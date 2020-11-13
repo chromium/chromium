@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1625959690469240009">Lai atvērtu vietnes iestatījumus, atjauniniet vai atkārtoti instalējiet pārlūku <ph name="BROWSER_NAME" />.</translation>
 <translation id="1700971771753530690">Lietotnei <ph name="APP_NAME" /> ir nepieciešama šī lietotne:</translation>
 <translation id="2697679025356221813">Lietotnei <ph name="APP_NAME" /> ir nepieciešams tīmekļa pārlūks</translation>
 <translation id="3858759029325727987">Izvēlieties pārlūku, kas atbalsta šo lietotni:</translation>

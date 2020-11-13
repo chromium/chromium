@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
+<translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
 <translation id="1734367976349034509">Šis įrenginys valdomas įmonės</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Nepavyko – išvestis pilna</translation>
 <translation id="4027485274696301677">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="ENROLLMENT_DOMAIN" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="4034824040120875894">Spausdintuvas</translation>
+<translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
-<translation id="4991056862642197104">Padėkite dokumentą ir spustelėkite „Nuskaityti“, kad galėtumėte pradėti</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="520299634122159966">Nėra pasiekiamų skaitytuvų</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
@@ -108,6 +109,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6048107060512778456">Nepavyko – įstrigęs popierius</translation>
+<translation id="6050189528197190982">Pilkumo tonas</translation>
 <translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
@@ -149,7 +151,9 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
 <translation id="8723108084122415655">Nenumatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8726019395068607495">Sustabdyta – atidarytos durelės</translation>
+<translation id="8730621377337864115">Atlikta</translation>
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>

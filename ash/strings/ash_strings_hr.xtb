@@ -130,7 +130,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
 <translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="2222338659135520253">Obavezna prijava</translation>
-<translation id="22546648640907338">Promijenjen je pokret po dodirnoj podlozi za otvaranje Pregleda. Prijeđite s tri prsta prema gore da biste otvorili Pregled.</translation>
 <translation id="225680501294068881">Pretraživanje uređaja...</translation>
 <translation id="2268130516524549846">Bluetooth onemogućen</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
@@ -148,7 +147,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2352467521400612932">Postavke pisaljke</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
-<translation id="2361223922412143600">Promijenjen je pokret po dodirnoj podlozi za zatvaranje Pregleda. Prijeđite s tri prsta prema dolje da biste zatvorili Pregled.</translation>
 <translation id="2365393535144473978">Omogućivanjem mobilnih podataka omogućit će Bluetooth.</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
 <translation id="2390318262976603432">Postavke oznake zemlje/jezika</translation>
@@ -177,7 +175,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2596078834055697711">Snimanje snimke zaslona prozora</translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
-<translation id="2640255526076764619">Promijenjen je pokret po dodirnoj podlozi za prelazak na prethodnu radnu površinu. Da biste prešli na prethodnu radnu površinu, prijeđite s četiri prsta ulijevo.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Klikanje i povlačenje</translation>
 <translation id="2700493154570097719">Postavite tipkovnicu</translation>
@@ -396,7 +393,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4696813013609194136">Otključajte uređaj roditeljskim kodom</translation>
 <translation id="4702647871202761252">Zaslon privatnosti je isključen</translation>
 <translation id="4705716602320768426">Pošaljite povratne informacije</translation>
-<translation id="4710243778082831592">Postavke za IME</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4744944742468440486">Informacije o vašem odabiru</translation>
@@ -527,7 +523,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6018164090099858612">Izlaz iz zrcalnog načina</translation>
 <translation id="602001110135236999">Pomicanje ulijevo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
-<translation id="6029337736376922061">Promijenjen je pokret po dodirnoj podlozi za prelazak na sljedeću radnu površinu. Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno.</translation>
 <translation id="6030495522958826102">Izbornik je premješten u donji lijevi kut zaslona.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj se monitor ne podudara s vašim uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>

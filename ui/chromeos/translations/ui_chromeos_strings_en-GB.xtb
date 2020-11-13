@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1000498691615767391">Select a folder to open</translation>
+<translation id="1016731229041675999">Arabic transliteration</translation>
+<translation id="102325055885714714">Tamil transliteration</translation>
 <translation id="1035094536595558507">Slide view</translation>
 <translation id="1047956942837015229">Deleting <ph name="COUNT" /> items...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1060368002126861100">To open files with <ph name="APP_NAME" />, first move them to the Windows files folder.</translation>
 <translation id="1062407476771304334">Replace</translation>
+<translation id="1082570120854863773">Chinese (Traditional) Pinyin</translation>
 <translation id="1119069657431255176">Bzip2 compressed tar archive</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> found.
@@ -41,10 +44,13 @@
 <translation id="1378727793141957596">Welcome to Google Drive!</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">Seek slider</translation>
+<translation id="1411401459521499147">Romanian with standard keyboard</translation>
+<translation id="14286271616944851">Persian</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
 <translation id="1439494416798956626">Moved to <ph name="FOLDER_NAME" />.</translation>
 <translation id="1464724975715666883">1 error.</translation>
+<translation id="1466220122465387403">Sorani Kurdish with English-based keyboard</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1472351751615457820">Greek (transliteration)</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" was not uploaded. There is not enough free space in your Google Drive.</translation>
@@ -59,6 +65,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622022025445651011">French (France)</translation>
 <translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
+<translation id="1649464394998806860">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="164969095109328410">Chrome device</translation>
 <translation id="1665611772925418501">The file could not be modified.</translation>
 <translation id="1673103856845176271">The file could not be accessed for security reasons.</translation>
@@ -89,9 +96,11 @@
 <translation id="1995337122023280937">Go to file location</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
+<translation id="2016165510591645686">Chinese Pinyin</translation>
 <translation id="2028997212275086731">RAR archive</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2060251957438343874">German (Germany)</translation>
+<translation id="2060392775416297569">Chinese Cangjie</translation>
 <translation id="2066433303065022982">Hebrew transliteration</translation>
 <translation id="2070909990982335904">Names starting with dot are reserved for the system. Please choose another name.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -123,11 +132,13 @@
 <translation id="2453576648990281505">File already exists</translation>
 <translation id="2464079411014186876">Ice cream</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2484472280211296077">Tamil phonetic</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
 <translation id="2541377937973966830">The contents of this folder are read-only. Some activities are not supported.</translation>
 <translation id="2542049655219295786">Google table</translation>
 <translation id="2547921442987553570">Add to <ph name="EXTENSION_NAME" /></translation>
+<translation id="255285553751745003">Vietnamese Telex</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Frog</translation>
@@ -140,11 +151,13 @@
 <translation id="2664412712123763093">File location</translation>
 <translation id="2672394958563893062">An error occurred. Click to restart from the beginning.</translation>
 <translation id="2676946222714718093">Playing on</translation>
+<translation id="2718873684053049373">Chinese Dayi</translation>
 <translation id="2735623501230989521">Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2781645665747935084">Belgian</translation>
 <translation id="2782104745158847185">Error installing Linux application</translation>
 <translation id="2787047795752739979">Overwrite original</translation>
+<translation id="2798201218072736543">Portuguese (Brazil)</translation>
 <translation id="2822854841007275488">Arabic</translation>
 <translation id="2843806747483486897">Change default...</translation>
 <translation id="2850124913210091882">Back Up</translation>
@@ -167,12 +180,14 @@
 <translation id="3003633581067744647">Switch to thumbnail view</translation>
 <translation id="3007214526293698309">Fix ratio</translation>
 <translation id="303198083543495566">Geography</translation>
+<translation id="3040867506619073727">Sinhala</translation>
 <translation id="3057861065630527966">Backup your photos and videos</translation>
 <translation id="3067790092342515856">Windows files</translation>
 <translation id="3078461028045006476">Share with <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">DONE</translation>
+<translation id="3171711500892772766">Telugu phonetic</translation>
 <translation id="3182237543071236785">English (UK)</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
@@ -211,6 +226,7 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
+<translation id="3608699648194837100">Tamil ITRANS</translation>
 <translation id="3609785682760573515">Syncing...</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -221,6 +237,7 @@
 <translation id="3645531960514756307">Unpin folder</translation>
 <translation id="3685122418104378273">Google Drive sync is disabled by default, when using mobile data.</translation>
 <translation id="3689865792480713551">Cancel <ph name="ACTIVITY_DESCRIPTION" />.</translation>
+<translation id="3717701509378976246">Armenian</translation>
 <translation id="3726463242007121105">This device cannot be opened because its file system is not supported.</translation>
 <translation id="3741243925913727067">Back up your media device’s photos and videos to Google Drive.</translation>
 <translation id="3749289110408117711">File name</translation>
@@ -259,6 +276,7 @@
 <translation id="4261901459838235729">Google Presentation</translation>
 <translation id="4290535918735525311">1 folder shared with Linux</translation>
 <translation id="4299729908419173967">Brazilian</translation>
+<translation id="4305486654020746131">Punjabi</translation>
 <translation id="4309915981827077375">General info</translation>
 <translation id="4315949787858895817">Dutch (Belgium)</translation>
 <translation id="4326192123064055915">Coffee</translation>
@@ -266,6 +284,7 @@
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">External link</translation>
+<translation id="4406790547322756995">Vietnamese with TCVN keyboard</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
@@ -284,8 +303,10 @@
 <translation id="4603392156942865207">Copying <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">Sanskrit</translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="463813589602055304">Chinese Wubi</translation>
 <translation id="4656293982926141856">This computer</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
+<translation id="4669979276126590335">Serbian transliteration</translation>
 <translation id="4690246192099372265">Swedish</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Monkey</translation>
@@ -296,8 +317,10 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos backed up</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Sorry, this video is not supported by your cast device.</translation>
+<translation id="4733240808404733495">Thai with TIS 820-2531 keyboard</translation>
 <translation id="4734518477988699048">Input value is invalid.</translation>
 <translation id="4737050008115666127">Landing</translation>
+<translation id="4738570502598323051">Tamil with InScript keyboard</translation>
 <translation id="4747271164117300400">Macedonian</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763055924467562718">Kannada (phonetic)</translation>
@@ -309,6 +332,7 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Device is read-only</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> items selected</translation>
+<translation id="4842306555839940112">Telugu transliteration</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">German (Belgium)</translation>
 <translation id="4850886885716139402">View</translation>
@@ -384,6 +408,7 @@
 <translation id="5368191757080475556">Share folder with Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5418923334382419584">Myanmar keyboard</translation>
+<translation id="5427022459704612663">Vietnamese VIQR</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5438282218546237410">There are no results for <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Invalid password</translation>
@@ -399,6 +424,7 @@
 <translation id="5534520101572674276">Calculating size</translation>
 <translation id="5551831234974556292">Maltese</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5601917305267643189">Spanish (Spain)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5623849870004487514">Nepali with phonetic keyboard</translation>
 <translation id="5649768706273821470">Listen</translation>
@@ -423,6 +449,7 @@
 <translation id="5833610766403489739">This file has wandered off somewhere. Please check your download location setting and try again.</translation>
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
+<translation id="5846013392911797712">Thai with Kedmanee keyboard</translation>
 <translation id="5850516540536751549">This file type is not supported. Please visit the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> to find an app that can open this type of file.
     <ph name="BEGIN_LINK_HELP" />Learn More<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nothing to see here...</translation>
@@ -440,6 +467,7 @@
 <translation id="60357267506638014">Czech QWERTY</translation>
 <translation id="604001903249547235">Cloud backup</translation>
 <translation id="6040143037577758943">Close</translation>
+<translation id="6041767187407754614">Chinese Quick</translation>
 <translation id="6074825444536523002">Google form</translation>
 <translation id="6096979789310008754">Search text cleared, showing all files and folders.</translation>
 <translation id="610101264611565198">Moving <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
@@ -496,6 +524,7 @@
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Manage Linux sharing</translation>
 <translation id="6808193438228982088">Fox</translation>
+<translation id="6819938753873901684">Tigrinya</translation>
 <translation id="6820687829547641339">Gzip compressed tar archive</translation>
 <translation id="6823166707458800069">All files saved in this folder are backed up online automatically.</translation>
 <translation id="6825883775269213504">Russian</translation>
@@ -504,6 +533,7 @@
 <translation id="6862635236584086457">All files saved in this folder are backed up online automatically</translation>
 <translation id="6876155724392614295">Cycle</translation>
 <translation id="6878261347041253038">Devanagari keyboard (Phonetic)</translation>
+<translation id="6878301034829092662">Russian with phonetic YaZHert keyboard</translation>
 <translation id="6885780034956018177">Snail</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6898028766943174120">More sub-folders…</translation>
@@ -531,10 +561,15 @@
 <translation id="7106346894903675391">Buy more storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="714369685015246514">Chinese Array</translation>
+<translation id="7155751472708812680">Sorani Kurdish with Arabic-based keyboard</translation>
+<translation id="7169438078134535111">Turkish with F-keyboard</translation>
 <translation id="7170467426996704624">Transliteration (salam → ሰላም)</translation>
+<translation id="7173380554947442031">Vietnamese VNI</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Save file as</translation>
+<translation id="7221999925319694720">Chinese Zhuyin</translation>
 <translation id="7238097264433196391">Drive name</translation>
 <translation id="7248671827512403053">Application</translation>
 <translation id="7268659760406822741">Available services</translation>
@@ -601,6 +636,7 @@
 <translation id="7881969471599061635">Disable subtitles</translation>
 <translation id="78946041517601018">Shared drives</translation>
 <translation id="7898607018410277265">Gujarati keyboard (New Phonetic)</translation>
+<translation id="7908150161525408421">Spanish (Latin America)</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
@@ -608,6 +644,7 @@
 <translation id="7953739707111622108">This device cannot be opened because its file system was not recognised.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7982283708762922719">Height</translation>
+<translation id="7988940501536183135">Russian with phonetic keyboard</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Size</translation>
 <translation id="803771048473350947">File</translation>
@@ -627,8 +664,10 @@
 <translation id="8154842056504218462">Selected all entries.</translation>
 <translation id="8157684860301034423">Failed to retrieve app info.</translation>
 <translation id="8157939133946352716">7 x 5</translation>
+<translation id="8159982522558068586">Tamil with Typewriter keyboard</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Device model</translation>
+<translation id="8196481879028929035">Portuguese (Portugal)</translation>
 <translation id="8208580316430297579">Artwork</translation>
 <translation id="8223479393428528563">To save these files for offline use, get back online, right-click the files and select the <ph name="OFFLINE_CHECKBOX_NAME" /> option.</translation>
 <translation id="8249296373107784235">Abort</translation>
@@ -661,6 +700,10 @@
 <translation id="8579285237314169903">Syncing <ph name="NUMBER_OF_FILES" /> items...</translation>
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
+<translation id="8608272065177710825">Bulgarian with phonetic keyboard</translation>
+<translation id="8619608420536266892">Tamil with Tamil99 keyboard</translation>
+<translation id="863846969551842412">Cantonese</translation>
+<translation id="8669047053197791123">Thai with Pattachote keyboard</translation>
 <translation id="8669949407341943408">Moving...</translation>
 <translation id="8688649574682805922">German (Switzerland)</translation>
 <translation id="8694836330346852143">Urdu</translation>

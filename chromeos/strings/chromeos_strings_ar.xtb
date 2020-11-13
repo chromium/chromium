@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
+<translation id="1703835215927279855">خطاب</translation>
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
 <translation id="1734367976349034509">يخضع هذا الجهاز لإدارة المؤسسة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
 <translation id="4027485274696301677">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="ENROLLMENT_DOMAIN" />. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="4034824040120875894">الطابعة</translation>
+<translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4985509611418653372">تشغيل</translation>
-<translation id="4991056862642197104">يُرجى وضع المستند والنقر على الزر "المسح ضوئيًا" للبدء.</translation>
 <translation id="5094480857972195099">يدير النطاق <ph name="ENROLLMENT_DOMAIN" /> هذا المستخدم، ويمكنه إدارة الإعدادات ورصد نشاط المستخدم عن بُعد.</translation>
 <translation id="520299634122159966">لا تتوفّر أجهزة مسح ضوئي.</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6048107060512778456">تعذَّرت الطباعة - الورق مكدّس</translation>
+<translation id="6050189528197190982">تدرج الرمادي</translation>
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
 <translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
+<translation id="8730621377337864115">تم</translation>
 <translation id="8747900814994928677">تأكيد التغيير</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>

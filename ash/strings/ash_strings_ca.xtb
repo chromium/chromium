@@ -130,7 +130,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222338659135520253">Cal iniciar la sessió</translation>
-<translation id="22546648640907338">El gest del ratolí tàctil per entrar a Aplicacions recents ha canviat. Fes lliscar tres dits cap amunt per entrar a Aplicacions recents.</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
@@ -148,7 +147,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2361223922412143600">El gest del ratolí tàctil per sortir d'Aplicacions recents ha canviat. Fes lliscar tres dits cap avall per sortir d'Aplicacions recents.</translation>
 <translation id="2365393535144473978">En activar les dades mòbils s'activarà el Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2390318262976603432">Configuració regional</translation>
@@ -177,7 +175,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2596078834055697711">Fa una captura de pantalla de la finestra</translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2621713457727696555">Segura</translation>
-<translation id="2640255526076764619">El gest del ratolí tàctil per canviar a l'escriptori anterior ha canviat. Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior.</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2658778018866295321">Fes clic i arrossega</translation>
 <translation id="2700493154570097719">Defineix el teu teclat</translation>
@@ -396,7 +393,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4705716602320768426">Envia suggeriments</translation>
-<translation id="4710243778082831592">Configuració d'IME</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
@@ -527,7 +523,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6018164090099858612">S'està sortint del mode de projecció</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
-<translation id="6029337736376922061">El gest del ratolí tàctil per canviar a l'escriptori següent ha canviat. Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent.</translation>
 <translation id="6030495522958826102">El menú s'ha mogut a l'extrem inferior esquerre de la pantalla.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
@@ -806,7 +801,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
-<translation id="8755498163081687682">Verifica la teva identitat; <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
+<translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
 <translation id="8759408218731716181">No es pot configurar l'inici de sessió múltiple</translation>
 <translation id="8785070478575117577">Connecta't a <ph name="NETWORK_NAME" /></translation>

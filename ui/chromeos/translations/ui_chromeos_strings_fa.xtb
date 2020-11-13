@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">آماده پشتیبان گرفتن از <ph name="FILE_COUNT" /> مورد</translation>
 <translation id="4924638091161556692">تصحیح شد</translation>
 <translation id="4935975195727477204">گل میخک</translation>
+<translation id="4942961016321891903">آوانگاری مالایالم</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4961158930123534723">‏۱ پوشه با Parallels Desktop هم‌رسانی شد</translation>
 <translation id="4969785127455456148">آلبوم</translation>
@@ -396,8 +397,10 @@
 <translation id="5524517123096967210">امکان خواندن فایل وجود نداشت.</translation>
 <translation id="5533102081734025921">تصویر <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">محاسبه اندازه</translation>
+<translation id="5551831234974556292">مالتی</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">دووراک آمریکایی</translation>
+<translation id="5623849870004487514">نپالی با صفحه‌کلید آوایی</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
 <translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
@@ -427,6 +430,7 @@
 <translation id="5912396950572065471">قالب</translation>
 <translation id="5913638992615760742">عملیات کپی انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">ماراتی</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
@@ -487,6 +491,7 @@
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6718273304615422081">در حال فشرده سازی ...</translation>
 <translation id="6751256176799620176">۱ پوشه انتخاب شد</translation>
+<translation id="6767296108234383966">نویسه‌گردانی مالایالم</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6795884519221689054">پاندا</translation>
 <translation id="6806699711453372963">‏مدیریت هم‌رسانی با Linux</translation>
@@ -521,6 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7040138676081995583">باز کردن با...</translation>
+<translation id="7096940708283911567">اوریه</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> مورد انتخاب شدند</translation>
 <translation id="7106346894903675391">خرید فضای ذخیره بیشتر...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;جستجوی Drive&lt;/em&gt;</translation>
@@ -544,6 +550,7 @@
 <translation id="7489215562877293245">‏<ph name="FILE_COUNT" /> مورد پیدا شد
     <ph name="LINE_BREAK1" />
     آماده برای پشتیبان‌گیری در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">نپالی با صفحه‌کلید هندی</translation>
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>
 <translation id="7508545000531937079">نمایش اسلاید</translation>
 <translation id="751507702149411736">بلاروسی</translation>

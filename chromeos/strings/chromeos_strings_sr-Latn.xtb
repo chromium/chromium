@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
 <translation id="1734367976349034509">Ovim uređajem upravlja preduzeće</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="4034824040120875894">Štampač</translation>
+<translation id="4131410914670010031">Crno-belo</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Pokreni</translation>
-<translation id="4991056862642197104">Postavite dokument i kliknite na Skeniraj da biste počeli</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="520299634122159966">Nema dostupnih skenera</translation>
 <translation id="5212543919916444558">Ne mogu da pronađem na ekranu ništa oko čega mogu da pomognem.
@@ -108,6 +109,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6048107060512778456">Nije uspelo – papir je zaglavljen</translation>
+<translation id="6050189528197190982">Sivi tonovi</translation>
 <translation id="6058625436358447366">Da biste završili, unesite staru i novu lozinku</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
 <translation id="6108689792487843350">Mrežni prolaz je nedostupan</translation>
@@ -149,7 +151,9 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
 <translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
+<translation id="8730621377337864115">Gotovo</translation>
 <translation id="8747900814994928677">Potvrdite promenu</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>

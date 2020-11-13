@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1625959690469240009">Pentru a deschide setările site-ului, actualizează sau reinstalează <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> necesită următoarea aplicație.</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> necesită un browser web</translation>
 <translation id="3858759029325727987">Alege un browser care acceptă această aplicație:</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
 <translation id="1734367976349034509">Este dispositivo xestiónao unha empresa</translation>
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4027485274696301677">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores poden configuralo de forma remota.</translation>
 <translation id="4034824040120875894">Impresora</translation>
+<translation id="4131410914670010031">Branco e negro</translation>
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
-<translation id="4991056862642197104">Coloca o documento e fai clic en Escanear para comezar</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> xestiona este usuario e pode xestionar a súa configuración e controlar a súa actividade de forma remota.</translation>
 <translation id="520299634122159966">Non hai ningún escáner dispoñible</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
@@ -108,6 +109,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6048107060512778456">Produciuse un erro: atasco de papel</translation>
+<translation id="6050189528197190982">Escala de grises</translation>
 <translation id="6058625436358447366">Para finalizar, introduce o teu antigo contrasinal e o novo</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
@@ -149,7 +151,9 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
+<translation id="8730621377337864115">Feito</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>

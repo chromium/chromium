@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Isiqalisi</translation>
 <translation id="1644574205037202324">Umlando</translation>
 <translation id="1662989795263954667">Imile - Uyinki uphelile</translation>
+<translation id="1703835215927279855">Incwadi</translation>
 <translation id="1706391837335750954">Isixazululi se-DNS Sikhona</translation>
 <translation id="1734367976349034509">Le divayisi iphethwe ibhizinisi</translation>
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Yehlulekile - Okukhiphayo kugcwele</translation>
 <translation id="4027485274696301677">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="ENROLLMENT_DOMAIN" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
 <translation id="4034824040120875894">Iphrinta</translation>
+<translation id="4131410914670010031">Okumnyama nokumhlophe</translation>
 <translation id="4227825898293920515">Iphasiwedi iphelelwa isikhathi ngo-<ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ayikho imisebenzi yokuphrinta eqhubekayo</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Imile - Iphepha liphelile</translation>
 <translation id="4932733599132424254">Idethi</translation>
 <translation id="4985509611418653372">Ukugijima</translation>
-<translation id="4991056862642197104">Beka idokhumenti yakho, bese uchofoza Skena ukuze uqalise</translation>
 <translation id="5094480857972195099">I-<ph name="ENROLLMENT_DOMAIN" /> iphatha lo msebenzisi futhi ingaphatha amasethingi isekudeni futhi iqaphe umsebenzi womsebenzisi.</translation>
 <translation id="520299634122159966">Awekho amaskena atholakalayo</translation>
 <translation id="5212543919916444558">Angikwazi ukuthola lutho kusikrini sakho engingasiza ngakho. 
@@ -108,6 +109,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5895138241574237353">Qalisa kabusha</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6048107060512778456">Yehlulekile - Ukujema kwephepha</translation>
+<translation id="6050189528197190982">I-Grayscale</translation>
 <translation id="6058625436358447366">Ukuze uqede, faka amaphasiwedi akho endala nentsha</translation>
 <translation id="6106186594183574873">Ukuze uqede, faka iphasiwedi endala</translation>
 <translation id="6108689792487843350">Umasango akafinyeleleki</translation>
@@ -149,7 +151,9 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="871560550817059752">Yehlulekile - Uyinki uphelile</translation>
 <translation id="8723108084122415655">Inethiwekhi engeyona ezenzakalelayo ingaphezu komkhawulo wokubambezeleka</translation>
 <translation id="8726019395068607495">Imile - Umnyango uvuliwe</translation>
+<translation id="8730621377337864115">Kwenziwe</translation>
 <translation id="8747900814994928677">Qinisekisa ushintsho</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Okuzenzakalelayo</translation>
 <translation id="8910721771319628100">Inethiwekhi ezenzakalelayo ingaphezu komkhawulo wokubambezeleka</translation>
 <translation id="8919837981463578619">Yehlulekile - Itreyi alikho</translation>

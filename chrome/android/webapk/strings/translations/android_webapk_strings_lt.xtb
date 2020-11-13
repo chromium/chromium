@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1625959690469240009">Norėdami atidaryti svetainės nustatymus, atnaujinkite arba iš naujo įdiekite „<ph name="BROWSER_NAME" />“</translation>
 <translation id="1700971771753530690">„<ph name="APP_NAME" />“ reikia nurodytos programos:</translation>
 <translation id="2697679025356221813">„<ph name="APP_NAME" />“ reikia žiniatinklio naršyklės</translation>
 <translation id="3858759029325727987">Pasirinkite šią programą palaikančią naršyklę:</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1625959690469240009">Para abrir a configuración do sitio, actualiza ou volve instalar <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">A aplicación <ph name="APP_NAME" /> precisa a seguinte aplicación:</translation>
 <translation id="2697679025356221813">A aplicación <ph name="APP_NAME" /> precisa un navegador web</translation>
 <translation id="3858759029325727987">Selecciona un navegador compatible con esta aplicación:</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">გამშვები</translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1662989795263954667">გაჩერდა — მელანი გათავდა</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ის მომგვარებლის არსებობა</translation>
 <translation id="1734367976349034509">ამ მოწყობილობას მართავს ორგანიზაცია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4027485274696301677">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="ENROLLMENT_DOMAIN" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
+<translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">გაჩერდა — ქაღალდი გათავდა</translation>
 <translation id="4932733599132424254">თარიღი</translation>
 <translation id="4985509611418653372">გაშვება</translation>
-<translation id="4991056862642197104">მოათავსეთ დოკუმენტი, დასაწყებად კი დააწკაპუნეთ „სკანირებაზე“</translation>
 <translation id="5094480857972195099">ამ მომხმარებელს მართავს <ph name="ENROLLMENT_DOMAIN" />, რომელსაც შეუძლია პარამეტრების დისტანციურად მართვა და მომხმარებლის აქტივობის მონიტორინგი.</translation>
 <translation id="520299634122159966">სკანერები მიუწვდომელია</translation>
 <translation id="5212543919916444558">თქვენს ეკრანზე ვერაფერი მოიძებნა, რითაც თქვენს დახმარებას შევძლებდი.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6048107060512778456">ვერ მოხერხდა — ქაღალდის გაჭედვა</translation>
+<translation id="6050189528197190982">ნაცრისფერის ელფერები</translation>
 <translation id="6058625436358447366">დასასრულებლად შეიყვანეთ თქვენი ძველი და ახალი პაროლები</translation>
 <translation id="6106186594183574873">დასასრულებლად შეიყვანეთ თქვენი ძველი პაროლი</translation>
 <translation id="6108689792487843350">გეითვეი მიუწვდომელია</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">ვერ მოხერხდა — მელანი გაუთავდა</translation>
 <translation id="8723108084122415655">არანაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>
 <translation id="8726019395068607495">გაჩერდა — პრინტერის კარი ღიაა</translation>
+<translation id="8730621377337864115">მზადაა</translation>
 <translation id="8747900814994928677">დაადასტურეთ ცვლილება</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8910721771319628100">ნაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>

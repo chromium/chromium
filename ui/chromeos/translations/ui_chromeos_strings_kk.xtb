@@ -322,6 +322,7 @@
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> файлдың сақтық көшірмесін жасауға болады</translation>
 <translation id="4924638091161556692">Түзетілді</translation>
 <translation id="4935975195727477204">Түймедақ гүлі</translation>
+<translation id="4942961016321891903">Малаялам (фонетикалық)</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">Parallels Desktop арқылы 1 қалта бөлісіледі.</translation>
 <translation id="4969785127455456148">Альбом</translation>
@@ -395,8 +396,10 @@
 <translation id="5524517123096967210">Файлды оқу мүмкін болмады.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> суреті</translation>
 <translation id="5534520101572674276">Көлемін есептеу</translation>
+<translation id="5551831234974556292">Мальта</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">АҚШ Дворак</translation>
+<translation id="5623849870004487514">Непал (фонетикалық пернетақтамен)</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалды дискіден ажырату мүмкін емес<ph name="END_BOLD" />
@@ -426,6 +429,7 @@
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Көшіру операциясы сәтсіз аяқталды, күтпеген қате болды: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Маратхи</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox құрылғылары</translation>
 <translation id="5982621672636444458">Сұрыптау параметрлері</translation>
@@ -486,6 +490,7 @@
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6718273304615422081">Қысылуда…</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
+<translation id="6767296108234383966">Малаялам (транслитерация)</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Linux контейнерімен бөлісуді басқару</translation>
@@ -520,6 +525,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Орнату сәтсіз аяқталды.</translation>
 <translation id="7040138676081995583">Ашу әдісі…</translation>
+<translation id="7096940708283911567">Одия</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> элемент таңдалды</translation>
 <translation id="7106346894903675391">Қосымша жад сатып алу…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
@@ -543,6 +549,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> файл табылды
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дискіне сақтық көшірмесін жасауға болады</translation>
+<translation id="7498032756958781551">Непал (InScript пернетақтасымен)</translation>
 <translation id="7505167922889582512">Жасырын файлдарды көрсету</translation>
 <translation id="7508545000531937079">Слайдшоу</translation>
 <translation id="751507702149411736">беларус</translation>

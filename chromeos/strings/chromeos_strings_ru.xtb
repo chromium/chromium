@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
 <translation id="1734367976349034509">Это корпоративное устройство</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4027485274696301677">Это устройство <ph name="DEVICE_TYPE" /> зарегистрировано в домене <ph name="ENROLLMENT_DOMAIN" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Проверить</translation>
-<translation id="4991056862642197104">Поместите документ и нажмите "Сканировать"</translation>
 <translation id="5094480857972195099">Это управляемый аккаунт. Администратор (<ph name="ENROLLMENT_DOMAIN" />) может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
+<translation id="6050189528197190982">Оттенки серого</translation>
 <translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
 <translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Подтверждение изменений</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>

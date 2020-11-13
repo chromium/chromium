@@ -304,7 +304,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208584281581115441">Proveri</translation>
 <translation id="3211426585530211793">Stavka <ph name="ITEM_TITLE" /> je izbrisana</translation>
-<translation id="3211503082155944789">Nepročitanih stranica: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome kao bezbednosni ključ</translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
@@ -641,7 +640,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5683547024293500885">Chrome ne može da traži ažuriranja</translation>
 <translation id="5686790454216892815">Ime datoteke je predugačko</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> će posle restartovanja koristiti <ph name="LANGUAGE" />.</translation>
-<translation id="5691211010013816086">Imate ovoliko stranica: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="569536719314091526">Prevedite ovu stranicu na bilo koji jezik pomoću dugmeta Još opcija</translation>
 <translation id="5696597120588531049">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugo</translation>
 <translation id="5697688514913266141">Datoteka će se sačuvati u direktorijumu <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Izmeni<ph name="END_LINK2" />.</translation>
@@ -886,7 +884,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7274013316676448362">Sajt je blokiran</translation>
 <translation id="7286572596625053347">Želite da promenite jezik <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Promena naziva nije moguća</translation>
-<translation id="7291387454912369099">Plaćanje pokreće Pomoćnik</translation>
 <translation id="7293171162284876153">Da biste pokrenuli sinhronizaciju, uključite opciju „Sinhronizujte Chrome podatke“.</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="729975465115245577">Uređaj nema aplikaciju za čuvanje datoteke sa lozinkama.</translation>

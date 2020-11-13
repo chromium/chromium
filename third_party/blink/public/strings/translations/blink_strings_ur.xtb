@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">اس مہینے</translation>
 <translation id="1637811476055996098">فائلوں کا انتخاب کریں</translation>
 <translation id="1650423536718072820">اقوال زریں</translation>
+<translation id="1681022320378710418">موجودہ وقت</translation>
 <translation id="1727886345390570319">سب ٹائٹلز مینو چھپائیں</translation>
 <translation id="1729654308190250600">براہ کرم ایک غیر خالی ای میل پتہ درج کریں</translation>
 <translation id="1758486001363313524">دیگر…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">‏براہ کرم ایک URL درج کریں۔</translation>
 <translation id="3175736971608411871">ٹائمر</translation>
 <translation id="3199563858620722075">کومبو باکس</translation>
+<translation id="3220661731597678625">موجودہ قدم</translation>
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3450233048674729344">قدر <ph name="MAXIMUM" /> سے کم یا اس کے برابر ہونی چاہیے۔</translation>
 <translation id="3486220673238053218">وضاحت</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ویڈیو</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
 <translation id="4812940957355064477">براہ کرم ایک نمبر درج کریں۔</translation>
+<translation id="4912200001568447310">موجودہ آئٹم</translation>
 <translation id="4912536737030637138">کتابیات کا اندراج</translation>
 <translation id="4915360478455618802">وقت منتخب کرنے والا دکھائیں</translation>
 <translation id="492244087561876220">تبصرہ</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">میڈیا چلانے سے قاصر۔</translation>
 <translation id="537648784377940524">کم سے کم تاریخ (<ph name="MIN_DATE_OR_TIME" />) زیادہ سے زیادہ تاریخ (<ph name="MAX_DATE_OR_TIME" />) سے پہلے آنی چاہیے۔</translation>
 <translation id="5406322316791861025">فیگر</translation>
+<translation id="5425179576310518467">موجودہ تاریخ</translation>
 <translation id="5453733299334684579">ٹری آئٹم</translation>
 <translation id="5466621249238537318">براہ کرم ایک یا مزید فائلیں منتخب کریں۔</translation>
 <translation id="5468998798572797635">پوری اسکرین سے خارج ہوں</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">میٹر</translation>
 <translation id="6166809985690652833">پسِ نوشت</translation>
 <translation id="6209276755895393898">بظاہر: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">موجودہ صفحہ</translation>
 <translation id="6213469881011901533">فرہنگ</translation>
 <translation id="6281588256137006900">روشن</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا اس سے زیادہ تک بڑھائیں (آپ فی الحال 1 حرف استعمال کر رہے ہیں)۔</translation>
 <translation id="7034405885550056553">تجویز</translation>
 <translation id="709897737746224366">براہ کرم مطلوبہ فارمیٹ کا مماثل بنائیں۔</translation>
+<translation id="7102274145889307184">موجودہ مقام</translation>
 <translation id="7118469954320184356">کوئی تفصیل دستیاب نہیں ہے۔</translation>
 <translation id="7139483182332611405">دیباچہ</translation>
 <translation id="7214187073215825913">مواد کی معلومات</translation>

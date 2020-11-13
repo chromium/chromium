@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1734367976349034509">Tym urządzeniem zarządza firma</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4027485274696301677">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza <ph name="ENROLLMENT_DOMAIN" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="4034824040120875894">Drukarka</translation>
+<translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Uruchom</translation>
-<translation id="4991056862642197104">Aby rozpocząć, umieść dokument w obszarze skanowania i kliknij Skanuj.</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="520299634122159966">Brak dostępnych skanerów</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
@@ -108,6 +109,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
+<translation id="6050189528197190982">Skala odcieni szarości</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
@@ -149,7 +151,9 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8726019395068607495">Zatrzymano – otwarte drzwiczki drukarki</translation>
+<translation id="8730621377337864115">Gotowe</translation>
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>

@@ -130,7 +130,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2208323208084708176">Hali ya eneo-kazi iliyounganishwa</translation>
 <translation id="2220572644011485463">PIN au nenosiri</translation>
 <translation id="2222338659135520253">Unahitaji kuingia katika akaunti</translation>
-<translation id="22546648640907338">Ishara ya padi ya kugusa inayotumiwa kufungua Muhtasari imebadilika. Telezesha vidole vitatu juu ili ufungue Muhtasari.</translation>
 <translation id="225680501294068881">Inatambazaa vifaa...</translation>
 <translation id="2268130516524549846">Bluetooth imelemazwa</translation>
 <translation id="2268813581635650749">Ondoa wote</translation>
@@ -148,7 +147,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2352467521400612932">Mipangilio ya stylus</translation>
 <translation id="2354174487190027830">Inaanza kutumia <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Endelea</translation>
-<translation id="2361223922412143600">Ishara ya padi ya kugusa inayotumiwa kufunga Muhtasari imebadilika. Telezesha vidole vitatu chini ili ufunge Muhtasari.</translation>
 <translation id="2365393535144473978">Kuwasha data ya mtandao wa simu kutawasha Bluetooth.</translation>
 <translation id="2369165858548251131">"Hujambo" kwa Kichina</translation>
 <translation id="2390318262976603432">Mipangilio ya Lugha</translation>
@@ -177,7 +175,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2596078834055697711">Piga picha ya skrini ya dirisha</translation>
 <translation id="2617342710774726426">SIM kadi imefungwa</translation>
 <translation id="2621713457727696555">Unalindwa</translation>
-<translation id="2640255526076764619">Ishara ya padi ya kugusa inayotumiwa kwenda kwenye eneokazi lililotangulia imebadilika. Telezesha vidole vinne kushoto ili uende kwenye eneokazi lililotangulia.</translation>
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2658778018866295321">Bofya na uburute</translation>
 <translation id="2700493154570097719">Weka kibodi yako</translation>
@@ -396,7 +393,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
 <translation id="4705716602320768426">Tuma maoni</translation>
-<translation id="4710243778082831592">Mipangilio ya Programu Inayotambua Mbinu za Kuingiza Data (IME)</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
 <translation id="4744944742468440486">Maelezo yanayohusiana na chaguo lako</translation>
@@ -527,7 +523,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6018164090099858612">Inaondoka kwenye hali ya kuakisi</translation>
 <translation id="602001110135236999">Sogeza kushoto</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
-<translation id="6029337736376922061">Ishara ya padi ya kugusa inayotumiwa kwenda kwenye eneokazi linalofuata imebadilika. Telezesha vidole vinne kulia ili uende kwenye eneokazi linalofuata.</translation>
 <translation id="6030495522958826102">Menyu imehamishiwa kwenye kona ya chini kushoto mwa skrini.</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6043212731627905357">Skrini hii haiingiliani na kifaa chako cha <ph name="DEVICE_TYPE" /> (Skrini haitumiki).</translation>
@@ -618,6 +613,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6910714959251846841">Sasisho hili linahitaji powerwash kwenye kifaa chako. Pata maelezo zaidi kuhusu sasisho jipya la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
 <translation id="6945221475159498467">Chagua</translation>
+<translation id="6953890208095195458">Kipengele cha kurekodi skrini kimekomeshwa na msimamizi wako kwa sababu ya maudhui yaliyo kwenye skrini yako.</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6972754398087986839">Anza</translation>
 <translation id="6981982820502123353">Ufikivu</translation>

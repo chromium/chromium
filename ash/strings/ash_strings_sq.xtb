@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Jam "Asistenti yt i Google" dhe jam këtu që të të ndihmoj gjatë gjithë ditës!
 Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> u shtua</translation>
+<translation id="1047773237499189053">Ka veçori të re, përdor tastin "Shigjeta lart" për të mësuar më shumë.</translation>
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Celulare: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
+<translation id="118532027333893379">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
 <translation id="1195412055398077112">mbiskanim</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
@@ -124,10 +126,10 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222338659135520253">Kërkohet identifikimi</translation>
-<translation id="22546648640907338">Është ndryshuar gjesti i bllokut me prekje për të hyrë te "Përmbledhja". Rrëshqit shpejt lart me tre gishta për të hyrë te "Përmbledhja".</translation>
 <translation id="225680501294068881">Po skanon për pajisje...</translation>
 <translation id="2268130516524549846">Bluetooth-i u çaktivizua</translation>
 <translation id="2268813581635650749">Dil nga të gjitha</translation>
@@ -136,6 +138,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="229397294990920565">Të dhënat celulare po çaktivizohen...</translation>
 <translation id="2295777434187870477">Mikrofoni është aktiv. Ndryshimi i tij do ta çaktivizojë hyrjen.</translation>
 <translation id="2298170939937364391">"Zmadhuesi i ekranit të plotë" u aktivizua. Shtyp përsëri Ctrl+Kërko+M për ta çaktivizuar.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliko dialogun për ta parë rezultatin tek "Asistenti".</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
 <translation id="2322173485024759474">Një shkronjë pas</translation>
@@ -144,7 +147,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2352467521400612932">Cilësimet e stilolapsit</translation>
 <translation id="2354174487190027830">Po aktivizon <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Vazhdo</translation>
-<translation id="2361223922412143600">Është ndryshuar gjesti i bllokut me prekje për të dalë nga "Përmbledhja". Rrëshqit shpejt poshtë me tre gishta për të dalë nga "Përmbledhja".</translation>
 <translation id="2365393535144473978">Aktivizimi i të dhënave celulare do të aktivizojë Bluetooth.</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
 <translation id="2390318262976603432">Cilësimet rajonale</translation>
@@ -163,6 +165,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2484513351006226581">Shtyp <ph name="KEYBOARD_SHORTCUT" /> për të ndryshuar planin e tastierës.</translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
 <translation id="2509468283778169019">KYÇJA E KAPITALEVE është aktive</translation>
+<translation id="2536159006530886390">S'mund të lidhet me internetin.</translation>
 <translation id="2542089167727451762">Trokit imazhin e profilit tënd</translation>
 <translation id="255671100581129685">"Asistenti i Google" nuk ofrohet në një sesion publik.</translation>
 <translation id="256712445991462162">zmadhuesi i stacionuar</translation>
@@ -172,7 +175,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2617342710774726426">Karta SIM është e kyçur</translation>
 <translation id="2621713457727696555">I siguruar</translation>
-<translation id="2640255526076764619">Është ndryshuar gjesti i bllokut me prekje për të kaluar te tavolina e mëparshme e punës. Rrëshqit shpejt majtas me katër gishta për të kaluar te tavolina e mëparshme e punës.</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2658778018866295321">Kliko dhe zvarrit</translation>
 <translation id="2700493154570097719">Vendos tastierën</translation>
@@ -184,6 +186,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
+<translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rafti</translation>
 <translation id="2841907151129139818">Kaloi në modalitetin e tabletit</translation>
@@ -324,6 +327,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4129129681837227511">Për të parë njoftime në ekranin e kyçjes, shkyçe për të ndryshuar cilësimin</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Regjistrimi i ekranit është i bllokuar</translation>
 <translation id="4157822100366708405">Cilësimet e "Temës së errët"</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4195877955194704651">Butoni i klikimeve automatike</translation>
@@ -389,9 +393,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
 <translation id="4705716602320768426">Dërgo komente</translation>
-<translation id="4710243778082831592">Cilësimet e redaktorit IME</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -510,6 +514,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5957083217255311415">Të dhënat celulare janë çaktivizuar.</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
+<translation id="5960825221082587934">Lëri "Asistentit" të tregojë informacione, si p.sh. përkufizimin, përkthimin apo konvertimin e njësive për zgjedhjen tënde.</translation>
 <translation id="5977415296283489383">Kufjet</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
@@ -518,7 +523,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
-<translation id="6029337736376922061">Është ndryshuar gjesti i bllokut me prekje për të kaluar te tavolina tjetër e punës. Rrëshqit shpejt djathtas me katër gishta për të kaluar te tavolina tjetër e punës.</translation>
 <translation id="6030495522958826102">Menyja u zhvendos në këndin poshtë majtas të ekranit.</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
@@ -596,6 +600,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6777216307882431711">Po furnizon me energji pajisjet e lidhura USB-C</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
+<translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
 <translation id="6850010208275816200">Aplikacioni yt aktual është në ekranin e plotë. Nëse aplikacioni kërkon fjalëkalimin, në fillim dil nga ekrani i plotë.</translation>
@@ -608,6 +613,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Karta inteligjente nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
+<translation id="6953890208095195458">Regjistrimi i ekranit është ndaluar nga administratori yt për shkak të përmbajtjes në ekranin tënd.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6981982820502123353">Qasja</translation>
@@ -661,6 +667,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Mundësia për të nxjerr një regjistrim ekrani të përmbajtjes së ekranit të është bllokuar nga administratori.</translation>
 <translation id="7548434653388805669">Koha për gjumë</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
@@ -789,6 +796,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8721053961083920564">Ndërro volumin. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
@@ -811,6 +819,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>
+<translation id="8883473964424809116">Kliko për të hapur cilësimet e Google Assistant.</translation>
 <translation id="8894122120026866664">Telefoni yt nuk mund të gjendet</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>

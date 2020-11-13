@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Tồn tại trình phân giải hệ thống tên miền (DNS)</translation>
 <translation id="1734367976349034509">Thiết bị này do doanh nghiệp quản lý</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> này do <ph name="ENROLLMENT_DOMAIN" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="4034824040120875894">Máy in</translation>
+<translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="4985509611418653372">Chạy</translation>
-<translation id="4991056862642197104">Đặt tài liệu của bạn vào vị trí rồi nhấp vào Quét để bắt đầu</translation>
 <translation id="5094480857972195099">Miền <ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
@@ -108,6 +109,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6048107060512778456">Không thành công – Kẹt giấy</translation>
+<translation id="6050189528197190982">Thang độ xám</translation>
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
@@ -149,7 +151,9 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8726019395068607495">Đã dừng – Cửa máy in đang mở</translation>
+<translation id="8730621377337864115">Xong</translation>
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Mặc định</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>

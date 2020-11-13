@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1662989795263954667">Peatati – tint on otsas</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
 <translation id="1734367976349034509">Seda seadet haldab ettevõte</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
 <translation id="4027485274696301677">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="ENROLLMENT_DOMAIN" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Mustvalge</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4985509611418653372">Käitati</translation>
-<translation id="4991056862642197104">Asetage oma dokument paigale ja klõpsake alustamiseks käsul Skanni</translation>
 <translation id="5094480857972195099">Seda kasutajat haldab domeen <ph name="ENROLLMENT_DOMAIN" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="520299634122159966">Ühtegi skannerit pole saadaval</translation>
 <translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
@@ -108,6 +109,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6048107060512778456">Ebaõnnestus – paberiummistus</translation>
+<translation id="6050189528197190982">Hallskaala</translation>
 <translation id="6058625436358447366">Toimingu lõpuleviimiseks sisestage oma vana ja uus parool</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
@@ -149,7 +151,9 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
 <translation id="8723108084122415655">Mittevaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
 <translation id="8910721771319628100">Vaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8919837981463578619">Ebaõnnestus – salv puudub</translation>

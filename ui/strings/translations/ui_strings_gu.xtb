@@ -100,6 +100,7 @@
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> ફાઇલ</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">“<ph name="LOOKUP_STRING" />” શોધો</translation>
+<translation id="3622035490309591977">ક્લિપબોર્ડનો ઇતિહાસ</translation>
 <translation id="364720409959344976">અપલોડ કરવા માટે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3660179305079774227">ઉપર એરો</translation>
 <translation id="3670030362669914947">નંબર</translation>
@@ -152,6 +153,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{આજે સક્રિય છે}=1{1 દિવસ પહેલાં સક્રિય હતું}one{# દિવસ પહેલાં સક્રિય હતું}other{# દિવસ પહેલાં સક્રિય હતું}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 દિવસ અને }one{# દિવસ અને }other{# દિવસ અને }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">છબી.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1વ. માં}one{#વ. માં}other{#વ. માં}}</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 સેકન્ડ બાકી}one{# સેકન્ડ બાકી}other{# સેકન્ડ બાકી}}</translation>
@@ -192,6 +194,7 @@
 <translation id="6845533974506654842">દબાવો</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 કલાક બાકી}one{# કલાક બાકી}other{# કલાક બાકી}}</translation>
 <translation id="688711909580084195">શીર્ષક વિનાનું વેબપેજ</translation>
+<translation id="6902419395050653510">HTML કન્ટેન્ટ.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 વર્ષ બાકી}one{# વર્ષ બાકી}other{# વર્ષ બાકી}}</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>

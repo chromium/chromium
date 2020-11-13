@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1734367976349034509">Това устройство се управлява корпоративно</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="4027485274696301677">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="ENROLLMENT_DOMAIN" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Стартиране</translation>
-<translation id="4991056862642197104">Поставете документа си и кликнете върху „Сканиране“, за да започнете</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="520299634122159966">Няма налични скенери</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6048107060512778456">Неуспешно – заседнала хартия</translation>
+<translation id="6050189528197190982">Сива скала</translation>
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
 <translation id="8723108084122415655">Забавянето на допълнителната мрежа е над прага</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>

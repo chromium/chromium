@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">లాంచర్</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
+<translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706391837335750954">DNS రిసాల్వర్ అందుబాటులో ఉంది</translation>
 <translation id="1734367976349034509">ఈ పరికరం సంస్థ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది. అడ్మినిస్ట్రేట‌ర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
+<translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
-<translation id="4991056862642197104">మీ డాక్యుమెంట్‌ను ఉంచి, ఆపై ప్రారంభించడానికి 'స్కాన్ చేయి'ని క్లిక్ చేయండి</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
 <translation id="520299634122159966">స్కానర్‌లు అందుబాటులో లేవు</translation>
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
@@ -107,6 +108,7 @@
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6048107060512778456">విఫలమైంది - కాగితం జామ్ అయింది</translation>
+<translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
 <translation id="6058625436358447366">దీనిని ముగించడానికి, మీ పాత, కొత్త పాస్‌వర్డ్‌లను నమోదు చేయండి</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
@@ -148,7 +150,9 @@
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>
 <translation id="8723108084122415655">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్-యేతర నెట్‌వర్క్</translation>
 <translation id="8726019395068607495">ఆగిపోయింది - డోర్ తెరిచి ఉంది</translation>
+<translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8747900814994928677">మార్పును నిర్ధారించండి</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>

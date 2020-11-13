@@ -130,7 +130,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2222338659135520253">Zahtevana je prijava</translation>
-<translation id="22546648640907338">Poteza na sledilni ploščici za odpiranje pregleda je spremenjena. Če želite odpreti pregled, povlecite s tremi prsti navzgor.</translation>
 <translation id="225680501294068881">Iskanje naprav ...</translation>
 <translation id="2268130516524549846">Bluetooth onemogočen</translation>
 <translation id="2268813581635650749">Odjava vseh</translation>
@@ -148,7 +147,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2352467521400612932">Nastavitve pisala</translation>
 <translation id="2354174487190027830">Aktiviranje omrežja <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Naprej</translation>
-<translation id="2361223922412143600">Poteza na sledilni ploščici za izhod iz načina pregleda je spremenjena. Če želite zapreti način pregleda, povlecite s tremi prsti navzdol.</translation>
 <translation id="2365393535144473978">Če omogočite prenos podatkov v mobilnem omrežju, bo omogočen Bluetooth.</translation>
 <translation id="2369165858548251131">»Živijo« po kitajsko</translation>
 <translation id="2390318262976603432">Nastavitve jezika</translation>
@@ -177,7 +175,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2621713457727696555">Varno</translation>
-<translation id="2640255526076764619">Poteza na sledilni ploščici za preklop na prejšnjo pisalno mizo je spremenjena. Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnjo pisalno mizo.</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2658778018866295321">Klikanje in vlečenje</translation>
 <translation id="2700493154570097719">Nastavitev tipkovnice</translation>
@@ -396,7 +393,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4705716602320768426">Pošiljanje povratnih informacij</translation>
-<translation id="4710243778082831592">Nastavitve UNV-ja</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
@@ -527,7 +523,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6018164090099858612">Izhod iz zrcalnega načina</translation>
 <translation id="602001110135236999">Pomik levo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
-<translation id="6029337736376922061">Poteza na sledilni ploščici za preklop na naslednjo pisalno mizo je spremenjena. Povlecite s štirimi prsti v desno, če želite preklopiti na naslednjo pisalno mizo.</translation>
 <translation id="6030495522958826102">Meni je bil premaknjen v spodnji levi kot zaslona.</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6043212731627905357">Ta monitor se ne ujema z napravo <ph name="DEVICE_TYPE" /> (monitor ni podprt).</translation>

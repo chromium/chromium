@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222338659135520253">Требуется выполнить вход.</translation>
-<translation id="22546648640907338">Жест для перехода в режим обзора изменился. Чтобы перейти в этот режим, проведите тремя пальцами вверх.</translation>
 <translation id="225680501294068881">Поиск устройств…</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
 <translation id="2268813581635650749">Выйти для всех</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
-<translation id="2361223922412143600">Жест для выхода из режима обзора изменился. Чтобы выйти из этого режима, проведите тремя пальцами вниз.</translation>
 <translation id="2365393535144473978">Вместе с мобильным Интернетом включится Bluetooth.</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
 <translation id="2390318262976603432">Региональные настройки</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2617342710774726426">SIM-карта заблокирована</translation>
 <translation id="2621713457727696555">Защищена</translation>
-<translation id="2640255526076764619">Жест для перехода на предыдущий рабочий стол изменился. Проведите по сенсорной панели четырьмя пальцами влево.</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2658778018866295321">Перетаскивание</translation>
 <translation id="2700493154570097719">Выберите раскладку</translation>
@@ -374,7 +371,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4485060137115666462">Чтобы, например, посмотреть определение и перевод слова или конвертировать одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
-<translation id="4488735711456074171">Подключите телефон к Интернету, чтобы функция стала доступна.</translation>
+<translation id="4488735711456074171">Чтобы функция стала доступна, подключите телефон к Интернету.</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
 <translation id="4705716602320768426">Отправить отзыв</translation>
-<translation id="4710243778082831592">Настройки редактора методов ввода</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
 <translation id="602001110135236999">Влево</translation>
 <translation id="6025324406281560198">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
-<translation id="6029337736376922061">Жест для перехода на следующий рабочий стол изменился. Проведите по сенсорной панели четырьмя пальцами вправо.</translation>
 <translation id="6030495522958826102">Меню перемещено в левый нижний угол экрана.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
@@ -584,7 +579,7 @@
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
 <translation id="6627638273713273709">Поиск + Shift + K</translation>
 <translation id="6637729079642709226">Изменение времени</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
 <translation id="6650933572246256093">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6665545700722362599">Разрешать сайтам, приложениям и расширениям использовать геолокацию, микрофон, камеру и другие функции устройства.</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">Чтобы установить это обновление, необходимо сбросить настройки устройства до заводских. Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6953890208095195458">Администратор остановил запись видео из-за недопустимого контента на экране.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
@@ -844,7 +840,7 @@
 <translation id="9070640332319875144">Настройки Ассистента</translation>
 <translation id="9072519059834302790">Оставшееся время работы от батареи: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9077515519330855811">Элементы управления медиафайлами, сейчас играет <ph name="MEDIA_TITLE" /></translation>
+<translation id="9077515519330855811">Элементы управления медиафайлами, сейчас играет "<ph name="MEDIA_TITLE" />"</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>
 <translation id="9080206825613744995">Микрофон используется</translation>

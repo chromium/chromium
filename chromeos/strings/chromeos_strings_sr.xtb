@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Покретач</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1662989795263954667">Заустављено – нема више мастила</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Присутан је DNS разрешивач</translation>
 <translation id="1734367976349034509">Овим уређајем управља предузеће</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="4034824040120875894">Штампач</translation>
+<translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4985509611418653372">Покрени</translation>
-<translation id="4991056862642197104">Поставите документ и кликните на Скенирај да бисте почели</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="520299634122159966">Нема доступних скенера</translation>
 <translation id="5212543919916444558">Не могу да пронађем на екрану ништа око чега могу да помогнем.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6048107060512778456">Није успело – папир је заглављен</translation>
+<translation id="6050189528197190982">Сиви тонови</translation>
 <translation id="6058625436358447366">Да бисте завршили, унесите стару и нову лозинку</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
 <translation id="8723108084122415655">Мрежа која није подразумевана премашује граничну вредност за кашњење</translation>
 <translation id="8726019395068607495">Заустављено – врата су отворена</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потврдите промену</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8910721771319628100">Подразумевана мрежа премашује граничну вредност за кашњење</translation>
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>

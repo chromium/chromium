@@ -318,6 +318,7 @@
 <translation id="4900532980794411603">Parallels Desktopৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />ৰ বেক আপ ল‘বলৈ সাজু</translation>
 <translation id="4924638091161556692">স্থিৰ কৰা হৈছে</translation>
+<translation id="4942961016321891903">মালায়ালম ফ’নেটিক</translation>
 <translation id="4943368462779413526">ফুটবল</translation>
 <translation id="4961158930123534723">Parallels Desktopৰ জৰিয়তে ১ টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4969785127455456148">এলবাম</translation>
@@ -391,8 +392,10 @@
 <translation id="5524517123096967210">ফাইলটো পঢ়িব নোৱাৰি।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> প্ৰতিচ্ছবি</translation>
 <translation id="5534520101572674276">আকাৰ গণনা কৰি থকা হৈছে</translation>
+<translation id="5551831234974556292">মল্টিজ</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
 <translation id="5605830556594064952">ইউ.এছ. ডভ’ৰাক</translation>
+<translation id="5623849870004487514">ফ’নেটিক কীব’ৰ্ডৰ সৈতে নেপালী</translation>
 <translation id="5649768706273821470">শুনক</translation>
 <translation id="5678784840044122290">Linux এপ্লিকেশ্বন আপোনাৰ টার্মিনেলৰ ভিতৰত উপলব্ধ হ'ব আৰু আপোনাৰ লঞ্চাৰতো এখন আইকন দেখুৱাব পাৰে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />আৰ্কাইভ বা ভাৰ্চুৱেল ডিস্কৰ পৰা সংযোগ বিচ্ছিনন্ন কৰিব পৰা নাই<ph name="END_BOLD" />
@@ -422,6 +425,7 @@
 <translation id="5912396950572065471">ফৰ্মেট কৰক</translation>
 <translation id="5913638992615760742">প্ৰতিলিপি কৰিব পৰা নগ’ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">মাৰাঠী</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টা বস্তু</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
@@ -482,6 +486,7 @@
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6718273304615422081">জিপ কৰি থকা হৈছে...</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
+<translation id="6767296108234383966">মালায়ালম লিপ্যন্তৰণ</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6795884519221689054">পাণ্ডা</translation>
 <translation id="6806699711453372963">Linuxৰ শ্বেয়াৰিং পৰিচালনা কৰক</translation>
@@ -516,6 +521,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="7040138676081995583">ইয়াৰ জৰিয়তে খোলক...</translation>
+<translation id="7096940708283911567">ওড়িয়া</translation>
 <translation id="7100897339030255923"><ph name="COUNT" />টা বস্তু বাছনি কৰা হৈছে</translation>
 <translation id="7106346894903675391">ষ্ট’ৰ কৰাৰ অধিক ঠাই কিনক...</translation>
 <translation id="7126604456862387217">’&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;’ - &lt;em&gt;সন্ধানৰ ড্ৰাইভ&lt;/em&gt;</translation>
@@ -538,6 +544,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> বিচাৰি পোৱা গৈছে
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ত বেক আপ কৰিবলৈ সাজু আছে</translation>
+<translation id="7498032756958781551">InScript কীব’ৰ্ডৰ সৈতে নেপালী</translation>
 <translation id="7505167922889582512">লুকুৱাই থোৱা ফাইলসমূহ দেখুৱাওক</translation>
 <translation id="7508545000531937079">শ্লাইডশ্ব’</translation>
 <translation id="751507702149411736">বেলাৰ’ছিয়ান</translation>

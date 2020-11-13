@@ -21,7 +21,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
-<translation id="118532027333893379">Appuyez n'importe où pour effectuer une capture en plein écran</translation>
+<translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1195412055398077112">Surbalayage</translation>
 <translation id="119944043368869598">Tout effacer</translation>
@@ -126,11 +126,10 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
-<translation id="2158971754079422508"><ph name="DESC_TEXT" /> Réessayer</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
-<translation id="22546648640907338">Le geste à effectuer sur le pavé tactile pour accéder à l'aperçu a changé. Pour effectuer cette action, vous devez maintenant balayer l'écran vers le haut avec trois doigts.</translation>
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
 <translation id="2268813581635650749">Déconnecter les util.</translation>
@@ -139,7 +138,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
 <translation id="2295777434187870477">Le son du micro est activé et peut être coupé si vous déplacez le curseur vers la gauche.</translation>
 <translation id="2298170939937364391">Le mode Loupe plein écran est activé. Appuyez de nouveau sur Ctrl+Recherche+M pour le désactiver.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" /> : Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Reculer par lettre</translation>
@@ -148,7 +147,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
-<translation id="2361223922412143600">Le geste à effectuer sur le pavé tactile pour quitter l'aperçu a changé. Pour effectuer cette action, vous devez maintenant balayer l'écran vers le bas avec trois doigts.</translation>
 <translation id="2365393535144473978">L'activation des données mobiles active également le Bluetooth.</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
 <translation id="2390318262976603432">Options des paramètres régionaux</translation>
@@ -177,7 +175,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
-<translation id="2640255526076764619">Le geste à effectuer sur le pavé tactile pour passer au bureau précédent a changé : vous devez à présent le balayer vers la gauche avec quatre doigts.</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -330,7 +327,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> géré par <ph name="DOMAIN" /></translation>
-<translation id="415719264485676252">Capture d'écran bloquée</translation>
+<translation id="415719264485676252">Enregistrement d'écran bloqué</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
@@ -396,7 +393,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4705716602320768426">Classer le commentaire</translation>
-<translation id="4710243778082831592">Paramètres IME</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
@@ -527,7 +523,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
-<translation id="6029337736376922061">Le geste à effectuer sur le pavé tactile pour afficher le bureau suivant a changé : vous devez à présent le balayer vers la droite avec quatre doigts.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
@@ -605,7 +600,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
-<translation id="6816797338148849397">Informations disponibles concernant le texte sélectionné. Pour y accéder, utilisez la flèche vers le haut.</translation>
+<translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
@@ -618,6 +613,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6910714959251846841">Cette mise à jour nécessite que vous utilisiez la fonctionnalité Powerwash sur votre appareil. Obtenez de plus amples informations sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
+<translation id="6953890208095195458">L'enregistrement d'écran a été arrêté par votre administrateur en raison du contenu affiché sur votre écran.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6981982820502123353">Accessibilité</translation>

@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">حالت میزکار یکپارچه</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2222338659135520253">ورود به سیستم لازم است</translation>
-<translation id="22546648640907338">اشاره صفحه لمسی برای ورود به «نمای کلی» تغییر کرده است. برای ورود به «نمای کلی» با سه انگشت تند به بالا بکشید.</translation>
 <translation id="225680501294068881">درحال جستجو برای دستگاه‌ها...</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
 <translation id="2268813581635650749">خروج همه از سیستم</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">تنظیمات قلم</translation>
 <translation id="2354174487190027830">فعال‌سازی <ph name="NAME" /></translation>
 <translation id="2359808026110333948">ادامه</translation>
-<translation id="2361223922412143600">اشاره صفحه لمسی برای خروج از «نمای کلی» تغییر کرده است. برای خروج از «نمای کلی» با سه انگشت تند به پایین بکشید.</translation>
 <translation id="2365393535144473978">فعال کردن داده تلفن همراه، بلوتوث را فعال می‌کند.</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2390318262976603432">تنظیمات منطقه زبانی</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
-<translation id="2640255526076764619">اشاره صفحه لمسی برای جابه‌جایی به میزکار قبلی تغییر کرده است. برای جابه‌جایی به میزکار قبلی، با چهار انگشت تند به‌چپ بکشید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
 <translation id="2700493154570097719">تنظیم صفحه‌کلید</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم‌خصوصی خاموش است</translation>
 <translation id="4705716602320768426">ثبت بازخورد</translation>
-<translation id="4710243778082831592">‏تنظیمات IME</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
-<translation id="6029337736376922061">اشاره صفحه لمسی برای جابه‌جایی به میزکار بعدی تغییر کرده است. برای جابه‌جایی به میزکار بعدی، با ۴ انگشت تند به‌راست بکشید.</translation>
 <translation id="6030495522958826102">منو به گوشه راست پایین صفحه منتقل شد.</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">‏این به‌روزرسانی نیاز به انجام powerwash دستگاهتان دارد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6945221475159498467">انتخاب</translation>
+<translation id="6953890208095195458">به‌دلیل محتوای روی صفحه، سرپرستتان ضبط صفحه‌نمایش را متوقف کرده‌ است.</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6972754398087986839">شروع به کار</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>

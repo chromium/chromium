@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1625959690469240009">Каб адкрыць налады сайта, абнавіце або пераўсталюйце <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> патрабуе для сваёй працы наступную праграму:</translation>
 <translation id="2697679025356221813">Праграме "<ph name="APP_NAME" />" патрабуецца вэб-браўзер</translation>
 <translation id="3858759029325727987">Выберыце браўзер, які падтрымлівае гэту праграму:</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Startprogram</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver finns</translation>
 <translation id="1734367976349034509">Enheten är företagshanterad</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
 <translation id="4027485274696301677">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="ENROLLMENT_DOMAIN" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="4034824040120875894">Skrivare</translation>
+<translation id="4131410914670010031">Svartvitt</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Kör</translation>
-<translation id="4991056862642197104">Passa in dokumentet i rutan och klicka på Skanna för att komma igång</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="520299634122159966">Det finns inga tillgängliga skannrar</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
@@ -108,6 +109,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
+<translation id="6050189528197190982">Gråskala</translation>
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
@@ -149,7 +151,9 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="871560550817059752">Misslyckades – slut på bläck</translation>
 <translation id="8723108084122415655">Tröskelvärdet för latens överskreds för nätverket som inte är standard</translation>
 <translation id="8726019395068607495">Har stoppats – luckan är öppen</translation>
+<translation id="8730621377337864115">Klart</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>

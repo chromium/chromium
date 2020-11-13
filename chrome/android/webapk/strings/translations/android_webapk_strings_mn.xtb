@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1625959690469240009">Сайтын тохиргоог нээхийн тулд <ph name="BROWSER_NAME" />-г шинэчилж эсвэл дахин суулгана уу</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" />-д дараах апп шаардлагатай:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> ажиллахын тулд веб хөтөч шаардлагатай</translation>
 <translation id="3858759029325727987">Энэ аппыг дэмждэг хөтөч сонгоно уу:</translation>

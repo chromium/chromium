@@ -130,7 +130,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222338659135520253">Inloggning krävs</translation>
-<translation id="22546648640907338">Styrplatterörelsen för att öppna översikten har ändrats. Öppna översikten genom att svepa uppåt med tre fingrar.</translation>
 <translation id="225680501294068881">Söker efter enheter ...</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268813581635650749">Logga ut alla</translation>
@@ -148,7 +147,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsätt</translation>
-<translation id="2361223922412143600">Styrplatterörelsen för att stänga översikten har ändrats. Stäng översikten genom att svepa nedåt med tre fingrar.</translation>
 <translation id="2365393535144473978">Om du aktiverar mobildata aktiveras Bluetooth.</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2390318262976603432">Inställningar av språkkod</translation>
@@ -177,7 +175,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
-<translation id="2640255526076764619">Styrplatterörelsen för att byta till det föregående skrivbordet har ändrats. Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet.</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
 <translation id="2700493154570097719">Ställ in tangentbord</translation>
@@ -396,7 +393,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
 <translation id="4705716602320768426">Skicka feedback</translation>
-<translation id="4710243778082831592">IME-inställningar</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
@@ -527,7 +523,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Rulla åt vänster</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
-<translation id="6029337736376922061">Styrplatterörelsen för att byta till nästa skrivbord har ändrats. Svep till höger med fyra fingrar för att byta till nästa skrivbord.</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
@@ -618,6 +613,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6910714959251846841">Den här uppdateringen kräver att en Powerwash görs av enheten. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6945221475159498467">Välj</translation>
+<translation id="6953890208095195458">Skärminspelningen stoppades av administratören på grund av innehåll på skärmen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Komma igång</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>

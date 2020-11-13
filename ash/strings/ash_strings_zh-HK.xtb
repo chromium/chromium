@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
-<translation id="22546648640907338">進入「概覽」的觸控板手勢已變更，用三隻手指向上滑動即可進入「概覽」。</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2361223922412143600">結束「概覽」的觸控板手勢已變更，用三隻手指向下滑動即可結束「概覽」。</translation>
 <translation id="2365393535144473978">如果您啟用流動數據，藍牙亦會隨之開啟。</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2621713457727696555">已受保護</translation>
-<translation id="2640255526076764619">切換至上一個桌面的觸控板手勢已變更，請用四隻手指向左滑動以切換至上一個桌面。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按一下並拖曳</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4705716602320768426">提供意見</translation>
-<translation id="4710243778082831592">輸入法編輯器設定</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
-<translation id="6029337736376922061">切換至下一個桌面的觸控板手勢已變更，請用四隻手指向右滑動以切換至下一個桌面。</translation>
 <translation id="6030495522958826102">已經將選單移去螢幕左下角。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6043212731627905357">此顯示器與您的 <ph name="DEVICE_TYPE" /> 無法配對 (並不支援該顯示器)。</translation>
@@ -605,7 +600,7 @@
 <translation id="6777216307882431711">正在為已連接的 USB-C 裝置充電</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
-<translation id="6816797338148849397">揀項目嘅相關資料。用向上箭咀掣就可以存取。</translation>
+<translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">此更新需要為裝置執行 Powerwash。進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新。</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6953890208095195458">由於螢幕上的內容，因此管理員已停止錄影螢幕畫面。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6981982820502123353">協助工具</translation>
@@ -671,7 +667,7 @@
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7526573455193969409">網絡可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">管理員已停用擷取螢幕畫面內容的功能。</translation>
+<translation id="7542906349682405018">管理員已封鎖擷取螢幕畫面內容的功能。</translation>
 <translation id="7548434653388805669">睡覺時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7561982940498449837">關閉選單</translation>
@@ -823,7 +819,7 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
-<translation id="8883473964424809116">㩒一下就可以開「Google 助理」設定。</translation>
+<translation id="8883473964424809116">㩒一下就可以打開「Google 助理」設定。</translation>
 <translation id="8894122120026866664">找不到手機</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>

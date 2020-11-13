@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1625959690469240009">หากต้องการเปิดการตั้งค่าเว็บไซต์ ให้อัปเดตหรือติดตั้ง <ph name="BROWSER_NAME" /> อีกครั้ง</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> ต้องใช้แอปต่อไปนี้:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> ต้องใช้เว็บเบราว์เซอร์</translation>
 <translation id="3858759029325727987">เลือกเบราว์เซอร์ที่รองรับแอปนี้:</translation>

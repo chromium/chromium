@@ -126,11 +126,10 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
-<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Volver a intentar</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Se requiere el acceso a la cuenta</translation>
-<translation id="22546648640907338">Se cambió el gesto del panel táctil para acceder a Recientes. Si quieres realizar esta acción, desliza tres dedos hacia arriba.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Salir de todo</translation>
@@ -148,7 +147,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">Se cambió el gesto del panel táctil para salir de Recientes. Si quieres realizar esta acción, desliza tres dedos hacia abajo.</translation>
 <translation id="2365393535144473978">Si habilitas los datos móviles, se habilitará Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
@@ -177,7 +175,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
-<translation id="2640255526076764619">Se cambió el gesto del panel táctil para ir al escritorio anterior. Para realizar esta acción, desliza cuatro dedos hacia la izquierda.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
 <translation id="2700493154570097719">Establecer el teclado</translation>
@@ -397,7 +394,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
-<translation id="4710243778082831592">Configuración de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>
@@ -528,7 +524,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
-<translation id="6029337736376922061">Se cambió el gesto del panel táctil para ir al escritorio siguiente. Para realizar esta acción, desliza cuatro dedos hacia la derecha.</translation>
 <translation id="6030495522958826102">El menú se movió a la esquina inferior izquierda de la pantalla.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -606,7 +601,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6777216307882431711">Se están cargando los dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6803622936009808957">No se pudieron reflejar las pantallas porque no se encontraron resoluciones compatibles. En su lugar, se activó el escritorio extendido.</translation>
-<translation id="6816797338148849397">Se muestra información sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
+<translation id="6816797338148849397">Información disponible sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
 <translation id="6818242057446442178">Volver palabra por palabra</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
 <translation id="6850010208275816200">La app actual se muestra en pantalla completa. Deberás salir de este modo si la app solicita tu contraseña.</translation>
@@ -619,6 +614,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6910714959251846841">Esta actualización requiere que apliques la función Powerwash en tu dispositivo. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6953890208095195458">El administrador detuvo la grabación de la pantalla debido al contenido que se muestra en ella.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>

@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2222338659135520253">Нэвтрэх шаардлагатай</translation>
-<translation id="22546648640907338">Тоймд нэвтрэх мэдрэгч самбарын зангааг өөрчилсөн. Тоймд нэвтрэхийн тулд гурван хуруугаараа дээш шударна уу.</translation>
 <translation id="225680501294068881">Төхөөрөмжийг хайж байна...</translation>
 <translation id="2268130516524549846">Bluetooth-г идэвхгүй болгосон байна</translation>
 <translation id="2268813581635650749">Бүгдээс гарах</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Мэдрэгч үзэгний тохиргоо</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> идэвхжүүлж байна</translation>
 <translation id="2359808026110333948">Цааш</translation>
-<translation id="2361223922412143600">Тоймоос гарах мэдрэгч самбарын зангааг өөрчилсөн. Тоймоос гарахын тулд гурван хуруугаараа доош шударна уу.</translation>
 <translation id="2365393535144473978">Мобайл датаг идэвхжүүлснээр Bluetooth мөн идэвхжинэ.</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
 <translation id="2390318262976603432">Хэл болон улсын кодын тохиргоо</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2617342710774726426">SIM карт түгжигдсэн</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
-<translation id="2640255526076764619">Өмнөх дэлгэц рүү сэлгэх мэдрэгч самбарын зангааг өөрчилсөн. Өмнөх дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа зүүн тийш шударна уу.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2658778018866295321">Товшоод чирэх</translation>
 <translation id="2700493154570097719">Гараа тохируулах</translation>
@@ -397,7 +394,6 @@
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4705716602320768426">Cанал хүсэлт илгээх</translation>
-<translation id="4710243778082831592">IME тохиргоо</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
@@ -528,7 +524,6 @@
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
-<translation id="6029337736376922061">Дараагийн дэлгэц рүү сэлгэх мэдрэгч самбарын зангааг өөрчилсөн. Дараагийн дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа баруун тийш шударна уу.</translation>
 <translation id="6030495522958826102">Цэсийг дэлгэцийн зүүн доод булан руу зөөсөн.</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6043212731627905357">Таны <ph name="DEVICE_TYPE" /> монитортой тохирохгүй байна (мониторыг дэмжээгүй).</translation>
@@ -619,6 +614,7 @@
 <translation id="6910714959251846841">Тус шинэчлэлт нь таны төхөөрөмжийг үйлдвэрийн тохиргоонд буцааж оруулахыг шаарддаг. Хамгийн сүүлийн үеийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="6945221475159498467">Сонгох</translation>
+<translation id="6953890208095195458">Таны дэлгэцийн контентын улмаас таны администратор дэлгэцийн үйлдэл бичигчийг зогсоосон.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Эхлүүлэх</translation>
 <translation id="6981982820502123353">Хандалт</translation>

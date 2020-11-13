@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384959399684842514">已暂停下载</translation>
+<translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1431402976894535801">禁止网站了解您何时处于活跃状态</translation>
 <translation id="1446450296470737166">允许全面控制 MIDI 设备</translation>
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">允许网站播放受保护内容。</translation>
 <translation id="4468959413250150279">将某个特定网站静音。</translation>
 <translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
+<translation id="4505788138578415521">网址已展开</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
 <translation id="4570913071927164677">详情</translation>
 <translation id="4645575059429386691">由您父母管理</translation>

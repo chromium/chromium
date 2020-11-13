@@ -26,7 +26,7 @@
 <translation id="6403469950615936250">פורמט המיקוד הזה אינו מזוהה. דוגמה למיקוד חוקי: <ph name="EXAMPLE" />. <ph name="BEGIN_LINK" />לבירור המיקוד שלך<ph name="END_LINK" />.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> אינו מזוהה כערך מוכר עבור השדה הזה.</translation>
 <translation id="6768780634682399515">Eircode</translation>
-<translation id="6777217372746654521">נראה שהכתובת הזו מכילה תיבת דואר. השתמש בכתובת רחוב או בניין.</translation>
+<translation id="6777217372746654521">נראה שהכתובת הזו מכילה תיבת דואר. יש להשתמש בכתובת רחוב או בניין.</translation>
 <translation id="6839929833149231406">אזור</translation>
 <translation id="684852933191805996">Townland</translation>
 <translation id="6970216967273061347">מחוז</translation>
@@ -34,7 +34,7 @@
 <translation id="7139724024395191329">האמירויות הערביות</translation>
 <translation id="7393381084163773901">כתובת</translation>
 <translation id="7602447984296396718">נראה שהמיקוד הזה לא תואם לשאר הכתובת.</translation>
-<translation id="7738983109397305830">נראה שהמיקוד הזה לא תואם לשאר הכתובת. אינך יודע מה המיקוד? תוכל לגלות <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" />.</translation>
+<translation id="7738983109397305830">נראה שהמיקוד הזה לא תואם לשאר הכתובת. לא ידוע לך המיקוד? אפשר למצוא אותו <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">תחום שיפוט</translation>
 <translation id="7805765407568469194">כפר / עיירה</translation>
 <translation id="8184169487503545976">פורמט המיקוד הזה לא מזוהה.</translation>

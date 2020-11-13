@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222338659135520253">Անհրաժեշտ է մուտք գործել</translation>
-<translation id="22546648640907338">Հպահարթակի միջոցով համատեսքը բացելու ժեստը փոխվել է։ Համատեսքը բացելու համար երեք մատով սահեցրեք վեր։</translation>
 <translation id="225680501294068881">Սարքերի որոնում…</translation>
 <translation id="2268130516524549846">Bluetooth-ն անջատված է</translation>
 <translation id="2268813581635650749">Դուրս գալ բոլորից</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Ստիլուսի կարգավորումներ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ի ակտիվացում</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
-<translation id="2361223922412143600">Հպահարթակի միջոցով համատեսքը փակելու ժեստը փոխվել է։ Համատեսքը փակելու համար երեք մատով սահեցրեք վար։</translation>
 <translation id="2365393535144473978">Բջջային ինտերնետը միացնելու դեպքում Bluetooth-ը ևս կակտիվանա:</translation>
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2390318262976603432">Լեզվի կարգավորումներ</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
-<translation id="2640255526076764619">Հպահարթակի միջոցով նախորդ աշխատասեղանին անցնելու ժեստը փոխվել է։ Նախորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք ձախ։</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2658778018866295321">Սեղմել և քաշել</translation>
 <translation id="2700493154570097719">Ընտրեք ստեղնաշարը</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
 <translation id="4705716602320768426">Հաղորդել վրիպակի մասին</translation>
-<translation id="4710243778082831592">IME կարգավորումներ</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
 <translation id="4744944742468440486">Տեղեկություններ ձեր ընտրության վերաբերյալ</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="602001110135236999">Ոլորել ձախ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
-<translation id="6029337736376922061">Հպահարթակի միջոցով հաջորդ աշխատասեղանին անցնելու ժեստը փոխվել է։ Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ։</translation>
 <translation id="6030495522958826102">Ընտրացանկը տեղափոխվեց էկրանի ներքևի ձախ անկյուն։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>

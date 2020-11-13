@@ -1005,6 +1005,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4953689047182316270">Reageer op toeganklikheidgebeurtenisse</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Vou lys uit</translation>
+<translation id="4959153516955727495">Skermvasvang is hervat.</translation>
 <translation id="4973922308112707173">Dubbelpons bo</translation>
 <translation id="4974590756084640048">Heraktiveer waarskuwings</translation>
 <translation id="4984088539114770594">Gebruik mikrofoon?</translation>
@@ -1214,6 +1215,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5759751709240058861">Gebruik en beweeg jou kamera</translation>
 <translation id="5763042198335101085">Voer 'n geldige e-posadres in</translation>
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>
+<translation id="5769902225741524803">Jou administrateur het skermskoot onderbreek weens inhoud op jou skerm.</translation>
 <translation id="5776313857861697733">Prioriteit</translation>
 <translation id="5778550464785688721">MIDI-toestelle volle beheer</translation>
 <translation id="5781136890105823427">Eksperiment is geaktiveer</translation>
@@ -1248,6 +1250,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5905445707201418379">Geblokkeer ingevolge <ph name="ORIGIN" /> se oorsprongbeleid.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (gesinkroniseer)</translation>
+<translation id="5913377024445952699">Skermskoot is onderbreek</translation>
 <translation id="59174027418879706">Geaktiveer</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Aan</translation>
@@ -1919,6 +1922,7 @@ Bykomende besonderhede:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8625384913736129811">Stoor hierdie kaart op hierdie toestel</translation>
+<translation id="8627040765059109009">Skermskoot is hervat</translation>
 <translation id="8657078576661269990">Jou administrateur het deling van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME_1" /> en <ph name="VM_NAME_2" /> geblokkeer</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="867224526087042813">Handtekening</translation>

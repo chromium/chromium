@@ -130,7 +130,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2208323208084708176">Modul Desktop unificat</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2222338659135520253">Este necesară conectarea</translation>
-<translation id="22546648640907338">Gestul pe touchpad pentru intrarea în modul Prezentare generală s-a schimbat. Glisează cu trei degete în sus pentru a intra în modul Prezentare generală.</translation>
 <translation id="225680501294068881">Se caută gadgeturi...</translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
 <translation id="2268813581635650749">Deconectează tot</translation>
@@ -148,7 +147,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2352467521400612932">Setările creionului</translation>
 <translation id="2354174487190027830">Se activează <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuă</translation>
-<translation id="2361223922412143600">Gestul pe touchpad pentru ieșirea din modul Prezentare generală s-a schimbat. Glisează în jos cu trei degete pentru a ieși din modul Prezentare generală.</translation>
 <translation id="2365393535144473978">Activând datele mobile, se va activa Bluetooth.</translation>
 <translation id="2369165858548251131">„Bună” în chineză</translation>
 <translation id="2390318262976603432">Setări de limbă</translation>
@@ -177,7 +175,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2621713457727696555">Securizată</translation>
-<translation id="2640255526076764619">Gestul pe touchpad pentru comutarea la desktopul anterior s-a modificat. Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior.</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2658778018866295321">Dă clic și trage</translation>
 <translation id="2700493154570097719">Setează tastatura</translation>
@@ -396,7 +393,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4705716602320768426">Feedback pentru fișiere</translation>
-<translation id="4710243778082831592">Setări IME</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4734965478015604180">Orizontal</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
@@ -527,7 +523,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6018164090099858612">Se iese din modul oglindă</translation>
 <translation id="602001110135236999">Derulează la stânga</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
-<translation id="6029337736376922061">Gestul pe touchpad pentru comutarea la desktopul următor s-a schimbat. Glisează spre dreapta cu patru degete pentru a comuta la desktopul următor.</translation>
 <translation id="6030495522958826102">Meniul a fost mutat în colțul din stânga jos al ecranului.</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
@@ -618,6 +613,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6910714959251846841">Această actualizare necesită rularea funcției Powerwash a dispozitivului. Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
 <translation id="6945221475159498467">Selectează</translation>
+<translation id="6953890208095195458">Înregistrarea ecranului a fost oprită de administrator din cauza conținutului de pe ecran.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Începe</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>

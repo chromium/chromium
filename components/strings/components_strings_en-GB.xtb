@@ -1004,6 +1004,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Expand list</translation>
+<translation id="4959153516955727495">Screen capture has been resumed.</translation>
 <translation id="4973922308112707173">Dual punch top</translation>
 <translation id="4974590756084640048">Re-enable warnings</translation>
 <translation id="4984088539114770594">Use microphone?</translation>
@@ -1213,6 +1214,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
+<translation id="5769902225741524803">Screen capture has been paused by your administrator due to content on your screen.</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5778550464785688721">MIDI devices full control</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
@@ -1247,6 +1249,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5905445707201418379">Blocked according to <ph name="ORIGIN" />'s origin policy.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
+<translation id="5913377024445952699">Screen capture paused</translation>
 <translation id="59174027418879706">Enabled</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">On</translation>
@@ -1918,6 +1921,7 @@ Additional details:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8625384913736129811">Save This Card to This Device</translation>
+<translation id="8627040765059109009">Screen capture resumed</translation>
 <translation id="8657078576661269990">Your administrator has blocked sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME_1" /> and <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="867224526087042813">Signature</translation>

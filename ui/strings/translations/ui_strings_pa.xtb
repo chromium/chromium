@@ -100,6 +100,7 @@
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> ਫ਼ਾਈਲ</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">“<ph name="LOOKUP_STRING" />” ਦੇਖੋ</translation>
+<translation id="3622035490309591977">ਕਲਿੱਪਬੋਰਡ ਇਤਿਹਾਸ</translation>
 <translation id="364720409959344976">ਅਪਲੋਡ ਕਰਨ ਲਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3660179305079774227">ਉੱਪਰ ਦਾ ਤੀਰ</translation>
 <translation id="3670030362669914947">ਨੰਬਰ</translation>
@@ -152,6 +153,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ}=1{1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ਦਿਨ ਅਤੇ }one{# ਦਿਨ ਅਤੇ }other{# ਦਿਨ ਅਤੇ }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">ਚਿੱਤਰ।</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 ਸਾਲ ਵਿੱਚ}one{# ਸਾਲ ਵਿੱਚ}other{# ਸਾਲ ਵਿੱਚ}}</translation>
 <translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ਸਕਿੰਟ ਬਾਕੀ}one{# ਸਕਿੰਟ ਬਾਕੀ}other{# ਸਕਿੰਟ ਬਾਕੀ}}</translation>
@@ -192,6 +194,7 @@
 <translation id="6845533974506654842">ਦਬਾਓ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ਘੰਟਾ ਬਾਕੀ}one{# ਘੰਟੇ ਬਾਕੀ}other{# ਘੰਟੇ ਬਾਕੀ}}</translation>
 <translation id="688711909580084195">ਬਿਨਾਂ ਸਿਰਲੇਖ ਦਾ ਵੈਬਸਫ਼ਾ</translation>
+<translation id="6902419395050653510">HTML ਸਮੱਗਰੀ।</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ਸਾਲ ਬਾਕੀ}one{# ਸਾਲ ਬਾਕੀ}other{# ਸਾਲ ਬਾਕੀ}}</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>

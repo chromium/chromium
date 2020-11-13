@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
+<translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1734367976349034509">Энэ төхөөрөмжийг байгууллагаас удирддаг</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4027485274696301677">Энэ <ph name="DEVICE_TYPE" />-г <ph name="ENROLLMENT_DOMAIN" /> удирддаг. Администратор төхөөрөмжийг алсаас тохируулах боломжтой.</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
+<translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
-<translation id="4991056862642197104">Эхлүүлэхийн тулд документоо байршуулж, Скан хийхийг товшино уу</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> нь энэ хэрэглэгчийг удирддаг бөгөөд тохиргоог алсаас удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
 <translation id="520299634122159966">Боломжтой скан хийгч алга</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6048107060512778456">Амжилтгүй болсон - Цаас гацсан</translation>
+<translation id="6050189528197190982">Хараас цагаан өнгө</translation>
 <translation id="6058625436358447366">Дуусгахын тулд хуучин болон шинэ нууц үгээ оруулна уу</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Амжилтгүй болсон - Бэх дууссан</translation>
 <translation id="8723108084122415655">Өгөгдмөл бус сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8726019395068607495">Зогссон - Таг нээлттэй</translation>
+<translation id="8730621377337864115">хийсэн</translation>
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>

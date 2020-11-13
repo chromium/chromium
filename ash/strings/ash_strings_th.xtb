@@ -8,7 +8,7 @@
 <translation id="1036672894875463507">ฉันคือ Google Assistant ที่พร้อมช่วยเหลือคุณตลอดทั้งวัน
 คุณลองทำสิ่งต่อไปนี้ได้เพื่อเริ่มใช้งาน</translation>
 <translation id="1037492556044956303">เพิ่ม <ph name="DEVICE_NAME" /> แล้ว</translation>
-<translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้ปุ่มลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
+<translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">โทรศัพท์มือถือ: <ph name="ADDRESS" /></translation>
@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222338659135520253">ต้องลงชื่อเข้าใช้</translation>
-<translation id="22546648640907338">มีการเปลี่ยนแปลงท่าทางสัมผัสของทัชแพดสำหรับเข้าสู่ "ภาพรวม" ใช้ 3 นิ้วเลื่อนขึ้นเพื่อเข้าสู่ "ภาพรวม"</translation>
 <translation id="225680501294068881">กำลังสแกนหาอุปกรณ์...</translation>
 <translation id="2268130516524549846">ปิดใช้งานบลูทูธแล้ว</translation>
 <translation id="2268813581635650749">ออกจากระบบทั้งหมด</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">การตั้งค่าสไตลัส</translation>
 <translation id="2354174487190027830">กำลังเปิดใช้งาน <ph name="NAME" /></translation>
 <translation id="2359808026110333948">ต่อไป</translation>
-<translation id="2361223922412143600">มีการเปลี่ยนแปลงท่าทางสัมผัสของทัชแพดสำหรับออกจาก "ภาพรวม" ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="2365393535144473978">การเปิดใช้เน็ตมือถือจะเปิดใช้บลูทูธ</translation>
 <translation id="2369165858548251131">"สวัสดี" ในภาษาจีน</translation>
 <translation id="2390318262976603432">การตั้งค่าภาษา</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2617342710774726426">ซิมการ์ดถูกล็อก</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
-<translation id="2640255526076764619">มีการเปลี่ยนแปลงท่าทางสัมผัสของทัชแพดสำหรับการเปลี่ยนไปใช้โต๊ะก่อนหน้า ใช้ 4 นิ้วเลื่อนไปทางซ้ายเพื่อเปลี่ยนไปใช้โต๊ะก่อนหน้า</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2658778018866295321">คลิกแล้วลาก</translation>
 <translation id="2700493154570097719">ตั้งค่าแป้นพิมพ์</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4705716602320768426">ความคิดเห็นเกี่ยวกับไฟล์</translation>
-<translation id="4710243778082831592">การตั้งค่า IME</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
-<translation id="6029337736376922061">มีการเปลี่ยนแปลงท่าทางสัมผัสของทัชแพดสำหรับการเปลี่ยนไปใช้โต๊ะถัดไป ใช้ 4 นิ้วเลื่อนไปทางขวาเพื่อเปลี่ยนไปใช้โต๊ะถัดไป</translation>
 <translation id="6030495522958826102">เมนูได้ย้ายไปอยู่ที่มุมซ้ายล่างของหน้าจอ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6043212731627905357">จอภาพนี้ใช้งานไม่ได้กับ <ph name="DEVICE_TYPE" /> ของคุณ (ไม่รองรับจอภาพนี้)</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">อัปเดตนี้จะมีการ Powerwash อุปกรณ์ ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6945221475159498467">เลือก</translation>
+<translation id="6953890208095195458">ผู้ดูแลระบบหยุดการบันทึกหน้าจอไว้เนื่องจากเนื้อหาบนหน้าจอของคุณ</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>

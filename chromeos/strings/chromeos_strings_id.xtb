@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
 <translation id="1734367976349034509">Perangkat ini dikelola perusahaan</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="ENROLLMENT_DOMAIN" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tidak ada tugas pencetakan yang sedang berlangsung</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
@@ -82,12 +84,11 @@
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
-<translation id="4832079907277790330">Pilih folder di aplikasi Files ...</translation>
+<translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4985509611418653372">Jalankan</translation>
-<translation id="4991056862642197104">Letakkan dokumen Anda, dan klik Pindai untuk memulai</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> akan mengelola pengguna ini serta dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
 <translation id="520299634122159966">Tidak ada pemindai yang tersedia</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
@@ -108,6 +109,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6048107060512778456">Gagal - Kertas macet</translation>
+<translation id="6050189528197190982">Abu-Abu</translation>
 <translation id="6058625436358447366">Untuk menyelesaikan, masukkan sandi yang lama dan baru</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
 <translation id="6108689792487843350">Gateway tidak dapat dijangkau</translation>
@@ -149,7 +151,9 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>
 <translation id="8723108084122415655">Jaringan non-default melebihi ambang batas latensi</translation>
 <translation id="8726019395068607495">Dihentikan - Tutup terbuka</translation>
+<translation id="8730621377337864115">Selesai</translation>
 <translation id="8747900814994928677">Konfirmasi perubahan</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>

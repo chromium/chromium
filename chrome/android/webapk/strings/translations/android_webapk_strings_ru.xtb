@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1625959690469240009">Чтобы открыть настройки сайта, обновите или переустановите <ph name="BROWSER_NAME" />.</translation>
 <translation id="1700971771753530690">Установка приложения для запуска "<ph name="APP_NAME" />"</translation>
 <translation id="2697679025356221813">Выбор браузера для запуска приложения "<ph name="APP_NAME" />"</translation>
 <translation id="3858759029325727987">Выберите браузер, который поддерживает это приложение:</translation>

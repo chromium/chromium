@@ -130,7 +130,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222338659135520253">É necessário iniciar sessão.</translation>
-<translation id="22546648640907338">O gesto do touchpad para aceder à Vista geral foi alterado. Deslize rapidamente para cima com três dedos para aceder à Vista geral.</translation>
 <translation id="225680501294068881">A procurar dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268813581635650749">Term. sess. de todos</translation>
@@ -148,7 +147,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2352467521400612932">Definições da caneta stylus</translation>
 <translation id="2354174487190027830">A ativar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">O gesto do touchpad para sair da Vista geral foi alterado. Deslize rapidamente para baixo com três dedos para sair da Vista geral.</translation>
 <translation id="2365393535144473978">A ativação dos dados móveis ativa o Bluetooth.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Definições locais</translation>
@@ -177,7 +175,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
-<translation id="2640255526076764619">O gesto do touchpad para mudar para o espaço de trabalho anterior foi alterado. Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
@@ -396,7 +393,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4705716602320768426">Envie comentários</translation>
-<translation id="4710243778082831592">Definições do IME</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
@@ -527,7 +523,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
-<translation id="6029337736376922061">O gesto do touchpad para mudar para o espaço de trabalho seguinte foi alterado. Deslize rapidamente para a direita com quatro dedos para mudar para o espaço de trabalho seguinte.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo do ecrã.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor está em conflito com o seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>

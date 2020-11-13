@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
 <translation id="1734367976349034509">Dit apparaat wordt beheerd door een onderneming</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4027485274696301677">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="ENROLLMENT_DOMAIN" />. Beheerders kunnen het apparaat op afstand configureren.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
-<translation id="4991056862642197104">Plaats je document en klik op Scannen om aan de slag te gaan</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
@@ -108,6 +109,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6048107060512778456">Mislukt - Papierstoring</translation>
+<translation id="6050189528197190982">Grijstinten</translation>
 <translation id="6058625436358447366">Geef je oude en nieuwe wachtwoord op om te voltooien</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
@@ -149,7 +151,9 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
 <translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor wachttijd</translation>
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>
+<translation id="8730621377337864115">Klaar</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor wachttijd</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>

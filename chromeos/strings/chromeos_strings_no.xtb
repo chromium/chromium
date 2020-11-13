@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
 <translation id="1734367976349034509">Denne enheten er administrert av en bedrift</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
 <translation id="4027485274696301677">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="ENROLLMENT_DOMAIN" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="4034824040120875894">Skriver</translation>
+<translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kjør</translation>
-<translation id="4991056862642197104">Plassér dokumentet, og klikk på Skann for å begynne</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
 <translation id="520299634122159966">Ingen tilgjengelige skannere</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
@@ -108,6 +109,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6048107060512778456">Mislykket – papirstopp</translation>
+<translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
@@ -149,7 +151,9 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
+<translation id="8730621377337864115">Ferdig</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8910721771319628100">Tidsforsinkelsen for standardnettverket er over grenseverdien</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1662989795263954667">停止 - インク切れ</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
 <translation id="1734367976349034509">このデバイスは会社が管理しています</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
 <translation id="4027485274696301677">この <ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="4034824040120875894">プリンタ</translation>
+<translation id="4131410914670010031">白黒</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4985509611418653372">実行</translation>
-<translation id="4991056862642197104">ドキュメントを追加して、[スキャン] をクリックすると開始できます</translation>
 <translation id="5094480857972195099">このユーザーは <ph name="ENROLLMENT_DOMAIN" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="520299634122159966">使用できるスキャナはありません</translation>
 <translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">再起動</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6048107060512778456">失敗 - 紙詰まりです</translation>
+<translation id="6050189528197190982">グレースケール</translation>
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
+<translation id="8730621377337864115">完了</translation>
 <translation id="8747900814994928677">変更を確認</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>

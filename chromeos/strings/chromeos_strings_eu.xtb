@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
 <translation id="1734367976349034509">Enpresak kudeatzen du gailu hau</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> da <ph name="DEVICE_TYPE" /> gailuaren kudeatzailea. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
+<translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
@@ -87,13 +89,13 @@
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Exekutatu</translation>
-<translation id="4991056862642197104">Kokatu dokumentua eta sakatu "Eskaneatu" prozesua abian jartzeko</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> arduratzen da erabiltzaile hau kudeatzeaz eta haren jarduerak gainbegira ditzake urrunetik.</translation>
 <translation id="520299634122159966">Ez dago eskanerrik erabilgarri</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
 Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Berrabiarazi ohiturak</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Aukeratu beste bat</translation>
@@ -102,10 +104,12 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6048107060512778456">Hutsegitea - Papera trabatuta dago</translation>
+<translation id="6050189528197190982">Gris-eskala</translation>
 <translation id="6058625436358447366">Amaitzeko, idatzi pasahitz zaharra eta berria</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
@@ -147,7 +151,9 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="871560550817059752">Hutsegitea - Ez dago tintarik</translation>
 <translation id="8723108084122415655">Lehenetsi gabeko sarea itxarote-denboraren atalasetik gora dago</translation>
 <translation id="8726019395068607495">Geldituta: atea irekita dago</translation>
+<translation id="8730621377337864115">Eginda</translation>
 <translation id="8747900814994928677">Berretsi aldaketa</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8910721771319628100">Sare lehenetsia itxarote-denboraren atalasetik gora dago</translation>
 <translation id="8919837981463578619">Hutsegitea - Erretilua falta da</translation>

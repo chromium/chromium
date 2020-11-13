@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1625959690469240009">Chcete-li otevřít nastavení webu, aktualizujte nebo přeinstalujte prohlížeč <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">Aplikace <ph name="APP_NAME" /> vyžaduje tuto aplikaci:</translation>
 <translation id="2697679025356221813">Aplikace <ph name="APP_NAME" /> vyžaduje webový prohlížeč</translation>
 <translation id="3858759029325727987">Vyberte prohlížeč, který podporuje tuto aplikaci:</translation>

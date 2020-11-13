@@ -130,7 +130,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
 <translation id="2222338659135520253">Nõutav on sisselogimine</translation>
-<translation id="22546648640907338">Puuteplaadi liigutus vahelehe Ülevaade avamiseks on muutunud. Vahelehe Ülevaade avamiseks pühkige kolme sõrmega üles.</translation>
 <translation id="225680501294068881">Seadmete skannimine ...</translation>
 <translation id="2268130516524549846">Bluetooth on keelatud</translation>
 <translation id="2268813581635650749">Logi kõik välja</translation>
@@ -148,7 +147,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2352467521400612932">Elektronpliiatsi seaded</translation>
 <translation id="2354174487190027830">Võrgu <ph name="NAME" /> aktiveerimine</translation>
 <translation id="2359808026110333948">Jätka</translation>
-<translation id="2361223922412143600">Puuteplaadi liigutus vahelehelt Ülevaade lahkumiseks on muutunud. Vahelehelt Ülevaade lahkumiseks pühkige kolme sõrmega alla.</translation>
 <translation id="2365393535144473978">Mobiilse andmeside lubamisel lubatakse Bluetooth.</translation>
 <translation id="2369165858548251131">„Tere” hiina keeles</translation>
 <translation id="2390318262976603432">Lokaadi seaded</translation>
@@ -177,7 +175,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2617342710774726426">SIM-kaart on lukustatud</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
-<translation id="2640255526076764619">Puuteplaadi liigutus eelmisele töölauale lülitumiseks on muutunud. Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule.</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2658778018866295321">Klõpsamine ja lohistamine</translation>
 <translation id="2700493154570097719">Valige klaviatuur</translation>
@@ -397,7 +394,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
 <translation id="4705716602320768426">Tagasiside esitamine</translation>
-<translation id="4710243778082831592">IME seaded</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4734965478015604180">Horisontaalne</translation>
 <translation id="4744944742468440486">Teie valikuga seotud teave</translation>
@@ -528,7 +524,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
 <translation id="602001110135236999">Keri vasakule</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
-<translation id="6029337736376922061">Puuteplaadi liigutus järgmisele töölauale lülitumiseks on muutunud. Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale.</translation>
 <translation id="6030495522958826102">Menüü teisaldati ekraanikuva vasakusse alanurka.</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6043212731627905357">See monitor ei toimi teie seadmega <ph name="DEVICE_TYPE" /> (seda monitori ei toetata).</translation>
@@ -619,6 +614,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6910714959251846841">Värskenduse jaoks on vajalik seadme powerwash. Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta.</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="6945221475159498467">Vali</translation>
+<translation id="6953890208095195458">Administraator on ekraanisalvestuse ekraanil kuvatud sisu tõttu peatanud.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Alustamine</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>

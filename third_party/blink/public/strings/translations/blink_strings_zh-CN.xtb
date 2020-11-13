@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">本月</translation>
 <translation id="1637811476055996098">选择文件</translation>
 <translation id="1650423536718072820">重要引述</translation>
+<translation id="1681022320378710418">当前时间</translation>
 <translation id="1727886345390570319">隐藏字幕菜单</translation>
 <translation id="1729654308190250600">请输入有效的电子邮件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">请输入网址。</translation>
 <translation id="3175736971608411871">定时器</translation>
 <translation id="3199563858620722075">组合框</translation>
+<translation id="3220661731597678625">当前步骤</translation>
 <translation id="3329013043687509092">饱和度</translation>
 <translation id="3450233048674729344">值必须小于或等于 <ph name="MAXIMUM" />。</translation>
 <translation id="3486220673238053218">定义</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">视频</translation>
 <translation id="479989351350248267">搜索</translation>
 <translation id="4812940957355064477">请输入一个数字。</translation>
+<translation id="4912200001568447310">当前项</translation>
 <translation id="4912536737030637138">参考书目</translation>
 <translation id="4915360478455618802">显示时间选择器</translation>
 <translation id="492244087561876220">评论</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">无法播放媒体。</translation>
 <translation id="537648784377940524">最早日期 (<ph name="MIN_DATE_OR_TIME" />) 必须早于最晚日期 (<ph name="MAX_DATE_OR_TIME" />)。</translation>
 <translation id="5406322316791861025">图表</translation>
+<translation id="5425179576310518467">当前日期</translation>
 <translation id="5453733299334684579">树状目录项</translation>
 <translation id="5466621249238537318">请选择一个或多个文件。</translation>
 <translation id="5468998798572797635">退出全屏模式</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">计量条</translation>
 <translation id="6166809985690652833">后记</translation>
 <translation id="6209276755895393898">似乎是：<ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">当前页面</translation>
 <translation id="6213469881011901533">词汇表</translation>
 <translation id="6281588256137006900">亮度</translation>
 <translation id="6281763101136022427">网址</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">请将该内容增加到 <ph name="MIN_CHARACTERS" /> 个或更多字符（目前您使用了 1 个字符）。</translation>
 <translation id="7034405885550056553">建议</translation>
 <translation id="709897737746224366">请与所请求的格式保持一致。</translation>
+<translation id="7102274145889307184">当前位置</translation>
 <translation id="7118469954320184356">尚无说明。</translation>
 <translation id="7139483182332611405">序言</translation>
 <translation id="7214187073215825913">内容信息</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Həlledicisi Mövcuddur</translation>
 <translation id="1734367976349034509">Bu cihaz korporativ idarə olunur</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
 <translation id="4027485274696301677">Bu <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
 <translation id="4932733599132424254">Tarix</translation>
 <translation id="4985509611418653372">İşə salın</translation>
-<translation id="4991056862642197104">Sənədinizi yerləşdirin və başlamaq üçün Skan düyməsinə klikləyin</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="520299634122159966">Əlçatan skaner yoxdur</translation>
 <translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
@@ -107,6 +108,7 @@
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6048107060512778456">Alınmadı - Kağız ilişib</translation>
+<translation id="6050189528197190982">Boz çalar</translation>
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
@@ -148,7 +150,9 @@
 <translation id="871560550817059752">Alınmadı - Mürəkkəb yoxdur</translation>
 <translation id="8723108084122415655">Qeyri-defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8726019395068607495">Dayanıb - Qapı açıqdır</translation>
+<translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8747900814994928677">Dəyişikliyi təsdiqləyin</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>

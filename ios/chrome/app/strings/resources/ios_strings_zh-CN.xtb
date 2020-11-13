@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
+<translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
 <translation id="1154690515305205900">无法创建指向突出显示的文本的链接。</translation>
 <translation id="1157749421655780457">允许使用位置信息…</translation>
 <translation id="1165039591588034296">错误</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
+<translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
 <translation id="3928666092801078803">合并我的数据</translation>

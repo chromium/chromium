@@ -322,6 +322,7 @@
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ကို မိတ္ထူပွားရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="4924638091161556692">ဖြေရှင်းပြီး</translation>
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
+<translation id="4942961016321891903">မလေယာလမ် အသံထွက်</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
@@ -395,8 +396,10 @@
 <translation id="5524517123096967210">ဖိုင်ကို ဖတ်ရန် အဖြစ် မပြုလုပ်နိုင်ပါ။</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ပုံ</translation>
 <translation id="5534520101572674276">ဆိုက</translation>
+<translation id="5551831234974556292">မော်လတာ</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5623849870004487514">အသံထွက်ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5678784840044122290">Linux အပလီကေးရှင်းကို သင်၏ Terminal အတွင်းတွင်ရနိုင်ပြီး သင်၏ Launcher တွင်လည်း သင်္ကေတပြနိုင်ပါသည်။</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုကို ချိတ်ဆက်မှုဖြုတ်၍မရပါ<ph name="END_BOLD" />
@@ -426,6 +429,7 @@
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">မာရာသီ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
@@ -486,6 +490,7 @@
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6718273304615422081">ဇစ်ပိတ်နေ...</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
+<translation id="6767296108234383966">မလေယာလမ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
 <translation id="6806699711453372963">Linux မျှဝေခြင်းကို စီမံရန်</translation>
@@ -520,6 +525,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="7040138676081995583">ဖွင့်ရန် သုံးရမည်မှာ...</translation>
+<translation id="7096940708283911567">အိုဒီယာ</translation>
 <translation id="7100897339030255923">အရာ <ph name="COUNT" /> ခုကို ရွေးထား</translation>
 <translation id="7106346894903675391">နောက်ထပ်သိုလှောင်မှု ဝယ်မည်...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
@@ -543,6 +549,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> တွေ့ပါသည်
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးရန် အဆင်သင့်ဖြစ်ပါပြီ</translation>
+<translation id="7498032756958781551">InScript ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>
 <translation id="7508545000531937079">ဆလိုက်ရှိုး</translation>
 <translation id="751507702149411736">ဘယ်လာရုရှမ်း</translation>

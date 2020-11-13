@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">今天已使用</translation>
+<translation id="1538801903729528855">獲得更佳的網上語音體驗</translation>
 <translation id="1543538514740974167">輕輕一按，即時到位</translation>
 <translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
+<translation id="1918175104945982129">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示在畫面下半部</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1922362554271624559">建議的語言</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">網站已暫停</translation>
 <translation id="2067805253194386918">文字</translation>
 <translation id="2068748236079642969">觀看下一段影片</translation>
+<translation id="2074143993849053708">「Google 助理」語音搜尋的同意使用者介面</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
 <translation id="2096012225669085171">在不同裝置上同步與個人化</translation>
 <translation id="2100273922101894616">自動登入</translation>
@@ -279,6 +282,7 @@
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3016635187733453316">請確保此裝置已連接互聯網</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
+<translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
 <translation id="3034163383943672781">將會在 <ph name="DATE" />開始下載。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
@@ -300,7 +304,6 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> 個未讀頁面</translation>
 <translation id="321773570071367578">如果您忘記密碼短語，或希望變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
@@ -437,6 +440,7 @@
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
+<translation id="4263656433980196874">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示於整個畫面</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4298388696830689168">已連結的網站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -502,7 +506,7 @@
 <translation id="4720982865791209136">協助改善 Chrome。<ph name="BEGIN_LINK" />請填寫我們的問卷調查<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">查看熱門網站</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
-<translation id="4732693703583195378">將此網站新增至平板電腦的主畫面，讓您更方便存取</translation>
+<translation id="4732693703583195378">將此網站新增至平板電腦的主畫面，方便日後使用</translation>
 <translation id="4738836084190194332">最後同步處理時間：<ph name="WHEN" /></translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -623,6 +627,7 @@
 <translation id="5581519193887989363">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5599455543593328020">無痕模式</translation>
+<translation id="5599941490345670218">「Google 助理」可助您完成各網站的操作</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕，喺「下載」主畫面搵您嘅檔案同網頁</translation>
 <translation id="5626134646977739690">名稱：</translation>
@@ -635,7 +640,6 @@
 <translation id="5683547024293500885">Chrome 無法檢查更新</translation>
 <translation id="5686790454216892815">檔案名稱過長</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> 會在重新啟動後使用<ph name="LANGUAGE" /></translation>
-<translation id="5691211010013816086">您有 <ph name="READING_LIST_COUNT" /> 個網頁</translation>
 <translation id="569536719314091526">透過「更多選項」掣，將呢個網頁翻譯成任何語言</translation>
 <translation id="5696597120588531049">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題</translation>
 <translation id="5697688514913266141">您的檔案將儲存至「<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />」。<ph name="BEGIN_LINK2" />編輯位置<ph name="END_LINK2" />。</translation>
@@ -880,7 +884,6 @@
 <translation id="7274013316676448362">已封鎖的網站</translation>
 <translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
-<translation id="7291387454912369099">Google 助理自動觸發結帳流程</translation>
 <translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理 Chrome 資料」。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="729975465115245577">裝置沒有可儲存密碼檔案的應用程式。</translation>
@@ -1144,10 +1147,11 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9148126808321036104">重新登入</translation>
-<translation id="9149286894143103695">請將此網站加入手機的主畫面，以便日後隨時使用</translation>
+<translation id="9149286894143103695">請將此網站加入手機的主畫面，方便日後使用</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9191031968346938109">新增至…</translation>
+<translation id="919615279147764192">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google此資料可能會儲存在您的 Google 帳戶中。您可在 Chrome 設定中關閉「Google 助理」。</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9206873250291191720">A</translation>

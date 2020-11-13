@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
+<translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
 <translation id="1734367976349034509">Este dispositivo é gerenciado por uma empresa</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar o dispositivo remotamente.</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Parado (sem papel)</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
-<translation id="4991056862642197104">Posicione seu documento e clique em "Digitalizar" para começar</translation>
 <translation id="5094480857972195099">O <ph name="ENROLLMENT_DOMAIN" /> gerencia o usuário e pode gerenciar configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="520299634122159966">Não há scanners disponíveis</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
@@ -108,6 +109,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6048107060512778456">Falha - Atolamento de papel</translation>
+<translation id="6050189528197190982">Escala de cinza</translation>
 <translation id="6058625436358447366">Para concluir, insira a senha antiga e a nova</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
 <translation id="6108689792487843350">Não é possível acessar o gateway</translation>
@@ -149,7 +151,9 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="871560550817059752">Falha - Sem tinta</translation>
 <translation id="8723108084122415655">Rede não padrão acima do limite de latência</translation>
 <translation id="8726019395068607495">Parado (porta aberta)</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8747900814994928677">Confirmar alteração</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>

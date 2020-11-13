@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1662989795263954667">Huminto - Wala nang ink</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">May DNS Resolver</translation>
 <translation id="1734367976349034509">Ang device na ito ay pinamamahalaan ng enterprise</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
 <translation id="4027485274696301677">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Huminto - Wala nang papel</translation>
 <translation id="4932733599132424254">Petsa</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
-<translation id="4991056862642197104">Ilagay ang iyong dokumento, at i-click ang I-scan para makapagsimula</translation>
 <translation id="5094480857972195099">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="520299634122159966">Walang available na scanner</translation>
 <translation id="5212543919916444558">Wala akong makitang kahit ano sa iyong screen kung saan ako makakatulong.
@@ -108,6 +109,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6048107060512778456">Hindi na-print - Naipit ang papel</translation>
+<translation id="6050189528197190982">Grayscale</translation>
 <translation id="6058625436358447366">Para tapusin, ilagay ang iyong luma at bagong password</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
@@ -149,7 +151,9 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>
+<translation id="8730621377337864115">Tapos na</translation>
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>
 <translation id="8919837981463578619">Hindi na-print - Walang tray</translation>

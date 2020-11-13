@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
+<translation id="1703835215927279855">અક્ષર</translation>
 <translation id="1706391837335750954">DNS રિઝોલ્વરનું વર્તમાન પરીક્ષણ</translation>
 <translation id="1734367976349034509">આ ડિવાઇસ એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
@@ -37,6 +38,7 @@
 <translation id="2805756323405976993">એપ્સ</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
+<translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3083667275341675831">કનેક્ટિવિટીના નિદાનો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
@@ -49,6 +51,7 @@
 <translation id="3515615323037921860">પ્રિન્ટ જોબ</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
@@ -60,6 +63,7 @@
 <translation id="4003384961948020559">નિષ્ફળ થયું - પ્રિન્ટરનું આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
+<translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
@@ -80,6 +84,7 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" />ને પ્રિન્ટ કરવાનું રદ કર્યું</translation>
+<translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
 <translation id="4932733599132424254">તારીખ</translation>
@@ -103,6 +108,7 @@
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6048107060512778456">નિષ્ફળ થયું - કાગળ ભરાઈ ગયું છે</translation>
+<translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6058625436358447366">સમાપ્ત કરવા માટે, તમારા જૂના અને નવા પાસવર્ડ દાખલ કરો</translation>
 <translation id="6106186594183574873">સમાપ્ત કરવા માટે, તમારો જૂનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6108689792487843350">ગેટવેથી કનેક્ટ કરી શકાતું નથી</translation>
@@ -126,6 +132,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
@@ -143,7 +150,9 @@
 <translation id="871560550817059752">નિષ્ફળ થયું - પ્રિન્ટરમાં શાહી પૂરી થઈ ગઈ છે</translation>
 <translation id="8723108084122415655">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8726019395068607495">બંધ - ઢાંકણ ખુલ્લું છે</translation>
+<translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8910721771319628100">ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8919837981463578619">નિષ્ફળ થયું - ટ્રે ખૂટે છે</translation>

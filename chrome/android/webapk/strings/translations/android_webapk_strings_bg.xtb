@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1625959690469240009">За да отворите настройките за сайта, актуализирайте или преинсталирайте <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> изисква следното приложение:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> изисква уеб браузър</translation>
 <translation id="3858759029325727987">Изберете браузър, който поддържа това приложение:</translation>

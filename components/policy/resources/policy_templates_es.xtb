@@ -590,13 +590,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="201557587962247231">Frecuencia de subida de informes de estado del dispositivo</translation>
 <translation id="2017301949684549118">URLs de aplicaciones web que se tienen que instalar de forma silenciosa.</translation>
 <translation id="2017459564744167827">Consulta la página <ph name="REFERENCE_URL" /> para obtener más información sobre el esquema y el formato.</translation>
-<translation id="2018836497795982119">Permite especificar el periodo en milisegundos en el que se solicita información sobre políticas del usuario al servicio de administración de dispositivos.
-
-      Al establecer esta política, se anula el valor predeterminado de tres horas. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (un día). Si el valor no está incluido en este intervalo, se redondeará al límite correspondiente. Si la plataforma admite notificaciones sobre políticas, el tiempo de actualización se establecerá en 24 horas, ya que se espera que estas notificaciones fuercen una actualización automática en cuanto se produzca algún cambio en una política.
-
-      Si no se establece esta política, <ph name="PRODUCT_NAME" /> usará el valor predeterminado de tres horas.
-
-      Ten en cuenta que si la plataforma admite notificaciones sobre políticas, el tiempo de actualización se establecerá en 24 horas (ignorando todos los valores predeterminados y el valor de esta política), ya que se espera que estas notificaciones fuercen una actualización automática en cuanto se produzca algún cambio en una política. De esta forma, no será necesario realizar actualizaciones con mayor frecuencia.</translation>
 <translation id="2024476116966025075">Configurar el nombre de dominio requerido para los clientes de acceso remoto</translation>
 <translation id="2024821084720338323">Cuando se habilita, la función <ph name="PRODUCT_NAME" /> hace que los temporizadores de JavaScript de las pestañas que están en segundo plano se limiten considerablemente y se fusionen. Se ejecutan como máximo una vez por minuto después de que una página haya estado en segundo plano durante 5 minutos o más.
 
@@ -945,7 +938,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
           Si se asigna el valor "false" a esta política, los usuarios no podrán habilitar
           esta función en la página de configuración.</translation>
-<translation id="250151283451228612">Si se habilita <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />, al asignarle un valor a <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> se establecerá el umbral de batería del cambio de alimentación en picos en forma de porcentaje.
+<translation id="250151283451228612">Si se habilita <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />, al asignarle un valor a <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />, se establecerá el umbral de batería del cambio de alimentación en picos en forma de porcentaje.
 
        Si no se asigna ningún valor a esta política, el cambio de alimentación en picos quedará desactivado.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior</translation>
@@ -1023,18 +1016,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si habilitas o inhabilitas esta opción, los usuarios no podrán cambiar o anular esta opción.
 
       Si no se establece esta política, la función del proxy de compresión de datos estará disponible para que el usuario decida si quiere o no utilizarla.</translation>
-<translation id="2575738503503093841">Especifica el retraso máximo en milisegundos entre la recepción de la invalidación de una política y la recuperación de la nueva política desde el servicio de gestión del dispositivo.
-
-      Al establecer esta política, se anula el valor predeterminado de 10.000 milisegundos. Los valores válidos de esta política se sitúan entre 1000 milisegundos (1 segundo) y 300.000 milisegundos (5 minutos). Cualquier valor fuera de este intervalo estará sujeto al límite correspondiente.
-
-      Si no se establece esta política, <ph name="PRODUCT_NAME" /> se utilizará el valor predeterminado de 10.000 milisegundos.</translation>
 <translation id="257788512393330403">Es obligatorio introducir la contraseña cada seis horas</translation>
 <translation id="2587719089023392205">Establecer <ph name="PRODUCT_NAME" /> como navegador predeterminado</translation>
 <translation id="2588252329503406673">Si se asigna un valor a esta política, definirá cómo debe comportarse <ph name="PRODUCT_OS_NAME" /> en caso de que no haya actividad de usuario durante un periodo de tiempo específico al mostrarse la pantalla de inicio de sesión. Esta política controla varios ajustes. Para obtener información sobre los intervalos de valores y la semántica de cada ajuste concreto, consulta las políticas correspondientes que controlan la gestión de energía de una sesión.
 
       Las desviaciones de estas políticas son:
 
-      * Las acciones que se deben emprender en caso de inactividad o cierre de la tapa no pueden consistir en la finalización de la sesión.
+      * Las acciones que se deben llevar a cabo en caso de inactividad o cierre de la tapa no pueden ser finalizar la sesión.
 
       * La acción predeterminada que se deberá llevar a cabo en caso de inactividad cuando el dispositivo esté conectado a la red eléctrica es apagar el dispositivo.
 
@@ -1170,9 +1158,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2787774054174244402">Si se le asigna el valor "true" a esta política, se evita que los usuarios deban escribir en dispositivos de almacenamiento externos.
 
       A menos que el almacenamiento externo esté bloqueado, si se configura "ExternalStorageReadOnly" en "false" o no se le asigna ningún valor, los usuarios podrán crear y modificar archivos de dispositivos de almacenamiento externos en los que se pueda escribir físicamente. (El almacenamiento externo se bloquea asignándole a "ExternalStorageDisable" el valor "true").</translation>
-<translation id="2791750069439339908">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> se definirá cuándo dejará de cargarse la batería. Este ajuste se basa en el porcentaje de carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe tener un valor al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Si no se asigna ningún valor a esta política, se aplicará el modo <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de carga de la batería.</translation>
 <translation id="2796714419743648316">Lista de aplicaciones y URL permitidas de límites de tiempo por aplicación</translation>
 <translation id="2796896367838042659">Esta política especifica qué aplicaciones y URLs deben añadirse a la lista de aplicaciones y URLs permitidas de restricciones de uso por aplicación.
         La lista de permitidas establecida tendrá efecto en las aplicaciones que un determinado usuario haya instalado en <ph name="PRODUCT_OS_NAME" /> que tengan límites de tiempo por aplicación.
@@ -1676,9 +1661,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Ten en cuenta que esta política se ha habilitado anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="348495353354674884">Habilitar teclado virtual</translation>
-<translation id="3487623755010328395">Si se habilita la política, <ph name="PRODUCT_NAME" /> intentará registrarse y aplicar la política relativa a la nube asociada a todos los perfiles.
-
-        El valor de esta política es un token de registro que se puede obtener de la consola de administración de Google.</translation>
 <translation id="3492834335089638487">Esta política controla el uso de aplicaciones Android de fuentes que no son de confianza (distintas a Google Play Store) en un dispositivo.
 
       Si no se asigna ningún valor a esta política, se considerará que no se permite la función.
@@ -1787,17 +1769,11 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se le asigna el valor true o no se configura, se permitirá crear nuevas cuentas de usuario siempre que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> no impida que el usuario inicie sesión.</translation>
 <translation id="3653237928288822292">Icono del proveedor de búsquedas predeterminadas</translation>
 <translation id="3654906736796256792">Permite ejecutar la zona de pruebas de audio</translation>
-<translation id="3659542706175323490">Si se habilita esta política, el inicio con CA siempre estará activado si el dispositivo lo admite. El inicio con CA (corriente alterna) ofrece la opción de que el sistema se reinicie desde el estado de apagado o hibernación cuando se conecte a una toma de corriente.
+<translation id="3659542706175323490">Si se habilita esta política, el inicio con CA (corriente alterna) siempre estará activado si el dispositivo lo admite. El inicio con CA ofrece la opción de que el sistema se reinicie desde el estado de apagado o hibernación cuando se conecte a una toma de corriente.
 
       Si se inhabilita esta política, el inicio con CA siempre estará desactivado.
 
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, el inicio con CA estará desactivado y los usuarios no podrán activarlo.</translation>
-<translation id="3660510274595679517">
-        Si se asigna el valor "True" a esta política, el registro en la gestión en la nube es obligatorio y, si no se puede realizar, se bloqueará el proceso de inicio de Chrome.
-
-        Si no se le asigna ningún valor o se le asigna el valor "False", el registro en la gestión en la nube es opcional y, si no se puede realizar, no se bloqueará el proceso de inicio de Chrome.
-
-        El registro automático de políticas de permisos de nube utiliza esta política en el escritorio y se puede configurar mediante el registro o el GPO en Windows, mediante plist en Mac y mediante el archivo de políticas JSON en Linux.</translation>
 <translation id="3660562134618097814">Transferir las cookies del proveedor de identidad SAML durante el inicio de sesión</translation>
 <translation id="3691155504326059225">Si se habilita esta política, se establecerá la página Nueva pestaña como la página principal del usuario, independientemente de la ubicación de la URL de la página principal. Si se inhabilita esta política, la página principal del usuario nunca será la página Nueva pestaña, a menos que se defina chrome://newtab como la URL de su página principal.
 
@@ -1812,7 +1788,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Se pueden producir filtraciones de datos cuando se copia y pega información, se transfieren archivos, se imprime, se comparte pantalla o se hacen capturas de pantalla, entre otras acciones.
 
       Cada regla se compone de lo siguiente:
-      - Una lista de fuentes definidas como URL. Los datos de las fuentes se consideran confidenciales y se les aplicarán las restricciones.
+      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se consideran confidenciales y se les aplicarán las restricciones.
       - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
       - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
 
@@ -1837,7 +1813,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3709266154059827597">Configurar lista negra de instalación de extensiones</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticación basada en certificados de cliente</translation>
-<translation id="3727476641336727380">A menos que <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> se haya inhabilitado, si se habilita <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> o no se le asigna ningún valor permitirá usar los wake locks de pantalla para la gestión de energía. Las extensiones pueden solicitar wake locks de pantalla a través de la API de extensión de gestión de energía y mediante las aplicaciones de ARC.
+<translation id="3727476641336727380">A menos que <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> se haya inhabilitado, si se habilita <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> o no se le asigna ningún valor, se podrán usar los wake locks de pantalla para la gestión de energía. Las extensiones pueden solicitar wake locks de pantalla a través de la API de extensión de gestión de energía y mediante las aplicaciones de ARC.
 
       Si se inhabilita esta política, se disminuye el nivel de las solicitudes de wake lock de pantalla a solicitudes de wake lock de sistema.</translation>
 <translation id="3727675072430693164">Si se habilita la política, los dispositivos registrados enviarán estadísticas de hardware sobre componentes SoC.
@@ -2031,7 +2007,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si no se define la política de fondo de pantalla del dispositivo, pero sí se define la política de fondo de pantalla del usuario, esta última decidirá qué contenido se mostrará.</translation>
 <translation id="3964298692570794635">Permite el contenido no seguro en estos sitios web</translation>
 <translation id="3965339130942650562">Tiempo de espera para cerrar sesión cuando el usuario se encuentre inactivo</translation>
-<translation id="3971673686578912106">Si se habilita esta política, se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo siempre y cuando los demás ajustes también lo permitan. A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "Verdadero", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que se puede ejecutar <ph name="PLUGIN_VM_NAME" />.
+<translation id="3971673686578912106">Si se habilita esta política, se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo siempre y cuando los demás ajustes también lo permitan. A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "True", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que se puede ejecutar <ph name="PLUGIN_VM_NAME" />.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
@@ -2052,9 +2028,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si el valor correspondiente a esta política se establece en "False", <ph name="PRODUCT_OS_NAME" /> no mostrará a los usuarios existentes en la pantalla de inicio de sesión. Se mostrará la pantalla de inicio de sesión normal, en la que solicita la dirección de correo electrónico del usuario y su contraseña o teléfono, o la pantalla intersticial SAML (si se ha activado mediante la política <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a menos que se configure una sesión administrada. Si se ha configurado una sesión administrada, solo se mostrarán las cuentas de dicha sesión, lo que permite seleccionar una de ellas.
 
       Ten en cuenta que esta política no determina si el dispositivo conserva o descarta los datos de usuario locales.</translation>
-<translation id="4009527123617846557">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> se definirá cuándo deberá empezar a cargarse la batería. Este ajuste se basa en el porcentaje de agotamiento de la batería. El valor debe ser al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Si no se asigna ningún valor a esta política, se aplicará el modo de carga estándar de la batería.</translation>
 <translation id="4010738624545340900">Permitir solicitud de cuadros de diálogo de selección de archivos</translation>
 <translation id="401260868452018796">Colocar la estantería en la parte inferior de la pantalla</translation>
 <translation id="4012737788880122133">Si se asigna el valor True a esta política, se inhabilitarán las actualizaciones automáticas.
@@ -2588,7 +2561,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no se podrán crear perfiles desde el administrador de usuarios.</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
-<translation id="4978405676361550165">Si se establece la política "OffHours", se ignorarán las políticas de dispositivos especificadas (se utiliza la configuración predeterminada de estas políticas) durante los intervalos de tiempo establecidos. Chrome vuelve a aplicar las políticas de dispositivos cada vez que se inicia o finaliza el periodo de "OffHours". El usuario recibirá una notificación y tendrá que cerrar sesión cuando finalice OffHours y se modifique la configuración de la política de dispositivos (por ejemplo, cuando el usuario no haya iniciado sesión con una cuenta permitida).</translation>
 <translation id="4980635395568992380">Tipo de datos:</translation>
 <translation id="4983201894483989687">Permitir la ejecución de complementos obsoletos</translation>
 <translation id="4986560318567565414">Ruta a Chrome para cambiar desde el navegador alternativo.</translation>
@@ -3021,13 +2993,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Esta política no se aplica a los cambios de canal.</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
-<translation id="5529037166721644841">Permite especificar el periodo en milisegundos en el que se solicita información sobre políticas de dispositivos al servicio de administración de dispositivos.
-
-      Al establecer esta política, se anula el valor predeterminado de tres horas. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (un día). Si el valor no está incluido en este intervalo, se redondeará al límite correspondiente.
-
-      Si no se establece esta política, <ph name="PRODUCT_OS_NAME" /> usará el valor predeterminado de tres horas.
-
-      Ten en cuenta que si la plataforma admite notificaciones sobre políticas, el tiempo de actualización se establecerá en 24 horas (ignorando todos los valores predeterminados y el valor de esta política), ya que se espera que estas notificaciones fuercen una actualización automática en cuanto se produzca algún cambio en una política. De esta forma, no será necesario realizar actualizaciones con mayor frecuencia.</translation>
 <translation id="5530347722229944744">Bloquear descargas potencialmente peligrosas</translation>
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
 <translation id="5540753481451194959">Si se le asigna un valor a esta política, se especificará el comportamiento del sistema al iniciar el navegador. Si se desactiva esta opción, no se le asignará ningún valor, ya que <ph name="PRODUCT_NAME" /> debe tener un comportamiento definido para iniciar el navegador.
@@ -3208,6 +3173,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se le asigna el valor "true", se enviará información sobre VPD del dispositivo.
       Los datos vitales del producto (VPD, Vital Product Data) son un conjunto de datos de configuración e informativos (como los números de serie) asociados al dispositivo.</translation>
 <translation id="5765780083710877561">Descripción:</translation>
+<translation id="5766438888216077649">No utilices <ph name="WINDOW_OPENER_PROPERTY" /> en enlaces destinados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5770738360657678870">Canal de desarrolladores (puede ser inestable)</translation>
 <translation id="5774856474228476867">URL de búsqueda del proveedor de búsquedas predeterminadas</translation>
 <translation id="5775235485119094648">Carga la batería mientras está dentro de un intervalo determinado.</translation>
@@ -3306,12 +3272,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5897913798715600338">Carga la batería usando la tecnología de carga rápida.</translation>
 <translation id="5898486742390981550">Si varios usuarios han iniciado sesión, solo podrá utilizar las aplicaciones para Android el usuario principal.</translation>
 <translation id="5901427587865226597">Solo impresión por las dos caras</translation>
-<translation id="5903898512448364160">
-      Si se asigna el valor "True" a esta política, la política de la nube prevalecerá si entra en conflicto con la política de la plataforma.
-      Si se le asigna el valor "False" o no se configura esta política, la política de la plataforma prevalecerá si entra en conflicto con la política de la nube.
-
-      Esta política solo está disponible como política obligatoria de la plataforma del equipo y solo afecta a las políticas de permisos de nube.
-      </translation>
 <translation id="5905473632148429217">Habilita las comprobaciones de OCSP/CRL online</translation>
 <translation id="5907283448020542268">El ajuste <ph name="GLS_ENABLED" /> activa los servicios de ubicación de Google durante la configuración inicial, a menos que se haya asignado el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" />. Si se asigna el valor <ph name="GLS_DISABLED" /> a esta política o no se le asigna ninguno, los servicios de ubicación estarán desactivados durante la configuración.
 
@@ -3380,7 +3340,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se usa esta política, el usuario solo podrá acceder a las impresoras cuyos ID se correspondan con los valores incluidos en ella. Los ID se deben corresponder con los campos "id" o "guid" del archivo especificado en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
-<translation id="6058879286588763839">A menos que se especifique <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (lo que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si se asigna un valor a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de gestión de energía del modo de carga de la batería si el dispositivo lo admite. Para ampliar la duración de la batería, esta política controlará dinámicamente la carga de la batería reduciendo el desgaste y el estrés de la misma.
+<translation id="6058879286588763839">A menos que se especifique <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (lo que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si se asigna un valor a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de gestión de energía del modo de carga de la batería (si el dispositivo lo admite). Para ampliar la duración de la batería, esta política controla dinámicamente la carga de la batería reduciendo el desgaste y el estrés de la misma.
 
       Si no se asigna ningún valor a esta política (si el dispositivo lo admite), se aplicará el modo de carga estándar de la batería y los usuarios no podrán modificarlo.
 
@@ -3504,13 +3464,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Los usuarios quedarán expuestos a riesgos de seguridad relacionados con la ejecución del subsistema de audio fuera de la zona de pruebas.
       Si no se define esta política, se usará la configuración predeterminada de la zona de pruebas de audio, que puede variar según la plataforma.
       El objetivo de esta política es ofrecer a las empresas la posibilidad de inhabilitar la zona de pruebas de audio si usan configuraciones de software de seguridad que interfieren con la zona de pruebas.</translation>
-<translation id="6255387031094435995">Permite combinar las políticas seleccionadas si proceden de fuentes distintas, con los mismos permisos y el mismo nivel.
-
-        Si una política está en la lista, en caso de que se produzca un conflicto entre dos fuentes que tengan los mismos permisos y el mismo nivel, los valores se combinarán en una nueva lista de políticas.
-
-        Si una política está en la lista, en caso de que se produzca un conflicto entre dos fuentes que tengan permisos o niveles distintos, se aplicará la política que tenga mayor prioridad.
-
-        Si una política no está en la lista, en caso de que se produzca algún conflicto entre las fuentes, los permisos o el nivel, se aplicará la política que tenga mayor prioridad.</translation>
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
 <translation id="6265892395051519509">Permitir el acceso a los sensores en estos sitios web</translation>
 <translation id="6273015149273504999">
@@ -3933,7 +3886,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se le asigna el valor "Disabled", se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
 <translation id="6821268164692776674">Destinos <ph name="CLOUD_PRINT_NAME" /> y Guardar en Google Drive</translation>
-<translation id="6823711520976094072">Si a esta política se le asigna un valor inferior a 1 MB o no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado de 256 MiB para el almacenamiento en caché de aplicaciones y extensiones de instalación por parte de varios usuarios de un solo dispositivo, lo que evitará que cada usuario deba volver a descargar el elemento.</translation>
+<translation id="6823711520976094072">Si a esta política se le asigna un valor inferior a 1 MB o no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado de 256 MB para el almacenamiento en caché de aplicaciones y extensiones que deben instalar varios usuarios de un mismo dispositivo, lo que evitará que cada usuario deba volver a descargar cada elemento.</translation>
 <translation id="682408981080798691">Si se habilita la política o no se establece, se activará la integridad del código del renderizador.
 
       Inhabilitar esta política reduce la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se podría cargar código desconocido y potencialmente hostil en los procesos del renderizador de <ph name="PRODUCT_NAME" />. Por ello, la política solo debe inhabilitarse si hay problemas de compatibilidad con un software de terceros que deba ejecutarse en los procesos del renderizador de <ph name="PRODUCT_NAME" />.
@@ -4271,15 +4224,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
 <translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación segura</translation>
-<translation id="7222749588229362483">Permite combinar las políticas seleccionadas si proceden de fuentes distintas, con los mismos permisos y el mismo nivel.
-
-        La combinación consiste en combinar las claves de primer nivel del diccionario de cada fuente. En caso de que se produzca un conflicto entre las claves, se aplicará la clave que procede de la fuente que tenga la mayor prioridad.
-
-        Si una política está en la lista, en caso de que se produzca un conflicto entre dos fuentes que tengan los mismos permisos y el mismo nivel, los valores se combinarán en una nueva política de diccionario.
-
-        Si una política está en la lista, en caso de que se produzca un conflicto entre dos fuentes, pero también entre distintos permisos o niveles, se aplicará la política que tenga la mayor prioridad.
-
-        Si una política no está en la lista, en caso de que se produzca algún conflicto entre las fuentes, los permisos o el nivel, se aplicará la política que tenga la mayor prioridad.</translation>
 <translation id="7229975860249300121">Contiene una expresión regular que se usa para determinar qué cuentas de Google pueden establecerse como cuentas principales de navegador en <ph name="PRODUCT_NAME" /> (por ejemplo, la cuenta elegida durante el proceso de activación de la sincronización).
 
       Si el usuario intenta establecer una cuenta principal de navegador con un nombre de usuario que no coincide con este patrón, se muestra un error.
@@ -4655,9 +4599,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7724161903134898864">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar ventanas emergentes. Si se le asigna el valor 2, se denegarán las ventanas emergentes.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
-<translation id="7724592140967451156">Si se asigna el valor "True" a esta política, los elementos de sitios web que no pertenezcan al dominio que aparece en la barra de direcciones del navegador no podrán establecer cookies. Si se le asigna el valor "False", estos elementos podrán establecer cookies y los usuarios no podrán cambiar esta opción.
-
-      Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="7731026922044991970">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en todos los sitios web</translation>
 <translation id="7732907212083471072">Políticas retiradas</translation>
 <translation id="77379430721695807">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de vídeo sin solicitarlo.
@@ -4825,11 +4766,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="8006219716745491366">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, se especificará una lista con URL alternativas para extraer términos de búsqueda del buscador. Las URL deben incluir la cadena <ph name="SEARCH_TERM_MARKER" />.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, no se usará ninguna URL alternativa para extraer términos de búsqueda.</translation>
-<translation id="8009554972280451023">Si se habilita este ajuste, la configuración almacenada en los perfiles de <ph name="PRODUCT_NAME" />, como los marcadores, los datos de la función Autocompletar y las contraseñas, también se escribirá en un archivo almacenado en la carpeta Itinerancia del perfil de usuario o en una ubicación especificada por el administrador en la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Al habilitar esta política, se inhabilitará la sincronización en la nube.
-
-      Si esta política se inhabilita o no se define, solo se utilizarán los perfiles locales habituales.
-
-      La política <ph name="SYNC_DISABLED_POLICY_NAME" /> inhabilita todas las sincronizaciones de datos y anula <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8011935490612940798">Controlar la función <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Girar la pantalla 0 grados</translation>
 <translation id="8027265928215448940">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se descarga un archivo en Chrome.
@@ -5100,6 +5036,13 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se asigna el valor "True" a esta política o no se le asigna ningún valor, el usuario tendrá acceso root a los contenedores de Crostini.
       Si se le asigna el valor "False", el usuario no tendrá acceso root a los contenedores de Crostini nuevos ni a los ya creados.</translation>
 <translation id="8417305981081876834">Definir la longitud máxima del PIN para la pantalla de bloqueo</translation>
+<translation id="8417750118762775739">Si se inhabilita la política, las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que ha solicitado abrir la ventana emergente.
+
+      Si se le habilita o no se le asigna ningún valor, se le asignará el valor <ph name="NULL_VALUE" /> a la propiedad <ph name="WINDOW_OPENER_PROPERTY" /> a no ser que el ancla tenga el atributo <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Esta política se eliminará en la versión 95 de <ph name="PRODUCT_NAME" />.
+
+      Visita https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Esta política está obsoleta. Se debe usar la política <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de bloqueados. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
@@ -5222,7 +5165,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos.</translation>
-<translation id="8603454805657060638">Establecer esta política permite que el administrador cambie la dirección MAC (control de acceso al medio) cuando se conecte una base al dispositivo. Al conectar una base a algunos modelos de dispositivo, se usará de forma predeterminada la dirección MAC designada de la base del dispositivo para identificarlo en Ethernet.
+<translation id="8603454805657060638">Establecer esta política permite que el administrador cambie la dirección MAC (control de acceso al medio) cuando se conecte un dispositivo a la base. Cuando una base está conectada a algunos modelos de dispositivo, se usa de forma predeterminada la dirección MAC designada de la base del dispositivo para identificarlo en Ethernet.
 
       Si se selecciona "DeviceDockMacAddress" o no se establece esta política, se usará la dirección MAC designada de la base del dispositivo.
 
@@ -5466,15 +5409,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
-<translation id="8952317565138994125">Permite inhabilitar la sincronización de datos en <ph name="PRODUCT_NAME" /> a través de los servicios de sincronización alojados por Google e impide que los usuarios cambien esta opción.
-
-      Si habilitas esta opción, los usuarios no podrán modificarla ni anularla en <ph name="PRODUCT_NAME" />.
-
-      Si no se establece esta política, el usuario podrá elegir si quiere usar Google Sync o no hacerlo.
-
-      Para desactivar Google Sync por completo, te recomendamos que inhabilites este servicio en la consola de administración de Google.
-
-      Esta política no se debe habilitar si la política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> está habilitada, ya que esta función comparte la misma funcionalidad del cliente. En este caso, la sincronización alojada por Google está completamente inhabilitada.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8959992920425111821">Configuración predeterminada</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>

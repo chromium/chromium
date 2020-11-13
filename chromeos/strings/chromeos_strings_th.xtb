@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
 <translation id="1734367976349034509">อุปกรณ์นี้ได้รับการจัดการโดยองค์กร</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="ENROLLMENT_DOMAIN" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
+<translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
 <translation id="4932733599132424254">วันที่</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
-<translation id="4991056862642197104">วางเอกสารแล้วคลิก "สแกน" เพื่อเริ่มต้น</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="520299634122159966">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6048107060512778456">ไม่สำเร็จ - กระดาษติด</translation>
+<translation id="6050189528197190982">ระดับสีเทา</translation>
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
+<translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>

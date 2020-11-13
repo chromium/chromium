@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1662989795263954667">ቆሟል - ቀለም አልቋል</translation>
+<translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
 <translation id="1734367976349034509">ይህ መሣሪያ በድርጅት የሚቀናበር ነው</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
 <translation id="4027485274696301677">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="ENROLLMENT_DOMAIN" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="4034824040120875894">አታሚ</translation>
+<translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4932733599132424254">ቀን</translation>
 <translation id="4985509611418653372">አሂድ</translation>
-<translation id="4991056862642197104">ሰነድዎን ያስቀምጡ እና ለመጀመር ቃኝን ጠቅ ያድርጉ</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያቀናብር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="520299634122159966">ምንም ቃኚዎች አይገኙም</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6048107060512778456">አልተሳካም - የወረቀት መታጨቅ</translation>
+<translation id="6050189528197190982">ግራጫማ ምጥጥን</translation>
 <translation id="6058625436358447366">ለማጠናቀቅ፣ የእርስዎን አሮጌ እና አዲስ የይለፍ ቃላት ያስገቡ</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">አልተሳካም - ቀለም አልቋል</translation>
 <translation id="8723108084122415655">ነባሪ ያልሆነ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ በላይ ነው</translation>
 <translation id="8726019395068607495">ቆሟል - በር ክፍት ነው</translation>
+<translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8910721771319628100">ነባሪ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ ገደብ በላይ ነው</translation>
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>

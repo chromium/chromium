@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">આ મહિને</translation>
 <translation id="1637811476055996098">ફાઇલો પસંદ કરો</translation>
 <translation id="1650423536718072820">પુલક્વોટ</translation>
+<translation id="1681022320378710418">વર્તમાન સમય</translation>
 <translation id="1727886345390570319">બંધ કરેલું ઉપશીર્ષક મેનૂ છુપાવો</translation>
 <translation id="1729654308190250600">કૃપા કરીને ખાલી ન હોય એવું ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1758486001363313524">અન્ય...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">કૃપા કરી કોઈ URL દાખલ કરો.</translation>
 <translation id="3175736971608411871">ટાઇમર</translation>
 <translation id="3199563858620722075">કૉમ્બો બૉક્સ</translation>
+<translation id="3220661731597678625">હાલનું પગલું</translation>
 <translation id="3329013043687509092">સંતૃપ્તતા</translation>
 <translation id="3450233048674729344">મૂલ્ય <ph name="MAXIMUM" /> જેટલું અથવા આનાથી ઓછું હોવું આવશ્યક છે.</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">વીડિયો</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">કૃપા કરીને એક નંબર દાખલ કરો.</translation>
+<translation id="4912200001568447310">વર્તમાન આઇટમ</translation>
 <translation id="4912536737030637138">ગ્રંથસૂચિની એન્ટ્રી</translation>
 <translation id="4915360478455618802">સમય પિકર બતાવો</translation>
 <translation id="492244087561876220">કૉમેન્ટ</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">મીડિયા ચલાવવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="537648784377940524">ન્યૂનતમ તારીખ (<ph name="MIN_DATE_OR_TIME" />) એ મહત્તમ તારીખ (<ph name="MAX_DATE_OR_TIME" />) કરતાં પહેલાંની હોવી આવશ્યક છે.</translation>
 <translation id="5406322316791861025">આકૃતિ</translation>
+<translation id="5425179576310518467">વર્તમાન તારીખ</translation>
 <translation id="5453733299334684579">ટ્રી આઇટમ</translation>
 <translation id="5466621249238537318">કૃપા કરીને એક અથવા વધુ ફાઇલ પસંદ કરો. </translation>
 <translation id="5468998798572797635">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">મીટર</translation>
 <translation id="6166809985690652833">સમાપન ભાષણ</translation>
 <translation id="6209276755895393898">આના જેવું જણાય છે: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">વર્તમાન પેજ</translation>
 <translation id="6213469881011901533">શબ્દાવલી</translation>
 <translation id="6281588256137006900">ઝાંખપ</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">કૃપા કરીને આ ટેક્સ્ટને <ph name="MIN_CHARACTERS" /> અથવા તેથી વધુ અક્ષર સુધી લંબાવો (તમે હાલમાં 1 અક્ષરનો ઉપયોગ કરી રહ્યાં છો).</translation>
 <translation id="7034405885550056553">સૂચન</translation>
 <translation id="709897737746224366">કૃપા કરીને વિનંતી કરેલા ફોર્મેટ સાથે મેળ કરો.</translation>
+<translation id="7102274145889307184">વર્તમાન સ્થાન</translation>
 <translation id="7118469954320184356">કોઈ વર્ણન ઉપલબ્ધ નથી.</translation>
 <translation id="7139483182332611405">પ્રસ્તાવના</translation>
 <translation id="7214187073215825913">કન્ટેન્ટ વિશેની માહિતી</translation>

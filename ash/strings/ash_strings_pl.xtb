@@ -130,7 +130,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2222338659135520253">Musisz się zalogować</translation>
-<translation id="22546648640907338">Zmienił się gest na touchpadzie służący do otwierania Przeglądu. Przesuń 3 palcami do góry, by otworzyć Przegląd.</translation>
 <translation id="225680501294068881">Skanowanie w poszukiwaniu urządzeń...</translation>
 <translation id="2268130516524549846">Bluetooth wyłączony</translation>
 <translation id="2268813581635650749">Wyloguj wszystkich</translation>
@@ -148,7 +147,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2352467521400612932">Ustawienia rysika</translation>
 <translation id="2354174487190027830">Aktywuję <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Dalej</translation>
-<translation id="2361223922412143600">Zmienił się gest na touchpadzie służący do zamykania Przeglądu. Przesuń 3 palcami w dół, by zamknąć Przegląd.</translation>
 <translation id="2365393535144473978">Wraz z mobilną transmisją danych zostanie włączony Bluetooth.</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2390318262976603432">Ustawienia języka</translation>
@@ -177,7 +175,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
-<translation id="2640255526076764619">Zmienił się gest na touchpadzie służący do przełączania się na poprzednie biurko. Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2658778018866295321">Kliknij i przeciągnij</translation>
 <translation id="2700493154570097719">Ustaw klawiaturę</translation>
@@ -396,7 +393,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4705716602320768426">Zgłoś opinię</translation>
-<translation id="4710243778082831592">Ustawienia IME</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
@@ -527,7 +523,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6018164090099858612">Wyłączam tryb odbicia lustrzanego</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
-<translation id="6029337736376922061">Zmienił się gest na touchpadzie służący do przełączania się na następne biurko. Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo.</translation>
 <translation id="6030495522958826102">Menu zostało przeniesione w lewy dolny róg ekranu.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>

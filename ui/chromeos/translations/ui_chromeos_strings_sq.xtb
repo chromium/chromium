@@ -18,6 +18,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonisht</translation>
 <translation id="1169885125071442573">Guxharatisht me transliterim</translation>
+<translation id="1170149495446063094">Anglisht (SHBA) me tastierë International</translation>
 <translation id="1172970565351728681">Koha e mbetur: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="117624967391683467">Po kopjon <ph name="FILE_NAME" />...</translation>
@@ -26,6 +27,7 @@
 <translation id="1201402288615127009">Tjetra</translation>
 <translation id="1243314992276662751">Ngarko</translation>
 <translation id="1249250836236328755">Zhanri</translation>
+<translation id="1251468808511160368">Anglisht (SHBA) me tastierën Programmer Dvorak</translation>
 <translation id="1276362640455948667">portugalisht me tastierë ndërkombëtare amerikane</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
@@ -171,9 +173,11 @@
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">U KRYE</translation>
+<translation id="3182237543071236785">Anglisht (MB)</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3197563288998582412">dvorak britanik</translation>
 <translation id="3202131003361292969">Shtegu</translation>
+<translation id="3204169104280704562">Anglisht (SHBA) me tastierën Workman</translation>
 <translation id="3224239078034945833">Kanadeze me shumë gjuhë</translation>
 <translation id="3236289833370040187">Pronësia do të transferohet te <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irlandisht</translation>
@@ -318,6 +322,7 @@
 <translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Rregulluar</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
+<translation id="4942961016321891903">Tastierë malajalamisht, fonetike</translation>
 <translation id="4943368462779413526">Futboll</translation>
 <translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
 <translation id="4969785127455456148">Albumi</translation>
@@ -381,6 +386,7 @@
 <translation id="5428105026674456456">Spanjisht</translation>
 <translation id="5438282218546237410">Nuk ka rezultate për <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Fjalëkalim i pavlefshëm</translation>
+<translation id="5468013476539915283">Anglisht (SHBA)</translation>
 <translation id="5469868506864199649">Italisht</translation>
 <translation id="5484429245813572665">Indonezisht</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
@@ -390,8 +396,10 @@
 <translation id="5524517123096967210">Ky skedar nuk mund të lexohej.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> imazh</translation>
 <translation id="5534520101572674276">Po llogarit madhësinë</translation>
+<translation id="5551831234974556292">Maltisht</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5605830556594064952">Amerikane Dvorak</translation>
+<translation id="5623849870004487514">Nepalisht me tastierë fonetike</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5678784840044122290">Aplikacioni për Linux do të ofrohet në "Terminalin" tënd dhe mund dhe të shfaqë një ikonë te "Nisësi" yt.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nuk mund të shkëputet nga një arkiv ose disk virtual<ph name="END_BOLD" />
@@ -401,6 +409,7 @@
 <translation id="5700087501958648444">Informacionet e audios</translation>
 <translation id="570049376144986742">Frëngjisht (Zvicër)</translation>
 <translation id="5731409020711461763">1 fotografi e re</translation>
+<translation id="573799789564358869">Anglisht (SHBA) me tastierë Colemak</translation>
 <translation id="5752453871435543420">Rezervimi në renë kompjuterike për sistemin operativ Chrome</translation>
 <translation id="5756666464756035725">Tastiera QWERTY në hungarisht</translation>
 <translation id="5776325638577448643">Spastro dhe formato</translation>
@@ -420,6 +429,7 @@
 <translation id="5912396950572065471">Formati</translation>
 <translation id="5913638992615760742">Operacioni i kopjimit dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Maratisht</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
@@ -452,17 +462,20 @@
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
+<translation id="6374309724856959519">Anglisht (SHBA) me tastierë Extended</translation>
 <translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="6412376911804527326">Laosisht</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>
+<translation id="647955688546403164">Anglisht (MB) me tastierë Dvorak</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
 <translation id="6509122719576673235">Norvegjisht</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="653019979737152879">Po sinkronizon <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Të fundit</translation>
 <translation id="6556866813142980365">Ribëje</translation>
+<translation id="6556932543564608391">Anglisht (SHBA) me tastierë Dvorak</translation>
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Lidhja e "Diskut të Google"</translation>
@@ -477,6 +490,7 @@
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6718273304615422081">Po ngjesh...</translation>
 <translation id="6751256176799620176">U zgjodh 1 dosje</translation>
+<translation id="6767296108234383966">Malajalamisht me transliterim</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Menaxho ndarjen në Linux</translation>
@@ -511,6 +525,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalimi dështoi.</translation>
 <translation id="7040138676081995583">Hape me...</translation>
+<translation id="7096940708283911567">Odiaisht</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> artikuj u zgjodhën</translation>
 <translation id="7106346894903675391">Bli më shumë hapësirë ruajtëse...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
@@ -534,6 +549,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> të gjetura
     <ph name="LINE_BREAK1" />
     Gati për të rezervuar te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Nepalisht me tastierë InScript</translation>
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>
 <translation id="7508545000531937079">Prezantimi</translation>
 <translation id="751507702149411736">Bjellorusisht</translation>
@@ -543,6 +559,7 @@
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
+<translation id="7585326627181105002">Anglisht (SHBA) me tastierën International PC</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
 <translation id="7603724359189955920">Rrjeta</translation>
@@ -597,6 +614,7 @@
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumanisht</translation>
 <translation id="8052887694493382350">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
+<translation id="8061794649181228915">Anglisht (SHBA) me tastierën Workman International</translation>
 <translation id="8066773524873206594">Të gjitha redaktimet do të ruhen te <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Përsërit</translation>
 <translation id="8106045200081704138">Të ndara me</translation>
@@ -625,6 +643,7 @@
 <translation id="8336153091935557858">Dje <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">nepalisht me transliterim</translation>
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
+<translation id="8362125533493859258">Anglisht (Kanada)</translation>
 <translation id="8382450452152102026">Për <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Përmasat</translation>
 <translation id="8437209419043462667">Amerikane</translation>

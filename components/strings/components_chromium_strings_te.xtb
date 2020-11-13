@@ -7,7 +7,7 @@
 <translation id="3550966579244642892">Chromium OS దాని ప్రాథమిక సెటప్‌ను పూర్తి చేయలేదు.</translation>
 <translation id="358997566136285270">Chromium లోగో</translation>
 <translation id="4365115785552740256">Chromium అనేది <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్ మరియు ఇతర <ph name="BEGIN_LINK_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_OSS" />లపై ఎంతగానో ఆధారపడుతుంది.</translation>
-<translation id="4559775032954821361">Chromium మెను &gt;
+<translation id="4559775032954821361">Chromium మెనూ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
@@ -18,7 +18,7 @@
           మరియు "మీ LAN కోసం ప్రాక్సీ సర్వర్‌ను ఉపయోగించండి" తనిఖీ పెట్టె ఎంపికను తీసివేయండి.</translation>
 <translation id="48558539577516920">మీ ఫైర్‌వాల్ లేదా యాంటీవైరస్ సెట్టింగ్‌ల్లో నెట్‌వర్క్‌ను యాక్సెస్ చేయడానికి
         Chromiumను అనుమతించండి.</translation>
-<translation id="580822234363523061">Chromium మెను &gt;
+<translation id="580822234363523061">Chromium మెనూ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
@@ -26,7 +26,7 @@
           <ph name="PROXIES_TITLE" />కు వెళ్లండి
           మరియు మీ కాన్ఫిగరేషన్ "ప్రాక్సీ వద్దు" లేదా "నేరుగా" లాగా సెట్ చేయబడిందని నిర్ధారించుకోండి.</translation>
 <translation id="6613594504749178791">మీ మార్పులు మీరు Chromiumని మరుసటిసారి ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
-<translation id="7861509383340276692">Chromium మెను &gt;
+<translation id="7861509383340276692">Chromium మెనూ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />కు వెళ్లండి,

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1625959690469240009">サイトの設定を開くには、<ph name="BROWSER_NAME" /> を更新または再インストールしてください</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> を使用するには次のアプリが必要です:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> を使用するにはウェブブラウザが必要です</translation>
 <translation id="3858759029325727987">このアプリをサポートしているブラウザを選択してください:</translation>

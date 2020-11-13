@@ -304,7 +304,6 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> չկարդացված էջ</translation>
 <translation id="321773570071367578">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome-ը որպես անվտանգության բանալի</translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
@@ -641,7 +640,6 @@
 <translation id="5683547024293500885">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="5686790454216892815">Ֆայլի անունը չափազանց երկար է</translation>
 <translation id="5687809546194252819">Վերագործարկումից հետո <ph name="APP_NAME" /> հավելվածը կօգտագործի <ph name="LANGUAGE" /> լեզուն։</translation>
-<translation id="5691211010013816086">Դուք ունեք <ph name="READING_LIST_COUNT" /> էջ</translation>
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
 <translation id="5697688514913266141">Ձեր ֆայլը կպահվի <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> պանակում։ <ph name="BEGIN_LINK2" />Փոխել<ph name="END_LINK2" /></translation>
@@ -886,7 +884,6 @@
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
 <translation id="7286572596625053347">Փոխե՞լ լեզուն (<ph name="LANGUAGE" />)</translation>
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>
-<translation id="7291387454912369099">Վճարում Օգնականի միջոցով</translation>
 <translation id="7293171162284876153">Սկսելու համար միացրեք «Համաժամացնել Chrome-ի տվյալները» կարգավորումը:</translation>
 <translation id="7293429513719260019">Ընտրել լեզուն</translation>
 <translation id="729975465115245577">Ձեր սարքը գաղտնաբառերի ֆայլ պահելու հավելված չունի:</translation>

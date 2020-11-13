@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222338659135520253">Bejelentkezést igényel</translation>
-<translation id="22546648640907338">Megváltozott a kézmozdulat, amelyet az Áttekintés nézetbe való belépéshez használhat az érintőpadon. Az Áttekintés nézetbe való belépéshez csúsztasson felfelé három ujjával.</translation>
 <translation id="225680501294068881">Eszközök keresése...</translation>
 <translation id="2268130516524549846">Bluetooth letiltva</translation>
 <translation id="2268813581635650749">Összes kiléptetése</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
 <translation id="2359808026110333948">Tovább</translation>
-<translation id="2361223922412143600">Megváltozott a kézmozdulat, amelyet az Áttekintés nézetből való kilépéshez használhat az érintőpadon. Ha szeretne kilépni az Áttekintés nézetből, csúsztasson lefelé három ujjával.</translation>
 <translation id="2365393535144473978">A mobiladat-kapcsolat engedélyezésével a Bluetooth is bekapcsol.</translation>
 <translation id="2369165858548251131">„Helló” kínai nyelven</translation>
 <translation id="2390318262976603432">Nyelv- és országkód beállításai</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2617342710774726426">A SIM-kártya zárolva van</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
-<translation id="2640255526076764619">Az érintőpadon az előző asztalra váltáshoz használt kézmozdulat megváltozott. Csúztasson balra négy ujjal az előző asztalra váltáshoz.</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2658778018866295321">Kattintás és húzás</translation>
 <translation id="2700493154570097719">Billentyűzetet beállítása</translation>
@@ -397,7 +394,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
 <translation id="4705716602320768426">Visszajelzés küldése</translation>
-<translation id="4710243778082831592">IME-beállítások</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4734965478015604180">Vízszintes</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
@@ -528,7 +524,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6018164090099858612">Kilépés a tükrözési módból</translation>
 <translation id="602001110135236999">Görgetés balra</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
-<translation id="6029337736376922061">A következő asztalra váltáshoz megváltozott az érintőpadon használt kézmozdulat. Csúztasson jobbra négy ujjal a következő asztalra váltáshoz.</translation>
 <translation id="6030495522958826102">A menü a képernyő bal alsó sarkába került.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6043212731627905357">Ez a monitor nem illik össze <ph name="DEVICE_TYPE" />-eszközével (a monitor nem támogatott).</translation>

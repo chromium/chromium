@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1734367976349034509">Bu cihaz kuruluş tarafından yönetiliyor</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">İşlem başarısız - Çıkış dolu</translation>
 <translation id="4027485274696301677">Bu <ph name="DEVICE_TYPE" />, <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="4034824040120875894">Yazıcı</translation>
+<translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
-<translation id="4991056862642197104">Belgenizi yerleştirin ve başlamak için Tara'yı tıklayın</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />, bu kullanıcıyı yönetir ve hem ayarları uzaktan yönetebilir hem de kullanıcı etkinliğini izleyebilir.</translation>
 <translation id="520299634122159966">Kullanılabilir tarayıcı yok</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
@@ -108,6 +109,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6048107060512778456">İşlem başarısız - Kağıt sıkışması</translation>
+<translation id="6050189528197190982">Gri Tonlama</translation>
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
@@ -149,7 +151,9 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
 <translation id="8723108084122415655">Varsayılan olmayan ağ, gecikme eşiğini aştı</translation>
 <translation id="8726019395068607495">Durduruldu - Kapak açık</translation>
+<translation id="8730621377337864115">Bitti</translation>
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>

@@ -130,7 +130,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222338659135520253">Cần đăng nhập</translation>
-<translation id="22546648640907338">Cử chỉ chuyển sang chế độ Tổng quan bằng bàn di chuột đã thay đổi. Hãy vuốt lên bằng 3 ngón tay để chuyển sang chế độ Tổng quan.</translation>
 <translation id="225680501294068881">Đang quét tìm thiết bị...</translation>
 <translation id="2268130516524549846">Đã tắt bluetooth</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
@@ -148,7 +147,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2352467521400612932">Cài đặt bút cảm ứng</translation>
 <translation id="2354174487190027830">Kích hoạt <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
-<translation id="2361223922412143600">Cử chỉ thoát chế độ Tổng quan bằng bàn di chuột đã thay đổi. Vuốt xuống bằng 3 ngón tay để thoát chế độ Tổng quan.</translation>
 <translation id="2365393535144473978">Bật dữ liệu di động sẽ bật Bluetooth.</translation>
 <translation id="2369165858548251131">"Xin chào" bằng tiếng Trung</translation>
 <translation id="2390318262976603432">Cài đặt ngôn ngữ</translation>
@@ -177,7 +175,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
-<translation id="2640255526076764619">Cử chỉ chuyển sang không gian làm việc trước bằng bàn di chuột đã thay đổi. Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước.</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
 <translation id="2700493154570097719">Đặt bàn phím</translation>
@@ -396,7 +393,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
 <translation id="4705716602320768426">Gửi ý kiến phản hồi</translation>
-<translation id="4710243778082831592">Cài đặt Trình chỉnh sửa phương thức nhập (IME)</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
 <translation id="4744944742468440486">Thông tin liên quan đến nội dung bạn chọn</translation>
@@ -527,7 +523,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
-<translation id="6029337736376922061">Cử chỉ chuyển sang không gian làm việc tiếp theo bằng bàn di chuột đã thay đổi. Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo.</translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6043212731627905357">Màn hình này không tương thích với <ph name="DEVICE_TYPE" /> của bạn (màn hình không được hỗ trợ).</translation>
@@ -618,6 +613,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6910714959251846841">Bản cập nhật này yêu cầu phải powerwash (đặt lại toàn bộ) thiết bị của bạn. Hãy tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6945221475159498467">Chọn</translation>
+<translation id="6953890208095195458">Quản trị viên của bạn đã dừng tính năng ghi màn hình do có nội dung không được phép ghi hình.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Bắt đầu</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>

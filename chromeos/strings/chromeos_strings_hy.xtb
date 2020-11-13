@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
 <translation id="1734367976349034509">Այս սարքը կառավարվում է կազմակերպության կողմից</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4027485274696301677">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="ENROLLMENT_DOMAIN" /> տիրույթի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
+<translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
-<translation id="4991056862642197104">Դրեք փաստաթուղթը և սեղմեք «Սկանավորել»՝ սկսելու համար</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> տիրույթը կառավարում է այս օգտատիրոջը։ Այն նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="520299634122159966">Հասանելի սկաներներ չկան</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Վերագործարկել</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6048107060512778456">Չհաջողվեց տպել – Թղթի խցանում</translation>
+<translation id="6050189528197190982">Գորշասանդղակ</translation>
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
 <translation id="8723108084122415655">Չկանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8726019395068607495">Դադարեցվել է – Դռնակը բաց է</translation>
+<translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>

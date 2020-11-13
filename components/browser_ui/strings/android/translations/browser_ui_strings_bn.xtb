@@ -17,6 +17,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> সাইট যোগ করা হয়েছে</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
+<translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
 <translation id="1431402976894535801">আপনি কখন ডিভাইস ব্যবহার করছেন তা জানাতে না চাইলে সাইটগুলি ব্লক করে দিন</translation>
 <translation id="1446450296470737166">MIDI ডিভাইসগুলির পূর্ণ নিয়ন্ত্রণের অনুমতি দিন</translation>
 <translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">সাইটকে সুরক্ষিত কন্টেন্ট চালানোর জন্য অনুমতি দিন</translation>
 <translation id="4468959413250150279">নির্দিষ্ট কোনও সাইটের জন্য সাউন্ড মিউট করুন।</translation>
 <translation id="4479647676395637221">সাইটগুলিকে আপনার ক্যামেরা ব্যবহার করতে দিতে মঞ্জুরি দেওয়ার আগে প্রথমে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
+<translation id="4505788138578415521">ইউআরএল বড় করা হয়েছে</translation>
 <translation id="4534723447064627427">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার মাইক্রোফোন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও মাইক্রোফোন চালু করে দিন।</translation>
 <translation id="4570913071927164677">বিবরণ</translation>
 <translation id="4645575059429386691">আপনার পিতামাতার দ্বারা পরিচালিত</translation>

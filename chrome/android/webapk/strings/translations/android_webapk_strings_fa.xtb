@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1625959690469240009">برای باز کردن تنظیمات سایت، <ph name="BROWSER_NAME" /> را به‌روزرسانی یا بازنصب کنید</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> به برنامه‌های زیر نیاز دارد:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> مرورگر وب نیاز دارد</translation>
 <translation id="3858759029325727987">مرورگری را که این برنامه را پشتیبانی می‌کند انتخاب کنید:</translation>

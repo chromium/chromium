@@ -130,7 +130,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2222338659135520253">Perlu login</translation>
-<translation id="22546648640907338">Gestur touchpad untuk masuk ke Ringkasan telah diubah. Geser ke atas dengan tiga jari untuk masuk ke Ringkasan.</translation>
 <translation id="225680501294068881">Memindai perangkat...</translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
@@ -148,7 +147,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2352467521400612932">Setelan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
-<translation id="2361223922412143600">Gestur touchpad untuk keluar dari Ringkasan telah diubah. Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan.</translation>
 <translation id="2365393535144473978">Mengaktifkan data seluler akan mengaktifkan Bluetooth.</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2390318262976603432">Setelan Lokal</translation>
@@ -177,7 +175,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2617342710774726426">Kartu SIM terkunci</translation>
 <translation id="2621713457727696555">Aman</translation>
-<translation id="2640255526076764619">Gestur touchpad untuk beralih ke desktop sebelumnya telah diubah. Geser ke kiri dengan empat jari untuk beralih ke desktop sebelumnya.</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2658778018866295321">Klik dan tarik</translation>
 <translation id="2700493154570097719">Setel keyboard Anda</translation>
@@ -396,7 +393,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4705716602320768426">Kirim masukan</translation>
-<translation id="4710243778082831592">Setelan IME</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
@@ -527,7 +523,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
-<translation id="6029337736376922061">Gestur touchpad untuk beralih ke desktop berikutnya telah diubah. Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya.</translation>
 <translation id="6030495522958826102">Menu dipindahkan ke pojok kiri bawah layar.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6043212731627905357">Monitor ini tidak dapat berfungsi dengan <ph name="DEVICE_TYPE" /> Anda (monitor tidak didukung).</translation>
@@ -618,6 +613,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6910714959251846841">Update ini memerlukan powerwash perangkat. Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru.</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
 <translation id="6945221475159498467">Pilih</translation>
+<translation id="6953890208095195458">Perekaman layar dihentikan oleh administrator karena konten di layar.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6972754398087986839">Mulai</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1625959690469240009">Para buksan ang mga setting ng site, i-update o i-install ulit ang <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">Kinakailangan ng <ph name="APP_NAME" /> ang sumusunod na app:</translation>
 <translation id="2697679025356221813">Kinakailangan ng <ph name="APP_NAME" /> ng web browser</translation>
 <translation id="3858759029325727987">Pumili ng browser na sinusuportahan ang app na ito:</translation>

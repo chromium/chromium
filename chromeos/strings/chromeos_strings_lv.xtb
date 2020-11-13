@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
 <translation id="1734367976349034509">Šo ierīci pārvalda uzņēmums</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4027485274696301677">Šī <ph name="DEVICE_TYPE" /> ierīce tiek pārvaldīta domēnā <ph name="ENROLLMENT_DOMAIN" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="4034824040120875894">Printeris</translation>
+<translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
-<translation id="4991056862642197104">Novietojiet dokumentu un pēc tam noklikšķiniet uz pogas Skenēt, lai sāktu</translation>
 <translation id="5094480857972195099">Šis lietotājs tiek pārvaldīts domēnā <ph name="ENROLLMENT_DOMAIN" />, un tajā var tikt attālināti pārvaldīti iestatījumi un uzraudzītas lietotāja darbības.</translation>
 <translation id="520299634122159966">Nav pieejamu skeneru</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
@@ -108,6 +109,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6048107060512778456">Neizdevās — iestrēdzis papīrs</translation>
+<translation id="6050189528197190982">Pelēktoņi</translation>
 <translation id="6058625436358447366">Lai pabeigtu, ievadiet savu iepriekšējo un jauno paroli</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
 <translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
@@ -149,7 +151,9 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
 <translation id="8723108084122415655">Tīklā, kas nav noklusējuma tīkls, latentums pārsniedza slieksni</translation>
 <translation id="8726019395068607495">Apturēts — durtiņas ir atvērtas</translation>
+<translation id="8730621377337864115">Gatavs</translation>
 <translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>

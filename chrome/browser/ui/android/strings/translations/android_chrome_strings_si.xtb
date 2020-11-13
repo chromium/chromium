@@ -304,7 +304,6 @@
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> මකන ලදි</translation>
-<translation id="3211503082155944789">නොකියවූ පිටු <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">ඔබට ඔබේ මුර-වැකිකඩ අමතක වී ඇත්නම් හෝ මෙම සැකසීම් වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />සමමුහුර්ත කිරීම නැවත සකසන්න<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">ආරක්ෂක යතුරක් ලෙස Google Chrome</translation>
 <translation id="3232754137068452469">වෙබ් යෙදුම</translation>
@@ -641,7 +640,6 @@
 <translation id="5683547024293500885">Chrome හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකිය</translation>
 <translation id="5686790454216892815">ගොනු නාමය දිග වැඩිය</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> ආරම්භයේදී <ph name="LANGUAGE" /> භාවිත කරනු ඇත.</translation>
-<translation id="5691211010013816086">ඔබට පිටු <ph name="READING_LIST_COUNT" />ක් ඇත</translation>
 <translation id="569536719314091526">තවත් විකල්ප බොත්තමෙන් මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
 <translation id="5696597120588531049">Chrome දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි, සහ තවත් ඒවාවලින් ඔබව ආරක්ෂිතව තබා ගැනීමට උදවු කළ හැකිය</translation>
 <translation id="5697688514913266141">ඔබගේ ගොනුව <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> වෙත සුරකිනු ඇත. <ph name="BEGIN_LINK2" />සංස්කරණය කරන්න<ph name="END_LINK2" />.</translation>
@@ -886,7 +884,6 @@
 <translation id="7274013316676448362">අවහිර කළ අඩවිය</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> වෙනස් කරන්නද?</translation>
 <translation id="7290209999329137901">යළි නම් කිරීම නොලැබේ</translation>
-<translation id="7291387454912369099">සහායක ක්‍රියාරම්භක ගෙවා පිටවීම</translation>
 <translation id="7293171162284876153">සමමුහුර්තය ඇරඹීමට, "ඔබේ Chrome දත්ත සමමුහුර්තය" ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7293429513719260019">භාෂාව තෝරන්න</translation>
 <translation id="729975465115245577">මුරපද ගොනුව ගබඩා කිරීමට ඔබේ උපාංගයට යෙදුමක් නොමැත.</translation>

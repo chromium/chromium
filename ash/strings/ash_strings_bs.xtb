@@ -130,7 +130,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222338659135520253">Potrebna je prijava</translation>
-<translation id="22546648640907338">Promijenjen je pokret dodirne podloge za pristupanje Pregledu. Prevucite prema gore s tri prsta da pristupite Pregledu.</translation>
 <translation id="225680501294068881">Traženje uređaja...</translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
@@ -148,7 +147,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2352467521400612932">Postavke stilosa</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
-<translation id="2361223922412143600">Promijenjen je pokret dodirne podloge za izlaz iz Pregleda. Prevucite nadolje s tri prsta da izađete iz Pregleda.</translation>
 <translation id="2365393535144473978">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth.</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
 <translation id="2390318262976603432">Postavke jezika/zemlje</translation>
@@ -177,7 +175,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2621713457727696555">Osigurano</translation>
-<translation id="2640255526076764619">Promijenjen je pokret dodirne podloge za prebacivanje na prethodnu radnu površinu. Prevucite ulijevo s četiri prsta da prebacite na prethodnu radnu površinu.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Kliknite i prevucite</translation>
 <translation id="2700493154570097719">Postavite tastaturu</translation>
@@ -396,7 +393,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
 <translation id="4705716602320768426">Pošaljite povratne informacije</translation>
-<translation id="4710243778082831592">Postavke za IME</translation>
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4744944742468440486">Informacije u vezi s vašim odabirom</translation>
@@ -527,7 +523,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6018164090099858612">Izlazak iz načina rada za preslikavanje</translation>
 <translation id="602001110135236999">Listaj ulijevo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
-<translation id="6029337736376922061">Promijenjen je pokret dodirne podloge za prebacivanje na sljedeću radnu površinu. Prevucite udesno s četiri prsta da prebacite na sljedeću radnu površinu.</translation>
 <translation id="6030495522958826102">Meni je pomjeren u donji lijevi ugao ekrana.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj monitor i vaš <ph name="DEVICE_TYPE" /> ne funkcioniraju skupa (monitor nije podržan).</translation>
@@ -618,7 +613,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6910714959251846841">Za ovo ažuriranje na uređaju je potrebno izvršiti Powerwash. Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
 <translation id="6945221475159498467">Odaberi</translation>
-<translation id="6953890208095195458">Administrator je zaustavio snimanje zaslona zbog sadržaja na vašem zaslonu.</translation>
+<translation id="6953890208095195458">Snimanje ekrana je zaustavio administrator zbog sadržaja na ekranu.</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6972754398087986839">Započnite</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
@@ -806,7 +801,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8721053961083920564">Uključivanje/isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Možda neko pokušava ukrasti vaše otkucaje na tastaturi</translation>
 <translation id="8735953464173050365">Pogledajte postavke tastature. Izabrana je tastatura <ph name="KEYBOARD_NAME" /></translation>
-<translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi da se radi o vama</translation>
+<translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="875593634123171288">Prikaži postavke VPN mreže</translation>
 <translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>
 <translation id="8785070478575117577">Povezivanje na mrežu <ph name="NETWORK_NAME" /></translation>

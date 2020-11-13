@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
 <translation id="1734367976349034509">ອຸປະກອນນີ້ຖືກຈັດການໂດຍວິສາຫະກິດ</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
+<translation id="4131410914670010031">ຂາວດໍາ</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
-<translation id="4991056862642197104">ວາງເອກະສານຂອງທ່ານ ແລ້ວຄລິກສະແກນເພື່ອເລີ່ມຕົ້ນ</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="520299634122159966">ບໍ່ມີເຄື່ອງສະແກນພ້ອມນຳໃຊ້</translation>
 <translation id="5212543919916444558">ຂ້ອຍບໍ່ສາມາດຊອກເຫັນອັນໃດຢູ່ໃນໜ້າຈໍຂອງທ່ານທີ່ຂ້ອຍສາມາດຊ່ວຍໄດ້.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6048107060512778456">ບໍ່ສຳເລັດ, ເຈ້ຍຕິດ</translation>
+<translation id="6050189528197190982">ໂທນສີເທົາ</translation>
 <translation id="6058625436358447366">ເພື່ອສຳເລັດກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າ ແລະ ໃໝ່ຂອງທ່ານ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
+<translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8919837981463578619">ບໍ່ສຳເລັດ, ຖາດໃສ່ເຈ້ຍຫາຍໄປ</translation>

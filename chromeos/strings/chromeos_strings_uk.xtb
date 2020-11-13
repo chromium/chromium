@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
 <translation id="1734367976349034509">Цим пристроєм керує адміністратор підприємства</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4027485274696301677">Цим пристроєм <ph name="DEVICE_TYPE" /> керує домен <ph name="ENROLLMENT_DOMAIN" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Виконати</translation>
-<translation id="4991056862642197104">Щоб почати, покладіть документ і натисніть "Сканувати"</translation>
 <translation id="5094480857972195099">Адміністратор домену <ph name="ENROLLMENT_DOMAIN" /> керує цим користувачем і може віддалено змінювати налаштування й відстежувати дії користувача.</translation>
 <translation id="520299634122159966">Немає доступних сканерів</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6048107060512778456">Не надруковано – зам'яло папір</translation>
+<translation id="6050189528197190982">Відтінки сірого</translation>
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">Шлюз недоступний</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
 <translation id="8723108084122415655">Затримка мережі не за умовчанням задовга</translation>
 <translation id="8726019395068607495">Зупинено – відкрито кришку принтера</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Підтвердити зміни</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8910721771319628100">Затримка мережі за умовчанням задовга</translation>
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>

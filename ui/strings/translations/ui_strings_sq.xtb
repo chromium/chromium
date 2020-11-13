@@ -100,6 +100,7 @@
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> Skedar</translation>
 <translation id="3608915363409716668">Mbi <ph name="MAXIMUM_VALUE" /></translation>
 <translation id="3618849550573277856">Kërko për "<ph name="LOOKUP_STRING" />"</translation>
+<translation id="3622035490309591977">Historiku i kujtesës së fragmenteve</translation>
 <translation id="364720409959344976">Zgjidh dosjen për ngarkim</translation>
 <translation id="3660179305079774227">Shigjeta lart</translation>
 <translation id="3670030362669914947">Numri</translation>
@@ -152,6 +153,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktive sot}=1{Aktive 1 ditë më parë}other{Aktive # ditë më parë}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ditë e }other{# ditë e }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Imazhi.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{në 1 vit}other{në # vite}}</translation>
 <translation id="588258955323874662">Ekrani i plotë</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekondë e mbetur}other{# sekonda të mbetura}}</translation>
@@ -192,6 +194,7 @@
 <translation id="6845533974506654842">shtyp</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 orë e mbetur}other{# orë të mbetura}}</translation>
 <translation id="688711909580084195">Faqe uebi pa titull</translation>
+<translation id="6902419395050653510">Përmbajtje HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 vit i mbetur}other{# vite të mbetura}}</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>

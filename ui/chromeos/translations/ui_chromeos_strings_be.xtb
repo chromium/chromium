@@ -321,6 +321,7 @@
 <translation id="4905417359854579806">Файлы (<ph name="FILE_COUNT" />) гатовыя да рэзервовага капіравання</translation>
 <translation id="4924638091161556692">Выпраўлена</translation>
 <translation id="4935975195727477204">Кветка гацаніі</translation>
+<translation id="4942961016321891903">Малаялам фанетычная</translation>
 <translation id="4943368462779413526">Мяч для амерыканскага футбола</translation>
 <translation id="4961158930123534723">1 папка абагулена з Parallels Desktop</translation>
 <translation id="4969785127455456148">Альбом</translation>
@@ -394,8 +395,10 @@
 <translation id="5524517123096967210">Не ўдалося прачытаць файл.</translation>
 <translation id="5533102081734025921">Відарыс <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Разлічваецца памер</translation>
+<translation id="5551831234974556292">Мальтыйская</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
+<translation id="5623849870004487514">Непальская (фанетычная клавіятура)</translation>
 <translation id="5649768706273821470">Праслухаць</translation>
 <translation id="5678784840044122290">Linux-праграма будзе даступна ў тэрмінале, а таксама на панэлі запуску можа паказвацца яе значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не ўдаецца адключыцца ад архіва або віртуальнага дыска<ph name="END_BOLD" />
@@ -425,6 +428,7 @@
 <translation id="5912396950572065471">Фармат</translation>
 <translation id="5913638992615760742">Не ўдалося выканаць аперацыю капіравання. Нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Маратхі</translation>
 <translation id="5955954492236143329">Элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
@@ -485,6 +489,7 @@
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6718273304615422081">Ідзе архіваванне...</translation>
 <translation id="6751256176799620176">Выбрана 1 папка</translation>
+<translation id="6767296108234383966">Малаялам (транслітарацыя)</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Кіраваць абагульваннем з Linux</translation>
@@ -519,6 +524,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Памылка ўсталявання.</translation>
 <translation id="7040138676081995583">Адкрыць з дапамогай...</translation>
+<translation id="7096940708283911567">Орыя</translation>
 <translation id="7100897339030255923">Выбрана элементаў: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Купіце больш месца ў сховішчы...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;пошук на Дыску&lt;/em&gt;</translation>
@@ -542,6 +548,7 @@
 <translation id="7489215562877293245">Знойдзена: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Гатова для рэзервовага капіравання на <ph name="BEGIN_LINK" />Google Дыск<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Непальская (клавіятура InScript)</translation>
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>
 <translation id="7508545000531937079">Слайд-шоу</translation>
 <translation id="751507702149411736">Беларуская</translation>

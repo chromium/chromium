@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1625959690469240009">Щоб відкрити налаштування сайту, оновіть або перестановіть <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">Щоб запустити <ph name="APP_NAME" />, потрібен такий додаток:</translation>
 <translation id="2697679025356221813">Щоб запустити <ph name="APP_NAME" />, потрібен веб-переглядач</translation>
 <translation id="3858759029325727987">Виберіть веб-переглядач, який підтримує цей додаток:</translation>

@@ -8,7 +8,7 @@
 <translation id="1036672894875463507">Ben Google Asistanınım, gün boyunca sana yardımcı olmak için buradayım.
 Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> eklendi</translation>
-<translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için Yukarı ok tuşunu kullanın.</translation>
+<translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
@@ -130,7 +130,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222338659135520253">Oturum açılması gerekiyor</translation>
-<translation id="22546648640907338">Genel Bakış'a girmek için kullanılan dokunmatik alan hareketi değişti. Genel Bakış'a girmek için üç parmakla yukarı kaydırın.</translation>
 <translation id="225680501294068881">Cihazlar taranıyor...</translation>
 <translation id="2268130516524549846">Bluetooth devre dışı</translation>
 <translation id="2268813581635650749">Tüm oturumları kapat</translation>
@@ -148,7 +147,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
 <translation id="2359808026110333948">Devam et</translation>
-<translation id="2361223922412143600">Genel Bakış'tan çıkmak için kullanılan dokunmatik alan hareketi değişti. Genel Bakış'tan çıkmak için üç parmakla aşağı kaydırın.</translation>
 <translation id="2365393535144473978">Mobil veri etkinleştirildiğinde Bluetooth açılır.</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
@@ -177,7 +175,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2596078834055697711">Pencerenin ekran görüntüsünü alır</translation>
 <translation id="2617342710774726426">SIM kart kilitli</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
-<translation id="2640255526076764619">Önceki masaya geçmek için kullanılan dokunmatik alan hareketi değişti. Önceki masaya geçmek için dört parmakla sola kaydırın.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2658778018866295321">Tıkla ve sürükle</translation>
 <translation id="2700493154570097719">Klavyenizi ayarlayın</translation>
@@ -396,7 +393,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
 <translation id="4705716602320768426">Geri bildirim gönder</translation>
-<translation id="4710243778082831592">IME Ayarları</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4734965478015604180">Yatay</translation>
 <translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
@@ -527,7 +523,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6018164090099858612">Ayna modundan çıkılıyor</translation>
 <translation id="602001110135236999">Sola kaydır</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
-<translation id="6029337736376922061">Sonraki masaya geçmek için kullanılan dokunmatik alan hareketi değişti. Sonraki masaya geçmek için dört parmakla sağa kaydırın.</translation>
 <translation id="6030495522958826102">Menü, ekranın sol alt köşesine taşındı.</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6043212731627905357">Bu monitör <ph name="DEVICE_TYPE" /> cihazınızla uyuşmuyor (monitör desteklenmiyor).</translation>
@@ -606,7 +601,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6803622936009808957">Desteklenen bir çözünürlük bulunamadığı için ekranlar yansıtılamıyor. Bunun yerine genişletilmiş masaüstüne geçiliyor.</translation>
-<translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için Yukarı ok tuşunu kullanın.</translation>
+<translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
 <translation id="6850010208275816200">Geçerli uygulamanız tam ekran modunda. Uygulama, şifrenizi isterse önce tam ekrandan çıkın.</translation>
@@ -619,6 +614,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6910714959251846841">Bu güncelleme, cihazınızda powerwash işlemi yapılmasını gerektiriyor. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="6945221475159498467">Seç</translation>
+<translation id="6953890208095195458">Ekran kaydı, ekranınızdaki içerik nedeniyle yöneticiniz tarafından durduruldu.</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6972754398087986839">Başlarken</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
@@ -801,7 +797,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
-<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için Sol veya Sağ ok tuşlarını kullanın.</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>

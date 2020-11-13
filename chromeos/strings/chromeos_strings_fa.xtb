@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1734367976349034509">این دستگاه توسط سازمانی مدیریت می‌شود</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند. سرپرست‌ها می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="4034824040120875894">چاپگر</translation>
+<translation id="4131410914670010031">سیاه و سفید</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">اجرا</translation>
-<translation id="4991056862642197104">سند را قرار دهید و برای شروع‌به‌کار روی «اسکن» کلیک کنید</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="520299634122159966">اسکنری دردسترس نیست</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6048107060512778456">انجام نشد - کاغذ گیر کرده است</translation>
+<translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
 <translation id="6108689792487843350">دروازه قابل دسترسی نیست</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
 <translation id="8723108084122415655">آستانه تأخیر در شبکه غیر پیش‌فرض خیلی زیاد است</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
+<translation id="8730621377337864115">تمام</translation>
 <translation id="8747900814994928677">تأیید تغییر</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>

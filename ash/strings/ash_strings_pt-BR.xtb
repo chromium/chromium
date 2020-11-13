@@ -130,7 +130,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222338659135520253">É necessário fazer login</translation>
-<translation id="22546648640907338">O gesto no touchpad para entrar na Visão geral mudou. Deslize com três dedos para cima para abrir a Visão geral.</translation>
 <translation id="225680501294068881">Procurando dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268813581635650749">Desconectar todos</translation>
@@ -148,7 +147,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2352467521400612932">Configurações da stylus</translation>
 <translation id="2354174487190027830">Ativando <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">O gesto no touchpad para sair da Visão geral mudou. Deslize com três dedos para baixo para fechar a Visão geral.</translation>
 <translation id="2365393535144473978">A ativação dos dados móveis também ativará o Bluetooth.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Configurações de localidade</translation>
@@ -177,7 +175,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
-<translation id="2640255526076764619">O gesto no touchpad para alternar para o espaço de trabalho anterior mudou. Deslize para a esquerda com quatro dedos para alternar para o espaço de trabalho anterior.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clicar e arrastar</translation>
 <translation id="2700493154570097719">Configurar teclado</translation>
@@ -396,7 +393,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4696813013609194136">Desbloquear dispositivo usando o código de pai/mãe</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4705716602320768426">Enviar feedback</translation>
-<translation id="4710243778082831592">Configurações do IME</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
@@ -518,7 +514,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
 <translation id="5957083217255311415">Os dados móveis estão desativados.</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
-<translation id="5960825221082587934">Permitir que o Assistente mostre informações como a definição ou a conversão de unidades da sua seleção.</translation>
+<translation id="5960825221082587934">Permitir que o Assistente mostre informações como a definição, a tradução ou a conversão de unidades da sua seleção.</translation>
 <translation id="5977415296283489383">Fone de ouvido</translation>
 <translation id="5978382165065462689">Compartilhando o controle de sua tela por meio da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
@@ -527,7 +523,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
-<translation id="6029337736376922061">O gesto no touchpad para trocar de espaço de trabalho mudou. Deslize para a direita com quatro dedos para mudar para o próximo espaço de trabalho.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo da tela.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor não está funcionando bem com seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
@@ -673,7 +668,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7509246181739783082">Verificar sua identidade</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">A capacidade de fazer uma captura do conteúdo da sua tela foi bloqueada pelo administrador.</translation>
+<translation id="7542906349682405018">O recurso de captura do conteúdo da sua tela foi bloqueado pelo administrador.</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
 <translation id="7561982940498449837">Fechar menu</translation>

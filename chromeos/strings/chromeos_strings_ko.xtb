@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">런처</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 리졸버 존재</translation>
 <translation id="1734367976349034509">기업에서 관리하는 기기입니다.</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4027485274696301677">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="ENROLLMENT_DOMAIN" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="4034824040120875894">프린터</translation>
+<translation id="4131410914670010031">흑백</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
 <translation id="4932733599132424254">날짜</translation>
 <translation id="4985509611418653372">실행</translation>
-<translation id="4991056862642197104">문서를 올려놓고 '스캔'을 클릭하여 시작하세요.</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />에서 이 사용자를 관리하고 원격으로 설정을 관리하며 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="520299634122159966">사용 가능한 스캐너 없음</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
+<translation id="6050189528197190982">회색조</translation>
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
 <translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
+<translation id="8730621377337864115">완료</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8910721771319628100">기본 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8919837981463578619">실패 - 트레이 없음</translation>

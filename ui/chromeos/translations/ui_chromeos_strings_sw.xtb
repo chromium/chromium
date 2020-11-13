@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">Iko tayari kuhifadhi nakala ya <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Imerekebishwa</translation>
 <translation id="4935975195727477204">Ua la Gazania</translation>
+<translation id="4942961016321891903">Fonetiki ya Kimalayalamu</translation>
 <translation id="4943368462779413526">Kandanda</translation>
 <translation id="4961158930123534723">Umeshiriki folda moja na Parallels Desktop</translation>
 <translation id="4969785127455456148">Albamu</translation>
@@ -396,8 +397,10 @@
 <translation id="5524517123096967210">Faili isingeweza kusomwa.</translation>
 <translation id="5533102081734025921">Picha ya <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Inakokotoa ukubwa</translation>
+<translation id="5551831234974556292">Kimalta</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Dvorak ya Marekani</translation>
+<translation id="5623849870004487514">Kinepali kwenye kibodi ya Fonetiki</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
 <translation id="5678784840044122290">Programu ya Linux itapatikana kwenye Kituo chako na huenda pia ikaonyesha aikoni kwenye Kifungua programu chako.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Imeshindwa kutenganishwa kwenye kumbukumbu au diski pepe<ph name="END_BOLD" />
@@ -427,6 +430,7 @@
 <translation id="5912396950572065471">Muundo</translation>
 <translation id="5913638992615760742">Uendeshaji wa kunakili umeshindikana, hitilafu isiyotarajiwa: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Kimarathi</translation>
 <translation id="5955954492236143329">Faili <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Chaguo za kupanga</translation>
@@ -487,6 +491,7 @@
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6718273304615422081">Inabanwa...</translation>
 <translation id="6751256176799620176">Folda 1 imechaguliwa</translation>
+<translation id="6767296108234383966">Unukuzi wa mfumo wa kuandika Kimalayalamu</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Dhibiti kushiriki katika Linux</translation>
@@ -521,6 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Usakinishaji haukufaulu.</translation>
 <translation id="7040138676081995583">Fungua kwa...</translation>
+<translation id="7096940708283911567">Kiodia</translation>
 <translation id="7100897339030255923">Vipengee vilivyoteuliwa<ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Nunua hifadhi zaidi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Hifadhi ya utafutaji&lt;/em&gt;</translation>
@@ -544,6 +550,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> imepatikana 
    <ph name="LINE_BREAK1" />
     Iko tayari kuhifadhi nakala kwenye <ph name="BEGIN_LINK" />Hifadhi ya Google<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Kinepali kwenye kibodi ya Hati za Kihindi</translation>
 <translation id="7505167922889582512">Onyesha faili zilizofichwa</translation>
 <translation id="7508545000531937079">Onyesho la slaidi</translation>
 <translation id="751507702149411736">Kibelarusi</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Appliste</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
 <translation id="1734367976349034509">Denne enhed er virksomhedsadministreret</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
 <translation id="4027485274696301677">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="ENROLLMENT_DOMAIN" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kør</translation>
-<translation id="4991056862642197104">Indsæt dit dokument, og klik på Scan for at komme i gang</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og holde øje med brugeraktivitet via fjernadgang.</translation>
 <translation id="520299634122159966">Der er ingen tilgængelige scannere</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
@@ -107,6 +108,7 @@
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6048107060512778456">Handlingen mislykkedes – Papirstop</translation>
+<translation id="6050189528197190982">Gråtone</translation>
 <translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
@@ -148,7 +150,9 @@
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
+<translation id="8730621377337864115">Udfør</translation>
 <translation id="8747900814994928677">Bekræft ændring</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>

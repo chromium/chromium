@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Lanceur d'applications</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1734367976349034509">Cet appareil est géré par une entreprise</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Échec – Bac de sortie plein</translation>
 <translation id="4027485274696301677">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="ENROLLMENT_DOMAIN" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="4034824040120875894">Imprimante</translation>
+<translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Exécuter</translation>
-<translation id="4991056862642197104">Placez votre document, puis cliquez sur "Numériser" pour commencer</translation>
 <translation id="5094480857972195099">Cet utilisateur est géré par <ph name="ENROLLMENT_DOMAIN" />, qui peut modifier ses paramètres et surveiller son activité à distance.</translation>
 <translation id="520299634122159966">Aucun scanner disponible</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
@@ -108,6 +109,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
+<translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6058625436358447366">Pour terminer, saisissez votre ancien mot de passe et le nouveau</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
@@ -149,7 +151,9 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
 <translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
+<translation id="8730621377337864115">OK</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
 <translation id="1734367976349034509">या डिव्हाइसला संस्थेेने व्यवस्थापित केेले आहे</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4027485274696301677">हे <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> द्वारे व्यवस्थापित केले जाते. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
+<translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
@@ -87,13 +89,13 @@
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4985509611418653372">रन</translation>
-<translation id="4991056862642197104">तुमचा दस्तऐवज ठेवा आणि सुरुवात करण्यासाठी स्कॅन करा वर क्लिक करा</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> या वापरकर्त्याला व्यवस्थापित करते आणि रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकते आणि वापरकर्ता अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकते.</translation>
 <translation id="520299634122159966">कोणतीही स्कॅनर उपलब्ध नाही</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पाहा.</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">रूटीन वर परत जा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">आता नवीन निवडा</translation>
@@ -102,10 +104,12 @@
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6048107060512778456">अयशस्वी झाले - कागद अडकला</translation>
+<translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6058625436358447366">पूर्ण करण्यासाठी, तुमचे जुने आणि नवीन पासवर्ड एंटर करा</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
@@ -147,7 +151,9 @@
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटंसी सीमेपेक्षा जास्त आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>
+<translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8747900814994928677">बदलाची खात्री करा</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटंसी सीमेच्या वर आहे</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>

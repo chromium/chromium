@@ -79,14 +79,14 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{לפני שנה אחת}two{לפני שנתיים}many{לפני # שנים}other{לפני # שנים}}</translation>
 <translation id="2878511608894704031">מחיקת הכול</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{עוד יום אחד}two{עוד 2 ימים}many{עוד # ימים}other{עוד # ימים}}</translation>
-<translation id="2931838996092594335">לחץ</translation>
+<translation id="2931838996092594335">לחיצה</translation>
 <translation id="2981684127883932071">מוצגות הצעות</translation>
-<translation id="3036649622769666520">פתח קבצים</translation>
+<translation id="3036649622769666520">פתיחת קבצים</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3068711042108640621">המדף בצד שמאל</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3157931365184549694">שחזר</translation>
+<translation id="3157931365184549694">שחזור</translation>
 <translation id="3183922693828471536">גלילה ל'כאן'</translation>
 <translation id="3234408098842461169">חץ למטה</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{יום אחד}two{יומיים}many{# ימים}other{# ימים}}</translation>
@@ -100,6 +100,7 @@
 <translation id="3600969208114796418">קובץ <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">חיפוש “<ph name="LOOKUP_STRING" />”</translation>
+<translation id="3622035490309591977">היסטוריית הלוח</translation>
 <translation id="364720409959344976">בחירת תיקייה להעלאה</translation>
 <translation id="3660179305079774227">חץ למעלה</translation>
 <translation id="3670030362669914947">מספר</translation>
@@ -160,7 +161,7 @@
 <translation id="5943826764092288734">{HOURS,plural, =1{שעה אחת}two{שעתיים}many{# שעות}other{# שעות}}</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6022924867608035986">ניקוי הטקסט בתיבת החיפוש</translation>
-<translation id="6040143037577758943">סגור</translation>
+<translation id="6040143037577758943">סגירה</translation>
 <translation id="6119846243427417423">הפעלה</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6134259848159370930">אפשר לחפש במכשיר, באפליקציות ובאינטרנט.</translation>
@@ -238,7 +239,7 @@
 <translation id="8331626408530291785">גלילה למעלה</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{שנה אחת}two{שנתיים}many{# שנים}other{# שנים}}</translation>
 <translation id="838869780401515933">סימון</translation>
-<translation id="8393700583063109961">שלח הודעה</translation>
+<translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8394908167088220973">הפעלה/השהיה של המדיה</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{שנה}two{# שנ}many{# שנ}other{# שנ}}</translation>
 <translation id="8602707065186045623">קובץ <ph name="SAVEAS_EXTENSION_TYPE" />  (<ph name="SAVEAS_EXTENSION_NAME" />.)</translation>

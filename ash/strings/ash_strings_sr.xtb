@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Режим спојених радних површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222338659135520253">Пријављивање је обавезно</translation>
-<translation id="22546648640907338">Промењен је покрет на тачпеду за улазак у Преглед. Превуците нагоре помоћу три прста да бисте ушли у Преглед.</translation>
 <translation id="225680501294068881">Скенирање уређаја...</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
 <translation id="2268813581635650749">Одјави све</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Подешавања писаљке</translation>
 <translation id="2354174487190027830">Активирање мреже <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Наставите</translation>
-<translation id="2361223922412143600">Промењен је покрет на тачпеду за излазак из Прегледа. Превлачите надоле помоћу три прста да бисте изашли из Прегледа.</translation>
 <translation id="2365393535144473978">Ако омогућите мобилне податке, омогућавате Bluetooth.</translation>
 <translation id="2369165858548251131">„Здраво“ на кинеском</translation>
 <translation id="2390318262976603432">Подешавања локалитета</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2621713457727696555">Заштићено</translation>
-<translation id="2640255526076764619">Промењен је покрет по тачпеду за прелазак на претходну радну површину. Превуците налево помоћу четири прста да бисте прешли на претходну радну површину.</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
 <translation id="2700493154570097719">Подесите тастатуру</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
 <translation id="4705716602320768426">Пошаљите повратне информације</translation>
-<translation id="4710243778082831592">Подешавања IME-а</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">Излазак из режима са пресликавањем</translation>
 <translation id="602001110135236999">Помери налево</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
-<translation id="6029337736376922061">Промењен је покрет по тачпеду за прелазак на следећу радну површину. Превуците удесно помоћу четири прста да бисте прешли на нову радну површину.</translation>
 <translation id="6030495522958826102">Мени је премештен у доњи леви угао екрана.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6043212731627905357">Овај монитор није компатибилан са уређајем <ph name="DEVICE_TYPE" /> (монитор није подржан).</translation>

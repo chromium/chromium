@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">छाप्न सकिएन।</translation>
 <translation id="1125564390852150847">नयाँ ट्याब सिर्जना गर्नुहोस्।</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
+<translation id="1147031633655575115">तपाईंले <ph name="USER" /> का नामबाट साइन इन गर्नुभएको छ</translation>
 <translation id="1154690515305205900">हाइलाइट गरिएको पाठको लिंक बनाउन सकिएन।</translation>
 <translation id="1157749421655780457">स्थानसम्बन्धी जानकारी प्रयोग गर्ने अनुमति दिनुहोस्...</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3892144330757387737">तपाईंले गर्नुभएका क्रियाकलापको इतिहास यहाँ देखिने छ</translation>
 <translation id="3897092660631435901">मेनु</translation>
+<translation id="3913386780052199712">तपाईंले Chrome मा साइन इन गर्नुभएको छ</translation>
 <translation id="3915450441834151894">साइटको जानकारी</translation>
 <translation id="3922310737605261887">प्रतिलिपि गरिएको पाठको खोजी गर्नुहोस्</translation>
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>

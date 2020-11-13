@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
+<translation id="1703835215927279855">Surat</translation>
 <translation id="1706391837335750954">Pelerai DNS Ada</translation>
 <translation id="1734367976349034509">Peranti ini diurus perusahaan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="ENROLLMENT_DOMAIN" />. Pentadbir boleh mengkonfigurasi peranti dari jauh.</translation>
 <translation id="4034824040120875894">Pencetak</translation>
+<translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="4985509611418653372">Jalankan</translation>
-<translation id="4991056862642197104">Letakkan dokumen anda dan klik Imbas untuk bermula</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="520299634122159966">Tiada pengimbas tersedia</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
@@ -108,6 +109,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6048107060512778456">Gagal - Kertas tersangkut</translation>
+<translation id="6050189528197190982">Skala Kelabu</translation>
 <translation id="6058625436358447366">Untuk menyelesaikan proses ini, masukkan kata laluan lama dan baharu</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
@@ -149,7 +151,9 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="871560550817059752">Gagal - Kehabisan dakwat</translation>
 <translation id="8723108084122415655">Rangkaian bukan lalai melebihi ambang kependaman</translation>
 <translation id="8726019395068607495">Dihentikan - Pintu terbuka</translation>
+<translation id="8730621377337864115">Selesai</translation>
 <translation id="8747900814994928677">Sahkan penukaran</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8910721771319628100">Rangkaian lalai melebihi ambang kependaman</translation>
 <translation id="8919837981463578619">Gagal - Dulang tiada</translation>

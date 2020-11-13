@@ -130,7 +130,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2208323208084708176">Vahid masa üstü rejimi</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="2222338659135520253">Giriş tələb olunur</translation>
-<translation id="22546648640907338">İcmala daxil olmaq üçün taçped jesti dəyişdirilib. İcmala daxil olmaq üçün üç barmaq ilə yuxarı çəkin.</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
 <translation id="2268813581635650749">Hamısından çıxın</translation>
@@ -148,7 +147,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2352467521400612932">Staylus ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktivləşdirilir</translation>
 <translation id="2359808026110333948">Davam edin</translation>
-<translation id="2361223922412143600">İcmaldan çıxmaq üçün taçped jesti dəyişdirilib. İcmaldan çıxmaq üçün üç barmaq ilə aşağı çəkin.</translation>
 <translation id="2365393535144473978">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək.</translation>
 <translation id="2369165858548251131">Çin dilində "Salam"</translation>
 <translation id="2390318262976603432">Yerli ayarlar</translation>
@@ -177,7 +175,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
 <translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2621713457727696555">Güvənli</translation>
-<translation id="2640255526076764619">Əvvəlki masaya keçmək üçün taçped jesti dəyişib. Əvvəlki masaya keçmək üçün dörd barmaqla sola çəkin.</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2658778018866295321">Klikləyin və çəkin</translation>
 <translation id="2700493154570097719">Klaviaturanı ayarlayın</translation>
@@ -396,7 +393,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
 <translation id="4705716602320768426">Rəy göndərin</translation>
-<translation id="4710243778082831592">IME ayarları</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
@@ -527,7 +523,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6018164090099858612">Güzgü rejimindən çıxır</translation>
 <translation id="602001110135236999">Sola sürüşdürün</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
-<translation id="6029337736376922061">Növbəti masaya keçmək üçün taçped jesti dəyişib. Növbəti masaya keçmək üçün dörd barmaqla sağa çəkin.</translation>
 <translation id="6030495522958826102">Menyu ekranın aşağı sol küncünə köçürülüb.</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6043212731627905357">Bu monitor <ph name="DEVICE_TYPE" /> cihazına uyğun gəlmir (monitor dəstəklənmir).</translation>
@@ -618,6 +613,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6910714959251846841">Bu güncəlləmə cihazın sıfırlanmasını tələb edir. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
 <translation id="6945221475159498467">Seçin</translation>
+<translation id="6953890208095195458">Ekrandakı məzmuna görə ekran yazılması administratorunuz tərəfindən dayandırılıb.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>

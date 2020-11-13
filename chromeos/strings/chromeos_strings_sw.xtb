@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
+<translation id="1703835215927279855">Barua</translation>
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
 <translation id="1734367976349034509">Kifaa hiki kinadhibitiwa kibiashara</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="ENROLLMENT_DOMAIN" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="4034824040120875894">Printa</translation>
+<translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Imesimama - Karatasi zimeisha</translation>
 <translation id="4932733599132424254">Tarehe</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
-<translation id="4991056862642197104">Weka hati yako, kisha ubofye Changanua ili uanze</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="520299634122159966">Hakuna vichanganuzi vinavyopatikana</translation>
 <translation id="5212543919916444558">Sijapata swali lolote kwenye skrini yako. Jaribu kugonga maikrofoni ili uniulize chochote.</translation>
@@ -107,6 +108,7 @@
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6048107060512778456">Haijakamilika - Karatasi imekwama</translation>
+<translation id="6050189528197190982">Mtindo wa rangi nyeupe na nyeusi</translation>
 <translation id="6058625436358447366">Ili ukamilishe, weka nenosiri lako la awali na lile jipya</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
@@ -148,7 +150,9 @@
 <translation id="871560550817059752">Haijakamilika - Wino umeisha</translation>
 <translation id="8723108084122415655">Muda wa kusubiri wa mtandao usio chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8726019395068607495">Imesimama - Mlango umefunguka</translation>
+<translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8747900814994928677">Thibitisha mabadiliko</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8910721771319628100">Muda wa kusubiri wa mtandao chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8919837981463578619">Haijakamilika - Trei haipo</translation>

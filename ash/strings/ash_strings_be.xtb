@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222338659135520253">Трэба выканаць уваход</translation>
-<translation id="22546648640907338">Жэст уваходу ў Агляд зменены. Правядзіце трыма пальцамі ўверх, каб увайсці ў Агляд.</translation>
 <translation id="225680501294068881">Ідзе пошук прылад…</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Працягнуць</translation>
-<translation id="2361223922412143600">Жэст выхаду з Агляду зменены. Каб выйсці з Агляду, правядзіце трыма пальцамі ўніз.</translation>
 <translation id="2365393535144473978">Пры ўключэнні мабільнай перадачы даных таксама ўключыцца Bluetooth.</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
 <translation id="2390318262976603432">Рэгіянальныя налады</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Зрабіць здымак акна</translation>
 <translation id="2617342710774726426">SIM-карта заблакіравана</translation>
 <translation id="2621713457727696555">Абаронена</translation>
-<translation id="2640255526076764619">Жэст пераходу на папярэдні працоўны стол зменены. Правядзіце па сэнсарнай панэлі чатырма пальцамі ўлева, каб перайсці на папярэдні працоўны стол.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2658778018866295321">Націснуць і перацягнуць</translation>
 <translation id="2700493154570097719">Наладзьце клавіятуру</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4705716602320768426">Пакінуць водгук</translation>
-<translation id="4710243778082831592">Налады IME</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">Выхад з рэжыму адлюстравання</translation>
 <translation id="602001110135236999">Прагартаць улева</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
-<translation id="6029337736376922061">Жэст пераходу на наступны працоўны стол зменены. Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол.</translation>
 <translation id="6030495522958826102">Меню перамешчана ў левы ніжні вугал экрана.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6043212731627905357">Гэты манітор не падыходзіць да прылады <ph name="DEVICE_TYPE" /> (манітор не падтрымліваецца).</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">Для ўсталявання абнаўлення патрабуецца скід прылад з дапамогай Powerwash. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
 <translation id="6945221475159498467">Выбраць</translation>
+<translation id="6953890208095195458">Запіс экрана быў спынены адміністратарам з-за характару змесціва, якое знаходзілася на экране.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Пачатак працы</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>

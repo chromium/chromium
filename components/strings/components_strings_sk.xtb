@@ -990,6 +990,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4953689047182316270">Reagovať na udalosti dostupnosti</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
+<translation id="4959153516955727495">Snímanie obrazovky bolo obnovené.</translation>
 <translation id="4973922308112707173">Dve dierky hore</translation>
 <translation id="4974590756084640048">Opätovne aktivovať upozornenia</translation>
 <translation id="4984088539114770594">Chcete používať mikrofón?</translation>
@@ -1199,6 +1200,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5759751709240058861">Používať kameru a hýbať ňou</translation>
 <translation id="5763042198335101085">Zadajte platnú e-mailovú adresu</translation>
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>
+<translation id="5769902225741524803">Nahrávanie obrazovky bolo pozastavené vaším správcom. Dôvodom bol obsah vašej obrazovky.</translation>
 <translation id="5776313857861697733">Priorita</translation>
 <translation id="5778550464785688721">Úplné ovládanie zariadení MIDI</translation>
 <translation id="5781136890105823427">Experiment je povolený</translation>
@@ -1233,6 +1235,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5905445707201418379">Blokované pravidlom pre zdroj <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronizované)</translation>
+<translation id="5913377024445952699">Snímanie obrazovky bolo pozastavené</translation>
 <translation id="59174027418879706">Povolené</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">zapnuté</translation>
@@ -1904,6 +1907,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Žiadne zhodujúce sa heslá. Zobrazte si všetky uložené heslá.</translation>
 <translation id="8625384913736129811">Uložiť túto kartu do tohto zariadenia</translation>
+<translation id="8627040765059109009">Snímanie obrazovky bolo obnovené</translation>
 <translation id="8657078576661269990">Váš správca zablokoval zdieľanie zo zdroja <ph name="ORIGIN_NAME" /> do počítačov <ph name="VM_NAME_1" /> a <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Súhrn objednávky, <ph name="TOTAL_LABEL" />, ďalšie podrobnosti</translation>
 <translation id="867224526087042813">Podpis</translation>

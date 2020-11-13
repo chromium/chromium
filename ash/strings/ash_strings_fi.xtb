@@ -130,7 +130,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222338659135520253">Sisäänkirjautuminen vaaditaan</translation>
-<translation id="22546648640907338">Kosketuslevyele, jolla siirrytään Viimeisimmät-osioon, on muuttunut. Siirry Viimeisimmät-osioon pyyhkäisemällä kolmella sormella ylöspäin.</translation>
 <translation id="225680501294068881">Etsitään laitteita...</translation>
 <translation id="2268130516524549846">Bluetooth pois käytöstä</translation>
 <translation id="2268813581635650749">Kirjaa kaikki ulos</translation>
@@ -148,7 +147,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2352467521400612932">Näyttökynäasetukset</translation>
 <translation id="2354174487190027830">Aktivoidaan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2361223922412143600">Kosketuslevyele, jolla poistutaan Viimeisimmät-osiosta, on muuttunut. Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin.</translation>
 <translation id="2365393535144473978">Mobiilidatan käyttöönotto ottaa käyttöön Bluetoothin.</translation>
 <translation id="2369165858548251131">"Hei" kiinaksi</translation>
 <translation id="2390318262976603432">Kieli- ja maa-asetukset</translation>
@@ -177,7 +175,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2617342710774726426">SIM-kortti on lukittu.</translation>
 <translation id="2621713457727696555">Suojattu</translation>
-<translation id="2640255526076764619">Kosketuslevyele, jolla siirrytään edelliseen työpöytään, on muuttunut. Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella.</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2658778018866295321">Klikkaa ja vedä</translation>
 <translation id="2700493154570097719">Määritä näppäimistö</translation>
@@ -396,7 +393,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
 <translation id="4705716602320768426">Tiedostopalaute</translation>
-<translation id="4710243778082831592">IME-asetukset</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
@@ -527,7 +523,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
-<translation id="6029337736376922061">Kosketuslevyele, jolla siirrytään seuraavaan työpöytään, on muuttunut. Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella.</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
@@ -620,6 +615,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6910714959251846841">Tämän päivityksen asennus edellyttää laitteen powerwashia. Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="6945221475159498467">Valitse</translation>
+<translation id="6953890208095195458">Järjestelmänvalvoja lopetti näytön tallennuksen näytöllä olevan sisällön vuoksi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6981982820502123353">Esteettömyys</translation>

@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">Gatavs dublēšanai: <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Fiksēts</translation>
 <translation id="4935975195727477204">Gazānijas zieds</translation>
+<translation id="4942961016321891903">Malajalu, fonētiskā</translation>
 <translation id="4943368462779413526">Futbols</translation>
 <translation id="4961158930123534723">Viena mape tika kopīgota ar Parallels Desktop</translation>
 <translation id="4969785127455456148">Albums</translation>
@@ -396,8 +397,10 @@
 <translation id="5524517123096967210">Failu nevarēja nolasīt.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> attēls</translation>
 <translation id="5534520101572674276">Notiek lieluma aprēķināšana.</translation>
+<translation id="5551831234974556292">Maltiešu</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5605830556594064952">ASV Dvorak</translation>
+<translation id="5623849870004487514">Nepāliešu, ar fonētisko tastatūru</translation>
 <translation id="5649768706273821470">Klausīties</translation>
 <translation id="5678784840044122290">Linux lietojumprogramma būs pieejama jūsu terminālī, un programmā Palaidējs var būt redzama arī tās ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nevar pārtraukt savienojumu ar arhīvu vai virtuālo disku<ph name="END_BOLD" />
@@ -427,6 +430,7 @@
 <translation id="5912396950572065471">Formāts</translation>
 <translation id="5913638992615760742">Kopēšana neizdevās; radās neparedzēta kļūda: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Marathu</translation>
 <translation id="5955954492236143329">Vienumu skaits: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Kārtošanas iespējas</translation>
@@ -487,6 +491,7 @@
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6718273304615422081">Notiek tilpsaspiešana...</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
+<translation id="6767296108234383966">Malajalu (transliterācija)</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Pārvaldīt kopīgošanu ar Linux</translation>
@@ -521,6 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalēšana neizdevās.</translation>
 <translation id="7040138676081995583">Atvērt ar...</translation>
+<translation id="7096940708283911567">Oriju</translation>
 <translation id="7100897339030255923">Atlasīti <ph name="COUNT" /> vienumi</translation>
 <translation id="7106346894903675391">Iegādāties papildu vietu krātuvē...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
@@ -544,6 +550,7 @@
 <translation id="7489215562877293245">Atrasts: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Gatavs dublēšanai <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Nepāliešu, ar InScript tastatūru</translation>
 <translation id="7505167922889582512">Rādīt paslēptos failus</translation>
 <translation id="7508545000531937079">Slaidrāde</translation>
 <translation id="751507702149411736">Baltkrievu valoda</translation>

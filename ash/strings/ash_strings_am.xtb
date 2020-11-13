@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2222338659135520253">በመለያ መግባት ያስፈልጋል</translation>
-<translation id="22546648640907338">ከአጠቃላይ ዕይታ ለመግባት የሚያገለግለው የመዳሰሻ ሰሌዳ እጅ ምልክት ተቀይሯል። ወደ አጠቃላይ ዕይታ ለመግባት በሦስት ጣቶች ወደ ላይ ያንሸራትቱ።</translation>
 <translation id="225680501294068881">መሣሪያዎችን በመቃኘት ላይ...</translation>
 <translation id="2268130516524549846">ብሉቱዝ ተሰናክሏል</translation>
 <translation id="2268813581635650749">ሁሉንም ዘግተህ ውጣ</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">የስቲለስ ቅንብሮች</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ን በማግበር ላይ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
-<translation id="2361223922412143600">ከአጠቃላይ ዕይታ ለመውጣት የሚያገለግለው የመዳሰሻ ሰሌዳ የእጅ ምልክት ተቀይሯል። ከአጠቃላይ ዕይታ ለመውጣት በሦስት ጣቶች ወደ ታች ያንሸራትቱ።</translation>
 <translation id="2365393535144473978">የተንቀሳቃሽ ስልክ ውሂብን ማንቃት ብሉቱዝን ያነቃል።</translation>
 <translation id="2369165858548251131">«Hello» በቻይንኛ</translation>
 <translation id="2390318262976603432">የቋንቋ ቅንብሮች</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">የመስኮት ቅጽበታዊ ገጽ እይታን ያንሱ</translation>
 <translation id="2617342710774726426">ሲም ካርድ ተዘግቷል</translation>
 <translation id="2621713457727696555">ደህንነቱ ተጠብቋል</translation>
-<translation id="2640255526076764619">ወደ ቀዳሚው ዴስክ ለመቀየር የመዳሰሻ ሰሌዳ ምልክቱ ተለውጧል። ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ።</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2658778018866295321">ጠቅ ያድርጉ እና ይጎትቱ</translation>
 <translation id="2700493154570097719">የእርስዎን ቁልፍ ሰሌዳ ያቀናብሩ</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
 <translation id="4705716602320768426">የፋይል ግብረመልስ</translation>
-<translation id="4710243778082831592">የIME ቅንብሮች</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">ከመስታወት ሁነታ በመውጣት ላይ</translation>
 <translation id="602001110135236999">ወደ ግራ ይሸብልሉ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>
-<translation id="6029337736376922061">ወደ ቀጣዩ ዴስክ ለመቀየር የመዳሰሻ ሰሌዳው ምልክት ተለውጧል። ወደ ቀጣዩ ዴስክ ለመቀየር በአራት ጣቶች ወደ ቀኝ ያንሸራትቱ።</translation>
 <translation id="6030495522958826102">ምናሌ ወደ የማያ ገጹ የታችኛው ግራ ጥግ ተወስዷል።</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6043212731627905357">ይህ ማሳያ ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር መስማማት አልቻለም (ማሳያው የሚደገፍ አይደለም)።</translation>

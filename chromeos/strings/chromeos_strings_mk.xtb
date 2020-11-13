@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Стартер</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1662989795263954667">Запрено - нема мастило</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Има DNS-одредувач</translation>
 <translation id="1734367976349034509">Со уредов управува претпријатие</translation>
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Неуспешно - излезната фиока е полна</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="4034824040120875894">Печатач</translation>
+<translation id="4131410914670010031">Црно и бело</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4985509611418653372">Изврши</translation>
-<translation id="4991056862642197104">Ставете го документот и кликнете „Скенирај“ за да започнете</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управува со корисников и може далечински да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="520299634122159966">Нема достапни скенери</translation>
 <translation id="5212543919916444558">Не можам да најдам ништо на екранот со што би можел ви помогнам.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6048107060512778456">Неуспешно - заглавена хартија</translation>
+<translation id="6050189528197190982">Скала на сиви тонови</translation>
 <translation id="6058625436358447366">За да завршите, внесете ги старата и новата лозинка</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8723108084122415655">Нестандардната мрежа е над прагот за латенција</translation>
 <translation id="8726019395068607495">Запрено - вратата е отворена</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потврдете ја измената</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>

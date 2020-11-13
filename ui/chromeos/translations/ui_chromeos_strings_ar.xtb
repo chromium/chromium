@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">جاهز للاحتفاظ بنسخة احتياطية من <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">تم الإصلاح</translation>
 <translation id="4935975195727477204">زهرة غازانيا</translation>
+<translation id="4942961016321891903">الماليالامية الصوتية</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
 <translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
@@ -396,8 +397,10 @@
 <translation id="5524517123096967210">تعذرت قراءة الملف.</translation>
 <translation id="5533102081734025921">صورة <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">جارٍ حساب الحجم</translation>
+<translation id="5551831234974556292">المالطية</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
+<translation id="5623849870004487514">النيبالية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5649768706273821470">استماع</translation>
 <translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
@@ -427,6 +430,7 @@
 <translation id="5912396950572065471">التنسيق</translation>
 <translation id="5913638992615760742">تعذَّر إتمام عملية النسخ، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">المراثية</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
@@ -487,6 +491,7 @@
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6718273304615422081">جارٍ الضغط...</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
+<translation id="6767296108234383966">تحويل صوتي إلى اللغة الماليالامية</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6806699711453372963">‏إدارة المشاركة في Linux</translation>
@@ -521,6 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7040138676081995583">فتح باستخدام...</translation>
+<translation id="7096940708283911567">الأوديا</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> من العناصر المحددة</translation>
 <translation id="7106346894903675391">شراء المزيد من مساحة التخزين...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;البحث في Drive&lt;/em&gt;</translation>
@@ -544,6 +550,7 @@
 <translation id="7489215562877293245">‏تم العثور على <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     جاهز للاحتفاظ بنسخة احتياطية في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">‏النيبالية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="7505167922889582512">إظهار الملفات المخفية</translation>
 <translation id="7508545000531937079">عرض الشرائح</translation>
 <translation id="751507702149411736">البيلاروسية</translation>
@@ -570,7 +577,7 @@
 <translation id="7724603315864178912">قص</translation>
 <translation id="7730494089396812859">عرض تفاصيل النسخ الاحتياطي عبر السحابة الإلكترونية</translation>
 <translation id="7748626145866214022">‏تتوفر مزيد من الخيارات على شريط الإجراءات. يُرجى الضغط على "Alt + A" لتركيز هذا الشريط.</translation>
-<translation id="7756956835689272676">الفرنسية (كندا) باستخدام لوحة المفاتيح متعددة اللغات</translation>
+<translation id="7756956835689272676">الفرنسية (كندا) باستخدام لوحة مفاتيح متعددة اللغات</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7774365994322694683">طائر</translation>
 <translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" بلا إنترنت، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />

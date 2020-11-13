@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
 <translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
+<translation id="1538801903729528855">വെബിൽ മികച്ച ശബ്‌ദാനുഭവം നേടൂ</translation>
 <translation id="1543538514740974167">ഇവിടെ വേഗത്തിൽ എത്തുക</translation>
 <translation id="1544826120773021464">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യാൻ, "അക്കൗണ്ട് മാനേജ് ചെയ്യുക" ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1549000191223877751">മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="1883903952484604915">എന്റെ ഫയലുകൾ</translation>
 <translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
+<translation id="1918175104945982129">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പകുതി ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="1922362554271624559">നിർദ്ദേശിക്കുന്ന ഭാഷകൾ</translation>
 <translation id="1925021887439448749">ഇഷ്‌ടാനുസൃത വെബ് വിലാസം നൽകുക</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">സൈറ്റ് താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="2067805253194386918">ടെക്‌സ്‌റ്റ്</translation>
 <translation id="2068748236079642969">അടുത്ത വീഡിയോ കാണുക</translation>
+<translation id="2074143993849053708">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI അടച്ചു</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
 <translation id="2096012225669085171">ഉപകരണങ്ങളിലുടനീളം സമന്വയിപ്പിക്കലും വ്യക്തിപരമാക്കലും നടത്തുക.</translation>
 <translation id="2100273922101894616">സ്വയമേവയുള്ള സൈൻ ഇൻ</translation>
@@ -279,6 +282,7 @@
 <translation id="3006881078666935414">ഉപയോഗ ഡാറ്റ ഇല്ല</translation>
 <translation id="3016635187733453316">ഈ ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="3029704984691124060">പാസ്‌ഫ്രെയ്‌സുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
+<translation id="3031225630520268969">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI</translation>
 <translation id="3034163383943672781"><ph name="DATE" />-ന് ഡൗൺലോഡ് ആരംഭിക്കും.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />സഹായം തേടുക<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">ലൊക്കേഷൻ ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
@@ -300,7 +304,6 @@
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ഇല്ലാതാക്കി</translation>
-<translation id="3211503082155944789">വായിക്കാത്ത <ph name="READING_LIST_COUNT" /> പേജുകൾ</translation>
 <translation id="321773570071367578">നിങ്ങൾ പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെങ്കിലോ, <ph name="BEGIN_LINK" />സമന്വയം റീസെറ്റ് ചെയ്യുക<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">സുരക്ഷാ കീ ആയി Google Chrome</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
@@ -437,6 +440,7 @@
 <translation id="4248098802131000011">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കുക</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4256782883801055595">ഓപ്പൺ സോഴ്‌സ് ലൈസൻസുകൾ</translation>
+<translation id="4263656433980196874">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പൂർണ്ണ ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="4298388696830689168">ലിങ്ക് ചെയ്‌ത സൈറ്റുകൾ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +627,7 @@
 <translation id="5581519193887989363">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK1" />ക്രമീകരണത്തിൽ<ph name="END_LINK1" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="5595485650161345191">വിലാസം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5599455543593328020">അദൃശ്യ മോഡ്</translation>
+<translation id="5599941490345670218">നിങ്ങൾക്കായി വെബ്‌സെെറ്റുകളിലുടനീളം പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കാൻ Google Assistant-ന് കഴിയും</translation>
 <translation id="5620163320393916465">സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
 <translation id="5620928963363755975">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്നും, ഡൗൺലോഡുകളിൽ നിന്നും നിങ്ങളുടെ ഫയലുകളും ‌പേജുകളും കണ്ടെത്തുക</translation>
 <translation id="5626134646977739690">നാമം:</translation>
@@ -635,7 +640,6 @@
 <translation id="5683547024293500885">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനാകില്ല</translation>
 <translation id="5686790454216892815">ഫയലിന്റെ പേര് ദൈർഘ്യമേറിയതാണ്</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> റീസ്‌റ്റാർട്ട് ചെയ്യുമ്പോൾ <ph name="LANGUAGE" /> ഉപയോഗിക്കും.</translation>
-<translation id="5691211010013816086">നിങ്ങൾക്ക് <ph name="READING_LIST_COUNT" /> പേജുകൾ ഉണ്ട്</translation>
 <translation id="569536719314091526">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്ന്, ഈ പേജ് ഏത് ഭാഷയിലേക്കും വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5696597120588531049">ഡാറ്റാ ലംഘനങ്ങൾ, സുരക്ഷിതമല്ലാത്ത വെബ്‌സൈറ്റുകൾ എന്നിവയിൽ നിന്നും മറ്റും നിങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ Chrome സഹായിക്കും</translation>
 <translation id="5697688514913266141"><ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> എന്നതിലേക്ക് നിങ്ങളുടെ ഫയൽ സംരക്ഷിക്കും. <ph name="BEGIN_LINK2" />എഡിറ്റ് ചെയ്യുക<ph name="END_LINK2" />.</translation>
@@ -880,7 +884,6 @@
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> മാറ്റണോ?</translation>
 <translation id="7290209999329137901">പേര് മാറ്റൽ ലഭ്യമല്ല</translation>
-<translation id="7291387454912369099">അസിസ്‌റ്റന്റ് ചെക്ക് ഔട്ട് ചെയ്യാൻ പ്രേരിപ്പിച്ചു</translation>
 <translation id="7293171162284876153">സമന്വയം ആരംഭിക്കാൻ, "നിങ്ങളുടെ Chrome ഡാറ്റാ സമന്വയിപ്പിക്കൽ" ഓണാക്കുക.</translation>
 <translation id="7293429513719260019">ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="729975465115245577">നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‍വേഡ് ഫയൽ സംഭരിക്കാനുള്ള ആപ്പ് ഇല്ല.</translation>
@@ -1148,6 +1151,7 @@
 <translation id="9155898266292537608">ഒരു വാക്കിൽ പെട്ടെന്ന് ടാപ്പ് ചെയ്‌തും നിങ്ങൾക്ക് തിരയാൻ കഴിയും</translation>
 <translation id="9169507124922466868">നാവിഗേഷൻ ചരിത്രം പകുതിയായി തുറന്നിരിക്കുന്നു</translation>
 <translation id="9191031968346938109">ഇതിലേക്ക് ചേർക്കുക…</translation>
+<translation id="919615279147764192">ടാസ്‌ക്കുകൾ പൂർത്തിയാക്കാൻ നിങ്ങളെ സഹായിക്കുന്നതിന്, നിങ്ങൾ Assistant ഉപയോഗിക്കുന്ന സൈറ്റുകളുടെ URL-കളും അവയിലെ ഉള്ളടക്കവും Assistant-ലൂടെ നിങ്ങൾ സമർപ്പിക്കുന്ന വിവരങ്ങളും Google-ന് ലഭിക്കും. ഈ വിവരങ്ങൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംഭരിച്ചേക്കാം. നിങ്ങൾക്ക് Chrome ക്രമീകരണത്തിൽ Assistant ഓഫാക്കാം.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ഒരു മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}other{# മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="9204836675896933765">ഒരു ഫയൽ ശേഷിക്കുന്നു</translation>
 <translation id="9206873250291191720">A</translation>

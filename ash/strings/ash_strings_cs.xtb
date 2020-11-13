@@ -130,7 +130,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222338659135520253">Je vyžadováno přihlášení</translation>
-<translation id="22546648640907338">Gesto touchpadu k otevření Přehledu se změnilo. Přehled otevřete přejetím třemi prsty nahoru.</translation>
 <translation id="225680501294068881">Vyhledávání zařízení…</translation>
 <translation id="2268130516524549846">Rozhraní Bluetooth deaktivováno</translation>
 <translation id="2268813581635650749">Odhlásit vše</translation>
@@ -148,7 +147,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2352467521400612932">Nastavení dotykového pera</translation>
 <translation id="2354174487190027830">Aktivace sítě <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Pokračovat</translation>
-<translation id="2361223922412143600">Gesto touchpadu k ukončení Přehledu se změnilo. Přehled ukončíte přejetím třemi prsty dolů.</translation>
 <translation id="2365393535144473978">Zapnutím mobilních dat aktivujete Bluetooth.</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
 <translation id="2390318262976603432">Nastavení národního prostředí</translation>
@@ -177,7 +175,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2617342710774726426">SIM karta je uzamčena</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
-<translation id="2640255526076764619">Gesto touchpadu k přepnutí na předchozí plochu se změnilo. Na předchozí plochu přejdete přejetím čtyřmi prsty doleva.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2658778018866295321">Kliknout a přetáhnout</translation>
 <translation id="2700493154570097719">Nastavit klávesnici</translation>
@@ -396,7 +393,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4705716602320768426">Poslat zpětnou vazbu</translation>
-<translation id="4710243778082831592">Nastavení editoru IME</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
@@ -527,7 +523,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6018164090099858612">Ukončování režimu zrcadlení</translation>
 <translation id="602001110135236999">Posunout doleva</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
-<translation id="6029337736376922061">Gesto touchpadu k přepnutí na další plochu se změnilo. Na další plochu přejdete přejetím čtyřmi prsty doprava.</translation>
 <translation id="6030495522958826102">Nabídka byla přesunuta do levého dolního rohu obrazovky.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6043212731627905357">Tento monitor si se zařízením <ph name="DEVICE_TYPE" /> nerozumí (monitor není podporován).</translation>
@@ -618,6 +613,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6910714959251846841">Kvůli této aktualizaci je potřeba zařízení pomocí funkce Powerwash obnovit do továrního nastavení. Viz další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
 <translation id="6945221475159498467">Vybrat</translation>
+<translation id="6953890208095195458">Nahrávání obrazovky ukončil administrátor kvůli obsahu na obrazovce.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Začínáme</translation>
 <translation id="6981982820502123353">Usnadnění</translation>

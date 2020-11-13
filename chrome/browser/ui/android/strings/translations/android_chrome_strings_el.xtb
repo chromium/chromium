@@ -304,7 +304,6 @@
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="3211426585530211793">Το <ph name="ITEM_TITLE" /> διαγράφηκε</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> μη αναγνωσμένες σελίδες</translation>
 <translation id="321773570071367578">Εάν ξεχάσετε τη φράση πρόσβασής σας ή θέλετε να αλλάξετε αυτήν τη ρύθμιση, <ph name="BEGIN_LINK" />επαναφέρετε το συγχρονισμό<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome ως κλειδί ασφαλείας</translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
@@ -641,7 +640,6 @@
 <translation id="5683547024293500885">Το Chrome δεν μπορεί να ελέγξει για ενημερώσεις.</translation>
 <translation id="5686790454216892815">Το όνομα του αρχείου είναι πολύ μεγάλο</translation>
 <translation id="5687809546194252819">Η εφαρμογή <ph name="APP_NAME" /> θα χρησιμοποιεί <ph name="LANGUAGE" /> μετά την επανεκκίνηση.</translation>
-<translation id="5691211010013816086">Έχετε <ph name="READING_LIST_COUNT" /> σελίδες.</translation>
 <translation id="569536719314091526">Μεταφράστε αυτήν τη σελίδα σε οποιαδήποτε γλώσσα από το κουμπί "Περισσότερες επιλογές"</translation>
 <translation id="5696597120588531049">Το Chrome μπορεί να σας προστατέψει από παραβιάσεις δεδομένων, μη ασφαλείς ιστοτόπους κ.α.</translation>
 <translation id="5697688514913266141">Το αρχείο σας θα αποθηκευτεί στον κατάλογο <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Επεξεργασία<ph name="END_LINK2" />.</translation>
@@ -886,7 +884,6 @@
 <translation id="7274013316676448362">Αποκλεισμένος ιστότοπος</translation>
 <translation id="7286572596625053347">Αλλαγή <ph name="LANGUAGE" />;</translation>
 <translation id="7290209999329137901">Η μετονομασία δεν είναι διαθέσιμη</translation>
-<translation id="7291387454912369099">Ολοκλήρωση αγοράς από τον Βοηθό</translation>
 <translation id="7293171162284876153">Για να ξεκινήσετε τον συγχρονισμό, ενεργοποιήστε την επιλογή "Συγχρονισμός των δεδομένων του Chrome".</translation>
 <translation id="7293429513719260019">Επιλογή γλώσσας</translation>
 <translation id="729975465115245577">Η συσκευή σας δεν διαθέτει κάποια εφαρμογή για την αποθήκευση του αρχείου κωδικών πρόσβασης.</translation>

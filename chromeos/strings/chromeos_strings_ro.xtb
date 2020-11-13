@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
 <translation id="1734367976349034509">Acest dispozitiv este gestionat de companie</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4027485274696301677">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="ENROLLMENT_DOMAIN" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
+<translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Rulează</translation>
-<translation id="4991056862642197104">Plasează documentul și dă clic pe Scanează ca să începi</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="520299634122159966">Nu sunt disponibile scanere</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
@@ -108,6 +109,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6048107060512778456">Nereușită – Blocaj de hârtie</translation>
+<translation id="6050189528197190982">Tonuri de gri</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
@@ -149,7 +151,9 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="871560550817059752">Nereușită – Cerneală epuizată</translation>
 <translation id="8723108084122415655">Rețeaua care nu este prestabilită depășește pragul de latență</translation>
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
+<translation id="8730621377337864115">Terminat</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8910721771319628100">Rețeaua prestabilită depășește pragul de latență</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>

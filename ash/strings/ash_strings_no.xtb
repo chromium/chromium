@@ -130,7 +130,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222338659135520253">Pålogging kreves</translation>
-<translation id="22546648640907338">Styreflatebevegelsen for å åpne Oversikt er endret. Sveip opp med tre fingre for å åpne Oversikt.</translation>
 <translation id="225680501294068881">Leter etter enheter ...</translation>
 <translation id="2268130516524549846">Bluetooth er deaktivert</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
@@ -148,7 +147,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
-<translation id="2361223922412143600">Styreflatebevegelsen for å lukke Oversikt er endret. Sveip ned med tre fingre for å lukke Oversikt.</translation>
 <translation id="2365393535144473978">Hvis du slår på mobildata, blir Bluetooth også slått på.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
@@ -177,7 +175,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Sikret</translation>
-<translation id="2640255526076764619">Styreflatebevegelsen for å bytte til forrige skrivebord er endret. Sveip til venstre med fire fingre for å bytte til forrige skrivebord.</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
@@ -396,7 +393,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
 <translation id="4705716602320768426">Send tilbakemelding</translation>
-<translation id="4710243778082831592">IME-innstillinger</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
@@ -527,7 +523,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6018164090099858612">Avslutter speilingsmodus</translation>
 <translation id="602001110135236999">Rull til venstre</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
-<translation id="6029337736376922061">Styreflatebevegelsen for å bytte til neste skrivebord er endret. Sveip til høyre med fire fingre for å bytte til neste skrivebord.</translation>
 <translation id="6030495522958826102">Menyen ble flyttet til nedre venstre hjørne av skjermen.</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>

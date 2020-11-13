@@ -17,7 +17,7 @@
 <translation id="1150565364351027703">Sólgleraugu</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalónskt</translation>
-<translation id="1169885125071442573">Umritun á Gujarati</translation>
+<translation id="1169885125071442573">Gujarati umrituð</translation>
 <translation id="1170149495446063094">Enska (bandarísk) með alþjóðlegu lyklaborði</translation>
 <translation id="1172970565351728681">Um <ph name="REMAINING_TIME" /> eftir</translation>
 <translation id="1173894706177603556">Endurnefna</translation>
@@ -46,7 +46,7 @@
 <translation id="1439494416798956626">Fært í <ph name="FOLDER_NAME" />.</translation>
 <translation id="1464724975715666883">1 villa.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
-<translation id="1472351751615457820">Umritun á grísku</translation>
+<translation id="1472351751615457820">Gríska umrituð</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ var ekki hlaðið. Ekki er nægt pláss á Google Drive.</translation>
 <translation id="148466539719134488">Svissneskt</translation>
 <translation id="1497522201463361063">Ekki tókst að breyta heiti „<ph name="FILE_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
@@ -92,7 +92,7 @@
 <translation id="2028997212275086731">RAR-skráasafn</translation>
 <translation id="2046702855113914483">Ramen-núðlur</translation>
 <translation id="2060251957438343874">Þýska (Þýskaland)</translation>
-<translation id="2066433303065022982">Umritun á hebresku</translation>
+<translation id="2066433303065022982">Hebreska umrituð</translation>
 <translation id="2070909990982335904">Heiti sem hefjast á punkti eru frátekin fyrir kerfið. Veldu annað heiti.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2084108471225856927">Stillingar tækis</translation>
@@ -118,7 +118,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> tiltæk</translation>
 <translation id="2425665904502185219">Heildarstærð skráar</translation>
 <translation id="2428749644083375155">Afritar <ph name="NUMBER_OF_ITEMS" /> atriði í <ph name="FOLDER_NAME" /></translation>
-<translation id="2445471348947930094">Gujarati-hljóðritunarlyklaborð</translation>
+<translation id="2445471348947930094">Gujarati hljóðrituð</translation>
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2453576648990281505">Skráin er þegar til</translation>
 <translation id="2464079411014186876">Ís</translation>
@@ -246,7 +246,7 @@
 <translation id="3958548648197196644">Loðber</translation>
 <translation id="3966388904776714213">Hljóðspilari</translation>
 <translation id="4002066346123236978">Heiti</translation>
-<translation id="4097397818890482665">Umritun á Kannada</translation>
+<translation id="4097397818890482665">Kannada umrituð</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
 <translation id="4158739975813877944">Opna spilunarlista</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> flutt.</translation>
@@ -300,7 +300,7 @@
 <translation id="4737050008115666127">Lending</translation>
 <translation id="4747271164117300400">Makedónska</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
-<translation id="4763055924467562718">Kannada hljóðritun</translation>
+<translation id="4763055924467562718">Kannada hljóðrituð</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-kynning</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -466,7 +466,7 @@
 <translation id="6394388407447716302">Skrifvarin</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> atriði</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
-<translation id="6412376911804527326">Laóskt</translation>
+<translation id="6412376911804527326">Laoska</translation>
 <translation id="642282551015776456">Ekki er hægt að nota þetta heiti sem skráar- eða möppuheiti</translation>
 <translation id="647955688546403164">Enska (bresk) með Dvorak-lyklaborði</translation>
 <translation id="6485131920355264772">Mistókst að sækja upplýsingar um pláss</translation>

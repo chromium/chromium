@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">साइट <ph name="SITE_NAME" /> थपियो</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
+<translation id="1415402041810619267">URL छोटो बनाइयो</translation>
 <translation id="1431402976894535801">साइटहरूलाई तपाईं कहिले यन्त्र प्रयोग गर्नुहुन्छ भन्ने कुरा थाहा पाउन नदिनुहोस्</translation>
 <translation id="1446450296470737166">MIDI यन्त्रहरूको पूर्ण नियन्त्रणलाई अनुमति दिनुहोस्</translation>
 <translation id="1509960214886564027">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4468959413250150279">निश्चित साइटको ध्वनि म्युट गर्नुहोस्।</translation>
 <translation id="4479647676395637221">साइटहरूलाई तपाईँको क्यामेरा प्रयोग गर्न अनुमति दिनुभन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
+<translation id="4505788138578415521">URL विस्तृत गरियो</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> लाई आफ्नो माइक्रोफोन प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई माइक्रोफोन पनि अन गर्नुहोस्।</translation>
 <translation id="4570913071927164677">विवरणहरू</translation>
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>

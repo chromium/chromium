@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
+<translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
 <translation id="1734367976349034509">Þessu tæki er stýrt af fyrirtæki</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> er stjórnað af <ph name="ENROLLMENT_DOMAIN" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="4034824040120875894">Prentari</translation>
+<translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4985509611418653372">Keyra</translation>
-<translation id="4991056862642197104">Komdu skjalinu fyrir og smelltu á „Skanna“ til að hefjast handa</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
 <translation id="520299634122159966">Engir skannar tiltækir</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
@@ -108,6 +109,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6048107060512778456">Mistókst – pappírsstífla</translation>
+<translation id="6050189528197190982">Grátónar</translation>
 <translation id="6058625436358447366">Sláðu inn gamla aðgangsorðið og það nýja til að ganga frá þessu</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6108689792487843350">Ekki næst í gátt</translation>
@@ -149,7 +151,9 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
 <translation id="8723108084122415655">Ósjálfgefið net yfir biðþröskuldi</translation>
 <translation id="8726019395068607495">Stöðvað – hlíf er opin</translation>
+<translation id="8730621377337864115">Lokið</translation>
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>

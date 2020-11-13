@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
+<translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
 <translation id="1734367976349034509">Tämä laite on yrityksen hallinnoima.</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4027485274696301677">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="ENROLLMENT_DOMAIN" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="4034824040120875894">Tulostin</translation>
+<translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4985509611418653372">Suorita</translation>
-<translation id="4991056862642197104">Aseta dokumentti kohdalleen ja paina Skannaa aloittaaksesi</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
 <translation id="520299634122159966">Skannereita ei saatavilla</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
@@ -108,6 +109,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6048107060512778456">Epäonnistui – Paperitukos</translation>
+<translation id="6050189528197190982">Harmaasävy</translation>
 <translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
@@ -149,7 +151,9 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
 <translation id="8723108084122415655">Muu kuin oletusverkko yli viiverajan</translation>
 <translation id="8726019395068607495">Pysähtynyt – Luukku auki</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Vahvista muutos</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>

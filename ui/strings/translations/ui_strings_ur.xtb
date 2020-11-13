@@ -100,6 +100,7 @@
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> فائل</translation>
 <translation id="3608915363409716668">‎<ph name="MAXIMUM_VALUE" />+‎</translation>
 <translation id="3618849550573277856">"<ph name="LOOKUP_STRING" />" دیکھیں</translation>
+<translation id="3622035490309591977">کلپ بورڈ کی سرگزشت</translation>
 <translation id="364720409959344976">اپ لوڈ کرنے کیلئے فولڈر منتخب کریں</translation>
 <translation id="3660179305079774227">اوپر تیر کا نشان</translation>
 <translation id="3670030362669914947">نمبر</translation>
@@ -152,6 +153,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{آج فعال تھا}=1{1 دن پہلے فعال تھا}other{# دن پہلے فعال تھا}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 دن اور }other{# دن اور }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">تصویر۔</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 سال میں}other{# سال میں}}</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 سیکنڈ باقی}other{# سیکنڈ باقی}}</translation>
@@ -192,6 +194,7 @@
 <translation id="6845533974506654842">دبائیں</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 گھنٹہ باقی}other{# گھنٹے باقی}}</translation>
 <translation id="688711909580084195">بلا عنوان ویب صفحہ</translation>
+<translation id="6902419395050653510">‏HTML مواد۔</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 سال باقی}other{# سال باقی}}</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>

@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222338659135520253">Изисква се вход в профила</translation>
-<translation id="22546648640907338">Жестът за активиране на режима „Общ преглед“ посредством сензорния панел е променен – прекарайте три пръста нагоре.</translation>
 <translation id="225680501294068881">Сканира се за устройства...</translation>
 <translation id="2268130516524549846">Bluetooth е деактивиран</translation>
 <translation id="2268813581635650749">Изход за всички</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">Настройки за писалката</translation>
 <translation id="2354174487190027830">„<ph name="NAME" />“ се активира</translation>
 <translation id="2359808026110333948">Напред</translation>
-<translation id="2361223922412143600">Жестът за изход от режима „Общ преглед“ посредством сензорния панел е променен – прекарайте три пръста надолу.</translation>
 <translation id="2365393535144473978">Активирането на мобилните данни ще включи Bluetooth.</translation>
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
 <translation id="2390318262976603432">Настройки на локала</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
 <translation id="2617342710774726426">SIM картата е заключена</translation>
 <translation id="2621713457727696555">защитена</translation>
-<translation id="2640255526076764619">Жестът за превключване към предишния работен кът посредством сензорния панел е променен. Прекарайте четири пръста наляво, за да превключите към предишния работен кът.</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2658778018866295321">Кликване и преместване с плъзгане</translation>
 <translation id="2700493154570097719">Задайте клавиатура</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4705716602320768426">Изпращане на отзиви</translation>
-<translation id="4710243778082831592">Настройки за редактора за метод на въвеждане</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">Излиза се от огледалния режим</translation>
 <translation id="602001110135236999">Превъртане наляво</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
-<translation id="6029337736376922061">Жестът за превключване към следващия работен кът посредством сензорния панел е променен. Прекарайте четири пръста надясно, за да превключите към следващия работен кът.</translation>
 <translation id="6030495522958826102">Менюто е преместено в долния ляв ъгъл на екрана.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6043212731627905357">Този монитор не се поддържа от вашия <ph name="DEVICE_TYPE" />.</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">Тази актуализация изисква Powerwash на устройството ви. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6945221475159498467">Избиране</translation>
+<translation id="6953890208095195458">Функцията „Запис на екрана“ бе спряна от администратора ви заради съдържанието, което се показва на екрана.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Първи стъпки</translation>
 <translation id="6981982820502123353">Достъпност</translation>

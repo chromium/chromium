@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1625959690469240009">您需要更新或重新安装 <ph name="BROWSER_NAME" />，才能打开网站设置</translation>
 <translation id="1700971771753530690">“<ph name="APP_NAME" />”需要使用以下应用：</translation>
 <translation id="2697679025356221813">“<ph name="APP_NAME" />”需要使用网络浏览器</translation>
 <translation id="3858759029325727987">选择一种支持此应用的浏览器：</translation>

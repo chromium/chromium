@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
 <translation id="1734367976349034509">Бул түзмөк ишкана тарабынан башкарылат</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="ENROLLMENT_DOMAIN" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
 <translation id="4238516577297848345">Аткарылып жаткан иш жок</translation>
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
-<translation id="4991056862642197104">Баштоо үчүн документиңизди коюп, "Скандоо" баскычын басыңыз</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> алыстан жөндөөлөрдү башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="520299634122159966">Жеткиликтүү сканерлер жок</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6048107060512778456">Басылып чыгарылган жок - Кагаз чайналып калды</translation>
+<translation id="6050189528197190982">Боз шкала</translation>
 <translation id="6058625436358447366">Бүтүрүү үчүн эски жана жаңы сырсөздөрүңүздү киргизиңиз</translation>
 <translation id="6106186594183574873">Бүтүрүү үчүн эски сырсөзүңүздү киргизиңиз</translation>
 <translation id="6108689792487843350">Шлюз жеткиликсиз</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Басылып чыгарылган жок - Сыя түгөнүп калды</translation>
 <translation id="8723108084122415655">Демейкиден башка тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8726019395068607495">Токтоду – Эшик ачык</translation>
+<translation id="8730621377337864115">Бүттү</translation>
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Демейки</translation>
 <translation id="8910721771319628100">Демейки тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>

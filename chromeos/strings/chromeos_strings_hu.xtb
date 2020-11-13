@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Indító</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
 <translation id="1734367976349034509">Az eszközt a vállalat felügyeli</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4027485274696301677">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
+<translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Futtatás</translation>
-<translation id="4991056862642197104">Helyezze be a dokumentumot, majd a kezdéshez kattintson a Scan (Beolvasás) gombra</translation>
 <translation id="5094480857972195099">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt a felhasználót, és távolról kezelheti a beállításokat, illetve figyelheti a felhasználói tevékenységeket.</translation>
 <translation id="520299634122159966">Nincsenek rendelkezésre álló szkennerek</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
@@ -108,6 +109,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6048107060512778456">Sikertelen – Papírelakadás</translation>
+<translation id="6050189528197190982">Szürkeárnyalat</translation>
 <translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
@@ -149,7 +151,9 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="871560550817059752">Sikertelen – Kifogyott a tinta</translation>
 <translation id="8723108084122415655">A nem alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8726019395068607495">Leállt – Nyitva van a nyomtató fedele</translation>
+<translation id="8730621377337864115">Kész</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8910721771319628100">Az alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>

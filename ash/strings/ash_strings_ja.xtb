@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222338659135520253">ログインしてください</translation>
-<translation id="22546648640907338">概要モードに切り替えるタッチパッド操作が変わりました。概要モードに切り替えるには、3 本の指で上にスワイプします。</translation>
 <translation id="225680501294068881">デバイスをスキャンしています...</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268813581635650749">すべてログアウト</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
 <translation id="2359808026110333948">続行</translation>
-<translation id="2361223922412143600">概要モードを終了するタッチパッド操作が変わりました。概要モードを終了するには、3 本の指で下にスワイプします。</translation>
 <translation id="2365393535144473978">モバイルデータ通信を有効にすると、Bluetooth も有効になります。</translation>
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2390318262976603432">言語 / 地域設定</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2621713457727696555">保護あり</translation>
-<translation id="2640255526076764619">前のデスクに切り替えるタッチパッド操作が変わりました。前のデスクに切り替えるには 4 本の指で左にスワイプします。</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
 <translation id="2700493154570097719">キーボードを設定</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4705716602320768426">フィードバックを送信</translation>
-<translation id="4710243778082831592">IME 設定</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
 <translation id="602001110135236999">左にスクロール</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
-<translation id="6029337736376922061">次のデスクに切り替えるタッチパッド操作が変わりました。次のデスクに切り替えるには 4 本の指で右にスワイプします。</translation>
 <translation id="6030495522958826102">メニューは画面左下に移動しました。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
@@ -618,6 +613,7 @@
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6953890208095195458">画面上のコンテンツに問題があるため、管理者によって画面の録画が停止されました。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>

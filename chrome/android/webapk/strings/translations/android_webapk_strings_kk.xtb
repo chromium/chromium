@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1625959690469240009">Сайт параметрлеріне өту үшін <ph name="BROWSER_NAME" /> браузерін жаңартыңыз не қайта орнатыңыз.</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> үшін келесі қолданбалар қажет:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> үшін веббраузер қажет</translation>
 <translation id="3858759029325727987">Осы қолданбаны қолдайтын браузерді таңдаңыз:</translation>

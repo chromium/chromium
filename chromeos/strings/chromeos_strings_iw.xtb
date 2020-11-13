@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1734367976349034509">המכשיר הזה מנוהל על ידי ארגון</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="ENROLLMENT_DOMAIN" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="4034824040120875894">מדפסת</translation>
+<translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4985509611418653372">הרצה</translation>
-<translation id="4991056862642197104">כדי להתחיל, יש למקם את המסמך וללחוץ על 'סריקה'</translation>
 <translation id="5094480857972195099">המשתמש הזה מנוהל על ידי <ph name="ENROLLMENT_DOMAIN" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="520299634122159966">אין סורקים זמינים</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
@@ -106,8 +107,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
-<translation id="6040143037577758943">סגור</translation>
+<translation id="6040143037577758943">סגירה</translation>
 <translation id="6048107060512778456">נכשלה – חסימת נייר</translation>
+<translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
+<translation id="8730621377337864115">בוצע</translation>
 <translation id="8747900814994928677">אישור השינוי</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>

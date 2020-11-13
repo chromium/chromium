@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Këtë muaj</translation>
 <translation id="1637811476055996098">Zgjidh skedarët</translation>
 <translation id="1650423536718072820">citim i theksuar</translation>
+<translation id="1681022320378710418">ora aktuale</translation>
 <translation id="1727886345390570319">fshih menynë e titrave</translation>
 <translation id="1729654308190250600">Fut një adresë mail-i jo boshe.</translation>
 <translation id="1758486001363313524">Tjetër...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Fut një URL.</translation>
 <translation id="3175736971608411871">kohëmatës</translation>
 <translation id="3199563858620722075">kutia e kombinuar</translation>
+<translation id="3220661731597678625">hapi aktual</translation>
 <translation id="3329013043687509092">Ngopje</translation>
 <translation id="3450233048674729344">Vlera duhet të jetë më e vogël ose e barabartë me <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">kërko</translation>
 <translation id="4812940957355064477">Fut një numër.</translation>
+<translation id="4912200001568447310">artikulli aktual</translation>
 <translation id="4912536737030637138">hyrje bibliografike</translation>
 <translation id="4915360478455618802">Shfaq zgjedhësin e datës</translation>
 <translation id="492244087561876220">koment</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Nuk mund të luajë media.</translation>
 <translation id="537648784377940524">Data minimale (<ph name="MIN_DATE_OR_TIME" />) duhet të jetë përpara datës maksimale (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">figura</translation>
+<translation id="5425179576310518467">data aktuale</translation>
 <translation id="5453733299334684579">artikull i pemës</translation>
 <translation id="5466621249238537318">Përzgjidh një ose më shumë skedarë.</translation>
 <translation id="5468998798572797635">dil nga ekrani i plotë</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">matës</translation>
 <translation id="6166809985690652833">pasthënie</translation>
 <translation id="6209276755895393898">Duket se është: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">faqja aktuale</translation>
 <translation id="6213469881011901533">fjalorth</translation>
 <translation id="6281588256137006900">Ndriçimi</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Zgjate këtë tekst në <ph name="MIN_CHARACTERS" /> karaktere ose më shumë (aktualisht po përdor 1 karakter).</translation>
 <translation id="7034405885550056553">sugjerim</translation>
 <translation id="709897737746224366">Përputhe me formatin e kërkuar.</translation>
+<translation id="7102274145889307184">vendndodhja aktuale</translation>
 <translation id="7118469954320184356">Nuk ka asnjë përshkrim.</translation>
 <translation id="7139483182332611405">parathënie</translation>
 <translation id="7214187073215825913">informacione për përmbajtjen</translation>

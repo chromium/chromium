@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1625959690469240009">Webgunearen ezarpenak irekitzeko, eguneratu edo instalatu berriro <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690">Aplikazio hau behar du <ph name="APP_NAME" /> aplikazioak:</translation>
 <translation id="2697679025356221813">Web-arakatzaile bat behar du <ph name="APP_NAME" /> aplikazioak</translation>
 <translation id="3858759029325727987">Aukeratu aplikazio honekin bateragarria den arakatzaile bat:</translation>

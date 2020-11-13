@@ -322,7 +322,7 @@
 <translation id="4905417359854579806">Broj fajlova spremnih za izradu sigurnosne kopije: <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Fiksni razmjer</translation>
 <translation id="4935975195727477204">Cvijet gazanije</translation>
-<translation id="4942961016321891903">malajalamski, fonetski</translation>
+<translation id="4942961016321891903">malajalamski fonetski</translation>
 <translation id="4943368462779413526">Nogomet</translation>
 <translation id="4961158930123534723">1 folder je podijeljen pomoću aplikacije Parallels Desktop</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -400,7 +400,7 @@
 <translation id="5551831234974556292">malteški</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
-<translation id="5623849870004487514">nepalski s fonetskom tipkovnicom</translation>
+<translation id="5623849870004487514">nepalski s fonetskom tastaturom</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5678784840044122290">Linux aplikacija će biti dostupna unutar vašeg Terminala, a može i prikazivati ikonu na vašem Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije moguće prekinuti vezu s arhivom ili virtuelnim diskom<ph name="END_BOLD" />
@@ -491,7 +491,7 @@
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6718273304615422081">Kreiranje zip fajla...</translation>
 <translation id="6751256176799620176">Odabran je 1 folder</translation>
-<translation id="6767296108234383966">malajalamski, transliteracija</translation>
+<translation id="6767296108234383966">Transliteracija za malajalamski</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Upravljajte Linux dijeljenjem</translation>
@@ -526,7 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalacija nije uspjela:</translation>
 <translation id="7040138676081995583">Otvori koristeći...</translation>
-<translation id="7096940708283911567">orijski</translation>
+<translation id="7096940708283911567">odija</translation>
 <translation id="7100897339030255923">Broj odabranih stavki: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Kupite dodatni prostor za pohranu...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
@@ -550,7 +550,7 @@
 <translation id="7489215562877293245">Broj pronađenih fajlova: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Spremno za izradu sigurnosne kopije na <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
-<translation id="7498032756958781551">nepalski s tipkovnicom InScript</translation>
+<translation id="7498032756958781551">nepalski s tastaturom s indijskim pismom</translation>
 <translation id="7505167922889582512">Prikaži skrivene fajlove</translation>
 <translation id="7508545000531937079">Prezentacija</translation>
 <translation id="751507702149411736">Bjeloruska</translation>

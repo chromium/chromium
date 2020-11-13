@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用盡</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
 <translation id="1734367976349034509">這個裝置受到企業管理</translation>
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4027485274696301677">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="ENROLLMENT_DOMAIN" /> 管理。系統管理員可以遠端設定這部裝置。</translation>
 <translation id="4034824040120875894">印表機</translation>
+<translation id="4131410914670010031">黑白</translation>
 <translation id="4227825898293920515">密碼將在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有任何進行中的列印工作</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">已停止 - 紙張用盡</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
-<translation id="4991056862642197104">放入你的文件，並按一下 [掃描] 即可開始掃描文件</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> 會管理這位使用者，而且可能會從遠端管理設定並監控使用者活動。</translation>
 <translation id="520299634122159966">沒有可用的掃描器</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
+<translation id="6050189528197190982">灰階</translation>
 <translation id="6058625436358447366">如要完成變更，請輸入你的舊密碼和新密碼</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
 <translation id="6108689792487843350">無法連上閘道</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8723108084122415655">非預設網路超過延遲門檻</translation>
 <translation id="8726019395068607495">已停止 - 蓋子處於開啟狀態</translation>
+<translation id="8730621377337864115">完成</translation>
 <translation id="8747900814994928677">確認變更</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8910721771319628100">預設網路超過延遲門檻</translation>
 <translation id="8919837981463578619">失敗 - 缺少紙匣</translation>

@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
 <translation id="1521774566618522728">Активно днес</translation>
+<translation id="1538801903729528855">Подобряване на работата с глас в мрежата</translation>
 <translation id="1543538514740974167">Стигайте дотук по-бързо</translation>
 <translation id="1544826120773021464">За да управлявате профила си в Google, докоснете бутона „Управление на профила“</translation>
 <translation id="1549000191223877751">Преместв. в другия прозорец</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
 <translation id="189358972401248634">Други езици</translation>
+<translation id="1918175104945982129">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на половината височина</translation>
 <translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
 <translation id="1922362554271624559">Предложени езици</translation>
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледане на следващия видеоклип</translation>
+<translation id="2074143993849053708">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е затворен</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизиране и персонализиране на всички устройства</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
@@ -279,6 +282,7 @@
 <translation id="3006881078666935414">Няма данни за използването</translation>
 <translation id="3016635187733453316">Уверете се, че това устройство е свързано с интернет</translation>
 <translation id="3029704984691124060">Пропуските не са идентични</translation>
+<translation id="3031225630520268969">Потребителски интерфейс за даване на съгласие за ползване на Асистент при гласови търсения</translation>
 <translation id="3034163383943672781">Изтеглянето ще стартира на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -300,7 +304,6 @@
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3211426585530211793">Изтрихте „<ph name="ITEM_TITLE" />“</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> непрочетени страници</translation>
 <translation id="321773570071367578">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome като ключ за сигурност</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
@@ -437,6 +440,7 @@
 <translation id="4248098802131000011">Защитете паролите си от нарушения на сигурността на данните и други подобни проблеми</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4256782883801055595">Лицензи за отворен код</translation>
+<translation id="4263656433980196874">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на пълната височина</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
 <translation id="4298388696830689168">Свързани сайтове</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +627,7 @@
 <translation id="5581519193887989363">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK1" />настройките<ph name="END_LINK1" />.</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="5599455543593328020">Режим „инкогнито“</translation>
+<translation id="5599941490345670218">Google Асистент може да извършва действия в уебсайтове вместо вас</translation>
 <translation id="5620163320393916465">Няма запазени пароли</translation>
 <translation id="5620928963363755975">Използвайте бутона „Още опции“, за да намерите файловете и страниците си в „Изтегляния“</translation>
 <translation id="5626134646977739690">Име:</translation>
@@ -635,7 +640,6 @@
 <translation id="5683547024293500885">Chrome не може да провери за актуализации</translation>
 <translation id="5686790454216892815">Името на файла е твърде дълго</translation>
 <translation id="5687809546194252819">След рестартиране за <ph name="APP_NAME" /> ще се използва <ph name="LANGUAGE" />.</translation>
-<translation id="5691211010013816086">В него има <ph name="READING_LIST_COUNT" /> страници</translation>
 <translation id="569536719314091526">Страницата може да бъде преведена на който и да е език чрез бутона за още опции</translation>
 <translation id="5696597120588531049">Chrome може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="5697688514913266141">Файлът ще бъде запазен в <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Редактиране<ph name="END_LINK2" />.</translation>
@@ -880,7 +884,6 @@
 <translation id="7274013316676448362">Блокиран сайт</translation>
 <translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>
-<translation id="7291387454912369099">Плащане с помощта на Асистент</translation>
 <translation id="7293171162284876153">За да стартирате синхронизирането, включете „Синхронизиране на данните ви в Chrome“.</translation>
 <translation id="7293429513719260019">Избор на език</translation>
 <translation id="729975465115245577">На устройството ви няма приложение за съхраняване на файла с паролите.</translation>
@@ -1148,6 +1151,7 @@
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9191031968346938109">Добавяне към…</translation>
+<translation id="919615279147764192">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата. Тази информация може да се съхранява в профила ви в Google. Имате възможност да изключите Асистент от настройките на Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9206873250291191720">А</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наяўнасць DNS-рэзолвера</translation>
 <translation id="1734367976349034509">Прылада знаходзіцца пад кіраваннем арганізацыі</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем дамена <ph name="ENROLLMENT_DOMAIN" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="4034824040120875894">Прынтар</translation>
+<translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Запусціць</translation>
-<translation id="4991056862642197104">Каб пачаць работу, палажыце дакумент у даступным месцы і націсніце "Адсканіраваць"</translation>
 <translation id="5094480857972195099">Дамен <ph name="ENROLLMENT_DOMAIN" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="520299634122159966">Няма даступных сканераў</translation>
 <translation id="5212543919916444558">Я не магу знайсці на экране нічога, з чым я мог бы вам дапамагчы.
@@ -108,6 +109,7 @@
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6048107060512778456">Збой: захрасла папера</translation>
+<translation id="6050189528197190982">Адценні шэрага</translation>
 <translation id="6058625436358447366">Каб закончыць, увядзіце стары і новы паролі</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
@@ -149,7 +151,9 @@
 <translation id="871560550817059752">Збой: скончылася чарніла</translation>
 <translation id="8723108084122415655">Затрымка ў нестандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8726019395068607495">Спынена: дзверцы прынтара адкрыты</translation>
+<translation id="8730621377337864115">Гатова</translation>
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>

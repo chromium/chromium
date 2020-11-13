@@ -573,13 +573,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="201557587962247231">Frequência de uploads de relatórios de status do dispositivo</translation>
 <translation id="2017301949684549118">URLs para apps da Web serem instalados silenciosamente.</translation>
 <translation id="2017459564744167827">Consulte <ph name="REFERENCE_URL" /> para ver mais informações sobre esquema e formatação.</translation>
-<translation id="2018836497795982119">Especifica o período em milissegundos em que o serviço de gerenciamento de dispositivos é consultado para o recebimento de informações sobre a política do usuário.
-
-      A definição dessa política modifica o valor padrão de três horas. Os valores válidos para essa política compreendem o período entre 1.800.000 (30 minutos) e 86.400.000 (1 dia). Todos os valores que não estiverem nesse período serão fixados no respectivo limite. Se a plataforma for compatível com as notificações sobre políticas, o atraso de atualização será definido para 24 horas, pois espera-se que as notificações sobre políticas forcem uma atualização automaticamente sempre que política for alterada.
-
-      Deixar a política sem definição fará o <ph name="PRODUCT_NAME" /> utilizar o valor padrão de três horas.
-
-      Se a plataforma for compatível com notificações sobre políticas, o atraso de atualização será configurado para 24 horas (ignorando todos os padrões e o valor da política), pois espera-se que as notificações sobre políticas forcem uma atualização automaticamente sempre que a política for alterada, tornando as atualizações mais frequentes desnecessárias.</translation>
 <translation id="2024476116966025075">Configurar o nome de domínio obrigatório para clientes de acesso remoto</translation>
 <translation id="2024821084720338323">Quando ativado, o recurso <ph name="PRODUCT_NAME" /> faz com que os timers JavaScript nas guias em segundo plano sejam agressivamente limitados e agrupados, sendo executados no máximo uma vez por minuto depois que uma página tiver ficado 5 minutos ou mais em segundo plano.
 
@@ -1006,29 +999,24 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você ativar ou desativar essa configuração, os usuários não poderão alterá-la ou substituí-la.
 
       Se esta política não for configurada, o recurso de proxy de compactação de dados estará disponível para que o usuário opte por usá-lo ou não.</translation>
-<translation id="2575738503503093841">Especifica o atraso máximo em milissegundos entre o recebimento da invalidação de uma política e a busca pela nova política no serviço de gerenciamento de dispositivos.
-
-      A definição dessa política modifica o valor padrão de 10.000 milissegundos. Os valores válidos para essa política variam entre 1.000 (um segundo) e 300.000 (cinco minutos). Quaisquer valores que não estejam nesse intervalo serão mantidos no limite correspondente.
-
-      Se a política não estiver definida, o <ph name="PRODUCT_NAME" /> usará o valor padrão de 10.000 milissegundos.</translation>
 <translation id="257788512393330403">A senha precisa ser digitada a cada seis horas</translation>
 <translation id="2587719089023392205">Definir o <ph name="PRODUCT_NAME" /> como meu navegador padrão</translation>
-<translation id="2588252329503406673">A definição da política permite definir como o <ph name="PRODUCT_OS_NAME" /> se comporta quando não há atividade do usuário por algum tempo enquanto a tela de login é exibida. A política controla várias configurações. Para semânticas individuais e intervalos de valor, veja as políticas correspondentes que controlam o gerenciamento de energia em uma sessão.
+<translation id="2588252329503406673">A definição da política permite definir como o <ph name="PRODUCT_OS_NAME" /> se comporta quando não há atividade do usuário por algum tempo enquanto a tela de login é exibida. A política controla várias configurações. Para semânticas individuais e intervalos de valores, veja as políticas correspondentes que controlam o gerenciamento de energia em uma sessão.
 
-      Os desvios dessas políticas são:
+      Os desvios dessas políticas são os seguintes:
 
       * As ações a serem tomadas em relação à inatividade e ao fechamento da tampa não podem ser para encerrar a sessão.
 
       * A ação padrão a ser tomada em relação à inatividade durante a execução com alimentação CA é o desligamento.
 
-      Se a política ou qualquer uma de suas configurações não forem definidas, haverá o uso de valores padrão para várias configurações de energia.</translation>
+      Se a política ou qualquer uma das configurações dela não forem definidas, haverá o uso de valores padrão para várias configurações de energia.</translation>
 <translation id="2592091433672667839">Duração da inatividade antes do protetor de tela ser mostrado na tela de login no modo de varejo</translation>
 <translation id="2592162121850992309">Se esta política for definida como verdadeira ou não for definida, a aceleração de hardware será ativada, a menos que um determinado recurso de GPU seja incluído na lista de proibições.
 
       Se a política for definida como falsa, a aceleração de hardware será desativada.</translation>
 <translation id="259289618675490104">Se a política for definida como "Todos" (valor 0) ou não for definida, os usuários poderão gerenciar certificados. Se a política for definida como "Nenhum" (valor 2), os usuários poderão apenas ver os certificados, não gerenciar.
 
-      Se a política for definida como "Somente usuário" (valor 1), os usuários poderão gerenciar certificados de usuários, mas não os certificados do dispositivo.</translation>
+      Se a política for definida como "Somente usuário" (valor 1), os usuários poderão gerenciar os próprios certificados, mas não os do dispositivo.</translation>
 <translation id="2593762551209145088">O "Navegação segura" nunca está ativado.</translation>
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
 <translation id="2604182581880595781">Configurar políticas relacionadas ao Compartilhamento de arquivos de rede.</translation>
@@ -1096,7 +1084,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
-<translation id="2723692978495226412">Se a política for definida como "Ativada", haverá recomendações para apps instalados anteriormente pelo usuário ou em outros dispositivos. Se nenhuma pesquisa de texto tiver sido inserida, essas recomendações aparecerão no acesso rápido depois das recomendações de apps locais.
+<translation id="2723692978495226412">Se a política for definida como "Ativada", haverá recomendações para apps instalados anteriormente pelo usuário ou em outros dispositivos. Se nenhum texto de pesquisa tiver sido inserido, essas recomendações aparecerão no acesso rápido depois das recomendações de apps locais.
 
       Se a política for definida como "Desativada" ou não for definida, essas recomendações não serão exibidas.
 
@@ -1153,9 +1141,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2787774054174244402">Definir a política como verdadeira evita que os usuários gravem em dispositivos de armazenamento externo.
 
       A não ser que o armazenamento externo seja bloqueado, se você definir a política ExternalStorageReadOnly como falsa ou deixá-la sem definição, os usuários poderão criar e modificar arquivos de dispositivos de armazenamento externo fisicamente graváveis. É possível bloquear o armazenamento externo definindo a ExternalStorageDisable como verdadeira.</translation>
-<translation id="2791750069439339908">Se <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> personalizará quando a bateria para de carregar. Isso é baseado na porcentagem de carga da bateria. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> precisa ficar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Se a política não for definida, o modo de carregamento da bateria <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> será aplicado.</translation>
 <translation id="2796714419743648316">Lista de permissões com limites de tempo por app</translation>
 <translation id="2796896367838042659">Esta política especifica quais aplicativos e URLs precisam ser colocados na lista de permissões para restrições de uso por app.
         A lista de permissões configurada pode ser aplicada aos apps instalados no <ph name="PRODUCT_OS_NAME" /> para um determinado usuário com limite de tempo por app.
@@ -1653,10 +1638,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="348495353354674884">Ativar teclado virtual</translation>
-<translation id="3487623755010328395">
-        Se esta política for configurada, <ph name="PRODUCT_NAME" /> tentará se registrar e aplicar a política de nuvem associada a todos os perfis.
-
-        O valor desta política é um token de inscrição que pode ser recuperado no Google Admin console.</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -1768,12 +1749,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se a política for definida como "Desativada", a inicialização em CA ficará desativada.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a inicialização em CA ficará desativada e os usuários não poderão ativá-la.</translation>
-<translation id="3660510274595679517">
-        Se esta política for definida como verdadeira, a inscrição no gerenciamento em nuvem será obrigatória e bloqueará o processo de inicialização do Chrome em caso de falha.
-
-        Se esta política não for definida ou for definida como falsa, a inscrição no gerenciamento em nuvem será opcional e não bloqueará o processo de inicialização do Chrome em caso de falha.
-
-        Esta política é usada na inscrição no gerenciamento em nuvem do escopo da máquina no computador desktop e pode ser definida por registro ou GPO no Windows, por plist no Mac e por arquivo de política JSON no Linux.</translation>
 <translation id="3660562134618097814">Transferir cookies do IDP de SAML durante o login</translation>
 <translation id="3691155504326059225">Se a política for definida como "Ativada", a página Nova guia será a página inicial do usuário. Qualquer local de URL de página inicial será ignorado. Se a política for definida como "Desativada", a página Nova guia não será a página inicial, a não ser que o URL dela seja definido como chrome://newtab.
 
@@ -1879,7 +1854,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se esta política não for definida, ou for definida como falso, o <ph name="PRODUCT_NAME" /> seguirá a programação de suspensão de uso publicamente anunciada.
 
       Acesse https://g.co/chrome/symantecpkicerts para ver mais detalhes sobre esta suspensão de uso.</translation>
-<translation id="3831836327853123066">A definição da política limita o tempo de atividade do dispositivo ao programar reinicializações automáticas, que podem ser atrasadas por até 24 horas se um usuário estiver no dispositivo. O valor da política precisa ser especificado em segundos. Os valores são ajustados para pelo menos 3.600 (uma hora).
+<translation id="3831836327853123066">A definição da política limita o tempo de atividade do dispositivo ao programar reinicializações automáticas, que poderão ser atrasadas por até 24 horas se um usuário estiver no dispositivo. O valor da política precisa ser especificado em segundos. Os valores são ajustados para pelo menos 3.600 (uma hora).
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, o tempo de atividade do dispositivo não será limitado.
 
@@ -2028,9 +2003,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se esta política for definida como falsa, o <ph name="PRODUCT_OS_NAME" /> não mostrará os usuários existentes na tela de login. A tela de login normal (que solicita o e-mail e a senha ou o número de telefone do usuário) ou a tela intersticial SAML (se tiver sido ativada por meio da política <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) será mostrada, a menos que uma sessão gerenciada tenha sido configurada. Se uma sessão gerenciada tiver sido configurada, apenas as contas da sessão gerenciada serão mostradas, permitindo escolher uma delas.
 
       Observe que esta política não afeta a retenção ou descarte dos dados do usuário local do dispositivo.</translation>
-<translation id="4009527123617846557">Se <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> personalizará quando o carregamento da bateria é iniciado. Isso é baseada na porcentagem de esgotamento da carga da bateria. O valor precisa estar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Se a política não for definida, o modo padrão de carregamento da bateria será aplicado.</translation>
 <translation id="4010738624545340900">Permitir a chamada de caixas de diálogo de seleção de arquivos</translation>
 <translation id="401260868452018796">Posicionar a estante na parte inferior da tela</translation>
 <translation id="4012737788880122133">Desativa as atualizações automáticas quando configurada como true.
@@ -2564,7 +2536,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não permitirá a criação de novos perfis no gerenciador de usuários.</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
-<translation id="4978405676361550165">Se a política "OffHours" for definida, as políticas do dispositivo especificadas serão ignoradas (use as configurações padrão dessas políticas) durante os intervalos de tempo definidos. As políticas do dispositivo são reaplicadas pelo Chrome em todos os eventos quando o período "OffHours" começa ou termina. O usuário será notificado e forçado a se desconectar quando o período "OffHours" terminar e as configurações de política do dispositivo forem alteradas (por exemplo, quando o usuário estiver conectado com uma conta que não seja permitida).</translation>
 <translation id="4980635395568992380">Tipo do dado:</translation>
 <translation id="4983201894483989687">Permitir a execução de plug-ins que estão desatualizados</translation>
 <translation id="4986560318567565414">Caminho para mudar do navegador alternativo para o Chrome.</translation>
@@ -2983,13 +2954,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Esta política não se aplica a trocas de canais.</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
-<translation id="5529037166721644841">Especifica o período em milissegundos em que o serviço de gerenciamento de dispositivos é consultado para o recebimento de informações sobre a política do dispositivo.
-
-      A definição dessa política modifica o valor padrão de três horas. Os valores válidos para essa política compreendem o período entre 1.800.000 (30 minutos) e 86.400.000 (1 dia). Todos os valores que não estão nesse período serão fixados no respectivo limite.
-
-      Deixar a política sem definição fará o <ph name="PRODUCT_OS_NAME" /> utilizar o valor padrão de três horas.
-
-      Se a plataforma for compatível com notificações sobre políticas, o atraso de atualização será configurado para 24 horas (ignorando todos os padrões e o valor da política), pois espera-se que as notificações sobre políticas forcem uma atualização automaticamente sempre que a política for alterada, tornando as atualizações mais frequentes desnecessárias.</translation>
 <translation id="5530347722229944744">Bloquear downloads potencialmente perigosos</translation>
 <translation id="5535973522252703021">Lista branca do servidor de delegação Kerberos</translation>
 <translation id="5540753481451194959">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.
@@ -3269,12 +3233,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5897913798715600338">Carregar a bateria usando tecnologia de carregamento rápido.</translation>
 <translation id="5898486742390981550">Quando vários usuários estão conectados, somente o usuário principal pode usar os apps Android.</translation>
 <translation id="5901427587865226597">Apenas impressão duplex</translation>
-<translation id="5903898512448364160">
-      Se a política for definida como verdadeira, a política da nuvem terá precedência caso haja conflito com a da plataforma.
-      Se a política for definida como falsa ou não for configurada, a política da plataforma terá precedência caso haja conflito com a da nuvem.
-
-      Esta política só está disponível como uma política da plataforma de máquina obrigatória e só afeta políticas da nuvem do escopo de máquina.
-      </translation>
 <translation id="5905473632148429217">Ativar verificações OCSP/CRL on-line</translation>
 <translation id="5907283448020542268">A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> ativará os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização continuarão desativados durante a configuração.
 
@@ -3343,7 +3301,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       </translation>
 <translation id="6058879286588763839">A menos que <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> seja especificada, o que substitui <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> especifica a política de gerenciamento de energia para o modo de carregamento da bateria, se compatível com o dispositivo. Para prolongar a duração da bateria, a política controla de maneira dinâmica o carregamento da bateria minimizando o estresse e o desgaste.
 
-      Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuário não poderão mudá-lo.
+      Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuários não poderão mudá-lo.
 
       Observação: se o modo personalizado de carregamento da bateria for selecionado, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> precisarão ser especificadas.</translation>
 <translation id="6066761914755798079">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará o URL do mecanismo que fornecerá sugestões de pesquisa. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
@@ -3462,13 +3420,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Essa opção deixa os usuários vulneráveis a riscos de segurança relacionados à execução do subsistema de áudio fora do sandbox.
       Se esta política não for definida, a configuração padrão do sandbox de áudio será usada, o que pode variar de acordo com a plataforma.
       Com esta política, as empresas que usam configurações de software de segurança que afetam o sandbox têm a flexibilidade de desativar o sandbox de áudio.</translation>
-<translation id="6255387031094435995">Permite que as políticas selecionadas sejam mescladas quando vierem de fontes diferentes, com o mesmo escopo e nível.
-
-        Se uma política estiver na lista, caso haja conflito entre duas fontes, considerando que elas tenham o mesmo escopo e nível, os valores serão mesclados em uma nova lista de políticas.
-
-        Se uma política estiver na lista, caso haja conflito entre duas fontes e também entre escopos e/ou níveis diferentes, a política com a maior prioridade será aplicada.
-
-        Se uma política não estiver na lista, caso haja algum conflito entre as fontes, escopos e/ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="6261643884958898336">Reportar informações de identificação da máquina</translation>
 <translation id="6265892395051519509">Permite acesso a sensores nesses sites</translation>
 <translation id="6273015149273504999">
@@ -3604,7 +3555,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="6467613372414922590">Permitir hosts de mensagens nativas no nível do usuário (instalados sem permissão do administrador)</translation>
 <translation id="6473623140202114570">Configure a lista de domínios em que a política Navegação segura não acionará avisos.</translation>
 <translation id="647698599569353771">Permitir a ativação do recurso "Compartilhar por proximidade"</translation>
-<translation id="6478261301433199402">A definição da política especifica a imagem do <ph name="PLUGIN_VM_NAME" /> para um usuário. Especificar essa política como uma string de formato JSON, com uma mensagem <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> informando onde fazer o download da imagem e <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> como um hash SHA-256 usado para verificar a integridade do download.</translation>
+<translation id="6478261301433199402">A definição da política especifica a imagem do <ph name="PLUGIN_VM_NAME" /> para um usuário. Especifique essa política como uma string de formato JSON, com um <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> informando onde fazer o download da imagem e <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> como um hash SHA-256 usado para verificar a integridade do download.</translation>
 <translation id="6485813825811798133">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
 
       Se a política não tiver definição, a <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
@@ -3890,7 +3841,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       A desativação da política faz com que uma mensagem de erro seja exibida.</translation>
 <translation id="6821268164692776674">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive"</translation>
-<translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MiB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
+<translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
 <translation id="682408981080798691">Se a política for definida como "Ativada" ou não for definida, a integridade do código renderizador será ativada.
 
       Se a política for definida como "Desativada", a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, uma vez que códigos desconhecidos e potencialmente hostis poderão ser carregados nos processos de renderização do <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos de renderizador do <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
@@ -4226,15 +4177,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
-<translation id="7222749588229362483">Permite que as políticas selecionadas sejam mescladas quando vierem de fontes diferentes, com o mesmo escopo e nível.
-
-        Essa ação consiste em mesclar as chaves de primeiro nível do dicionário de cada fonte. Caso haja conflito entre as chaves, a chave da fonte com a maior prioridade será aplicada.
-
-        Se uma política estiver na lista, caso haja conflito entre duas fontes, considerando que elas tenham o mesmo escopo e nível, os valores serão mesclados em um novo dicionário de políticas.
-
-        Se uma política estiver na lista, caso haja conflito entre duas fontes e também entre escopos e/ou níveis diferentes, a política com a maior prioridade será aplicada.
-
-        Se uma política não estiver na lista, caso haja algum conflito entre as fontes, escopos e/ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="7229975860249300121">Contém uma expressão regular que é usada para determinar quais Contas do Google podem ser definidas como contas principais do navegador no <ph name="PRODUCT_NAME" /> (isto é, a conta escolhida durante o fluxo de ativação de sincronização).
 
       Se o usuário tentar configurar uma conta principal com um nome de usuário que não corresponde a esse padrão, o erro correspondente será exibido.
@@ -4608,9 +4550,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 
       Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
-<translation id="7724592140967451156">Se a política for definida como verdadeira, os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como falsa, os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
-
-      Se ela não for definida, os cookies de terceiros serão ativados, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="7731026922044991970">Reverter para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies em todos os sites</translation>
 <translation id="7732907212083471072">Políticas removidas</translation>
 <translation id="77379430721695807">Se a política for definida, você especificará a lista de URLs cujos padrões devem corresponder à origem de segurança do URL solicitante. Quando houver correspondência de padrão, o acesso a dispositivos de captura de vídeo será permitido sem o envio de uma solicitação ao usuário.
@@ -4671,7 +4610,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Esta política está obsoleta. Use a <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
       </translation>
 <translation id="782661371433719637">Não permitir que nenhum site solicite acesso de leitura de arquivos e diretórios pela API File System</translation>
-<translation id="7839180815400079700">Se <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> estiver "Ativada", a configuração de <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> definirá a configuração do dia para a economia de energia no período de pico.
+<translation id="7839180815400079700">Se <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> estiver "Ativada", a definição de <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> determinará a configuração do dia para a economia de energia no período de pico.
 
       Se a política não for definida, a economia de energia no período de pico ficará desativada.
 
@@ -4773,11 +4712,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8006219716745491366">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> especificará uma lista de URLs alternativos para extrair termos de pesquisa do mecanismo. Os URLs precisam incluir a string <ph name="SEARCH_TERM_MARKER" />.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> não for definida, nenhum URL alternativo será usado para extrair termos de pesquisa.</translation>
-<translation id="8009554972280451023">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outras, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
-
-      Se essa política for desativada ou não for configurada, apenas os perfis locais normais serão usados.
-
-      A política <ph name="SYNC_DISABLED_POLICY_NAME" /> desativa a sincronização de todos os dados por meio da substituição da política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8011935490612940798">Controlar o recurso de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
 <translation id="8027265928215448940">Lista de configurações para os serviços de conectores do Chrome Enterprise que serão aplicadas ao conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, que é acionado quando o download de um arquivo é feito no Chrome.
@@ -5420,15 +5354,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8947415621777543415">Informar a localização do dispositivo</translation>
 <translation id="8948062138228904066">Lista de permissões do servidor de autenticação</translation>
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
-<translation id="8952317565138994125">Desativa a sincronização de dados no <ph name="PRODUCT_NAME" /> usando os serviços de sincronização hospedados no Google e impede que os usuários alterem esta configuração.
-
-      Se você ativar esta configuração, os usuários não poderão alterá-la ou modificá-la no <ph name="PRODUCT_NAME" />.
-
-      Se esta política não for configurada, o usuário poderá escolher se deseja usa o Google Sync ou não.
-
-      Para desativar completamente o Google Sync, recomendamos que você desative o serviço do Google Sync no Google Admin Console.
-
-      Esta política não deve ser ativada quando a política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver definida como ativada porque esse recurso usa a mesma funcionalidade do lado do cliente. Nesse caso, a sincronização hospedada pelo Google é completamente desativada.</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8959992920425111821">Configuração padrão</translation>
 <translation id="8970205333161758602">Remover a solicitação de recusa do <ph name="PRODUCT_FRAME_NAME" /></translation>

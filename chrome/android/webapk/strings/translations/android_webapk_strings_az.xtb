@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1625959690469240009">Sayt ayarlarını açmaq üçün <ph name="BROWSER_NAME" /> brauzerini güncəlləyin və ya quraşdırın</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> aşağıdakı tətbiqi tələb edir:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> veb brauzer tələb edir</translation>
 <translation id="3858759029325727987">Bu tətbiqi dəstəkləyən brauzer seçin:</translation>

@@ -130,7 +130,6 @@
 <translation id="2208323208084708176">ერთიანი დესკტოპის რეჟიმი</translation>
 <translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
 <translation id="2222338659135520253">აუცილებელია სისტემაში შესვლა</translation>
-<translation id="22546648640907338">მიმოხილვაზე გადასვლის ჟესტი შეიცვალა სენსორულ პანელზე. მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით.</translation>
 <translation id="225680501294068881">სკანირება მოწყობილობებისთვის…</translation>
 <translation id="2268130516524549846">Bluetooth გათიშულია</translation>
 <translation id="2268813581635650749">ყველას გამოსვლა</translation>
@@ -148,7 +147,6 @@
 <translation id="2352467521400612932">სტილუსის პარამეტრები</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ის გააქტიურება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
-<translation id="2361223922412143600">მიმოხილვიდან გასვლის ჟესტი შეიცვალა სენსორულ პანელზე. მიმოხილვიდან გასასვლელად გადაფურცლეთ ქვემოთ სამი თითით.</translation>
 <translation id="2365393535144473978">მობილური ინტერნეტის ჩართვის შემთხვევაში, ჩაირთვება Bluetooth.</translation>
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2390318262976603432">ლოკალის პარამეტრები</translation>
@@ -177,7 +175,6 @@
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2621713457727696555">დაცული</translation>
-<translation id="2640255526076764619">სენსორული პანელიდან წინა სამუშაო მაგიდაზე გადართვის ჟესტი შეიცვალა. წინა სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარცხნივ ოთხი თითით.</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2658778018866295321">დაწკაპუნება და ჩავლებით გადატანა</translation>
 <translation id="2700493154570097719">დააყენეთ კლავიატურა</translation>
@@ -396,7 +393,6 @@
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4705716602320768426">გამოხმაურება</translation>
-<translation id="4710243778082831592">IME პარამეტრები</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
@@ -527,7 +523,6 @@
 <translation id="6018164090099858612">მიმდინარეობს სარკის რეჟიმიდან გამოსვლა</translation>
 <translation id="602001110135236999">გადაადგილება მარცხნივ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
-<translation id="6029337736376922061">სენსორული პანელიდან შემდეგ სამუშაო მაგიდაზე გადართვის ჟესტი შეიცვალა. შემდეგ სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარჯვნივ ოთხი თითით.</translation>
 <translation id="6030495522958826102">მენიუ გადატანილია ეკრანის ქვედა მარცხენა კუთხეში.</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6043212731627905357">ეს მონიტორი თქვენს <ph name="DEVICE_TYPE" />-თან თავსებადი არ არის (მონიტორი მხარდაუჭერელია).</translation>

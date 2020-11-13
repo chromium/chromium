@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">Paruošta kurti atsargines kopijas: <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Pataisyta</translation>
 <translation id="4935975195727477204">Gėlė</translation>
+<translation id="4942961016321891903">Malajalių k. fonetinė</translation>
 <translation id="4943368462779413526">Futbolas</translation>
 <translation id="4961158930123534723">Vienas aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4969785127455456148">Albumas</translation>
@@ -396,8 +397,10 @@
 <translation id="5524517123096967210">Nepavyko nuskaityti failo.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> vaizdas</translation>
 <translation id="5534520101572674276">Apskaičiuojamas dydis</translation>
+<translation id="5551831234974556292">Maltiečių k.</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5605830556594064952">JAV Dvorako</translation>
+<translation id="5623849870004487514">Nepaliečių k. su fonetine klaviatūra</translation>
 <translation id="5649768706273821470">Klausyti</translation>
 <translation id="5678784840044122290">„Linux“ programa pasiekiama jūsų terminale ir piktograma taip pat gali būti rodoma Paleidimo priemonėje.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Negalima atsijungti nuo archyvo ar virtualiojo disko<ph name="END_BOLD" />
@@ -427,6 +430,7 @@
 <translation id="5912396950572065471">Formatas</translation>
 <translation id="5913638992615760742">Nepavyko įvykdyti kopijavimo operacijos; nenumatyta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Maratų k.</translation>
 <translation id="5955954492236143329">Elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
@@ -487,6 +491,7 @@
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6718273304615422081">Glaudinama...</translation>
 <translation id="6751256176799620176">Pasirinktas 1 aplankas</translation>
+<translation id="6767296108234383966">Malajalių k. transliteracija</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Tvarkyti „Linux“ bendrinimą</translation>
@@ -521,6 +526,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Nepavyko įdiegti.</translation>
 <translation id="7040138676081995583">Atidaryti naudojant...</translation>
+<translation id="7096940708283911567">Orijų k.</translation>
 <translation id="7100897339030255923">Pasirinkta elementų: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Įsigyti daugiau atminties...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;ieškoti Diske&lt;/em&gt;</translation>
@@ -544,6 +550,7 @@
 <translation id="7489215562877293245">Rasta: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Paruošta kurti atsarginę kopiją <ph name="BEGIN_LINK" />„Google“ diske<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Nepaliečių k. su „InScript“ klaviatūra</translation>
 <translation id="7505167922889582512">Rodyti paslėptus failus</translation>
 <translation id="7508545000531937079">Skaidrių demonstracija</translation>
 <translation id="751507702149411736">Baltarusių</translation>

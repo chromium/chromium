@@ -130,7 +130,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222338659135520253">Nepieciešama pierakstīšanās</translation>
-<translation id="22546648640907338">Ir mainīts skārienpaliktņa žests, ar kuru var atvērt pārskatu. Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup.</translation>
 <translation id="225680501294068881">Notiek ierīču meklēšana...</translation>
 <translation id="2268130516524549846">Bluetooth atspējots</translation>
 <translation id="2268813581635650749">Izrakstīt visus</translation>
@@ -148,7 +147,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2352467521400612932">Skārienekrāna pildspalvas iestatījumi</translation>
 <translation id="2354174487190027830">Notiek <ph name="NAME" /> aktivizēšana.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
-<translation id="2361223922412143600">Ir mainīts skārienpaliktņa žests, ar kuru var aizvērt pārskatu. Lai aizvērtu pārskatu, ar trim pirkstiem velciet lejup.</translation>
 <translation id="2365393535144473978">Iespējojot mobilos datus, tiks iespējots Bluetooth.</translation>
 <translation id="2369165858548251131">“Sveiki!” ķīniešu valodā</translation>
 <translation id="2390318262976603432">Lokalizācijas iestatījumi</translation>
@@ -177,7 +175,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2617342710774726426">SIM karte ir bloķēta.</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
-<translation id="2640255526076764619">Skārienpaliktņa žests, ar ko var pārslēgties uz iepriekšējo darbvietu, ir mainīts. Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi.</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2658778018866295321">Noklikšķiniet un velciet</translation>
 <translation id="2700493154570097719">Iestatiet savu tastatūru</translation>
@@ -396,7 +393,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
 <translation id="4705716602320768426">Iesniegt atsauksmi</translation>
-<translation id="4710243778082831592">IME iestatījumi</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
@@ -527,7 +523,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6018164090099858612">Notiek iziešana no spoguļošanas režīma</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
-<translation id="6029337736376922061">Skārienpaliktņa žests, ar ko var pārslēgties uz nākamo darbvietu, ir mainīts. Lai pārslēgtos uz nākamo darbvietu, ar četriem pirkstiem velciet pa labi.</translation>
 <translation id="6030495522958826102">Izvēlne pārvietota uz ekrāna apakšējo labo malu.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6043212731627905357">Šis monitors nav saderīgs ar jūsu ierīci <ph name="DEVICE_TYPE" /> (monitors netiek atbalstīts).</translation>
@@ -618,6 +613,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6910714959251846841">Lai atjauninātu sistēmu, ierīcē jāizmanto funkcija Powerwash. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
+<translation id="6953890208095195458">Jūsu administrators apturēja ekrāna ierakstīšanu jūsu ekrānā redzamā satura dēļ.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6972754398087986839">Sākt darbu</translation>
 <translation id="6981982820502123353">Pieejamība</translation>

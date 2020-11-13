@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1734367976349034509">Aquest dispositiu està gestionat per una empresa</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4027485274696301677">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="ENROLLMENT_DOMAIN" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executa</translation>
-<translation id="4991056862642197104">Col·loca el document i fes clic a Escaneja per començar</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
@@ -108,6 +109,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
+<translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
@@ -149,7 +151,9 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
+<translation id="8730621377337864115">Fet</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
