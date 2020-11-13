@@ -10991,6 +10991,28 @@ Please help our engineers fix this problem. Tell us what happened right before y
                translateable="false">
         https://support.google.com/chrome/?p=mac_ARM
       </message>
+
+      <!-- The Rosetta is required infobar -->
+      <message name="IDS_ROSETTA_REQUIRED_INFOBAR_TEXT"
+               desc="The infobar text when installation of Rosetta is required">
+        To play protected media on this page, you need to install Rosetta.
+      </message>
+      <message name="IDS_ROSETTA_REQUIRED_INFOBAR_LINK_TEXT"
+               desc="The learn more text when installation of Rosetta is required.">
+        Learn more
+      </message>
+      <message name="IDS_ROSETTA_REQUIRED_INFOBAR_BUTTON_TEXT"
+               desc="The button text when installation of Rosetta is required.">
+        Install Rosetta
+      </message>
+      <message name="IDS_ROSETTA_INSTALL_RESTART_DIALOG_NOW"
+                 desc="The 'restart now' button in the dialog once Rosetta is installed.">
+        Restart Now
+      </message>
+      <message name="IDS_ROSETTA_INSTALL_RESTART_DIALOG_LATER"
+                 desc="The 'restart later' button in the dialog once Rosetta is installed.">
+        Restart Later
+      </message>
     </if>
 
     <message name="IDS_NAME_WINDOW_PROMPT_TITLE"

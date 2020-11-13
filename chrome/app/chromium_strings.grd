@@ -1179,6 +1179,22 @@ Chromium is unable to recover your settings.
           Ask when I open Chromium
         </message>
       </if>
+
+      <!-- Rosetta installation for protected media -->
+      <if expr="is_macosx">
+        <message name="IDS_ROSETTA_INSTALL_TITLE"
+                   desc="Title of the 'do you want to install Rosetta' dialog. Used when there is a page title.">
+          To enable Chromium to play protected media, you need to install Rosetta. Do you want to install it now?
+        </message>
+        <message name="IDS_ROSETTA_INSTALL_BODY"
+                   desc="Body text of the 'do you want to install Rosetta' dialog.">
+          Rosetta enables Chromium to play the protected media on this page.
+        </message>
+        <message name="IDS_ROSETTA_INSTALL_RESTART_DIALOG"
+                   desc="Title text of the dialog once Rosetta is installed.">
+          To use Rosetta to play protected media, you must restart Chromium.
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

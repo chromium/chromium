@@ -36912,6 +36912,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="98" label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
   <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
+  <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">

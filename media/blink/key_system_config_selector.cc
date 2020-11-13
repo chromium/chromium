@@ -911,13 +911,12 @@ void KeySystemConfigSelector::SelectConfig(
   std::string key_system_ascii = key_system.Ascii();
   if (!key_systems_->IsSupportedKeySystem(key_system_ascii)) {
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-    // CDM support on Mac ARM is known not ready yet. We only notify once per
-    // render process.
-    static bool s_has_notified_unsupported_platform = false;
-    if (!s_has_notified_unsupported_platform) {
-      s_has_notified_unsupported_platform = true;
-      media_permission_->NotifyUnsupportedPlatform();
-    }
+    // CDM support on Mac ARM is known not ready yet, so Chrome uses an
+    // architecture translation of the CDM on that platform. If the CDM isn't a
+    // supported key system, then it might be due to the fact the translation
+    // system isn't yet installed. Notify the browser process so that it can
+    // offer installation of the translation system to the user.
+    media_permission_->NotifyUnsupportedPlatform();
     std::move(cb).Run(Status::kUnsupportedPlatform, nullptr, nullptr);
 #else
     std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
