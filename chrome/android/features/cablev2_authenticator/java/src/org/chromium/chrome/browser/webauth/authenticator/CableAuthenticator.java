@@ -440,9 +440,9 @@ class CableAuthenticator {
      * @param value contents of the QR code, which will be a valid caBLE
      *              URL, i.e. "fido://"...
      */
-    void onQRCode(String value) {
+    void onQRCode(String value, boolean link) {
         assert mTaskRunner.belongsToCurrentThread();
-        CableAuthenticatorJni.get().startQR(this, getName(), value);
+        CableAuthenticatorJni.get().startQR(this, getName(), value, link);
         // TODO: show the user an error if that returned false.
         // that indicates that the QR code was invalid.
     }
@@ -558,8 +558,8 @@ class CableAuthenticator {
          * should be human-meaningful. The qrUrl must be a caBLE URL, i.e. starting with
          * "fido://c1/"
          */
-        boolean startQR(
-                CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl);
+        boolean startQR(CableAuthenticator cableAuthenticator, String authenticatorName,
+                String qrUrl, boolean link);
 
         /**
          * unlink causes the root secret to be rotated and the FCM token to be rotated. This

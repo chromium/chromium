@@ -12,6 +12,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import androidx.fragment.app.DialogFragment;
 
@@ -42,10 +43,11 @@ class QRScanDialog extends DialogFragment implements Camera.PreviewCallback {
      * Receives a single call containing the decoded QR value. It will
      * begin with FIDO_QR_PREFIX.
      */
-    public static interface Callback { void onQRCode(String value); }
+    public static interface Callback { void onQRCode(String value, boolean link); }
 
     private final Callback mCallback;
     private BarcodeDetector mQRScanner;
+    private CheckBox mLinkCheckbox;
     private CameraView mCameraView;
     private ByteBuffer mBuffer;
     private boolean mDismissed;
@@ -62,6 +64,8 @@ class QRScanDialog extends DialogFragment implements Camera.PreviewCallback {
         mCameraView = v.findViewById(R.id.camera_view);
         mCameraView.setCallback(this);
         mCameraView.setDisplay(getActivity().getWindowManager().getDefaultDisplay());
+
+        mLinkCheckbox = v.findViewById(R.id.link_checkbox);
         return v;
     }
 
@@ -126,7 +130,7 @@ class QRScanDialog extends DialogFragment implements Camera.PreviewCallback {
         for (int i = 0; i < barcodes.size(); i++) {
             String value = barcodes.valueAt(i).rawValue;
             if (value.startsWith(FIDO_QR_PREFIX)) {
-                mCallback.onQRCode(value);
+                mCallback.onQRCode(value, mLinkCheckbox.isChecked());
                 dismiss();
                 return;
             }

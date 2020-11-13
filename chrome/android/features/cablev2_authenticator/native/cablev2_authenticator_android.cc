@@ -477,7 +477,8 @@ static jboolean JNI_CableAuthenticator_StartQR(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
     const JavaParamRef<jstring>& authenticator_name,
-    const JavaParamRef<jstring>& qr_url) {
+    const JavaParamRef<jstring>& qr_url,
+    jboolean link) {
   GlobalData& global_data = GetGlobalData();
   const std::string& qr_string = ConvertJavaStringToUTF8(qr_url);
   base::Optional<device::cablev2::qr::Components> decoded_qr(
@@ -492,7 +493,8 @@ static jboolean JNI_CableAuthenticator_StartQR(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
-          decoded_qr->peer_identity, global_data.registration->contact_id());
+          decoded_qr->peer_identity,
+          link ? global_data.registration->contact_id() : base::nullopt);
 
   return true;
 }

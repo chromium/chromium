@@ -183,9 +183,9 @@ public class CableAuthenticatorUI
      */
     @Override
     @SuppressLint("SetTextI18n")
-    public void onQRCode(String value) {
+    public void onQRCode(String value, boolean link) {
         setHeader(R.style.step1);
-        mAuthenticator.onQRCode(value);
+        mAuthenticator.onQRCode(value, link);
     }
 
     void onStatus(int code) {
