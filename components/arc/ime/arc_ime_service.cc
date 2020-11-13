@@ -41,14 +41,6 @@ namespace {
 
 base::Optional<double> g_override_default_device_scale_factor;
 
-double GetDefaultDeviceScaleFactor() {
-  if (g_override_default_device_scale_factor.has_value())
-    return g_override_default_device_scale_factor.value();
-  if (!exo::WMHelper::HasInstance())
-    return 1.0;
-  return exo::WMHelper::GetInstance()->GetDefaultDeviceScaleFactor();
-}
-
 class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
  public:
   explicit ArcWindowDelegateImpl(ArcImeService* ime_service)
@@ -410,15 +402,9 @@ void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
 void ArcImeService::OnKeyboardAppearanceChanged(
     const ash::KeyboardStateDescriptor& state) {
   gfx::Rect new_bounds = state.occluded_bounds_in_screen;
-  // Multiply by the scale factor. To convert from DIP to physical pixels.
-  // The default scale factor is always used in Android side regardless of
-  // dynamic scale factor in Chrome side because Chrome sends only the default
-  // scale factor. You can find that in WaylandRemoteShell in
-  // components/exo/wayland/server.cc. We can't send dynamic scale factor due to
-  // difference between definition of DIP in Chrome OS and definition of DIP in
-  // Android.
+  // Multiply by the scale factor. To convert from Chrome DIP to Android pixels.
   gfx::Rect bounds_in_px =
-      gfx::ScaleToEnclosingRect(new_bounds, GetDefaultDeviceScaleFactor());
+      gfx::ScaleToEnclosingRect(new_bounds, GetDeviceScaleFactorForKeyboard());
 
   ime_bridge_->SendOnKeyboardAppearanceChanging(bounds_in_px, state.is_visible);
 }
@@ -675,12 +661,9 @@ void ArcImeService::InvalidateSurroundingTextAndSelectionRange() {
 
 bool ArcImeService::UpdateCursorRect(const gfx::Rect& rect,
                                      bool is_screen_coordinates) {
-  // Divide by the scale factor. To convert from physical pixels to DIP.
-  // The default scale factor is always used because Android side is always
-  // using the default scale factor regardless of dynamic scale factor in Chrome
-  // side.
-  gfx::Rect converted(
-      gfx::ScaleToEnclosingRect(rect, 1 / GetDefaultDeviceScaleFactor()));
+  // Divide by the scale factor. To convert from Android pixels to Chrome DIP.
+  gfx::Rect converted(gfx::ScaleToEnclosingRect(
+      rect, 1 / GetDeviceScaleFactorForFocusedWindow()));
 
   // If the supplied coordinates are relative to the window, add the offset of
   // the window showing the ARC app.
@@ -718,6 +701,31 @@ bool ArcImeService::ShouldSendUpdateToInputMethod() const {
   // can be sent from Android anytime because there is a dummy input view in
   // Android which is synchronized with the text input on a non-ARC window.
   return focused_arc_window_ != nullptr;
+}
+
+double ArcImeService::GetDeviceScaleFactorForKeyboard() const {
+  if (g_override_default_device_scale_factor.has_value())
+    return g_override_default_device_scale_factor.value();
+  if (!exo::WMHelper::HasInstance() ||
+      !keyboard::KeyboardUIController::HasInstance()) {
+    return 1.0;
+  }
+  aura::Window* const keyboard_window =
+      keyboard::KeyboardUIController::Get()->GetKeyboardWindow();
+  if (!keyboard_window)
+    return 1.0;
+  return exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
+      keyboard_window);
+}
+
+double ArcImeService::GetDeviceScaleFactorForFocusedWindow() const {
+  DCHECK(focused_arc_window_);
+  if (g_override_default_device_scale_factor.has_value())
+    return g_override_default_device_scale_factor.value();
+  if (!exo::WMHelper::HasInstance())
+    return 1.0;
+  return exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
+      focused_arc_window_);
 }
 
 }  // namespace arc

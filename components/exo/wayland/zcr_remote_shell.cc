@@ -909,6 +909,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   void SetUseDefaultScaleCancellation(bool use_default_scale) {
     use_default_scale_cancellation_ = use_default_scale;
+    WMHelper::GetInstance()->SetDefaultScaleCancellation(use_default_scale);
   }
 
   // TODO(mukai, oshima): rewrite this through delegate-style instead of

@@ -195,6 +195,16 @@ double CastWMHelper::GetDefaultDeviceScaleFactor() const {
   return 1.0;
 }
 
+double CastWMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
+  NOTIMPLEMENTED();
+  return 1.0;
+}
+
+void CastWMHelper::SetDefaultScaleCancellation(
+    bool default_scale_cancellation) {
+  NOTIMPLEMENTED();
+}
+
 void CastWMHelper::SetImeBlocked(aura::Window* window, bool ime_blocked) {
   NOTIMPLEMENTED();
 }

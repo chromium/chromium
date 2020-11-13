@@ -188,6 +188,9 @@ class ArcImeService : public KeyedService,
   // from Android is valid.
   bool ShouldSendUpdateToInputMethod() const;
 
+  double GetDeviceScaleFactorForKeyboard() const;
+  double GetDeviceScaleFactorForFocusedWindow() const;
+
   std::unique_ptr<ArcImeBridge> ime_bridge_;
   std::unique_ptr<ArcWindowDelegate> arc_window_delegate_;
   ui::TextInputType ime_type_;

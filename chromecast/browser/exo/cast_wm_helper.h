@@ -95,6 +95,8 @@ class CastWMHelper : public WMHelper, public VSyncTimingManager::Delegate {
   void RemovePostTargetHandler(ui::EventHandler* handler) override;
   bool InTabletMode() const override;
   double GetDefaultDeviceScaleFactor() const override;
+  double GetDeviceScaleFactorForWindow(aura::Window* window) const override;
+  void SetDefaultScaleCancellation(bool default_scale_cancellation) override;
   void SetImeBlocked(aura::Window* window, bool ime_blocked) override;
   bool IsImeBlocked(aura::Window* window) const override;
 

@@ -231,6 +231,20 @@ double WMHelperChromeOS::GetDefaultDeviceScaleFactor() const {
   return display_info.display_modes()[0].device_scale_factor();
 }
 
+double WMHelperChromeOS::GetDeviceScaleFactorForWindow(
+    aura::Window* window) const {
+  if (default_scale_cancellation_)
+    return GetDefaultDeviceScaleFactor();
+  const display::Screen* screen = display::Screen::GetScreen();
+  display::Display display = screen->GetDisplayNearestWindow(window);
+  return display.device_scale_factor();
+}
+
+void WMHelperChromeOS::SetDefaultScaleCancellation(
+    bool default_scale_cancellation) {
+  default_scale_cancellation_ = default_scale_cancellation;
+}
+
 void WMHelperChromeOS::SetImeBlocked(aura::Window* window, bool ime_blocked) {
   DCHECK_EQ(window, window->GetToplevelWindow());
   window->SetProperty(kImeBlockedKey, ime_blocked);
