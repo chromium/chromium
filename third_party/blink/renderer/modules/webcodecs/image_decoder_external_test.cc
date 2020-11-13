@@ -98,6 +98,57 @@ TEST_F(ImageDecoderTest, DecodeEmpty) {
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
 }
 
+TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {
+  V8TestingScope v8_scope;
+
+  auto* init = MakeGarbageCollected<ImageDecoderInit>();
+  auto* buffer = DOMArrayBuffer::Create(SharedBuffer::Create());
+
+  init->setType("image/png");
+  init->setData(
+      ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(buffer));
+
+  ArrayBufferContents contents;
+  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
+
+  auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
+                                               v8_scope.GetExceptionState());
+  EXPECT_TRUE(decoder);
+  EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
+}
+
+TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
+  V8TestingScope v8_scope;
+
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+
+  auto* init = MakeGarbageCollected<ImageDecoderInit>();
+  init->setType(kImageType);
+
+  constexpr char kTestFile[] = "images/resources/animated.gif";
+  auto data = ReadFile(kTestFile);
+  DCHECK(!data->IsEmpty()) << "Missing file: " << kTestFile;
+
+  auto* buffer = DOMArrayBuffer::Create(std::move(data));
+
+  init->setData(
+      ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(buffer));
+
+  auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
+                                               v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  ArrayBufferContents contents;
+  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
+
+  auto promise = decoder->decode(0, true);
+  ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsRejected());
+}
+
 TEST_F(ImageDecoderTest, DecodeUnsupported) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/svg+xml";
