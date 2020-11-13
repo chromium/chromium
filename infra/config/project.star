@@ -54,21 +54,21 @@ def _project_settings(
 
 settings = _project_settings(
     # Set this to the name of the milestone's project
-    project = "chromium",
+    project = "chromium-m88",
     # Set this to how the branch should be referred to in console titles
-    branch_title = "Chromium",
+    branch_title = "Chromium M88",
     # Set this to False for branches
-    is_master = True,
+    is_master = False,
     # Set this to True for LTC/LTS branches
     is_lts_branch = False,
     # Set this to the branch ref for branches
-    ref = "refs/heads/master",
+    ref = "refs/branch-heads/4324",
     # Set this to the branch ref for branches
-    cq_ref_regexp = "refs/heads/.+",
+    cq_ref_regexp = "refs/branch-heads/4324",
     # Set this to None for branches
-    try_triggering_projects = ["angle", "dawn", "skia", "v8"],
+    try_triggering_projects = None,
     # Set this to None for branches
-    tree_status_host = "chromium-status.appspot.com",
+    tree_status_host = None,
 )
 
 def _generate_project_pyl(ctx):
