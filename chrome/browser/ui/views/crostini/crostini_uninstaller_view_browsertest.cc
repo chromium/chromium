@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"

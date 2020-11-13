@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

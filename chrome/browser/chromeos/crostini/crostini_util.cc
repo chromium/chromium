@@ -171,8 +171,12 @@ void LaunchApplication(
   AppServiceAppWindowLauncherController* app_service_controller =
       chrome_launcher_controller->app_service_app_window_controller();
   DCHECK(app_service_controller);
-  app_service_controller->app_service_crostini_tracker()->OnAppLaunchRequested(
-      app_id, display_id);
+
+  AppServiceAppWindowCrostiniTracker* crostini_tracker =
+      app_service_controller->app_service_crostini_tracker();
+  DCHECK(crostini_tracker);
+
+  crostini_tracker->OnAppLaunchRequested(app_id, display_id);
 
   // Share any paths not in crostini.  The user will see the spinner while this
   // is happening.

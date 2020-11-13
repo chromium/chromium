@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
   crostini::FakeCrostiniFeatures crostini_features;
-  crostini_features.set_ui_allowed(true);
+  crostini_features.set_ui_allowed(true, true);
   crostini_features.set_enabled(true);
 
   // Setup CrostiniManager for testing.
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
   crostini::FakeCrostiniFeatures crostini_features;
-  crostini_features.set_ui_allowed(true);
+  crostini_features.set_ui_allowed(true, true);
   crostini_features.set_enabled(true);
 
   // Setup CrostiniManager for testing.

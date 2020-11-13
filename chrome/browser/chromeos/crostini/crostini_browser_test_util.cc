@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/chromeos/crostini/crostini_browser_test_util.h"
 
 #include <utility>
 
@@ -87,15 +87,33 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
   DISALLOW_COPY_AND_ASSIGN(CrostiniBrowserTestChromeBrowserMainExtraParts);
 };
 
-CrostiniDialogBrowserTest::CrostiniDialogBrowserTest(bool register_termina)
+CrostiniBrowserTestBase::CrostiniBrowserTestBase(bool register_termina)
     : register_termina_(register_termina) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
   fake_crostini_features_.SetAll(true);
+
+  dmgr_ = new chromeos::disks::MockDiskMountManager;
+  ON_CALL(*dmgr_, MountPath)
+      .WillByDefault(Invoke(this, &CrostiniBrowserTestBase::DiskMountImpl));
+  // Test object will be deleted by DiskMountManager::Shutdown
+  chromeos::disks::DiskMountManager::InitializeForTesting(dmgr_);
+}
+void CrostiniBrowserTestBase::DiskMountImpl(
+    const std::string& source_path,
+    const std::string& source_format,
+    const std::string& mount_label,
+    const std::vector<std::string>& mount_options,
+    chromeos::MountType type,
+    chromeos::MountAccessMode access_mode) {
+  chromeos::disks::DiskMountManager::MountPointInfo info(
+      source_path, "/path/to/mount", type,
+      chromeos::disks::MOUNT_CONDITION_NONE);
+  dmgr_->NotifyMountEvent(
+      chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
+      chromeos::MountError::MOUNT_ERROR_NONE, info);
 }
 
-CrostiniDialogBrowserTest::~CrostiniDialogBrowserTest() = default;
-
-void CrostiniDialogBrowserTest::CreatedBrowserMainParts(
+void CrostiniBrowserTestBase::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
   ChromeBrowserMainParts* chrome_browser_main_parts =
       static_cast<ChromeBrowserMainParts*>(browser_main_parts);
@@ -104,54 +122,21 @@ void CrostiniDialogBrowserTest::CreatedBrowserMainParts(
   chrome_browser_main_parts->AddParts(base::WrapUnique(extra_parts_));
 }
 
-void CrostiniDialogBrowserTest::SetUp() {
-  DialogBrowserTest::SetUp();
-}
-
-void CrostiniDialogBrowserTest::SetUpOnMainThread() {
+void CrostiniBrowserTestBase::SetUpOnMainThread() {
   browser()->profile()->GetPrefs()->SetBoolean(
       crostini::prefs::kCrostiniEnabled, true);
 }
 
-void CrostiniDialogBrowserTest::SetConnectionType(
+void CrostiniBrowserTestBase::SetConnectionType(
     network::mojom::ConnectionType connection_type) {
   extra_parts_->connection_change_simulator()->SetConnectionType(
       connection_type);
 }
 
-void CrostiniDialogBrowserTest::UnregisterTermina() {
+void CrostiniBrowserTestBase::UnregisterTermina() {
   extra_parts_->cros_component_manager()->ResetComponentState(
       imageloader::kTerminaComponentName,
       component_updater::FakeCrOSComponentManager::ComponentInfo(
           component_updater::CrOSComponentManager::Error::INSTALL_FAILURE,
           base::FilePath(), base::FilePath()));
-}
-
-class WebContentsWaiter : public content::WebContentsObserver {
- public:
-  enum Operation { LOAD };  // Add other operations as required.
-  explicit WebContentsWaiter(content::WebContents* contents,
-                             Operation operation)
-      : content::WebContentsObserver(contents), operation_(operation) {}
-
-  ~WebContentsWaiter() override = default;
-
-  void Wait() { run_loop_.Run(); }
-
-  // content::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override {
-    if (operation_ == LOAD) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  Operation operation_;
-};
-
-void CrostiniDialogBrowserTest::WaitForLoadFinished(
-    content::WebContents* contents) {
-  WebContentsWaiter(contents, WebContentsWaiter::LOAD).Wait();
 }

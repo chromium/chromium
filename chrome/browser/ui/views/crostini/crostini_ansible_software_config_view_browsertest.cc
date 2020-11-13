@@ -9,7 +9,7 @@
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/network_service_instance.h"

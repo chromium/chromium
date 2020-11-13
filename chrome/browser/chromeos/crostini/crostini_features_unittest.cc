@@ -41,7 +41,7 @@ TEST(CrostiniFeaturesTest, TestExportImportUIAllowed) {
   FakeCrostiniFeatures crostini_features;
 
   // Set up for success.
-  crostini_features.set_ui_allowed(true);
+  crostini_features.set_ui_allowed(true, true);
   profile.GetPrefs()->SetBoolean(
       crostini::prefs::kUserCrostiniExportImportUIAllowedByPolicy, true);
 
@@ -49,9 +49,9 @@ TEST(CrostiniFeaturesTest, TestExportImportUIAllowed) {
   EXPECT_TRUE(crostini_features.IsExportImportUIAllowed(&profile));
 
   // Crostini UI not allowed.
-  crostini_features.set_ui_allowed(false);
+  crostini_features.set_ui_allowed(false, false);
   EXPECT_FALSE(crostini_features.IsExportImportUIAllowed(&profile));
-  crostini_features.set_ui_allowed(true);
+  crostini_features.set_ui_allowed(true, true);
 
   // Pref off.
   profile.GetPrefs()->SetBoolean(
@@ -66,7 +66,7 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   // Set up for success.
-  crostini_features.set_ui_allowed(true);
+  crostini_features.set_ui_allowed(true, true);
   scoped_feature_list.InitWithFeatures(
       {features::kCrostiniAdvancedAccessControls}, {});
   profile.GetPrefs()->SetBoolean(

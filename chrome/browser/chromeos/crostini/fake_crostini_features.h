@@ -40,8 +40,9 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
   void set_allowed(bool allowed) {
     allowed_ = allowed;
   }
-  void set_ui_allowed(bool allowed) {
+  void set_ui_allowed(bool allowed, bool policy_allowed) {
     ui_allowed_ = allowed;
+    policy_allowed_ = policy_allowed;
   }
   void set_enabled(bool enabled) {
     enabled_ = enabled;
@@ -71,6 +72,7 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
 
   base::Optional<bool> allowed_;
   base::Optional<bool> ui_allowed_;
+  base::Optional<bool> policy_allowed_;
   base::Optional<bool> enabled_;
   base::Optional<bool> export_import_ui_allowed_;
   base::Optional<bool> root_access_allowed_;

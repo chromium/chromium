@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -16,15 +15,13 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 constexpr char kDesktopFileId[] = "test_app";
 constexpr int kDisplayId = 0;
@@ -119,17 +116,13 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpgraderDialogBrowserTest,
       base::BindOnce(
           [](base::RunLoop* run_loop, bool* is_successful_app_launch,
              bool success, const std::string& failure_reason) {
-            // In tests, we don't expect Crostini to restart successfully, but
-            // the error message should start as below.
-            auto pos = failure_reason.find("crostini restart to launch app");
-            *is_successful_app_launch = (pos == 0);
+            EXPECT_TRUE(success) << failure_reason;
             run_loop->Quit();
           },
           &run_loop, &is_successful_app_launch));
   run_loop.Run();
 
   ExpectNoDialog();
-  EXPECT_TRUE(is_successful_app_launch);
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniUpgraderDialogBrowserTest, ShowsOnAppLaunch) {
@@ -167,5 +160,3 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpgraderDialogBrowserTest, ShowsOnAppLaunch) {
           crostini::UpgradeDialogEvent::kDialogShown),
       1);
 }
-
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

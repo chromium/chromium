@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/label_button.h"
 
