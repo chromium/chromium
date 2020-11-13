@@ -242,7 +242,7 @@
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "chrome/browser/ui/webui/webui_js_exception/webui_js_exception_ui.h"
+#include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
 #endif
 
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
@@ -809,8 +809,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // defined(OS_CHROMEOS)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  if (url.host_piece() == chrome::kChromeUIWebUIJsExceptionHost)
-    return &NewWebUI<WebUIJsExceptionUI>;
+  if (url.host_piece() == chrome::kChromeUIWebUIJsErrorHost)
+    return &NewWebUI<WebUIJsErrorUI>;
 #endif
 #if defined(OS_ANDROID)
   if (url.host_piece() == chrome::kChromeUIExploreSitesInternalsHost &&

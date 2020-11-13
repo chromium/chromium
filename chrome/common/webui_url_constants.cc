@@ -341,8 +341,8 @@ bool IsSystemWebUIHost(base::StringPiece host) {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-const char kChromeUIWebUIJsExceptionHost[] = "webuijsexception";
-const char kChromeUIWebUIJsExceptionURL[] = "chrome://webuijsexception/";
+const char kChromeUIWebUIJsErrorHost[] = "webuijserror";
+const char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
@@ -617,7 +617,7 @@ const char* const kChromeDebugURLs[] = {
     kChromeUIJavaCrashURL,
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    kChromeUIWebUIJsExceptionURL,
+    kChromeUIWebUIJsErrorURL,
 #endif
     kChromeUIQuitURL,
     kChromeUIRestartURL};

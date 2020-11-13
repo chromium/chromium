@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Title is not localized since this is just a debugging page -->
+    <title>WebUI JS Error Page</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Text not localized since this is just a debugging page -->
+    This page generates a JavaScript error on load. Other types of errors can
+    be generated with the buttons: <div>
+      <!-- Ids are referenced in integration tests, including tast tests -->
+      <button id="error-button">Log Error</button>
+      <button id="exception-button">Throw Uncaught Error</button>
+      <button id="promise-button">Unhandled Promise Rejection</button>
+    </div>
+    <script src="chrome://resources/js/assert.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="webui_js_error.js"></script>
+  </body>
+</html>

@@ -63,7 +63,7 @@ if (enable_js_type_check) {
       deps += [ "sandbox_internals:closure_compile" ]
     }
     if (is_linux || is_chromeos) {
-      deps += [ "webui_js_exception:closure_compile" ]
+      deps += [ "webui_js_error:closure_compile" ]
     }
     if (is_chromeos) {
       deps += [

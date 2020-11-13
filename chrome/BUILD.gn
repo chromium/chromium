@@ -1390,7 +1390,8 @@ group("extra_resources") {
   }
 
   if (is_linux || is_chromeos) {
-    public_deps += [ "//chrome/browser/resources/webui_js_exception:webui_js_exception_resources" ]
+    public_deps +=
+        [ "//chrome/browser/resources/webui_js_error:webui_js_error_resources" ]
   }
 
   if (!is_android && !is_chromeos) {

@@ -234,8 +234,10 @@ template("chrome_extra_paks") {
       }
     }
     if (is_linux || is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/webui_js_exception_resources.pak" ]
-      deps += [ "//chrome/browser/resources/webui_js_exception:webui_js_exception_resources" ]
+      sources += [ "$root_gen_dir/chrome/webui_js_error_resources.pak" ]
+      deps += [
+        "//chrome/browser/resources/webui_js_error:webui_js_error_resources",
+      ]
     }
     if (!is_android && !is_chromeos) {
       sources += [
