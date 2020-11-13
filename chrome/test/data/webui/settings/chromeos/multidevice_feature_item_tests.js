@@ -75,10 +75,10 @@ suite('Multidevice', function() {
    * @param {HTMLElement} element. Target of click.
    */
   async function checkWhetherFeatureToggleClickedFired(element) {
-    const showCellularSetupPromise =
+    const expectedEvent =
         test_util.eventToPromise('feature-toggle-clicked', featureToggle);
     element.click();
-    await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
+    await Promise.all([expectedEvent, test_util.flushTasks()]);
   }
 
   setup(function() {
@@ -128,11 +128,7 @@ suite('Multidevice', function() {
     featureState = settings.MultiDeviceFeatureState.ENABLED_BY_USER;
     featureItem.subpageRoute = null;
 
-    await checkWhetherFeatureToggleClickedFired(
-        featureItem.$$('#item-text-container'));
-    await checkWhetherFeatureToggleClickedFired(featureItem.$$('iron-icon'));
-    await checkWhetherFeatureToggleClickedFired(
-        featureItem.$$('#featureSecondary'));
+    await checkWhetherFeatureToggleClickedFired(featureItem.$$('#linkWrapper'));
   });
 
   test('toggle click does not navigate to subpage in any state', function() {
