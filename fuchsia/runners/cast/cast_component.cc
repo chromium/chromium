@@ -148,6 +148,9 @@ void CastComponent::StartComponent() {
                      kBindingsFailureExitCode,
                      fuchsia::sys::TerminationReason::INTERNAL_ERROR));
 
+  // Get the theme from the system service.
+  frame()->SetPreferredTheme(fuchsia::settings::ThemeType::AUTO);
+
   // Media loading has to be unblocked by the agent via the
   // ApplicationController.
   frame()->SetBlockMediaLoading(true);

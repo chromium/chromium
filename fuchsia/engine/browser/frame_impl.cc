@@ -251,7 +251,8 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
       log_level_(kLogSeverityUnreachable),
       url_request_rewrite_rules_manager_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
-      media_blocker_(web_contents_.get()) {
+      media_blocker_(web_contents_.get()),
+      theme_manager_(web_contents_.get()) {
   DCHECK(!WebContentsToFrameImplMap()[web_contents_.get()]);
   WebContentsToFrameImplMap()[web_contents_.get()] = this;
 
@@ -864,6 +865,20 @@ void FrameImpl::GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) {
   }
 
   callback(task_stats.mem_private_bytes);
+}
+
+void FrameImpl::SetPreferredTheme(fuchsia::settings::ThemeType theme) {
+  theme_manager_.SetTheme(theme, base::BindOnce(
+                                     [](FrameImpl* frame_impl, bool result) {
+                                       // TODO(crbug.com/1148454): Destroy the
+                                       // frame once a fake Display service is
+                                       // implemented.
+
+                                       // if (!result)
+                                       //   frame_impl->CloseAndDestroyFrame
+                                       //       ZX_ERR_INVALID_ARGS);
+                                     },
+                                     base::Unretained(this)));
 }
 
 void FrameImpl::ForceContentDimensions(

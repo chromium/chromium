@@ -27,6 +27,7 @@
 #include "fuchsia/engine/browser/event_filter.h"
 #include "fuchsia/engine/browser/frame_permission_controller.h"
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
+#include "fuchsia/engine/browser/theme_manager.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/focus_controller.h"
@@ -190,6 +191,7 @@ class FrameImpl : public fuchsia::web::Frame,
       const content::MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
   void GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) override;
+  void SetPreferredTheme(fuchsia::settings::ThemeType theme) override;
 
   // content::WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) override;
@@ -274,6 +276,8 @@ class FrameImpl : public fuchsia::web::Frame,
 
   fidl::Binding<fuchsia::web::Frame> binding_;
   media_control::MediaBlocker media_blocker_;
+
+  ThemeManager theme_manager_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_H_

@@ -43,6 +43,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.netstack.Netstack",
     "fuchsia.posix.socket.Provider",
     "fuchsia.process.Launcher",
+    "fuchsia.settings.Display",
     "fuchsia.sysmem.Allocator",
     "fuchsia.ui.input.ImeService",
     "fuchsia.ui.input.ImeVisibilityService",
