@@ -70,7 +70,9 @@ class HostStatusProviderImpl : public HostStatusProvider,
   // device_sync::DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;
 
-  void CheckForUpdatedStatusAndNotifyIfChanged();
+  void CheckForUpdatedStatusAndNotifyIfChanged(
+      bool force_notify_host_status_change);
+
   HostStatusWithDevice GetCurrentStatus();
 
   EligibleHostDevicesProvider* eligible_host_devices_provider_;

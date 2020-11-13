@@ -67,7 +67,8 @@ HostStatusProviderImpl::HostStatusProviderImpl(
   host_verifier_->AddObserver(this);
   device_sync_client_->AddObserver(this);
 
-  CheckForUpdatedStatusAndNotifyIfChanged();
+  CheckForUpdatedStatusAndNotifyIfChanged(
+      /*force_notify_host_status_change=*/false);
   RecordMultiDeviceHostStatus(current_status_and_device_.host_status());
 }
 
@@ -83,25 +84,38 @@ HostStatusProviderImpl::GetHostWithStatus() const {
 }
 
 void HostStatusProviderImpl::OnHostChangedOnBackend() {
-  CheckForUpdatedStatusAndNotifyIfChanged();
+  CheckForUpdatedStatusAndNotifyIfChanged(
+      /*force_notify_host_status_change=*/false);
 }
 
 void HostStatusProviderImpl::OnPendingHostRequestChange() {
-  CheckForUpdatedStatusAndNotifyIfChanged();
+  CheckForUpdatedStatusAndNotifyIfChanged(
+      /*force_notify_host_status_change=*/false);
 }
 
 void HostStatusProviderImpl::OnHostVerified() {
-  CheckForUpdatedStatusAndNotifyIfChanged();
+  CheckForUpdatedStatusAndNotifyIfChanged(
+      /*force_notify_host_status_change=*/false);
 }
 
 void HostStatusProviderImpl::OnNewDevicesSynced() {
-  CheckForUpdatedStatusAndNotifyIfChanged();
+  CheckForUpdatedStatusAndNotifyIfChanged(
+      /*force_notify_host_status_change=*/true);
 }
 
-void HostStatusProviderImpl::CheckForUpdatedStatusAndNotifyIfChanged() {
+void HostStatusProviderImpl::CheckForUpdatedStatusAndNotifyIfChanged(
+    bool force_notify_host_status_change) {
   HostStatusWithDevice current_status_and_device = GetCurrentStatus();
-  if (current_status_and_device == current_status_and_device_)
+  if (current_status_and_device == current_status_and_device_) {
+    if (force_notify_host_status_change) {
+      // If the RemoteDevice the host device references has changed, but not its
+      // contents, fire a host status change. Note that since the status doesn't
+      // actually change, neither logging nor metric collection should occur.
+      NotifyHostStatusChange(current_status_and_device_.host_status(),
+                             current_status_and_device_.host_device());
+    }
     return;
+  }
 
   PA_LOG(VERBOSE) << "HostStatusProviderImpl::"
                   << "CheckForUpdatedStatusAndNotifyIfChanged(): Host status "

@@ -92,6 +92,10 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
 
   FakeHostVerifier* fake_host_verifier() { return fake_host_verifier_.get(); }
 
+  device_sync::FakeDeviceSyncClient* fake_device_sync_client() {
+    return fake_device_sync_client_.get();
+  }
+
  private:
   multidevice::RemoteDeviceRefList test_devices_;
 
@@ -143,6 +147,14 @@ TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
   VerifyCurrentStatus(mojom::HostStatus::kHostVerified,
                       test_devices()[0] /* host_device */,
                       3u /* expected_observer_index */);
+}
+
+TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
+       OnNewDevicesSyncedNotifiesHostStatusChange) {
+  MakeDevicesEligibleHosts();
+  EXPECT_EQ(1u, GetNumChangeEvents());
+  fake_device_sync_client()->NotifyNewDevicesSynced();
+  EXPECT_EQ(2u, GetNumChangeEvents());
 }
 
 TEST_F(MultiDeviceSetupHostStatusProviderImplTest, SetHostThenForget) {
