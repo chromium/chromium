@@ -42,6 +42,7 @@ class ContextImpl;
 class FrameWindowTreeHost;
 class FrameLayoutManager;
 class MediaPlayerImpl;
+class NavigationPolicyHandler;
 
 // Implementation of fuchsia.web.Frame based on content::WebContents.
 class FrameImpl : public fuchsia::web::Frame,
@@ -73,6 +74,10 @@ class FrameImpl : public fuchsia::web::Frame,
 
   UrlRequestRewriteRulesManager* url_request_rewrite_rules_manager() {
     return &url_request_rewrite_rules_manager_;
+  }
+
+  NavigationPolicyHandler* navigation_policy_handler() {
+    return navigation_policy_handler_.get();
   }
 
   zx::unowned_channel GetBindingChannelForTest() const;
@@ -191,6 +196,10 @@ class FrameImpl : public fuchsia::web::Frame,
       const content::MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
   void GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) override;
+  void SetNavigationPolicyProvider(
+      fuchsia::web::NavigationPolicyProviderParams params,
+      fidl::InterfaceHandle<fuchsia::web::NavigationPolicyProvider> provider)
+      override;
   void SetPreferredTheme(fuchsia::settings::ThemeType theme) override;
 
   // content::WebContentsDelegate implementation.
@@ -259,6 +268,7 @@ class FrameImpl : public fuchsia::web::Frame,
   logging::LogSeverity log_level_;
   UrlRequestRewriteRulesManager url_request_rewrite_rules_manager_;
   FramePermissionController permission_controller_;
+  std::unique_ptr<NavigationPolicyHandler> navigation_policy_handler_;
 
   // Session ID to use for fuchsia.media.AudioConsumer. Set with
   // SetMediaSessionId().

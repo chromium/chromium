@@ -13,11 +13,13 @@
 #include "base/strings/string_split.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "fuchsia/engine/browser/navigation_policy_throttle.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
@@ -186,6 +188,22 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                  kSwitchesToCopy, base::size(kSwitchesToCopy));
+}
+
+std::vector<std::unique_ptr<content::NavigationThrottle>>
+WebEngineContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationHandle* navigation_handle) {
+  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+  auto* frame_impl =
+      FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+
+  // Only create throttle if FrameImpl has a NavigationPolicyProvider,
+  // indicating an interest in navigations.
+  if (frame_impl->navigation_policy_handler()) {
+    throttles.push_back(std::make_unique<NavigationPolicyThrottle>(
+        navigation_handle, frame_impl->navigation_policy_handler()));
+  }
+  return throttles;
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

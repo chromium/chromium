@@ -4,7 +4,6 @@
 
 #include "fuchsia/engine/browser/fake_navigation_policy_provider.h"
 
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
