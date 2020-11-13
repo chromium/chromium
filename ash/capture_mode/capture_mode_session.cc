@@ -553,11 +553,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
-  // No need to handle events if the current source is kFullscreen.
-  const CaptureModeSource capture_source = controller_->source();
-  if (capture_source == CaptureModeSource::kFullscreen)
-    return;
-
   gfx::Point location = event->location();
   gfx::Point screen_location = event->location();
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
@@ -568,7 +563,11 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           screen_location);
 
-  if (capture_source == CaptureModeSource::kWindow) {
+  const CaptureModeSource capture_source = controller_->source();
+  const bool is_capture_fullscreen =
+      capture_source == CaptureModeSource::kFullscreen;
+  const bool is_capture_window = capture_source == CaptureModeSource::kWindow;
+  if (is_capture_fullscreen || is_capture_window) {
     // Do not handle any event located on the capture mode bar.
     if (is_event_on_capture_bar)
       return;
@@ -580,13 +579,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_MOUSE_MOVED:
       case ui::ET_TOUCH_PRESSED:
       case ui::ET_TOUCH_MOVED: {
-        capture_window_observer_->UpdateSelectedWindowAtPosition(
-            screen_location);
+        if (is_capture_window) {
+          capture_window_observer_->UpdateSelectedWindowAtPosition(
+              screen_location);
+        }
         break;
       }
       case ui::ET_MOUSE_RELEASED:
       case ui::ET_TOUCH_RELEASED:
-        if (GetSelectedWindow())
+        if (is_capture_fullscreen || (is_capture_window && GetSelectedWindow()))
           controller_->PerformCapture();
         break;
       default:

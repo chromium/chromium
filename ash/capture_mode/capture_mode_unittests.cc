@@ -1460,4 +1460,24 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   histogram_tester.ExpectBucketCount(kTabletHistogram, 0, 1);
 }
 
+TEST_F(CaptureModeTest, FullscreenCapture) {
+  ui::ScopedAnimationDurationScaleMode animatin_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  EXPECT_TRUE(controller->IsActive());
+  // Press anywhere to capture image.
+  auto* event_generator = GetEventGenerator();
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(controller->IsActive());
+
+  controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                   CaptureModeType::kVideo);
+  EXPECT_TRUE(controller->IsActive());
+  // Press anywhere to capture video.
+  event_generator->ClickLeftButton();
+  WaitForCountDownToFinish();
+  EXPECT_FALSE(controller->IsActive());
+}
+
 }  // namespace ash
