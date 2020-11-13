@@ -362,9 +362,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  BubbleObserver prompt_observer(WebContents());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -374,15 +373,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Fill a form and submit through a <input type="submit"> button. Nothing
   // special. The form does an in-page navigation before submitting.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -393,30 +391,28 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_unrelated').value = 'temp';"
       "document.getElementById('password_unrelated').value = 'random';"
       "document.getElementById('submit_unrelated').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, LoginFailed) {
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_failed').value = 'temp';"
       "document.getElementById('password_failed').value = 'random';"
       "document.getElementById('submit_failed').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Disabled due to flakiness: https://crbug.com/1030579.
@@ -452,15 +448,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // This should work regardless of the type of element, as long as submit() is
   // called.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForDynamicForm) {
@@ -508,12 +503,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForNavigation) {
 
   // Don't fill the password form, just navigate away. Shouldn't prompt.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
       RenderFrameHost(), "window.location.href = 'done.html';"));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -523,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // If you are filling out a password form in one frame and a different frame
   // navigates, this should not trigger the infobar.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   std::string fill =
       "var first_frame = document.getElementById('first_frame');"
@@ -538,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill));
   ASSERT_TRUE(content::ExecuteScript(WebContents(), navigate_frame));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -549,14 +542,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  auto prompt_observer = std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_different_action').value = 'temp';"
       "document.getElementById('password_different_action').value = 'random';"
       "document.getElementById('submit_different_action').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForActionMutation) {
@@ -587,14 +580,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  auto prompt_observer = std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_contains_username').value = 'temp';"
       "document.getElementById('password_contains_username').value = 'random';"
       "document.getElementById('submit_contains_username').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -605,14 +598,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/navigate_to_same_url_empty_actions.html");
 
   NavigationObserver observer(WebContents());
-  auto prompt_observer = std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username').value = 'temp';"
       "document.getElementById('password').value = 'random';"
       "document.getElementById('submit-button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -622,8 +615,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Make sure that we prompt to save password even if a sub-frame navigation
   // happens first.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   std::string navigate_frame =
       "var second_iframe = document.getElementById('second_frame');"
@@ -638,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecuteScript(WebContents(), navigate_frame));
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -649,8 +641,7 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure that we don't prompt to save the password for a failed login
   // from the main frame with multiple frames in the same page.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_failed').value = 'temp';"
       "document.getElementById('password_failed').value = 'random';"
@@ -658,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -669,8 +660,7 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure that we don't prompt to save the password for a failed login
   // from a sub-frame with multiple frames in the same page.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "var first_frame = document.getElementById('first_frame');"
       "var frame_doc = first_frame.contentDocument;"
@@ -681,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.SetPathToWaitFor("/password/failed.html");
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForXHRSubmit) {
@@ -692,15 +682,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForXHRSubmit) {
   // Note that calling 'submit()' on a form with javascript doesn't call
   // the onsubmit handler, so we click the submit button instead.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -716,8 +705,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // doesn't need to be via form.submit(), but for testing purposes it's
   // necessary since we otherwise ignore changes made to the value of these
   // fields by script.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('username_field').value = 'temp';"
@@ -730,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -746,8 +734,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // doesn't need to be via form.submit(), but for testing purposes it's
   // necessary since we otherwise ignore changes made to the value of these
   // fields by script.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('signup_username_field').value = 'temp';"
@@ -761,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -774,8 +761,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Verify that if XHR without navigation occurs and the form has NOT been
   // filled out we don't prompt.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('username_field').value = 'temp';"
@@ -787,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -801,8 +787,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify that if XHR without navigation occurs and the form has NOT been
   // filled out we don't prompt.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('signup_username_field').value = 'temp';"
@@ -814,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(
       break;
   }
 
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForFetchSubmit) {
@@ -825,15 +810,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForFetchSubmit) {
   // Note that calling 'submit()' on a form with javascript doesn't call
   // the onsubmit handler, so we click the submit button instead.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Flaky on chromeos: http://crbug.com/870372
@@ -857,8 +841,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // doesn't need to be via form.submit(), but for testing purposes it's
   // necessary since we otherwise ignore changes made to the value of these
   // fields by script.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('username_field').value = 'temp';"
@@ -871,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Flaky on chromeos: http://crbug.com/870372
@@ -895,8 +878,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // doesn't need to be via form.submit(), but for testing purposes it's
   // necessary since we otherwise ignore changes made to the value of these
   // fields by script.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('signup_username_field').value = 'temp';"
@@ -910,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -924,8 +906,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify that if Fetch without navigation occurs and the form has NOT been
   // filled out we don't prompt.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('username_field').value = 'temp';"
@@ -937,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(
       break;
   }
 
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -951,8 +932,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify that if Fetch without navigation occurs and the form has NOT been
   // filled out we don't prompt.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "navigate = false;"
       "document.getElementById('signup_username_field').value = 'temp';"
@@ -964,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(
       break;
   }
 
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
@@ -973,15 +953,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
   // Verify that if the user takes a direct action to leave the page, we don't
   // prompt to save the password even if the form is already filled out.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_click_link =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('link').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_click_link));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Disabled due to flakiness on windows.
@@ -1002,8 +981,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Enter a password and save it.
   NavigationObserver first_observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('other_info').value = 'stuff';"
       "document.getElementById('username_field').value = 'my_username';"
@@ -1012,8 +990,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
 
   first_observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   // Now navigate to a login form that has similar HTML markup.
   NavigateToFile("/password/password_form.html");
@@ -1028,13 +1006,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Submit the form and verify that there is no infobar (as the password
   // has already been saved).
   NavigationObserver second_observer(WebContents());
-  std::unique_ptr<BubbleObserver> second_prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver second_prompt_observer(WebContents());
   std::string submit_form =
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit_form));
   second_observer.Wait();
-  EXPECT_FALSE(second_prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(second_prompt_observer.IsSavePromptShownAutomatically());
 
   // Verify that we sent two pings to Autofill. One vote for of PASSWORD for
   // the current form, and one vote for ACCOUNT_CREATION_PASSWORD on the
@@ -1059,8 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForSubmitFromIframe) {
   // user gesture. We expect the save password prompt to be shown here, because
   // some pages use such iframes for login forms.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "var iframe = document.getElementById('test_iframe');"
       "var iframe_doc = iframe.contentDocument;"
@@ -1070,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForSubmitFromIframe) {
 
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1080,15 +1056,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field_no_name').value = 'temp';"
       "document.getElementById('password_field_no_name').value = 'random';"
       "document.getElementById('input_submit_button_no_name').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1098,15 +1073,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementsByName('username_field_no_id')[0].value = 'temp';"
       "document.getElementsByName('password_field_no_id')[0].value = 'random';"
       "document.getElementsByName('input_submit_button_no_id')[0].click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1116,8 +1090,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "var form = document.getElementById('testform_elements_no_id_no_name');"
       "var username = form.children[0];"
@@ -1127,8 +1100,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "form.children[2].click()";  // form.children[2] is the submit button.
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   // Check that credentials are stored.
   WaitForPasswordStore();
@@ -1141,15 +1114,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForFileSchemeURLs) {
   ui_test_utils::NavigateToURL(browser(), url);
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('input_submit_button').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1159,15 +1131,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field_http_error').value = 'temp';"
       "document.getElementById('password_field_http_error').value = 'random';"
       "document.getElementById('input_submit_button_http_error').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // TODO(crbug.com/949908) The test is flaky (crashing) on all platforms.
@@ -1456,11 +1427,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Don't prompt if we navigate away even if there is a password value since
   // it's not coming from the user.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   NavigateToFile("/password/done.html");
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1470,15 +1440,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Fill a form and submit through a <input type="submit"> button. Nothing
   // special.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -1487,15 +1456,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Fill a form and submit through a <input type="submit"> button.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Test fix for crbug.com/368690.
@@ -1508,13 +1476,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptWhenReloading) {
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill));
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   GURL url = embedded_test_server()->GetURL("/password/password_form.html");
   NavigateParams params(browser(), url, ::ui::PAGE_TRANSITION_RELOAD);
   ui_test_utils::NavigateToURL(&params);
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Test that if a form gets dynamically added between the form parsing and
@@ -1674,8 +1641,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/create_form_copy_on_submit.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('username').value = 'overwrite_me';"
       "document.getElementById('password').value = 'random';"
@@ -1684,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   observer.Wait();
 
   WaitForPasswordStore();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Tests whether a attempted submission of a malicious credentials gets blocked.
@@ -1868,16 +1834,15 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/form_with_only_password_field.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('password').value = 'password';"
       "document.getElementById('submit-button').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
   observer.Wait();
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   WaitForPasswordStore();
   EXPECT_FALSE(password_store->IsEmpty());
@@ -2000,15 +1965,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // after submission
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Similar to the case above, but this time the form persists after
@@ -2022,8 +1986,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // history.pushsTate();
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "should_delete_testform = false;"
       "document.getElementById('username_field').value = 'temp';"
@@ -2031,7 +1994,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // The password manager should distinguish forms with empty actions. After
@@ -2043,15 +2006,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('ea_username_field').value = 'temp';"
       "document.getElementById('ea_password_field').value = 'random';"
       "document.getElementById('ea_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Similar to the case above, but this time the form persists after
@@ -2063,8 +2025,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "should_delete_testform = false;"
       "document.getElementById('ea_username_field').value = 'temp';"
@@ -2072,7 +2033,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('ea_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Current and target URLs contain different parameters and references. This
@@ -2085,8 +2046,7 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "add_parameters_to_target_url = true;"
       "document.getElementById('pa_username_field').value = 'temp';"
@@ -2094,7 +2054,7 @@ IN_PROC_BROWSER_TEST_F(
       "document.getElementById('pa_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Similar to the case above, but this time the form persists after
@@ -2107,8 +2067,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "should_delete_testform = false;"
       "add_parameters_to_target_url = true;"
@@ -2117,7 +2076,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('pa_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -2180,8 +2139,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdFormBubbleShown) {
   NavigateToFile("/password/password_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('chg_username_field').value = 'temp';"
       "document.getElementById('chg_password_field').value = 'random';"
@@ -2190,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdFormBubbleShown) {
       "document.getElementById('chg_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -2199,8 +2157,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   NavigationObserver observer(WebContents());
   observer.set_quit_on_entry_committed(true);
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('chg_username_field').value = 'temp';"
       "document.getElementById('chg_password_field').value = 'random';"
@@ -2209,7 +2166,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('chg_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptOnBack) {
@@ -2251,8 +2208,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // In this case, pretend that username_field is actually a password field
   // that starts as a text field to simulate placeholder.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string change_and_submit =
       "document.getElementById('other_info').value = 'username';"
       "document.getElementById('username_field').type = 'password';"
@@ -2261,7 +2217,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('testform').submit();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), change_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Regression test for http://crbug.com/451631
@@ -2274,8 +2230,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/many_password_signup_form.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'username';"
       "document.getElementById('password_field').value = 'mypass';"
@@ -2285,7 +2240,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('testform').submit();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -2296,8 +2251,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // is no navigation to wait for.
   content::DOMMessageQueue message_queue;
 
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "var iframe = document.getElementById('login_iframe');"
       "var frame_doc = iframe.contentDocument;"
@@ -2312,7 +2266,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       break;
   }
 
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 // Check that a username and password are filled into forms in iframes
@@ -2489,8 +2443,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_form_in_same_origin_iframe.html");
   NavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
 
   std::string submit =
       "var ifrmDoc = document.getElementById('iframe').contentDocument;"
@@ -2499,8 +2452,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "ifrmDoc.getElementById('input_submit_button').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   // Visit the form again
   NavigationObserver reload_observer(WebContents());
@@ -2597,8 +2550,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdNoAccountStored) {
 
   // Fill a form and submit through a <input type="submit"> button.
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
 
   std::string fill_and_submit =
       "document.getElementById('chg_password_wo_username_field').value = "
@@ -2611,8 +2563,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdNoAccountStored) {
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
   // No credentials stored before, so save bubble is shown.
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   // Check that credentials are stored.
   WaitForPasswordStore();
@@ -2635,8 +2587,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwd1AccountStored) {
   // Check that password update bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit_change_password =
       "document.getElementById('chg_password_wo_username_field').value = "
       "'random';"
@@ -2648,10 +2599,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwd1AccountStored) {
   ASSERT_TRUE(
       content::ExecuteScript(WebContents(), fill_and_submit_change_password));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
   // We emulate that the user clicks "Update" button.
-  prompt_observer->AcceptUpdatePrompt();
+  prompt_observer.AcceptUpdatePrompt();
 
   WaitForPasswordStore();
   CheckThatCredentialsStored("temp", "new_pw");
@@ -2688,8 +2639,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithAutofillDisabled,
   // Check that password update bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'new_pw';"
@@ -2698,9 +2648,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithAutofillDisabled,
   observer.Wait();
   // The stored password "pw" was overridden with "new_pw", so update prompt is
   // expected.
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
-  prompt_observer->AcceptUpdatePrompt();
+  prompt_observer.AcceptUpdatePrompt();
   WaitForPasswordStore();
   CheckThatCredentialsStored("temp", "new_pw");
 }
@@ -2722,8 +2672,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Check that password update bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('password_field').value = 'pw';"
@@ -2732,7 +2681,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   observer.Wait();
   // The stored password "pw" was not overridden, so update prompt is not
   // expected.
-  EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsUpdatePromptShownAutomatically());
   CheckThatCredentialsStored("temp", "pw");
 }
 
@@ -2798,8 +2747,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Check that password update bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit_change_password =
       "document.getElementById('chg_text_field').value = '3';"
       "document.getElementById('chg_password_withtext_field').value"
@@ -2812,9 +2760,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(
       content::ExecuteScript(WebContents(), fill_and_submit_change_password));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
-  prompt_observer->AcceptUpdatePrompt();
+  prompt_observer.AcceptUpdatePrompt();
   WaitForPasswordStore();
   CheckThatCredentialsStored("temp", "new_pw");
 }
@@ -3251,15 +3199,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Check that password save bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"
       "document.getElementById('retry_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
-  prompt_observer->AcceptSavePrompt();
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
 
   WaitForPasswordStore();
   CheckThatCredentialsStored("", "pw");
@@ -3288,15 +3235,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // same in one of the stored credentials.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"
       "document.getElementById('retry_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
-  EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsUpdatePromptShownAutomatically());
 }
 
 // Tests that the update bubble shown when a password form without username is
@@ -3318,17 +3264,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Check that password update bubble is shown.
   NavigateToFile("/password/password_form.html");
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'new_pw';"
       "document.getElementById('retry_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
   // The new password "new_pw" is used, so update prompt is expected.
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
-  prompt_observer->AcceptUpdatePrompt();
+  prompt_observer.AcceptUpdatePrompt();
 
   WaitForPasswordStore();
   CheckThatCredentialsStored("temp", "new_pw");
@@ -3370,15 +3315,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/password_autocomplete_off_test.html");
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username').value = 'temp';"
       "document.getElementById('password').value = 'random';"
       "document.getElementById('submit').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3406,8 +3350,7 @@ IN_PROC_BROWSER_TEST_F(
       "navigator.credentials.get({password: true, unmediated: true })"));
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit_change_password =
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'password';"
@@ -3415,7 +3358,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       content::ExecuteScript(WebContents(), fill_and_submit_change_password));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Verify that the form's 'skip_zero_click' is not updated.
   auto& passwords_map = password_store->stored_passwords();
@@ -3449,8 +3392,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // No API call.
 
   NavigationObserver observer(WebContents());
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit_change_password =
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'password';"
@@ -3458,7 +3400,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(
       content::ExecuteScript(WebContents(), fill_and_submit_change_password));
   observer.Wait();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Verify that the form's 'skip_zero_click' is not updated.
   auto& passwords_map = password_store->stored_passwords();
@@ -3579,22 +3521,21 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankFramesAreIgnored) {
   NavigateToFile("/password/other.html");
 
   // Add a blank iframe and then inject a password form into it.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
   InjectBlankFrameWithPasswordForm(WebContents(), submit_url);
   content::RenderFrameHost* frame =
       ChildFrameAt(WebContents()->GetMainFrame(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
   EXPECT_TRUE(frame->IsRenderFrameLive());
-  EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
 
   // Fill in the password and submit the form.  This shouldn't bring up a save
   // password prompt and shouldn't result in a renderer kill.
   SubmitInjectedPasswordForm(WebContents(), frame, submit_url);
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_EQ(submit_url, frame->GetLastCommittedURL());
-  EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
 }
 
 // Verify that password manager ignores passwords on forms injected into
@@ -3619,10 +3560,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankPopupsAreIgnored) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Submit the password form and check that there was no renderer kill and no
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   SubmitInjectedPasswordForm(newtab, newtab->GetMainFrame(), submit_url);
-  EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
   EXPECT_TRUE(newtab->GetMainFrame()->IsRenderFrameLive());
   EXPECT_EQ(submit_url, newtab->GetMainFrame()->GetLastCommittedURL());
 }
@@ -3700,8 +3640,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/other.html");
 
   // Add a iframe with a data URL that has a password form.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
   std::string form_html = GeneratePasswordFormForAction(submit_url);
   std::string inject_data_frame_with_password_form =
@@ -3717,7 +3656,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ChildFrameAt(WebContents()->GetMainFrame(), 0);
   EXPECT_TRUE(frame->GetLastCommittedURL().SchemeIs(url::kDataScheme));
   EXPECT_TRUE(frame->IsRenderFrameLive());
-  EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
 
   // Fill in the password and submit the form.  This shouldn't bring up a save
   // password prompt and shouldn't result in a renderer kill.
@@ -3726,7 +3665,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   frame = ChildFrameAt(WebContents()->GetMainFrame(), 0);
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_EQ(submit_url, frame->GetLastCommittedURL());
-  EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
 }
 
 // Verify that there is no renderer kill when filling out a password on a
@@ -3978,12 +3917,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_THAT(password_store->stored_passwords(),
               ElementsAre(testing::Key(url_A.GetOrigin())));
   CheckThatCredentialsStored("user", "oldpassword");
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  BubbleObserver prompt_observer(WebContents());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
   // Check that the password is updated correctly if the user clicks Update.
-  prompt_observer->AcceptUpdatePrompt();
+  prompt_observer.AcceptUpdatePrompt();
 
   WaitForPasswordStore();
   // The stored credential has been updated with the new password.
@@ -4403,8 +4341,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 
   // The stored password "pw" was overridden with "new_pw", so update prompt is
   // expected. Use the retry form, to avoid autofill.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
 
   NavigationObserver observer(WebContents());
   std::string fill_and_submit =
@@ -4413,7 +4350,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
   observer.Wait();
 
-  EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 
   // Complete the Gaia signin.
   CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
@@ -4436,10 +4373,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   NavigateToGaiaSigninPage();
 
   // Add the new password: triggers the save bubble.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   FillAndSubmitGaiaPassword();
-  EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Complete the Gaia signin.
   CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
@@ -4464,10 +4400,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   NavigateToGaiaSigninPage();
 
   // Add the new password, password bubble not triggered.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   FillAndSubmitGaiaPassword();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Complete the Gaia signin.
   CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
@@ -4499,10 +4434,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   EXPECT_TRUE(signin_interceptor()->is_interception_in_progress());
 
   // Add the new password, password bubble not triggered.
-  std::unique_ptr<BubbleObserver> prompt_observer =
-      std::make_unique<BubbleObserver>(WebContents());
+  BubbleObserver prompt_observer(WebContents());
   FillAndSubmitGaiaPassword();
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 #endif  // ENABLE_DICE_SUPPORT
 
