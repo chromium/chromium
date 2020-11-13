@@ -11,6 +11,8 @@
 #include "chrome/browser/apps/digital_goods/util.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/payments_experimental_features.h"
+#include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 
 namespace {
 
@@ -35,6 +37,12 @@ void DigitalGoodsFactoryImpl::BindDigitalGoodsFactory(
 void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     const std::string& payment_method,
     CreateDigitalGoodsCallback callback) {
+  if (!render_frame_host_->IsFeatureEnabled(
+          blink::mojom::FeaturePolicyFeature::kPayment)) {
+    mojo::ReportBadMessage("Feature policy blocks Payment");
+    return;
+  }
+
   // Check feature flag.
   if (!payments::PaymentsExperimentalFeatures::IsEnabled(
           payments::features::kAppStoreBilling)) {
