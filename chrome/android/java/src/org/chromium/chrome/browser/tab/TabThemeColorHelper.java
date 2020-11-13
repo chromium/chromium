@@ -161,9 +161,8 @@ public class TabThemeColorHelper extends EmptyTabObserver implements UserData {
         return securityLevel != ConnectionSecurityLevel.DANGEROUS
                 && securityLevel != ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT
                 && (mTab.getActivity() == null || !mTab.getActivity().isTablet())
-                && (mTab.getActivity() == null
-                        || !mTab.getActivity().getNightModeStateProvider().isInNightMode())
-                && !mTab.isNativePage() && !mTab.isIncognito() && !Previews.isPreview(mTab);
+                && !ColorUtils.inNightMode(mTab.getContext()) && !mTab.isNativePage()
+                && !mTab.isIncognito() && !Previews.isPreview(mTab);
     }
 
     /**

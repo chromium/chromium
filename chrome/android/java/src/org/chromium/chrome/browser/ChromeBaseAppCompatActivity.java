@@ -69,7 +69,8 @@ public class ChromeBaseAppCompatActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        NightModeUtils.updateConfigurationForNightMode(this, newConfig, mThemeResId);
+        NightModeUtils.updateConfigurationForNightMode(
+                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResId);
     }
 
     /**
@@ -90,7 +91,7 @@ public class ChromeBaseAppCompatActivity
     /**
      * @return The {@link NightModeStateProvider} that provides the state of night mode.
      */
-    public final NightModeStateProvider getNightModeStateProvider() {
+    protected final NightModeStateProvider getNightModeStateProvider() {
         return mNightModeStateProvider;
     }
 

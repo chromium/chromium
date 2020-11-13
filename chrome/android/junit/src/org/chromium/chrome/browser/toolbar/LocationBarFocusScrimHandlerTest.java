@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -22,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -42,7 +42,7 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock
     private Resources mResources;
     @Mock
-    private NightModeStateProvider mNightModeStateProvider;
+    private Configuration mConfiguration;
     @Mock
     private TabObscuringHandler mTabObscuringHandler;
     @Mock
@@ -56,9 +56,9 @@ public class LocationBarFocusScrimHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
+        doReturn(mConfiguration).when(mResources).getConfiguration();
         mScrimHandler = new LocationBarFocusScrimHandler(mScrimCoordinator, mTabObscuringHandler,
-                mContext, mNightModeStateProvider, mLocationBarDataProvider, mClickDelegate,
-                mScrimTarget);
+                mContext, mLocationBarDataProvider, mClickDelegate, mScrimTarget);
     }
 
     @Test

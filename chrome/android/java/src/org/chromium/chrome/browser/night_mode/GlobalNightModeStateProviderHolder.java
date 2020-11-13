@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.chromium.base.CommandLine;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -50,9 +49,9 @@ public class GlobalNightModeStateProviderHolder {
 
     /**
      * @return The {@link NightModeStateProvider} that maintains the night mode state for the entire
-     *         application. Note that UI widgets should always get the
-     *         {@link NightModeStateProvider} from the {@link ChromeBaseAppCompatActivity} they are
-     *         attached to, because the night mode state can be overridden at the activity level.
+     *         application. Note that UI widgets should use ColorUtils#inNightMode(Context) using
+     *         the activity context they are attached to, because the night mode state can be
+     *         overridden at the activity level.
      */
     public static NightModeStateProvider getInstance() {
         if (sInstance == null) {

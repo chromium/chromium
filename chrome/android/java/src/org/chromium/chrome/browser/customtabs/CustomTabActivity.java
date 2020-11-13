@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -38,7 +39,7 @@ import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarCon
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * The activity for custom tabs. It will be launched on top of a client's task.
@@ -246,8 +248,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder()
                         .setShowTitle(true)
-                        .setColorScheme(NightModeUtils.isInNightMode(context) ? COLOR_SCHEME_DARK
-                                                                              : COLOR_SCHEME_LIGHT)
+                        .setColorScheme(ColorUtils.inNightMode(context) ? COLOR_SCHEME_DARK
+                                                                        : COLOR_SCHEME_LIGHT)
                         .build();
         customTabIntent.intent.setData(Uri.parse(url));
 
@@ -295,5 +297,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Nullable
     public String getTwaPackage() {
         return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
+    }
+
+    @VisibleForTesting
+    NightModeStateProvider getNightModeStateProviderForTesting() {
+        return super.getNightModeStateProvider();
     }
 }

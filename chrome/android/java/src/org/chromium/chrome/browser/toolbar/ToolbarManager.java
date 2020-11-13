@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -281,7 +280,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param isInOverviewModeSupplier Supplies whether the app is currently in overview mode.
      * @param isCustomTab Whether the toolbar is for a custom tab.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
-     * @param nightModeStateProvider Provides the state of night mode.
      * @param statusBarColorController The {@link StatusBarColorController} for the app.
      * @param appMenuDelegate Allows interacting with the app menu.
      * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle,
@@ -307,7 +305,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
             Supplier<Boolean> isInOverviewModeSupplier, boolean isCustomTab,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            NightModeStateProvider nightModeStateProvider,
             StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier) {
@@ -441,9 +438,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         Runnable clickDelegate =
                 () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mCompositorViewHolder;
-        mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
-                tabObscuringHandler, /* context= */ activity, nightModeStateProvider,
-                mLocationBarModel, clickDelegate, scrimTarget);
+        mLocationBarFocusHandler =
+                new LocationBarFocusScrimHandler(scrimCoordinator, tabObscuringHandler,
+                        /* context= */ activity, mLocationBarModel, clickDelegate, scrimTarget);
         if (mLocationBar.getFakeboxDelegate() != null) {
             mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(mLocationBarFocusHandler);
         }

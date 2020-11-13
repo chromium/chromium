@@ -123,9 +123,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivity.getTabModelSelector(), mPropertyModel,
                 mSurfaceMode == SurfaceMode.SINGLE_PANE ? this::initializeSecondaryTasksSurface
                                                         : null,
-                mSurfaceMode, mActivity.getNightModeStateProvider(),
-                mActivity.getBrowserControlsManager(), this::isActivityFinishingOrDestroyed,
-                excludeMVTiles,
+                mSurfaceMode, mActivity, mActivity.getBrowserControlsManager(),
+                this::isActivityFinishingOrDestroyed, excludeMVTiles,
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 startSurfaceOneshotSupplier);
 

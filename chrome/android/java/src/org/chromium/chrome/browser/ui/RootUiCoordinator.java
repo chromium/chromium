@@ -614,7 +614,7 @@ public class RootUiCoordinator
                     mPromoShownOneshotSupplier, mActivity.getWindowAndroid(),
                     mActivity::isInOverviewMode, mActivity.isCustomTab(),
                     mActivity.getModalDialogManagerSupplier(),
-                    mActivity.getNightModeStateProvider(), mActivity.getStatusBarColorController(),
+                    mActivity.getStatusBarColorController(),
                     /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
                     mStartSurfaceParentTabSupplier);
             if (!mActivity.supportsAppMenu()) {

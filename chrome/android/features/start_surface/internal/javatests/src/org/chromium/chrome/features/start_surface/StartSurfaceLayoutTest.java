@@ -142,6 +142,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -2043,7 +2044,7 @@ public class StartSurfaceLayoutTest {
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(true));
         cta = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class);
-        assertTrue(cta.getNightModeStateProvider().isInNightMode());
+        assertTrue(ColorUtils.inNightMode(cta));
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);

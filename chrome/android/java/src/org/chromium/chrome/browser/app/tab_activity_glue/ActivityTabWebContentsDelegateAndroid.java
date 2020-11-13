@@ -48,6 +48,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * {@link WebContentsDelegateAndroid} that interacts with {@link ChromeActivity} and those
@@ -358,7 +359,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean isNightModeEnabled() {
-        return mActivity != null ? mActivity.getNightModeStateProvider().isInNightMode() : false;
+        return mActivity != null ? ColorUtils.inNightMode(mActivity) : false;
     }
 
     @Override

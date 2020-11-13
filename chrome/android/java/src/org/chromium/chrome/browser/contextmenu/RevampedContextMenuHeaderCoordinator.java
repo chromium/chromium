@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -17,6 +15,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ColorUtils;
 
 class RevampedContextMenuHeaderCoordinator {
     private PropertyModel mModel;
@@ -47,13 +46,7 @@ class RevampedContextMenuHeaderCoordinator {
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {
         CharSequence url = params.getUrl();
         if (!TextUtils.isEmpty(url)) {
-            boolean useDarkColors =
-                    !GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
-            if (activity instanceof ChromeBaseAppCompatActivity) {
-                useDarkColors = !((ChromeBaseAppCompatActivity) activity)
-                                         .getNightModeStateProvider()
-                                         .isInNightMode();
-            }
+            boolean useDarkColors = !ColorUtils.inNightMode(activity);
 
             SpannableString spannableUrl =
                     new SpannableString(ChromeContextMenuPopulator.createUrlText(params));

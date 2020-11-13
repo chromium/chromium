@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -21,6 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * A dialog for showing available USB devices. This dialog is shown when a website requests to
@@ -62,10 +62,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         Profile profile = Profile.getLastUsedRegularProfile();
         SpannableString originSpannableString = new SpannableString(origin);
 
-        assert activity instanceof ChromeBaseAppCompatActivity;
-        final boolean useDarkColors = !((ChromeBaseAppCompatActivity) activity)
-                                               .getNightModeStateProvider()
-                                               .isInNightMode();
+        final boolean useDarkColors = !ColorUtils.inNightMode(activity);
 
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(profile);

@@ -10,7 +10,6 @@ import android.view.View;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -18,6 +17,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -39,7 +39,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final Runnable mClickDelegate;
     private final Context mContext;
-    private NightModeStateProvider mNightModeStateProvider;
 
     /**
      *
@@ -47,14 +46,12 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      * @param tabObscuringHandler Handler used to obscure/unobscure tabs when the scrim is
      *         shown/hidden.
      * @param context Context for retrieving resources.
-     * @param nightModeStateProvider Provider of state about night mode color settings.
      * @param locationBarDataProvider Provider of location bar data, e.g. the NTP state.
      * @param clickDelegate Click handler for the scrim
      * @param scrimTarget View that the scrim should be anchored to.
      */
     public LocationBarFocusScrimHandler(ScrimCoordinator scrimCoordinator,
             TabObscuringHandler tabObscuringHandler, Context context,
-            NightModeStateProvider nightModeStateProvider,
             LocationBarDataProvider locationBarDataProvider, Runnable clickDelegate,
             View scrimTarget) {
         mScrimCoordinator = scrimCoordinator;
@@ -62,7 +59,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mLocationBarDataProvider = locationBarDataProvider;
         mClickDelegate = clickDelegate;
         mContext = context;
-        mNightModeStateProvider = nightModeStateProvider;
 
         Resources resources = context.getResources();
         int topMargin =
@@ -101,7 +97,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     public void onUrlFocusChange(boolean hasFocus) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         boolean useLightColor = !isTablet && !mLocationBarDataProvider.isIncognito()
-                && !mNightModeStateProvider.isInNightMode();
+                && !ColorUtils.inNightMode(mContext);
         mScrimModel.set(ScrimProperties.BACKGROUND_COLOR,
                 useLightColor ? mLightScrimColor : ScrimProperties.INVALID_COLOR);
 

@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.Disti
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -45,6 +44,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -455,13 +455,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         return activity.getFullscreenManager();
     }
 
-    private NightModeStateProvider getNightModeStateProvider() {
-        // TODO(1069815): Remove this ChromeActivity cast once NightModeStateProvider is
-        //                accessible via another mechanism.
-        ChromeActivity activity = (ChromeActivity) TabUtils.getActivity(mTab);
-        return activity.getNightModeStateProvider();
-    }
-
     private void distillInCustomTab() {
         Activity activity = TabUtils.getActivity(mTab);
         WebContents webContents = mTab.getWebContents();
@@ -479,7 +472,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
-        builder.setColorScheme(getNightModeStateProvider().isInNightMode()
+        builder.setColorScheme(ColorUtils.inNightMode(activity)
                         ? CustomTabsIntent.COLOR_SCHEME_DARK
                         : CustomTabsIntent.COLOR_SCHEME_LIGHT);
         CustomTabsIntent customTabsIntent = builder.build();

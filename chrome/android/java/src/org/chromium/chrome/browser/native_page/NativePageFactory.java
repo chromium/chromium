@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
@@ -88,9 +89,8 @@ public class NativePageFactory {
             return new NewTabPage(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getActivityTabProvider(), mActivity.getSnackbarManager(),
                     mActivity.getLifecycleDispatcher(), mActivity.getTabModelSelector(),
-                    mActivity.isTablet(), mUma.get(),
-                    mActivity.getNightModeStateProvider().isInNightMode(), nativePageHost, tab,
-                    mBottomSheetController);
+                    mActivity.isTablet(), mUma.get(), ColorUtils.inNightMode(mActivity),
+                    nativePageHost, tab, mBottomSheetController);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

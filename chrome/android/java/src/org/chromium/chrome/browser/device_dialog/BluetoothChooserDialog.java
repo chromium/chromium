@@ -28,7 +28,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.location.LocationUtils;
@@ -39,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -186,10 +186,7 @@ public class BluetoothChooserDialog
         Profile profile = Profile.getLastUsedRegularProfile();
         SpannableString origin = new SpannableString(mOrigin);
 
-        assert mActivity instanceof ChromeBaseAppCompatActivity;
-        final boolean useDarkColors = !((ChromeBaseAppCompatActivity) mActivity)
-                                               .getNightModeStateProvider()
-                                               .isInNightMode();
+        final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(profile);
 
