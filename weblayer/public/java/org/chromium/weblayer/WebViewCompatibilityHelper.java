@@ -50,19 +50,7 @@ final class WebViewCompatibilityHelper {
             // matches what Android does when constructing class loaders, see
             // android.app.ApplicationLoaders.
             return new PathClassLoader(
-                    dexPath, librarySearchPath, ClassLoader.getSystemClassLoader().getParent()) {
-                @Override
-                public Class<?> loadClass(String name) throws ClassNotFoundException {
-                    // TODO(crbug.com/1112001): Investigate why loading classes causes strict mode
-                    // violations in some situations.
-                    StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-                    try {
-                        return super.loadClass(name);
-                    } finally {
-                        StrictMode.setThreadPolicy(oldPolicy);
-                    }
-                }
-            };
+                    dexPath, librarySearchPath, ClassLoader.getSystemClassLoader().getParent());
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
