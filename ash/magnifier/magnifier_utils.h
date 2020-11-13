@@ -6,6 +6,7 @@
 #define ASH_MAGNIFIER_MAGNIFIER_UTILS_H_
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 
 namespace aura {
 class Window;
@@ -22,6 +23,28 @@ namespace magnifier_utils {
 // value will be changed x1.000, x1.189, x1.414, x1.681, x2.000, ...
 // Note: this value is 2.0 ^ (1 / 4).
 constexpr float kMagnificationScaleFactor = 1.18920712f;
+
+// When magnifier wants to make visible a rect that's wider than the viewport,
+// we want to align the left edge of the rect to the left edge of the viewport.
+// In a right-to-left language, such as Hebrew, we'll want to align the right
+// edge of the rect with the right edge of the viewport. This way, the user can
+// see the maximum amount of useful information in the rect, assuming the
+// information begins at that edge (e.g. an omnibox entry). We also want to
+// include a bit of padding beyond that edge of the rect, to provide more
+// context about what's around the rect to the user. |kLeftEdgeContextPadding|
+// defines how much padding to include in the viewport.
+// TODO(accessibility): Add support for right-to-left languages.
+constexpr int kLeftEdgeContextPadding = 32;
+
+// The duration of time to ignore caret update after the last move magnifier to
+// rect call. Prevents jumping magnifier viewport to caret when user is
+// navigating through other things, but which happen to cause text/caret
+// updates (e.g. the omnibox results). Try keep under one frame buffer length
+// (~16ms assuming 60hz screen updates), however most importantly keep it short,
+// so e.g. when user focuses an element, and then starts typing, the viewport
+// quickly moves to the caret position.
+constexpr base::TimeDelta kPauseCaretUpdateDuration =
+    base::TimeDelta::FromMilliseconds(15);
 
 // Calculates the new scale if it were to be adjusted exponentially by the
 // given |linear_offset|. This allows linear changes in scroll offset

@@ -808,14 +808,18 @@ TEST_F(DockedMagnifierTest, TextInputFieldEvents) {
   // goes through the magnifier layer transform, it should end up being in the
   // center of the viewport.
   gfx::Point caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  TestMagnifierLayerTransform(caret_center, root_windows[0]);
+  gfx::Point caret_screen_point =
+      controller()->GetLastCaretScreenPointForTesting();
+  ASSERT_EQ(caret_center, caret_screen_point);
 
   // Simulate typing by pressing some keys while focus is in the text field. The
   // transformed caret center should always go to the viewport center.
   GetEventGenerator()->PressKey(ui::VKEY_A, 0);
   GetEventGenerator()->ReleaseKey(ui::VKEY_A, 0);
   gfx::Point new_caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  TestMagnifierLayerTransform(new_caret_center, root_windows[0]);
+  gfx::Point new_caret_screen_point =
+      controller()->GetLastCaretScreenPointForTesting();
+  ASSERT_EQ(new_caret_center, new_caret_screen_point);
 }
 
 // Tests that there are no crashes observed when the docked magnifier switches
@@ -843,7 +847,9 @@ TEST_F(DockedMagnifierTest, NoCrashDueToRecursion) {
   // Focus on the text input field.
   text_input_helper.FocusOnTextInputView();
   gfx::Point caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  TestMagnifierLayerTransform(caret_center, roots[0]);
+  gfx::Point caret_screen_point =
+      controller()->GetLastCaretScreenPointForTesting();
+  ASSERT_EQ(caret_center, caret_screen_point);
 
   // Move the mouse to the second display and expect no crashes.
   GetEventGenerator()->MoveMouseTo(1000, 300);
