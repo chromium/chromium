@@ -17,6 +17,8 @@
 #include "fuchsia/cast_streaming/public/cast_streaming_session.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 ContextImpl::ContextImpl(content::BrowserContext* browser_context,
                          WebEngineDevToolsController* devtools_controller)
@@ -70,6 +72,27 @@ void ContextImpl::CreateFrameWithParams(
   content::WebContents::CreateParams create_params(browser_context_, nullptr);
   create_params.initially_hidden = true;
   auto web_contents = content::WebContents::Create(create_params);
+
+  blink::web_pref::WebPreferences web_preferences =
+      web_contents->GetOrCreateWebPreferences();
+
+  // REQUIRE_USER_ACTIVATION is the default per the FIDL API.
+  web_preferences.autoplay_policy =
+      blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+
+  if (params.has_autoplay_policy()) {
+    switch (params.autoplay_policy()) {
+      case fuchsia::web::AutoplayPolicy::ALLOW:
+        web_preferences.autoplay_policy =
+            blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+        break;
+      case fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION:
+        web_preferences.autoplay_policy =
+            blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+        break;
+    }
+  }
+  web_contents->SetWebPreferences(web_preferences);
 
   // Register the new Frame with the DevTools controller. The controller will
   // reject registration if user-debugging is requested, but it is not enabled

@@ -127,11 +127,6 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
 
   if (allow_insecure_content_)
     web_prefs->allow_running_insecure_content = true;
-
-  // Allow media to autoplay.
-  // TODO(crbug.com/1067101): Provide a FIDL API to configure AutoplayPolicy.
-  web_prefs->autoplay_policy =
-      blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 }
 
 void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
