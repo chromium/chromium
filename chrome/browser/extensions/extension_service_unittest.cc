@@ -2286,13 +2286,12 @@ TEST_F(ExtensionServiceTest, TestInstallThemeWithExtensionsDisabled) {
   ValidateIntegerPref(theme_crx, "location", Manifest::INTERNAL);
 }
 
-#if defined(THREAD_SANITIZER)
-// Flaky under Tsan. http://crbug.com/377702
+#if defined(OS_MAC) || defined(OS_WIN)
+// Flaky on these platforms. http://crbug.com/1148894
 #define MAYBE_InstallTheme DISABLED_InstallTheme
 #else
 #define MAYBE_InstallTheme InstallTheme
 #endif
-
 TEST_F(ExtensionServiceTest, MAYBE_InstallTheme) {
   InitializeEmptyExtensionService();
   service()->Init();
