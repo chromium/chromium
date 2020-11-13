@@ -159,25 +159,12 @@ void WaylandKeyboard::RepeatInfo(void* data,
                                  wl_keyboard* obj,
                                  int32_t rate,
                                  int32_t delay) {
-  // Negative values for either rate or delay are illegal.
-  if (rate < 0 || delay < 0) {
-    LOG(ERROR) << "Invalid rate or delay: " << rate << ", " << delay;
-    return;
-  }
   WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
   DCHECK(keyboard);
 
-  if (rate == 0) {
-    // A rate of zero will disable any repeating (regardless of the value of
-    // delay).
-    keyboard->auto_repeat_handler_.SetAutoRepeatEnabled(false);
-  } else {
-    keyboard->auto_repeat_handler_.SetAutoRepeatEnabled(true);
-    // The rate is in characters per second
-    keyboard->auto_repeat_handler_.SetAutoRepeatRate(
-        base::TimeDelta::FromMilliseconds(delay),
-        base::TimeDelta::FromSecondsD(1.0 / rate));
-  }
+  keyboard->auto_repeat_handler_.SetAutoRepeatRate(
+      base::TimeDelta::FromMilliseconds(delay),
+      base::TimeDelta::FromMilliseconds(rate));
 }
 
 void WaylandKeyboard::FlushInput(base::OnceClosure closure) {
