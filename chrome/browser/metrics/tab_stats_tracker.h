@@ -243,6 +243,9 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   static const char kTabCountHistogramName[];
   static const char kWindowCountHistogramName[];
 
+  // The name of the histogram that records each window's width, in DIPs.
+  static const char kWindowWidthHistogramName[];
+
   UmaStatsReportingDelegate() {}
   virtual ~UmaStatsReportingDelegate() {}
 

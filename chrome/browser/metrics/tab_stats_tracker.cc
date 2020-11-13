@@ -23,6 +23,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +33,8 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
@@ -107,6 +110,10 @@ const char
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowCountHistogramName[] =
         "Tabs.WindowCount";
+
+const char
+    TabStatsTracker::UmaStatsReportingDelegate::kWindowWidthHistogramName[] =
+        "Tabs.WindowWidth";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -396,6 +403,33 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
 
   UMA_HISTOGRAM_COUNTS_10000(kTabCountHistogramName, tab_stats.total_tab_count);
   UMA_HISTOGRAM_COUNTS_10000(kWindowCountHistogramName, tab_stats.window_count);
+
+  // Record the width of all open browser windows with tabs.
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->type() != Browser::TYPE_NORMAL)
+      continue;
+
+    const BrowserWindow* window = browser->window();
+
+    // Only consider visible windows.
+    if (!window->IsVisible() || window->IsMinimized())
+      continue;
+
+    // Get the window's size (in DIPs).
+    const gfx::Size window_size = browser->window()->GetBounds().size();
+
+    // If the size is for some reason 0 in either dimension, skip it.
+    if (window_size.IsEmpty())
+      continue;
+
+    // A 4K screen is 4096 pixels wide. Doubling this and rounding up to
+    // 10000 should give a reasonable upper bound on DIPs. For the
+    // minimum width, pick an arbitrary value of 100. Most screens are
+    // unlikely to be this small, and likewise a browser window's min
+    // width is around this size.
+    UMA_HISTOGRAM_CUSTOM_COUNTS(kWindowWidthHistogramName, window_size.width(),
+                                100, 10000, 50);
+  }
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportUsageDuringInterval(

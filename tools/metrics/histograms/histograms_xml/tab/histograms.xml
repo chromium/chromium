@@ -2481,6 +2481,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.WindowWidth" units="DIPs" expires_after="M91">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The width of each open browser window, in DIPs, reported every 5 minutes.
+    Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.PaintChildrenDuration" units="microseconds"
     expires_after="M80">
   <owner>collinbaker@chromium.org</owner>
