@@ -211,6 +211,8 @@ static_library("browser") {
     "wait_for_document_operation.h",
     "web/check_on_top_worker.cc",
     "web/check_on_top_worker.h",
+    "web/element.cc",
+    "web/element.h",
     "web/element_finder.cc",
     "web/element_finder.h",
     "web/element_position_getter.cc",

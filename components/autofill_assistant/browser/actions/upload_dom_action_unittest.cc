@@ -140,12 +140,12 @@ TEST_F(UploadDomActionTest, MultipleDomUpload) {
   EXPECT_CALL(mock_action_delegate_, FindAllElements(selector, _))
       .WillOnce(testing::WithArgs<1>([](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
-        element_result->object_id = "fake_object_id";
+        element_result->dom_object.object_data.object_id = "fake_object_id";
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
   ElementFinder::Result expected_result;
-  expected_result.object_id = "fake_object_id";
+  expected_result.dom_object.object_data.object_id = "fake_object_id";
 
   std::vector<std::string> fake_htmls{"<div></div>", "<span></span>"};
   EXPECT_CALL(mock_action_delegate_,

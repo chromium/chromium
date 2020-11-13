@@ -31,11 +31,11 @@ void CheckOnTopWorker::Start(const ElementFinder::Result& element,
   js_snippet.AddLine("}");
   std::string function = js_snippet.ToString();
 
-  pending_result_count_ = element.frame_stack.size() + 1;
-  for (const auto& frame : element.frame_stack) {
+  pending_result_count_ = element.frame_stack().size() + 1;
+  for (const auto& frame : element.frame_stack()) {
     CallFunctionOn(function, frame.node_frame_id, frame.object_id);
   }
-  CallFunctionOn(function, element.node_frame_id, element.object_id);
+  CallFunctionOn(function, element.node_frame_id(), element.object_id());
 }
 
 void CheckOnTopWorker::CallFunctionOn(const std::string& function,

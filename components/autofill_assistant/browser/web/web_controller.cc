@@ -386,15 +386,15 @@ void WebController::ScrollIntoView(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(element.object_id, &argument);
+  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(argument))
           .SetFunctionDeclaration(std::string(kScrollIntoViewCenterScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
@@ -440,10 +440,10 @@ void WebController::WaitUntilElementIsStable(
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(devtools_client_.get(),
                                               max_rounds, check_interval,
-                                              element.node_frame_id);
+                                              element.node_frame_id());
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
-  ptr->Start(element.container_frame_host, element.object_id,
+  ptr->Start(element.container_frame_host, element.object_id(),
              base::BindOnce(
                  &WebController::OnWaitUntilElementIsStable,
                  weak_ptr_factory_.GetWeakPtr(), ptr,
@@ -475,14 +475,14 @@ void WebController::ClickOrTapElement(
 
   if (click_type == ClickType::JAVASCRIPT) {
     std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-    AddRuntimeCallArgumentObjectId(element.object_id, &argument);
+    AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
     devtools_client_->GetRuntime()->CallFunctionOn(
         runtime::CallFunctionOnParams::Builder()
-            .SetObjectId(element.object_id)
+            .SetObjectId(element.object_id())
             .SetArguments(std::move(argument))
             .SetFunctionDeclaration(kClickElementScript)
             .Build(),
-        element.node_frame_id,
+        element.node_frame_id(),
         base::BindOnce(
             &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
             base::BindOnce(&DecorateWebControllerStatus,
@@ -495,14 +495,14 @@ void WebController::ClickOrTapElement(
       std::make_unique<ElementPositionGetter>(
           devtools_client_.get(), /* max_rounds= */ 1,
           /* check_interval= */ base::TimeDelta::FromMilliseconds(0),
-          element.node_frame_id);
+          element.node_frame_id());
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(
-      element.container_frame_host, element.object_id,
+      element.container_frame_host, element.object_id(),
       base::BindOnce(
           &WebController::TapOrClickOnCoordinates,
-          weak_ptr_factory_.GetWeakPtr(), ptr, element.node_frame_id,
+          weak_ptr_factory_.GetWeakPtr(), ptr, element.node_frame_id(),
           click_type,
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::CLICK_OR_TAP_ELEMENT,
@@ -682,7 +682,7 @@ void WebController::WaitForDocumentReadyState(
           .SetReturnByValue(true)
           .SetAwaitPromise(true)
           .Build(),
-      optional_frame_element.node_frame_id,
+      optional_frame_element.node_frame_id(),
       base::BindOnce(&WebController::OnWaitForDocumentReadyState,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      base::TimeTicks::Now()));
@@ -938,12 +938,12 @@ void WebController::SelectOption(
   AddRuntimeCallArgument(static_cast<int>(select_strategy), &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kSelectOptionScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(&WebController::OnSelectOption,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus,
@@ -979,17 +979,16 @@ void WebController::OnSelectOption(
 void WebController::HighlightElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  const std::string& object_id = element.object_id;
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(object_id, &argument);
+  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(argument))
           .SetFunctionDeclaration(std::string(kHighlightElementScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
@@ -1002,17 +1001,17 @@ void WebController::ScrollToElementPosition(
     const TopPadding& top_padding,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgumentObjectId(element.object_id, &arguments);
+  AddRuntimeCallArgumentObjectId(element.object_id(), &arguments);
   AddRuntimeCallArgument(top_padding.pixels(), &arguments);
   AddRuntimeCallArgument(top_padding.ratio(), &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kScrollIntoViewWithPaddingScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(
@@ -1027,11 +1026,11 @@ void WebController::GetFieldValue(
         callback) {
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetFunctionDeclaration(std::string(kGetValueAttributeScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResultForString,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1064,12 +1063,12 @@ void WebController::GetStringAttribute(
   AddRuntimeCallArgument(attribute_values, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kGetElementAttributeScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResultForString,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1083,10 +1082,10 @@ void WebController::SelectFieldValue(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetFunctionDeclaration(std::string(kSelectFieldValueScript))
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
@@ -1102,11 +1101,11 @@ void WebController::SetValueAttribute(
   AddRuntimeCallArgument(value, &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(argument))
           .SetFunctionDeclaration(std::string(kSetValueAttributeScript))
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateWebControllerStatus,
@@ -1139,11 +1138,11 @@ void WebController::SetAttribute(
   AddRuntimeCallArgument(value, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kSetAttributeScript))
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(&WebController::OnJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus,
@@ -1169,7 +1168,7 @@ void WebController::SendKeyboardInput(
   }
 
   DispatchKeyboardTextDownEvent(
-      element.node_frame_id, codepoints, 0,
+      element.node_frame_id(), codepoints, 0,
       /* delay= */ false, delay_in_millisecond,
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
@@ -1184,10 +1183,10 @@ void WebController::FocusField(
 
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetFunctionDeclaration(std::string(kFocusFieldScript))
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(&WebController::OnJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus,
@@ -1354,11 +1353,11 @@ void WebController::GetOuterHtml(
         callback) {
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetFunctionDeclaration(std::string(kGetOuterHtmlScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResultForString,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1373,11 +1372,11 @@ void WebController::GetOuterHtmls(
                             const std::vector<std::string>&)> callback) {
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(elements.object_id)
+          .SetObjectId(elements.object_id())
           .SetFunctionDeclaration(std::string(kGetOuterHtmlsScript))
           .SetReturnByValue(true)
           .Build(),
-      elements.node_frame_id,
+      elements.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResultForStringArray,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1393,11 +1392,11 @@ void WebController::GetElementTag(
         callback) {
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
+          .SetObjectId(element.object_id())
           .SetFunctionDeclaration(std::string(kGetElementTagScript))
           .SetReturnByValue(true)
           .Build(),
-      element.node_frame_id,
+      element.node_frame_id(),
       base::BindOnce(
           &WebController::OnJavaScriptResultForString,
           weak_ptr_factory_.GetWeakPtr(),

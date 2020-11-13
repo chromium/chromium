@@ -46,12 +46,12 @@ void ElementRectGetter::GetBoundingClientRect(
     ElementRectCallback callback) {
   std::string object_id;
   std::string node_frame_id;
-  if (index < element->frame_stack.size()) {
-    object_id = element->frame_stack[index].object_id;
-    node_frame_id = element->frame_stack[index].node_frame_id;
+  if (index < element->frame_stack().size()) {
+    object_id = element->frame_stack()[index].object_id;
+    node_frame_id = element->frame_stack()[index].node_frame_id;
   } else {
-    object_id = element->object_id;
-    node_frame_id = element->node_frame_id;
+    object_id = element->object_id();
+    node_frame_id = element->node_frame_id();
   }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
@@ -109,7 +109,7 @@ void ElementRectGetter::OnGetClientRectResult(
     rect.bottom = std::min(stacked_rect.bottom, stacked_rect.top + rect.bottom);
   }
 
-  if (index >= element->frame_stack.size()) {
+  if (index >= element->frame_stack().size()) {
     std::move(callback).Run(OkClientStatus(), rect);
     return;
   }

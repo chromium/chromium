@@ -67,4 +67,4 @@ class ElementRectGetter : public WebControllerWorker {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_ELEMENT_POSITION_GETTER_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_ELEMENT_RECT_GETTER_H_

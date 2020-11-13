@@ -14,7 +14,7 @@
 namespace autofill_assistant {
 
 MATCHER_P(EqualsElement, element, "") {
-  return arg.object_id == element.object_id;
+  return arg.object_id() == element.object_id();
 }
 
 MATCHER_P(EqualsStatus, status, "") {

@@ -524,7 +524,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ElementFinder::Result result;
     FindElement(selector, &status, &result);
     EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, status.proto_status());
-    EXPECT_THAT(result.object_id, IsEmpty());
+    EXPECT_THAT(result.object_id(), IsEmpty());
   }
 
   void CheckFindElementResult(const ElementFinder::Result& result,
@@ -532,13 +532,13 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     if (is_main_frame) {
       EXPECT_EQ(shell()->web_contents()->GetMainFrame(),
                 result.container_frame_host);
-      EXPECT_EQ(result.frame_stack.size(), 0u);
+      EXPECT_EQ(result.frame_stack().size(), 0u);
     } else {
       EXPECT_NE(shell()->web_contents()->GetMainFrame(),
                 result.container_frame_host);
-      EXPECT_GE(result.frame_stack.size(), 1u);
+      EXPECT_GE(result.frame_stack().size(), 1u);
     }
-    EXPECT_FALSE(result.object_id.empty());
+    EXPECT_FALSE(result.object_id().empty());
   }
 
   ClientStatus GetStringAttribute(const Selector& selector,

@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/js_snippets.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 
@@ -48,23 +49,29 @@ class ElementFinder : public WebControllerWorker {
     kMatchArray,
   };
 
+  // Result is the fully resolved element that can be used without limitations.
+  // This means that |container_frame_host| has been found and is not nullptr.
   struct Result {
     Result();
     ~Result();
     Result(const Result&);
 
+    DomObjectFrameStack dom_object;
+
     // The render frame host contains the element.
     content::RenderFrameHost* container_frame_host = nullptr;
 
-    // The object id of the element.
-    std::string object_id;
+    const std::string& object_id() const {
+      return dom_object.object_data.object_id;
+    }
 
-    // The frame id to use to execute devtools Javascript calls within the
-    // context of the frame. Might be empty if no frame id needs to be
-    // specified.
-    std::string node_frame_id;
+    const std::string& node_frame_id() const {
+      return dom_object.object_data.node_frame_id;
+    }
 
-    std::vector<Result> frame_stack;
+    const std::vector<JsObjectIdentifier>& frame_stack() const {
+      return dom_object.frame_stack;
+    }
   };
 
   // |web_contents| and |devtools_client| must be valid for the lifetime of the
@@ -294,8 +301,6 @@ class ElementFinder : public WebControllerWorker {
                               std::unique_ptr<dom::DescribeNodeResult> result);
   void OnResolveNode(const DevtoolsClient::ReplyStatus& reply_status,
                      std::unique_ptr<dom::ResolveNodeResult> result);
-  content::RenderFrameHost* FindCorrespondingRenderFrameHost(
-      std::string frame_id);
 
   // Handle TaskType::PROXIMITY
   void ApplyProximityFilter(int filter_index,
@@ -354,7 +359,7 @@ class ElementFinder : public WebControllerWorker {
   // elements matched by task i, or nullptr if the task is still running.
   std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
 
-  std::vector<Result> frame_stack_;
+  std::vector<JsObjectIdentifier> frame_stack_;
 
   // Finder for the target of the current proximity filter.
   std::unique_ptr<ElementFinder> proximity_target_filter_;

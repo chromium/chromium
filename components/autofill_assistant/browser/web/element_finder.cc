@@ -6,6 +6,7 @@
 
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -324,15 +325,15 @@ void ElementFinder::SendSuccessResult(const std::string& object_id) {
   // Fill in result and return
   std::unique_ptr<Result> result =
       std::make_unique<Result>(BuildResult(object_id));
-  result->frame_stack = frame_stack_;
+  result->dom_object.frame_stack = frame_stack_;
   std::move(callback_).Run(OkClientStatus(), std::move(result));
 }
 
 ElementFinder::Result ElementFinder::BuildResult(const std::string& object_id) {
   Result result;
   result.container_frame_host = current_frame_;
-  result.object_id = object_id;
-  result.node_frame_id = current_frame_id_;
+  result.dom_object.object_data.object_id = object_id;
+  result.dom_object.object_data.node_frame_id = current_frame_id_;
   return result;
 }
 
@@ -735,9 +736,10 @@ void ElementFinder::OnDescribeNodeForFrame(
   if (node->GetNodeName() == "IFRAME") {
     DCHECK(node->HasFrameId());  // Ensure all frames have an id.
 
-    frame_stack_.push_back(BuildResult(object_id));
+    frame_stack_.push_back({object_id, current_frame_id_});
 
-    auto* frame = FindCorrespondingRenderFrameHost(node->GetFrameId());
+    auto* frame =
+        FindCorrespondingRenderFrameHost(node->GetFrameId(), web_contents_);
     if (!frame) {
       VLOG(1) << __func__ << " Failed to find corresponding owner frame.";
       SendResult(ClientStatus(FRAME_HOST_NOT_FOUND));
@@ -799,17 +801,6 @@ void ElementFinder::OnResolveNode(
   // Use the node as root for the rest of the evaluation.
   current_matches_.emplace_back(object_id);
   ExecuteNextTask();
-}
-
-content::RenderFrameHost* ElementFinder::FindCorrespondingRenderFrameHost(
-    std::string frame_id) {
-  for (auto* frame : web_contents_->GetAllFrames()) {
-    if (frame->GetDevToolsFrameToken().ToString() == frame_id) {
-      return frame;
-    }
-  }
-
-  return nullptr;
 }
 
 void ElementFinder::ApplyProximityFilter(int filter_index,
@@ -922,7 +913,7 @@ void ElementFinder::OnProximityFilterTarget(int filter_index,
 })");
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgumentObjectId(result->object_id, &arguments);
+  AddRuntimeCallArgumentObjectId(result->object_id(), &arguments);
   AddRuntimeCallArgument(filter.max_pairs(), &arguments);
 
   devtools_client_->GetRuntime()->CallFunctionOn(
