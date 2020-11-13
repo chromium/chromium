@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-PASS EventListener parameter is optional
 PASS listeners are called when <iframe> is resized
 FAIL listeners are called correct number of times assert_equals: expected 1 but got 0
 FAIL listeners are called in order they were added assert_array_equals: lengths differ, expected array ["1st", "2nd"] length 2, got [] length 0
