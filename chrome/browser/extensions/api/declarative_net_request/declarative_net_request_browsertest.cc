@@ -76,10 +76,10 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
@@ -2109,11 +2109,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       "yahoo.com", "/pages_with_script/index.html");
 
   const Extension* extension = last_loaded_extension();
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension);
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension);
   ASSERT_EQ(1u, static_sources.size());
-  RulesetSource dynamic_source =
-      RulesetSource::CreateDynamic(profile(), extension->id());
+  FileBackedRulesetSource dynamic_source =
+      FileBackedRulesetSource::CreateDynamic(profile(), extension->id());
 
   // Loading the extension should cause some main frame requests to be blocked.
   {
@@ -2230,7 +2230,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const Extension* extension = last_loaded_extension();
   ASSERT_TRUE(extension);
 
-  std::vector<RulesetSource> sources = RulesetSource::CreateStatic(*extension);
+  std::vector<FileBackedRulesetSource> sources =
+      FileBackedRulesetSource::CreateStatic(*extension);
   ASSERT_EQ(kNumStaticRulesets, sources.size());
 
   // Mimic extension prefs corruption by overwriting the indexed ruleset
@@ -2351,12 +2352,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // Ensure that the new checksum was correctly persisted in prefs.
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   const Extension* extension = last_loaded_extension();
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension);
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension);
   ASSERT_EQ(static_cast<size_t>(kNumStaticRulesets), static_sources.size());
 
   int checksum = kTestChecksum + 1;
-  for (const RulesetSource& source : static_sources) {
+  for (const FileBackedRulesetSource& source : static_sources) {
     EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(extension_id, source.id(),
                                                    &checksum));
     EXPECT_EQ(kTestChecksum, checksum);
@@ -2379,8 +2380,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const ExtensionId extension_id = last_loaded_extension_id();
   const Extension* extension = last_loaded_extension();
 
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension);
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension);
   ASSERT_EQ(1u, static_sources.size());
 
   DisableExtension(extension_id);

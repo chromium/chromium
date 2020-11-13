@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/common/install_warning.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -53,10 +53,11 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
 
  private:
   friend class base::RefCountedThreadSafe<IndexHelper>;
-  using IndexResults = std::vector<
-      std::pair<const RulesetSource*, IndexAndPersistJSONRulesetResult>>;
+  using IndexResults = std::vector<std::pair<const FileBackedRulesetSource*,
+                                             IndexAndPersistJSONRulesetResult>>;
 
-  IndexHelper(std::vector<RulesetSource> sources, IndexCallback callback);
+  IndexHelper(std::vector<FileBackedRulesetSource> sources,
+              IndexCallback callback);
   ~IndexHelper();
 
   // Starts indexing the rulesets.
@@ -66,15 +67,16 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   void OnAllRulesetsIndexed();
 
   // Callback invoked when indexing of a single ruleset is completed.
-  // |source_index| is the index of the RulesetSource within |sources_|.
+  // |source_index| is the index of the FileBackedRulesetSource within
+  // |sources_|.
   void OnRulesetIndexed(base::OnceClosure ruleset_done_closure,
                         size_t source_index,
                         IndexAndPersistJSONRulesetResult result);
 
-  const std::vector<RulesetSource> sources_;
+  const std::vector<FileBackedRulesetSource> sources_;
   IndexCallback callback_;
 
-  // Stores the result for each RulesetSource in |sources_|.
+  // Stores the result for each FileBackedRulesetSource in |sources_|.
   IndexResults results_;
 
   // We use a single shared Data Decoder service instance to process all of the

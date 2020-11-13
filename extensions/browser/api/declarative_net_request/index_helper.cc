@@ -23,10 +23,10 @@ namespace declarative_net_request {
 namespace {
 namespace dnr_api = api::declarative_net_request;
 
-// Combines indexing results from multiple RulesetSources into a single
-// IndexHelper::Result.
+// Combines indexing results from multiple FileBackedRulesetSources into a
+// single IndexHelper::Result.
 IndexHelper::Result CombineResults(
-    std::vector<std::pair<const RulesetSource*,
+    std::vector<std::pair<const FileBackedRulesetSource*,
                           IndexAndPersistJSONRulesetResult>> results,
     bool log_histograms) {
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
@@ -45,7 +45,7 @@ IndexHelper::Result CombineResults(
   // Note |results| may be empty.
   for (auto& result_pair : results) {
     IndexAndPersistJSONRulesetResult& index_result = result_pair.second;
-    const RulesetSource* source = result_pair.first;
+    const FileBackedRulesetSource* source = result_pair.first;
 
     // Per-ruleset limits should have been enforced during ruleset indexing.
     DCHECK_LE(index_result.regex_rules_count,
@@ -141,18 +141,19 @@ void IndexHelper::IndexStaticRulesets(const Extension& extension,
   // In these cases there's a potential for a use-after-free with manual memory
   // management.
   auto index_helper = base::WrapRefCounted(new IndexHelper(
-      RulesetSource::CreateStatic(extension), std::move(callback)));
+      FileBackedRulesetSource::CreateStatic(extension), std::move(callback)));
   index_helper->Start();
 }
 
 // static
 IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
     const Extension& extension) {
-  std::vector<RulesetSource> sources = RulesetSource::CreateStatic(extension);
+  std::vector<FileBackedRulesetSource> sources =
+      FileBackedRulesetSource::CreateStatic(extension);
 
   IndexResults results;
   results.reserve(sources.size());
-  for (const RulesetSource& source : sources)
+  for (const FileBackedRulesetSource& source : sources)
     results.emplace_back(&source, source.IndexAndPersistJSONRulesetUnsafe());
 
   // Don't log histograms for unpacked extensions so that the histograms reflect
@@ -162,7 +163,7 @@ IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
   return CombineResults(std::move(results), log_histograms);
 }
 
-IndexHelper::IndexHelper(std::vector<RulesetSource> sources,
+IndexHelper::IndexHelper(std::vector<FileBackedRulesetSource> sources,
                          IndexCallback callback)
     : sources_(std::move(sources)), callback_(std::move(callback)) {}
 

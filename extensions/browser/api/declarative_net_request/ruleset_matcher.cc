@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
 
@@ -24,7 +24,7 @@ namespace declarative_net_request {
 
 // static
 LoadRulesetResult RulesetMatcher::CreateVerifiedMatcher(
-    const RulesetSource& source,
+    const FileBackedRulesetSource& source,
     int expected_ruleset_checksum,
     std::unique_ptr<RulesetMatcher>* matcher) {
   DCHECK(matcher);

@@ -156,7 +156,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
 
 // Helper to create the new list of dynamic rules. Returns false on failure and
 // populates |error| and |status|.
-bool GetNewDynamicRules(const RulesetSource& source,
+bool GetNewDynamicRules(const FileBackedRulesetSource& source,
                         std::vector<int> rule_ids_to_remove,
                         std::vector<dnr_api::Rule> rules_to_add,
                         std::vector<dnr_api::Rule>* new_rules,
@@ -219,7 +219,7 @@ bool GetNewDynamicRules(const RulesetSource& source,
 
 // Returns true on success and populates |ruleset_checksum|. Returns false on
 // failure and populates |error| and |status|.
-bool UpdateAndIndexDynamicRules(const RulesetSource& source,
+bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
                                 std::vector<int> rule_ids_to_remove,
                                 std::vector<dnr_api::Rule> rules_to_add,
                                 int* ruleset_checksum,
@@ -241,8 +241,8 @@ bool UpdateAndIndexDynamicRules(const RulesetSource& source,
 
   // Initially write the new JSON and indexed rulesets to temporary files to
   // ensure we don't leave the actual files in an inconsistent state.
-  std::unique_ptr<RulesetSource> temporary_source =
-      RulesetSource::CreateTemporarySource(
+  std::unique_ptr<FileBackedRulesetSource> temporary_source =
+      FileBackedRulesetSource::CreateTemporarySource(
           source.id(), source.rule_count_limit(), source.extension_id());
   if (!temporary_source) {
     *error = kInternalErrorUpdatingDynamicRules;
@@ -327,7 +327,8 @@ bool UpdateAndIndexDynamicRules(const RulesetSource& source,
 
 }  // namespace
 
-RulesetInfo::RulesetInfo(RulesetSource source) : source_(std::move(source)) {}
+RulesetInfo::RulesetInfo(FileBackedRulesetSource source)
+    : source_(std::move(source)) {}
 RulesetInfo::~RulesetInfo() = default;
 RulesetInfo::RulesetInfo(RulesetInfo&&) = default;
 RulesetInfo& RulesetInfo::operator=(RulesetInfo&&) = default;

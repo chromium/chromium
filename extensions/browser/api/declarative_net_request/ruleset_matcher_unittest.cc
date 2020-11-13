@@ -20,9 +20,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extensions_test.h"
@@ -155,7 +155,7 @@ TEST_F(RulesetMatcherTest, UpgradeRule) {
 
 // Tests that a modified ruleset file fails verification.
 TEST_F(RulesetMatcherTest, FailedVerification) {
-  RulesetSource source = CreateTemporarySource();
+  FileBackedRulesetSource source = CreateTemporarySource();
   std::unique_ptr<RulesetMatcher> matcher;
   int expected_checksum;
   ASSERT_TRUE(CreateVerifiedMatcher({}, source, &matcher, &expected_checksum));

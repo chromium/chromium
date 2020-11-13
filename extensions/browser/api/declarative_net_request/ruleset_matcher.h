@@ -21,7 +21,7 @@ class RenderFrameHost;
 namespace extensions {
 
 namespace declarative_net_request {
-class RulesetSource;
+class FileBackedRulesetSource;
 enum class LoadRulesetResult;
 
 namespace flat {
@@ -40,7 +40,7 @@ class RulesetMatcher {
   // called on a sequence where file IO is allowed. Returns kSuccess on
   // success along with the ruleset |matcher|.
   static LoadRulesetResult CreateVerifiedMatcher(
-      const RulesetSource& source,
+      const FileBackedRulesetSource& source,
       int expected_ruleset_checksum,
       std::unique_ptr<RulesetMatcher>* matcher);
 

@@ -20,10 +20,10 @@
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -123,11 +123,11 @@ DeclarativeNetRequestGetDynamicRulesFunction::
 
 ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetDynamicRulesFunction::Run() {
-  auto source = declarative_net_request::RulesetSource::CreateDynamic(
+  auto source = declarative_net_request::FileBackedRulesetSource::CreateDynamic(
       browser_context(), extension()->id());
 
   auto read_dynamic_rules = base::BindOnce(
-      [](const declarative_net_request::RulesetSource& source) {
+      [](const declarative_net_request::FileBackedRulesetSource& source) {
         return source.ReadJSONRulesUnsafe();
       },
       std::move(source));

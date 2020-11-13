@@ -16,8 +16,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -51,9 +51,10 @@ struct TestLoadRulesetInfo {
 };
 
 struct TestCase {
-  explicit TestCase(RulesetSource source) : source(std::move(source)) {}
+  explicit TestCase(FileBackedRulesetSource source)
+      : source(std::move(source)) {}
   int checksum;
-  RulesetSource source;
+  FileBackedRulesetSource source;
   TestLoadRulesetInfo expected_result;
 };
 
@@ -77,7 +78,7 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestAddDynamicRules(
-      RulesetSource source,
+      FileBackedRulesetSource source,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
       ReadJSONRulesResult::Status expected_read_status,
       UpdateDynamicRulesStatus expected_update_status,
@@ -298,7 +299,7 @@ TEST_F(FileSequenceHelperTest, JSONAndIndexedRulesetDeleted) {
 TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
   // Simulate adding rules for the first time i.e. with no JSON and indexed
   // ruleset files.
-  RulesetSource source = CreateTemporarySource();
+  FileBackedRulesetSource source = CreateTemporarySource();
   base::DeleteFile(source.json_path());
   base::DeleteFile(source.indexed_path());
 

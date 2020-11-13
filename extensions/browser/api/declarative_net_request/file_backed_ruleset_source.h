@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
-#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
+#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
+#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 
 #include <memory>
 #include <string>
@@ -136,35 +136,37 @@ struct ReadJSONRulesResult {
 };
 
 // Holds paths for an extension ruleset.
-class RulesetSource {
+class FileBackedRulesetSource {
  public:
-  // Creates RulesetSources corresponding to the static rulesets in the
-  // extension package.
-  static std::vector<RulesetSource> CreateStatic(const Extension& extension);
+  // Creates FileBackedRulesetSources corresponding to the static rulesets in
+  // the extension package.
+  static std::vector<FileBackedRulesetSource> CreateStatic(
+      const Extension& extension);
 
-  // Creates a static RulesetSource corresponding to |info| for the given
-  // |extension|.
-  static RulesetSource CreateStatic(const Extension& extension,
-                                    const DNRManifestData::RulesetInfo& info);
+  // Creates a static FileBackedRulesetSource corresponding to |info| for the
+  // given |extension|.
+  static FileBackedRulesetSource CreateStatic(
+      const Extension& extension,
+      const DNRManifestData::RulesetInfo& info);
 
-  // Creates RulesetSource corresponding to the dynamic rules added by the
-  // extension. This must only be called for extensions which specified a
+  // Creates FileBackedRulesetSource corresponding to the dynamic rules added by
+  // the extension. This must only be called for extensions which specified a
   // declarative ruleset.
-  static RulesetSource CreateDynamic(content::BrowserContext* context,
-                                     const ExtensionId& extension_id);
+  static FileBackedRulesetSource CreateDynamic(content::BrowserContext* context,
+                                               const ExtensionId& extension_id);
 
   // Creates a temporary source i.e. a source corresponding to temporary files.
   // Returns null on failure.
-  static std::unique_ptr<RulesetSource> CreateTemporarySource(
+  static std::unique_ptr<FileBackedRulesetSource> CreateTemporarySource(
       RulesetID id,
       size_t rule_count_limit,
       ExtensionId extension_id);
 
-  ~RulesetSource();
-  RulesetSource(RulesetSource&&);
-  RulesetSource& operator=(RulesetSource&&);
+  ~FileBackedRulesetSource();
+  FileBackedRulesetSource(FileBackedRulesetSource&&);
+  FileBackedRulesetSource& operator=(FileBackedRulesetSource&&);
 
-  RulesetSource Clone() const;
+  FileBackedRulesetSource Clone() const;
 
   // Path to the JSON rules.
   const base::FilePath& json_path() const { return json_path_; }
@@ -217,12 +219,12 @@ class RulesetSource {
       const std::vector<api::declarative_net_request::Rule>& rules) const;
 
  private:
-  RulesetSource(base::FilePath json_path,
-                base::FilePath indexed_path,
-                RulesetID id,
-                size_t rule_count_limit,
-                ExtensionId extension_id,
-                bool enabled);
+  FileBackedRulesetSource(base::FilePath json_path,
+                          base::FilePath indexed_path,
+                          RulesetID id,
+                          size_t rule_count_limit,
+                          ExtensionId extension_id,
+                          bool enabled);
 
   base::FilePath json_path_;
   base::FilePath indexed_path_;
@@ -231,10 +233,10 @@ class RulesetSource {
   ExtensionId extension_id_;
   bool enabled_by_default_;
 
-  DISALLOW_COPY_AND_ASSIGN(RulesetSource);
+  DISALLOW_COPY_AND_ASSIGN(FileBackedRulesetSource);
 };
 
 }  // namespace declarative_net_request
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
+#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_

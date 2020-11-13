@@ -1012,8 +1012,8 @@ TEST_P(SingleRulesetGlobalRulesTest, RuleCountLimitMatched) {
   LoadAndExpectSuccess(300);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension());
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension());
 
   ASSERT_EQ(1u, static_sources.size());
   EXPECT_TRUE(base::PathExists(static_sources[0].indexed_path()));
@@ -1079,8 +1079,8 @@ TEST_P(SingleRulesetGlobalRulesTest, RuleCountLimitExceeded) {
   DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
       0, 0, false /* expect_rulesets_indexed */);
 
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension());
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension());
 
   // Since the ruleset was ignored and not indexed, it should not be persisted
   // to a file.
@@ -1487,8 +1487,8 @@ TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InternalError) {
   LoadAndExpectSuccess();
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension());
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension());
   ASSERT_EQ(2u, static_sources.size());
 
   constexpr char kReindexHistogram[] =
@@ -1642,8 +1642,8 @@ TEST_P(MultipleRulesetsGlobalRulesTest, StaticRuleCountExceeded) {
               UnorderedElementsAre(
                   Pointee(Property(&RulesetMatcher::GetRulesCount, 250))));
 
-  std::vector<RulesetSource> static_sources =
-      RulesetSource::CreateStatic(*extension());
+  std::vector<FileBackedRulesetSource> static_sources =
+      FileBackedRulesetSource::CreateStatic(*extension());
   ASSERT_EQ(2u, static_sources.size());
 
   if (GetParam() != ExtensionLoadType::PACKED) {

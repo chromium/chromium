@@ -23,10 +23,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/file_sequence_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -234,8 +234,8 @@ void RulesMonitorService::OnExtensionLoaded(
 
   // Static rulesets.
   {
-    std::vector<RulesetSource> sources =
-        RulesetSource::CreateStatic(*extension);
+    std::vector<FileBackedRulesetSource> sources =
+        FileBackedRulesetSource::CreateStatic(*extension);
 
     base::Optional<std::set<RulesetID>> prefs_enabled_rulesets =
         prefs_->GetDNREnabledStaticRulesets(extension->id());
@@ -274,8 +274,8 @@ void RulesMonitorService::OnExtensionLoaded(
   // Dynamic ruleset
   if (prefs_->GetDNRDynamicRulesetChecksum(extension->id(),
                                            &expected_ruleset_checksum)) {
-    RulesetInfo dynamic_ruleset(
-        RulesetSource::CreateDynamic(browser_context, extension->id()));
+    RulesetInfo dynamic_ruleset(FileBackedRulesetSource::CreateDynamic(
+        browser_context, extension->id()));
     dynamic_ruleset.set_expected_checksum(expected_ruleset_checksum);
     load_data.rulesets.push_back(std::move(dynamic_ruleset));
   }
@@ -347,8 +347,8 @@ void RulesMonitorService::OnExtensionUninstalled(
   // Cleanup the dynamic rules directory for the extension.
   // TODO(karandeepb): It's possible that this task fails, e.g. during shutdown.
   // Make this more robust.
-  RulesetSource source =
-      RulesetSource::CreateDynamic(browser_context, extension->id());
+  FileBackedRulesetSource source =
+      FileBackedRulesetSource::CreateDynamic(browser_context, extension->id());
   DCHECK_EQ(source.json_path().DirName(), source.indexed_path().DirName());
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
@@ -373,7 +373,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
   // We are updating the indexed ruleset. Don't set the expected checksum since
   // it'll change.
   data.rulesets.emplace_back(
-      RulesetSource::CreateDynamic(context_, extension_id));
+      FileBackedRulesetSource::CreateDynamic(context_, extension_id));
 
   auto update_rules_callback =
       base::BindOnce(&RulesMonitorService::OnDynamicRulesUpdated,
@@ -416,7 +416,8 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
 
     const DNRManifestData::RulesetInfo& info =
         DNRManifestData::GetRuleset(*extension, id_to_enable);
-    RulesetInfo static_ruleset(RulesetSource::CreateStatic(*extension, info));
+    RulesetInfo static_ruleset(
+        FileBackedRulesetSource::CreateStatic(*extension, info));
     static_ruleset.set_expected_checksum(expected_ruleset_checksum);
     load_data.rulesets.push_back(std::move(static_ruleset));
   }

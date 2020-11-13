@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
@@ -313,10 +313,11 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
 bool AreAllIndexedStaticRulesetsValid(
     const Extension& extension,
     content::BrowserContext* browser_context) {
-  std::vector<RulesetSource> sources = RulesetSource::CreateStatic(extension);
+  std::vector<FileBackedRulesetSource> sources =
+      FileBackedRulesetSource::CreateStatic(extension);
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  for (RulesetSource& source : sources) {
+  for (FileBackedRulesetSource& source : sources) {
     if (prefs->ShouldIgnoreDNRRuleset(extension.id(), source.id()))
       continue;
 
@@ -338,7 +339,7 @@ bool AreAllIndexedStaticRulesetsValid(
 }
 
 bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
-                           const RulesetSource& source,
+                           const FileBackedRulesetSource& source,
                            std::unique_ptr<RulesetMatcher>* matcher,
                            int* expected_checksum) {
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
@@ -370,11 +371,12 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   return load_result == LoadRulesetResult::kSuccess;
 }
 
-RulesetSource CreateTemporarySource(RulesetID id,
-                                    size_t rule_count_limit,
-                                    ExtensionId extension_id) {
-  std::unique_ptr<RulesetSource> source = RulesetSource::CreateTemporarySource(
-      id, rule_count_limit, std::move(extension_id));
+FileBackedRulesetSource CreateTemporarySource(RulesetID id,
+                                              size_t rule_count_limit,
+                                              ExtensionId extension_id) {
+  std::unique_ptr<FileBackedRulesetSource> source =
+      FileBackedRulesetSource::CreateTemporarySource(id, rule_count_limit,
+                                                     std::move(extension_id));
   CHECK(source);
   return source->Clone();
 }

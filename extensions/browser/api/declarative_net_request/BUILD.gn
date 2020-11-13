@@ -65,6 +65,8 @@ source_set("core") {
   sources = [
     "constants.cc",
     "constants.h",
+    "file_backed_ruleset_source.cc",
+    "file_backed_ruleset_source.h",
     "flat_ruleset_indexer.cc",
     "flat_ruleset_indexer.h",
     "index_helper.cc",
@@ -75,8 +77,6 @@ source_set("core") {
     "parse_info.h",
     "ruleset_install_pref.cc",
     "ruleset_install_pref.h",
-    "ruleset_source.cc",
-    "ruleset_source.h",
     "utils.cc",
     "utils.h",
   ]

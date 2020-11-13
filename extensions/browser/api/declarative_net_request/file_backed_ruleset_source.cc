@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 
 #include <memory>
 #include <set>
@@ -90,7 +90,7 @@ void AddRegexLimitExceededWarnings(
 
   constexpr size_t kMaxRegexLimitExceededWarnings = 10;
   if (rule_ids.size() <= kMaxRegexLimitExceededWarnings) {
-    for (const std::string& rule_id: rule_ids) {
+    for (const std::string& rule_id : rule_ids) {
       warnings->push_back(CreateInstallWarning(
           json_path, ErrorUtils::FormatErrorMessage(kErrorRegexTooLarge,
                                                     rule_id, kRegexFilterKey)));
@@ -209,7 +209,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
 }
 
 IndexAndPersistJSONRulesetResult IndexAndPersistRuleset(
-    const RulesetSource& source,
+    const FileBackedRulesetSource& source,
     ReadJSONRulesResult read_result,
     const base::ElapsedTimer& timer) {
   // Rulesets which exceed the rule limit are ignored because they can never be
@@ -253,10 +253,11 @@ IndexAndPersistJSONRulesetResult IndexAndPersistRuleset(
       info.regex_rules_count(), timer.Elapsed());
 }
 
-void OnSafeJSONParse(const base::FilePath& json_path,
-                     const RulesetSource& source,
-                     RulesetSource::IndexAndPersistJSONRulesetCallback callback,
-                     data_decoder::DataDecoder::ValueOrError result) {
+void OnSafeJSONParse(
+    const base::FilePath& json_path,
+    const FileBackedRulesetSource& source,
+    FileBackedRulesetSource::IndexAndPersistJSONRulesetCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     std::move(callback).Run(IndexAndPersistJSONRulesetResult::CreateErrorResult(
         GetErrorWithFilename(json_path, *result.error)));
@@ -268,8 +269,8 @@ void OnSafeJSONParse(const base::FilePath& json_path,
       source.id(), json_path, *result.value, source.rule_count_limit(),
       source.is_dynamic_ruleset());
 
-  std::move(callback).Run(IndexAndPersistRuleset(
-      source, std::move(read_result), timer));
+  std::move(callback).Run(
+      IndexAndPersistRuleset(source, std::move(read_result), timer));
 }
 
 }  // namespace
@@ -334,22 +335,22 @@ ReadJSONRulesResult& ReadJSONRulesResult::operator=(ReadJSONRulesResult&&) =
     default;
 
 // static
-std::vector<RulesetSource> RulesetSource::CreateStatic(
+std::vector<FileBackedRulesetSource> FileBackedRulesetSource::CreateStatic(
     const Extension& extension) {
   const std::vector<DNRManifestData::RulesetInfo>& rulesets =
       declarative_net_request::DNRManifestData::GetRulesets(extension);
 
-  std::vector<RulesetSource> sources;
+  std::vector<FileBackedRulesetSource> sources;
   for (const auto& info : rulesets)
     sources.push_back(CreateStatic(extension, info));
 
   return sources;
 }
 
-RulesetSource RulesetSource::CreateStatic(
+FileBackedRulesetSource FileBackedRulesetSource::CreateStatic(
     const Extension& extension,
     const DNRManifestData::RulesetInfo& info) {
-  return RulesetSource(
+  return FileBackedRulesetSource(
       extension.path().Append(info.relative_path),
       extension.path().Append(
           file_util::GetIndexedRulesetRelativePath(info.id.value())),
@@ -357,13 +358,14 @@ RulesetSource RulesetSource::CreateStatic(
 }
 
 // static
-RulesetSource RulesetSource::CreateDynamic(content::BrowserContext* context,
-                                           const ExtensionId& extension_id) {
+FileBackedRulesetSource FileBackedRulesetSource::CreateDynamic(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id) {
   base::FilePath dynamic_ruleset_directory =
       context->GetPath()
           .AppendASCII(kDynamicRulesetDirectory)
           .AppendASCII(extension_id);
-  return RulesetSource(
+  return FileBackedRulesetSource(
       dynamic_ruleset_directory.AppendASCII(kDynamicRulesJSONFilename),
       dynamic_ruleset_directory.AppendASCII(kDynamicIndexedRulesFilename),
       kDynamicRulesetID, GetDynamicRuleLimit(), extension_id,
@@ -371,10 +373,10 @@ RulesetSource RulesetSource::CreateDynamic(content::BrowserContext* context,
 }
 
 // static
-std::unique_ptr<RulesetSource> RulesetSource::CreateTemporarySource(
-    RulesetID id,
-    size_t rule_count_limit,
-    ExtensionId extension_id) {
+std::unique_ptr<FileBackedRulesetSource>
+FileBackedRulesetSource::CreateTemporarySource(RulesetID id,
+                                               size_t rule_count_limit,
+                                               ExtensionId extension_id) {
   base::FilePath temporary_file_indexed;
   base::FilePath temporary_file_json;
   if (!base::CreateTemporaryFile(&temporary_file_indexed) ||
@@ -382,32 +384,34 @@ std::unique_ptr<RulesetSource> RulesetSource::CreateTemporarySource(
     return nullptr;
   }
 
-  // Use WrapUnique since RulesetSource constructor is private.
-  return base::WrapUnique(new RulesetSource(
+  // Use WrapUnique since FileBackedRulesetSource constructor is private.
+  return base::WrapUnique(new FileBackedRulesetSource(
       std::move(temporary_file_json), std::move(temporary_file_indexed), id,
       rule_count_limit, std::move(extension_id),
       true /* enabled_by_default */));
 }
 
-RulesetSource::~RulesetSource() = default;
-RulesetSource::RulesetSource(RulesetSource&&) = default;
-RulesetSource& RulesetSource::operator=(RulesetSource&&) = default;
+FileBackedRulesetSource::~FileBackedRulesetSource() = default;
+FileBackedRulesetSource::FileBackedRulesetSource(FileBackedRulesetSource&&) =
+    default;
+FileBackedRulesetSource& FileBackedRulesetSource::operator=(
+    FileBackedRulesetSource&&) = default;
 
-RulesetSource RulesetSource::Clone() const {
-  return RulesetSource(json_path_, indexed_path_, id_, rule_count_limit_,
-                       extension_id_, enabled_by_default_);
+FileBackedRulesetSource FileBackedRulesetSource::Clone() const {
+  return FileBackedRulesetSource(json_path_, indexed_path_, id_,
+                                 rule_count_limit_, extension_id_,
+                                 enabled_by_default_);
 }
 
 IndexAndPersistJSONRulesetResult
-RulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
+FileBackedRulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
   DCHECK(IsAPIAvailable());
 
   base::ElapsedTimer timer;
-  return IndexAndPersistRuleset(*this, ReadJSONRulesUnsafe(),
-                                             timer);
+  return IndexAndPersistRuleset(*this, ReadJSONRulesUnsafe(), timer);
 }
 
-void RulesetSource::IndexAndPersistJSONRuleset(
+void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
     data_decoder::DataDecoder* decoder,
     IndexAndPersistJSONRulesetCallback callback) const {
   DCHECK(IsAPIAvailable());
@@ -430,7 +434,7 @@ void RulesetSource::IndexAndPersistJSONRuleset(
                                     std::move(callback)));
 }
 
-ParseInfo RulesetSource::IndexAndPersistRules(
+ParseInfo FileBackedRulesetSource::IndexAndPersistRules(
     std::vector<dnr_api::Rule> rules) const {
   DCHECK_LE(rules.size(), rule_count_limit_);
   DCHECK(IsAPIAvailable());
@@ -483,7 +487,7 @@ ParseInfo RulesetSource::IndexAndPersistRules(
                    std::move(large_regex_rule_ids));
 }
 
-ReadJSONRulesResult RulesetSource::ReadJSONRulesUnsafe() const {
+ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
   ReadJSONRulesResult result;
 
   if (!base::PathExists(json_path_)) {
@@ -509,7 +513,7 @@ ReadJSONRulesResult RulesetSource::ReadJSONRulesUnsafe() const {
                             rule_count_limit_, is_dynamic_ruleset());
 }
 
-bool RulesetSource::WriteRulesToJSON(
+bool FileBackedRulesetSource::WriteRulesToJSON(
     const std::vector<dnr_api::Rule>& rules) const {
   DCHECK_LE(rules.size(), rule_count_limit_);
 
@@ -532,12 +536,12 @@ bool RulesetSource::WriteRulesToJSON(
          data_size;
 }
 
-RulesetSource::RulesetSource(base::FilePath json_path,
-                             base::FilePath indexed_path,
-                             RulesetID id,
-                             size_t rule_count_limit,
-                             ExtensionId extension_id,
-                             bool enabled_by_default)
+FileBackedRulesetSource::FileBackedRulesetSource(base::FilePath json_path,
+                                                 base::FilePath indexed_path,
+                                                 RulesetID id,
+                                                 size_t rule_count_limit,
+                                                 ExtensionId extension_id,
+                                                 bool enabled_by_default)
     : json_path_(std::move(json_path)),
       indexed_path_(std::move(indexed_path)),
       id_(id),
