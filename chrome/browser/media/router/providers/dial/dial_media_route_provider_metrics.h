@@ -16,7 +16,9 @@ static constexpr char kHistogramDialParseMessageResult[] =
 
 // Note on enums defined in this file:
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. They must also be kept in sync with
+// tools/metrics/histograms/enums.xml.
+
 enum class DialCreateRouteResult {
   kSuccess = 0,
   kSinkNotFound = 1,
@@ -32,6 +34,7 @@ enum class DialTerminateRouteResult {
   kRouteNotFound = 1,
   kSinkNotFound = 2,
   kStopAppFailed = 3,
+  kRouteAlreadyTerminated = 4,
   kCount
 };
 

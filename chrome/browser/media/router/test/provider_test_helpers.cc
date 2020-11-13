@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,8 +79,9 @@ void TestDialURLFetcher::StartDownload() {
 }
 
 TestDialActivityManager::TestDialActivityManager(
+    DialAppDiscoveryService* app_discovery_service,
     network::TestURLLoaderFactory* factory)
-    : DialActivityManager(), factory_(factory) {}
+    : DialActivityManager(app_discovery_service), factory_(factory) {}
 TestDialActivityManager::~TestDialActivityManager() = default;
 
 std::unique_ptr<DialURLFetcher> TestDialActivityManager::CreateFetcher(

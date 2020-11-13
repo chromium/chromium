@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
@@ -113,7 +114,8 @@ class TestDialURLFetcher : public DialURLFetcher {
 
 class TestDialActivityManager : public DialActivityManager {
  public:
-  explicit TestDialActivityManager(network::TestURLLoaderFactory* factory);
+  TestDialActivityManager(DialAppDiscoveryService* app_discovery_service,
+                          network::TestURLLoaderFactory* factory);
   ~TestDialActivityManager() override;
 
   std::unique_ptr<DialURLFetcher> CreateFetcher(
