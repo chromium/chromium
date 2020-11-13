@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -162,6 +163,12 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
+
+  // Override the default zoom level for ths HaTS dialog. Its size should align
+  // with native UI elements, rather than web content.
+  content::HostZoomMap::GetDefaultForBrowserContext(otr_profile_)
+      ->SetZoomLevelForHost(hats_survey_url_.host(),
+                            blink::PageZoomFactorToZoomLevel(1.0f));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
 

@@ -48,6 +48,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, SurveyLoaded);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, DialogResize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, MaximumSize);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, ZoomLevel);
 
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,

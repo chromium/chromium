@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/hats/hats_bubble_view.h"
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/hats/hats_web_dialog.h"
+#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -33,6 +34,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "url/gurl.h"
 
 class HatsBubbleTest : public DialogBrowserTest {
@@ -509,4 +511,28 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
     dialog->WaitForUpdateWidgetSize();
     EXPECT_EQ(HatsNextWebDialog::kMaxSize, dialog->CalculatePreferredSize());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
+  // Ensure that the dialog correctly resets the zoom level to default.
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
+      blink::PageZoomFactorToZoomLevel(5.0f));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* dialog = new MockHatsNextWebDialog(
+      browser(), kHatsNextSurveyTriggerIDTesting,
+      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+
+  // Allow the dialog to open before checking the zoom level of the contents.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce(testing::Invoke([&run_loop]() {
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+
+  EXPECT_TRUE(blink::PageZoomValuesEqual(
+      content::HostZoomMap::GetDefaultForBrowserContext(dialog->otr_profile_)
+          ->GetZoomLevel(dialog->web_view_->GetWebContents()),
+      blink::PageZoomFactorToZoomLevel(1.0f)));
 }
