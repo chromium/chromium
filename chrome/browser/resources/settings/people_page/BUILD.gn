@@ -99,7 +99,7 @@ js_library("sync_encryption_options") {
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  closure_flags = settings_closure_flags
+  closure_flags = settings_closure_flags + mojom_js_args
   deps = [
     ":account_manager_browser_proxy.m",
     ":people_page",

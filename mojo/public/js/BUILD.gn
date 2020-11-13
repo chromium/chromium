@@ -100,7 +100,7 @@ js_library("bindings_lite_sources") {
 # below.
 concatenate_files("bindings_uncompiled_module") {
   inputs = [
-    "bindings_module_preamble.js.part",
+    "bindings_uncompiled_module_preamble.js.part",
     "bindings_lite.js",
     "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite.js",
     "interface_support.js",
@@ -128,6 +128,7 @@ if (enable_mojom_closure_compile || enable_js_type_check) {
 
   concatenate_files("bindings_compiled_module") {
     inputs = [
+      "bindings_module_preamble.js.part",
       "$target_gen_dir/mojo_bindings_lite.js",
       "bindings_module_export.js.part",
     ]

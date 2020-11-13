@@ -42,8 +42,8 @@ if (optimize_webui) {
     ]
     excludes = [
       "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
     ]
   }
 }

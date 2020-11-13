@@ -6,12 +6,12 @@
  * @fileoverview Helper functions for color manipulations.
  */
 
-import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 /**
  * Converts an SkColor object to a string in the form
  * "rgba(<red>, <green>, <blue>, <alpha>)".
- * @param {skia.mojom.SkColor} skColor The input color.
+ * @param {SkColor} skColor The input color.
  * @return {string} The rgba string.
  */
 export function skColorToRgba(skColor) {
@@ -25,7 +25,7 @@ export function skColorToRgba(skColor) {
 /**
  * Converts a string of the form "#rrggbb" to an SkColor object.
  * @param {string} hexColor The color string.
- * @return {!skia.mojom.SkColor} The SkColor object,
+ * @return {!SkColor} The SkColor object,
  */
 export function hexColorToSkColor(hexColor) {
   if (!/^#[0-9a-f]{6}$/.test(hexColor)) {

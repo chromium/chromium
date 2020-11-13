@@ -6,7 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
+  closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://signin-dice-web-intercept/=../../chrome/browser/resources/signin/dice_web_signin_intercept/\"",
                     "browser_resolver_prefix_replacements=\"chrome://profile-customization/=../../chrome/browser/resources/signin/profile_customization/\"",
                     "browser_resolver_prefix_replacements=\"chrome://profile-picker/=../../chrome/browser/resources/signin/profile_picker/\"",

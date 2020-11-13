@@ -1002,5 +1002,8 @@ grit("skia_resources") {
     "skia_resources.pak",
   ]
 
-  deps = [ "public/mojom:mojom_js" ]
+  deps = [
+    "//skia/public/mojom:mojom_js",
+    "//skia/public/mojom:mojom_webui_js",
+  ]
 }

@@ -56,8 +56,12 @@ js_modules_args = [
 ]
 
 mojom_js_args = [
-  "js_module_root=gen/mojo/public/js/",
-  "js_module_root=gen/mojom-webui/",
+  "js_module_root=" +
+      rebase_path("$root_gen_dir/mojo/public/js", root_build_dir),
+  "js_module_root=" + rebase_path("$root_gen_dir/mojom-webui", root_build_dir),
+  "js_module_root=" +
+      rebase_path("$root_gen_dir/mojom-webui/ui/webui/resources",
+                  root_build_dir),
 
   # Mojom WebUI JS modules load bindings.js which may be compiled and stripped
   # of type annotations. Rewrite these references to the uncompiled equivalent

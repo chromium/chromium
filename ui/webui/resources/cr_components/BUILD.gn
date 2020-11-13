@@ -10,6 +10,7 @@ import("//ui/webui/webui_features.gni")
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_mojom_manifest = "preprocessed_mojom_manifest.json"
 preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
 
@@ -19,6 +20,7 @@ generate_grd("build_grdp") {
   deps = [ ":preprocess" ]
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
+    "$target_gen_dir/$preprocess_mojom_manifest",
     "$target_gen_dir/$preprocess_polymer2_manifest",
     "$target_gen_dir/$preprocess_src_manifest",
   ]
@@ -28,6 +30,7 @@ generate_grd("build_grdp") {
 group("preprocess") {
   public_deps = [
     ":preprocess_generated",
+    ":preprocess_mojom",
     ":preprocess_polymer2",
     ":preprocess_src",
   ]
@@ -48,6 +51,15 @@ preprocess_grit("preprocess_src") {
   }
 }
 
+preprocess_grit("preprocess_mojom") {
+  deps =
+      [ "//ui/webui/resources/cr_components/customize_themes:mojom_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojom_manifest"
+  in_files = [ "customize_themes/customize_themes.mojom-webui.js" ]
+}
+
 preprocess_grit("preprocess_generated") {
   deps = [ ":polymer3_elements" ]
   in_folder = target_gen_dir
@@ -55,7 +67,6 @@ preprocess_grit("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "customize_themes/customize_themes.js",
-    "customize_themes/customize_themes.mojom-lite.js",
     "customize_themes/theme_icon.js",
     "managed_footnote/managed_footnote.m.js",
     "omnibox/cr_autocomplete_match_list.js",

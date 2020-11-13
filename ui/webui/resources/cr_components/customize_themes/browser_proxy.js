@@ -7,18 +7,16 @@
  * interact with the browser.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
-import './customize_themes.mojom-lite.js';
-
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
+import {CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerFactory, CustomizeThemesHandlerFactoryRemote, CustomizeThemesHandlerInterface, CustomizeThemesHandlerRemote} from './customize_themes.mojom-webui.js';
 
 /** @interface */
 export class CustomizeThemesBrowserProxy {
-  /** @return {customizeThemes.mojom.CustomizeThemesHandlerInterface} */
+  /** @return {CustomizeThemesHandlerInterface} */
   handler() {}
 
-  /** @return {customizeThemes.mojom.CustomizeThemesClientCallbackRouter} */
+  /** @return {CustomizeThemesClientCallbackRouter} */
   callbackRouter() {}
 
   /** @param {string} url */
@@ -28,16 +26,14 @@ export class CustomizeThemesBrowserProxy {
 /** @implements {CustomizeThemesBrowserProxy} */
 export class CustomizeThemesBrowserProxyImpl {
   constructor() {
-    /** @private {customizeThemes.mojom.CustomizeThemesHandlerRemote} */
-    this.handler_ = new customizeThemes.mojom.CustomizeThemesHandlerRemote();
+    /** @private {!CustomizeThemesHandlerRemote} */
+    this.handler_ = new CustomizeThemesHandlerRemote();
 
-    /** @private {customizeThemes.mojom.CustomizeThemesClientCallbackRouter} */
-    this.callbackRouter_ =
-        new customizeThemes.mojom.CustomizeThemesClientCallbackRouter();
+    /** @private {!CustomizeThemesClientCallbackRouter} */
+    this.callbackRouter_ = new CustomizeThemesClientCallbackRouter();
 
-    /** @type {customizeThemes.mojom.CustomizeThemesHandlerFactoryRemote} */
-    const factory =
-        customizeThemes.mojom.CustomizeThemesHandlerFactory.getRemote();
+    /** @type {!CustomizeThemesHandlerFactoryRemote} */
+    const factory = CustomizeThemesHandlerFactory.getRemote();
     factory.createCustomizeThemesHandler(
         this.callbackRouter_.$.bindNewPipeAndPassRemote(),
         this.handler_.$.bindNewPipeAndPassReceiver());

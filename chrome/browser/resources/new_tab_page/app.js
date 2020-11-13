@@ -18,6 +18,7 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundManager} from './background_manager.js';
@@ -166,7 +167,7 @@ class AppElement extends PolymerElement {
         type: Boolean,
       },
 
-      /** @private {skia.mojom.SkColor} */
+      /** @private {SkColor} */
       backgroundColor_: {
         computed: 'computeBackgroundColor_(showBackgroundImage_, theme_)',
         type: Object,
@@ -588,7 +589,7 @@ class AppElement extends PolymerElement {
   }
 
   /**
-   * @param {skia.mojom.SkColor} skColor
+   * @param {SkColor} skColor
    * @return {string}
    * @private
    */
@@ -700,7 +701,7 @@ class AppElement extends PolymerElement {
   }
 
   /**
-   * @return {skia.mojom.SkColor}
+   * @return {SkColor}
    * @private
    */
   computeBackgroundColor_() {
@@ -711,7 +712,7 @@ class AppElement extends PolymerElement {
   }
 
   /**
-   * @return {skia.mojom.SkColor}
+   * @return {SkColor}
    * @private
    */
   computeLogoColor_() {

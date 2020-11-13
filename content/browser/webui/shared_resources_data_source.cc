@@ -100,6 +100,8 @@ const std::map<int, std::string> CreateSkiaResourceIdToAliasMap() {
        "mojo/skia/public/mojom/image_info.mojom-lite.js"},
       {IDR_SKIA_SKCOLOR_MOJOM_LITE_JS,
        "mojo/skia/public/mojom/skcolor.mojom-lite.js"},
+      {IDR_SKIA_SKCOLOR_MOJOM_WEBUI_JS,
+       "mojo/skia/public/mojom/skcolor.mojom-webui.js"},
   };
 }
 
