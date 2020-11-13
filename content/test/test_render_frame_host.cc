@@ -181,51 +181,6 @@ void TestRenderFrameHost::SimulateRedirect(const GURL& new_url) {
   url_loader->SimulateServerRedirect(new_url);
 }
 
-void TestRenderFrameHost::SimulateNavigationCommit(const GURL& url) {
-  if (frame_tree_node_->navigation_request())
-    PrepareForCommit();
-
-  bool is_auto_subframe =
-      GetParent() && !frame_tree_node()->has_committed_real_load();
-
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
-  params.nav_entry_id = 0;
-  params.url = url;
-  params.origin = url::Origin::Create(url);
-  if (!GetParent())
-    params.transition = ui::PAGE_TRANSITION_LINK;
-  else if (is_auto_subframe)
-    params.transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
-  else
-    params.transition = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
-  params.should_update_history = true;
-  params.did_create_new_entry = !is_auto_subframe;
-  params.gesture = NavigationGestureUser;
-  params.contents_mime_type = "text/html";
-  params.method = "GET";
-  params.http_status_code = 200;
-  params.history_list_was_cleared = simulate_history_list_was_cleared_;
-  params.original_request_url = url;
-
-  url::Replacements<char> replacements;
-  replacements.ClearRef();
-
-  // This approach to determining whether a navigation is to be treated as
-  // same document is not robust, as it will not handle pushState type
-  // navigation. Do not use elsewhere!
-  bool was_within_same_document =
-      (GetLastCommittedURL().is_valid() && !last_commit_was_error_page_ &&
-       url.ReplaceComponents(replacements) ==
-           GetLastCommittedURL().ReplaceComponents(replacements));
-
-  params.page_state =
-      blink::PageState::CreateForTesting(url, false, nullptr, nullptr);
-  if (!was_within_same_document)
-    params.embedding_token = base::UnguessableToken::Create();
-
-  SendNavigateWithParams(&params, was_within_same_document);
-}
-
 void TestRenderFrameHost::SimulateBeforeUnloadCompleted(bool proceed) {
   base::TimeTicks now = base::TimeTicks::Now();
   ProcessBeforeUnloadCompleted(

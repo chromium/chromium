@@ -255,9 +255,6 @@ class NavigationSimulator {
   // Sets whether this navigation originated as the result of a form submission.
   virtual void SetIsFormSubmission(bool is_form_submission) = 0;
 
-  // Sets whether this navigation originated as the result of a link click.
-  virtual void SetWasInitiatedByLinkClick(bool was_initiated_by_link_click) = 0;
-
   // The following parameters can change during redirects. They should be
   // specified before calling |Start| if they need to apply to the navigation to
   // the original url. Otherwise, they should be specified before calling
@@ -274,18 +271,6 @@ class NavigationSimulator {
   // Pretend the navigation is against an inner response of a signed exchange.
   virtual void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) = 0;
-
-  // Sets the InterfaceProvider interface receiver to pass in as an argument to
-  // DidCommitProvisionalLoad for cross-document navigations. If not called,
-  // a stub will be passed in (which will never receive any interface
-  // receivers).
-  //
-  // This interface connection would normally be created by the RenderFrame,
-  // with the client end bound to |remote_interfaces_| to allow the new document
-  // to access services exposed by the RenderFrameHost.
-  virtual void SetInterfaceProviderReceiver(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          receiver) = 0;
 
   // Provides the contents mime type to be set at commit. It should be
   // specified before calling |ReadyToCommit| or |Commit|.
@@ -342,9 +327,6 @@ class NavigationSimulator {
 
   // Simulate the ongoing load stopping successfully.
   virtual void StopLoading() = 0;
-
-  // Simulates the ongoing load stopping due to |error_code|.
-  virtual void FailLoading(const GURL& url, int error_code) = 0;
 
  private:
   // This interface should only be implemented inside content.

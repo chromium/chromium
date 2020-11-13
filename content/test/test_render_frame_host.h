@@ -116,10 +116,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // DEPRECATED: use NavigationSimulator instead.
   void SimulateRedirect(const GURL& new_url);
 
-  // Simulates a navigation to |url| committing in the RenderFrameHost.
-  // DEPRECATED: use NavigationSimulator instead.
-  void SimulateNavigationCommit(const GURL& url);
-
   // This method simulates receiving a BeginNavigation IPC.
   // DEPRECATED: use NavigationSimulator instead.
   void SendRendererInitiatedNavigationRequest(const GURL& url,
@@ -175,10 +171,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   // Creates a WebBluetooth Service with a dummy InterfaceRequest.
   WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting();
-
-  bool last_commit_was_error_page() const {
-    return last_commit_was_error_page_;
-  }
 
   // Returns a PendingReceiver<InterfaceProvider> that is safe to bind to an
   // implementation, but will never receive any interface receivers.

@@ -84,15 +84,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetReloadType(ReloadType reload_type) override;
   void SetMethod(const std::string& method) override;
   void SetIsFormSubmission(bool is_form_submission) override;
-  void SetWasInitiatedByLinkClick(bool was_initiated_by_link_click) override;
   void SetReferrer(blink::mojom::ReferrerPtr referrer) override;
   void SetSocketAddress(const net::IPEndPoint& remote_endpoint) override;
   void SetWasFetchedViaCache(bool was_fetched_via_cache) override;
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
-  void SetInterfaceProviderReceiver(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
-      override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
@@ -107,7 +103,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   void SetKeepLoading(bool keep_loading) override;
   void StopLoading() override;
-  void FailLoading(const GURL& url, int error_code) override;
 
   // Additional utilities usable only inside content/.
 
@@ -230,10 +225,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // NavigationRequest.
   void PrepareCompleteCallbackOnRequest();
 
-  // Check if the navigation corresponds to a same-document navigation.
-  // Only use on renderer-initiated navigations.
-  bool CheckIfSameDocument();
-
   // Infers from internal parameters whether the navigation created a new
   // entry.
   bool DidCreateNewEntry();
@@ -288,7 +279,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool is_signed_exchange_inner_response_ = false;
   std::string initial_method_;
   bool is_form_submission_ = false;
-  bool was_initiated_by_link_click_ = false;
   bool browser_initiated_;
   bool same_document_ = false;
   TestRenderFrameHost::LoadingScenario loading_scenario_ =

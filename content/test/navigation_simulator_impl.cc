@@ -887,13 +887,6 @@ void NavigationSimulatorImpl::SetIsFormSubmission(bool is_form_submission) {
   is_form_submission_ = is_form_submission;
 }
 
-void NavigationSimulatorImpl::SetWasInitiatedByLinkClick(
-    bool was_initiated_by_link_click) {
-  CHECK_EQ(INITIALIZATION, state_) << "The form submission parameter cannot "
-                                      "be set after the navigation has started";
-  was_initiated_by_link_click_ = was_initiated_by_link_click;
-}
-
 void NavigationSimulatorImpl::SetReferrer(blink::mojom::ReferrerPtr referrer) {
   CHECK_LE(state_, STARTED) << "The referrer cannot be set after the "
                                "navigation has committed or has failed";
@@ -919,14 +912,6 @@ void NavigationSimulatorImpl::SetIsSignedExchangeInnerResponse(
   CHECK_LE(state_, STARTED) << "The signed exchange flag cannot be set after "
                                "the navigation has committed or failed";
   is_signed_exchange_inner_response_ = is_signed_exchange_inner_response;
-}
-
-void NavigationSimulatorImpl::SetInterfaceProviderReceiver(
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver) {
-  CHECK_LE(state_, STARTED) << "The InterfaceProvider cannot be set "
-                               "after the navigation has committed or failed";
-  CHECK(receiver.is_valid());
-  interface_provider_receiver_ = std::move(receiver);
 }
 
 void NavigationSimulatorImpl::SetContentsMimeType(
@@ -1165,7 +1150,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           blink::mojom::RequestContextType::HYPERLINK,
           network::mojom::RequestDestination::kDocument,
           blink::WebMixedContentContextType::kBlockable, is_form_submission_,
-          was_initiated_by_link_click_, GURL() /* searchable_form_url */,
+          false /* was_initiated_by_link_click */,
+          GURL() /* searchable_form_url */,
           std::string() /* searchable_form_encoding */,
           GURL() /* client_side_redirect_url */,
           base::nullopt /* detools_initiator_info */,
@@ -1256,39 +1242,6 @@ RenderFrameHost* NavigationSimulatorImpl::GetFinalRenderFrameHost() {
 
 bool NavigationSimulatorImpl::IsDeferred() {
   return !throttle_checks_complete_closure_.is_null();
-}
-
-bool NavigationSimulatorImpl::CheckIfSameDocument() {
-  // This approach to determining whether a navigation is to be treated as
-  // same document is not robust, as it will not handle pushState type
-  // navigation. Do not use elsewhere!
-
-  // First we need a valid document that is not an error page.
-  if (!render_frame_host_->GetLastCommittedURL().is_valid() ||
-      render_frame_host_->last_commit_was_error_page()) {
-    return false;
-  }
-
-  // Exclude reloads.
-  if (ui::PageTransitionCoreTypeIs(transition_, ui::PAGE_TRANSITION_RELOAD)) {
-    return false;
-  }
-
-  // A browser-initiated navigation to the exact same url in the address bar is
-  // not a same document navigation.
-  if (browser_initiated_ &&
-      render_frame_host_->GetLastCommittedURL() == navigation_url_) {
-    return false;
-  }
-
-  // Finally, the navigation url and the last committed url should match,
-  // except for the fragment.
-  GURL url_copy(navigation_url_);
-  url::Replacements<char> replacements;
-  replacements.ClearRef();
-  return url_copy.ReplaceComponents(replacements) ==
-         render_frame_host_->GetLastCommittedURL().ReplaceComponents(
-             replacements);
 }
 
 bool NavigationSimulatorImpl::DidCreateNewEntry() {
@@ -1405,11 +1358,6 @@ void NavigationSimulatorImpl::SetKeepLoading(bool keep_loading) {
 void NavigationSimulatorImpl::StopLoading() {
   CHECK(render_frame_host_);
   render_frame_host_->SimulateLoadingCompleted(loading_scenario_);
-}
-
-void NavigationSimulatorImpl::FailLoading(const GURL& url, int error_code) {
-  CHECK(render_frame_host_);
-  render_frame_host_->DidFailLoadWithError(url, error_code);
 }
 
 void NavigationSimulatorImpl::
