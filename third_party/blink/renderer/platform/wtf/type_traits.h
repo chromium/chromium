@@ -32,7 +32,7 @@
 
 #if BUILDFLAG(USE_V8_OILPAN)
 #include "v8/include/cppgc/type-traits.h"  // nogncheck
-#else
+#else                                      // !BUILDFLAG(USE_V8_OILPAN)
 namespace blink {
 template <typename T>
 class Member;
@@ -40,7 +40,7 @@ class Visitor;
 template <typename T>
 class WeakMember;
 }  // namespace blink
-#endif  // BUILDFLAG(BLINK_HEAP_USE_V8_OILPAN)
+#endif                                     // !BUILDFLAG(USE_V8_OILPAN)
 
 namespace WTF {
 

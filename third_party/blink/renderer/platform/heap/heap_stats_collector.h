@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_STATS_COLLECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_STATS_COLLECTOR_H_
 
-#include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
-#if BUILDFLAG(BLINK_HEAP_USE_V8_OILPAN)
+#if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/heap_stats_collector.h"
-#else  // !BLINK_HEAP_USE_V8_OILPAN
+#else  // !USE_V8_OILPAN
 #include "third_party/blink/renderer/platform/heap/impl/heap_stats_collector.h"
-#endif  // !BLINK_HEAP_USE_V8_OILPAN
+#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_STATS_COLLECTOR_H_
