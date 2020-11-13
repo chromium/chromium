@@ -93,7 +93,7 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
   void CreateProfileShortcut(const base::FilePath& profile_path) override;
   void RemoveProfileShortcuts(const base::FilePath& profile_path) override;
   void HasProfileShortcuts(const base::FilePath& profile_path,
-                           const base::Callback<void(bool)>& callback) override;
+                           base::OnceCallback<void(bool)> callback) override;
   void GetShortcutProperties(const base::FilePath& profile_path,
                              base::CommandLine* command_line,
                              base::string16* name,

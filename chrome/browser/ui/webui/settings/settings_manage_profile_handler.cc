@@ -233,8 +233,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK(shortcut_manager);
   shortcut_manager->HasProfileShortcuts(
       profile_->GetPath(),
-      base::Bind(&ManageProfileHandler::OnHasProfileShortcuts,
-                 weak_factory_.GetWeakPtr(), callback_id));
+      base::BindOnce(&ManageProfileHandler::OnHasProfileShortcuts,
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void ManageProfileHandler::OnHasProfileShortcuts(

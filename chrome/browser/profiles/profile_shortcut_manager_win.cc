@@ -791,11 +791,11 @@ void ProfileShortcutManagerWin::RemoveProfileShortcuts(
 
 void ProfileShortcutManagerWin::HasProfileShortcuts(
     const base::FilePath& profile_path,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()}).get(),
       FROM_HERE, base::BindOnce(&HasAnyProfileShortcuts, profile_path),
-      base::BindOnce(callback));
+      base::BindOnce(std::move(callback)));
 }
 
 void ProfileShortcutManagerWin::GetShortcutProperties(

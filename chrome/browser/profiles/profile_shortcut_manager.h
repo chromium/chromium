@@ -44,9 +44,8 @@ class ProfileShortcutManager {
   // Checks if a profile at |profile_path| has any shortcuts and invokes
   // |callback| with the bool result some time later. Does not consider
   // non-profile specific shortcuts.
-  virtual void HasProfileShortcuts(
-      const base::FilePath& profile_path,
-      const base::Callback<void(bool)>& callback) = 0;
+  virtual void HasProfileShortcuts(const base::FilePath& profile_path,
+                                   base::OnceCallback<void(bool)> callback) = 0;
 
   // Populates the |command_line|, |name| and |icon_path| that a shortcut for
   // the given |profile_path| should use.
