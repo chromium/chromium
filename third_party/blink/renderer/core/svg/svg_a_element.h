@@ -42,7 +42,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
  private:
   String title() const override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 

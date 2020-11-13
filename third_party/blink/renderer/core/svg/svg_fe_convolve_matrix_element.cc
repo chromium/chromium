@@ -205,7 +205,8 @@ bool SVGFEConvolveMatrixElement::SetFilterEffectAttribute(
 }
 
 void SVGFEConvolveMatrixElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kEdgeModeAttr ||
       attr_name == svg_names::kDivisorAttr ||
       attr_name == svg_names::kBiasAttr ||
@@ -224,7 +225,7 @@ void SVGFEConvolveMatrixElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEConvolveMatrixElement::Build(

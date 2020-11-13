@@ -114,7 +114,9 @@ void SVGFEImageElement::BuildPendingResource() {
   Invalidate();
 }
 
-void SVGFEImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGFEImageElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kPreserveAspectRatioAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
@@ -127,7 +129,7 @@ void SVGFEImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 Node::InsertionNotificationRequest SVGFEImageElement::InsertedInto(

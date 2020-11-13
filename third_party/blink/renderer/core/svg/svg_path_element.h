@@ -53,7 +53,7 @@ class SVGPathElement final : public SVGGeometryElement {
  private:
   const StylePath* GetStylePath() const;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,

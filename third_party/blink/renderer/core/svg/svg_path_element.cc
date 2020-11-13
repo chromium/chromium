@@ -101,14 +101,16 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
   return SVGPointTearOff::CreateDetached(point);
 }
 
-void SVGPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGPathElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kDAttr) {
     InvalidateMPathDependencies();
     GeometryPresentationAttributeChanged(attr_name);
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 void SVGPathElement::CollectStyleForPresentationAttribute(

@@ -39,7 +39,7 @@ class SVGFEMergeNodeElement final : public SVGElement {
   void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
     return false;

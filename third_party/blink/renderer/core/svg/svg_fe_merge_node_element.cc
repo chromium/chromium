@@ -38,14 +38,14 @@ void SVGFEMergeNodeElement::Trace(Visitor* visitor) const {
 }
 
 void SVGFEMergeNodeElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kInAttr) {
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kInAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterPrimitiveParent(*this);
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 }  // namespace blink

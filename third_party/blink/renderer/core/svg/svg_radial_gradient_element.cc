@@ -85,7 +85,8 @@ void SVGRadialGradientElement::Trace(Visitor* visitor) const {
 }
 
 void SVGRadialGradientElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
       attr_name == svg_names::kFxAttr || attr_name == svg_names::kFyAttr ||
       attr_name == svg_names::kRAttr || attr_name == svg_names::kFrAttr) {
@@ -95,7 +96,7 @@ void SVGRadialGradientElement::SvgAttributeChanged(
     return;
   }
 
-  SVGGradientElement::SvgAttributeChanged(attr_name);
+  SVGGradientElement::SvgAttributeChanged(params);
 }
 
 LayoutObject* SVGRadialGradientElement::CreateLayoutObject(const ComputedStyle&,

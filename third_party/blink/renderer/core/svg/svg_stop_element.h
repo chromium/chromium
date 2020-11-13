@@ -45,7 +45,7 @@ class SVGStopElement final : public SVGElement {
   void DidRecalcStyle(const StyleRecalcChange) override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   // Stop elements don't have associated layout objects.
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {

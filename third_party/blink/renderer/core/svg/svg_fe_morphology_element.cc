@@ -90,7 +90,8 @@ bool SVGFEMorphologyElement::SetFilterEffectAttribute(
 }
 
 void SVGFEMorphologyElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kOperatorAttr ||
       attr_name == svg_names::kRadiusAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -104,7 +105,7 @@ void SVGFEMorphologyElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEMorphologyElement::Build(SVGFilterBuilder* filter_builder,

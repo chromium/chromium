@@ -49,7 +49,7 @@ class SVGEllipseElement final : public SVGGeometryElement {
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool SelfHasRelativeLengths() const override;
 

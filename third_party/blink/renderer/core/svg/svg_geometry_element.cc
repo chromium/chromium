@@ -65,7 +65,9 @@ SVGGeometryElement::SVGGeometryElement(const QualifiedName& tag_name,
   AddToPropertyMap(path_length_);
 }
 
-void SVGGeometryElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGGeometryElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kPathLengthAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     if (LayoutObject* layout_object = GetLayoutObject())
@@ -73,7 +75,7 @@ void SVGGeometryElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 void SVGGeometryElement::Trace(Visitor* visitor) const {

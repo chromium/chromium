@@ -43,7 +43,7 @@ class SVGCircleElement final : public SVGGeometryElement {
   void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,

@@ -90,7 +90,8 @@ bool SVGFEDropShadowElement::SetFilterEffectAttribute(
 }
 
 void SVGFEDropShadowElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kInAttr ||
       attr_name == svg_names::kStdDeviationAttr ||
       attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr) {
@@ -99,7 +100,7 @@ void SVGFEDropShadowElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,

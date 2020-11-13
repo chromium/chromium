@@ -44,7 +44,7 @@ class SVGTextPositioningElement : public SVGTextContentElement {
  protected:
   SVGTextPositioningElement(const QualifiedName&, Document&);
 
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
   bool IsTextPositioning() const final { return true; }
 
   Member<SVGAnimatedLengthList> x_;

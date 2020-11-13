@@ -97,7 +97,8 @@ void SVGForeignObjectElement::CollectStyleForPresentationAttribute(
 }
 
 void SVGForeignObjectElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool is_width_height_attribute =
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
   bool is_xy_attribute =
@@ -121,7 +122,7 @@ void SVGForeignObjectElement::SvgAttributeChanged(
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 LayoutObject* SVGForeignObjectElement::CreateLayoutObject(const ComputedStyle&,

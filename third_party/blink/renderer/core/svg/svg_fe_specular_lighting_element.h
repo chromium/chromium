@@ -52,7 +52,7 @@ class SVGFESpecularLightingElement final
 
  private:
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override;
 

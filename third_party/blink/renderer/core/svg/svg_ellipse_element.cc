@@ -115,7 +115,9 @@ void SVGEllipseElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGEllipseElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGEllipseElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
       attr_name == svg_names::kRxAttr || attr_name == svg_names::kRyAttr) {
     UpdateRelativeLengthsInformation();
@@ -123,7 +125,7 @@ void SVGEllipseElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGEllipseElement::SelfHasRelativeLengths() const {

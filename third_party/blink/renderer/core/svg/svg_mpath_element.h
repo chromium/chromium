@@ -46,7 +46,7 @@ class SVGMPathElement final : public SVGElement, public SVGURIReference {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
     return false;

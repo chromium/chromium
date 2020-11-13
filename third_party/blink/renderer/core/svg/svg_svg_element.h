@@ -126,7 +126,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void DidMoveToNewDocument(Document& old_document) override;
 

@@ -77,7 +77,7 @@ class SVGUseElement final : public SVGGraphicsElement,
   void RemovedFrom(ContainerNode&) override;
   void DidMoveToNewDocument(Document&) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 

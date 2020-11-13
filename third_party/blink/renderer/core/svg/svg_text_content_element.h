@@ -80,7 +80,7 @@ class CORE_EXPORT SVGTextContentElement : public SVGGraphicsElement {
   void CollectStyleForPresentationAttribute(const QualifiedName&,
                                             const AtomicString&,
                                             MutableCSSPropertyValueSet*) final;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool SelfHasRelativeLengths() const override;
 

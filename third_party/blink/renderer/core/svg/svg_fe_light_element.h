@@ -71,7 +71,7 @@ class SVGFELightElement : public SVGElement {
   SVGFELightElement(const QualifiedName&, Document&);
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
   void ChildrenChanged(const ChildrenChange&) final;
 
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {

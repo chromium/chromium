@@ -233,7 +233,9 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGSVGElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool update_relative_lengths_or_view_box = false;
   bool width_or_height_changed =
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
@@ -285,7 +287,7 @@ void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 // FloatRect::intersects does not consider horizontal or vertical lines (because

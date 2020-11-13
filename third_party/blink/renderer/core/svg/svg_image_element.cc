@@ -131,7 +131,9 @@ void SVGImageElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGImageElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool is_length_attribute =
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
@@ -165,7 +167,7 @@ void SVGImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 void SVGImageElement::ParseAttribute(

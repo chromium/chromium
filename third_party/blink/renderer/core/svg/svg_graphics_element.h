@@ -77,7 +77,7 @@ class CORE_EXPORT SVGGraphicsElement : public SVGElement, public SVGTests {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   Member<SVGAnimatedTransformList> transform_;
 

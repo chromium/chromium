@@ -258,7 +258,8 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
 }
 
 void SVGTextContentElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kTextLengthAttr)
     text_length_is_specified_by_user_ = true;
 
@@ -273,7 +274,7 @@ void SVGTextContentElement::SvgAttributeChanged(
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 bool SVGTextContentElement::SelfHasRelativeLengths() const {

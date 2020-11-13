@@ -144,7 +144,9 @@ void SVGRectElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGRectElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGRectElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr || attr_name == svg_names::kRxAttr ||
@@ -154,7 +156,7 @@ void SVGRectElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGRectElement::SelfHasRelativeLengths() const {

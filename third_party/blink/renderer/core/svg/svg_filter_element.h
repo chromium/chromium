@@ -68,7 +68,7 @@ class CORE_EXPORT SVGFilterElement final : public SVGElement,
   LocalSVGResource* AssociatedResource() const;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;

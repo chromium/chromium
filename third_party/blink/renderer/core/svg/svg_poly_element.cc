@@ -70,13 +70,14 @@ Path SVGPolyElement::AsPathFromPoints() const {
   return path;
 }
 
-void SVGPolyElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kPointsAttr) {
+void SVGPolyElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kPointsAttr) {
     GeometryAttributeChanged();
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 }  // namespace blink

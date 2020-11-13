@@ -122,7 +122,8 @@ bool SVGFEDiffuseLightingElement::SetFilterEffectAttribute(
 }
 
 void SVGFEDiffuseLightingElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kSurfaceScaleAttr ||
       attr_name == svg_names::kDiffuseConstantAttr ||
       attr_name == svg_names::kLightingColorAttr) {
@@ -137,7 +138,7 @@ void SVGFEDiffuseLightingElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 void SVGFEDiffuseLightingElement::LightElementAttributeChanged(

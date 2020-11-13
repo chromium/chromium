@@ -122,7 +122,8 @@ bool SVGFETurbulenceElement::SetFilterEffectAttribute(
 }
 
 void SVGFETurbulenceElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kBaseFrequencyAttr ||
       attr_name == svg_names::kNumOctavesAttr ||
       attr_name == svg_names::kSeedAttr ||
@@ -133,7 +134,7 @@ void SVGFETurbulenceElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFETurbulenceElement::Build(SVGFilterBuilder*, Filter* filter) {

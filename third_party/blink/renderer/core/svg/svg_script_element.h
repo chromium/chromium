@@ -60,7 +60,7 @@ class SVGScriptElement final : public SVGElement,
   void ChildrenChanged(const ChildrenChange&) override;
   void DidMoveToNewDocument(Document& old_document) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   bool IsURLAttribute(const Attribute&) const override;
   bool IsStructurallyExternal() const override { return HasSourceAttribute(); }
   void FinishParsingChildren() override;

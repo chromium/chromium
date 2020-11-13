@@ -58,13 +58,14 @@ void InvalidateInstancesAndAncestorResources(SVGStopElement* stop_element) {
 
 }  // namespace
 
-void SVGStopElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kOffsetAttr) {
+void SVGStopElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kOffsetAttr) {
     InvalidateInstancesAndAncestorResources(this);
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGStopElement::DidRecalcStyle(const StyleRecalcChange change) {

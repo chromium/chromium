@@ -71,7 +71,7 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
 
   using VisitedSet = HeapHashSet<Member<const SVGGradientElement>>;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
  private:
   void CollectStyleForPresentationAttribute(

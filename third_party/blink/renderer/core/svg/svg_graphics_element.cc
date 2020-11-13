@@ -127,7 +127,9 @@ AffineTransform* SVGGraphicsElement::AnimateMotionTransform() {
   return EnsureSVGRareData()->AnimateMotionTransform();
 }
 
-void SVGGraphicsElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGGraphicsElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   // Reattach so the isValid() check will be run again during layoutObject
   // creation.
   if (SVGTests::IsKnownAttribute(attr_name)) {
@@ -150,7 +152,7 @@ void SVGGraphicsElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 SVGElement* SVGGraphicsElement::nearestViewportElement() const {

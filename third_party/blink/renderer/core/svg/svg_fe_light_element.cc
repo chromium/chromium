@@ -113,7 +113,9 @@ FloatPoint3D SVGFELightElement::PointsAt() const {
                       pointsAtZ()->CurrentValue()->Value());
 }
 
-void SVGFELightElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGFELightElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kAzimuthAttr ||
       attr_name == svg_names::kElevationAttr ||
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
@@ -140,7 +142,7 @@ void SVGFELightElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGFELightElement::ChildrenChanged(const ChildrenChange& change) {

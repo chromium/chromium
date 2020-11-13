@@ -46,7 +46,7 @@ class SVGFEDropShadowElement final
   void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override;

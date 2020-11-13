@@ -70,7 +70,8 @@ void SVGTextPositioningElement::Trace(Visitor* visitor) const {
 }
 
 void SVGTextPositioningElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool update_relative_lengths =
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr;
@@ -92,7 +93,7 @@ void SVGTextPositioningElement::SvgAttributeChanged(
     return;
   }
 
-  SVGTextContentElement::SvgAttributeChanged(attr_name);
+  SVGTextContentElement::SvgAttributeChanged(params);
 }
 
 }  // namespace blink

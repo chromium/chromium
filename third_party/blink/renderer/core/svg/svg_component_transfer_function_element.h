@@ -52,7 +52,7 @@ class SVGComponentTransferFunctionElement : public SVGElement {
  protected:
   SVGComponentTransferFunctionElement(const QualifiedName&, Document&);
 
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
 
   bool LayoutObjectIsNeeded(const ComputedStyle& style) const final {
     return false;

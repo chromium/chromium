@@ -96,7 +96,8 @@ bool SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
 }
 
 void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr ||
@@ -106,7 +107,7 @@ void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGFilterPrimitiveStandardAttributes::ChildrenChanged(

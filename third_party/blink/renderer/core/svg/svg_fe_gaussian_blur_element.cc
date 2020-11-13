@@ -62,7 +62,8 @@ void SVGFEGaussianBlurElement::Trace(Visitor* visitor) const {
 }
 
 void SVGFEGaussianBlurElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kInAttr ||
       attr_name == svg_names::kStdDeviationAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -70,7 +71,7 @@ void SVGFEGaussianBlurElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEGaussianBlurElement::Build(SVGFilterBuilder* filter_builder,

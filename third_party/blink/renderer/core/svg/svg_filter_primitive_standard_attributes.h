@@ -64,7 +64,7 @@ class SVGFilterPrimitiveStandardAttributes : public SVGElement {
  protected:
   SVGFilterPrimitiveStandardAttributes(const QualifiedName&, Document&);
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
  private:

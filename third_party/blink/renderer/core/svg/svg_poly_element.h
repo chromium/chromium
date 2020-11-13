@@ -45,9 +45,8 @@ class SVGPolyElement : public SVGGeometryElement {
   Path AsPathFromPoints() const;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
 
- private:
   Member<SVGAnimatedPointList> points_;
 };
 

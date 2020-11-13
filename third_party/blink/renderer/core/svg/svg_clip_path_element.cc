@@ -41,8 +41,9 @@ void SVGClipPathElement::Trace(Visitor* visitor) const {
   SVGGraphicsElement::Trace(visitor);
 }
 
-void SVGClipPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kClipPathUnitsAttr) {
+void SVGClipPathElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kClipPathUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
@@ -51,7 +52,7 @@ void SVGClipPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {

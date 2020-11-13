@@ -86,7 +86,9 @@ void SVGTextPathElement::ClearResourceReferences() {
   RemoveAllOutgoingReferences();
 }
 
-void SVGTextPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGTextPathElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     BuildPendingResource();
@@ -106,7 +108,7 @@ void SVGTextPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGTextContentElement::SvgAttributeChanged(attr_name);
+  SVGTextContentElement::SvgAttributeChanged(params);
 }
 
 LayoutObject* SVGTextPathElement::CreateLayoutObject(const ComputedStyle&,

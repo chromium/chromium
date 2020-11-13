@@ -54,7 +54,7 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
   void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ImageNotifyFinished(ImageResourceContent*) override;
   String DebugName() const override { return "SVGFEImageElement"; }
 

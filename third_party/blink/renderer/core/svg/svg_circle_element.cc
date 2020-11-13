@@ -99,7 +99,9 @@ void SVGCircleElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGCircleElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGCircleElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kRAttr || attr_name == svg_names::kCxAttr ||
       attr_name == svg_names::kCyAttr) {
     UpdateRelativeLengthsInformation();
@@ -107,7 +109,7 @@ void SVGCircleElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 bool SVGCircleElement::SelfHasRelativeLengths() const {

@@ -39,14 +39,15 @@ void SVGFETileElement::Trace(Visitor* visitor) const {
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
 
-void SVGFETileElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kInAttr) {
+void SVGFETileElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kInAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFETileElement::Build(SVGFilterBuilder* filter_builder,

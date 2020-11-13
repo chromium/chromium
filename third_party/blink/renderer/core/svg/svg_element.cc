@@ -248,21 +248,25 @@ void SVGElement::SetAnimatedAttribute(const QualifiedName& attribute,
   if (attribute == html_names::kClassAttr)
     EnsureUniqueElementData();
 
-  ForSelfAndInstances(this, [&attribute, &value](SVGElement* element) {
+  const SvgAttributeChangedParams params(
+      attribute, AttributeModificationReason::kDirectly);
+  ForSelfAndInstances(this, [&params, &value](SVGElement* element) {
     if (SVGAnimatedPropertyBase* animated_property =
-            element->PropertyFromAttribute(attribute)) {
+            element->PropertyFromAttribute(params.name)) {
       animated_property->SetAnimatedValue(value);
-      element->SvgAttributeChanged(attribute);
+      element->SvgAttributeChanged(params);
     }
   });
 }
 
 void SVGElement::ClearAnimatedAttribute(const QualifiedName& attribute) {
-  ForSelfAndInstances(this, [&attribute](SVGElement* element) {
+  const SvgAttributeChangedParams params(
+      attribute, AttributeModificationReason::kDirectly);
+  ForSelfAndInstances(this, [&params](SVGElement* element) {
     if (SVGAnimatedPropertyBase* animated_property =
-            element->PropertyFromAttribute(attribute)) {
+            element->PropertyFromAttribute(params.name)) {
       animated_property->AnimationEnded();
-      element->SvgAttributeChanged(attribute);
+      element->SvgAttributeChanged(params);
     }
   });
 }
@@ -904,11 +908,12 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   if (params.name == html_names::kStyleAttr)
     return;
 
-  SvgAttributeChanged(params.name);
+  SvgAttributeChanged({params.name, params.reason});
   UpdateWebAnimatedAttributeOnBaseValChange(params.name);
 }
 
-void SVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   CSSPropertyID prop_id = SVGElement::CssPropertyIdForSVGAttributeName(
       GetExecutionContext(), attr_name);
   if (prop_id > CSSPropertyID::kInvalid) {
@@ -927,7 +932,7 @@ void SVGElement::BaseValueChanged(
     const SVGAnimatedPropertyBase& animated_property) {
   const QualifiedName& attribute = animated_property.AttributeName();
   EnsureUniqueElementData().SetSvgAttributesAreDirty(true);
-  SvgAttributeChanged(attribute);
+  SvgAttributeChanged({attribute, AttributeModificationReason::kDirectly});
   if (class_name_ == &animated_property) {
     UpdateClassList(g_null_atom,
                     AtomicString(class_name_->BaseValue()->Value()));
@@ -1233,16 +1238,18 @@ void SVGElement::RebuildAllIncomingReferences() {
   const SVGElementSet& incoming_references =
       SvgRareData()->IncomingReferences();
 
-  // Iterate on a snapshot as |incomingReferences| may be altered inside loop.
+  // Iterate on a snapshot as |incoming_references| may be altered inside loop.
   HeapVector<Member<SVGElement>> incoming_references_snapshot;
   CopyToVector(incoming_references, incoming_references_snapshot);
 
-  // Force rebuilding the |sourceElement| so it knows about this change.
+  // Force rebuilding the |source_element| so it knows about this change.
+  const SvgAttributeChangedParams params(
+      svg_names::kHrefAttr, AttributeModificationReason::kDirectly);
   for (SVGElement* source_element : incoming_references_snapshot) {
-    // Before rebuilding |sourceElement| ensure it was not removed from under
+    // Before rebuilding |source_element| ensure it was not removed from under
     // us.
     if (incoming_references.Contains(source_element))
-      source_element->SvgAttributeChanged(svg_names::kHrefAttr);
+      source_element->SvgAttributeChanged(params);
   }
 }
 

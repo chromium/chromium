@@ -46,14 +46,14 @@ void SVGFEComponentTransferElement::Trace(Visitor* visitor) const {
 }
 
 void SVGFEComponentTransferElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kInAttr) {
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kInAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEComponentTransferElement::Build(

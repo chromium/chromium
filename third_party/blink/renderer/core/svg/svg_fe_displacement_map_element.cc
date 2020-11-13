@@ -91,7 +91,8 @@ bool SVGFEDisplacementMapElement::SetFilterEffectAttribute(
 }
 
 void SVGFEDisplacementMapElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kXChannelSelectorAttr ||
       attr_name == svg_names::kYChannelSelectorAttr ||
       attr_name == svg_names::kScaleAttr) {
@@ -106,7 +107,7 @@ void SVGFEDisplacementMapElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEDisplacementMapElement::Build(

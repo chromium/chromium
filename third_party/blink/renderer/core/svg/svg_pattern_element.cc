@@ -143,7 +143,9 @@ void SVGPatternElement::CollectStyleForPresentationAttribute(
   SVGElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 
-void SVGPatternElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGPatternElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool is_length_attr =
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
@@ -174,7 +176,7 @@ void SVGPatternElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 Node::InsertionNotificationRequest SVGPatternElement::InsertedInto(
