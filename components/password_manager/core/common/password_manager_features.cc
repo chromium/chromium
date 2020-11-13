@@ -71,6 +71,16 @@ const base::Feature kPasswordCheck = {"PasswordCheck",
 const base::Feature kPasswordImport = {"PasswordImport",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables password reuse detection.
+const base::Feature kPasswordReuseDetectionEnabled = {
+    "PasswordReuseDetectionEnabled",
+#if defined(OS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // defined(OS_IOS)
+};
+
 // Enables password scripts fetching for the |PasswordChangeInSettings| feature.
 const base::Feature kPasswordScriptsFetching = {
     "PasswordScriptsFetching", base::FEATURE_DISABLED_BY_DEFAULT};

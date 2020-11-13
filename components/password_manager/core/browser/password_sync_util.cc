@@ -7,16 +7,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/origin.h"
-
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 using url::Origin;
 
@@ -87,13 +85,12 @@ bool IsGaiaCredentialPage(const std::string& signon_realm) {
 
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs) {
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-  return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
-         safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
-                                                                   prefs);
-#else
+  if (base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
+    return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
+           safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
+                                                                     prefs);
+  }
   return false;
-#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 }
 
 }  // namespace sync_util
