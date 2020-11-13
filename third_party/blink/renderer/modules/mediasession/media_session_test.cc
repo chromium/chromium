@@ -56,7 +56,8 @@ class MediaSessionTest : public PageTestBase {
 
     mock_service_ = std::make_unique<MockMediaSessionService>();
 
-    media_session_ = MakeGarbageCollected<MediaSession>(GetFrame().DomWindow());
+    media_session_ =
+        MediaSession::mediaSession(*GetFrame().DomWindow()->navigator());
     media_session_->service_ = mock_service_->CreateRemoteAndBind();
     media_session_->clock_ = &test_clock_;
   }

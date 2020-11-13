@@ -8,12 +8,12 @@
 #include <memory>
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace base {
@@ -22,20 +22,22 @@ class TickClock;
 
 namespace blink {
 
-class ExecutionContext;
 class ExceptionState;
 class MediaMetadata;
 class MediaPositionState;
+class Navigator;
 class V8MediaSessionActionHandler;
 
 class MODULES_EXPORT MediaSession final
     : public ScriptWrappable,
-      public ExecutionContextClient,
+      public Supplement<Navigator>,
       public blink::mojom::blink::MediaSessionClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit MediaSession(ExecutionContext*);
+  static const char kSupplementName[];
+  static MediaSession* mediaSession(Navigator&);
+  explicit MediaSession(Navigator&);
 
   void setPlaybackState(const String&);
   String playbackState();
@@ -74,7 +76,7 @@ class MODULES_EXPORT MediaSession final
   void DidReceiveAction(media_session::mojom::blink::MediaSessionAction,
                         mojom::blink::MediaSessionActionDetailsPtr) override;
 
-  // Returns null when the ExecutionContext is not document.
+  // Returns null if the associated window is detached.
   mojom::blink::MediaSessionService* GetService();
 
   const base::TickClock* clock_ = nullptr;

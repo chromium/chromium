@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_handler.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata_sanitizer.h"
@@ -125,11 +125,23 @@ mojom::blink::MediaSessionPlaybackState StringToMediaSessionPlaybackState(
 
 }  // anonymous namespace
 
-MediaSession::MediaSession(ExecutionContext* execution_context)
-    : ExecutionContextClient(execution_context),
+const char MediaSession::kSupplementName[] = "MediaSession";
+
+MediaSession* MediaSession::mediaSession(Navigator& navigator) {
+  MediaSession* supplement =
+      Supplement<Navigator>::From<MediaSession>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<MediaSession>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+MediaSession::MediaSession(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
       clock_(base::DefaultTickClock::GetInstance()),
       playback_state_(mojom::blink::MediaSessionPlaybackState::NONE),
-      client_receiver_(this, execution_context) {}
+      client_receiver_(this, navigator.DomWindow()) {}
 
 void MediaSession::setPlaybackState(const String& playback_state) {
   playback_state_ = StringToMediaSessionPlaybackState(playback_state);
@@ -166,21 +178,22 @@ void MediaSession::OnMetadataChanged() {
     return;
 
   service->SetMetadata(MediaMetadataSanitizer::SanitizeAndConvertToMojo(
-      metadata_, GetExecutionContext()));
+      metadata_, GetSupplementable()->DomWindow()));
 }
 
 void MediaSession::setActionHandler(const String& action,
                                     V8MediaSessionActionHandler* handler,
                                     ExceptionState& exception_state) {
   if (action == "skipad") {
-    if (!RuntimeEnabledFeatures::SkipAdEnabled(GetExecutionContext())) {
+    LocalDOMWindow* window = GetSupplementable()->DomWindow();
+    if (!RuntimeEnabledFeatures::SkipAdEnabled(window)) {
       exception_state.ThrowTypeError(
           "The provided value 'skipad' is not a valid enum "
           "value of type MediaSessionAction.");
       return;
     }
 
-    UseCounter::Count(GetExecutionContext(), WebFeature::kMediaSessionSkipAd);
+    UseCounter::Count(window, WebFeature::kMediaSessionSkipAd);
   }
 
   if (handler) {
@@ -324,13 +337,13 @@ void MediaSession::RecalculatePositionState(bool was_set) {
 mojom::blink::MediaSessionService* MediaSession::GetService() {
   if (service_)
     return service_.get();
-  if (!GetExecutionContext())
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window)
     return nullptr;
 
   // See https://bit.ly/2S0zRAS for task types.
-  auto task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+  auto task_runner = window->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  window->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver());
   if (service_.get())
     service_->SetClient(client_receiver_.BindNewPipeAndPassRemote(task_runner));
@@ -341,10 +354,11 @@ mojom::blink::MediaSessionService* MediaSession::GetService() {
 void MediaSession::DidReceiveAction(
     media_session::mojom::blink::MediaSessionAction action,
     mojom::blink::MediaSessionActionDetailsPtr details) {
-  if (!GetExecutionContext())
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window)
     return;
   LocalFrame::NotifyUserActivation(
-      To<LocalDOMWindow>(GetExecutionContext())->GetFrame(),
+      window->GetFrame(),
       mojom::blink::UserActivationNotificationType::kInteraction);
 
   auto& name = MojomActionToActionName(action);
@@ -366,7 +380,7 @@ void MediaSession::Trace(Visitor* visitor) const {
   visitor->Trace(metadata_);
   visitor->Trace(action_handlers_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink
