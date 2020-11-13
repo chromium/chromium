@@ -26,6 +26,7 @@ class UnifiedBrightnessView : public UnifiedSliderView,
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   UnifiedSystemTrayModel* const model_;
