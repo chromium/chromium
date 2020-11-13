@@ -870,12 +870,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   topToolbar.leadingButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
   topToolbar.leadingButton.target = self;
-  if (IsCloseAllTabsConfirmationEnabled()) {
-    topToolbar.leadingButton.action =
-        @selector(closeAllButtonTappedShowConfirmation);
-  } else {
-    topToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
-  }
+  topToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
   topToolbar.trailingButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
   topToolbar.trailingButton.accessibilityIdentifier =
@@ -914,12 +909,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   ]];
 
   bottomToolbar.leadingButton.target = self;
-  if (IsCloseAllTabsConfirmationEnabled()) {
-    bottomToolbar.leadingButton.action =
-        @selector(closeAllButtonTappedShowConfirmation);
-  } else {
     bottomToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
-  }
   bottomToolbar.trailingButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
   bottomToolbar.trailingButton.accessibilityIdentifier =
@@ -1435,6 +1425,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)closeAllButtonTapped:(id)sender {
+  if (IsCloseAllTabsConfirmationEnabled()) {
+    [self closeAllButtonTappedShowConfirmation];
+    return;
+  }
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate closeAllItems];

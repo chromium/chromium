@@ -123,12 +123,6 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 
 @implementation RequestDesktopMobileSiteTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-  return config;
-}
-
 #pragma mark - Helpers
 
 - (GREYElementInteraction*)defaultRequestButton {
@@ -201,15 +195,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
                                         timeout:kWaitForUserAgentChangeTimeout];
 
   // Close all tabs and undo, trigerring a restoration.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
-      performAction:grey_tap()];
+  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
 
   // Verify that desktop user agent propagates.
   [ChromeEarlGreyUI openToolsMenu];

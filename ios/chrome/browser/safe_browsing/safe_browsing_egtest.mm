@@ -98,11 +98,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(safe_browsing::kRealTimeUrlLookupEnabled);
-  // EnableCloseAllTabsConfirmation feature is disabled in order to be able to
-  // restore session from |triggerRestoreViaTabGridRemoveAllUndo|.
-  // TODO(crbug.com/1146391): Remove dependency on
-  // kEnableCloseAllTabsConfirmation flag.
-  config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
 
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.

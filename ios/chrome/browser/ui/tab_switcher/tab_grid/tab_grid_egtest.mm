@@ -53,22 +53,6 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
 
 @implementation TabGridTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Features are enabled or disabled based on the name of the test that is
-  // running. This is done because it is inefficient to use
-  // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
-      [self isRunningTest:@selector
-            (testUndoCloseAllNotAvailableAfterNewTabCreation)]) {
-    config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-  } else {
-    config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -120,6 +104,11 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
 // Tests that tapping Close All shows no tabs, shows Undo button, and displays
 // the empty state. Then tests tapping Undo shows Close All button again.
 - (void)testCloseAllAndUndoCloseAll {
+  if ([ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Close All Tabs Confirmation feature flag is on.");
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
@@ -146,6 +135,11 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
 // Tests that the Undo button is no longer available after tapping Close All,
 // then creating a new tab, then coming back to the tab grid.
 - (void)testUndoCloseAllNotAvailableAfterNewTabCreation {
+  if ([ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Close All Tabs Confirmation feature flag is on.");
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
@@ -238,6 +232,11 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
 // It also tests that tapping on "Close x Tab(s)" on the confirmation dialog
 // displays an empty grid and tapping on "Cancel" doesn't modify the grid.
 - (void)testCloseAllTabsConfirmation {
+  if (![ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Close All Tabs Confirmation feature flag is off.");
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
 

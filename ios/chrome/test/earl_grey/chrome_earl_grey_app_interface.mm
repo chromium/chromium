@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -87,6 +88,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return base::SysUTF8ToNSString(serialized_value);
 }
 
+// ScopedFeatureList used to disable the kEnableCloseAllTabsConfirmation
+// feature. It's kept alive to preserve the state of
+// kEnableCloseAllTabsConfirmation feature during testing.
+base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 @implementation ChromeEarlGreyAppInterface
@@ -301,6 +306,15 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (NSUInteger)indexOfActiveNormalTab {
   return chrome_test_util::GetIndexOfActiveNormalTab();
+}
+
++ (void)resetCloseAllTabsConfirmation {
+  closeAllTabsScopedFeatureList.Reset();
+}
+
++ (void)disableCloseAllTabsConfirmation {
+  closeAllTabsScopedFeatureList.InitAndDisableFeature(
+      kEnableCloseAllTabsConfirmation);
 }
 
 #pragma mark - Window utilities (EG2)
