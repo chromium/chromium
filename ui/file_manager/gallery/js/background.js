@@ -23,8 +23,7 @@ const windowCreateOptions = {
  * Backgound object. This is necessary for AppWindowWrapper.
  * @type {!BackgroundBase}
  */
-// eslint-disable-next-line no-var
-var background = new BackgroundBase();
+window.background = new BackgroundBaseImpl();
 
 /**
  * Gallery app window wrapper.
@@ -82,4 +81,4 @@ function openGalleryWindow(urls) {
       });
 }
 
-background.setLaunchHandler(openGalleryWindow);
+window.background.setLaunchHandler(openGalleryWindow);

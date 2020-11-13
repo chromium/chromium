@@ -6,7 +6,7 @@
  * Root class of the background page.
  * @implements {FileBrowserBackgroundFull}
  */
-class FileBrowserBackgroundImpl extends BackgroundBase {
+class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   constructor() {
     super();
     this.setLaunchHandler(this.launch_);
@@ -306,7 +306,7 @@ class FileBrowserBackgroundImpl extends BackgroundBase {
       this.launch_(undefined);
       return;
     }
-    BackgroundBase.prototype.onLaunched_.apply(this, [launchData]);
+    BackgroundBaseImpl.prototype.onLaunched_.apply(this, [launchData]);
   }
 
   /**
@@ -532,7 +532,7 @@ const GPLUS_PHOTOS_APP_ORIGIN =
 
 /**
  * Singleton instance of Background object.
- * @type {!FileBrowserBackgroundImpl}
+ * @type {!FileBrowserBackgroundFull}
  */
 window.background = new FileBrowserBackgroundImpl();
 

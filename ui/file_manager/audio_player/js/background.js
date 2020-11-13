@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {BackgroundBase} from '../../file_manager/background/js/background_base.m.js';
+// #import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
 // #import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
 // #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {FileType} from '../../file_manager/common/js/file_type.m.js';
@@ -39,7 +39,7 @@ const audioPlayerCreateOptions = {
   frame: {color: '#fafafa'}
 };
 
-class AudioPlayerBackground extends BackgroundBase {
+class AudioPlayerBackground extends BackgroundBaseImpl {
   constructor() {
     super();
   }
@@ -62,8 +62,7 @@ class AudioPlayerBackground extends BackgroundBase {
  * Backgound object. This is necessary for AppWindowWrapper.
  * @type {!AudioPlayerBackground}
  */
-// eslint-disable-next-line no-var
-/* #export */ var background = new AudioPlayerBackground();
+window.background = new AudioPlayerBackground();
 
 /**
  * Audio player app window wrapper.
@@ -139,4 +138,4 @@ const audioPlayer = new SingletonAppWindowWrapper(
       });
 }
 
-background.setLaunchHandler(open);
+window.background.setLaunchHandler(open);

@@ -27,8 +27,7 @@ const windowCreateOptions = {
  * Backgound object.
  * @type {!BackgroundBase}
  */
-// eslint-disable-next-line no-var
-var background = new BackgroundBase();
+window.background = new BackgroundBaseImpl();
 
 /**
  * Creates a unique windowId string. Each call increments the sequence number
@@ -103,4 +102,4 @@ function openVideoPlayerWindow(urls) {
       }.wrap());
 }
 
-background.setLaunchHandler(openVideoPlayerWindow);
+window.background.setLaunchHandler(openVideoPlayerWindow);

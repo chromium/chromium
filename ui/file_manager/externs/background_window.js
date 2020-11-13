@@ -9,7 +9,13 @@
 class BackgroundWindow {
   constructor() {
     /**
-     * @type {FileBrowserBackground}
+     * For File Manager it uses FileBrowserBackgroundFull.
+     * For all other apps it uses BackgroundBase.
+     *
+     * TODO(crbug.com/1148545): Add `FileBrowserBackgroundFull` together with
+     * `BackgroundBase` below.
+     *
+     * @type {!BackgroundBase}
      */
     this.background;
 

@@ -15,12 +15,7 @@ let FILE_MANAGER_ROOT;
 /** @type {!FileManagerTestDeps} */
 let fileManager;
 
-/**
- * Declare as FileBrowserBackground rather than FileBrowserBackgroundFull to
- * simplify deps.  Individual fields such as progressCenter below can be
- * defined as needed.
- * @type {!FileBrowserBackground}}
- */
+/** @type {!FileBrowserBackgroundFull} */
 fileManager.fileBrowserBackground_;
 
 /**
@@ -33,5 +28,5 @@ class ProgressCenterPanel {}
 /** @type {!ProgressCenter} */
 fileManager.fileBrowserBackground_.progressCenter;
 
-/** @type {!FileBrowserBackground} */
+/** @type {!FileBrowserBackgroundFull} */
 window.background;
