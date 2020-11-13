@@ -143,9 +143,14 @@ void MemoryMetricsLogger::RecordMemoryMetricsAfterDelay(
 // static
 void MemoryMetricsLogger::RecordMemoryMetrics(scoped_refptr<State> state,
                                               RecordCallback done_callback) {
-  memory_instrumentation::MemoryInstrumentation::GetInstance()
-      ->RequestGlobalDump({}, base::BindOnce(&RecordMemoryMetricsImpl,
-                                             std::move(done_callback)));
+  auto* instrumentation =
+      memory_instrumentation::MemoryInstrumentation::GetInstance();
+  if (!instrumentation) {
+    // Content layer is not initialized yet, nothing to log.
+    return;
+  }
+  instrumentation->RequestGlobalDump(
+      {}, base::BindOnce(&RecordMemoryMetricsImpl, std::move(done_callback)));
   RecordMemoryMetricsAfterDelay(state);
 }
 

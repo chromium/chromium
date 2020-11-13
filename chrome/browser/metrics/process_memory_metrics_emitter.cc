@@ -649,18 +649,23 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
 
   MarkServiceRequestsInProgress();
 
-  // The callback keeps this object alive until the callback is invoked.
-  auto callback =
-      base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
-  std::vector<std::string> mad_list;
-  for (const auto& metric : kAllocatorDumpNamesForMetrics)
-    mad_list.push_back(metric.dump_name);
-  if (pid_scope_ != base::kNullProcessId) {
-    memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDumpForPid(pid_scope_, mad_list, std::move(callback));
-  } else {
-    memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDump(mad_list, std::move(callback));
+  auto* instrumentation =
+      memory_instrumentation::MemoryInstrumentation::GetInstance();
+  // nullptr means content layer is not initialized yet (there's no memory
+  // metrics to log in this case)
+  if (instrumentation) {
+    // The callback keeps this object alive until the callback is invoked.
+    auto callback =
+        base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
+    std::vector<std::string> mad_list;
+    for (const auto& metric : kAllocatorDumpNamesForMetrics)
+      mad_list.push_back(metric.dump_name);
+    if (pid_scope_ != base::kNullProcessId) {
+      instrumentation->RequestGlobalDumpForPid(pid_scope_, mad_list,
+                                               std::move(callback));
+    } else {
+      instrumentation->RequestGlobalDump(mad_list, std::move(callback));
+    }
   }
 
   // Use a lambda adapter to post the results back to this sequence.
