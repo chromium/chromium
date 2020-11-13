@@ -438,6 +438,17 @@ gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
 
 void ClipboardHistoryControllerImpl::OnMenuClosed() {
   accelerator_target_->OnMenuClosed();
+
+  // Reset `context_menu_` in the asynchronous way. Because the menu may be
+  // accessed after `OnMenuClosed()` is called.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](const base::WeakPtr<ClipboardHistoryControllerImpl>&
+                            controller_weak_ptr) {
+                       if (controller_weak_ptr)
+                         controller_weak_ptr->context_menu_.reset();
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace ash
