@@ -368,15 +368,14 @@ auto RunMathService(mojo::PendingReceiver<math::mojom::MathService> receiver) {
   return std::make_unique<math::MathService>(std::move(receiver));
 }
 
-mojo::ServiceFactory* GetMainThreadServiceFactory() {
-  // Existing factories...
-  static base::NoDestructor<mojo::ServiceFactory> factory {
-    RunFilePatcher,
-    RunUnzipper,
+void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+  // Existing services...
+  services.Add(RunFilePatcher);
+  services.Add(RunUnzipper);
 
-    // We add our own factory to this list
-    RunMathService,
-    //...
+  // We add our own factory to this list
+  services.Add(RunMathService);
+  //...
 ```
 
 With this done, it is now possible for the browser process to launch new
