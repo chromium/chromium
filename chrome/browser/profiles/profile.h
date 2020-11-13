@@ -111,8 +111,8 @@ class Profile : public content::BrowserContext {
     explicit OTRProfileID(const std::string& profile_id);
 
     // ID used by the incognito and guest profiles.
-    // TODO(https://crbug.com/1033903): To be replaced with |IncognitoID| and
-    // |GuestID| when the use cases are reduced.
+    // TODO(https://crbug.com/1125474): To be replaced with |IncognitoID| when
+    // OTR Guest profiles are deprecated.
     static const OTRProfileID PrimaryID();
 
     // Creates a unique OTR profile id with the given profile id prefix.

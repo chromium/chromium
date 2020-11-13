@@ -11,9 +11,10 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 
-class ProfileDestroyerTest : public BrowserWithTestWindowTest {
+class ProfileDestroyerTest : public BrowserWithTestWindowTest,
+                             public testing::WithParamInterface<bool> {
  public:
-  ProfileDestroyerTest() = default;
+  ProfileDestroyerTest() : is_primary_otr_(GetParam()) {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -24,22 +25,26 @@ class ProfileDestroyerTest : public BrowserWithTestWindowTest {
 
   TestingProfile* GetOriginalProfile() { return GetProfile(); }
 
-  TestingProfile* GetIncognitoProfile() {
-    if (!incognito_profile_) {
+  TestingProfile* GetOffTheRecordProfile() {
+    if (!otr_profile_) {
       TestingProfile::Builder builder;
-      incognito_profile_ = builder.BuildIncognito(GetOriginalProfile());
-      incognito_profile_->SetProfileDestructionObserver(
-          base::BindOnce(&ProfileDestroyerTest::SetIncognitoProfileDestroyed,
+      Profile::OTRProfileID profile_id =
+          is_primary_otr_ ? Profile::OTRProfileID::PrimaryID()
+                          : Profile::OTRProfileID("Test::ProfileDestroyer");
+      otr_profile_ =
+          builder.BuildOffTheRecord(GetOriginalProfile(), profile_id);
+      otr_profile_->SetProfileDestructionObserver(
+          base::BindOnce(&ProfileDestroyerTest::SetOTRProfileDestroyed,
                          base::Unretained(this)));
     }
-    return incognito_profile_;
+    return otr_profile_;
   }
 
   void SetOriginalProfileDestroyed() { original_profile_destroyed_ = true; }
-  void SetIncognitoProfileDestroyed() { incognito_profile_destroyed_ = true; }
+  void SetOTRProfileDestroyed() { otr_profile_destroyed_ = true; }
 
   bool IsOriginalProfileDestroyed() { return original_profile_destroyed_; }
-  bool IsIncognitoProfileDestroyed() { return incognito_profile_destroyed_; }
+  bool IsOTRProfileDestroyed() { return otr_profile_destroyed_; }
 
   // Creates a render process host based on a new site instance given the
   // |profile| and mark it as used.
@@ -56,56 +61,59 @@ class ProfileDestroyerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  bool is_primary_otr_;
   bool original_profile_destroyed_{false};
-  bool incognito_profile_destroyed_{false};
-  TestingProfile* incognito_profile_{nullptr};
+  bool otr_profile_destroyed_{false};
+  TestingProfile* otr_profile_{nullptr};
 
   std::vector<scoped_refptr<content::SiteInstance>> site_instances_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileDestroyerTest);
 };
 
-// Expect immediate incognito profile destruction when no pending renderer
+// Expect immediate OTR profile destruction when no pending renderer
 // process host exists.
-TEST_F(ProfileDestroyerTest, ImmediateIncognitoProfileDestruction) {
-  TestingProfile* incognito_profile = GetIncognitoProfile();
+TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestruction) {
+  TestingProfile* otr_profile = GetOffTheRecordProfile();
 
   // Destroying the regular browser does not result in destruction of regular
-  // profile and hence should not destroy the incognito profile.
+  // profile and hence should not destroy the OTR profile.
   set_browser(nullptr);
   EXPECT_FALSE(IsOriginalProfileDestroyed());
-  EXPECT_FALSE(IsIncognitoProfileDestroyed());
+  EXPECT_FALSE(IsOTRProfileDestroyed());
 
-  // Ask for destruction of Incognito profile, and expect immediate destruction.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(incognito_profile);
-  EXPECT_TRUE(IsIncognitoProfileDestroyed());
+  // Ask for destruction of OTR profile, and expect immediate destruction.
+  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile);
+  EXPECT_TRUE(IsOTRProfileDestroyed());
 }
 
-// Expect pending renderer process hosts delay incognito profile destruction.
-TEST_F(ProfileDestroyerTest, DelayedIncognitoProfileDestruction) {
-  TestingProfile* incognito_profile = GetIncognitoProfile();
+// Expect pending renderer process hosts delay OTR profile destruction.
+TEST_P(ProfileDestroyerTest, DelayedOTRProfileDestruction) {
+  TestingProfile* otr_profile = GetOffTheRecordProfile();
 
   // Create two render process hosts.
   std::unique_ptr<content::RenderProcessHost> render_process_host1 =
-      CreatedRendererProcessHost(incognito_profile);
+      CreatedRendererProcessHost(otr_profile);
   std::unique_ptr<content::RenderProcessHost> render_process_host2 =
-      CreatedRendererProcessHost(incognito_profile);
+      CreatedRendererProcessHost(otr_profile);
 
-  // Ask for destruction of Incognito profile, but expect it to be delayed.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(incognito_profile);
-  EXPECT_FALSE(IsIncognitoProfileDestroyed());
+  // Ask for destruction of OTR profile, but expect it to be delayed.
+  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile);
+  EXPECT_FALSE(IsOTRProfileDestroyed());
 
   // Destroy the first pending render process host, and expect it not to destroy
-  // the incognito profile.
+  // the OTR profile.
   render_process_host1.release()->Cleanup();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsIncognitoProfileDestroyed());
+  EXPECT_FALSE(IsOTRProfileDestroyed());
 
-  // Destroy the other renderer process, and expect destruction of incognito
+  // Destroy the other renderer process, and expect destruction of OTR
   // profile.
   render_process_host2.release()->Cleanup();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsIncognitoProfileDestroyed());
+  EXPECT_TRUE(IsOTRProfileDestroyed());
 }
 
-// TODO(https://crbug.com/1033903): Add tests for non-primary OTRs.
+INSTANTIATE_TEST_SUITE_P(AllOTRProfileTypes,
+                         ProfileDestroyerTest,
+                         /*is_primary_otr=*/testing::Bool());
