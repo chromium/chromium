@@ -4,8 +4,6 @@
 <script src="../resources/runner.js"></script>
 <script>
 
-const hostChildren = 100;
-
 function createDeepShadowTemplateContent(levels, slotted) {
   const nestedContent = levels > 0 ? createDeepShadowTemplateContent(levels-1) : '<span>End</span>';
   if (slotted) {
@@ -15,16 +13,19 @@ function createDeepShadowTemplateContent(levels, slotted) {
   }
 }
 
-// Build templates once
-const templateSlotted = document.createElement('template');
-document.body.appendChild(templateSlotted);
-templateSlotted.content.allowDeclarativeShadowDom = true;
-templateSlotted.innerHTML = createDeepShadowTemplateContent(hostChildren, true);
+const hostChildren = 100;
 
-const templateNested = document.createElement('template');
-document.body.appendChild(templateNested);
-templateNested.content.allowDeclarativeShadowDom = true;
-templateNested.innerHTML = createDeepShadowTemplateContent(hostChildren, false);
+function buildTemplate(slotted) {
+  const template = document.createElement('template');
+  document.body.appendChild(template);
+  const html = createDeepShadowTemplateContent(hostChildren, slotted);
+  template.setInnerHTML(html, {allowShadowRoot: true});
+  return template;
+}
+
+// Build templates once
+const templateSlotted = buildTemplate(true);
+const templateNested = buildTemplate(false);
 
 if (!templateSlotted.content.firstChild.shadowRoot) {
   PerfTestRunner.logFatalError("Declarative Shadow DOM must be enabled for this test.");
