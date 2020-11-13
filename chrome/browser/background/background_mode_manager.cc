@@ -268,6 +268,8 @@ BackgroundModeManager::BackgroundModeManager(
 
   // Add self as an observer for the ProfileAttributesStorage so we know when
   // profiles are deleted and their names change.
+  // This observer is never unregistered because the BackgroundModeManager
+  // outlives the profile storage.
   profile_storage_->AddObserver(this);
 
   UMA_HISTOGRAM_BOOLEAN("BackgroundMode.OnStartup.AutoLaunchState",

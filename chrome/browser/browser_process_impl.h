@@ -316,6 +316,8 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<SystemNotificationHelper> system_notification_helper_;
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  // Must be destroyed after the profile manager, because it doesn't remove
+  // itself as a profile attributes storage observer on destruction.
   std::unique_ptr<BackgroundModeManager> background_mode_manager_;
 #endif
 

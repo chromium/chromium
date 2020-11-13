@@ -425,6 +425,10 @@ void BrowserProcessImpl::StartTearDown() {
     // can be destroyed.
     UserManager::Hide();
 #endif  // !defined(OS_CHROMEOS)
+    // `profile_manager_` must be destroyed before `background_mode_manager_`,
+    // because the background mode manager does not stop observing profile
+    // changes at destruction (notifying the observers would cause a use-after-
+    // free).
     profile_manager_.reset();
   }
 
