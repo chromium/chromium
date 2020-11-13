@@ -55,7 +55,7 @@ void SVGAnimateTransformElement::ResolveTargetProperty() {
   css_property_id_ = CSSPropertyID::kInvalid;
 }
 
-SVGPropertyBase* SVGAnimateTransformElement::CreatePropertyForAnimation(
+SVGPropertyBase* SVGAnimateTransformElement::ParseValue(
     const String& value) const {
   DCHECK(IsAnimatingSVGDom());
   return MakeGarbageCollected<SVGTransformList>(transform_type_, value);

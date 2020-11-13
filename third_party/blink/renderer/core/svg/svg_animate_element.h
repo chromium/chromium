@@ -105,7 +105,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   void WillChangeAnimatedType();
   void DidChangeAnimatedType();
 
-  virtual SVGPropertyBase* CreatePropertyForAnimation(const String&) const;
+  virtual SVGPropertyBase* ParseValue(const String&) const;
   SVGPropertyBase* CreatePropertyForAttributeAnimation(const String&) const;
   SVGPropertyBase* CreatePropertyForCSSAnimation(const String&) const;
 
