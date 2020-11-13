@@ -1,10 +1,11 @@
 # TEAM: payments-dev@chromium.org
-# COMPONENT: UI>Browser>Payments
+# COMPONENT: Blink>Payments
 
 rouslan@chromium.org
 danyao@chromium.org
 maxlg@chromium.org
 sahel@chromium.org
+nburris@chromium.org
 
 # Emeritus
 gogerald@chromium.org
