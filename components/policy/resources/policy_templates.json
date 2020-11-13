@@ -23653,18 +23653,27 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use the <ph name="LACROS_NAME">Lacros</ph> browser',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from using the <ph name="LACROS_NAME">Lacros</ph> browser',
+        },
+      ],
       'example_value': False,
+      'default': False,
       'id': 793,
       'default_for_enterprise_users': False,
-      'caption': '''Allow usage of Lacros''',
+      'caption': '''Allow usage of <ph name="LACROS_NAME">Lacros</ph>''',
       'tags': [],
-      'desc': '''This setting allows users to use the Lacros browser.
+      'desc': '''This setting allows users to use the <ph name="LACROS_NAME">Lacros</ph> browser.
 
-      If this policy is set to false, the user cannot use Lacros.
+      If this policy is set to Disabled or unset, the user cannot use <ph name="LACROS_NAME">Lacros</ph>.
 
-      If this policy is set to true, the user can use the Lacros browser.
-
-      If this policy is unset, the user cannot use the Lacros browser.''',
+      If this policy is set to Enabled, the user can use the <ph name="LACROS_NAME">Lacros</ph> browser.''',
     },
   ],
 

@@ -9,6 +9,7 @@ how various product names and the like should be referenced.
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
+* Lacros: `<ph name="LACROS_NAME">Lacros</ph>`
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
 * Windows: `<ph name="MS_WIN_NAME">Microsoft® Windows®</ph>`
 * Microsoft ActiveDirectory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`
