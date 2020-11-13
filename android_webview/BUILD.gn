@@ -536,6 +536,7 @@ android_library("browser_java") {
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/policy/android:policy_java",
     "//components/safe_browsing/android:safe_browsing_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/variations:load_seed_result_enum_java",
     "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",

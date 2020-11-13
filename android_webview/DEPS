@@ -19,6 +19,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+components/services/heap_profiling/public",
+  "+components/url_formatter",
   "+components/version_info",
   # Only allow this header in spellchecking since allowing all of spellchecking
   # would include both browser and renderer components.
