@@ -13,13 +13,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
-#include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
-#include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -504,15 +501,11 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindow) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, *app_id);
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
 
   // The app should open as a window.
-  EXPECT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(),
-                            /*process_startup=*/false,
-                            std::make_unique<LaunchModeRecorder>()));
+  EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
   app_loaded_observer.Wait();
 
   Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
@@ -562,15 +555,10 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, *app_id);
 
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-
   // The app should open as a tab.
-  EXPECT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(),
-                            /*process_startup=*/false,
-                            std::make_unique<LaunchModeRecorder>()));
+  EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
   app_loaded_observer.Wait();
 
   {

@@ -53,6 +53,10 @@ class StartupBrowserCreatorImpl {
       delete;
   ~StartupBrowserCreatorImpl() = default;
 
+  // If command line specifies kiosk mode, or full screen mode, switch
+  // to full screen.
+  static void MaybeToggleFullscreen(Browser* browser);
+
   // Creates the necessary windows for startup. Returns true on success,
   // false on failure. process_startup is true if Chrome is just
   // starting up. If process_startup is false, it indicates Chrome was
@@ -126,22 +130,6 @@ class StartupBrowserCreatorImpl {
   Browser* OpenTabsInBrowser(Browser* browser,
                              bool process_startup,
                              const StartupTabs& tabs);
-
-  // If the process was launched with the web application command line flags,
-  // e.g. --app=http://www.google.com/ or --app_id=... return true.
-  // In this case |app_url| or |app_id| are populated if they're non-null.
-  bool IsAppLaunch(std::string* app_url, std::string* app_id) const;
-
-  // Opens an application window or tab if the process was launched with the web
-  // application command line switches. Returns true if launch succeeded (or is
-  // proceeding asynchronously); otherwise, returns false to indicate that
-  // normal browser startup should resume. Desktop web applications launch
-  // asynchronously, and fall back to launching a browser window.
-  // If the function returns true, |launch_mode_recorder| will be moved away,
-  // and the unique_ptr's value will be null.
-  bool MaybeLaunchApplication(
-      Profile* profile,
-      std::unique_ptr<LaunchModeRecorder>& launch_mode_recorder);
 
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore

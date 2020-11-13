@@ -1311,18 +1311,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
 
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-
-  // The app should open as a tab.
-  EXPECT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(),
-                            /*process_startup=*/false,
-                            std::make_unique<LaunchModeRecorder>()));
+  EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   {
-    // From startup_browser_creator_impl.cc:
+    // From launch_mode_recorder.cc:
     constexpr char kLaunchModesHistogram[] = "Launch.Modes";
     const base::HistogramBase::Sample LM_AS_WEBAPP_IN_TAB = 21;
 

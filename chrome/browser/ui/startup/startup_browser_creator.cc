@@ -32,7 +32,10 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
+#include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -64,6 +67,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -294,6 +298,106 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
       prefs::kStartupBrowserWindowLaunchSuppressed);
 #endif  // defined(OS_CHROMEOS)
 
+  return false;
+}
+
+void FinalizeWebAppLaunch(
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
+    Browser* browser,
+    apps::mojom::LaunchContainer container) {
+  LaunchMode mode;
+  switch (container) {
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+      DCHECK(browser->is_type_app());
+      mode = LaunchMode::kAsWebAppInWindow;
+      break;
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+      DCHECK(!browser->is_type_app());
+      mode = LaunchMode::kAsWebAppInTab;
+      break;
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+      NOTREACHED();
+      FALLTHROUGH;
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+      DCHECK(!browser->is_type_app());
+      mode = LaunchMode::kUnknownWebApp;
+      break;
+  }
+
+  if (launch_mode_recorder)
+    launch_mode_recorder->SetLaunchMode(mode);
+  StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
+}
+
+// If the process was launched with the web application command line flags,
+// e.g. --app=http://www.google.com/ or --app_id=... return true.
+// In this case |app_url| or |app_id| are populated if they're non-null.
+bool IsAppLaunch(const base::CommandLine& command_line,
+                 std::string* app_url,
+                 std::string* app_id) {
+  if (command_line.HasSwitch(switches::kApp)) {
+    if (app_url)
+      *app_url = command_line.GetSwitchValueASCII(switches::kApp);
+    return true;
+  }
+  if (command_line.HasSwitch(switches::kAppId)) {
+    if (app_id)
+      *app_id = command_line.GetSwitchValueASCII(switches::kAppId);
+    return true;
+  }
+  return false;
+}
+
+// Opens an application window or tab if the process was launched with the web
+// application command line switches. Returns true if launch succeeded (or is
+// proceeding asynchronously); otherwise, returns false to indicate that
+// normal browser startup should resume. Desktop web applications launch
+// asynchronously, and fall back to launching a browser window.
+bool MaybeLaunchApplication(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile,
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+  std::string url_string, app_id;
+  if (!IsAppLaunch(command_line, &url_string, &app_id))
+    return false;
+
+  if (!app_id.empty()) {
+    // Opens an empty browser window if the app_id is invalid.
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithCallback(
+            app_id, command_line, cur_dir,
+            base::BindOnce(&FinalizeWebAppLaunch,
+                           std::move(launch_mode_recorder)));
+    return true;
+  }
+
+  if (url_string.empty())
+    return false;
+
+#if defined(OS_WIN)  // Fix up Windows shortcuts.
+  base::ReplaceSubstringsAfterOffset(&url_string, 0, "\\x", "%");
+#endif
+  GURL url(url_string);
+
+  // Restrict allowed URLs for --app switch.
+  if (!url.is_empty() && url.is_valid()) {
+    content::ChildProcessSecurityPolicy* policy =
+        content::ChildProcessSecurityPolicy::GetInstance();
+    if (policy->IsWebSafeScheme(url.scheme()) ||
+        url.SchemeIs(url::kFileScheme)) {
+      const content::WebContents* web_contents =
+          apps::OpenExtensionAppShortcutWindow(profile, url);
+      if (web_contents) {
+        FinalizeWebAppLaunch(
+            std::move(launch_mode_recorder),
+            chrome::FindBrowserWithWebContents(web_contents),
+            apps::mojom::LaunchContainer::kLaunchContainerWindow);
+        return true;
+      }
+    }
+  }
   return false;
 }
 
@@ -807,6 +911,27 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     return true;
   }
 #endif  // defined(OS_WIN)
+
+  if (command_line.HasSwitch(switches::kAppId)) {
+    std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
+    // If |app_id| is a disabled or terminated platform app we handle it
+    // specially here, otherwise it will be handled below.
+    if (apps::OpenExtensionApplicationWithReenablePrompt(
+            last_used_profile, app_id, command_line, cur_dir)) {
+      return true;
+    }
+  }
+
+  // If we're being run as an application window or application tab, don't
+  // restore tabs or open initial URLs as the user has directly launched an app
+  // shortcut. In the first case, the user should see a standlone app window. In
+  // the second case, the tab should either open in an existing Chrome window
+  // for this profile, or spawn a new Chrome window without any NTP if no window
+  // exists (see crbug.com/528385).
+  if (MaybeLaunchApplication(command_line, cur_dir, last_used_profile,
+                             std::make_unique<LaunchModeRecorder>())) {
+    return true;
+  }
 
   return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
                                       last_used_profile, last_opened_profiles);

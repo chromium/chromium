@@ -18,10 +18,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
-#include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -58,7 +55,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -95,43 +91,6 @@
 namespace {
 
 // Utility functions ----------------------------------------------------------
-
-void MaybeToggleFullscreen(Browser* browser) {
-  // In kiosk mode, we want to always be fullscreen.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kStartFullscreen)) {
-    chrome::ToggleFullscreenMode(browser);
-  }
-}
-
-void FinalizeWebAppLaunch(
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
-    Browser* browser,
-    apps::mojom::LaunchContainer container) {
-  LaunchMode mode;
-  switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      DCHECK(browser->is_type_app());
-      mode = LaunchMode::kAsWebAppInWindow;
-      break;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      DCHECK(!browser->is_type_app());
-      mode = LaunchMode::kAsWebAppInTab;
-      break;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED();
-      FALLTHROUGH;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      DCHECK(!browser->is_type_app());
-      mode = LaunchMode::kUnknownWebApp;
-      break;
-  }
-
-  if (launch_mode_recorder)
-    launch_mode_recorder->SetLaunchMode(mode);
-  MaybeToggleFullscreen(browser);
-}
 
 void UrlsToTabs(const std::vector<GURL>& urls, StartupTabs* tabs) {
   for (const GURL& url : urls) {
@@ -195,6 +154,16 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
       browser_creator_(browser_creator),
       is_first_run_(is_first_run == chrome::startup::IS_FIRST_RUN) {}
 
+// static
+void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
+  // In kiosk mode, we want to always be fullscreen.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kStartFullscreen)) {
+    chrome::ToggleFullscreenMode(browser);
+  }
+}
+
 bool StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     const std::vector<GURL>& urls_to_open,
@@ -203,60 +172,41 @@ bool StartupBrowserCreatorImpl::Launch(
   DCHECK(profile);
   profile_ = profile;
 
-  if (command_line_.HasSwitch(switches::kAppId)) {
-    std::string app_id = command_line_.GetSwitchValueASCII(switches::kAppId);
-    // If |app_id| is a disabled or terminated platform app we handle it
-    // specially here, otherwise it will be handled below.
-    if (apps::OpenExtensionApplicationWithReenablePrompt(
-            profile, app_id, command_line_, cur_dir_)) {
-      return true;
+  // Check the true process command line for --try-chrome-again=N rather than
+  // the one parsed for startup URLs and such.
+  if (launch_mode_recorder) {
+    if (!base::CommandLine::ForCurrentProcess()
+             ->GetSwitchValueNative(switches::kTryChromeAgain)
+             .empty()) {
+      launch_mode_recorder->SetLaunchMode(LaunchMode::kUserExperiment);
+    } else {
+      launch_mode_recorder->SetLaunchMode(urls_to_open.empty()
+                                              ? LaunchMode::kToBeDecided
+                                              : LaunchMode::kWithUrls);
     }
   }
 
-  // Open the required browser windows and tabs. If we're being run as an
-  // application window or application tab, don't restore tabs or open initial
-  // URLs as the user has directly launched an app shortcut. In the first case,
-  // the user should see a standlone app window. In the second case, the tab
-  // should either open in an existing Chrome window for this profile, or spawn
-  // a new Chrome window without any NTP if no window exists (see
-  // crbug.com/528385).
-  if (!MaybeLaunchApplication(profile, launch_mode_recorder)) {
-    // Check the true process command line for --try-chrome-again=N rather than
-    // the one parsed for startup URLs and such.
-    if (launch_mode_recorder) {
-      if (!base::CommandLine::ForCurrentProcess()
-               ->GetSwitchValueNative(switches::kTryChromeAgain)
-               .empty()) {
-        launch_mode_recorder->SetLaunchMode(LaunchMode::kUserExperiment);
-      } else {
-        launch_mode_recorder->SetLaunchMode(urls_to_open.empty()
-                                                ? LaunchMode::kToBeDecided
-                                                : LaunchMode::kWithUrls);
-      }
-    }
+  DetermineURLsAndLaunch(process_startup, urls_to_open);
 
-    DetermineURLsAndLaunch(process_startup, urls_to_open);
-
-    if (command_line_.HasSwitch(switches::kInstallChromeApp)) {
-      install_chrome_app::InstallChromeApp(
-          command_line_.GetSwitchValueASCII(switches::kInstallChromeApp));
-    }
+  if (command_line_.HasSwitch(switches::kInstallChromeApp)) {
+    install_chrome_app::InstallChromeApp(
+        command_line_.GetSwitchValueASCII(switches::kInstallChromeApp));
+  }
 
 #if defined(OS_MAC)
-    if (process_startup) {
-      // Check whether the auto-update system needs to be promoted from user
-      // to system.
-      KeystoneInfoBar::PromotionInfoBar(profile);
-    }
+  if (process_startup) {
+    // Check whether the auto-update system needs to be promoted from user
+    // to system.
+    KeystoneInfoBar::PromotionInfoBar(profile);
+  }
 #endif
 
-    // It's possible for there to be no browser window, e.g. if someone
-    // specified a non-sensical combination of options
-    // ("--kiosk --no_startup_window"); do nothing in that case.
-    Browser* browser = BrowserList::GetInstance()->GetLastActive();
-    if (browser)
-      MaybeToggleFullscreen(browser);
-  }
+  // It's possible for there to be no browser window, e.g. if someone
+  // specified a non-sensical combination of options
+  // ("--kiosk --no_startup_window"); do nothing in that case.
+  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  if (browser)
+    MaybeToggleFullscreen(browser);
 
   return true;
 }
@@ -338,67 +288,6 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
   browser->window()->Show();
 
   return browser;
-}
-
-bool StartupBrowserCreatorImpl::IsAppLaunch(std::string* app_url,
-                                            std::string* app_id) const {
-  if (command_line_.HasSwitch(switches::kApp)) {
-    if (app_url)
-      *app_url = command_line_.GetSwitchValueASCII(switches::kApp);
-    return true;
-  }
-  if (command_line_.HasSwitch(switches::kAppId)) {
-    if (app_id)
-      *app_id = command_line_.GetSwitchValueASCII(switches::kAppId);
-    return true;
-  }
-  return false;
-}
-
-bool StartupBrowserCreatorImpl::MaybeLaunchApplication(
-    Profile* profile,
-    std::unique_ptr<LaunchModeRecorder>& launch_mode_recorder) {
-  std::string url_string, app_id;
-  if (!IsAppLaunch(&url_string, &app_id))
-    return false;
-
-  if (!app_id.empty()) {
-    // Opens an empty browser window if the app_id is invalid.
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithCallback(
-            app_id, command_line_, cur_dir_,
-            base::BindOnce(&FinalizeWebAppLaunch,
-                           std::move(launch_mode_recorder)));
-    return true;
-  }
-
-  if (url_string.empty())
-    return false;
-
-#if defined(OS_WIN)  // Fix up Windows shortcuts.
-  base::ReplaceSubstringsAfterOffset(&url_string, 0, "\\x", "%");
-#endif
-  GURL url(url_string);
-
-  // Restrict allowed URLs for --app switch.
-  if (!url.is_empty() && url.is_valid()) {
-    content::ChildProcessSecurityPolicy* policy =
-        content::ChildProcessSecurityPolicy::GetInstance();
-    if (policy->IsWebSafeScheme(url.scheme()) ||
-        url.SchemeIs(url::kFileScheme)) {
-      const content::WebContents* web_contents =
-          apps::OpenExtensionAppShortcutWindow(profile, url);
-      if (web_contents) {
-        FinalizeWebAppLaunch(
-            std::move(launch_mode_recorder),
-            chrome::FindBrowserWithWebContents(web_contents),
-            apps::mojom::LaunchContainer::kLaunchContainerWindow);
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(

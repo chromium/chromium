@@ -23,6 +23,11 @@ namespace base {
 class CommandLine;
 }
 
+namespace web_app {
+FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineTab);
+FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindow);
+}  // namespace web_app
+
 // class containing helpers for BrowserMain to spin up a new instance and
 // initialize the profile.
 class StartupBrowserCreator {
@@ -108,6 +113,7 @@ class StartupBrowserCreator {
   friend class StartupBrowserCreatorImpl;
   // TODO(crbug.com/642442): Remove this when first_run_tabs gets refactored.
   friend class StartupTabProviderImpl;
+  FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            ReadingWasRestartedAfterNormalStart);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
@@ -118,6 +124,15 @@ class StartupBrowserCreator {
                            ValidNotificationLaunchId);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            InvalidNotificationLaunchId);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutNoPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutTabPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           OpenAppShortcutWindowPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppUrlShortcut);
+  FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
+                           CommandLineTab);
+  FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
+                           CommandLineWindow);
 
   bool ProcessCmdLineImpl(const base::CommandLine& command_line,
                           const base::FilePath& cur_dir,

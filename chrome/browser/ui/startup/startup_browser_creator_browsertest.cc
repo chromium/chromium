@@ -416,12 +416,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
   command_line.AppendSwitchASCII(switches::kApp, url.spec());
 
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   Browser* new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
@@ -457,11 +454,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutNoPref) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
 
-  chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
-      chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   // No pref was set, so the app should have opened in a tab in the existing
   // window.
@@ -483,11 +478,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutWindowPref) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
-  chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
-      chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   // Pref was set to open in a window, so the app should have opened in a
   // window.  The launch should have created a new browser. Find the new
@@ -518,11 +511,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppShortcutTabPref) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
-  chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
-      chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   // When an app shortcut is open and the pref indicates a tab should open, the
   // tab is open in the existing browser window.
@@ -548,7 +539,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
       L"1|1|0|Default|0|https://example.com/|notification_id");
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), false, browser()->profile(), {}));
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   // The launch delegates to the notification system and doesn't open any new
   // browser window.
@@ -561,7 +553,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, InvalidNotificationLaunchId) {
   command_line.AppendSwitchNative(switches::kNotificationLaunchId, L"");
   StartupBrowserCreator browser_creator;
   ASSERT_FALSE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), false, browser()->profile(), {}));
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
 
   // No new browser window is open.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
