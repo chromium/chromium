@@ -283,12 +283,6 @@ config("asan_flags") {
       # https://crbug.com/708707
       cflags += [ "-fno-sanitize-address-use-after-scope" ]
     }
-    if (!asan_globals) {
-      cflags += [
-        "-mllvm",
-        "-asan-globals=0",
-      ]
-    }
     if (asan_use_blacklist) {
       if (is_win) {
         if (!defined(asan_win_blacklist_path)) {

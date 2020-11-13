@@ -172,11 +172,6 @@ declare_args() {
   # builds.
   use_clang_profiling_inside_sandbox =
       use_clang_profiling && !use_fuzzing_engine
-
-  # Detect overflow/underflow for global objects.
-  #
-  # Mac: http://crbug.com/352073
-  asan_globals = !is_mac
 }
 
 if (use_fuzzing_engine && sanitizer_coverage_flags == "") {
