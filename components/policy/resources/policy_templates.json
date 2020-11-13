@@ -1478,6 +1478,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Web Proxy Auto-Discovery (WPAD) optimizations',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Web Proxy Auto-Discovery (WPAD) optimization',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 261,
@@ -7691,6 +7701,20 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show the apps shortcut in the bookmark bar',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show the apps shortcut in the bookmark bar',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': False,
       'default': None,
       'id': 267,
@@ -10343,6 +10367,20 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use a Google web service to help resolve spelling errors',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use any Google web services to help resolve spelling errors',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to choose if Google web services are used to resolve spelling errors',
+        },
+      ],
       'example_value': False,
       'default': None,
       'id': 151,
@@ -17465,6 +17503,20 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable spellcheck',
+        },
+        {
+          'value': False,
+          'caption': 'Disable spellcheck',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to enable or disable spellcheck',
+        },
+      ],
       'example_value': False,
       'default': None,
       'id': 408,
@@ -20381,6 +20433,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Accept web contents served as Signed HTTP Exchanges',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent Signed HTTP Exchanges from loading',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 542,
@@ -20462,6 +20524,16 @@
       'schema': {
         'type': 'boolean',
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to file feedback',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from filing feedback',
+        },
+      ],
       'supported_on': ['chrome.*:77-', 'chrome_os:77-'],
       'features': {
         'dynamic_refresh': True,
@@ -23407,6 +23479,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow WebRTC to use obsolete versions of the TLD/DTLS protocol',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent WebRTC from using obsolete versions of TLS/DTLS',
+        },
+      ],
       'example_value': False,
       'default': False,
       'id': 787,
