@@ -22,9 +22,9 @@ public class MockPersistedTabData extends PersistedTabData {
     public MockPersistedTabData(Tab tab, int field) {
         super(tab,
                 PersistedTabDataConfiguration.get(MockPersistedTabData.class, tab.isIncognito())
-                        .storage,
+                        .getStorage(),
                 PersistedTabDataConfiguration.get(MockPersistedTabData.class, tab.isIncognito())
-                        .id);
+                        .getId());
         mField = field;
     }
 

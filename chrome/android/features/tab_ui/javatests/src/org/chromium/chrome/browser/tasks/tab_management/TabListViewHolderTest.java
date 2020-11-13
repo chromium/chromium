@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
@@ -24,18 +27,26 @@ import android.widget.TextView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorage;
+import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorageJni;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -54,6 +65,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabListViewHolderTest extends DummyUiActivityTestCase {
+    @Rule
+    public JniMocker mMocker = new JniMocker();
+
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final String EXPECTED_PRICE_STRING = "$287";
@@ -72,6 +86,12 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private PropertyModelChangeProcessor mSelectableMCP;
 
     private ViewGroup mSelectableTabListView;
+
+    @Mock
+    private Profile mProfile;
+
+    @Mock
+    private LevelDBPersistedTabDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
@@ -124,6 +144,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        MockitoAnnotations.initMocks(this);
         ViewGroup view = new LinearLayout(getActivity());
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -178,6 +199,13 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
             PropertyModelChangeProcessor.create(mSelectableModel, mSelectableTabListView,
                     TabListViewBinder::bindSelectableListTab);
         });
+        mMocker.mock(LevelDBPersistedTabDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
+        doNothing()
+                .when(mLevelDBPersistedTabDataStorage)
+                .init(any(LevelDBPersistedTabDataStorage.class), any(BrowserContextHandle.class));
+        doReturn(false).when(mProfile).isOffTheRecord();
+        LevelDBPersistedTabDataStorage.setSkipNativeAssertionsForTesting(true);
+        Profile.setLastUsedProfileForTesting(mProfile);
     }
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {

@@ -86,9 +86,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public ShoppingPersistedTabData(Tab tab) {
         super(tab,
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
-                        .storage,
+                        .getStorage(),
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
-                        .id);
+                        .getId());
     }
 
     private ShoppingPersistedTabData(

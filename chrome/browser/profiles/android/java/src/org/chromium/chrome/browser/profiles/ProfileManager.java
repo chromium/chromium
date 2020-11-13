@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 
@@ -59,7 +61,8 @@ public class ProfileManager {
         }
     }
 
-    static void onProfileDestroyed(Profile profile) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void onProfileDestroyed(Profile profile) {
         for (Observer observer : sObservers) {
             observer.onProfileDestroyed(profile);
         }

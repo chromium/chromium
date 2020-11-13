@@ -79,7 +79,7 @@ public abstract class PersistedTabData implements UserData {
             Tab tab, PersistedTabDataFactory<T> factory, byte[] data, Class<T> clazz) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
-        T persistedTabData = factory.create(data, config.storage, config.id);
+        T persistedTabData = factory.create(data, config.getStorage(), config.getId());
         setUserData(tab, clazz, persistedTabData);
         return persistedTabData;
     }
@@ -126,14 +126,15 @@ public abstract class PersistedTabData implements UserData {
         if (sCachedCallbacks.get(key).size() > 1) return;
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
-        config.storage.restore(tab.getId(), config.id, (data) -> {
+        config.getStorage().restore(tab.getId(), config.getId(), (data) -> {
             if (data == null) {
                 tabDataCreator.onResult((tabData) -> {
                     updateLastUpdatedMs(tabData);
                     onPersistedTabDataResult(tabData, tab, clazz, key);
                 });
             } else {
-                T persistedTabDataFromStorage = factory.create(data, config.storage, config.id);
+                T persistedTabDataFromStorage =
+                        factory.create(data, config.getStorage(), config.getId());
                 if (persistedTabDataFromStorage.needsUpdate()) {
                     tabDataCreator.onResult((tabData) -> {
                         updateLastUpdatedMs(tabData);
