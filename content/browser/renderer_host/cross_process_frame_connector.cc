@@ -62,6 +62,18 @@ CrossProcessFrameConnector::~CrossProcessFrameConnector() {
   SetView(nullptr);
 }
 
+bool CrossProcessFrameConnector::OnMessageReceived(const IPC::Message& msg) {
+  bool handled = true;
+
+  IPC_BEGIN_MESSAGE_MAP(CrossProcessFrameConnector, msg)
+    IPC_MESSAGE_HANDLER(FrameHostMsg_SynchronizeVisualProperties,
+                        OnSynchronizeVisualProperties)
+    IPC_MESSAGE_UNHANDLED(handled = false)
+  IPC_END_MESSAGE_MAP()
+
+  return handled;
+}
+
 void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
   // Detach ourselves from the previous |view_|.
   if (view_) {

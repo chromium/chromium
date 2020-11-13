@@ -80,17 +80,7 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "color_space_mojom_traits.h" ]
-      traits_public_deps = [ ":shared_mojom_traits" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gfx.mojom.DisplayColorSpaces"
-          cpp = "::gfx::DisplayColorSpaces"
-        },
-      ]
-      traits_headers = [ "display_color_spaces_mojom_traits.h" ]
-      traits_public_deps = [ ":shared_mojom_traits" ]
+      traits_public_deps = [ ":color_space_mojom_support" ]
     },
     {
       types = [
@@ -181,6 +171,17 @@ mojom("mojom") {
       ]
       traits_sources = [ "ca_layer_params_mojom_traits.cc" ]
       traits_headers = [ "ca_layer_params_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.DisplayColorSpaces"
+          cpp = "::gfx::DisplayColorSpaces"
+        },
+      ]
+      traits_sources = [ "display_color_spaces_mojom_traits.cc" ]
+      traits_headers = [ "display_color_spaces_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
     {
@@ -293,6 +294,18 @@ mojom("test_interfaces") {
   public_deps = [ ":mojom" ]
 }
 
+component("color_space_mojom_support") {
+  sources = [
+    "color_space_mojom_traits.cc",
+    "color_space_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//ui/gfx",
+  ]
+  defines = [ "IS_UI_GFX_MOJOM_TRAITS_IMPL" ]
+}
+
 component("native_handle_types_mojom_traits") {
   output_name = "gfx_native_types_shared_mojom_traits"
   defines = [ "IS_GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS_IMPL" ]
@@ -315,10 +328,6 @@ component("shared_mojom_traits") {
   sources = [
     "buffer_types_mojom_traits.cc",
     "buffer_types_mojom_traits.h",
-    "color_space_mojom_traits.cc",
-    "color_space_mojom_traits.h",
-    "display_color_spaces_mojom_traits.cc",
-    "display_color_spaces_mojom_traits.h",
     "gpu_extra_info_mojom_traits.cc",
     "gpu_extra_info_mojom_traits.h",
     "gpu_fence_handle_mojom_traits.cc",

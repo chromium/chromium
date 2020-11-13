@@ -547,10 +547,9 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
       selection_controller);
 
-  RenderFrameProxyHost* child_proxy_host =
-      child->render_manager()->GetProxyToParent();
-  auto interceptor = std::make_unique<SynchronizeVisualPropertiesInterceptor>(
-      child_proxy_host);
+  auto filter =
+      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
+  root->current_frame_host()->GetProcess()->AddFilter(filter.get());
 
   // Find the location of some text to select.
   gfx::PointF point_f;
@@ -629,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Make sure we wait for the scroll to actually happen.
-  interceptor->WaitForRect();
+  filter->WaitForRect();
 
   // Since the check below that compares the scroll_delta to the actual handle
   // movement requires use of TransformPointToRootCoordSpaceF() in

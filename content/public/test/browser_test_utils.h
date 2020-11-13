@@ -1782,23 +1782,17 @@ bool HasValidProcessForProcessGroup(const std::string& process_group_name);
 
 // Performs a simple auto-resize flow and ensures that the embedder gets a
 // single response messages back from the guest, with the expected values.
-bool TestGuestAutoresize(WebContents* embedder_web_contents,
-                         WebContents* guest_web_contents);
+bool TestGuestAutoresize(RenderProcessHost* embedder_rph,
+                         RenderWidgetHost* guest_rwh);
 
-// Class to intercept SynchronizeVisualProperties method. This allows the
-// message to continue to the target child so that processing can be verified by
-// tests. It also monitors for GesturePinchBegin/End events.
-class SynchronizeVisualPropertiesInterceptor
-    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
+// Class to sniff incoming IPCs for FrameHostMsg_SynchronizeVisualProperties
+// messages. This allows the message to continue to the target child so that
+// processing can be verified by tests. It also monitors for
+// GesturePinchBegin/End events.
+class SynchronizeVisualPropertiesMessageFilter
+    : public content::BrowserMessageFilter {
  public:
-  explicit SynchronizeVisualPropertiesInterceptor(
-      RenderFrameProxyHost* render_frame_proxy_host);
-  ~SynchronizeVisualPropertiesInterceptor() override;
-
-  blink::mojom::RemoteFrameHost* GetForwardingInterface() override;
-
-  void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties) override;
+  SynchronizeVisualPropertiesMessageFilter();
 
   gfx::Rect last_rect() const { return last_rect_; }
 
@@ -1813,32 +1807,36 @@ class SynchronizeVisualPropertiesInterceptor
 
   void WaitForPinchGestureEnd();
 
+ protected:
+  ~SynchronizeVisualPropertiesMessageFilter() override;
+
  private:
+  void OnSynchronizeFrameHostVisualProperties(
+      const blink::FrameVisualProperties& visual_properties);
+  void OnSynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties);
   // |rect| is in DIPs.
   void OnUpdatedFrameRectOnUI(const gfx::Rect& rect);
   void OnUpdatedFrameSinkIdOnUI();
   void OnUpdatedSurfaceIdOnUI(viz::LocalSurfaceId surface_id);
 
+  bool OnMessageReceived(const IPC::Message& message) override;
+
   base::RunLoop run_loop_;
 
-  RenderFrameProxyHost* render_frame_proxy_host_;
-
   std::unique_ptr<base::RunLoop> screen_space_rect_run_loop_;
-  bool screen_space_rect_received_ = false;
+  bool screen_space_rect_received_;
   gfx::Rect last_rect_;
 
   viz::LocalSurfaceId last_surface_id_;
   std::unique_ptr<base::RunLoop> surface_id_run_loop_;
 
-  bool pinch_gesture_active_set_ = false;
-  bool pinch_gesture_active_cleared_ = false;
-  bool last_pinch_gesture_active_ = false;
+  bool pinch_gesture_active_set_;
+  bool pinch_gesture_active_cleared_;
+  bool last_pinch_gesture_active_;
   std::unique_ptr<base::RunLoop> pinch_end_run_loop_;
 
-  base::WeakPtrFactory<SynchronizeVisualPropertiesInterceptor> weak_factory_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronizeVisualPropertiesInterceptor);
+  DISALLOW_COPY_AND_ASSIGN(SynchronizeVisualPropertiesMessageFilter);
 };
 
 // This class allows monitoring of mouse events received by a specific

@@ -564,8 +564,8 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
     return;
 
   // Let the browser know about the updated view rect.
-  web_frame_->SetVisualProperties(pending_visual_properties_);
-
+  Send(new FrameHostMsg_SynchronizeVisualProperties(
+      routing_id_, pending_visual_properties_));
   sent_visual_properties_ = pending_visual_properties_;
 
   TRACE_EVENT_WITH_FLOW2(

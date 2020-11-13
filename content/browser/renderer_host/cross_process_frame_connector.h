@@ -12,7 +12,6 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -20,6 +19,10 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace IPC {
+class Message;
+}
 
 namespace blink {
 struct FrameVisualProperties;
@@ -84,6 +87,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   explicit CrossProcessFrameConnector(
       RenderFrameProxyHost* frame_proxy_in_parent_renderer);
   virtual ~CrossProcessFrameConnector();
+
+  bool OnMessageReceived(const IPC::Message& msg);
 
   // |view| corresponds to B2's RenderWidgetHostViewChildFrame in the example
   // above.
@@ -306,10 +311,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // became visible.
   void DelegateWasShown();
 
-  // Handlers for messages received from the parent frame.
-  void OnSynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties);
-
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
   void set_child_frame_crash_shown_closure_for_testing(
@@ -340,6 +341,10 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Check if a crashed child frame has become visible, and if so, log the
   // Stability.ChildFrameCrash.Visibility.ShownAfterCrashing* metrics.
   void MaybeLogShownCrash(ShownAfterCrashingReason reason);
+
+  // Handlers for messages received from the parent frame.
+  void OnSynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
   RenderWidgetHostViewChildFrame* view_ = nullptr;
