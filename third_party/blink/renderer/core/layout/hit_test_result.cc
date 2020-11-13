@@ -173,6 +173,27 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   return layout_object->PositionForPoint(LocalPoint());
 }
 
+PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
+    const {
+  Node* node = InnerPossiblyPseudoNode();
+  if (node && !node->IsPseudoElement())
+    node = InnerNodeOrImageMapImage();
+  if (!node)
+    return PositionWithAffinity();
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object)
+    return PositionWithAffinity();
+  PositionWithAffinity position;
+  if (box_fragment_ && NGPhysicalBoxFragment::SupportsPositionForPoint() &&
+      layout_object == GetLayoutObject())
+    position = box_fragment_->PositionForPoint(LocalPoint());
+  else
+    position = layout_object->PositionForPoint(LocalPoint());
+  if (position.IsNull())
+    return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
+  return position;
+}
+
 LayoutObject* HitTestResult::GetLayoutObject() const {
   return inner_node_ ? inner_node_->GetLayoutObject() : nullptr;
 }

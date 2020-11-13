@@ -134,6 +134,7 @@ class CORE_EXPORT HitTestResult {
   }
 
   PositionWithAffinity GetPosition() const;
+  PositionWithAffinity GetPositionForInnerNodeOrImageMapImage() const;
   LayoutObject* GetLayoutObject() const;
 
   void SetToShadowHostIfInRestrictedShadowRoot();
