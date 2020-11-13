@@ -70,6 +70,7 @@ class FeedStream : public FeedStreamApi,
     virtual std::string GetLanguageTag() = 0;
     virtual void ClearAll() = 0;
     virtual bool IsSignedIn() = 0;
+    virtual void PrefetchImage(const GURL& url) = 0;
   };
 
   // Forwards to |feed::TranslateWireResponse()| by default. Can be overridden
@@ -224,6 +225,8 @@ class FeedStream : public FeedStreamApi,
   Metadata* GetMetadata() { return &metadata_; }
   const Metadata* GetMetadata() const { return &metadata_; }
   MetricsReporter* GetMetricsReporter() const { return metrics_reporter_; }
+
+  void PrefetchImage(const GURL& url);
 
   // Returns the time of the last content fetch.
   base::Time GetLastFetchTime();

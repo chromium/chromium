@@ -46,6 +46,9 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     return FeedServiceBridge::GetDisplayMetrics();
   }
   void ClearAll() override { FeedServiceBridge::ClearAll(); }
+  void PrefetchImage(const GURL& url) override {
+    FeedServiceBridge::PrefetchImage(url);
+  }
 };
 
 }  // namespace

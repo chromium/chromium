@@ -65,6 +65,8 @@ source_set("feed_core_v2") {
     "tasks/load_stream_from_store_task.h",
     "tasks/load_stream_task.cc",
     "tasks/load_stream_task.h",
+    "tasks/prefetch_images_task.cc",
+    "tasks/prefetch_images_task.h",
     "tasks/upload_actions_task.cc",
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",

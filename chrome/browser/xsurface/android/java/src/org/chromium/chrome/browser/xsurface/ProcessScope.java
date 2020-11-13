@@ -34,4 +34,9 @@ public interface ProcessScope {
     default SurfaceScope obtainSurfaceScope(Context activityContext) {
         return null;
     }
+
+    @Nullable
+    default ImagePrefetcher provideImagePrefetcher() {
+        return null;
+    }
 }
