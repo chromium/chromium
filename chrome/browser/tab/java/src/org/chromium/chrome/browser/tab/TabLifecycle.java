@@ -17,6 +17,11 @@ public interface TabLifecycle {
     boolean isInitialized();
 
     /**
+     * @return Whether this Tab has been destroyed.
+     */
+    boolean isDestroyed();
+
+    /**
      * Prepares the tab to be shown. This method is supposed to be called before the tab is
      * displayed. It restores the ContentView if it is not available after the cold start and
      * reloads the tab if its renderer has crashed.

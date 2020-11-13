@@ -186,6 +186,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final UserDataHost mUserDataHost = new UserDataHost();
 
+    private boolean mIsDestroyed;
+
     /**
      * Creates an instance of a {@link TabImpl}.
      *
@@ -575,6 +577,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
+    public boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
+    @Override
     public final void show(@TabSelectionType int type) {
         try {
             TraceEvent.begin("Tab.show");
@@ -651,6 +658,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void destroy() {
+        // Set at the start since destroying the WebContents can lead to calling back into
+        // this class.
+        mIsDestroyed = true;
+
         // Update the title before destroying the tab. http://b/5783092
         updateTitle();
 
