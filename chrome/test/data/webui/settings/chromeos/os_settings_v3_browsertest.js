@@ -97,6 +97,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
 [['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
+ ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.m.js'],

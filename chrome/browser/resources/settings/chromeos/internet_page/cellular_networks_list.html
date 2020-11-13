@@ -43,7 +43,8 @@
     <template
         is="dom-if"
         if="[[!shouldShowNetworkSublist_(eSimNetworks_)]]" restamp>
-      <div class="cellular-network-content cellular-not-setup">
+      <div id="eSimNoNetworkFound"
+          class="cellular-network-content cellular-not-setup">
         <settings-localized-link
             on-link-clicked="onEsimLearnMoreClicked_"
             localized-string="$i18n{eSimNetworkNotSetup}">
@@ -68,7 +69,8 @@
     <template
         is="dom-if"
         if="[[!shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
-      <div class="cellular-network-content cellular-not-setup">
+      <div id="pSimNoNetworkFound"
+          class="cellular-network-content cellular-not-setup">
         <settings-localized-link
             on-link-clicked="onPsimLearnMoreClicked_"
             localized-string="$i18n{pSimNetworkNotSetup}">

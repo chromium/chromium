@@ -940,6 +940,35 @@ TEST_F(
       mocha.run();
     });
 
+// Test fixture for settings-internet-known-cellular-networks-page.
+// eslint-disable-next-line no-var
+var OSSettingsCellularNetworksListTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload; /* +
+         'chromeos/internet_page/cellular_setup_dialog.html';*/
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kUpdatedCellularActivationUi']};
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '//ui/webui/resources/js/assert.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      'cellular_networks_list_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsCellularNetworksListTest', 'CellularNetworkList', () => {
+  mocha.run();
+});
+
 // Test fixture for settings-internet-known-networks-page.
 // eslint-disable-next-line no-var
 var OSSettingsCellularSetupDialogTest =
