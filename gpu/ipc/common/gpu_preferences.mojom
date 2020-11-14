@@ -85,7 +85,8 @@ struct GpuPreferences {
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
   bool enable_dawn_backend_validation;
-  bool disable_dawn_robustness;
+  array<string> enabled_dawn_features_list;
+  array<string> disabled_dawn_features_list;
   bool enable_gpu_blocked_time_metric;
   bool enable_perf_data_collection;
 

@@ -583,7 +583,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<dawn_native::Instance> dawn_instance_;
   std::vector<dawn_native::Adapter> dawn_adapters_;
 
-  bool disable_dawn_robustness_;
+  std::vector<std::string> force_enabled_toggles_;
+  std::vector<std::string> force_disabled_toggles_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGPUDecoderImpl);
 };
@@ -627,11 +628,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
               memory_tracker)),
       dawn_platform_(new DawnPlatform()),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
-      dawn_instance_(new dawn_native::Instance()),
-      disable_dawn_robustness_(gpu_preferences.disable_dawn_robustness) {
+      dawn_instance_(new dawn_native::Instance()) {
   dawn_instance_->SetPlatform(dawn_platform_.get());
   dawn_instance_->EnableBackendValidation(
       gpu_preferences.enable_dawn_backend_validation);
+
+  force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
+  force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 }
 
 WebGPUDecoderImpl::~WebGPUDecoderImpl() {
@@ -673,8 +676,11 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
     device_descriptor.requiredExtensions.push_back("timestamp_query");
   }
 
-  if (disable_dawn_robustness_) {
-    device_descriptor.forceEnabledToggles.push_back("disable_robustness");
+  for (const std::string& toggles : force_enabled_toggles_) {
+    device_descriptor.forceEnabledToggles.push_back(toggles.c_str());
+  }
+  for (const std::string& toggles : force_disabled_toggles_) {
+    device_descriptor.forceDisabledToggles.push_back(toggles.c_str());
   }
 
   WGPUDevice wgpu_device =

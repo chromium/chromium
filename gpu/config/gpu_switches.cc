@@ -50,8 +50,11 @@ const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
-// Enable the toggle Toggle::DisableRobustness when creating Dawn device.
-const char kDisableDawnRobustness[] = "disable-dawn-robustness";
+// Set the Dawn features(toggles) enabled on the creation of Dawn devices.
+const char kEnableDawnFeatures[] = "enable-dawn-features";
+
+// Set the Dawn features(toggles) disabled on the creation of Dawn devices.
+const char kDisableDawnFeatures[] = "disable-dawn-features";
 
 // Increases the priority (to REALTIME_AUDIO) of gpu process and compositor
 // thread.

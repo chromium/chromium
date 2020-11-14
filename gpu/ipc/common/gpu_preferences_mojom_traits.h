@@ -176,7 +176,11 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->enable_webgpu = prefs.enable_webgpu();
     out->enable_dawn_backend_validation =
         prefs.enable_dawn_backend_validation();
-    out->disable_dawn_robustness = prefs.disable_dawn_robustness();
+    if (!prefs.ReadEnabledDawnFeaturesList(&out->enabled_dawn_features_list))
+      return false;
+    if (!prefs.ReadDisabledDawnFeaturesList(&out->disabled_dawn_features_list))
+      return false;
+
     out->enable_gpu_blocked_time_metric =
         prefs.enable_gpu_blocked_time_metric();
     out->enable_perf_data_collection = prefs.enable_perf_data_collection();
@@ -360,8 +364,13 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static bool enable_dawn_backend_validation(const gpu::GpuPreferences& prefs) {
     return prefs.enable_dawn_backend_validation;
   }
-  static bool disable_dawn_robustness(const gpu::GpuPreferences& prefs) {
-    return prefs.disable_dawn_robustness;
+  static const std::vector<std::string>& enabled_dawn_features_list(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.enabled_dawn_features_list;
+  }
+  static const std::vector<std::string>& disabled_dawn_features_list(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.disabled_dawn_features_list;
   }
   static bool enable_gpu_blocked_time_metric(const gpu::GpuPreferences& prefs) {
     return prefs.enable_gpu_blocked_time_metric;

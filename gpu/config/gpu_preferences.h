@@ -243,10 +243,11 @@ struct GPU_EXPORT GpuPreferences {
   // Enable validation layers in Dawn backends.
   bool enable_dawn_backend_validation = false;
 
-  // Enable the toggle Toggle::DisableRobustness when creating Dawn device for
-  // the investigation of the performance issues related to the implementation
-  // of robustness in Dawn.
-  bool disable_dawn_robustness = false;
+  // The Dawn features(toggles) enabled on the creation of Dawn devices.
+  std::vector<std::string> enabled_dawn_features_list;
+
+  // The Dawn features(toggles) disabled on the creation of Dawn devices.
+  std::vector<std::string> disabled_dawn_features_list;
 
   // Enable measuring blocked time on GPU Main thread
   bool enable_gpu_blocked_time_metric = false;

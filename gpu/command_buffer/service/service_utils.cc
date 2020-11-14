@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -163,8 +164,16 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   gpu_preferences.enable_dawn_backend_validation =
       command_line->HasSwitch(switches::kEnableDawnBackendValidation);
-  gpu_preferences.disable_dawn_robustness =
-      command_line->HasSwitch(switches::kDisableDawnRobustness);
+  if (command_line->HasSwitch(switches::kEnableDawnFeatures)) {
+    gpu_preferences.enabled_dawn_features_list = base::SplitString(
+        command_line->GetSwitchValueASCII(switches::kEnableDawnFeatures), ",",
+        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+  if (command_line->HasSwitch(switches::kDisableDawnFeatures)) {
+    gpu_preferences.disabled_dawn_features_list = base::SplitString(
+        command_line->GetSwitchValueASCII(switches::kDisableDawnFeatures), ",",
+        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
   gpu_preferences.gr_context_type = ParseGrContextType();
   gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
   gpu_preferences.disable_vulkan_surface =
