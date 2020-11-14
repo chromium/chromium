@@ -438,8 +438,6 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, EnsureQueryIsCleared) {
-  GURL whitelsited_url = embedded_test_server()->GetURL(
-      kExampleHost, "/supervised_user/simple.html");
   AllowlistUrlRegx(kExampleHost);
   BlockWeb();
 
