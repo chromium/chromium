@@ -131,7 +131,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   EXPECT_FALSE(default_printer_name.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
+// TODO(crbug.com/809738):  Re-enable after the updates for setting up the
+// printer test environment are made to print_backend_service.mojom.
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
+                       DISABLED_GetDefaultPrinterName) {
   base::Optional<std::string> default_printer_name;
 
   DoInitAndSetupTestData();

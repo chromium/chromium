@@ -322,6 +322,7 @@ static_library("test_support") {
 test("printing_unittests") {
   sources = [
     "backend/mojom/print_backend_mojom_traits_unittest.cc",
+    "backend/test_print_backend_unittest.cc",
     "metafile_skia_unittest.cc",
     "nup_parameters_unittest.cc",
     "page_number_unittest.cc",
@@ -337,6 +338,7 @@ test("printing_unittests") {
   configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":printing",
+    ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/test:run_all_unittests",

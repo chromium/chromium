@@ -35,8 +35,16 @@ using PrinterBasicInfoOptions = std::map<std::string, std::string>;
 
 struct PRINTING_EXPORT PrinterBasicInfo {
   PrinterBasicInfo();
+  PrinterBasicInfo(const std::string& printer_name,
+                   const std::string& display_name,
+                   const std::string& printer_description,
+                   int printer_status,
+                   bool is_default,
+                   const PrinterBasicInfoOptions& options);
   PrinterBasicInfo(const PrinterBasicInfo& other);
   ~PrinterBasicInfo();
+
+  bool operator==(const PrinterBasicInfo& other) const;
 
   // The name of the printer as understood by OS.
   std::string printer_name;
