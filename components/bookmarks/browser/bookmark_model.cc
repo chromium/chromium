@@ -116,9 +116,10 @@ class EmptyUndoDelegate : public BookmarkUndoDelegate {
 
 BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
     : client_(std::move(client)),
-      owned_root_(std::make_unique<BookmarkNode>(/*id=*/0,
-                                                 BookmarkNode::kRootNodeGuid,
-                                                 GURL())),
+      owned_root_(std::make_unique<BookmarkNode>(
+          /*id=*/0,
+          base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
+          GURL())),
       root_(owned_root_.get()),
       observers_(base::ObserverListPolicy::EXISTING_ONLY),
       empty_undo_delegate_(std::make_unique<EmptyUndoDelegate>()) {
@@ -586,13 +587,12 @@ const BookmarkNode* BookmarkModel::AddFolder(
   DCHECK(!is_root_node(parent));
   DCHECK(IsValidIndex(parent, index, true));
 
-  if (guid)
-    DCHECK(base::IsValidGUIDOutputString(*guid));
-  else
-    guid = base::GenerateGUID();
+  base::GUID parsed_guid =
+      guid ? base::GUID::ParseLowercase(*guid) : base::GUID::GenerateRandomV4();
+  DCHECK(parsed_guid.is_valid());
 
-  auto new_node =
-      std::make_unique<BookmarkNode>(generate_next_node_id(), *guid, GURL());
+  auto new_node = std::make_unique<BookmarkNode>(generate_next_node_id(),
+                                                 parsed_guid, GURL());
   new_node->set_date_folder_modified(Time::Now());
   // Folders shouldn't have line breaks in their titles.
   new_node->SetTitle(title);
@@ -618,10 +618,9 @@ const BookmarkNode* BookmarkModel::AddURL(
   DCHECK(!is_root_node(parent));
   DCHECK(IsValidIndex(parent, index, true));
 
-  if (guid)
-    DCHECK(base::IsValidGUIDOutputString(*guid));
-  else
-    guid = base::GenerateGUID();
+  base::GUID parsed_guid =
+      guid ? base::GUID::ParseLowercase(*guid) : base::GUID::GenerateRandomV4();
+  DCHECK(parsed_guid.is_valid());
 
   if (!creation_time)
     creation_time = Time::Now();
@@ -631,7 +630,7 @@ const BookmarkNode* BookmarkModel::AddURL(
     SetDateFolderModified(parent, *creation_time);
 
   auto new_node =
-      std::make_unique<BookmarkNode>(generate_next_node_id(), *guid, url);
+      std::make_unique<BookmarkNode>(generate_next_node_id(), parsed_guid, url);
   new_node->SetTitle(title);
   new_node->set_date_added(*creation_time);
   if (meta_info)

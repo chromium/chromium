@@ -1545,7 +1545,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   GURL url;
-  BookmarkNode node(/*id=*/0, base::GenerateGUID(), url);
+  BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
   EXPECT_FALSE(node.GetMetaInfoMap());
 
   EXPECT_TRUE(node.SetMetaInfo("key1", "value1"));

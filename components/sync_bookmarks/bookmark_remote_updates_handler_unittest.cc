@@ -1122,7 +1122,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(base::GenerateGUID());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
-  bookmarks::BookmarkNode node(/*id=*/1, base::GenerateGUID(), GURL());
+  bookmarks::BookmarkNode node(/*id=*/1, base::GUID::GenerateRandomV4(),
+                               GURL());
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..

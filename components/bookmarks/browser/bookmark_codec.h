@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/guid.h"
 #include "base/hash/md5.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -195,7 +196,7 @@ class BookmarkCodec {
 
   // Contains the GUID of each of the nodes found in the file. Used to determine
   // if we have duplicates.
-  std::set<std::string> guids_;
+  std::set<base::GUID> guids_;
 
   // MD5 context used to compute MD5 hash of all bookmark data.
   base::MD5Context md5_context_;

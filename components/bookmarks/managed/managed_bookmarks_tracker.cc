@@ -61,7 +61,7 @@ int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
       continue;
 
     BookmarkNode* child = folder->Add(std::make_unique<BookmarkNode>(
-        next_node_id++, base::GenerateGUID(), url));
+        next_node_id++, base::GUID::GenerateRandomV4(), url));
     child->SetTitle(title);
     if (children) {
       child->set_date_folder_modified(base::Time::Now());

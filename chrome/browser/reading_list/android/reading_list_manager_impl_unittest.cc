@@ -161,7 +161,7 @@ TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
 
   // Node with the same URL but not in the tree.
   auto node_same_url =
-      std::make_unique<BookmarkNode>(0, base::GenerateGUID(), url);
+      std::make_unique<BookmarkNode>(0, base::GUID::GenerateRandomV4(), url);
   EXPECT_FALSE(manager()->IsReadingListBookmark(node_same_url.get()));
 }
 
@@ -207,7 +207,7 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
 
   // Node not in the reading list should return false.
   auto other_node =
-      std::make_unique<BookmarkNode>(0, base::GenerateGUID(), url);
+      std::make_unique<BookmarkNode>(0, base::GUID::GenerateRandomV4(), url);
   EXPECT_FALSE(manager()->GetReadStatus(node));
 
   // Root node should return false.

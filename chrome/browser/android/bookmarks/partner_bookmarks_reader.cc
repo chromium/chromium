@@ -107,7 +107,8 @@ const BookmarkNode* GetNodeByID(const BookmarkNode* parent, int64_t id) {
 }
 
 std::unique_ptr<BookmarkNode> CreatePartnerBookmarksRoot(int id) {
-  return std::make_unique<BookmarkNode>(id, base::GenerateGUID(), GURL());
+  return std::make_unique<BookmarkNode>(id, base::GUID::GenerateRandomV4(),
+                                        GURL());
 }
 
 }  // namespace
@@ -167,7 +168,7 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
   jlong node_id = 0;
   if (wip_partner_bookmarks_root_.get()) {
     std::unique_ptr<BookmarkNode> node = std::make_unique<BookmarkNode>(
-        wip_next_available_id_++, base::GenerateGUID(), GURL(url));
+        wip_next_available_id_++, base::GUID::GenerateRandomV4(), GURL(url));
     node->SetTitle(title);
 
     // Handle favicon and touchicon

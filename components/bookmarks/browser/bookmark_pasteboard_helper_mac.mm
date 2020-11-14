@@ -94,8 +94,8 @@ void ConvertNSArrayToElements(
       url = GURL(base::SysNSStringToUTF8(url_string));
     }
 
-    auto new_node =
-        std::make_unique<BookmarkNode>(/*id=*/0, base::GenerateGUID(), url);
+    auto new_node = std::make_unique<BookmarkNode>(
+        /*id=*/0, base::GUID::GenerateRandomV4(), url);
 
     NSNumber* node_id =
         base::mac::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);

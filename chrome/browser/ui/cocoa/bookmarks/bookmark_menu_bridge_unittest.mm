@@ -310,7 +310,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
   EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
-  const BookmarkNode empty_node(/*id=*/0, base::GenerateGUID(),
+  const BookmarkNode empty_node(/*id=*/0, base::GUID::GenerateRandomV4(),
                                 GURL("http://no-where/"));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), &empty_node));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), nullptr));

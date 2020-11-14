@@ -14,6 +14,7 @@
 #include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -104,10 +105,11 @@ bool BookmarkCodec::Decode(const base::Value& value,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
   ids_.clear();
-  guids_ = {BookmarkNode::kRootNodeGuid, BookmarkNode::kBookmarkBarNodeGuid,
-            BookmarkNode::kOtherBookmarksNodeGuid,
-            BookmarkNode::kMobileBookmarksNodeGuid,
-            BookmarkNode::kManagedNodeGuid};
+  guids_ = {base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
+            base::GUID::ParseLowercase(BookmarkNode::kBookmarkBarNodeGuid),
+            base::GUID::ParseLowercase(BookmarkNode::kOtherBookmarksNodeGuid),
+            base::GUID::ParseLowercase(BookmarkNode::kMobileBookmarksNodeGuid),
+            base::GUID::ParseLowercase(BookmarkNode::kManagedNodeGuid)};
   ids_reassigned_ = false;
   guids_reassigned_ = false;
   ids_valid_ = true;
@@ -296,7 +298,7 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
   base::string16 title;
   value.GetString(kNameKey, &title);
 
-  std::string guid;
+  base::GUID guid;
   // |node| is only passed in for bookmarks of type BookmarkPermanentNode, in
   // which case we do not need to check for GUID validity as their GUIDs are
   // hard-coded and not read from the persisted file.
@@ -304,22 +306,20 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
     // GUIDs can be empty for bookmarks that were created before GUIDs were
     // required. When encountering one such bookmark we thus assign to it a new
     // GUID. The same applies if the stored GUID is invalid or a duplicate.
-    if (!value.GetString(kGuidKey, &guid) || guid.empty() ||
-        !base::IsValidGUID(guid)) {
-      guid = base::GenerateGUID();
+    const std::string* guid_str = value.FindStringKey(kGuidKey);
+    if (guid_str && !guid_str->empty()) {
+      guid = base::GUID::ParseCaseInsensitive(*guid_str);
+    }
+
+    if (!guid.is_valid()) {
+      guid = base::GUID::GenerateRandomV4();
       guids_reassigned_ = true;
     }
 
-    // GUIDs are case insensitive as per RFC 4122. To prevent collisions due to
-    // capitalization differences, all GUIDs are canonicalized to lowercase
-    // during JSON-parsing.
-    guid = base::ToLowerASCII(guid);
-    DCHECK(base::IsValidGUIDOutputString(guid));
-
     // Guard against GUID collisions, which would violate BookmarkModel's
     // invariant that each GUID is unique.
-    if (guids_.count(guid) != 0) {
-      guid = base::GenerateGUID();
+    if (base::Contains(guids_, guid)) {
+      guid = base::GUID::GenerateRandomV4();
       guids_reassigned_ = true;
     }
 
@@ -345,10 +345,12 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
       return false;
 
     GURL url = GURL(url_string);
-    if (!node && url.is_valid())
+    if (!node && url.is_valid()) {
+      DCHECK(guid.is_valid());
       node = new BookmarkNode(id, guid, url);
-    else
+    } else {
       return false;  // Node invalid.
+    }
 
     if (parent)
       parent->Add(base::WrapUnique(node));
@@ -366,6 +368,7 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
       return false;
 
     if (!node) {
+      DCHECK(guid.is_valid());
       node = new BookmarkNode(id, guid, GURL());
     } else {
       // If a new node is not created, explicitly assign ID to the existing one.

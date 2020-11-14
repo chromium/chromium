@@ -296,7 +296,7 @@ void PasteFromClipboard(BookmarkModel* model,
     GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
     if (!url.is_valid())
       return;
-    BookmarkNode node(/*id=*/0, base::GenerateGUID(), url);
+    BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
     node.SetTitle(base::ASCIIToUTF16(url.spec()));
     bookmark_data = BookmarkNodeData(&node);
   }

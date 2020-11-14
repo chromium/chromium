@@ -231,11 +231,11 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
       PartnerBookmarksReader::CreatePartnerBookmarksRootForTesting();
   BookmarkNode* partner_bookmark_a =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          1, base::GenerateGUID(), GURL("http://www.a.com")));
+          1, base::GUID::GenerateRandomV4(), GURL("http://www.a.com")));
   partner_bookmark_a->SetTitle(base::ASCIIToUTF16("Partner Bookmark A"));
   BookmarkNode* partner_bookmark_b =
       root_partner_node->Add(std::make_unique<BookmarkNode>(
-          2, base::GenerateGUID(), GURL("http://www.b.com")));
+          2, base::GUID::GenerateRandomV4(), GURL("http://www.b.com")));
   partner_bookmark_b->SetTitle(base::ASCIIToUTF16("Partner Bookmark B"));
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
       std::move(root_partner_node));

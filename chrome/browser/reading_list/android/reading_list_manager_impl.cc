@@ -52,8 +52,8 @@ ReadingListManagerImpl::ReadingListManagerImpl(
       loaded_(false),
       performing_batch_update_(false) {
   DCHECK(reading_list_model_);
-  root_ = std::make_unique<BookmarkNode>(maximum_id_++, base::GenerateGUID(),
-                                         GURL());
+  root_ = std::make_unique<BookmarkNode>(
+      maximum_id_++, base::GUID::GenerateRandomV4(), GURL());
   root_->SetTitle(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   DCHECK(root_->is_folder());
   reading_list_model_->AddObserver(this);
@@ -254,7 +254,7 @@ const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(
 
   // Add a new node.
   auto new_node = std::make_unique<BookmarkNode>(
-      maximum_id_++, base::GenerateGUID(), entry->URL());
+      maximum_id_++, base::GUID::GenerateRandomV4(), entry->URL());
   bool success = SyncToBookmark(*entry, new_node.get());
   return success ? root_->Add(std::move(new_node)) : nullptr;
 }

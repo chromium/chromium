@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -53,7 +54,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   static const char kManagedNodeGuid[];
 
   // Creates a new node with |id|, |guid| and |url|.
-  BookmarkNode(int64_t id, const std::string& guid, const GURL& url);
+  BookmarkNode(int64_t id, const base::GUID& guid, const GURL& url);
 
   ~BookmarkNode() override;
 
@@ -76,7 +77,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // For bookmark nodes that are managed by the bookmark model, the GUIDs are
   // persisted across sessions and stable throughout the lifetime of the
   // bookmark.
-  const std::string& guid() const { return guid_; }
+  const std::string& guid() const { return guid_.AsLowercaseString(); }
 
   const GURL& url() const { return url_; }
   void set_url(const GURL& url) { url_ = url; }
@@ -136,7 +137,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
  protected:
   BookmarkNode(int64_t id,
-               const std::string& guid,
+               const base::GUID& guid,
                const GURL& url,
                Type type,
                bool is_permanent_node);
@@ -176,7 +177,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // stable throughout the lifetime of the bookmark, with the exception of nodes
   // added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
   // start-up every time.
-  const std::string guid_;
+  const base::GUID guid_;
 
   // The URL of this node. BookmarkModel maintains maps off this URL, so changes
   // to the URL must be done through the BookmarkModel.
@@ -246,7 +247,7 @@ class BookmarkPermanentNode : public BookmarkNode {
   // other than the well-known ones, see factory methods.
   BookmarkPermanentNode(int64_t id,
                         Type type,
-                        const std::string& guid,
+                        const base::GUID& guid,
                         const base::string16& title,
                         bool visible_when_empty);
 
