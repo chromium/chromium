@@ -57,9 +57,6 @@ class SystemEngine : public InputEngine {
   void OnReply(const std::vector<uint8_t>& message,
                mojo::Remote<mojom::InputChannel>& remote);
 
-  // Shared library handle of the implementation for input logic with decoders.
-  base::ScopedNativeLibrary library_;
-
   ImeEngineMainEntry* engine_main_entry_ = nullptr;
 
   ImeCrosPlatform* platform_ = nullptr;

@@ -209,6 +209,7 @@ class ImeClientDelegate {
 // This class is implemented in the shared library and processes messages from
 // clients of the IME service. The shared library will exposes its create
 // function to the IME service.
+// DEPRECATED: Will be removed soon.
 class ImeEngineMainEntry {
  protected:
   virtual ~ImeEngineMainEntry() = default;
@@ -251,6 +252,12 @@ typedef ImeEngineMainEntry* (*ImeMainEntryCreateFn)(ImeCrosPlatform*);
 
 // For use when bridging logs logged in IME shared library to Chrome logging.
 typedef void (*ImeEngineLoggerSetterFn)(ChromeLoggerFunc);
+
+typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform*);
+typedef bool (*ImeDecoderSupportsFn)(const char*);
+typedef bool (*ImeDecoderActivateImeFn)(const char*, ImeClientDelegate*);
+typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
+typedef void (*ImeDecoderCloseFn)();
 
 // Defined name of ImeMainEntryCreateFn exported from shared library.
 #define IME_MAIN_ENTRY_CREATE_FN_NAME "CreateImeMainEntry"
