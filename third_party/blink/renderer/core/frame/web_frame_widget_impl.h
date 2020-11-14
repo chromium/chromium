@@ -102,9 +102,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   // WebFrameWidget implementation.
   bool ScrollFocusedEditableElementIntoView() override;
-  void SetZoomLevelForTesting(double zoom_level) override;
-  void ResetZoomLevelForTesting() override;
-  void SetDeviceScaleFactorForTesting(float factor) override;
 
   PaintLayerCompositor* Compositor() const;
 

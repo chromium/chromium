@@ -353,7 +353,7 @@ void WidgetBase::UpdateVisualProperties(
 
   blink::VisualProperties visual_properties = visual_properties_from_browser;
   // Web tests can override the device scale factor in the renderer.
-  if (auto scale_factor = client_->GetDeviceScaleFactorForTesting()) {
+  if (auto scale_factor = client_->GetTestingDeviceScaleFactorOverride()) {
     visual_properties.screen_info.device_scale_factor = scale_factor;
     visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(gfx::ScaleToCeiledSize(

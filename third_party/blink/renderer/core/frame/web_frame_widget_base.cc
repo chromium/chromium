@@ -1311,6 +1311,10 @@ WebFrameWidgetBase::GetAndResetContextMenuLocation() {
 }
 
 void WebFrameWidgetBase::SetZoomLevel(double zoom_level) {
+  // Override the zoom level with the testing one if necessary.
+  if (zoom_level_for_testing_ != -INFINITY)
+    zoom_level = zoom_level_for_testing_;
+
   View()->SetZoomLevel(zoom_level);
 
   // Part of the UpdateVisualProperties dance we send the zoom level to
@@ -3059,6 +3063,10 @@ KURL WebFrameWidgetBase::GetURLForDebugTrace() {
   return {};
 }
 
+float WebFrameWidgetBase::GetTestingDeviceScaleFactorOverride() {
+  return device_scale_factor_for_testing_;
+}
+
 void WebFrameWidgetBase::ReleaseMouseLockAndPointerCaptureForTesting() {
   GetPage()->GetPointerLockController().ExitPointerLock();
   MouseCaptureLost();
@@ -3073,6 +3081,49 @@ const viz::FrameSinkId& WebFrameWidgetBase::GetFrameSinkId() {
 
 WebHitTestResult WebFrameWidgetBase::HitTestResultAt(const gfx::PointF& point) {
   return CoreHitTestResultAt(point);
+}
+
+void WebFrameWidgetBase::SetZoomLevelForTesting(double zoom_level) {
+  DCHECK(ForMainFrame());
+  DCHECK_NE(zoom_level, -INFINITY);
+  zoom_level_for_testing_ = zoom_level;
+  SetZoomLevel(zoom_level);
+}
+
+void WebFrameWidgetBase::ResetZoomLevelForTesting() {
+  DCHECK(ForMainFrame());
+  zoom_level_for_testing_ = -INFINITY;
+  SetZoomLevel(0);
+}
+
+void WebFrameWidgetBase::SetDeviceScaleFactorForTesting(float factor) {
+  DCHECK(ForMainFrame());
+  DCHECK_GE(factor, 0.f);
+
+  // Stash the window size before we adjust the scale factor, as subsequent
+  // calls to convert will use the new scale factor.
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(Size());
+  device_scale_factor_for_testing_ = factor;
+
+  // Receiving a 0 is used to reset between tests, it removes the override in
+  // order to listen to the browser for the next test.
+  if (!factor)
+    return;
+
+  // We are changing the device scale factor from the renderer, so allocate a
+  // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
+  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
+
+  ScreenInfo info = widget_base_->GetScreenInfo();
+  info.device_scale_factor = factor;
+  gfx::Size size_with_dsf = gfx::ScaleToCeiledSize(size_in_dips, factor);
+  widget_base_->UpdateCompositorViewportAndScreenInfo(gfx::Rect(size_with_dsf),
+                                                      info);
+  if (!AutoResizeMode()) {
+    // This picks up the new device scale factor as
+    // `UpdateCompositorViewportAndScreenInfo()` has applied a new value.
+    Resize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips));
+  }
 }
 
 WebPlugin* WebFrameWidgetBase::GetFocusedPluginContainer() {

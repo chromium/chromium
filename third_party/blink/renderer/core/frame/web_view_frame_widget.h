@@ -68,19 +68,13 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
                        DocumentUpdateReason reason) override;
   void MouseCaptureLost() override;
 
-  // blink::mojom::FrameWidget
-
   // WebFrameWidget overrides:
   bool ScrollFocusedEditableElementIntoView() override;
-  void SetZoomLevelForTesting(double zoom_level) override;
-  void ResetZoomLevelForTesting() override;
-  void SetDeviceScaleFactorForTesting(float factor) override;
 
   // WebFrameWidgetBase overrides:
   bool ForSubframe() const override { return false; }
   bool ForTopLevelFrame() const override { return !is_for_nested_main_frame_; }
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
-  void SetZoomLevel(double zoom_level) override;
   void SetAutoResizeMode(bool auto_resize,
                          const gfx::Size& min_size_before_dsf,
                          const gfx::Size& max_size_before_dsf,
@@ -101,7 +95,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void FocusChanged(bool enabled) override;
-  float GetDeviceScaleFactorForTesting() override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
 
@@ -125,16 +118,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
-
-  // Web tests override the zoom factor in the renderer with this. We store it
-  // to keep the override if the browser passes along VisualProperties with the
-  // real device scale factor. A value of -INFINITY means this is ignored.
-  double zoom_level_for_testing_ = -INFINITY;
-
-  // Web tests override the device scale factor in the renderer with this. We
-  // store it to keep the override if the browser passes along VisualProperties
-  // with the real device scale factor. A value of 0.f means this is ignored.
-  float device_scale_factor_for_testing_ = 0;
 
   // This bit is used to tell if this is a nested widget (an "inner web
   // contents") like a <webview> or <portal> widget. If false, the widget is the

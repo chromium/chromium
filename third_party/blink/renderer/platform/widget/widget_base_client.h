@@ -182,7 +182,7 @@ class WidgetBaseClient {
   }
 
   // Return the overridden device scale factor for testing.
-  virtual float GetDeviceScaleFactorForTesting() { return 0.f; }
+  virtual float GetTestingDeviceScaleFactorOverride() { return 0.f; }
 
   // Test-specific methods below this point.
   virtual void ScheduleAnimationForWebTests() {}

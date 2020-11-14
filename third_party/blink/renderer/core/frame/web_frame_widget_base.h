@@ -300,6 +300,9 @@ class CORE_EXPORT WebFrameWidgetBase
   void ReleaseMouseLockAndPointerCaptureForTesting() override;
   const viz::FrameSinkId& GetFrameSinkId() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
+  void SetZoomLevelForTesting(double zoom_level) override;
+  void ResetZoomLevelForTesting() override;
+  void SetDeviceScaleFactorForTesting(float factor) override;
 
   // Called when a drag-n-drop operation should begin.
   void StartDragging(const WebDragData&,
@@ -404,6 +407,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void WasHidden() override;
   void WasShown(bool was_evicted) override;
   KURL GetURLForDebugTrace() override;
+  float GetTestingDeviceScaleFactorOverride() override;
 
   // mojom::blink::FrameWidget methods.
   void DragTargetDragEnter(const WebDragData&,
@@ -477,7 +481,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // Called when the FrameView for this Widget's local root is created.
   virtual void DidCreateLocalRootView() {}
 
-  virtual void SetZoomLevel(double zoom_level);
+  void SetZoomLevel(double zoom_level);
 
   // Enable or disable auto-resize. This is part of
   // UpdateVisualProperties though tests may call to it more directly.
@@ -834,6 +838,20 @@ class CORE_EXPORT WebFrameWidgetBase
     DCHECK(ForSubframe());
     return child_local_root_data_;
   }
+
+  // Web tests override the zoom factor in the renderer with this. We store it
+  // to keep the override if the browser passes along VisualProperties with the
+  // real device scale factor. A value of -INFINITY means this is ignored.
+  // It is always valid to read this variable but it can only be set for main
+  // frame widgets.
+  double zoom_level_for_testing_ = -INFINITY;
+
+  // Web tests override the device scale factor in the renderer with this. We
+  // store it to keep the override if the browser passes along VisualProperties
+  // with the real device scale factor. A value of 0.f means this is ignored.
+  // It is always valid to read this variable but it can only be set for main
+  // frame widgets.
+  float device_scale_factor_for_testing_ = 0;
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

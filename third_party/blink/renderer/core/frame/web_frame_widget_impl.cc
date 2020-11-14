@@ -345,20 +345,6 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   return true;
 }
 
-void WebFrameWidgetImpl::SetZoomLevelForTesting(double zoom_level) {
-  // Zoom level is only controlled for testing on the main frame.
-  NOTREACHED();
-}
-
-void WebFrameWidgetImpl::ResetZoomLevelForTesting() {
-  // Zoom level is only controlled for testing on the main frame.
-  NOTREACHED();
-}
-
-void WebFrameWidgetImpl::SetDeviceScaleFactorForTesting(float factor) {
-  NOTREACHED();
-}
-
 void WebFrameWidgetImpl::IntrinsicSizingInfoChanged(
     mojom::blink::IntrinsicSizingInfoPtr sizing_info) {
   GetAssociatedFrameWidgetHost()->IntrinsicSizingInfoChanged(

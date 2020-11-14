@@ -115,10 +115,6 @@ void WebViewFrameWidget::FocusChanged(bool enable) {
   web_view_->SetFocus(enable);
 }
 
-float WebViewFrameWidget::GetDeviceScaleFactorForTesting() {
-  return device_scale_factor_for_testing_;
-}
-
 bool WebViewFrameWidget::ShouldHandleImeEvents() {
   return HasFocus();
 }
@@ -371,53 +367,6 @@ LocalFrameView* WebViewFrameWidget::GetLocalFrameViewForAnimationScrolling() {
   // cause ownership of the timeline and animation host.
   // See ScrollingCoordinator::AnimationHostInitialized.
   return nullptr;
-}
-
-void WebViewFrameWidget::SetZoomLevelForTesting(double zoom_level) {
-  DCHECK_NE(zoom_level, -INFINITY);
-  zoom_level_for_testing_ = zoom_level;
-  SetZoomLevel(zoom_level);
-}
-
-void WebViewFrameWidget::ResetZoomLevelForTesting() {
-  zoom_level_for_testing_ = -INFINITY;
-  SetZoomLevel(0);
-}
-
-void WebViewFrameWidget::SetDeviceScaleFactorForTesting(float factor) {
-  DCHECK_GE(factor, 0.f);
-
-  // Stash the window size before we adjust the scale factor, as subsequent
-  // calls to convert will use the new scale factor.
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size_);
-  device_scale_factor_for_testing_ = factor;
-
-  // Receiving a 0 is used to reset between tests, it removes the override in
-  // order to listen to the browser for the next test.
-  if (!factor)
-    return;
-
-  // We are changing the device scale factor from the renderer, so allocate a
-  // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
-  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
-
-  ScreenInfo info = widget_base_->GetScreenInfo();
-  info.device_scale_factor = factor;
-  gfx::Size size_with_dsf = gfx::ScaleToCeiledSize(size_in_dips, factor);
-  widget_base_->UpdateCompositorViewportAndScreenInfo(gfx::Rect(size_with_dsf),
-                                                      info);
-  if (!AutoResizeMode()) {
-    // This picks up the new device scale factor as
-    // UpdateCompositorViewportAndScreenInfo has applied a new value.
-    Resize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips));
-  }
-}
-
-void WebViewFrameWidget::SetZoomLevel(double zoom_level) {
-  // Override the zoom level with the testing one if necessary
-  if (zoom_level_for_testing_ != -INFINITY)
-    zoom_level = zoom_level_for_testing_;
-  WebFrameWidgetBase::SetZoomLevel(zoom_level);
 }
 
 void WebViewFrameWidget::SetAutoResizeMode(bool auto_resize,
