@@ -129,7 +129,7 @@ if (is_nacl) {
     outputs = [ "${root_build_dir}/nacl_test_data/${nacl_toolchain_variant}/{{source_file_part}}" ]
   }
 
-  source_set("ppapi_test_lib") {
+  static_library("ppapi_test_lib") {
     sources = [
       "ppapi_test_lib/get_browser_interface.cc",
       "ppapi_test_lib/get_browser_interface.h",
@@ -144,6 +144,7 @@ if (is_nacl) {
     deps = [
       "//native_client/src/shared/gio",
       "//native_client/src/shared/platform",
+      "//ppapi/c",
       "//ppapi/native_client:ppapi_lib",
     ]
   }
@@ -234,6 +235,7 @@ if (is_nacl && !is_nacl_nonsfi) {
 
   nacl_test_data("ppapi_bad_ppp_initialize_crash") {
     sources = [ "bad/ppapi_bad_ppp_initialize_crash.cc" ]
+    deps = [ ":ppapi_test_lib" ]
     destination_dir = "nacl_test_data"
   }
 
@@ -245,6 +247,7 @@ if (is_nacl && !is_nacl_nonsfi) {
 
   nacl_test_data("ppapi_bad_get_ppp_instance_crash") {
     sources = [ "bad/ppapi_bad_get_ppp_instance_crash.cc" ]
+    deps = [ ":ppapi_test_lib" ]
     destination_dir = "nacl_test_data"
   }
 
@@ -255,6 +258,7 @@ if (is_nacl && !is_nacl_nonsfi) {
 
   nacl_test_data("ppapi_bad_ppp_instance_didcreate_crash") {
     sources = [ "bad/ppapi_bad_ppp_instance_didcreate_crash.cc" ]
+    deps = [ ":ppapi_test_lib" ]
     destination_dir = "nacl_test_data"
   }
 
@@ -477,6 +481,7 @@ if ((is_linux || is_chromeos) && is_clang) {
     output_name = "libc_free_$arch"
     output_extension = "nexe"
     sources = [ "nonsfi/libc_free.c" ]
+    deps = [ "//ppapi/c" ]
 
     no_default_deps = true
 

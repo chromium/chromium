@@ -171,6 +171,7 @@ template("nacl_test_data") {
                            ])
     deps = [
       "//build/config/nacl:nacl_base",
+      "//ppapi/c",
       "//ppapi/native_client:ppapi_lib",
     ]
     ldflags = [ "-pthread" ]
