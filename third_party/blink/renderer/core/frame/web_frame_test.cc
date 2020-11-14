@@ -7371,11 +7371,11 @@ TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
   gfx::Transform transform;
   transform.Translate(100, 100);
 
-  auto intersection_state = blink::mojom::blink::ViewportIntersectionState(
+  auto intersection_state = blink::mojom::blink::ViewportIntersectionState::New(
       viewport_intersection, mainframe_intersection, gfx::Rect(),
       occlusion_state, gfx::Size(), gfx::Point(), transform);
-  static_cast<WebFrameWidgetBase*>(widget)->SetRemoteViewportIntersection(
-      intersection_state);
+  static_cast<WebFrameWidgetBase*>(widget)->SetViewportIntersection(
+      std::move(intersection_state));
   EXPECT_EQ(client.MainFrameIntersection(), blink::WebRect(100, 100, 200, 140));
 }
 
@@ -13556,9 +13556,10 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   blink::mojom::FrameOcclusionState occlusion_state =
       blink::mojom::FrameOcclusionState::kUnknown;
 
-  static_cast<WebFrameWidgetBase*>(widget)->SetRemoteViewportIntersection(
-      {viewport_intersection, mainframe_intersection, viewport_intersection,
-       occlusion_state, gfx::Size(), gfx::Point(), viewport_transform});
+  static_cast<WebFrameWidgetBase*>(widget)->SetViewportIntersection(
+      blink::mojom::blink::ViewportIntersectionState::New(
+          viewport_intersection, mainframe_intersection, viewport_intersection,
+          occlusion_state, gfx::Size(), gfx::Point(), viewport_transform));
 
   // The viewport intersection should be applied by the layout geometry mapping
   // code when these flags are used.

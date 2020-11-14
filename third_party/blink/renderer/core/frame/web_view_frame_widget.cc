@@ -119,10 +119,6 @@ float WebViewFrameWidget::GetDeviceScaleFactorForTesting() {
   return device_scale_factor_for_testing_;
 }
 
-gfx::Rect WebViewFrameWidget::ViewportVisibleRect() {
-  return widget_base_->CompositorViewportRect();
-}
-
 bool WebViewFrameWidget::ShouldHandleImeEvents() {
   return HasFocus();
 }

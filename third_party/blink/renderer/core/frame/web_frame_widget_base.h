@@ -397,6 +397,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void OrientationChanged() override;
   void DidUpdateSurfaceAndScreen(
       const ScreenInfo& previous_original_screen_info) override;
+  gfx::Rect ViewportVisibleRect() override;
   const ScreenInfo& GetOriginalScreenInfo() override;
   base::Optional<blink::mojom::ScreenOrientation> ScreenOrientationOverride()
       override;
@@ -444,10 +445,9 @@ class CORE_EXPORT WebFrameWidgetBase
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void SetViewportIntersection(
-      mojom::blink::ViewportIntersectionStatePtr intersection_state) override {}
+      mojom::blink::ViewportIntersectionStatePtr intersection_state) override;
   void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;
   void DisableDeviceEmulation() override;
-
   // Sets the inert bit on an out-of-process iframe, causing it to ignore
   // input.
   void SetIsInertForSubFrame(bool inert) override {}
@@ -641,13 +641,6 @@ class CORE_EXPORT WebFrameWidgetBase
   // call there must be an AckPendingWindowRect call.
   void AckPendingWindowRect();
 
-  // Constrains the viewport intersection for use by IntersectionObserver,
-  // and indicates whether the frame may be painted over or obscured in the
-  // parent. This is needed for out-of-process iframes to know if they are
-  // clipped or obscured by ancestor frames in another process.
-  virtual void SetRemoteViewportIntersection(
-      const mojom::blink::ViewportIntersectionState& intersection_state) {}
-
   // Return the focused WebPlugin if there is one.
   WebPlugin* GetFocusedPluginContainer();
 
@@ -830,6 +823,17 @@ class CORE_EXPORT WebFrameWidgetBase
   // keyPress events to be suppressed if the associated keyDown event was
   // handled.
   bool suppress_next_keypress_event_ = false;
+
+  // This struct contains data that is only valid for child local root widgets.
+  // You should use `child_data()` to access it.
+  struct ChildLocalRootData {
+    gfx::Rect compositor_visible_rect;
+  } child_local_root_data_;
+
+  ChildLocalRootData& child_data() {
+    DCHECK(ForSubframe());
+    return child_local_root_data_;
+  }
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

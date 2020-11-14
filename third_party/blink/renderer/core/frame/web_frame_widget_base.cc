@@ -1269,6 +1269,20 @@ void WebFrameWidgetBase::ShowContextMenu(
   host_context_menu_location_.reset();
 }
 
+void WebFrameWidgetBase::SetViewportIntersection(
+    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
+  // Remote viewports are only applicable to local frames with remote ancestors.
+  // TODO(https://crbug.com/1148960): Should this deal with portals?
+  DCHECK(ForSubframe());
+
+  child_data().compositor_visible_rect =
+      intersection_state->compositor_visible_rect;
+  widget_base_->LayerTreeHost()->SetViewportVisibleRect(
+      intersection_state->compositor_visible_rect);
+  LocalRootImpl()->GetFrame()->SetViewportIntersectionFromParent(
+      *intersection_state);
+}
+
 void WebFrameWidgetBase::EnableDeviceEmulation(
     const DeviceEmulationParams& parameters) {
   // Device Emaulation is only supported for the main frame.
@@ -2947,6 +2961,14 @@ void WebFrameWidgetBase::DidUpdateSurfaceAndScreen(
           remote_frame->Client()->DidChangeScreenInfo(original_screen_info);
         },
         original_screen_info));
+  }
+}
+
+gfx::Rect WebFrameWidgetBase::ViewportVisibleRect() {
+  if (ForMainFrame()) {
+    return widget_base_->CompositorViewportRect();
+  } else {
+    return child_data().compositor_visible_rect;
   }
 }
 

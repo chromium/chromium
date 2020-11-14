@@ -102,7 +102,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void FocusChanged(bool enabled) override;
   float GetDeviceScaleFactorForTesting() override;
-  gfx::Rect ViewportVisibleRect() override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
 

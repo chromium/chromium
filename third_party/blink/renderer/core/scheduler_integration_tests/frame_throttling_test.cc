@@ -1696,7 +1696,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   intersection.viewport_intersection = gfx::Rect(0, 0, 100, 100);
   LocalFrameRoot().FrameWidget()->Resize(gfx::Size(300, 200));
   static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
-      ->SetRemoteViewportIntersection(intersection);
+      ->SetViewportIntersection(intersection.Clone());
 
   auto* root_frame = LocalFrameRoot().GetFrame();
   auto* frame_document =
@@ -1737,7 +1737,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   // Show the frame without any other change.
   LocalFrameRoot().WasShown();
   static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
-      ->SetRemoteViewportIntersection(intersection);
+      ->SetViewportIntersection(intersection.Clone());
   CompositeFrame();
   EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));
   EXPECT_FALSE(root_frame->View()->CanThrottleRenderingForPropagation());

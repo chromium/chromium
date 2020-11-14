@@ -438,8 +438,12 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
   if (host()) {
     host()->SetIntersectsViewport(
         !intersection_state.viewport_intersection.IsEmpty());
-    host()->GetAssociatedFrameWidget()->SetViewportIntersection(
-        intersection_state.Clone());
+
+    // Do not send viewport intersection to main frames.
+    if (!host()->owner_delegate()) {
+      host()->GetAssociatedFrameWidget()->SetViewportIntersection(
+          intersection_state.Clone());
+    }
   }
 }
 

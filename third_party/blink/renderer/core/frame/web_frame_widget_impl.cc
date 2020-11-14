@@ -436,26 +436,6 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
   focus_root_frame = local_frame->View()->ConvertToRootFrame(focus);
 }
 
-void WebFrameWidgetImpl::SetRemoteViewportIntersection(
-    const mojom::blink::ViewportIntersectionState& intersection_state) {
-  SetViewportIntersection(intersection_state.Clone());
-}
-
-void WebFrameWidgetImpl::SetViewportIntersection(
-    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
-  // Remote viewports are only applicable to local frames with remote ancestors.
-  DCHECK(LocalRootImpl()->Parent() &&
-         LocalRootImpl()->Parent()->IsWebRemoteFrame() &&
-         LocalRootImpl()->GetFrame());
-
-  compositor_visible_rect_ =
-      gfx::Rect(intersection_state->compositor_visible_rect);
-  widget_base_->LayerTreeHost()->SetViewportVisibleRect(
-      compositor_visible_rect_);
-  LocalRootImpl()->GetFrame()->SetViewportIntersectionFromParent(
-      *intersection_state);
-}
-
 void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {
   DCHECK(LocalRootImpl()->Parent());
   DCHECK(LocalRootImpl()->Parent()->IsWebRemoteFrame());
@@ -657,10 +637,6 @@ void WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
       Intersection(absolute_caret_bounds, maximal_rect), maximal_rect);
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   rect_to_scroll = PhysicalRect(maximal_rect);
-}
-
-gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
-  return compositor_visible_rect_;
 }
 
 void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
