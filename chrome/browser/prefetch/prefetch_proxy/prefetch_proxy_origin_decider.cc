@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,6 +71,10 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
   if (retry_after < base::TimeDelta()) {
     return;
   }
+
+  UMA_HISTOGRAM_CUSTOM_TIMES("IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+                             retry_after, base::TimeDelta::FromSeconds(1),
+                             base::TimeDelta::FromDays(7), 100);
 
   // Cap values at a maximum per experiment.
   if (retry_after > PrefetchProxyMaxRetryAfterDelta()) {

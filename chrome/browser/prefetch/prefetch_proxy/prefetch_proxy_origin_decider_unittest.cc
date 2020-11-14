@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
@@ -23,9 +24,12 @@ class PrefetchProxyOriginDeciderTest : public testing::Test {
 
   base::SimpleTestClock* clock() { return &clock_; }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock clock_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PrefetchProxyOriginDeciderTest, DefaultEligible) {
@@ -52,6 +56,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, MaxCap) {
 
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
+  histogram_tester()->ExpectUniqueTimeSample(
+      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      base::TimeDelta::FromSeconds(15), 1);
 
   clock()->Advance(base::TimeDelta::FromSeconds(11));
   EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
@@ -63,6 +70,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
   auto decider = NewDecider();
 
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
+  histogram_tester()->ExpectUniqueTimeSample(
+      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      base::TimeDelta::FromSeconds(15), 1);
 
   for (size_t i = 0; i <= 15; i++) {
     EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
@@ -77,6 +87,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, ByOrigin) {
 
   decider->ReportOriginRetryAfter(GURL("http://foo.com"),
                                   base::TimeDelta::FromSeconds(1));
+  histogram_tester()->ExpectUniqueTimeSample(
+      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      base::TimeDelta::FromSeconds(1), 1);
 
   // Any url for the origin should be ineligible.
   for (const GURL& url : {
@@ -105,6 +118,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, Clear) {
   auto decider = NewDecider();
 
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(1));
+  histogram_tester()->ExpectUniqueTimeSample(
+      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      base::TimeDelta::FromSeconds(1), 1);
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
 
   decider->OnBrowsingDataCleared();
@@ -119,6 +135,14 @@ TEST_F(PrefetchProxyOriginDeciderTest, PersistentPrefs) {
                                     base::TimeDelta::FromSeconds(1));
     decider->ReportOriginRetryAfter(GURL("http://foo.com"),
                                     base::TimeDelta::FromSeconds(3));
+    histogram_tester()->ExpectTimeBucketCount(
+        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+        base::TimeDelta::FromSeconds(1), 1);
+    histogram_tester()->ExpectTimeBucketCount(
+        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+        base::TimeDelta::FromSeconds(3), 1);
+    histogram_tester()->ExpectTotalCount(
+        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter", 2);
   }
 
   clock()->Advance(base::TimeDelta::FromSeconds(2));
