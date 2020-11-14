@@ -336,6 +336,54 @@ void FillQuantizationInfo(VADecPictureParameterBufferAV1& va_pic_param,
       base::checked_cast<uint16_t>(quant_param.matrix_level[2]);
 }
 
+void FillCdefInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                  const libgav1::Cdef& cdef,
+                  uint8_t color_bitdepth) {
+  // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
+  // All the strength values parsed in libgav1 are from the spec and left
+  // shifted by (bitdepth - 8).
+  CHECK_GE(color_bitdepth, 8u);
+  const uint8_t coeff_shift = color_bitdepth - 8u;
+  va_pic_param.cdef_damping_minus_3 =
+      base::checked_cast<uint8_t>(cdef.damping - coeff_shift - 3u);
+
+  va_pic_param.cdef_bits = cdef.bits;
+  static_assert(
+      libgav1::kMaxCdefStrengths == 8 &&
+          ARRAY_SIZE(cdef.y_primary_strength) == libgav1::kMaxCdefStrengths &&
+          ARRAY_SIZE(cdef.y_secondary_strength) == libgav1::kMaxCdefStrengths &&
+          ARRAY_SIZE(cdef.uv_primary_strength) == libgav1::kMaxCdefStrengths &&
+          ARRAY_SIZE(cdef.uv_secondary_strength) ==
+              libgav1::kMaxCdefStrengths &&
+          ARRAY_SIZE(va_pic_param.cdef_y_strengths) ==
+              libgav1::kMaxCdefStrengths &&
+          ARRAY_SIZE(va_pic_param.cdef_uv_strengths) ==
+              libgav1::kMaxCdefStrengths,
+      "Invalid size of cdef strengths");
+  const size_t num_cdef_strengths = 1 << cdef.bits;
+  DCHECK_LE(num_cdef_strengths,
+            static_cast<size_t>(libgav1::kMaxCdefStrengths));
+  for (size_t i = 0; i < num_cdef_strengths; ++i) {
+    const uint8_t prim_strength = cdef.y_primary_strength[i] >> coeff_shift;
+    uint8_t sec_strength = cdef.y_secondary_strength[i] >> coeff_shift;
+    DCHECK_LE(sec_strength, 4u);
+    if (sec_strength == 4)
+      sec_strength--;
+    va_pic_param.cdef_y_strengths[i] =
+        ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
+  }
+
+  for (size_t i = 0; i < num_cdef_strengths; ++i) {
+    const uint8_t prim_strength = cdef.uv_primary_strength[i] >> coeff_shift;
+    uint8_t sec_strength = cdef.uv_secondary_strength[i] >> coeff_shift;
+    DCHECK_LE(sec_strength, 4u);
+    if (sec_strength == 4)
+      sec_strength--;
+    va_pic_param.cdef_uv_strengths[i] =
+        ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
+  }
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
