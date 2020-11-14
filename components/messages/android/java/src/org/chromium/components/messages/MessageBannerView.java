@@ -11,18 +11,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 
 /**
  * View representing the message banner.
  */
-public class MessageBannerView extends LinearLayout {
+public class MessageBannerView extends BoundedLinearLayout {
     private ImageView mIconView;
     private TextView mTitle;
     private TextView mDescription;

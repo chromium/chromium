@@ -44,12 +44,12 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         mContainer.setLayoutParams(params);
     }
 
-    public void showMessageContainer() {
+    protected void showMessageContainer() {
         mContainer.setVisibility(View.VISIBLE);
         updateMargins();
     }
 
-    public void hideMessageContainer() {
+    protected void hideMessageContainer() {
         mContainer.setVisibility(View.GONE);
     }
 
