@@ -24,6 +24,7 @@ import org.chromium.payments.mojom.CanMakePaymentQueryResult;
 import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
+import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentErrorReason;
@@ -1049,10 +1050,33 @@ public class PaymentRequestService
         onInstrumentAbortResult(true);
     }
 
-    /** The component part of the {@link PaymentRequest#complete} implementation. */
+    /**
+     * Completes the payment request. This method is triggered by PaymentResponse.complete() from
+     * the renderer, used to notify the UI of the completion, closes the UI and opened resources
+     * and close the payment request service.
+     * @param result The status of the transaction, defined in {@link PaymentComplete}, specified
+     *      by the merchant with complete(result).
+     */
     /* package */ void complete(int result) {
         if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.complete(result);
+        if (result != PaymentComplete.FAIL) {
+            mJourneyLogger.setCompleted();
+            assert mSpec.getRawTotal() != null;
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, true /*completed*/);
+        }
+
+        mBrowserPaymentRequest.complete(result, this::onCompleteHandled);
+    }
+
+    private void onCompleteHandled() {
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onCompleteCalled();
+        }
+        if (sObserverForTest != null) {
+            sObserverForTest.onCompleteReplied();
+        }
+        if (mClient != null) mClient.onComplete();
     }
 
     /**
@@ -1195,11 +1219,6 @@ public class PaymentRequestService
     /** Invokes {@link PaymentRequestClient.onError}. */
     public void onError(int error, String errorMessage) {
         if (mClient != null) mClient.onError(error, errorMessage);
-    }
-
-    /** Invokes {@link PaymentRequestClient.onComplete}. */
-    public void onComplete() {
-        if (mClient != null) mClient.onComplete();
     }
 
     /** Invokes {@link PaymentRequestClient.warnNoFavicon}. */

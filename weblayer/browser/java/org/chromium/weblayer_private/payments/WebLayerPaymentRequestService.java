@@ -35,7 +35,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     }
 
     @Override
-    public void complete(int result) {
+    public void complete(int result, Runnable onCompleteHandled) {
         assert false : "Not implemented yet";
     }
 

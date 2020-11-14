@@ -407,19 +407,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                 null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
 
-    private void onUiCompleted() {
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onCompleteCalled();
-        }
-        if (PaymentRequestService.getObserverForTest() != null) {
-            PaymentRequestService.getObserverForTest().onCompleteReplied();
-        }
-        if (mPaymentRequestService != null) {
-            mPaymentRequestService.onComplete();
-            close();
-        }
-    }
-
     // Implements BrowserPaymentRequest:
     @Override
     public void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodDataMap) {
@@ -644,25 +631,17 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     }
 
     // Implement BrowserPaymentRequest:
-    /**
-     * Called when the merchant website has processed the payment.
-     */
     @Override
-    public void complete(int result) {
-        if (mPaymentRequestService == null) return;
+    public void complete(int result, Runnable onCompleteHandled) {
+        // This method is only supposed to be called by mPaymentRequestService.
+        assert mPaymentRequestService != null;
 
-        if (result != PaymentComplete.FAIL) {
-            mJourneyLogger.setCompleted();
-            if (!PaymentPreferencesUtil.isPaymentCompleteOnce()) {
-                PaymentPreferencesUtil.setPaymentCompleteOnce();
-            }
-            assert mSpec.getRawTotal() != null;
-            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
-                    mSpec.getRawTotal().amount.value, true /*completed*/);
+        if (result != PaymentComplete.FAIL && !PaymentPreferencesUtil.isPaymentCompleteOnce()) {
+            PaymentPreferencesUtil.setPaymentCompleteOnce();
         }
 
         mPaymentUiService.onPaymentRequestComplete(result,
-                /*onMinimalUiErroredAndClosed=*/this::close, this::onUiCompleted);
+                /*onMinimalUiErroredAndClosed=*/this::close, onCompleteHandled::run);
     }
 
     // Implement BrowserPaymentRequest:

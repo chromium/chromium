@@ -7,6 +7,7 @@ package org.chromium.components.payments;
 import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -50,8 +51,12 @@ public interface BrowserPaymentRequest {
      */
     void onPaymentDetailsNotUpdated(@Nullable String selectedShippingOptionError);
 
-    /** The browser part of the {@link PaymentRequest#complete} implementation. */
-    void complete(int result);
+    /**
+     * Handles the payment request completion.
+     * @param result The status of the transaction, defined in {@link PaymentComplete}.
+     * @param onCompleteHandled Called when the complete has been handled.
+     */
+    void complete(int result, Runnable onCompleteHandled);
 
     /**
      * The browser part of the {@link PaymentRequest#retry} implementation.
