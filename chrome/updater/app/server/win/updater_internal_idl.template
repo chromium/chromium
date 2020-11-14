@@ -12,7 +12,7 @@ import "ocidl.idl";
 [
   object,
   dual,
-  uuid(IUPDATERCONTROLCALLBACK_IID),
+  uuid(PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65),
   helpstring("IUpdaterControlCallback Interface"),
   pointer_default(unique)
 ]
@@ -23,7 +23,7 @@ interface IUpdaterControlCallback : IUnknown {
 [
   object,
   dual,
-  uuid(IUPDATERCONTROL_IID),
+  uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
   helpstring("IUpdaterControl Interface"),
   pointer_default(unique)
 ]
@@ -33,7 +33,7 @@ interface IUpdaterControl : IUnknown {
 };
 
 [
-  uuid(UPDATER_INTERNAL_LIB_UUID),
+  uuid(PLACEHOLDER-GUID-C6CE92DB-72CA-42EF-8C98-6EE92481B3C9),
   version(1.0),
   helpstring("Chromium Updater internal type library.")
 ]
@@ -41,7 +41,7 @@ library UpdaterInternalLib {
   importlib("stdole2.tlb");
 
   [
-    uuid(1F87FE2F-D6A9-4711-9D11-8187705F8457),
+    uuid(PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457),
     helpstring("UpdaterControl Class")
   ]
   coclass UpdaterControlClass

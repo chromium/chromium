@@ -6,10 +6,11 @@ import("//build/toolchain/win/midl.gni")
 import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
 
-# TODO(crbug.com/1109612): these GUIDs must depend on branding only.
-placeholder_guids = [
+# These GUIDs must depend on branding only.
+branding_only_placeholder_guids = [
   "PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC",  # UpdaterLib
   "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791",  # UpdaterClass
+  "PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93",  # UpdaterServiceClass
   "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B",  # IUpdater
   "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6",  # IUpdateState
   "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B",  # ICompleteStatus
@@ -17,9 +18,8 @@ placeholder_guids = [
 ]
 
 uuid5_guids = []
-foreach(guid, placeholder_guids) {
-  uuid5_guids +=
-      [ guid + "=uuid5:$updater_product_full_name$chrome_version_full" ]
+foreach(guid, branding_only_placeholder_guids) {
+  uuid5_guids += [ guid + "=uuid5:$updater_product_full_name" ]
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
@@ -32,16 +32,26 @@ midl("updater_idl_idl") {
   writes_tlb = true
 }
 
+# These GUIDs must depend on branding and version.
+branding_version_placeholder_guids = [
+  "PLACEHOLDER-GUID-C6CE92DB-72CA-42EF-8C98-6EE92481B3C9",  # UpdaterInternalLib
+  "PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457",  # UpdaterControlClass
+  "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA",  # IUpdaterControl
+  "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65",  # IUpdaterControlCallback
+]
+
+uuid5_guids = []
+foreach(guid, branding_version_placeholder_guids) {
+  uuid5_guids +=
+      [ guid + "=uuid5:$updater_product_full_name$chrome_version_full" ]
+}
+uuid5_guids = string_join(",", uuid5_guids)
+
 midl("updater_internal_idl_idl") {
+  dynamic_guids = "ignore_proxy_stub," + uuid5_guids
+
   header_file = "updater_internal_idl.h"
   sources = [ "updater_internal_idl.template" ]
-
-  # TODO(crbug.com/1109612): these GUIDs must depend on branding and version.
-  defines = [
-    "IUPDATERCONTROL_IID=526DA036-9BD3-4697-865A-DA12D37DFFCA",
-    "IUPDATERCONTROLCALLBACK_IID=D272C794-2ACE-4584-B993-3B90C622BE65",
-    "UPDATER_INTERNAL_LIB_UUID=C6CE92DB-72CA-42EF-8C98-6EE92481B3C9",
-  ]
 
   writes_tlb = true
 }

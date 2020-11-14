@@ -90,7 +90,7 @@ library UpdaterLib {
   }
 
   [
-    uuid(415FD747-D79E-42D7-93AC-1BA6E5FD4E93),
+    uuid(PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93),
     helpstring("UpdaterService Class")
   ]
   coclass UpdaterServiceClass
