@@ -5,7 +5,7 @@
 settings = struct(
     project = "chromium-m86",
     is_master = False,
-    is_lts_branch = False,
+    is_lts_branch = True,
     ref = "refs/branch-heads/4240",
     ci_bucket = "ci",
     ci_poller = "chromium-gitiles-trigger",
