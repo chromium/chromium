@@ -140,7 +140,8 @@ bool SysmemBufferCollection::Initialize(
   is_protected_ = force_protected;
 
   if (register_with_image_pipe) {
-    scenic_overlay_view_.emplace(scenic_surface_factory->CreateScenicSession());
+    scenic_overlay_view_.emplace(scenic_surface_factory->CreateScenicSession(),
+                                 scenic_surface_factory);
     surface_factory_ = scenic_surface_factory;
   }
 

@@ -271,7 +271,9 @@ void ScenicSurfaceFactory::RemoveSurface(gfx::AcceleratedWidget widget) {
 ScenicSurface* ScenicSurfaceFactory::GetSurface(gfx::AcceleratedWidget widget) {
   base::AutoLock lock(surface_lock_);
   auto it = surface_map_.find(widget);
-  DCHECK(it != surface_map_.end());
+  if (it == surface_map_.end())
+    return nullptr;
+
   ScenicSurface* surface = it->second;
   surface->AssertBelongsToCurrentThread();
   return surface;
