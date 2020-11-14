@@ -45,13 +45,13 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // guarantees that the region is in the company of regions that have leading
   // guard pages).
   size_t reserved_size = slot_size + PartitionPageSize();
-#if !defined(ARCH_CPU_64_BITS)
+#if !defined(PA_HAS_64_BITS_POINTERS)
   reserved_size += SystemPageSize();
 #endif
   // Round up to the allocation granularity.
   reserved_size = bits::Align(reserved_size, PageAllocationGranularity());
   size_t map_size = reserved_size - PartitionPageSize();
-#if !defined(ARCH_CPU_64_BITS)
+#if !defined(PA_HAS_64_BITS_POINTERS)
   map_size -= SystemPageSize();
 #endif
   PA_DCHECK(slot_size <= map_size);
@@ -71,17 +71,16 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   if (UNLIKELY(!ptr))
     return nullptr;
 
-  size_t committed_page_size = slot_size + SystemPageSize();
-  root->total_size_of_direct_mapped_pages.fetch_add(committed_page_size,
+  root->total_size_of_direct_mapped_pages.fetch_add(reserved_size,
                                                     std::memory_order_relaxed);
-  root->IncreaseCommittedPages(committed_page_size);
+  root->IncreaseCommittedPages(slot_size);
 
   char* slot = ptr + PartitionPageSize();
   SetSystemPagesAccess(ptr, SystemPageSize(), PageInaccessible);
   SetSystemPagesAccess(ptr + (SystemPageSize() * 2),
                        PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
-#if !defined(ARCH_CPU_64_BITS)
+#if !defined(PA_HAS_64_BITS_POINTERS)
   // TODO(bartekn): Uncommit all the way up to reserved_size, or in case of
   // GigaCage, all the way up to 2MB boundary.
   PA_DCHECK(slot + slot_size + SystemPageSize() <= ptr + reserved_size);
@@ -676,9 +675,12 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(new_slot_span);
   } else {
     // Third. If we get here, we need a brand new slot span.
+    // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
+    // as slot_span_committed_size.
     uint16_t num_partition_pages = get_pages_per_slot_span();
-    void* raw_memory = AllocNewSlotSpan(root, flags, num_partition_pages,
-                                        get_bytes_per_span());
+    void* raw_memory =
+        AllocNewSlotSpan(root, flags, num_partition_pages,
+                         /* slot_span_committed_size= */ get_bytes_per_span());
     if (LIKELY(raw_memory != nullptr)) {
       new_slot_span =
           SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(

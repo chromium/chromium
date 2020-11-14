@@ -2591,6 +2591,112 @@ TEST_F(PartitionAllocTest, GetUsableSize) {
   }
 }
 
+TEST_F(PartitionAllocTest, Bookkeeping) {
+  auto& root = *allocator.root();
+
+  EXPECT_EQ(0U, root.total_size_of_committed_pages);
+  EXPECT_EQ(0U, root.total_size_of_super_pages);
+  size_t small_size = 1000 - kExtraAllocSize;
+
+  // A full slot span of size 1 partition page is committed.
+  void* ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
+  size_t expected_committed_size = PartitionPageSize();
+  size_t expected_super_pages_size = kSuperPageSize;
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Freeing memory doesn't result in decommitting pages right away.
+  root.Free(ptr);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Allocating the same size lands it in the same slot span.
+  ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Freeing memory doesn't result in decommitting pages right away.
+  root.Free(ptr);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Allocating another size commits another slot span.
+  ptr = root.Alloc(2 * small_size - kExtraAllocSize, type_name);
+  expected_committed_size += PartitionPageSize();
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Freeing memory doesn't result in decommitting pages right away.
+  root.Free(ptr);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Single-slot slot spans...
+  size_t big_size = kMaxBucketed - SystemPageSize();
+  size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
+  PartitionBucket<base::internal::ThreadSafe>* bucket =
+      &root.buckets[bucket_index];
+  ASSERT_LT(big_size, bucket->get_bytes_per_span());
+  ASSERT_NE(big_size % PartitionPageSize(), 0U);
+  ptr = root.Alloc(big_size - kExtraAllocSize, type_name);
+  expected_committed_size += bucket->get_bytes_per_span();
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Allocating 2nd time doesn't overflow the super page...
+  void* ptr2 = root.Alloc(big_size - kExtraAllocSize, type_name);
+  expected_committed_size += bucket->get_bytes_per_span();
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // ... but 3rd time does.
+  void* ptr3 = root.Alloc(big_size - kExtraAllocSize, type_name);
+  expected_committed_size += bucket->get_bytes_per_span();
+  expected_super_pages_size += kSuperPageSize;
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Freeing memory doesn't result in decommitting pages right away.
+  root.Free(ptr);
+  root.Free(ptr2);
+  root.Free(ptr3);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // Now everything should be decommitted. The reserved space for super pages
+  // stays the same and will never go away (by design).
+  root.PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
+  expected_committed_size = 0;
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+
+  // None of the above should affect the direct map space.
+  EXPECT_EQ(0U, root.total_size_of_direct_mapped_pages);
+
+  // For direct map, we commit only as many pages as needed.
+  size_t huge_size = kMaxBucketed + SystemPageSize();
+  ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
+  expected_committed_size += huge_size;
+  size_t surrounding_pages_size = PartitionPageSize();
+#if !defined(PA_HAS_64_BITS_POINTERS)
+  surrounding_pages_size += SystemPageSize();
+#endif
+  size_t expected_direct_map_size = bits::Align(
+      huge_size + surrounding_pages_size, PageAllocationGranularity());
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+
+  // Freeing memory in the diret map decommits pages right away. The address
+  // space is released for re-use too.
+  root.Free(ptr);
+  expected_committed_size -= huge_size;
+  expected_direct_map_size = 0;
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+}
+
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
 TEST_F(PartitionAllocTest, RefCountBasic) {

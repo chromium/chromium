@@ -27,7 +27,6 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
   auto* extent = PartitionDirectMapExtent<thread_safe>::FromSlotSpan(slot_span);
-  size_t unmap_size = extent->map_size;
 
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
@@ -41,27 +40,25 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
     extent->next_extent->prev_extent = extent->prev_extent;
   }
 
+  root->DecreaseCommittedPages(slot_span->bucket->slot_size);
+
   // Add the size of the trailing guard page (32-bit only) and preceding
   // partition page.
-  unmap_size += PartitionPageSize();
-#if !defined(ARCH_CPU_64_BITS)
-  unmap_size += SystemPageSize();
+  size_t reserved_size = extent->map_size + PartitionPageSize();
+#if !defined(PA_HAS_64_BITS_POINTERS)
+  reserved_size += SystemPageSize();
 #endif
-
-  size_t uncommitted_page_size =
-      slot_span->bucket->slot_size + SystemPageSize();
-  root->DecreaseCommittedPages(uncommitted_page_size);
-  PA_DCHECK(root->total_size_of_direct_mapped_pages >= uncommitted_page_size);
-  root->total_size_of_direct_mapped_pages -= uncommitted_page_size;
-
-  PA_DCHECK(!(unmap_size & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(root->total_size_of_direct_mapped_pages >= reserved_size);
+  root->total_size_of_direct_mapped_pages -= reserved_size;
+  PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
 
   char* ptr = reinterpret_cast<char*>(
       SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
   // Account for the mapping starting a partition page before the actual
   // allocation address.
   ptr -= PartitionPageSize();
-  return {ptr, unmap_size};
+  return {ptr, reserved_size};
 }
 
 template <bool thread_safe>

@@ -148,7 +148,14 @@ struct BASE_EXPORT PartitionRoot {
 #endif
 
   // Bookkeeping.
-  // Invariant: total_size_of_committed_pages <=
+  // - total_size_of_super_pages - total virtual address space for normal bucket
+  //     super pages
+  // - total_size_of_direct_mapped_pages - total virtual address space for
+  //     direct-map regions
+  // - total_size_of_committed_pages - total committed pages for slots (doesn't
+  //     include metadata, bitmaps (if any), or any data outside or regions
+  //     described in #1 and #2)
+  // Invariant: total_size_of_committed_pages <
   //                total_size_of_super_pages +
   //                total_size_of_direct_mapped_pages.
   // Since all operations on these atomic variables have relaxed semantics, we
