@@ -256,7 +256,9 @@ static const size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // crbug.com/998048 for details.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxDirectMapped() {
-  return (1UL << 31) - PageAllocationGranularity();
+  // Subtract kSuperPageSize to accommodate for alignment inside
+  // PartitionRoot::GetDirectMapReservedSize.
+  return (1UL << 31) - kSuperPageSize;
 }
 static const size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 

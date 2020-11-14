@@ -87,14 +87,6 @@ struct PartitionBucket {
            NumSystemPagesPerPartitionPage();
   }
 
-  static ALWAYS_INLINE size_t get_direct_map_size(size_t size) {
-    // Caller must check that the size is not above the MaxDirectMapped()
-    // limit before calling. This also guards against integer overflow in the
-    // calculation here.
-    PA_DCHECK(size <= MaxDirectMapped());
-    return (size + SystemPageOffsetMask()) & SystemPageBaseMask();
-  }
-
   // This helper function scans a bucket's active slot span list for a suitable
   // new active slot span.  When it finds a suitable new active slot span (one
   // that has free slots and is not empty), it is set as the new active slot

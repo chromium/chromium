@@ -22,6 +22,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
+#include "base/bits.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -95,8 +96,7 @@ const size_t kTestSizes[] = {
     100,
     base::SystemPageSize(),
     base::SystemPageSize() + 1,
-    base::PartitionRoot<
-        base::internal::ThreadSafe>::Bucket::get_direct_map_size(100),
+    base::PartitionRoot<base::internal::ThreadSafe>::GetDirectMapSlotSize(100),
     1 << 20,
     1 << 21,
 };
@@ -1599,36 +1599,26 @@ TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
 #endif  // !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
 // Check that guard pages are present where expected.
-TEST_F(PartitionAllocDeathTest, GuardPages) {
-// PartitionAlloc adds PartitionPageSize() to the requested size
-// (for metadata), and then rounds that size to PageAllocationGranularity().
-// To be able to reliably write one past a direct allocation, choose a size
-// that's
-// a) larger than kMaxBucketed (to make the allocation direct)
-// b) aligned at PageAllocationGranularity() boundaries after
-//    PartitionPageSize() has been added to it.
-// (On 32-bit, PartitionAlloc adds another SystemPageSize() to the
-// allocation size before rounding, but there it marks the memory right
-// after size as inaccessible, so it's fine to write 1 past the size we
-// hand to PartitionAlloc and we don't need to worry about allocation
-// granularities.)
-#define ALIGN(N, A) (((N) + (A)-1) / (A) * (A))
-  const size_t kSize = ALIGN(kMaxBucketed + 1 + PartitionPageSize(),
-                             PageAllocationGranularity()) -
-                       PartitionPageSize();
-#undef ALIGN
-  EXPECT_GT(kSize, kMaxBucketed)
-      << "allocation not large enough for direct allocation";
-  size_t size = kSize - kExtraAllocSize;
-  void* ptr = allocator.root()->Alloc(size, type_name);
+TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
+  const size_t kSizes[] = {
+      kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
+      kMaxBucketed + PartitionPageSize(),
+      bits::Align(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
+  for (size_t size : kSizes) {
+    size -= kExtraAllocSize;
+    EXPECT_GT(size, kMaxBucketed)
+        << "allocation not large enough for direct allocation";
+    void* ptr = allocator.root()->Alloc(size, type_name);
 
-  EXPECT_TRUE(ptr);
-  char* char_ptr = reinterpret_cast<char*>(ptr) - kPointerOffset;
+    EXPECT_TRUE(ptr);
+    char* char_ptr = reinterpret_cast<char*>(ptr) - kPointerOffset;
 
-  EXPECT_DEATH(*(char_ptr - 1) = 'A', "");
-  EXPECT_DEATH(*(char_ptr + size + kExtraAllocSize) = 'A', "");
+    EXPECT_DEATH(*(char_ptr - 1) = 'A', "");
+    EXPECT_DEATH(*(char_ptr + bits::Align(size, SystemPageSize())) = 'A', "");
 
-  allocator.root()->Free(ptr);
+    allocator.root()->Free(ptr);
+  }
 }
 
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -2673,28 +2663,48 @@ TEST_F(PartitionAllocTest, Bookkeeping) {
   // None of the above should affect the direct map space.
   EXPECT_EQ(0U, root.total_size_of_direct_mapped_pages);
 
-  // For direct map, we commit only as many pages as needed.
-  size_t huge_size = kMaxBucketed + SystemPageSize();
-  ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
-  expected_committed_size += huge_size;
-  size_t surrounding_pages_size = PartitionPageSize();
+  size_t huge_sizes[] = {
+      kMaxBucketed + SystemPageSize(),
+      kMaxBucketed + SystemPageSize() + 123,
+      kSuperPageSize - PageAllocationGranularity(),
+      kSuperPageSize - SystemPageSize() - PartitionPageSize(),
+      kSuperPageSize - PartitionPageSize(),
+      kSuperPageSize - SystemPageSize(),
+      kSuperPageSize,
+      kSuperPageSize + SystemPageSize(),
+      kSuperPageSize + PartitionPageSize(),
+      kSuperPageSize + SystemPageSize() + PartitionPageSize(),
+      kSuperPageSize + PageAllocationGranularity(),
+  };
+  for (size_t huge_size : huge_sizes) {
+    // For direct map, we commit only as many pages as needed.
+    size_t aligned_size = bits::Align(huge_size, SystemPageSize());
+    ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
+    expected_committed_size += aligned_size;
+    size_t surrounding_pages_size = PartitionPageSize();
 #if !defined(PA_HAS_64_BITS_POINTERS)
-  surrounding_pages_size += SystemPageSize();
+    surrounding_pages_size += SystemPageSize();
 #endif
-  size_t expected_direct_map_size = bits::Align(
-      huge_size + surrounding_pages_size, PageAllocationGranularity());
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
-  EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+    size_t alignment = PageAllocationGranularity();
+#if defined(PA_HAS_64_BITS_POINTERS)
+    if (root.UsesGigaCage())
+      alignment = kSuperPageSize;
+#endif
+    size_t expected_direct_map_size =
+        bits::Align(aligned_size + surrounding_pages_size, alignment);
+    EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+    EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+    EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
 
-  // Freeing memory in the diret map decommits pages right away. The address
-  // space is released for re-use too.
-  root.Free(ptr);
-  expected_committed_size -= huge_size;
-  expected_direct_map_size = 0;
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
-  EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+    // Freeing memory in the diret map decommits pages right away. The address
+    // space is released for re-use too.
+    root.Free(ptr);
+    expected_committed_size -= aligned_size;
+    expected_direct_map_size = 0;
+    EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+    EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+    EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+  }
 }
 
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR

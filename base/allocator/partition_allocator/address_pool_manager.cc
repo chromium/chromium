@@ -15,7 +15,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -142,8 +142,8 @@ void AddressPoolManager::Pool::Reset() {
 uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
   base::AutoLock scoped_lock(lock_);
 
-  const size_t required_size = bits::Align(requested_size, kSuperPageSize);
-  const size_t need_bits = required_size >> kSuperPageShift;
+  PA_CHECK(!(requested_size & kSuperPageOffsetMask));
+  const size_t need_bits = requested_size >> kSuperPageShift;
 
   // Use first-fit policy to find an available chunk from free chunks. Start
   // from |bit_hint_|, because we know there are no free chunks before.
@@ -183,7 +183,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
       }
       uintptr_t address = address_begin_ + beg_bit * kSuperPageSize;
 #if DCHECK_IS_ON()
-      PA_DCHECK(address + required_size <= address_end_);
+      PA_DCHECK(address + requested_size <= address_end_);
 #endif
       return address;
     }
@@ -196,16 +196,16 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
   base::AutoLock scoped_lock(lock_);
 
-  PA_DCHECK(!(address & kSuperPageOffsetMask));
+  PA_CHECK(!(address & kSuperPageOffsetMask));
+  PA_CHECK(!(free_size & kSuperPageOffsetMask));
 
-  const size_t size = bits::Align(free_size, kSuperPageSize);
   DCHECK_LE(address_begin_, address);
 #if DCHECK_IS_ON()
-  PA_DCHECK(address + size <= address_end_);
+  PA_DCHECK(address + free_size <= address_end_);
 #endif
 
   const size_t beg_bit = (address - address_begin_) / kSuperPageSize;
-  const size_t end_bit = beg_bit + size / kSuperPageSize;
+  const size_t end_bit = beg_bit + free_size / kSuperPageSize;
   for (size_t i = beg_bit; i < end_bit; ++i) {
     PA_DCHECK(alloc_bitset_.test(i));
     alloc_bitset_.reset(i);

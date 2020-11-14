@@ -42,12 +42,9 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
 
   root->DecreaseCommittedPages(slot_span->bucket->slot_size);
 
-  // Add the size of the trailing guard page (32-bit only) and preceding
-  // partition page.
-  size_t reserved_size = extent->map_size + PartitionPageSize();
-#if !defined(PA_HAS_64_BITS_POINTERS)
-  reserved_size += SystemPageSize();
-#endif
+  size_t reserved_size =
+      extent->map_size +
+      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
   PA_DCHECK(!(reserved_size & PageAllocationGranularityOffsetMask()));
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reserved_size);
   root->total_size_of_direct_mapped_pages -= reserved_size;

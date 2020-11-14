@@ -444,7 +444,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
       internal::PartitionSizeAdjustAdd(allow_extras, requested_size);
   // Note that the new size isn't a bucketed size; this function is called
   // whenever we're reallocating a direct mapped allocation.
-  size_t new_slot_size = Bucket::get_direct_map_size(raw_size);
+  size_t new_slot_size = GetDirectMapSlotSize(raw_size);
   if (new_slot_size < kMinDirectMappedDownsize)
     return false;
 
@@ -453,13 +453,17 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
   char* char_ptr = static_cast<char*>(SlotSpan::ToPointer(slot_span));
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
+    // That's because raw_size may have changed.
   } else if (new_slot_size < current_slot_size) {
-    size_t map_size = DirectMapExtent::FromSlotSpan(slot_span)->map_size;
+    size_t current_map_size =
+        DirectMapExtent::FromSlotSpan(slot_span)->map_size;
+    size_t new_map_size = GetDirectMapReservedSize(raw_size) -
+                          GetDirectMapMetadataAndGuardPagesSize();
 
-    // Don't reallocate in-place if new size is less than 80 % of the full
-    // map size, to avoid holding on to too much unused address space.
-    if ((new_slot_size / SystemPageSize()) * 5 <
-        (map_size / SystemPageSize()) * 4)
+    // Don't reallocate in-place if new map size would be less than 80 % of the
+    // current map size, to avoid holding on to too much unused address space.
+    if ((new_map_size / SystemPageSize()) * 5 <
+        (current_map_size / SystemPageSize()) * 4)
       return false;
 
     // Shrink by decommitting unneeded pages and making them inaccessible.
