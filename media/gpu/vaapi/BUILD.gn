@@ -109,7 +109,10 @@ source_set("vaapi") {
   ]
 
   if (is_ash) {
+    assert(use_libgav1_parser)
     sources += [
+      "av1_vaapi_video_decoder_delegate.cc",
+      "av1_vaapi_video_decoder_delegate.h",
       "vaapi_jpeg_encode_accelerator.cc",
       "vaapi_jpeg_encode_accelerator.h",
       "vaapi_mjpeg_decode_accelerator.cc",

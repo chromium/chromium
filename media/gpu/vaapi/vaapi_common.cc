@@ -48,4 +48,18 @@ scoped_refptr<VP9Picture> VaapiVP9Picture::CreateDuplicate() {
   return new VaapiVP9Picture(va_surface_);
 }
 
+#if BUILDFLAG(IS_ASH)
+VaapiAV1Picture::VaapiAV1Picture(
+    scoped_refptr<VASurface> display_va_surface,
+    scoped_refptr<VASurface> reconstruct_va_surface)
+    : display_va_surface_(std::move(display_va_surface)),
+      reconstruct_va_surface_(std::move(reconstruct_va_surface)) {}
+
+VaapiAV1Picture::~VaapiAV1Picture() = default;
+
+scoped_refptr<AV1Picture> VaapiAV1Picture::CreateDuplicate() {
+  return base::MakeRefCounted<VaapiAV1Picture>(display_va_surface_,
+                                               reconstruct_va_surface_);
+}
+#endif  // BUILDFLAG(IS_ASH)
 }  // namespace media

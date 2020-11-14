@@ -32,6 +32,11 @@
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_ASH)
+#include "media/gpu/av1_decoder.h"
+#include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
+#endif  // BUILDFLAG(IS_ASH)
+
 namespace media {
 
 namespace {
@@ -643,16 +648,27 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 
     decoder_.reset(
         new VP9Decoder(std::move(accelerator), profile_, color_space_));
+  }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  } else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
+  else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
     auto accelerator =
         std::make_unique<H265VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
         new H265Decoder(std::move(accelerator), profile_, color_space_));
+  }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  } else {
+#if BUILDFLAG(IS_ASH)
+  else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
+    auto accelerator =
+        std::make_unique<AV1VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
+    decoder_delegate_ = accelerator.get();
+
+    decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));
+  }
+#endif  // BUILDFLAG(IS_ASH)
+  else {
     return Status(StatusCode::kDecoderUnsupportedProfile)
         .WithData("profile", profile_);
   }
