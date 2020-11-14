@@ -85,9 +85,13 @@ gsutil ls gs://chromeos-localmirror/distfiles/espeak*
 Pick the latest version and
 
 ```
-gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-20180801.tar.gz /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
-tar xvf /usr/share/chromeos-assets/speech_synthesis/espeak-ng/espeak-ng-20180801.tar.gz
-rm /usr/share/chromeos-assets/speech_synthesis/espeak-ng/espeak-ng-20180801.tar.gz
+TMPDIR=$(mktemp -d)
+gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-20180801.tar.gz $TMPDIR
+tar -C $TMPDIR -xvf ~/espeak-ng/espeak-ng-20180801.tar.gz
+sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
+sudo chown -R $(whoami) /usr/share/chromeos-assets/
+cp -r $TMPDIR/espeak-ng/chrome-extension/* /usr/share/chromeos-assets/speech_synthesis/espeak-ng
+rm -rf $TMPDIR
 ```
 
 **Be sure to check permissions of /usr/share/chromeos-assets, some users report
