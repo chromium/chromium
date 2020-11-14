@@ -461,12 +461,17 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
                             const PhysicalRect& damage_rect,
                             const PhysicalOffset& offset_from_root) const;
 
-  // MaybeIncludeTransformForAncestorLayer means that a transform on
-  // |ancestorLayer| may be applied to the bounding box, in particular if
-  // paintsWithTransform() is true.
   enum CalculateBoundsOptions {
-    kIncludeClipsAndMaybeIncludeTransformForAncestorLayer,
-    kIncludeTransformsAndCompositedChildLayers,
+    // Include clips between this layer and its ancestor layer (inclusive).
+    kIncludeClips = 0x1,
+    // Include transforms, irrespective of if they are applied via composition
+    // or painting.
+    kIncludeTransforms = 0x2,
+    // Include child layers (recursive) whether composited or not.
+    kIncludeCompositedChildLayers = 0x4,
+    // Include transform for the ancestor layer (|composited_layer| in the
+    // initial call) if |PaintsWithTransform|
+    kMaybeIncludeTransformForAncestorLayer = 0x8
   };
 
   // Bounding box relative to some ancestor layer. Pass offsetFromRoot if known.
@@ -475,9 +480,10 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   PhysicalRect PhysicalBoundingBox(const PaintLayer* ancestor_layer) const;
   PhysicalRect FragmentsBoundingBox(const PaintLayer* ancestor_layer) const;
 
-  PhysicalRect BoundingBoxForCompositingOverlapTest() const;
+  PhysicalRect LocalBoundingBoxForCompositingOverlapTest() const;
+  IntRect ExpandedBoundingBoxForCompositingOverlapTest(
+      bool use_clipped_bounding_rect) const;
   PhysicalRect BoundingBoxForCompositing() const;
-
 
   // Static position is set in parent's coordinate space.
   LayoutUnit StaticInlinePosition() const { return static_inline_position_; }
@@ -804,7 +810,14 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     const PaintLayer* nearest_contained_layout_layer = nullptr;
 
     // These two boxes do not include any applicable scroll offset of the
-    // root PaintLayer.
+    // root PaintLayer. Note that 'absolute' here is potentially misleading as
+    // the actual coordinate system depends on if this layer is affected by the
+    // viewport's scroll offset or not. For content that is not affected by the
+    // viewport scroll offsets, this ends up being a rect in viewport coords.
+    // For content that is affected by the viewport's scroll offset this
+    // coordinate system is in absolute coords.
+    // Note: This stores LocalBoundingBoxForCompositingOverlapTest and not the
+    // expanded bounds (ExpandedBoundingBoxForCompositingOverlapTest).
     IntRect clipped_absolute_bounding_box;
     IntRect unclipped_absolute_bounding_box;
 
@@ -1274,18 +1287,20 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     needs_paint_phase_float_ |= layer.needs_paint_phase_float_;
   }
 
+  bool IsTopMostNotAffectedByScrollOf(const PaintLayer* ancestor) const;
+
   void ExpandRectForStackingChildren(const PaintLayer& composited_layer,
                                      PhysicalRect& result,
-                                     PaintLayer::CalculateBoundsOptions) const;
+                                     unsigned options) const;
 
   // The return value is in the space of |stackingParent|, if non-null, or
   // |this| otherwise.
   PhysicalRect BoundingBoxForCompositingInternal(
       const PaintLayer& composited_layer,
       const PaintLayer* stacking_parent,
-      CalculateBoundsOptions) const;
+      unsigned options) const;
   bool ShouldApplyTransformToBoundingBox(const PaintLayer& composited_layer,
-                                         CalculateBoundsOptions) const;
+                                         unsigned options) const;
 
   AncestorDependentCompositingInputs& EnsureAncestorDependentCompositingInputs()
       const {

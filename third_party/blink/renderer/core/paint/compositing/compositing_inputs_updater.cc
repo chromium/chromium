@@ -463,13 +463,17 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
 
     properties.unclipped_absolute_bounding_box =
         EnclosingIntRect(geometry_map_->AbsoluteRect(
-            layer->BoundingBoxForCompositingOverlapTest()));
+            layer->LocalBoundingBoxForCompositingOverlapTest()));
 
     bool affected_by_scroll = root_layer_->GetScrollableArea() &&
                               layer->IsAffectedByScrollOf(root_layer_);
 
-    // At ths point, |unclipped_absolute_bounding_box| is in viewport space.
+    // At this point, |unclipped_absolute_bounding_box| is in viewport space.
     // To convert to absolute space, add scroll offset for non-fixed layers.
+    // Content that is not affected by scroll, e.g. fixed-pos content and
+    // children of that content, stays in viewport space so we can expand its
+    // bounds during overlap testing without having a dependency on the scroll
+    // offset at the time these properties are calculated.
     if (affected_by_scroll) {
       properties.unclipped_absolute_bounding_box.Move(
           RoundedIntSize(root_layer_->GetScrollableArea()->GetScrollOffset()));

@@ -409,6 +409,30 @@ bool PaintLayer::IsAffectedByScrollOf(const PaintLayer* ancestor) const {
   return current_layer == ancestor;
 }
 
+bool PaintLayer::IsTopMostNotAffectedByScrollOf(
+    const PaintLayer* ancestor) const {
+  // Returns true if |this| is the top-most fixed-pos layer between |this|
+  // (inclusive) and |ancestor.
+
+  // Should only call this method for layers that we already know are not
+  // affected by the scroll offset of the ancestor (implying this element or
+  // an ancestor must be fixed).
+  DCHECK(!IsAffectedByScrollOf(ancestor));
+
+  // Only fixed-pos elements can be top-most.
+  if (!GetLayoutObject().IsFixedPositioned())
+    return false;
+
+  PaintLayer* curr = Parent();
+  while (curr && curr != ancestor) {
+    if (curr->GetLayoutObject().IsFixedPositioned())
+      return false;
+    curr = curr->Parent();
+  }
+
+  return true;
+}
+
 void PaintLayer::UpdateTransformationMatrix() {
   if (TransformationMatrix* transform = Transform()) {
     LayoutBox* box = GetLayoutBox();
@@ -1079,7 +1103,7 @@ void PaintLayer::SetChildNeedsCompositingInputsUpdateUpToAncestor(
 
 const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
   if (RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    PhysicalRect mapping_rect = BoundingBoxForCompositingOverlapTest();
+    PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
     GetLayoutObject().MapToVisualRectInAncestorSpace(
         GetLayoutObject().View(), mapping_rect, kUseGeometryMapper);
     return EnclosingIntRect(mapping_rect);
@@ -1091,7 +1115,7 @@ const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
 const IntRect PaintLayer::UnclippedAbsoluteBoundingBox() const {
   if (RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
     return EnclosingIntRect(GetLayoutObject().LocalToAbsoluteRect(
-        BoundingBoxForCompositingOverlapTest(),
+        LocalBoundingBoxForCompositingOverlapTest(),
         kUseGeometryMapperMode | kIgnoreScrollOffset));
   } else {
     return GetAncestorDependentCompositingInputs()
@@ -2503,7 +2527,7 @@ void PaintLayer::UpdateFilterReferenceBox() {
     return;
   PhysicalRect result = LocalBoundingBox();
   ExpandRectForStackingChildren(
-      *this, result, PaintLayer::kIncludeTransformsAndCompositedChildLayers);
+      *this, result, kIncludeTransforms | kIncludeCompositedChildLayers);
   FloatRect reference_box = FloatRect(result);
 
   float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
@@ -2645,7 +2669,15 @@ PhysicalRect PaintLayer::FragmentsBoundingBox(
   return result;
 }
 
-PhysicalRect PaintLayer::BoundingBoxForCompositingOverlapTest() const {
+PhysicalRect PaintLayer::LocalBoundingBoxForCompositingOverlapTest() const {
+  // Returns the bounding box, in the local coordinate system for this layer,
+  // for the content that this paint layer is responsible for compositing. This
+  // doesn't include the content painted by self-painting descendants such as
+  // composited absolute positioned children. But the bounds is suitable for
+  // calculations such as squashing sparsity. To get the bounds that includes
+  // the visible extent of this layer and its children for overlap testing, use
+  // ExpandedBoundingBoxForCompositingOverlapTest.
+
   // Apply NeverIncludeTransformForAncestorLayer, because the geometry map in
   // CompositingInputsUpdater will take care of applying the transform of |this|
   // (== the ancestorLayer argument to boundingBoxForCompositing).
@@ -2664,37 +2696,85 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingOverlapTest() const {
         style.BackdropFilter().MapRect(FloatRect(bounding_box)));
   }
 
-  if (FixedToViewport() && !bounding_box.IsEmpty()) {
-    DCHECK_EQ(style.GetPosition(), EPosition::kFixed);
-    // Note that we only expand the bounding box for overlap testing when the
-    // fixed's containing block is the viewport. This keeps us from expanding
-    // the bounds when the fixed is a child of an ancestor with transform,
-    // filters, etc. and the fixed is no longer scroll position dependent.
-
-    // Expand the bounding box by the amount that scrolling the
-    // viewport can expand the area that this fixed-pos element could
-    // cover. Compute how much we could still scroll in each direction.
-    // |max_scroll_delta| is the amount we could still scroll in
-    // increasing offset direction. |min_scroll_delta| is the amount we
-    // can still scroll in a decreasing scroll offset direction.
-    PaintLayerScrollableArea* scrollable_area =
-        GetLayoutObject().View()->GetScrollableArea();
-    ScrollOffset current_scroll_offset = scrollable_area->GetScrollOffset();
-    ScrollOffset max_scroll_delta =
-        scrollable_area->MaximumScrollOffset() - current_scroll_offset;
-    ScrollOffset min_scroll_delta =
-        current_scroll_offset - scrollable_area->MinimumScrollOffset();
-    bounding_box.Expand(
-        LayoutRectOutsets(min_scroll_delta.Height(), max_scroll_delta.Width(),
-                          max_scroll_delta.Height(), min_scroll_delta.Width()));
-  }
   return bounding_box;
+}
+
+IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
+    bool use_clipped_bounding_rect) const {
+  // Returns the bounding box for this layer and self-painted composited
+  // children which are otherwise not included in
+  // LocalBoundingBoxForCompositingOverlapTest. Use the bounds from this layer
+  // for overlap testing that cares about the bounds of this layer and all its
+  // children.
+  IntRect abs_bounds = use_clipped_bounding_rect
+                           ? ClippedAbsoluteBoundingBox()
+                           : UnclippedAbsoluteBoundingBox();
+  PaintLayer* root_layer = GetLayoutObject().View()->Layer();
+  // |abs_bounds| does not include root scroller offset, as in it's in absolute
+  // coordinates, for everything but fixed-pos objects (and their children)
+  // which are in viewport coords. Adjusting these to all be in absolute coords
+  // happens here. This adjustment is delayed until this point in time as doing
+  // it during compositing inputs update would embed the scroll offset at the
+  // time the compositing inputs was ran when converting from viewport to
+  // absolute, making the resulting rects unusable for any other scroll offset.
+  if (root_layer->GetScrollableArea() && !abs_bounds.IsEmpty() &&
+      !IsAffectedByScrollOf(root_layer)) {
+    PaintLayerScrollableArea* scrollable_area = root_layer->GetScrollableArea();
+    ScrollOffset current_scroll_offset = scrollable_area->GetScrollOffset();
+    // Move the bounds to absolute coords
+    if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled())
+      abs_bounds.Move(RoundedIntSize(current_scroll_offset));
+
+    if (IsTopMostNotAffectedByScrollOf(root_layer)) {
+      // For overlap testing, expand the rect used for fixed-pos content in
+      // two ways. First, include any children such that overlap testing
+      // against the top-most fixed-pos layer is guaranteed to detect any
+      // overlap where a self-painting composited child of the fixed-pos layer
+      // exceeds the fixed-pos layer's bounds. Second, expand the rect to
+      // include the area it could cover if the view were to be scrolled to
+      // its minimum and maximum extents. This allows skipping overlap testing
+      // on scroll offset changes. Note that bounds expansion does not happen
+      // for fixed under a non-view container (under xform or filter for
+      // example) as those fixed still are affected by the view's scroll offset.
+      // This is checked for with the IsAffectedByScrollOf call earlier.
+
+      // Expand the rect to include children that are not already included in
+      // |layer|'s bounds.
+      PhysicalRect children_bounds;
+      if (!GetLayoutObject().ChildPaintBlockedByDisplayLock()) {
+        PaintLayerPaintOrderIterator iterator(*this, kAllChildren);
+        while (PaintLayer* child_layer = iterator.Next()) {
+          // Note that we intentionally include children irrespective of if they
+          // are composited or not.
+          children_bounds.Unite(child_layer->BoundingBoxForCompositingInternal(
+              *this, this,
+              kIncludeClips | kIncludeTransforms |
+                  kIncludeCompositedChildLayers));
+        }
+        if (!children_bounds.IsEmpty()) {
+          GetLayoutObject().MapToVisualRectInAncestorSpace(
+              GetLayoutObject().View(), children_bounds, kUseGeometryMapper);
+          abs_bounds.Unite(EnclosingIntRect(children_bounds));
+        }
+      }
+
+      // Expand bounds to include min/max scroll extents
+      ScrollOffset max_scroll_delta =
+          scrollable_area->MaximumScrollOffset() - current_scroll_offset;
+      ScrollOffset min_scroll_delta =
+          current_scroll_offset - scrollable_area->MinimumScrollOffset();
+      abs_bounds.Expand(
+          IntRectOutsets(min_scroll_delta.Height(), max_scroll_delta.Width(),
+                         max_scroll_delta.Height(), min_scroll_delta.Width()));
+    }
+  }
+  return abs_bounds;
 }
 
 void PaintLayer::ExpandRectForStackingChildren(
     const PaintLayer& composited_layer,
     PhysicalRect& result,
-    PaintLayer::CalculateBoundsOptions options) const {
+    unsigned options) const {
   // If we're locked, th en the subtree does not contribute painted output.
   // Furthermore, we might not have up-to-date sizing and position information
   // in the subtree, so skip recursing into the subtree.
@@ -2708,31 +2788,32 @@ void PaintLayer::ExpandRectForStackingChildren(
     // for this Layer. For example, the bounds of squashed Layers
     // will be included in the computation of the appropriate squashing
     // GraphicsLayer.
-    if (options != PaintLayer::CalculateBoundsOptions::
-                       kIncludeTransformsAndCompositedChildLayers &&
-        child_layer->GetCompositingState() != kNotComposited)
-      continue;
-    result.Unite(child_layer->BoundingBoxForCompositingInternal(
-        composited_layer, this, options));
+    if ((options & kIncludeCompositedChildLayers) ||
+        child_layer->GetCompositingState() == kNotComposited) {
+      result.Unite(child_layer->BoundingBoxForCompositingInternal(
+          composited_layer, this, options));
+    }
   }
 }
 
 PhysicalRect PaintLayer::BoundingBoxForCompositing() const {
   return BoundingBoxForCompositingInternal(
-      *this, nullptr, kIncludeClipsAndMaybeIncludeTransformForAncestorLayer);
+      *this, nullptr, kIncludeClips | kMaybeIncludeTransformForAncestorLayer);
 }
 
 bool PaintLayer::ShouldApplyTransformToBoundingBox(
     const PaintLayer& composited_layer,
-    CalculateBoundsOptions options) const {
+    unsigned options) const {
+  DCHECK(!(options & kIncludeTransforms) ||
+         !(options & kMaybeIncludeTransformForAncestorLayer));
   if (!Transform())
     return false;
-  if (options == kIncludeTransformsAndCompositedChildLayers)
+  if (options & kIncludeTransforms)
     return true;
   if (PaintsWithTransform(kGlobalPaintNormalPhase)) {
     if (this != &composited_layer)
       return true;
-    if (options == kIncludeClipsAndMaybeIncludeTransformForAncestorLayer)
+    if (options & kMaybeIncludeTransformForAncestorLayer)
       return true;
   }
   return false;
@@ -2741,7 +2822,7 @@ bool PaintLayer::ShouldApplyTransformToBoundingBox(
 PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     const PaintLayer& composited_layer,
     const PaintLayer* stacking_parent,
-    CalculateBoundsOptions options) const {
+    unsigned options) const {
   DCHECK_GE(GetLayoutObject().GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kInPrePaint);
   if (!IsSelfPaintingLayer())
@@ -2771,14 +2852,11 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     return PhysicalRect();
 
   PhysicalRect result;
-  if (options == kIncludeClipsAndMaybeIncludeTransformForAncestorLayer) {
+  if (options & kIncludeClips) {
     // If there is a clip applied by an ancestor to this PaintLayer but below or
     // equal to |ancestorLayer|, apply that clip. This optimizes the size
     // of the composited layer to exclude clipped-out regions of descendants.
-    result = Clipper((GetLayoutObject().GetDocument().Lifecycle().GetState() ==
-                      DocumentLifecycle::kInCompositingAssignmentsUpdate)
-                         ? GeometryMapperOption::kUseGeometryMapper
-                         : GeometryMapperOption::kUseGeometryMapper)
+    result = Clipper(GeometryMapperOption::kUseGeometryMapper)
                  .LocalClipRect(composited_layer);
 
     result.Intersect(LocalBoundingBox());
