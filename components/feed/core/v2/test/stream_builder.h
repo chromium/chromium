@@ -19,7 +19,7 @@
 namespace feed {
 struct StreamModelUpdateRequest;
 
-extern const base::Time kTestTimeEpoch;
+extern base::Time kTestTimeEpoch;
 
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,

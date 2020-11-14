@@ -13,7 +13,7 @@
 
 namespace feed {
 
-const base::Time kTestTimeEpoch = base::Time::UnixEpoch();
+base::Time kTestTimeEpoch = base::Time::UnixEpoch();
 
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,

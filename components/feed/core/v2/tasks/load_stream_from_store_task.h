@@ -15,10 +15,6 @@
 #include "components/feed/core/v2/feed_store.h"
 #include "components/offline_pages/task/task.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace feed {
 struct StreamModelUpdateRequest;
 
@@ -48,7 +44,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamFromStoreTask(LoadType load_type,
                           FeedStore* store,
-                          const base::Clock* clock,
                           base::OnceCallback<void(Result)> callback);
   ~LoadStreamFromStoreTask() override;
   LoadStreamFromStoreTask(const LoadStreamFromStoreTask&) = delete;
@@ -70,7 +65,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadType load_type_;
   FeedStore* store_;  // Unowned.
-  const base::Clock* clock_;
   bool ignore_staleness_ = false;
   base::OnceCallback<void(Result)> result_callback_;
 

@@ -15,9 +15,6 @@
 #include "url/gurl.h"
 
 class PrefService;
-namespace base {
-class TickClock;
-}  // namespace base
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -43,7 +40,6 @@ class FeedNetworkImpl : public FeedNetwork {
                   signin::IdentityManager* identity_manager,
                   const std::string& api_key,
                   scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-                  const base::TickClock* tick_clock,
                   PrefService* pref_service);
   ~FeedNetworkImpl() override;
   FeedNetworkImpl(const FeedNetworkImpl&) = delete;
@@ -84,7 +80,6 @@ class FeedNetworkImpl : public FeedNetwork {
   signin::IdentityManager* identity_manager_;
   const std::string api_key_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
-  const base::TickClock* tick_clock_;
   PrefService* pref_service_;
   base::flat_set<std::unique_ptr<NetworkFetch>, base::UniquePtrComparator>
       pending_requests_;

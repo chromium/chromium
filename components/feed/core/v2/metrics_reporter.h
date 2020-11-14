@@ -14,9 +14,6 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
 
-namespace base {
-class TickClock;
-}  // namespace base
 namespace feed {
 namespace internal {
 // This enum is used for a UMA histogram. Keep in sync with FeedEngagementType
@@ -67,8 +64,7 @@ class MetricsReporter {
   // sheet.
   static const int kUnknownCardIndex = INT_MAX;
 
-  explicit MetricsReporter(const base::TickClock* clock,
-                           PrefService* profile_prefs);
+  explicit MetricsReporter(PrefService* profile_prefs);
   virtual ~MetricsReporter();
   MetricsReporter(const MetricsReporter&) = delete;
   MetricsReporter& operator=(const MetricsReporter&) = delete;
@@ -149,7 +145,6 @@ class MetricsReporter {
   void FinalizeMetrics();
   void FinalizeVisit();
 
-  const base::TickClock* clock_;
   PrefService* profile_prefs_;
   // Persistent data stored in prefs. Data is read in the constructor, and then
   // written back to prefs on backgrounding.

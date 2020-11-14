@@ -44,8 +44,7 @@ class MetricsReporterTest : public testing::Test {
   }
 
   void RecreateMetricsReporter() {
-    reporter_ = std::make_unique<MetricsReporter>(
-        task_environment_.GetMockTickClock(), &profile_prefs_);
+    reporter_ = std::make_unique<MetricsReporter>(&profile_prefs_);
   }
 
  protected:

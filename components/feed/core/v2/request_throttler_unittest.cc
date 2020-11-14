@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/prefs/testing_pref_service.h"
@@ -29,15 +29,18 @@ class FeedRequestThrottlerTest : public testing::Test {
 
     RegisterProfilePrefs(test_prefs_.registry());
 
-    base::Time now;
-    EXPECT_TRUE(base::Time::FromString("2018-06-11 12:01AM", &now));
-    test_clock_.SetNow(now);
+    // Set the clock to 12:01AM.
+    base::Time twelveO_One =
+        (base::Time::Now() + base::TimeDelta::FromDays(1)).LocalMidnight() +
+        base::TimeDelta::FromMinutes(1);
+    task_environment_.AdvanceClock(twelveO_One - base::Time::Now());
   }
 
  protected:
   TestingPrefServiceSimple test_prefs_;
-  base::SimpleTestClock test_clock_;
-  RequestThrottler throttler_{&test_prefs_, &test_clock_};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  RequestThrottler throttler_{&test_prefs_};
 };
 
 TEST_F(FeedRequestThrottlerTest, RequestQuotaAllAtOnce) {
@@ -53,9 +56,9 @@ TEST_F(FeedRequestThrottlerTest, QuotaIsPerDay) {
   }
   // Because we started at 12:01AM, we need to advance 24 hours before making
   // another successful request.
-  test_clock_.Advance(base::TimeDelta::FromHours(23));
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
   EXPECT_FALSE(throttler_.RequestQuota(NetworkRequestType::kUploadActions));
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   EXPECT_TRUE(throttler_.RequestQuota(NetworkRequestType::kUploadActions));
 }
 

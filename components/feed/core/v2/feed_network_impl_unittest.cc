@@ -12,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
@@ -93,8 +92,7 @@ class FeedNetworkTest : public testing::Test {
             &test_factory_);
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
-        shared_url_loader_factory_, task_environment_.GetMockTickClock(),
-        &profile_prefs_);
+        shared_url_loader_factory_, &profile_prefs_);
   }
 
   FeedNetwork* feed_network() { return feed_network_.get(); }
@@ -202,7 +200,6 @@ class FeedNetworkTest : public testing::Test {
   std::unique_ptr<FeedNetwork> feed_network_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  base::SimpleTestTickClock test_tick_clock_;
   TestingPrefServiceSimple profile_prefs_;
   base::HistogramTester histogram_;
 };

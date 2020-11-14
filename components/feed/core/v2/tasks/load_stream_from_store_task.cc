@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/proto_util.h"
@@ -26,11 +26,9 @@ LoadStreamFromStoreTask::Result& LoadStreamFromStoreTask::Result::operator=(
 LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     LoadType load_type,
     FeedStore* store,
-    const base::Clock* clock,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
       store_(store),
-      clock_(clock),
       result_callback_(std::move(callback)),
       update_request_(std::make_unique<StreamModelUpdateRequest>()) {}
 
@@ -60,7 +58,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
   }
   if (!ignore_staleness_) {
     const base::TimeDelta content_age =
-        clock_->Now() - feedstore::GetLastAddedTime(result.stream_data);
+        base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
     if (content_age < base::TimeDelta()) {
       Complete(LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture);
       return;

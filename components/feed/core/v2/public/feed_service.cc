@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/time/default_clock.h"
-#include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
@@ -182,11 +180,10 @@ FeedService::FeedService(
   stream_delegate_ = std::make_unique<StreamDelegateImpl>(
       local_state, delegate_.get(), identity_manager);
   network_delegate_ = std::make_unique<NetworkDelegateImpl>(delegate_.get());
-  metrics_reporter_ = std::make_unique<MetricsReporter>(
-      base::DefaultTickClock::GetInstance(), profile_prefs);
+  metrics_reporter_ = std::make_unique<MetricsReporter>(profile_prefs);
   feed_network_ = std::make_unique<FeedNetworkImpl>(
       network_delegate_.get(), identity_manager, api_key, url_loader_factory,
-      base::DefaultTickClock::GetInstance(), profile_prefs);
+      profile_prefs);
   image_fetcher_ = std::make_unique<ImageFetcher>(url_loader_factory);
   store_ = std::make_unique<FeedStore>(std::move(database));
 
@@ -194,7 +191,6 @@ FeedService::FeedService(
       refresh_task_scheduler_.get(), metrics_reporter_.get(),
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
       image_fetcher_.get(), store_.get(), prefetch_service, offline_page_model,
-      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       chrome_info);
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(

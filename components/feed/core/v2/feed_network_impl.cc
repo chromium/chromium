@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
@@ -170,7 +169,6 @@ class FeedNetworkImpl::NetworkFetch {
                signin::IdentityManager* identity_manager,
                network::SharedURLLoaderFactory* loader_factory,
                const std::string& api_key,
-               const base::TickClock* tick_clock,
                bool allow_bless_auth)
       : url_(url),
         request_type_(request_type),
@@ -179,8 +177,7 @@ class FeedNetworkImpl::NetworkFetch {
         identity_manager_(identity_manager),
         loader_factory_(loader_factory),
         api_key_(api_key),
-        tick_clock_(tick_clock),
-        entire_send_start_ticks_(tick_clock_->NowTicks()),
+        entire_send_start_ticks_(base::TimeTicks::Now()),
         allow_bless_auth_(allow_bless_auth) {}
   ~NetworkFetch() = default;
   NetworkFetch(const NetworkFetch&) = delete;
@@ -204,7 +201,7 @@ class FeedNetworkImpl::NetworkFetch {
     token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
         "feed", identity_manager_, GetAuthScopes(),
         base::BindOnce(&NetworkFetch::AccessTokenFetchFinished,
-                       base::Unretained(this), tick_clock_->NowTicks()),
+                       base::Unretained(this), base::TimeTicks::Now()),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
   }
 
@@ -215,8 +212,7 @@ class FeedNetworkImpl::NetworkFetch {
         "ContentSuggestions.Feed.Network.TokenFetchStatus", error.state(),
         GoogleServiceAuthError::NUM_STATES);
 
-    base::TimeDelta token_duration =
-        tick_clock_->NowTicks() - token_start_ticks;
+    base::TimeDelta token_duration = base::TimeTicks::Now() - token_start_ticks;
     UMA_HISTOGRAM_MEDIUM_TIMES("ContentSuggestions.Feed.Network.TokenDuration",
                                token_duration);
 
@@ -225,7 +221,7 @@ class FeedNetworkImpl::NetworkFetch {
   }
 
   void StartLoader() {
-    loader_only_start_ticks_ = tick_clock_->NowTicks();
+    loader_only_start_ticks_ = base::TimeTicks::Now();
     simple_loader_ = MakeLoader();
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         loader_factory_, base::BindOnce(&NetworkFetch::OnSimpleLoaderComplete,
@@ -334,7 +330,7 @@ class FeedNetworkImpl::NetworkFetch {
     NetworkResponseInfo response_info;
     response_info.status_code = simple_loader_->NetError();
     response_info.fetch_duration =
-        tick_clock_->NowTicks() - entire_send_start_ticks_;
+        base::TimeTicks::Now() - entire_send_start_ticks_;
     response_info.fetch_time = base::Time::Now();
     response_info.base_request_url = GetUrlWithoutQuery(url_);
     response_info.was_signed_in = !access_token_.empty();
@@ -378,7 +374,7 @@ class FeedNetworkImpl::NetworkFetch {
                                response_info.fetch_duration);
 
     base::TimeDelta loader_only_duration =
-        tick_clock_->NowTicks() - loader_only_start_ticks_;
+        base::TimeTicks::Now() - loader_only_start_ticks_;
     // This histogram purposefully matches name and bucket size used in
     // RemoteSuggestionsFetcherImpl.
     UMA_HISTOGRAM_TIMES("NewTabPage.Snippets.FetchTime", loader_only_duration);
@@ -408,7 +404,6 @@ class FeedNetworkImpl::NetworkFetch {
   base::OnceCallback<void(RawResponse)> done_callback_;
   network::SharedURLLoaderFactory* loader_factory_;
   const std::string api_key_;
-  const base::TickClock* tick_clock_;
 
   // Set when the NetworkFetch is constructed, before token and article fetch.
   const base::TimeTicks entire_send_start_ticks_;
@@ -424,13 +419,11 @@ FeedNetworkImpl::FeedNetworkImpl(
     signin::IdentityManager* identity_manager,
     const std::string& api_key,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    const base::TickClock* tick_clock,
     PrefService* pref_service)
     : delegate_(delegate),
       identity_manager_(identity_manager),
       api_key_(api_key),
       loader_factory_(loader_factory),
-      tick_clock_(tick_clock),
       pref_service_(pref_service) {}
 
 FeedNetworkImpl::~FeedNetworkImpl() = default;
@@ -507,8 +500,7 @@ void FeedNetworkImpl::Send(const GURL& url,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_type, std::move(request_body), force_signed_out_request,
-      identity_manager_, loader_factory_.get(), api_key_, tick_clock_,
-      allow_bless_auth);
+      identity_manager_, loader_factory_.get(), api_key_, allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
 

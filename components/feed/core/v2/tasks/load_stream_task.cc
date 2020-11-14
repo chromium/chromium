@@ -9,8 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/time/clock.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
@@ -79,7 +77,7 @@ void LoadStreamTask::Run() {
           : LoadStreamFromStoreTask::LoadType::kPendingActionsOnly;
 
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      load_from_store_type, stream_->GetStore(), stream_->GetClock(),
+      load_from_store_type, stream_->GetStore(),
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }
@@ -152,7 +150,7 @@ void LoadStreamTask::QueryRequestComplete(
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
           *result.response_body,
           StreamModelUpdateRequest::Source::kNetworkUpdate,
-          result.response_info.was_signed_in, stream_->GetClock()->Now());
+          result.response_info.was_signed_in, base::Time::Now());
   if (!response_data.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
@@ -168,8 +166,7 @@ void LoadStreamTask::QueryRequestComplete(
   stream_->SetLastStreamLoadHadNoticeCard(isNoticeCardFulfilled);
   MetricsReporter::NoticeCardFulfilled(isNoticeCardFulfilled);
 
-  stream_->GetMetadata()->MaybeUpdateSessionId(response_data.session_id,
-                                               stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId(response_data.session_id);
 
   if (load_type_ != LoadType::kBackgroundRefresh) {
     auto model = std::make_unique<StreamModel>();

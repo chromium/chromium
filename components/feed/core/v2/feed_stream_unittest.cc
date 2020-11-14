@@ -22,10 +22,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
@@ -69,7 +68,7 @@ std::unique_ptr<StreamModel> LoadModelFromStore(FeedStore* store) {
     result = std::move(task_result);
   };
   LoadStreamFromStoreTask load_task(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, store, /*clock=*/nullptr,
+      LoadStreamFromStoreTask::LoadType::kFullLoad, store,
       base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale.
   load_task.IgnoreStalenessForTesting();
@@ -146,6 +145,18 @@ feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
   {                                                                           \
     std::string want = (WANT), got = (GOT);                                   \
     EXPECT_EQ(want, got) << "Wanted:\n" << (want) << "\nBut got:\n" << (got); \
+  }
+
+// Although time is mocked through TaskEnvironment, it does drift by small
+// amounts.
+const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(5);
+#define EXPECT_TIME_EQ(WANT, GOT)          \
+  {                                        \
+    base::Time want = (WANT), got = (GOT); \
+    if (got != want) {                     \
+      EXPECT_LT(want - kEpsilon, got);     \
+      EXPECT_GT(want + kEpsilon, got);     \
+    }                                      \
   }
 
 class TestSurface : public FeedStream::SurfaceInterface {
@@ -427,8 +438,7 @@ class FakeRefreshTaskScheduler : public RefreshTaskScheduler {
 
 class TestMetricsReporter : public MetricsReporter {
  public:
-  explicit TestMetricsReporter(const base::TickClock* clock, PrefService* prefs)
-      : MetricsReporter(clock, prefs) {}
+  explicit TestMetricsReporter(PrefService* prefs) : MetricsReporter(prefs) {}
 
   // MetricsReporter.
   void ContentSliceViewed(SurfaceId surface_id, int index_in_stream) override {
@@ -559,14 +569,14 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
  public:
   void SetUp() override {
     SetupFeatures();
+    kTestTimeEpoch = base::Time::Now();
 
     // Reset to default config, since tests can change it.
     SetFeedConfigForTesting(Config());
 
     feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
     feed::RegisterProfilePrefs(profile_prefs_.registry());
-    metrics_reporter_ = std::make_unique<TestMetricsReporter>(
-        task_environment_.GetMockTickClock(), &profile_prefs_);
+    metrics_reporter_ = std::make_unique<TestMetricsReporter>(&profile_prefs_);
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -574,7 +584,6 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     image_fetcher_ =
         std::make_unique<TestImageFetcher>(shared_url_loader_factory_);
 
-    CHECK_EQ(kTestTimeEpoch, task_environment_.GetMockClock()->Now());
     CreateStream();
   }
 
@@ -617,8 +626,7 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     stream_ = std::make_unique<FeedStream>(
         &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
         &network_, image_fetcher_.get(), store_.get(), &prefetch_service_,
-        &offline_page_model_, task_environment_.GetMockClock(),
-        task_environment_.GetMockTickClock(), chrome_info);
+        &offline_page_model_, chrome_info);
 
     WaitForIdleTaskQueue();  // Wait for any initialization.
     stream_->SetWireResponseTranslatorForTesting(&response_translator_);
@@ -2182,7 +2190,7 @@ TEST_F(FeedStreamTest, MetadataLoadedWhenDatabaseInitialized) {
 
   ASSERT_TRUE(stream_->GetMetadata());
   EXPECT_EQ("session-id", stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiry, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiry, stream_->GetMetadata()->GetSessionIdExpiryTime());
   EXPECT_EQ("token", stream_->GetMetadata()->GetConsistencyToken());
   EXPECT_EQ(2, stream_->GetMetadata()->GetNextActionId().GetUnsafeValue());
 }
@@ -2540,27 +2548,30 @@ TEST_F(FeedStreamTest, GetSetAndUpdateSessionId) {
   // Verify that directly calling SetSessionId works as expected.
   stream_->GetMetadata()->SetSessionId(kToken1, kExpiryTime1);
   EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiryTime1,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // Updating the token with nullopt is a NOP.
-  stream_->GetMetadata()->MaybeUpdateSessionId(base::nullopt,
-                                               stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId(base::nullopt);
   EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiryTime1,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // Updating the token with the same value is a NOP.
-  stream_->GetMetadata()->MaybeUpdateSessionId(kToken1, stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId(kToken1);
   EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiryTime1,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // Updating the token with a different value resets the token and assigns a
   // new expiry time.
-  stream_->GetMetadata()->MaybeUpdateSessionId(kToken2, stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId(kToken2);
   EXPECT_EQ(kToken2, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiryTime2, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiryTime2,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // Updating the token with the empty string clears its value.
-  stream_->GetMetadata()->MaybeUpdateSessionId("", stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId("");
   EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
   EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
 }
@@ -2616,8 +2627,8 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .chrome_client_info()
                                 .session_id());
   EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kSessionToken1ExpiryTime,
-            stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kSessionToken1ExpiryTime,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // (3) LoadMore: the server omits returning a session-id token
   //     - this should trigger a network request
@@ -2639,8 +2650,8 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .chrome_client_info()
                                 .session_id());
   EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kSessionToken1ExpiryTime,
-            stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kSessionToken1ExpiryTime,
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 
   // (4) LoadMore: the server returns new session id.
   //     - this should trigger a network request
@@ -2663,16 +2674,15 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .chrome_client_info()
                                 .session_id());
   EXPECT_EQ(kSessionToken2, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kSessionToken1ExpiryTime + base::TimeDelta::FromSeconds(3),
-            stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kSessionToken1ExpiryTime + base::TimeDelta::FromSeconds(3),
+                 stream_->GetMetadata()->GetSessionIdExpiryTime());
 }
 
 TEST_F(FeedStreamTest, ClearAllResetsSessionId) {
   is_signed_in_ = false;
 
   // Initialize a session id.
-  stream_->GetMetadata()->MaybeUpdateSessionId("session-id",
-                                               stream_->GetClock());
+  stream_->GetMetadata()->MaybeUpdateSessionId("session-id");
   ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdToken().empty());
   ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
 
@@ -2737,7 +2747,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
   task_environment_.FastForwardBy(GetFeedConfig().session_id_max_age -
                                   GetFeedConfig().stale_content_threshold);
   ASSERT_LT(stream_->GetMetadata()->GetSessionIdExpiryTime(),
-            task_environment_.GetMockClock()->Now());
+            base::Time::Now());
   response_translator_.InjectResponse(model_generator.MakeFirstPage(),
                                       kSessionToken2);
   surface.Attach(stream_.get());
@@ -2775,7 +2785,7 @@ TEST_F(FeedStreamTest, SessionIdPersistsAcrossStreamLoads) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_EQ(kSessionToken, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_EQ(kExpiryTime, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_TIME_EQ(kExpiryTime, stream_->GetMetadata()->GetSessionIdExpiryTime());
 }
 
 }  // namespace

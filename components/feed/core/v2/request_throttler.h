@@ -8,16 +8,13 @@
 #include "components/feed/core/v2/enums.h"
 
 class PrefService;
-namespace base {
-class Clock;
-}  // namespace base
 
 namespace feed {
 
 // Limits number of network requests that can be made each day.
 class RequestThrottler {
  public:
-  RequestThrottler(PrefService* pref_service, const base::Clock* clock);
+  explicit RequestThrottler(PrefService* pref_service);
 
   RequestThrottler(const RequestThrottler&) = delete;
   RequestThrottler& operator=(const RequestThrottler&) = delete;
@@ -31,9 +28,6 @@ class RequestThrottler {
 
   // Provides durable storage.
   PrefService* pref_service_;
-
-  // Used to access current time, injected for testing.
-  const base::Clock* clock_;
 };
 
 }  // namespace feed

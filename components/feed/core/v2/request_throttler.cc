@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/time/clock.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -32,11 +31,9 @@ int DaysSinceOrigin(const base::Time& time_value) {
 
 }  // namespace
 
-RequestThrottler::RequestThrottler(PrefService* pref_service,
-                                   const base::Clock* clock)
-    : pref_service_(pref_service), clock_(clock) {
+RequestThrottler::RequestThrottler(PrefService* pref_service)
+    : pref_service_(pref_service) {
   DCHECK(pref_service);
-  DCHECK(clock);
 }
 
 bool RequestThrottler::RequestQuota(NetworkRequestType request_type) {
@@ -63,7 +60,7 @@ bool RequestThrottler::RequestQuota(NetworkRequestType request_type) {
 void RequestThrottler::ResetCountersIfDayChanged() {
   // Grant new quota on local midnight to spread out when clients that start
   // making un-throttled requests to server.
-  const base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   const bool day_changed =
       DaysSinceOrigin(feed::prefs::GetLastRequestTime(*pref_service_)) !=
       DaysSinceOrigin(now);
