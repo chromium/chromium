@@ -978,6 +978,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         window.setAttributes(params);
     }
 
+    @CalledByNative
+    private boolean applyDisableSurfaceControlWorkaround() {
+        return mDisplayAndroid.applyDisableSurfaceControlWorkaround();
+    }
+
     @SuppressLint("NewApi")
     // mSupportedRefreshRateModes should only be set if Display.Mode is available.
     @TargetApi(Build.VERSION_CODES.M)

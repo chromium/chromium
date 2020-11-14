@@ -305,14 +305,7 @@ void OnTransactionCompletedOnAnyThread(void* context,
 
 // static
 bool SurfaceControl::IsSupported() {
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-
-  // Disabled on Samsung devices due to a platform bug fixed in R.
-  int min_sdk_version = base::android::SDK_VERSION_Q;
-  if (base::EqualsCaseInsensitiveASCII(build_info->manufacturer(), "samsung"))
-    min_sdk_version = base::android::SDK_VERSION_R;
-
-  if (build_info->sdk_int() < min_sdk_version)
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_q())
     return false;
 
   CHECK(SurfaceControlMethods::Get().supported);
