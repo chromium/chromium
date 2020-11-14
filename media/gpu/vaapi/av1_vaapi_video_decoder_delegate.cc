@@ -17,6 +17,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "third_party/libgav1/src/src/utils/types.h"
+#include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
 namespace {
@@ -176,6 +177,44 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
     COPY_FILM_GRAIN_FIELD2(cr_offset, v_offset + 256);
   }
 #undef COPY_FILM_GRAIN_FIELD2
+}
+
+void FillGlobalMotionInfo(
+    VAWarpedMotionParamsAV1 va_warped_motion[7],
+    const std::array<libgav1::GlobalMotion, libgav1::kNumReferenceFrameTypes>&
+        global_motion) {
+  // global_motion[0] (for kReferenceFrameIntra) is not used.
+  constexpr size_t kWarpedMotionSize = libgav1::kNumReferenceFrameTypes - 1;
+  for (size_t i = 0; i < kWarpedMotionSize; ++i) {
+    // Copy |global_motion| because SetupShear updates the affine variables of
+    // the |global_motion|.
+    auto gm = global_motion[i + 1];
+    switch (gm.type) {
+      case libgav1::kGlobalMotionTransformationTypeIdentity:
+        va_warped_motion[i].wmtype = VAAV1TransformationIdentity;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeTranslation:
+        va_warped_motion[i].wmtype = VAAV1TransformationTranslation;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeRotZoom:
+        va_warped_motion[i].wmtype = VAAV1TransformationRotzoom;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeAffine:
+        va_warped_motion[i].wmtype = VAAV1TransformationAffine;
+        break;
+      default:
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << va_warped_motion[i].wmtype;
+    }
+    static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
+                      ARRAY_SIZE(gm.params) == 6,
+                  "Invalid size of warp motion parameters");
+    for (size_t j = 0; j < 6; ++j)
+      va_warped_motion[i].wmmat[j] = gm.params[j];
+    va_warped_motion[i].wmmat[6] = 0;
+    va_warped_motion[i].wmmat[7] = 0;
+    va_warped_motion[i].invalid = !libgav1::SetupShear(&gm);
+  }
 }
 
 bool FillAV1PictureParameter(const AV1Picture& pic,
