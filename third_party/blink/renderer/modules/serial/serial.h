@@ -15,23 +15,31 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 class ExecutionContext;
+class NavigatorBase;
 class ScriptPromiseResolver;
 class ScriptState;
 class SerialPort;
 class SerialPortRequestOptions;
 
 class Serial final : public EventTargetWithInlineData,
+                     public Supplement<NavigatorBase>,
                      public ExecutionContextLifecycleObserver,
                      public mojom::blink::SerialServiceClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit Serial(ExecutionContext&);
+  static const char kSupplementName[];
+
+  // Web-exposed navigator.serial
+  static Serial* serial(NavigatorBase&);
+
+  explicit Serial(NavigatorBase&);
 
   // EventTarget
   ExecutionContext* GetExecutionContext() const override;

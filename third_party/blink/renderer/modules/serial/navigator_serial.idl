@@ -5,7 +5,7 @@
 // https://wicg.github.io/serial
 
 [
-    ImplementedAs=NavigatorSerial,
+    ImplementedAs=Serial,
     RuntimeEnabled=Serial,
     SecureContext
 ] partial interface Navigator {

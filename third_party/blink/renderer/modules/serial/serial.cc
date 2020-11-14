@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_connection_event.h"
@@ -41,10 +42,30 @@ String TokenToString(const base::UnguessableToken& token) {
 
 }  // namespace
 
-Serial::Serial(ExecutionContext& execution_context)
-    : ExecutionContextLifecycleObserver(&execution_context),
-      service_(&execution_context),
-      receiver_(this, &execution_context) {}
+const char Serial::kSupplementName[] = "Serial";
+
+Serial* Serial::serial(NavigatorBase& navigator) {
+  ExecutionContext* context = navigator.GetExecutionContext();
+  if (!context ||
+      (!context->IsWindow() && !context->IsDedicatedWorkerGlobalScope())) {
+    // TODO(https://crbug.com/839117): Remove this check once the Exposed
+    // attribute is fixed to only expose this property in dedicated workers.
+    return nullptr;
+  }
+
+  Serial* serial = Supplement<NavigatorBase>::From<Serial>(navigator);
+  if (!serial) {
+    serial = MakeGarbageCollected<Serial>(navigator);
+    ProvideTo(navigator, serial);
+  }
+  return serial;
+}
+
+Serial::Serial(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      service_(navigator.GetExecutionContext()),
+      receiver_(this, navigator.GetExecutionContext()) {}
 
 ExecutionContext* Serial::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
@@ -173,6 +194,7 @@ void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(request_port_promises_);
   visitor->Trace(port_cache_);
   EventTargetWithInlineData::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

@@ -9,9 +9,9 @@
     // interface declaration once it's supported.
     //
     // Exposed=DedicatedWorker,
-    ImplementedAs=WorkerNavigatorSerial,
+    ImplementedAs=Serial,
     RuntimeEnabled=Serial,
     SecureContext
 ] partial interface WorkerNavigator {
-    [CallWith=ScriptState, SameObject] readonly attribute Serial serial;
+    [SameObject] readonly attribute Serial serial;
 };

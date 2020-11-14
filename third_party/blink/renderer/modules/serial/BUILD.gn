@@ -10,8 +10,6 @@ assert(!is_android)
 
 blink_modules_sources("serial") {
   sources = [
-    "navigator_serial.cc",
-    "navigator_serial.h",
     "serial.cc",
     "serial.h",
     "serial_connection_event.cc",
@@ -22,7 +20,5 @@ blink_modules_sources("serial") {
     "serial_port_underlying_sink.h",
     "serial_port_underlying_source.cc",
     "serial_port_underlying_source.h",
-    "worker_navigator_serial.cc",
-    "worker_navigator_serial.h",
   ]
 }
