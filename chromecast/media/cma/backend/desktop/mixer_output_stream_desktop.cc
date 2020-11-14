@@ -14,7 +14,7 @@ namespace chromecast {
 namespace media {
 
 constexpr base::TimeDelta kTargetWritePeriod =
-    base::TimeDelta::FromMilliseconds(10);
+    base::TimeDelta::FromMilliseconds(20);
 
 bool MixerOutputStreamDesktop::Start(int requested_sample_rate, int channels) {
   sample_rate_ = requested_sample_rate;
