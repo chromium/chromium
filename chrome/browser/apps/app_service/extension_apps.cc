@@ -12,9 +12,8 @@ namespace apps {
 
 ExtensionApps::ExtensionApps(
     const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile,
-    apps::mojom::AppType app_type)
-    : ExtensionAppsBase(app_service, profile, app_type) {}
+    Profile* profile)
+    : ExtensionAppsBase(app_service, profile) {}
 
 ExtensionApps::~ExtensionApps() = default;
 
@@ -34,15 +33,7 @@ bool ExtensionApps::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
-  switch (app_type()) {
-    case apps::mojom::AppType::kExtension:
-      return !extension->from_bookmark();
-    case apps::mojom::AppType::kWeb:
-      return extension->from_bookmark();
-    default:
-      NOTREACHED();
-      return false;
-  }
+  return !extension->from_bookmark();
 }
 
 bool ExtensionApps::ShouldShownInLauncher(

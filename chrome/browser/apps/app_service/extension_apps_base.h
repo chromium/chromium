@@ -14,12 +14,6 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -53,13 +47,10 @@ class ExtensionAppsEnableFlow;
 // See components/services/app_service/README.md.
 class ExtensionAppsBase : public apps::PublisherBase,
                           public extensions::ExtensionPrefsObserver,
-                          public extensions::ExtensionRegistryObserver,
-                          public content_settings::Observer,
-                          public web_app::AppRegistrarObserver {
+                          public extensions::ExtensionRegistryObserver {
  public:
   ExtensionAppsBase(const mojo::Remote<apps::mojom::AppService>& app_service,
-                    Profile* profile,
-                    apps::mojom::AppType app_type);
+                    Profile* profile);
   ~ExtensionAppsBase() override;
 
   ExtensionAppsBase(const ExtensionAppsBase&) = delete;
@@ -103,8 +94,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   Profile* profile() const { return profile_; }
 
-  apps::mojom::AppType app_type() { return app_type_; }
-
   base::WeakPtr<ExtensionAppsBase> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -143,18 +132,11 @@ class ExtensionAppsBase : public apps::PublisherBase,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
                            int64_t display_id) override;
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
   void OpenNativeSettings(const std::string& app_id) override;
-
-  // content_settings::Observer overrides.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
 
   // extensions::ExtensionPrefsObserver overrides.
   void OnExtensionLastLaunchTimeChanged(
@@ -162,11 +144,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
       const base::Time& last_launch_time) override;
   void OnExtensionPrefsWillBeDestroyed(
       extensions::ExtensionPrefs* prefs) override;
-
-  // web_app::AppRegistrarObserver:
-  void OnAppRegistrarDestroyed() override;
-  void OnWebAppLocallyInstalledStateChanged(const web_app::AppId& app_id,
-                                            bool is_locally_installed) override;
 
   // extensions::ExtensionRegistryObserver overrides.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -177,9 +154,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
                             bool is_update) override;
-
-  // Function called when SystemWebAppManager::on_apps_synchronized() runs.
-  void OnSystemWebAppsInstalled();
 
   // Checks if extension is disabled and if enable flow should be started.
   // Returns true if extension enable flow is started or there is already one
@@ -194,8 +168,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   static bool ShouldShow(const extensions::Extension* extension,
                          Profile* profile);
 
-  void PopulatePermissions(const extensions::Extension* extension,
-                           std::vector<mojom::PermissionPtr>* target);
   void PopulateIntentFilters(const base::Optional<GURL>& app_scope,
                              std::vector<mojom::IntentFilterPtr>* target);
   virtual apps::mojom::AppPtr Convert(const extensions::Extension* extension,
@@ -209,8 +181,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   Profile* const profile_;
 
-  const apps::mojom::AppType app_type_;
-
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   ScopedObserver<extensions::ExtensionPrefs, extensions::ExtensionPrefsObserver>
@@ -218,19 +188,12 @@ class ExtensionAppsBase : public apps::PublisherBase,
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
       registry_observer_{this};
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observer_{this};
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      app_registrar_observer_{this};
 
   using EnableFlowPtr = std::unique_ptr<ExtensionAppsEnableFlow>;
   std::map<std::string, EnableFlowPtr> enable_flow_map_;
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;
-
-  // TODO(crbug.com/1061843): Remove web_app_launch_manager_ when BMO launches.
-  std::unique_ptr<web_app::WebAppLaunchManager> web_app_launch_manager_;
 
   base::WeakPtrFactory<ExtensionAppsBase> weak_factory_{this};
 };

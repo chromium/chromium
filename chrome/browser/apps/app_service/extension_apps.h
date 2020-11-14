@@ -32,8 +32,7 @@ namespace apps {
 class ExtensionApps : public apps::ExtensionAppsBase {
  public:
   ExtensionApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-                Profile* profile,
-                apps::mojom::AppType app_type);
+                Profile* profile);
   ~ExtensionApps() override;
 
   ExtensionApps(const ExtensionApps&) = delete;

@@ -175,8 +175,7 @@ void AppServiceProxy::Initialize() {
     }
     crostini_apps_ = std::make_unique<CrostiniApps>(app_service_, profile_);
     extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
-        app_service_, profile_, apps::mojom::AppType::kExtension,
-        &instance_registry_);
+        app_service_, profile_, &instance_registry_);
     if (!g_omit_plugin_vm_apps_for_testing_) {
       plugin_vm_apps_ = std::make_unique<PluginVmApps>(app_service_, profile_);
     }
@@ -193,8 +192,7 @@ void AppServiceProxy::Initialize() {
                                                   &instance_registry_);
 #else
     web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
-    extension_apps_ = std::make_unique<ExtensionApps>(
-        app_service_, profile_, apps::mojom::AppType::kExtension);
+    extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 #endif
 
     // Asynchronously add app icon source, so we don't do too much work in the
