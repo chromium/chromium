@@ -217,6 +217,54 @@ void FillGlobalMotionInfo(
   }
 }
 
+bool FillTileInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                  const libgav1::TileInfo& tile_info) {
+  // Since gav1 decoder doesn't support decoding with tile lists (i.e. large
+  // scale tile decoding), libgav1::ObuParser doesn't parse tile list, so that
+  // we cannot acquire anchor_frames_num, anchor_frames_list, tile_count_minus_1
+  // and output_frame_width/height_in_tiles_minus_1, and thus must set them and
+  // large_scale_tile to 0 or false. This is already done by the memset in
+  // SubmitDecode(). libgav1::ObuParser returns kStatusUnimplemented on
+  // ParseOneFrame(), a fallback to av1 software decoder happens in the large
+  // scale tile decoding.
+  // TODO(hiroh): Support the large scale tile decoding once libgav1::ObuParser
+  // supports it.
+  va_pic_param.tile_cols = base::checked_cast<uint8_t>(tile_info.tile_columns);
+  va_pic_param.tile_rows = base::checked_cast<uint8_t>(tile_info.tile_rows);
+
+  if (!tile_info.uniform_spacing) {
+    constexpr int kVaSizeOfTileWidthAndHeightArray = 63;
+    static_assert(
+        ARRAY_SIZE(tile_info.tile_column_width_in_superblocks) == 65 &&
+            ARRAY_SIZE(tile_info.tile_row_height_in_superblocks) == 65 &&
+            ARRAY_SIZE(va_pic_param.width_in_sbs_minus_1) ==
+                kVaSizeOfTileWidthAndHeightArray &&
+            ARRAY_SIZE(va_pic_param.height_in_sbs_minus_1) ==
+                kVaSizeOfTileWidthAndHeightArray,
+        "Invalid sizes of tile column widths and row heights");
+    const int tile_columns =
+        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_columns);
+    for (int i = 0; i < tile_columns; i++) {
+      if (!base::CheckSub<int>(tile_info.tile_column_width_in_superblocks[i], 1)
+               .AssignIfValid(&va_pic_param.width_in_sbs_minus_1[i])) {
+        return false;
+      }
+    }
+    const int tile_rows =
+        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_rows);
+    for (int i = 0; i < tile_rows; i++) {
+      if (!base::CheckSub<int>(tile_info.tile_row_height_in_superblocks[i], 1)
+               .AssignIfValid(&va_pic_param.height_in_sbs_minus_1[i])) {
+        return false;
+      }
+    }
+  }
+
+  va_pic_param.context_update_tile_id =
+      base::checked_cast<uint16_t>(tile_info.context_update_id);
+  return true;
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
