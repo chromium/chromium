@@ -407,6 +407,57 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
   mode_control.skip_mode_present = frame_header.skip_mode_present;
 }
 
+void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                             const libgav1::LoopRestoration& loop_restoration,
+                             bool is_monochrome) {
+  auto to_frame_restoration_type = [](libgav1::LoopRestorationType lr_type) {
+    // Spec. 6.10.15
+    switch (lr_type) {
+      case libgav1::LoopRestorationType::kLoopRestorationTypeNone:
+        return 0;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeSwitchable:
+        return 3;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeWiener:
+        return 1;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
+        return 2;
+      case libgav1::LoopRestorationType::kNumLoopRestorationTypes:
+      default:
+        NOTREACHED() << "Invalid restoration type"
+                     << base::strict_cast<int>(lr_type);
+        return 0;
+    }
+  };
+  static_assert(
+      ARRAY_SIZE(loop_restoration.type) == libgav1::kMaxPlanes &&
+          ARRAY_SIZE(loop_restoration.unit_size_log2) == libgav1::kMaxPlanes,
+      "Invalid size of loop restoration values");
+  auto& va_loop_restoration = va_pic_param.loop_restoration_fields.bits;
+  va_loop_restoration.yframe_restoration_type =
+      to_frame_restoration_type(loop_restoration.type[0]);
+  va_loop_restoration.cbframe_restoration_type =
+      to_frame_restoration_type(loop_restoration.type[1]);
+  va_loop_restoration.crframe_restoration_type =
+      to_frame_restoration_type(loop_restoration.type[2]);
+
+  const size_t num_planes =
+      is_monochrome ? libgav1::kMaxPlanesMonochrome : libgav1::kMaxPlanes;
+  const bool use_loop_restoration =
+      std::find_if(std::begin(loop_restoration.type),
+                   std::begin(loop_restoration.type) + num_planes,
+                   [](const auto type) {
+                     return type != libgav1::kLoopRestorationTypeNone;
+                   }) != (loop_restoration.type + num_planes);
+  if (!use_loop_restoration)
+    return;
+  DCHECK_GE(loop_restoration.unit_size_log2[0], 6);
+  DCHECK_GE(loop_restoration.unit_size_log2[0],
+            loop_restoration.unit_size_log2[1]);
+  va_loop_restoration.lr_unit_shift = loop_restoration.unit_size_log2[0] - 6;
+  va_loop_restoration.lr_uv_shift =
+      loop_restoration.unit_size_log2[0] - loop_restoration.unit_size_log2[1];
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
