@@ -1085,6 +1085,15 @@ public class PaymentRequestService
      */
     /* package */ void retry(PaymentValidationErrors errors) {
         if (mBrowserPaymentRequest == null) return;
+        if (!PaymentValidator.validatePaymentValidationErrors(errors)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_VALIDATION_ERRORS, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+        assert mSpec != null;
+        assert !mSpec.isDestroyed() : "mSpec should not be used after being destroyed.";
+        mSpec.retry(errors);
         mBrowserPaymentRequest.retry(errors);
     }
 

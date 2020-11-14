@@ -39,7 +39,6 @@ import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.components.payments.PaymentUIsObserver;
-import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
 import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -647,19 +646,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     // Implement BrowserPaymentRequest:
     @Override
     public void retry(PaymentValidationErrors errors) {
-        if (mPaymentRequestService == null) return;
-        // mSpec.retry() can be used only when mSpec has not been destroyed.
-        assert !mSpec.isDestroyed();
-
-        if (!PaymentValidator.validatePaymentValidationErrors(errors)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_VALIDATION_ERRORS);
-            return;
-        }
-        mSpec.retry(errors);
-
         mWasRetryCalled = true;
-
         mPaymentUiService.onRetry(errors);
     }
 
