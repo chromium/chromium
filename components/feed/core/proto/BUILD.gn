@@ -94,6 +94,7 @@ if (is_android) {
       "wire/action_request.proto",
       "wire/action_type.proto",
       "wire/capability.proto",
+      "wire/chrome_fulfillment_info.proto",
       "wire/client_info.proto",
       "wire/consistency_token.proto",
       "wire/content_id.proto",
