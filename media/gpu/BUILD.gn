@@ -297,6 +297,7 @@ source_set("common") {
     ]
   }
 
+  public_deps = []
   deps = [
     ":buildflags",
     "//base",
@@ -307,6 +308,17 @@ source_set("common") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
+
+  if (is_ash && use_vaapi) {
+    assert(use_libgav1_parser)
+    sources += [
+      "av1_decoder.cc",
+      "av1_decoder.h",
+      "av1_picture.cc",
+      "av1_picture.h",
+    ]
+    public_deps += [ "//third_party/libgav1:libgav1" ]
+  }
 }
 
 source_set("command_buffer_helper") {
@@ -524,6 +536,12 @@ source_set("unit_tests") {
   if (use_v4l2_codec || use_vaapi) {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
+
+  if (is_ash && use_vaapi) {
+    sources += [ "av1_decoder_unittest.cc" ]
+    deps += [ "//third_party/ffmpeg" ]
+  }
+
   if (is_win && enable_library_cdms) {
     sources += [
       "windows/d3d11_copying_texture_wrapper_unittest.cc",
