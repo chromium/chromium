@@ -16,9 +16,6 @@ namespace {
 constexpr const base::Feature* kExternalAppInstallFeatures[] = {
     &kMigrateDefaultChromeAppToWebAppsGSuite,
     &kMigrateDefaultChromeAppToWebAppsNonGSuite,
-#if defined(OS_CHROMEOS)
-    &kCameraSystemWebApp
-#endif  // OS_CHROMEOS
 };
 
 bool g_always_enabled_for_testing = false;
@@ -36,12 +33,6 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
 const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
     "MigrateDefaultChromeAppToWebAppsNonGSuite",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if defined(OS_CHROMEOS)
-// Enable or disables running the Camera App as a System Web App.
-const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // OS_CHROMEOS
 
 bool IsExternalAppInstallFeatureEnabled(base::StringPiece feature_name) {
   if (g_always_enabled_for_testing)

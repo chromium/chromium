@@ -7,16 +7,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
 class CameraAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   CameraAppIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(web_app::kCameraSystemWebApp);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kCameraSystemWebApp}, {});
   }
 
  private:
