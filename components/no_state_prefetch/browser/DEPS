@@ -5,6 +5,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+content/public/browser",
   "+content/public/common",
+  "+content/public/test",
   "+mojo/public",
   "+net/http",
   "+services/metrics/public/cpp",

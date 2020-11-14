@@ -40,7 +40,7 @@ class PrerenderLinkManager : public KeyedService,
   // Called when a <link rel=prerender ...> element has been inserted into the
   // document. Returns the prerender id that is used for canceling or abandoning
   // prerendering. Returns base::nullopt if the prerender was not started.
-  base::Optional<int> OnStartPrerender(
+  virtual base::Optional<int> OnStartPrerender(
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
@@ -50,13 +50,13 @@ class PrerenderLinkManager : public KeyedService,
 
   // Called when a <link rel=prerender ...> element has been explicitly removed
   // from a document.
-  void OnCancelPrerender(int prerender_id);
+  virtual void OnCancelPrerender(int prerender_id);
 
   // Called when a renderer launching <link rel=prerender ...> has navigated
   // away from the launching page, the launching renderer process has crashed,
   // or perhaps the renderer process was fast-closed when the last render view
   // in it was closed.
-  void OnAbandonPrerender(int prerender_id);
+  virtual void OnAbandonPrerender(int prerender_id);
 
  private:
   friend class PrerenderBrowserTest;

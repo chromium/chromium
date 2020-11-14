@@ -125,12 +125,6 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
       std::move(attributes), initiator_origin, std::move(processor_client),
       manager_->GetCurrentTimeTicks(), prerender_contents);
 
-  // Observe disconnect of the client to abandon the running prerender. The raw
-  // pointer to |this| is safe because |prerender| is owned by |this|.
-  prerender->remote_processor_client.set_disconnect_handler(
-      base::BindOnce(&PrerenderLinkManager::OnAbandonPrerender,
-                     base::Unretained(this), prerender->prerender_id));
-
   // Stash pointer used only for comparison later.
   const LinkPrerender* prerender_ptr = prerender.get();
 

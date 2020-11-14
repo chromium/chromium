@@ -1503,31 +1503,6 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerCancelThenAddAgain) {
   EXPECT_FALSE(prerender_manager()->FindEntry(url));
 }
 
-TEST_F(PrerenderTest, LinkManagerRendererDisconnect) {
-  prerender_manager()->SetTickClockForTesting(tick_clock());
-  EXPECT_TRUE(IsEmptyPrerenderLinkManager());
-  GURL url("http://www.myexample.com");
-  DummyPrerenderContents* prerender_contents =
-      prerender_manager()->CreateNextPrerenderContents(url,
-                                                       FINAL_STATUS_TIMED_OUT);
-
-  EXPECT_TRUE(AddSimplePrerender(url));
-  EXPECT_TRUE(prerender_contents->prerendering_has_started());
-  EXPECT_FALSE(prerender_contents->prerendering_has_been_cancelled());
-  ASSERT_EQ(prerender_contents, prerender_manager()->FindEntry(url));
-
-  // Disconnect all clients. Spin the run loop to give the link manager
-  // opportunity to detect disconnection.
-  DisconnectAllPrerenderProcessorClients();
-  base::RunLoop().RunUntilIdle();
-
-  tick_clock()->Advance(prerender_manager()->config().abandon_time_to_live +
-                        TimeDelta::FromSeconds(1));
-
-  EXPECT_FALSE(prerender_manager()->FindEntry(url));
-  EXPECT_TRUE(IsEmptyPrerenderLinkManager());
-}
-
 // Creates two prerenders, one of which should be blocked by the
 // max_link_concurrency; abandons both of them and waits to make sure both
 // are cleared from the PrerenderLinkManager.

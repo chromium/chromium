@@ -6,6 +6,7 @@
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_PROCESSOR_IMPL_H_
 
 #include "components/no_state_prefetch/browser/prerender_processor_impl_delegate.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/origin.h"
 
@@ -15,12 +16,17 @@ class RenderFrameHost;
 
 namespace prerender {
 
+// PrerenderProcessorImpl implements blink::mojom::PrerenderProcessor and works
+// as the browser-side entry point of NoStatePrefetch for <link rel=prerender>.
+// This is a self-owned object and deletes itself when the mojo connection is
+// lost.
 class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
  public:
   PrerenderProcessorImpl(
       int render_process_id,
       int render_frame_id,
       const url::Origin& initiator_origin,
+      mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver,
       std::unique_ptr<PrerenderProcessorImplDelegate> delegate);
   ~PrerenderProcessorImpl() override;
 
@@ -36,6 +42,10 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
   void Cancel() override;
 
  private:
+  // Abandons prerendering and deletes `this`. Called from the mojo disconnect
+  // handler.
+  void Abandon();
+
   PrerenderLinkManager* GetPrerenderLinkManager();
 
   const int render_process_id_;
@@ -46,6 +56,8 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
   // The ID of PrerenderLinkManager::LinkPrerender. Used for canceling or
   // abandoning prerendering.
   base::Optional<int> prerender_id_;
+
+  mojo::Receiver<blink::mojom::PrerenderProcessor> receiver_{this};
 };
 
 }  // namespace prerender

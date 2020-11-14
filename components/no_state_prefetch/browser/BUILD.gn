@@ -54,13 +54,15 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "prerender_history_unittest.cc",
+    "prerender_processor_impl_unittest.cc",
     "prerender_util_unittest.cc",
   ]
 
   deps = [
-    ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/no_state_prefetch/browser",
+    "//content/test:test_support",
     "//google_apis:google_apis",
     "//testing/gtest",
     "//url:url",
