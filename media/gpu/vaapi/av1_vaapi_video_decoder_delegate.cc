@@ -23,6 +23,7 @@ namespace media {
 namespace {
 
 #define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+#define STD_ARRAY_SIZE(ar) (std::tuple_size<decltype(ar)>::value)
 
 void FillSegmentInfo(VASegmentationStructAV1& va_seg_info,
                      const libgav1::Segmentation& segmentation) {
@@ -263,6 +264,46 @@ bool FillTileInfo(VADecPictureParameterBufferAV1& va_pic_param,
   va_pic_param.context_update_tile_id =
       base::checked_cast<uint16_t>(tile_info.context_update_id);
   return true;
+}
+
+void FillLoopFilterInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                        const libgav1::LoopFilter& loop_filter) {
+  static_assert(STD_ARRAY_SIZE(loop_filter.level) == libgav1::kFrameLfCount &&
+                    libgav1::kFrameLfCount == 4 &&
+                    ARRAY_SIZE(va_pic_param.filter_level) == 2,
+                "Invalid size of loop filter strength array");
+  va_pic_param.filter_level[0] =
+      base::checked_cast<uint8_t>(loop_filter.level[0]);
+  va_pic_param.filter_level[1] =
+      base::checked_cast<uint8_t>(loop_filter.level[1]);
+  va_pic_param.filter_level_u =
+      base::checked_cast<uint8_t>(loop_filter.level[2]);
+  va_pic_param.filter_level_v =
+      base::checked_cast<uint8_t>(loop_filter.level[3]);
+
+  va_pic_param.loop_filter_info_fields.bits.sharpness_level =
+      loop_filter.sharpness;
+  va_pic_param.loop_filter_info_fields.bits.mode_ref_delta_enabled =
+      loop_filter.delta_enabled;
+  va_pic_param.loop_filter_info_fields.bits.mode_ref_delta_update =
+      loop_filter.delta_update;
+
+  static_assert(libgav1::kNumReferenceFrameTypes == 8 &&
+                    ARRAY_SIZE(va_pic_param.ref_deltas) ==
+                        libgav1::kNumReferenceFrameTypes &&
+                    STD_ARRAY_SIZE(loop_filter.ref_deltas) ==
+                        libgav1::kNumReferenceFrameTypes,
+                "Invalid size of ref deltas array");
+  static_assert(libgav1::kLoopFilterMaxModeDeltas == 2 &&
+                    ARRAY_SIZE(va_pic_param.mode_deltas) ==
+                        libgav1::kLoopFilterMaxModeDeltas &&
+                    STD_ARRAY_SIZE(loop_filter.mode_deltas) ==
+                        libgav1::kLoopFilterMaxModeDeltas,
+                "Invalid size of mode deltas array");
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
+    va_pic_param.ref_deltas[i] = loop_filter.ref_deltas[i];
+  for (size_t i = 0; i < libgav1::kLoopFilterMaxModeDeltas; i++)
+    va_pic_param.mode_deltas[i] = loop_filter.mode_deltas[i];
 }
 
 bool FillAV1PictureParameter(const AV1Picture& pic,
