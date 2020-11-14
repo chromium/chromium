@@ -15,8 +15,8 @@ namespace device {
 // HidConnectionImpl is reponsible for handling mojo communications from
 // clients. It delegates to HidConnection the real work of creating
 // connections in different platforms.
-class HidConnectionImpl : public mojom::HidConnection,
-                          public HidConnection::Client {
+class HidConnectionImpl final : public mojom::HidConnection,
+                                public HidConnection::Client {
  public:
   // Creates a strongly-bound HidConnectionImpl owned by |receiver| and
   // |watcher|. |connection| provides access to the HID device. If

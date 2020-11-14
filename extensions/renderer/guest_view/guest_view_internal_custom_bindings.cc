@@ -61,7 +61,7 @@ content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
   return content::RenderFrame::FromWebFrame(frame);
 }
 
-class RenderFrameStatus : public content::RenderFrameObserver {
+class RenderFrameStatus final : public content::RenderFrameObserver {
  public:
   explicit RenderFrameStatus(content::RenderFrame* render_frame)
       : content::RenderFrameObserver(render_frame) {}

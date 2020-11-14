@@ -29,7 +29,7 @@ namespace content {
 // MediaInterfaceFactory is an implementation of media::mojom::InterfaceFactory
 // that provides thread safety and handles disconnection error automatically.
 // The Create* methods can be called on any thread.
-class CONTENT_EXPORT MediaInterfaceFactory
+class CONTENT_EXPORT MediaInterfaceFactory final
     : public media::mojom::InterfaceFactory {
  public:
   explicit MediaInterfaceFactory(
