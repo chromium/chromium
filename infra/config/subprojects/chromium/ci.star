@@ -2689,6 +2689,15 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "mac11.0-updater-tester-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "updater|mac",
+        short_name = "11.0",
+    ),
+    triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
     name = "win-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|win",

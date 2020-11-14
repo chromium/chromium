@@ -5197,6 +5197,15 @@
           'isolated_scripts': 'updater_isolated_scripts',
         },
       },
+      'mac11.0-updater-tester-rel': {
+        'mixins': [
+            'mac_11.0_beta',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+      },
       'win10-updater-tester-rel': {
         'mixins': [
           'win10',
