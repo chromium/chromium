@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">ਆਪਣੇ ਨਵੇਂ Chromium ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="1396446129537741364">Chromium ਪਾਸਵਰਡ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="1414495520565016063">ਤੁਸੀਂ Chromium ਤੇ ਸਾਈਨ ਇਨ ਕੀਤਾ ਹੈ!</translation>
+<translation id="1414973082589232775">ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਲਈ Rosetta ਵਰਤਣ ਵਾਸਤੇ, ਤੁਹਾਨੂੰ Chromium ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="151962892725702025">Chromium OS ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਸਿੰਕ ਤੁਹਾਡੇ ਡੋਮੇਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1524282610922162960">ਕੋਈ Chromium ਟੈਬ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="1553461853655228091">Chromium ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Google Chrome ਨੂੰ Windows 7 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5653831366781983928">ਕਿਰਪਾ ਕਰਕੇ ਹੁਣੇ Chromium ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5698481217667032250">Chromium ਨੂੰ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ  ਦਿਖਾਓ ।</translation>
+<translation id="5736967399513123100">ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਲਈ Chromium ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਸਤੇ, ਤੁਹਾਨੂੰ Rosetta ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਹੁਣੇ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium ਹਫ਼ਤੇ ਵਿੱਚ ਇੱਕ ਵਾਰ ਅਣਚਾਹੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਜਾਂਚ ਕਰਦਾ ਹੈ। ਪਿਛਲੀ ਵਾਰ ਜਾਂਚ ਕੀਤੀ ਗਈ: 1 ਦਿਨ ਪਹਿਲਾਂ।}one{Chromium ਹਫ਼ਤੇ ਵਿੱਚ ਇੱਕ ਵਾਰ ਅਣਚਾਹੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਜਾਂਚ ਕਰਦਾ ਹੈ। ਪਿਛਲੀ ਵਾਰ ਜਾਂਚ ਕੀਤੀ ਗਈ: {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ।}other{Chromium ਹਫ਼ਤੇ ਵਿੱਚ ਇੱਕ ਵਾਰ ਅਣਚਾਹੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਜਾਂਚ ਕਰਦਾ ਹੈ। ਪਿਛਲੀ ਵਾਰ ਜਾਂਚ ਕੀਤੀ ਗਈ: {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ।}}</translation>
 <translation id="6893813176749746474">Chromium ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਪਰੰਤੂ ਤੁਸੀਂ ਇਸਨੂੰ ਪਿਛਲੇ ਘੱਟੋ-ਘੱਟ 30 ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ ਹੈ।</translation>
+<translation id="6897548120660295439">Rosetta ਇਸ ਪੰਨੇ 'ਤੇ Chromium ਨੂੰ ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਦੇ ਯੋਗ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="6964305034639999644">Chromium ਇਨ&amp;ਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6978145336957848883">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣਾ ਆਸਾਨ ਹੁੰਦਾ ਹੈ। Chromium ਨੂੰ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਲਈ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਉਣ ਅਤੇ ਯਾਦ ਰੱਖਣ<ph name="END_LINK" /> ਦਿਓ।</translation>
 <translation id="6990124437352146030">Chromium ਨੂੰ ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>

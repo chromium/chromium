@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
 <translation id="1396446129537741364">Chromium püüab paroole kuvada.</translation>
 <translation id="1414495520565016063">Olete Chromiumi sisse logitud.</translation>
+<translation id="1414973082589232775">Rosettaga kaitstud meedia esitamiseks peate Chromiumi taaskäivitama.</translation>
 <translation id="151962892725702025">Chromium OS ei saanud teie andmeid sünkroonida, sest teie domeenil pole sünkroonimine saadaval.</translation>
 <translation id="1524282610922162960">Chromiumi vahekaardi jagamine</translation>
 <translation id="1553461853655228091">Chromium vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium vajab operatsioonisüsteemi Windows 7 või uuemat versiooni.</translation>
 <translation id="5653831366781983928">Käivitage Chromium kohe uuesti</translation>
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
+<translation id="5736967399513123100">Kui soovite, et Chromium esitaks kaitstud meediat, peate installima Rosetta. Kas soovite kohe installida?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
@@ -179,6 +181,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6863361426438995919">Google Pay (kopeeritud Chromiumi)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: 1 päev tagasi.}other{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: {NUM_DAYS} päeva tagasi.}}</translation>
 <translation id="6893813176749746474">Chromiumi on värskendatud, kuid te ei ole seda kasutanud vähemalt 30 päeva.</translation>
+<translation id="6897548120660295439">Rosetta võimaldab Chromiumil esitada sellel lehel olevat kaitstud meediat.</translation>
 <translation id="6964305034639999644">Ava link Chromiumi inko&amp;gnito aknas</translation>
 <translation id="6978145336957848883">Nõrku paroole on lihtne ära arvata. Laske Chromiumil <ph name="BEGIN_LINK" />teie jaoks luua ja meelde jätta tugevaid paroole<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda</translation>

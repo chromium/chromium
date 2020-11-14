@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">Chromium-н шинэ профайлаа тохируулах</translation>
 <translation id="1396446129537741364">Chromium нь нууц үгийг үзүүлэхээр ачаалж байна.</translation>
 <translation id="1414495520565016063">Та Chromium руу нэвтэрсэн байна!</translation>
+<translation id="1414973082589232775">Хамгаалагдсан медиаг тоглуулахын тулд Rosetta-г ашиглах бол та Chromium-г дахин эхлүүлэх ёстой.</translation>
 <translation id="151962892725702025">Chromium-ийн үйлдлийн систем нь таны датаг синхрончлох боломжгүй байна. Учир нь таны домайнд Синх хийх боломжгүй.</translation>
 <translation id="1524282610922162960">Chromium-н таб хуваалцах</translation>
 <translation id="1553461853655228091">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chromium-д шаардлагатай</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>
 <translation id="5653831366781983928">Chromium-г одоо дахин эхлүүлнэ үү</translation>
 <translation id="5698481217667032250">Chromium-г энэ хэлээр харуулах</translation>
+<translation id="5736967399513123100">Chromium-г хамгаалагдсан медиа тоглуулах боломжтой болгохын тулд та Rosetta-г суулгах шаардлагатай. Та үүнийг одоо суулгамаар байна уу?</translation>
 <translation id="5820394555380036790">Chromium-н үйлдлийн систем</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
@@ -179,6 +181,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium-д хуулсан)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд 1 хоногийн өмнө шалгасан.}other{Chromium нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд {NUM_DAYS} хоногийн өмнө шалгасан.}}</translation>
 <translation id="6893813176749746474">Chromium нь шинэчлэгдсэн байгаа хэдий ч та үүнийг доод тал нь 30 хоногийн турш ашиглаагүй байна.</translation>
+<translation id="6897548120660295439">Rosetta нь Chromium-г энэ хуудсан дээр хамгаалагдсан медиа тоглуулах боломжтой болгодог.</translation>
 <translation id="6964305034639999644">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
 <translation id="6978145336957848883">Сул нууц үгийг таахад хялбар байдаг. Chromium-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="6990124437352146030">Энэ сайтыг ашиглахын тулд Chromium-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>

@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">તમારી નવી Chromium પ્રોફાઇલ સેટઅપ કરો</translation>
 <translation id="1396446129537741364">Chromium પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="1414495520565016063">તમે Chromium માં સાઇન ઇન કર્યું છે!</translation>
+<translation id="1414973082589232775">સંરક્ષિત મીડિયા ચલાવવા Rosettaનો ઉપયોગ કરવા માટે, તમારે Chromium ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="151962892725702025">Chromium OS તમારા ડેટાને સિંક કરી શક્યું નથી, કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>
 <translation id="1524282610922162960">Chromium ટૅબ શેર કરો</translation>
 <translation id="1553461853655228091">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromiumને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromium માટે Windows 7 અથવા તે પછીનું સંસ્કરણ આવશ્યક છે.</translation>
 <translation id="5653831366781983928">કૃપા કરીને હવે Chromium ફરી શરૂ કરો</translation>
 <translation id="5698481217667032250">આ ભાષામાં Chromium બતાવો</translation>
+<translation id="5736967399513123100">સંરક્ષિત મીડિયા ચલાવવા Chromium ચાલુ કરવા માટે, તમારે Rosetta ઇન્સ્ટૉલ કરવું જરૂરી છે. શું તમે આ હમણાં ઇન્સ્ટૉલ કરવા માગો છો?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: 1 દિવસ પહેલાં.}one{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}other{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}}</translation>
 <translation id="6893813176749746474">Chromium અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
+<translation id="6897548120660295439">Rosettaની મદદથી Chromium આ પેજ પર સંરક્ષિત મીડિયા ચલાવી શકશે.</translation>
 <translation id="6964305034639999644">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="6978145336957848883">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromiumને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="6990124437352146030">Chromiumને આ સાઇટ માટે તમારા માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>

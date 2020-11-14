@@ -197,6 +197,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6454142105866844106">සතියකට වරක් අනවශ්‍ය මෘදුකාංග සඳහා Chrome පරික්ෂා කරයි</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome යාවත්කාලීන කරමින් (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">ආරක්ෂිත මාධ්‍ය වාදනය කිරීම සඳහා Rosetta භාවිත කිරීමට, ඔබ Chrome යළි ඇරඹිය යුතුය.</translation>
 <translation id="6676384891291319759">අන්තර්ජාලය වෙත පිවිසෙන්න</translation>
 <translation id="6679975945624592337">Chrome Run හට පසුබිම ධාවනය වීමට ඉඩ දෙන්න</translation>
 <translation id="6750954913813541382">අක්‍ෂර වින්‍යාස දෝෂ නිවැරදි කිරීමට, නිඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Chrome විසින් Google වෙත යවනු ලැබේ</translation>
@@ -262,6 +263,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8521348052903287641">mDNS තදබදයට ඉඩ දීමට Google Chrome Dev සඳහා බන්ධිත රීතිය.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
+<translation id="861359755029082151">මෙම පිටුවේ ආරක්ෂිත මාධ්‍ය වාදනය කිරීමට Rosetta විසින් Chrome සබල කරයි.</translation>
 <translation id="8614913330719544658">Google Chrome ප්‍රතිචාර නොදක්වයි. යළි දියත් කරන්නද?</translation>
 <translation id="861702415419836452">Chrome හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 විනාඩියකින් යළි දියත් වෙයි}one{Chrome විනාඩි # කින් යළි දියත් වෙයි}other{Chrome විනාඩි # කින් යළි දියත් වෙයි}}</translation>
@@ -276,6 +278,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8834965163890861871">Google Chrome මුරපද සංස්කරණ කිරීමට උත්සහ කරයි. එයට ඉඩදීම සඳහා Windows මුරපදය යොදන්න.</translation>
 <translation id="884296878221830158">ඔබ ක්‍රෝම් ආරම්භ කළ විට හෝ මුල්පිටු බොත්තම ක්ලික් කළ විට පෙන්විය යුත්තේ කුමන පිටුවදැයි එමඟින් පාලනය කරයි.</translation>
 <translation id="8862326446509486874">ඔබට පද්ධති මට්ටමේ ස්ථානපයකට අයිතිය නැත. නැවත පරිපාලක වශයෙන් ස්ථාපකය ධාවනය කිරීමට උත්සාහ කරන්න.</translation>
+<translation id="8907709077090383765">ආරක්ෂිත මාධ්‍ය වාදනය කිරීම සඳහා Chrome සබල කිරීමට, ඔබ Rosetta ස්ථාපනය කිරීමට අවශ්‍යයි. ඔබට දැන් එය ස්ථාපනය කිරීමට අවශ්‍යද?</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chrome වෙත පුරන්න.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome යාවත්කාලීනයක් තිබේ}=1{Chrome යාවත්කාලීනයක් තිබේ}one{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}other{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}}</translation>

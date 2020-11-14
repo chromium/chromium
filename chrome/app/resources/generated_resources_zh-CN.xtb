@@ -1665,6 +1665,7 @@
 <translation id="2913331724188855103">允许网站保存和读取 Cookie 数据（推荐）</translation>
 <translation id="2915102088417824677">查看活动日志</translation>
 <translation id="2915873080513663243">自动扫描</translation>
+<translation id="2915996080311180594">暂不重启</translation>
 <translation id="2916073183900451334">在网页上按 Tab 可突出显示链接以及表单字段</translation>
 <translation id="2916745397441987255">搜索扩展程序</translation>
 <translation id="2921081876747860777">请设置密码，以保护您的本地数据。</translation>
@@ -1952,6 +1953,7 @@
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
+<translation id="3286538390144397061">立即重新启动</translation>
 <translation id="3288047731229977326">以开发者模式运行的扩展程序可能会损害您的计算机。如果您不是开发者，那么，为安全起见，应停用以开发者模式运行的扩展程序。</translation>
 <translation id="3289668031376215426">自动大写</translation>
 <translation id="3289856944988573801">要检查是否有更新，请使用以太网或 WLAN。</translation>
@@ -5033,6 +5035,7 @@
 <translation id="6973611239564315524">可以升级至 Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">离线演示模式</translation>
 <translation id="6977381486153291903">固件版本</translation>
+<translation id="6977877318519394148">安装 Rosetta</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6979044105893951891">启动和退出受管理访客会话</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
@@ -6608,6 +6611,7 @@
 <translation id="8814319344131658221">支持“拼写检查”功能的语言取决于您的语言偏好设置</translation>
 <translation id="8814644416678422095">硬盘</translation>
 <translation id="8814687660896548945">请稍候，正在扫描该归档文件…</translation>
+<translation id="8815333263781723799">您需要安装 Rosetta，才能播放此页上受保护的媒体内容。</translation>
 <translation id="881782782501875829">添加端口号</translation>
 <translation id="881799181680267069">隐藏其他应用</translation>
 <translation id="8818152010000655963">壁纸</translation>

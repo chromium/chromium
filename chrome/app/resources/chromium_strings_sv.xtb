@@ -14,6 +14,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
 <translation id="1396446129537741364">Chromium försöker visa lösenord.</translation>
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
+<translation id="1414973082589232775">Du måste starta om Chromium om du vill använda Rosetta för att spela upp skyddad media.</translation>
 <translation id="151962892725702025">Det gick inte att synkronisera data med Chromium eftersom synkronisering inte är tillgängligt för domänen.</translation>
 <translation id="1524282610922162960">Dela en flik i Chromium</translation>
 <translation id="1553461853655228091">Du behöver ge Chromium behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
@@ -134,6 +135,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5634636535844844681">För Chromium krävs Windows 7 eller senare.</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
+<translation id="5736967399513123100">Du måste installera Rosetta om du vill aktivera uppspelning av skyddad media i Chromium. Vill du installera det nu?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -181,6 +183,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6863361426438995919">Google Pay (har kopierats till Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 dag sedan.}other{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_DAYS} dagar sedan.}}</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
+<translation id="6897548120660295439">Rosetta gör det möjligt för Chromium att spela upp skyddad media på den här sidan.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
 <translation id="6978145336957848883">Svaga lösenord är lätta att lista ut. Låt Chromium <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>

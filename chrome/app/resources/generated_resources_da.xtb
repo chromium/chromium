@@ -1669,6 +1669,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2913331724188855103">Tillad, at websites gemmer og læser cookiedata (anbefales)</translation>
 <translation id="2915102088417824677">Se din aktivitetshistorik</translation>
 <translation id="2915873080513663243">Automatisk scanning</translation>
+<translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2916073183900451334">Tryk på Tab på en webside fremhæver links og felter i formularer</translation>
 <translation id="2916745397441987255">Søg efter udvidelser</translation>
 <translation id="2921081876747860777">Opret en adgangskode for at beskytte dine lokale data.</translation>
@@ -1956,6 +1957,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3285322247471302225">Ny &amp;fane</translation>
 <translation id="328571385944182268">Vil du gemme dine adgangskoder?</translation>
+<translation id="3286538390144397061">Genstart nu</translation>
 <translation id="3288047731229977326">Udvidelser, der kører i udviklertilstand, kan skade din computer. Hvis du ikke er udvikler, skal du deaktivere udvidelserne, der kører i udviklertilstand, af hensyn til sikkerheden.</translation>
 <translation id="3289668031376215426">Skriv automatisk med stort</translation>
 <translation id="3289856944988573801">Du kan søge efter opdateringer via Ethernet eller Wi-Fi.</translation>
@@ -5039,6 +5041,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6973611239564315524">Der er en tilgængelig opdatering til Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Offline demotilstand</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
+<translation id="6977877318519394148">Installer Rosetta</translation>
 <translation id="6978121630131642226">Søgemaskiner</translation>
 <translation id="6979044105893951891">Start og afslut administrerede gæstesessioner</translation>
 <translation id="6979440798594660689">Slå lyden fra (standard)</translation>
@@ -6615,6 +6618,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8814319344131658221">Sprog til stavekontrol er baseret på dine sprogpræferencer</translation>
 <translation id="8814644416678422095">Harddisk</translation>
 <translation id="8814687660896548945">Vent et øjeblik, mens arkivet scannes…</translation>
+<translation id="8815333263781723799">Hvis du vil afspille beskyttede medier på denne side, skal du installere Rosetta.</translation>
 <translation id="881782782501875829">Tilføj portnummer</translation>
 <translation id="881799181680267069">Skjul andre</translation>
 <translation id="8818152010000655963">Baggrund</translation>

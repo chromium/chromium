@@ -1669,6 +1669,7 @@
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
 <translation id="2915102088417824677">활동 로그 보기</translation>
 <translation id="2915873080513663243">자동 스캔</translation>
+<translation id="2915996080311180594">나중에 다시 시작</translation>
 <translation id="2916073183900451334">웹페이지에서 Tab 키를 누르면 링크뿐 아니라 양식 입력란도 강조표시됩니다.</translation>
 <translation id="2916745397441987255">확장 프로그램 검색</translation>
 <translation id="2921081876747860777">비밀번호를 만들어 로컬 데이터 보호</translation>
@@ -1956,6 +1957,7 @@
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3285322247471302225">새 탭(&amp;T)</translation>
 <translation id="328571385944182268">비밀번호를 저장하시겠습니까?</translation>
+<translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="3288047731229977326">개발자 모드로 실행 중인 확장 프로그램은 컴퓨터에 해를 줄 수 있습니다. 개발자가 아닌 경우 컴퓨터를 안전하게 사용하려면 개발자 모드로 실행 중인 확장 프로그램을 사용 중지해야 합니다.</translation>
 <translation id="3289668031376215426">자동 대문자화</translation>
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
@@ -5036,6 +5038,7 @@
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
 <translation id="6974609594866392343">오프라인 데모 모드</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
+<translation id="6977877318519394148">Rosetta 설치</translation>
 <translation id="6978121630131642226">검색엔진</translation>
 <translation id="6979044105893951891">관리 게스트 세션 실행 및 종료</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
@@ -6612,6 +6615,7 @@
 <translation id="8814319344131658221">맞춤법 검사 언어는 사용자의 언어 환경설정에 따라 지정됩니다.</translation>
 <translation id="8814644416678422095">하드 드라이브</translation>
 <translation id="8814687660896548945">잠시 기다려 주세요. 보관 파일을 검사하는 중입니다.</translation>
+<translation id="8815333263781723799">이 페이지에서 보호된 미디어를 재생하려면 Rosetta를 설치해야 합니다.</translation>
 <translation id="881782782501875829">포트 번호 추가</translation>
 <translation id="881799181680267069">기타 숨기기</translation>
 <translation id="8818152010000655963">배경화면</translation>

@@ -197,6 +197,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6454142105866844106">Chrome ពិនិត្យ​រកមើល​កម្មវិធី​ដែលមិនចង់បានម្ដង​ក្នុងមួយសប្ដាហ៍</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">កំពុងអាប់ដេត Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">ដើម្បីប្រើ Rosetta ឱ្យចាក់មេឌៀ​ដែលមាន​ការការពារ អ្នកត្រូវតែ​ចាប់ផ្ដើម Chrome ឡើងវិញ។</translation>
 <translation id="6676384891291319759">ចូលប្រើអ៊ីនធឺណិត</translation>
 <translation id="6679975945624592337">អនុញ្ញាត​ឱ្យ Google Chrome ដំណើរការ​នៅ​ផ្ទៃខាងក្រោយ</translation>
 <translation id="6750954913813541382">Chrome ផ្ញើអក្សរដែលអ្នក​វាយបញ្ចូលនៅក្នុង​កម្មវិធីរុករកតាមអ៊ីនធឺណិតទៅ Google ដើម្បីកែ​កំហុសអក្ខរាវិរុទ្ធ</translation>
@@ -262,6 +263,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8521348052903287641">ក្បួនត្រលប់ចូលសម្រាប់ Google Chrome Dev ដែលត្រូវអនុញ្ញាតលើការធ្វើចរាចររបស់ mDNS ។</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">មានកំណែ Google Chrome ថ្មី ហើយវាលឿនជាងពេលណាទាំងអស់។</translation>
+<translation id="861359755029082151">Rosetta អនុញ្ញាតឱ្យ Chrome ចាក់​មេឌៀដែលមាន​ការការពារ​នៅលើ​ទំព័រនេះ។</translation>
 <translation id="8614913330719544658">Google Chrome មិនឆ្លើយតប។ បើកដំណើរការឡើងវិញឥឡូវនេះ?</translation>
 <translation id="861702415419836452">Chrome ត្រូវការការអនុញ្ញាតចូលប្រើកាមេរ៉ារបស់អ្នក ដើម្បីបង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល 1 នាទីទៀត}other{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល # នាទីទៀត}}</translation>
@@ -276,6 +278,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8834965163890861871">Google Chrome កំពុង​ព្យាយាម​កែ​ពាក្យសម្ងាត់​។ សូម​វាយបញ្ចូល​ពាក្យសម្ងាត់ Windows របស់អ្នក ដើម្បី​អនុញ្ញាត​ការកែនេះ​។</translation>
 <translation id="884296878221830158">វាក៏គ្រប់គ្រងអ្វីដែលទំព័របានបង្ហាញផងដែរ នៅពេលដែលអ្នកចាប់ផ្តើម Chrome ឬចុចប៊ូតុង ទំព័រដើម។</translation>
 <translation id="8862326446509486874">អ្នកមិនមានសិទ្ធិសមស្របក្នុងការតំឡើងកម្រិតប្រព័ន្ធទេ។ សាកល្បងដំណើរការកម្មវិធីតំឡើងម្តងទៀតក្នុងរបៀបអ្នកគ្រប់គ្រង។</translation>
+<translation id="8907709077090383765">ដើម្បីអនុញ្ញាតឱ្យ Chrome ចាក់​មេឌៀដែលមាន​ការការពារ អ្នកត្រូវ​ដំឡើង Rosetta។ តើអ្នកចង់ដំឡើង​វាឥឡូវនេះ​ដែរទេ?</translation>
 <translation id="8914504000324227558">ដំណើរការ Chrome ឡើងវិញ</translation>
 <translation id="8922193594870374009">ដើម្បីផ្ញើ​លេខទូរសព្ទពី <ph name="ORIGIN" /> ទៅទូរសព្ទ Android របស់អ្នក សូមចូល Chrome នៅលើឧបករណ៍​ទាំងពីរ។</translation>
 <translation id="8999208279178790196">{0,plural, =0{មាន​កំណែថ្មី​របស់ Chrome ហើយ}=1{មាន​កំណែថ្មី​របស់ Chrome ហើយ}other{មាន​កំណែថ្មី​របស់ Chrome រយៈពេល # ថ្ងៃហើយ}}</translation>

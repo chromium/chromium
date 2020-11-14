@@ -189,6 +189,7 @@
 <translation id="6454142105866844106">தேவையற்ற மென்பொருள் உள்ளதா என Chrome வாரம் ஒருமுறை சரிபார்க்கும்</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chromeஐப் புதுப்பிக்கிறது (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">பாதுகாக்கப்பட்ட மீடியாவைப் பிளே செய்வதற்கு Rosettaவைப் பயன்படுத்த Chromeமை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="6676384891291319759">இணையத்தை அணுகுதல்</translation>
 <translation id="6679975945624592337">பின்னணியில் Google Chromeஐ இயங்க அனுமதி</translation>
 <translation id="6750954913813541382">எழுத்துப்பிழைகளைச் சரிசெய்ய உலாவியில் உள்ளிடும் உரையை Chrome ஆப்ஸ் Googleளுக்கு அனுப்பும்</translation>
@@ -254,6 +255,7 @@
 <translation id="8521348052903287641">mDNS ட்ராஃபிக்கை அனுமதிக்க, Google Chrome Devக்கான உள்வரும் விதி.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome இன் புதிய பதிப்பு கிடைக்கிறது, அது முன்னெப்போதையும் விட விரைவானது.</translation>
+<translation id="861359755029082151">பாதுகாக்கப்பட்ட மீடியாவை Chrome இந்தப் பக்கத்தில் பிளே செய்ய Rosetta உதவும்.</translation>
 <translation id="8614913330719544658">Google Chrome பதிலளிக்கவில்லை. இப்போது மீண்டும் தொடங்கவா?</translation>
 <translation id="861702415419836452">உங்களைச் சுற்றியுள்ள இடங்களின் 3D வரைபடத்தை உருவாக்க, Chromeமுக்கு உங்கள் கேமராவை அணுக அனுமதி தேவை</translation>
 <translation id="8625237574518804553">{0,plural, =1{ஒரு நிமிடத்தில் Chrome மீண்டும் தொடங்கும்}other{# நிமிடங்களில் Chrome மீண்டும் தொடங்கும்}}</translation>
@@ -268,6 +270,7 @@
 <translation id="8834965163890861871">Google Chrome கடவுச்சொற்களைத் திருத்த முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="884296878221830158">Chromeமைத் தொடங்கும்போது அல்லது முகப்புப் பொத்தானைக் கிளிக் செய்யும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
 <translation id="8862326446509486874">கம்ப்யூட்டர்-சார்ந்த நிறுவலுக்கான முறையான உரிமைகள் உங்களிடம் இல்லை. அதனால் நிர்வாகியாக மீண்டும் நிறுவலை இயக்க முயற்சி செய்க.</translation>
+<translation id="8907709077090383765">பாதுகாக்கப்பட்ட மீடியாவை Chrome பிளே செய்ய Rosettaவை நிறுவுவது அவசியம். அதை இப்போதே நிறுவ விரும்புகிறீர்களா?</translation>
 <translation id="8914504000324227558">Chrome ஐ மீண்டும் தொடங்கு</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> என்ற தளத்தில் இருந்து உங்கள் Android மொபைலுக்கு ஓர் எண்ணை அனுப்ப, இரு சாதனங்களிலும் Chromeமில் உள்நுழையுங்கள்.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chromeமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromeமிற்கான புதுப்பிப்பு உள்ளது}other{Chromeமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>

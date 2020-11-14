@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
 <translation id="1396446129537741364">Chromium está intentando mostrar contraseñas.</translation>
 <translation id="1414495520565016063">Accediste a Chromium.</translation>
+<translation id="1414973082589232775">Si quieres usar Rosetta para reproducir contenido multimedia protegido, deberás reiniciar Chromium.</translation>
 <translation id="151962892725702025">El Sistema operativo Chromium no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="1524282610922162960">Compartir una pestaña de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>
@@ -130,6 +131,7 @@
 <translation id="5634636535844844681">Para usar Chromium, se requiere Windows 7 o versiones posteriores.</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
+<translation id="5736967399513123100">Si quieres habilitar Chromium para que reproduzca contenido multimedia protegido, deberás instalar Rosetta. ¿Quieres instalar este software ahora?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -175,6 +177,7 @@
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium busca software no deseado una vez a la semana. Última verificación: hace 1 día}other{Chromium busca software no deseado una vez a la semana. Última verificación: hace {NUM_DAYS} días.}}</translation>
 <translation id="6893813176749746474">Chromium fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
+<translation id="6897548120660295439">Rosetta permite que Chromium reproduzca contenido multimedia protegido en esta página.</translation>
 <translation id="6964305034639999644">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chromium</translation>
 <translation id="6978145336957848883">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chromium <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras para ti<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder a tu micrófono para este sitio</translation>

@@ -197,6 +197,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6454142105866844106">Chrome ਹਫ਼ਤੇ ਵਿੱਚ ਇੱਕ ਵਾਰ ਅਣਚਾਹੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਜਾਂਚ ਕਰਦਾ ਹੈ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ਅੱਪਡੇਟ ਹੋ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਲਈ Rosetta ਵਰਤਣ ਵਾਸਤੇ, ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6676384891291319759">ਇੰਟਰਨੈਟ ਤੱਕ ਪਹੁੰਚੋ</translation>
 <translation id="6679975945624592337">Google Chrome ਨੂੰ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲਣ ਦਿਓ</translation>
 <translation id="6750954913813541382">ਸ਼ਬਦ-ਜੋੜ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰਨ ਲਈ, Chrome, ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜਦਾ ਹੈ</translation>
@@ -262,6 +263,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8521348052903287641">mDNS ਟ੍ਰੈਫਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ Google Chrome Dev ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome ਦਾ ਇੱਕ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ ਅਤੇ ਇਹ ਪਹਿਲਾਂ ਨਾਲੋਂ ਵੱਧ ਤੇਜ਼ ਹੈ।</translation>
+<translation id="861359755029082151">Rosetta ਇਸ ਪੰਨੇ 'ਤੇ Chrome ਨੂੰ ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਦੇ ਯੋਗ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="8614913330719544658">Google Chrome ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ। ਕੀ ਹੁਣੇ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="861702415419836452">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}one{Chrome # ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}other{Chrome # ਮਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}}</translation>
@@ -276,6 +278,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8834965163890861871">Google Chrome ਪਾਸਵਰਡਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="884296878221830158">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਜਾਂ ਹੋਮ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
 <translation id="8862326446509486874">ਤੁਹਾਡੇ ਕੋਲ ਸਿਸਟਮ-ਪੱਧਰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਉਚਿਤ ਅਧਿਕਾਰ ਨਹੀਂ ਹਨ। ਪ੍ਰਬੰਧਕ ਦੇ ਤੌਰ 'ਤੇ ਦੁਬਾਰਾ ਸਥਾਪਨਾਕਾਰ ਚਲਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="8907709077090383765">ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਲਈ Chrome ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਸਤੇ, ਤੁਹਾਨੂੰ Rosetta ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਹੁਣੇ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8914504000324227558">Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> ਤੋਂ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਨੰਬਰ ਭੇਜਣ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ}=1{Chrome ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ}other{Chrome ਅੱਪਡੇਟ # ਦਿਨਾਂ ਤੋਂ ਉਪਲਬਧ ਹੈ}}</translation>

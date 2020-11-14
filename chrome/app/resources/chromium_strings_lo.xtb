@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">ຕັ້ງຄ່າໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1396446129537741364">Chromium ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
 <translation id="1414495520565016063">ທ່ານ​ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium ແລ້ວ​!</translation>
+<translation id="1414973082589232775">ເພື່ອໃຊ້ Rosetta ຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນ, ທ່ານຕ້ອງຣິສະຕາດ Chromium.</translation>
 <translation id="151962892725702025">Chromium OS ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ເພາະວ່າບໍ່ມີການຊິງຄ໌ຢູ່ໃນໂດເມນຂອງທ່ານ.</translation>
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
 <translation id="1553461853655228091">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຂອງທ່ານເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສະພາບແວດລ້ອມອ້ອມຂ້າງຂອງທ່ານ</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromium ຕ້ອງໃຊ້ Windows 7 ຫຼື ສູງກວ່າ.</translation>
 <translation id="5653831366781983928">ກະລຸນາປິດເປີດ Chromium ຄືນໃໝ່ຕອນນີ້</translation>
 <translation id="5698481217667032250">ສະ​ແດງ Chromium ເປັນພາສານີ້</translation>
+<translation id="5736967399513123100">ເພື່ອໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໄດ້, ທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງ Rosetta. ທ່ານຕ້ອງການຕິດຕັ້ງມັນຕອນນີ້ບໍ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (ສຳເນົາໄວ້ໃນ Chromium ແລ້ວ)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: 1 ມື້ກ່ອນ.}other{Chromium ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: {NUM_DAYS} ມື້ກ່ອນ.}}</translation>
 <translation id="6893813176749746474">ອັບເດດ Chromium ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
+<translation id="6897548120660295439">Rosetta ເຮັດໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໃນໜ້ານີ້ໄດ້.</translation>
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="6978145336957848883">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ອະນຸຍາດໃຫ້ Chromium <ph name="BEGIN_LINK" />ສ້າງ ແລະ ຈື່ລະຫັດຜ່ານຍາກສຳລັບທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>

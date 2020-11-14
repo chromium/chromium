@@ -1669,6 +1669,7 @@
 <translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
 <translation id="2915102088417824677">アクティビティ ログを表示</translation>
 <translation id="2915873080513663243">自動スキャン</translation>
+<translation id="2915996080311180594">後で再起動</translation>
 <translation id="2916073183900451334">ウェブページで Tab キーを押すと、リンクやフォーム欄がハイライト表示されます</translation>
 <translation id="2916745397441987255">拡張機能を検索</translation>
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
@@ -1956,6 +1957,7 @@
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3285322247471302225">新しいタブ(&amp;T)</translation>
 <translation id="328571385944182268">パスワードを保存しますか？</translation>
+<translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="3288047731229977326">デベロッパー モードで実行される拡張機能はパソコンにダメージを与える恐れがあります。デベロッパーでない場合は、安全のため、デベロッパー モードで実行されているこれらの拡張機能を無効にしてください。</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
@@ -5038,6 +5040,7 @@
 <translation id="6973611239564315524">Debian 10（Buster）にアップグレードできます</translation>
 <translation id="6974609594866392343">オフライン デモモード</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
+<translation id="6977877318519394148">Rosetta をインストール</translation>
 <translation id="6978121630131642226">検索エンジン</translation>
 <translation id="6979044105893951891">管理対象のゲスト セッションの開始と終了</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
@@ -6614,6 +6617,7 @@
 <translation id="8814319344131658221">言語設定に基づく、スペルチェックが可能な言語です</translation>
 <translation id="8814644416678422095">ハードドライブ</translation>
 <translation id="8814687660896548945">アーカイブをスキャンしています。しばらくお待ちください...</translation>
+<translation id="8815333263781723799">このページ上の保護されたメディアを再生するには、Rosetta をインストールする必要があります。</translation>
 <translation id="881782782501875829">ポート番号の追加</translation>
 <translation id="881799181680267069">ほかを隠す</translation>
 <translation id="8818152010000655963">壁紙</translation>

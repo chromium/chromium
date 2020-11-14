@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">আপনার নতুন Chromium প্রোফাইল সেট আপ করুন</translation>
 <translation id="1396446129537741364">Chromium পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
 <translation id="1414495520565016063">আপনি Chromium এ প্রবেশ করেছেন!</translation>
+<translation id="1414973082589232775">সুরক্ষিত মিডিয়া প্লে করার জন্য Rosetta ব্যবহার করতে, আপনাকে অবশ্যই Chromium রিস্টার্ট করতে হবে।</translation>
 <translation id="151962892725702025">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Chromium OS আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
 <translation id="1553461853655228091">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chromium-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium এর জন্য Windows 7 বা উচ্চতর সংস্করণ প্রয়োজন।</translation>
 <translation id="5653831366781983928">এখনই Chromium রিস্টার্ট করুন</translation>
 <translation id="5698481217667032250">এই ভাষায় Chromium প্রদর্শন করুন</translation>
+<translation id="5736967399513123100">সুরক্ষিত মিডিয়া প্লে করার জন্য Chromium চালু করতে, আপনাকে Rosetta ইনস্টল করতে হবে। আপনি কি এখনই এটি ইনস্টল করতে চান?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium-এ স্বাগতম</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
@@ -177,6 +179,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium এ কপি করা হয়েছে)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium সপ্তাহে একবার ডিভাইসে কোনও অযাচিত সফ্টওয়্যার আছে কিনা তা চেক করে দেখে। শেষবার চেক করা হয়েছে: ১ দিন আগে।}one{Chromium সপ্তাহে একবার ডিভাইসে কোনও অযাচিত সফ্টওয়্যার আছে কিনা তা চেক করে দেখে। শেষবার চেক করা হয়েছে: {NUM_DAYS} দিন আগে।}other{Chromium সপ্তাহে একবার ডিভাইসে কোনও অযাচিত সফ্টওয়্যার আছে কিনা তা চেক করে দেখে। শেষবার চেক করা হয়েছে: {NUM_DAYS} দিন আগে।}}</translation>
 <translation id="6893813176749746474"> Chromium আপডেট করা হয়েছে৷ কিন্তু আপনি এটি অন্ততঃপক্ষে 30 দিন ব্যবহার করতে পারবেন না৷</translation>
+<translation id="6897548120660295439">Chromium চালু করার মাধ্যমে এই পৃষ্ঠাতে Rosetta সুরক্ষিত মিডিয়া প্লে করে।</translation>
 <translation id="6964305034639999644">Chromium ছদ্মবেশী উইন্ডোতে লিঙ্কটি খুলুন</translation>
 <translation id="6978145336957848883">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। Chromium-কে <ph name="BEGIN_LINK" />আপনার জন্য শক্তিশালী পাসওয়ার্ড তৈরি করার ও সেটি মনে রাখার<ph name="END_LINK" /> অনুমতি দিন।</translation>
 <translation id="6990124437352146030">এই সাইটটির জন্য Chromium কে আপনার মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>

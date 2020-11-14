@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">Жаңа Chromium профилінің параметрлерін реттеу</translation>
 <translation id="1396446129537741364">Chromium құпия сөздерді көрсетпек.</translation>
 <translation id="1414495520565016063">Chromium жүйесіне кірдіңіз!</translation>
+<translation id="1414973082589232775">Rosetta қолданбасында қорғалған медиамазмұнды ойнату үшін Chromium браузерін қайта қосуыңыз керек.</translation>
 <translation id="151962892725702025">Chromium OS деректеріңізді синхрондай алмады, себебі синхрондау функциясы доменіңіз үшін қолжетімді емес.</translation>
 <translation id="1524282610922162960">Chromium қойындысын бөлісу</translation>
 <translation id="1553461853655228091">Chromium браузеріне айналаңыздың 3D картасын жасау үшін камераны пайдалану рұқсаты керек.</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromium браузері Windows 7 жүйесін не одан кейінгі нұсқасын қажет етеді.</translation>
 <translation id="5653831366781983928">Chromium браузерін қайта іске қосыңыз</translation>
 <translation id="5698481217667032250">Chromium жүйесін осы тілде көрсету</translation>
+<translation id="5736967399513123100">Chromium браузерінде қорғалған медиамазмұнды ойнату үшін Rosetta қолданбасын орнатуыңыз керек. Оны қазір орнатқыңыз келе ме?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium жүйесіне қош келдіңіз</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium браузеріне көшірілген)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium браузері қажетсіз бағдарламалық құралдың бар-жоғын аптасына бір рет тексереді. Соңғы тексерілген уақыты: 1 күн бұрын.}other{Chromium браузері қажетсіз бағдарламалық құралдың бар-жоғын аптасына бір рет тексереді. Соңғы тексерілген уақыты: {NUM_DAYS} күн бұрын.}}</translation>
 <translation id="6893813176749746474">Chromium жаңартылды, бірақ оны кемінде 30 күн пайдаланбадыңыз.</translation>
+<translation id="6897548120660295439">Rosetta қолданбасы Chromium браузеріне осы беттегі қорғалған медиамазмұнды ойнатуға мүмкіндік береді.</translation>
 <translation id="6964305034639999644">Сілтемені Chromium инкогнито терезесінде ашу</translation>
 <translation id="6978145336957848883">Құпия сөзіңіз оңай болса, оны табу да оңай. Chromium браузеріне <ph name="BEGIN_LINK" />күрделі құпия сөздер жасауға және сақтауға<ph name="END_LINK" /> мүмкіндік беріңіз.</translation>
 <translation id="6990124437352146030">Chromium браузеріне бұл сайтта микрофонды пайдалану үшін рұқсат керек</translation>

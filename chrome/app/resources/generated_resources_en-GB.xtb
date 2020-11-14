@@ -1669,6 +1669,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2913331724188855103">Allow sites to save and read cookie data (recommended)</translation>
 <translation id="2915102088417824677">View activity log</translation>
 <translation id="2915873080513663243">Auto-scan</translation>
+<translation id="2915996080311180594">Restart later</translation>
 <translation id="2916073183900451334">Pressing Tab on a web page highlights links, as well as form fields</translation>
 <translation id="2916745397441987255">Search extensions</translation>
 <translation id="2921081876747860777">Please create a password to protect your local data.</translation>
@@ -1956,6 +1957,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285322247471302225">New &amp;Tab</translation>
 <translation id="328571385944182268">Save your passwords?</translation>
+<translation id="3286538390144397061">Restart Now</translation>
 <translation id="3288047731229977326">Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
 <translation id="3289856944988573801">To check for updates, please use Ethernet or Wi-Fi.</translation>
@@ -5038,6 +5040,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6973611239564315524">An upgrade to Debian 10 (Buster) is available</translation>
 <translation id="6974609594866392343">Offline demo mode</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
+<translation id="6977877318519394148">Install Rosetta</translation>
 <translation id="6978121630131642226">Search Engines</translation>
 <translation id="6979044105893951891">Launch and exit managed guest sessions</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
@@ -6614,6 +6617,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8814319344131658221">Languages for spell check are based on your language preference</translation>
 <translation id="8814644416678422095">Hard drive</translation>
 <translation id="8814687660896548945">Please wait, the archive is being scanned…</translation>
+<translation id="8815333263781723799">To play protected media on this page, you need to install Rosetta.</translation>
 <translation id="881782782501875829">Add port number</translation>
 <translation id="881799181680267069">Hide Others</translation>
 <translation id="8818152010000655963">Wallpaper</translation>

@@ -197,6 +197,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6454142105866844106">Chrome хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>
 <translation id="6566149418543181476">Google Chrome-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Хамгаалагдсан медиаг тоглуулахын тулд Rosetta-г ашиглах бол та Chrome-г дахин эхлүүлэх ёстой.</translation>
 <translation id="6676384891291319759">Интернэтэд нэвтрэх</translation>
 <translation id="6679975945624592337">Google Chrome-г цаана ажиллуулахыг зөвшөөрөх</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
@@ -262,6 +263,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8521348052903287641">mDNS урсгалыг зөвшөөрөх Google Chrome-н дотоод дүрэм.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome-ийн шинэ хувилбар боломжтой байгаа бөгөөд энэ нь урьд урьдныхаас ч илүү хурдан.</translation>
+<translation id="861359755029082151">Rosetta нь Chrome-г энэ хуудсан дээр хамгаалагдсан медиа тоглуулах боломжтой болгодог.</translation>
 <translation id="8614913330719544658">Google Chrome ажиллахгүй байна. Дахин эхүүлэх үү?</translation>
 <translation id="861702415419836452">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chrome-д шаардлагатай</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome-г 1 минутын дотор дахин ажиллуулна}other{Chrome-г # минутын дотор дахин ажиллуулна}}</translation>
@@ -276,6 +278,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8834965163890861871">Google Chrome нь нууц үгсийг засах гэж оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="884296878221830158">Энэ нь мөн таныг Chrome-ыг эхлүүлэх эсвэл Home товчийг дарах үед гарч ирсэн хуудсыг хянаж байдаг.</translation>
 <translation id="8862326446509486874">Танд системийн түвшинд суулгах зохих эрх байхгүй байна. Суулгагчийг админы хувиар дахин ажиллуулахыг оролдож үзнэ үү.</translation>
+<translation id="8907709077090383765">Chrome-г хамгаалагдсан медиа тоглуулах боломжтой болгохын тулд та Rosetta-г суулгах шаардлагатай. Та үүнийг одоо суулгамаар байна уу?</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />-с Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>

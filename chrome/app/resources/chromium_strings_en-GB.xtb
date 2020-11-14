@@ -14,6 +14,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
 <translation id="1396446129537741364">Chromium is trying to show passwords.</translation>
 <translation id="1414495520565016063">You're signed in to Chromium!</translation>
+<translation id="1414973082589232775">To use Rosetta to play protected media, you must restart Chromium.</translation>
 <translation id="151962892725702025">Chromium OS could not sync your data because Sync is not available for your domain.</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
@@ -134,6 +135,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5634636535844844681">Chromium requires Windows 7 or higher.</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
+<translation id="5736967399513123100">To enable Chromium to play protected media, you need to install Rosetta. Do you want to install it now?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -181,6 +183,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium checks for unwanted software once a week. Last checked: 1 day ago.}other{Chromium checks for unwanted software once a week. Last checked: {NUM_DAYS} days ago.}}</translation>
 <translation id="6893813176749746474">Chromium has been updated, but you haven't used it for 30 days or more.</translation>
+<translation id="6897548120660295439">Rosetta enables Chromium to play the protected media on this page.</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>

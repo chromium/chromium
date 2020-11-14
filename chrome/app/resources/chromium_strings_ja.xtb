@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="1396446129537741364">Chromium はパスワードを表示しようとしています。</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
+<translation id="1414973082589232775">Rosetta を使用して、保護されたメディアを再生するには、Chromium を再起動する必要があります。</translation>
 <translation id="151962892725702025">お使いのドメインでは同期を利用できないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
 <translation id="1553461853655228091">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium のご利用には Windows 7 以上が必要です。</translation>
 <translation id="5653831366781983928">今すぐ Chromium を再起動してください</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
+<translation id="5736967399513123100">保護されたメディアを Chromium で再生できるようにするには、Rosetta をインストールする必要があります。今すぐインストールしますか？</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -179,6 +181,7 @@
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 日前。}other{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_DAYS} 日前。}}</translation>
 <translation id="6893813176749746474">Chromium が更新されましたが、30 日以上使用されていません。</translation>
+<translation id="6897548120660295439">Rosetta をインストールすると、このページ上の保護されたメディアを Chromium で再生できるようになります。</translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="6978145336957848883">脆弱なパスワードは簡単に推測されてしまいます。Chromium で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>

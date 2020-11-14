@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="1396446129537741364">‏Chromium מנסה להציג סיסמאות.</translation>
 <translation id="1414495520565016063">‏נכנסת ל-Chromium!</translation>
+<translation id="1414973082589232775">‏כדי להשתמש ב-Rosetta כדי להפעיל קובצי מדיה מוגנים, עליך להפעיל מחדש את Chromium.</translation>
 <translation id="151962892725702025">‏מערכת ההפעלה של Chromium לא הצליחה לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>
 <translation id="1524282610922162960">‏שיתוף כרטיסיית Chromium</translation>
 <translation id="1553461853655228091">‏Chromium זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
@@ -130,6 +131,7 @@
 <translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
+<translation id="5736967399513123100">‏כדי לאפשר ל-Chromium להפעיל קובצי מדיה מוגנים, עליך להתקין Rosetta. רוצה להתקין עכשיו?</translation>
 <translation id="5820394555380036790">‏מערכת ההפעלה של Chromium</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -177,6 +179,7 @@
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני יום אחד.}two{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}many{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}other{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}}</translation>
 <translation id="6893813176749746474">‏Chromium עודכן, אך לא השתמשת בו לפחות 30 ימים.</translation>
+<translation id="6897548120660295439">‏Rosetta מאפשרת ל-Chromium להפעיל קובצי מדיה מוגנים בדף זה.</translation>
 <translation id="6964305034639999644">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="6978145336957848883">‏קל לנחש סיסמאות חלשות. באמצעות Chromium אפשר <ph name="BEGIN_LINK" />ליצור ולזכור סיסמאות חזקות<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏Chromium זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>

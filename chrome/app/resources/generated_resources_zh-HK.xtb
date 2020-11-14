@@ -1668,6 +1668,7 @@
 <translation id="2913331724188855103">允許網站儲存及讀取 Cookie 資料 (建議)</translation>
 <translation id="2915102088417824677">查看活動記錄</translation>
 <translation id="2915873080513663243">自動掃瞄</translation>
+<translation id="2915996080311180594">稍後重新開機</translation>
 <translation id="2916073183900451334">在網頁上按 Tab 鍵可反白顯示連結和表格欄位</translation>
 <translation id="2916745397441987255">搜尋擴充程式</translation>
 <translation id="2921081876747860777">請建立密碼以保護您的本機資料。</translation>
@@ -1955,6 +1956,7 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3285322247471302225">新分頁(&amp;T)</translation>
 <translation id="328571385944182268">要儲存密碼嗎？</translation>
+<translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3288047731229977326">在開發人員模式中執行擴充功能可能會損害您的電腦。如果您不是開發人員，最好在開發人員模式中停用這些擴充功能，以策安全。</translation>
 <translation id="3289668031376215426">自動大寫</translation>
 <translation id="3289856944988573801">如要檢查更新，請使用以太網絡或 Wi-Fi。</translation>
@@ -5037,6 +5039,7 @@
 <translation id="6973611239564315524">可以升級至 Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">離線示範模式</translation>
 <translation id="6977381486153291903">韌體版本</translation>
+<translation id="6977877318519394148">安裝 Rosetta</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
@@ -6612,6 +6615,7 @@
 <translation id="8814319344131658221">系統會根據語言偏好設定來提供拼字檢查使用的語言</translation>
 <translation id="8814644416678422095">硬碟</translation>
 <translation id="8814687660896548945">正在掃瞄封存檔案，請稍候…</translation>
+<translation id="8815333263781723799">您需要安裝 Rosetta，才能在此頁面播放受保護的媒體。</translation>
 <translation id="881782782501875829">新增連接埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>

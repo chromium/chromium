@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">നിങ്ങളുടെ പുതിയ Chromium പ്രൊഫൈൽ സജ്ജീകരിക്കുക</translation>
 <translation id="1396446129537741364">Chromium പാസ്‌വേഡുകൾ ദൃശ്യമാക്കാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="1414495520565016063">നിങ്ങൾ Chromium-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
+<translation id="1414973082589232775">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Rosetta ഉപയോഗിക്കാൻ Chromium റീസ്‌റ്റാർട്ട് ചെയ്‌തിരിക്കണം.</translation>
 <translation id="151962892725702025">നിങ്ങളുടെ ഡൊമെയ്‌നിന് സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Chromium OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="1524282610922162960">ഒരു Chromium ടാബ് പങ്കിടുക</translation>
 <translation id="1553461853655228091">നിങ്ങളുടെ ചുറ്റുപാടിന്റെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിന് നിങ്ങളുടെ ക്യാമറ ആക്സസ് ചെയ്യാൻ Chromium-ന് നിങ്ങളുടെ അനുമതി ആവശ്യമാണ്</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromium-ത്തിന് Windows 7 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
 <translation id="5653831366781983928">Chromium ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="5698481217667032250">ഈ ഭാഷയിൽ Chromium പ്രദർശിപ്പിക്കുക</translation>
+<translation id="5736967399513123100">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Chromium പ്രവർത്തനക്ഷമമാക്കാൻ Rosetta ഇൻസ്‌റ്റാൾ ചെയ്യേണ്ടതുണ്ട്. ഇപ്പോൾ ഇൻസ്‌റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium-ത്തിലേക്ക് സ്വാഗതം</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium-ത്തിലേക്ക് പകർത്തി)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{ആഴ്‌ചയിൽ ഒരിക്കൽ അനാവശ്യ സോഫ്‌റ്റ്‌വെയർ കണ്ടെത്താൻ Chromium പരിശോധിക്കുന്നു. അവസാനം പരിശോധിച്ചത്: ഒരു ദിവസം മുമ്പ്.}other{ആഴ്‌ചയിൽ ഒരിക്കൽ അനാവശ്യ സോഫ്‌റ്റ്‌വെയർ കണ്ടെത്താൻ Chromium പരിശോധിക്കുന്നു. അവസാനം പരിശോധിച്ചത്: {NUM_DAYS} ദിവസം മുമ്പ്.}}</translation>
 <translation id="6893813176749746474">Chromium അപ്‌ഡേറ്റുചെയ്‌തു, എന്നാൽ കുറഞ്ഞത് 30 ദിവസം പോലും നിങ്ങൾ ഇത് ഉപയോഗിച്ചില്ല.</translation>
+<translation id="6897548120660295439">Rosetta, ഈ പേജിൽ പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യാൻ Chromium-നെ പ്രവർത്തനക്ഷമമാക്കുന്നു.</translation>
 <translation id="6964305034639999644">Chromium അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="6978145336957848883">ദുർബലമായ പാസ്‌വേഡുകൾ ഊഹിക്കാൻ എളുപ്പമാണ്. <ph name="BEGIN_LINK" />നിങ്ങൾക്കായി ശക്തമായ പാസ്‌വേഡുകൾ സൃഷ്ടിക്കാനും ഓർമ്മിക്കാനും<ph name="END_LINK" /> Chromium-ത്തെ അനുവദിക്കുക.</translation>
 <translation id="6990124437352146030">ഈ സൈറ്റിനായി, Chromium-ത്തിന് നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>

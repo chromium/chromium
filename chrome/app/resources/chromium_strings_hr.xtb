@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Postavite novi profil u Chromiumu</translation>
 <translation id="1396446129537741364">Chromium pokušava prikazati zaporke.</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
+<translation id="1414973082589232775">Da biste za reprodukciju zaštićenih medija koristili Rosettu, morate ponovno pokrenuti Chromium.</translation>
 <translation id="151962892725702025">OS Chromium nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
 <translation id="1524282610922162960">Dijeljenje kartice Chromium</translation>
 <translation id="1553461853655228091">Chromium treba dopuštenje za pristup kameri radi izrade 3D karte vašeg okruženja</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium zahtijeva Windows 7 ili noviju verziju.</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>
 <translation id="5698481217667032250">Prikaži Chromium na tom jeziku</translation>
+<translation id="5736967399513123100">Da biste na Chromiumu omogućili reprodukciju zaštićenih medija, morate instalirati Rosettu. Želite li je sada instalirati?</translation>
 <translation id="5820394555380036790">OS Chromium</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
@@ -179,6 +181,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6863361426438995919">Google Pay (kopirano na Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je jučer.}one{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}few{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}other{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}}</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali vi ga niste upotrebljavali najmanje 30 dana.</translation>
+<translation id="6897548120660295439">Rosetta omogućuje Chromiumu da na ovoj stranici reproducira zaštićene medije.</translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="6978145336957848883">Slabe zaporke lako je pogoditi. Neka Chromium <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>

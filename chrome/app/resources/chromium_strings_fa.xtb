@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">‏راه‌اندازی نمایه Chromium جدید</translation>
 <translation id="1396446129537741364">‏Chromium می‌خواهد گذرواژه‌ها را نشان دهد.</translation>
 <translation id="1414495520565016063">‏شما وارد سیستم Chromium شدید!</translation>
+<translation id="1414973082589232775">‏برای استفاده از Rosetta برای پخش رسانه محافظت‌شده، باید Chromium را بازراه‌اندازی کنید.</translation>
 <translation id="151962892725702025">‏سیستم‌عامل Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
 <translation id="1524282610922162960">‏هم‌رسانی برگه Chromium</translation>
 <translation id="1553461853655228091">‏Chromium برای ایجاد نقشه سه‌بعدی محیط شما باید اجازه دسترسی به دوربین داشته باشد</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">‏Chromium به Windows 7 یا بالاتر نیاز دارد.</translation>
 <translation id="5653831366781983928">‏لطفاً اکنون Chromium را بازراه‌اندازی کنید</translation>
 <translation id="5698481217667032250">‏نمایش Chromium به این زبان</translation>
+<translation id="5736967399513123100">‏برای اینکه Chromium بتواند رسانه محافظت‌شده پخش کند، باید Rosetta را نصب کنید. می‌خواهید آن را اکنون نصب کنید؟</translation>
 <translation id="5820394555380036790">‏سیستم‌عامل Chromium </translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
@@ -178,6 +180,7 @@
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: ۱ روز قبل.}one{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_DAYS} روز قبل.}other{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_DAYS} روز قبل.}}</translation>
 <translation id="6893813176749746474">‏Chromium به‌روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
+<translation id="6897548120660295439">‏Rosetta به Chromium امکان می‌دهد رسانه محافظت‌شده را در این صفحه پخش کند.</translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6978145336957848883">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chromium اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>

@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
 <translation id="1396446129537741364">Chromium forsøger at vise adgangskoder.</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
+<translation id="1414973082589232775">Du skal genstarte Chromium, før du kan bruge Rosetta til at afspille beskyttede medier.</translation>
 <translation id="151962892725702025">Chromium OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængeligt på dit domæne.</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium kræver Windows 7 eller nyere.</translation>
 <translation id="5653831366781983928">Genstart Chromium nu</translation>
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
+<translation id="5736967399513123100">Hvis du vil afspille beskyttede medier i Chromium, skal du installere Rosetta. Vil du installere softwaren nu?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -179,6 +181,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For 1 dag siden.}one{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For {NUM_DAYS} dag siden.}other{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For {NUM_DAYS} dage siden.}}</translation>
 <translation id="6893813176749746474">Chromium er blevet opdateret, men du har ikke brugt den i 30 dage.</translation>
+<translation id="6897548120660295439">Når du har installeret Rosetta, kan Chromium afspille de beskyttede medier på denne side.</translation>
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6978145336957848883">Svage adgangskoder er nemme at gætte. Få Chromium <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium skal have tilladelse til at bruge din mikrofon på dette website</translation>

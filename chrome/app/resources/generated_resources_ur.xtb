@@ -1670,6 +1670,7 @@ myaccount.google.com/activitycontrols/search پر تبدیل کر سکتے ہي�
 <translation id="2913331724188855103">سائٹس کو کوکی ڈیٹا کو محفوظ کرنے اور پڑھنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="2915102088417824677">سرگرمی کا لاگ دیکھیں</translation>
 <translation id="2915873080513663243">خودکار اسکین</translation>
+<translation id="2915996080311180594">بعد میں ری سٹارٹ کریں</translation>
 <translation id="2916073183900451334">کسی ویب صفحہ پر ٹیب کو دبانے سے لنکس، نیز فارم فیلڈز ہائی لائٹ ہو جاتی ہیں</translation>
 <translation id="2916745397441987255">ایکسٹینشنز تلاش کریں</translation>
 <translation id="2921081876747860777">براہ کرم اپنے مقامی ڈیٹا کی حفاظت کرنے کیلئے ایک پاس ورڈ بنائیں۔</translation>
@@ -1957,6 +1958,7 @@ myaccount.google.com/activitycontrols/search پر تبدیل کر سکتے ہي�
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3285322247471302225">نیا &amp;ٹیب</translation>
 <translation id="328571385944182268">آپ کے پاس ورڈز محفوظ کریں؟</translation>
+<translation id="3286538390144397061">ابھی ری اسٹارٹ کریں</translation>
 <translation id="3288047731229977326">ڈویلپر وضع میں چلنے والی ایکسٹینشنز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ اگر آپ ایک ڈویلپر نہیں ہیں تو محفوظ رہنے کیلئے آپ کو ڈویلپر وضع میں چلنے والی ان ایکسٹینشنز کو غیر فعال کر دینا چاہیے۔</translation>
 <translation id="3289668031376215426">خود بڑے حروف میں لکھنا</translation>
 <translation id="3289856944988573801">‏اپ ڈیٹس چیک کرنے کیلئے، براہ کرم ایتھرنیٹ یا Wi-Fi کا استعمال کریں۔</translation>
@@ -5039,6 +5041,7 @@ myaccount.google.com/activitycontrols/search پر تبدیل کر سکتے ہي�
 <translation id="6973611239564315524">‏Debian 10 (بسٹر) کے لیے ایک اپ گریڈ دستیاب ہے</translation>
 <translation id="6974609594866392343">آف لائن ڈیمو وضع</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
+<translation id="6977877318519394148">‏Rosetta انسٹال کریں</translation>
 <translation id="6978121630131642226">سرچ انجن</translation>
 <translation id="6979044105893951891">شروع کریں اور نظم کردہ مہمان سیشنز سے باہر نکلیں</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
@@ -6615,6 +6618,7 @@ myaccount.google.com/activitycontrols/search پر تبدیل کر سکتے ہي�
 <translation id="8814319344131658221">املا کی جانچ کے لیے زبانیں آپ کی زبان کی ترجیح پر مبنی ہوتی ہے</translation>
 <translation id="8814644416678422095">ہارڈ ڈرائیو</translation>
 <translation id="8814687660896548945">براہ کرم انتظار کریں، آرکائیو کو اسکین کیا جا رہا ہے…</translation>
+<translation id="8815333263781723799">‏اس صفحے پر تحفظ یافتہ میڈیا چلانے کیلئے، آپ کو Rosetta انسٹال کرنے کی ضرورت ہے۔</translation>
 <translation id="881782782501875829">پورٹ نمبر شامل کریں</translation>
 <translation id="881799181680267069">دوسروں کو چھپائیں</translation>
 <translation id="8818152010000655963">وال پیپر</translation>

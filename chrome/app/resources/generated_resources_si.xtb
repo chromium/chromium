@@ -1666,6 +1666,7 @@
 <translation id="2913331724188855103">අඩවි වලට කුකී දත්ත සුරැකීමට සහ කුකී දත්ත කියවන්න (නිර්දේශිතයි)</translation>
 <translation id="2915102088417824677">ක්‍රියාකාරකම් ලොගය බලන්න</translation>
 <translation id="2915873080513663243">ස්වයංක්‍රීය ස්කෑන් කිරීම</translation>
+<translation id="2915996080311180594">පසුව යළි අරඹන්න</translation>
 <translation id="2916073183900451334">වෙබ් පිටු උද්දීපණ ලින්ක් එකක් මත, මෙන්ම ආකෘති ක්ෂේත්‍ර ටැබය එබීම</translation>
 <translation id="2916745397441987255">දිගු සොයන්න</translation>
 <translation id="2921081876747860777">ඔබේ ස්ථානීය දත්ත ආරක්ෂා කිරීම සඳහා මුරපදයක් තනන්න.</translation>
@@ -1953,6 +1954,7 @@
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3285322247471302225">නව සහ ටැබ</translation>
 <translation id="328571385944182268">ඔබේ මුරපදය සුරකින්නද?</translation>
+<translation id="3286538390144397061">දැන් යළි අාරම්භ කරන්න</translation>
 <translation id="3288047731229977326">සංවර්ධක ප්‍රකාරය තුළ ධාවනය වන දිගු ඔබගේ පරිගණකයට හානි කළ හැක. ඔබ සංවර්ධකයකු නොවේ නම්, ආරක්ෂිතව සිටීමට ඔබ සංවර්ධක ප්‍රකාරය තුළ ධාවනය වන මෙම දිගු අබල කළ යුතුයි.</translation>
 <translation id="3289668031376215426">ස්වයං-මහකුරුකරණය</translation>
 <translation id="3289856944988573801">යාවත්කාල පරීක්ෂා කිරීමට, කරුණාකර ඊදර්නෙට් හෝ Wi-Fi භාවිතා කරන්න.</translation>
@@ -5035,6 +5037,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6973611239564315524">Debian 10 (Buster) වෙත උත්ශ්‍රේණි කිරීමක් ලැබේ</translation>
 <translation id="6974609594866392343">නොබැඳි ආදර්ශන ප්‍රකාරය</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
+<translation id="6977877318519394148">Rosetta ස්ථාපනය කරන්න</translation>
 <translation id="6978121630131642226">සෙවීම් යාන්ත්‍රණ</translation>
 <translation id="6979044105893951891">කළමනා කෙරෙන ආරාධිත සැසි දියත් කරන්න සහ එයින් පිටවන්න</translation>
 <translation id="6979440798594660689">නිහඬ කරන්න (පෙරනිමි)</translation>
@@ -6609,6 +6612,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8814319344131658221">අක්ෂර වින්‍යාසය පරීක්ෂාව සඳහා ඇති භාෂා ඔබගේ භාෂා මනාපය මත පදනම් වේ</translation>
 <translation id="8814644416678422095">දෘඪ තැටිය</translation>
 <translation id="8814687660896548945">රැඳී සිටින්න, සංරක්ෂණය ස්කෑන් කරමින් පවතී...</translation>
+<translation id="8815333263781723799">මෙම පිටුවේ ආරක්ෂිත මාධ්‍ය වාදනය කිරීමට, ඔබ Rosetta ස්ථාපනය කළ යුතුය.</translation>
 <translation id="881782782501875829">තොට අංකය එක් කරන්න</translation>
 <translation id="881799181680267069">අනෙක් ඒවා සඟවන්න</translation>
 <translation id="8818152010000655963">වෝල්පේපරය</translation>

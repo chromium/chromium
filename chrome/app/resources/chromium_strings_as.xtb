@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">আপোনাৰ নতুন Chromium প্ৰ'ফাইল ছেট আপ কৰক</translation>
 <translation id="1396446129537741364">Chromiumএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="1414495520565016063">আপুনি Chromiumত ছাইন ইন হৈ আছে!</translation>
+<translation id="1414973082589232775">সুৰক্ষিত মিডিয়া প্লে’ কৰাৰ বাবে Rosetta ব্যৱহাৰ কৰিবলৈ আপুনি Chromium ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="151962892725702025">আপোনাৰ ড‘মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে Chromium OSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="1524282610922162960">Chromium টেব এটা শ্বেয়াৰ কৰক</translation>
 <translation id="1553461853655228091">আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ Chromiumক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতিৰ প্ৰয়োজন</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromiumৰ বাবে Windows 7 বা তাতোকৈ উন্নত সংস্কৰণৰ আৱশ্যক।</translation>
 <translation id="5653831366781983928">অনুগ্ৰহ কৰি এতিয়া Chromium ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5698481217667032250">এই ভাষাত Chromium প্ৰদর্শন কৰক</translation>
+<translation id="5736967399513123100">সুৰক্ষিত মিডিয়া Chromiumএ প্লে’ কৰাৰ সুবিধাটো সক্ষম কৰিবলৈ আপুনি Rosetta ইনষ্টল কৰিব লাগিব। আপুনি এইটো এতিয়াই ইনষ্টল কৰিব বিচাৰেনে?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromiumলৈ প্ৰতিলিপি কৰা হ’ল)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: ১ দিনৰ আগত।}one{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_DAYS} দিনৰ আগত।}other{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_DAYS} দিনৰ আগত।}}</translation>
 <translation id="6893813176749746474">Chromium আপডে’ট কৰা হৈছে, কিন্তু আপুনি সেইটো যোৱা ৩০ দিন ধৰি ব্যৱহাৰ কৰা নাই।</translation>
+<translation id="6897548120660295439">এই পৃষ্ঠাখনত সুৰক্ষিত মিডিয়া প্লে’ কৰিবলৈ Rosettaই Chromiumক সক্ষম কৰে।</translation>
 <translation id="6964305034639999644">Chromium ইন&amp;ক’গনিট’ ৱিণ্ড’ত লিংকটো খোলক</translation>
 <translation id="6978145336957848883">দুৰ্বল পাছৱৰ্ডসমূহ অনুমান কৰিবলৈ সহজ। Chromiumক <ph name="BEGIN_LINK" />আপোনাৰ বাবে শক্তিশালী পাছৱৰ্ড সৃষ্টি কৰিবলৈ আৰু মনত ৰাখিবলৈ দিয়ক<ph name="END_LINK" />।</translation>
 <translation id="6990124437352146030">এই ছাইটটোৰ বাবে মাইক্ৰ'ফ'ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>

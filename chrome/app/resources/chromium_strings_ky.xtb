@@ -14,6 +14,7 @@
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
 <translation id="1396446129537741364">Chromium сырсөздөрдү көрсөткөнгө аракет кылып жатат.</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
+<translation id="1414973082589232775">Корголгон медиа файлдарды Rosetta'да ойнотуу үчүн Chromium'ду өчүрүп күйгүзүү керек.</translation>
 <translation id="151962892725702025">Сиздин домениңизде шайкештештирүү мүмкүнчүлүгү жок болгондуктан, Chromium OS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
 <translation id="1553461853655228091">Chromium айланаңыздын 3D картасын түзүү үчүн камераңызды колдонушу керек</translation>
@@ -134,6 +135,7 @@
 <translation id="5634636535844844681">Chromium'га Windows 7 же жаңыраак версиясы талап кылынат.</translation>
 <translation id="5653831366781983928">Chromium'ду азыр өчүрүп күйгүзүңүз</translation>
 <translation id="5698481217667032250">Chromium ушул тилде көрсөтүлсүн</translation>
+<translation id="5736967399513123100">Корголгон медиа файлдарды Chromium'да ойнотуу үчүн Rosetta'ны орнотуп алышыңыз керек. Аны азыр орнотуп аласызбы?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium'га кош келиңиз</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
@@ -181,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium'га көчүрүлдү)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium кооптуу программаларды аптасына бир жолу текшерет. Акыркы жолу качан текшерилген: 1 күн мурда.}other{Chromium кооптуу программаларды аптасына бир жолу текшерет. Акыркы жолу качан текшерилген: {NUM_DAYS} күн мурда.}}</translation>
 <translation id="6893813176749746474">Chromium жаңырды, бирок аны 30 күндөн бери колдоно элексиз.</translation>
+<translation id="6897548120660295439">Rosetta бул барактагы медиа файлдарды Chromium'да ойнотот.</translation>
 <translation id="6964305034639999644">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="6978145336957848883">Начар сырсөздөрдү билип алуу оңой. Chromium'га <ph name="BEGIN_LINK" />сиз үчүн татаал сырсөздөрдү түзүп, эстеп калууга<ph name="END_LINK" /> уруксат бериңиз.</translation>
 <translation id="6990124437352146030">Бул сайтта иштөө үчүн Chromium микрофонуңузду колдонушу керек</translation>

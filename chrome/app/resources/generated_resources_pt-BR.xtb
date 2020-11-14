@@ -1669,6 +1669,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2913331724188855103">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede. (Recomendado)</translation>
 <translation id="2915102088417824677">Ver registro de atividades</translation>
 <translation id="2915873080513663243">Verificação automática</translation>
+<translation id="2915996080311180594">Reiniciar mais tarde</translation>
 <translation id="2916073183900451334">Ao pressionar Tab em uma página da Web, os links e os campos de formulário são destacados</translation>
 <translation id="2916745397441987255">Pesquisar extensões</translation>
 <translation id="2921081876747860777">Crie uma senha para proteger seus dados locais.</translation>
@@ -1956,6 +1957,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3285322247471302225">Nova &amp;guia</translation>
 <translation id="328571385944182268">Salvar senhas?</translation>
+<translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3288047731229977326">Extensões executadas no modo de desenvolvedor podem prejudicar o computador. Se você não for desenvolvedor, para sua segurança, desative essas extensões que estão sendo executadas no modo de desenvolvedor.</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
@@ -5041,6 +5043,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6973611239564315524">O upgrade para o Debian 10 (Buster) está disponível</translation>
 <translation id="6974609594866392343">Modo de demonstração off-line</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
+<translation id="6977877318519394148">Instalar Rosetta</translation>
 <translation id="6978121630131642226">Mecanismos de pesquisa</translation>
 <translation id="6979044105893951891">Iniciar e sair de Sessões de Visitante gerenciadas</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
@@ -6617,6 +6620,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8814319344131658221">Os idiomas para verificação ortográfica são baseados na sua preferência de idioma</translation>
 <translation id="8814644416678422095">Disco rígido</translation>
 <translation id="8814687660896548945">Aguarde. O arquivo está sendo verificado...</translation>
+<translation id="8815333263781723799">Para reproduzir mídia protegida nesta página, instale o Rosetta.</translation>
 <translation id="881782782501875829">Adicionar número da porta</translation>
 <translation id="881799181680267069">Ocultar outros</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>

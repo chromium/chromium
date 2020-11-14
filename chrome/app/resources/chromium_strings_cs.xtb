@@ -14,6 +14,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1315551408014407711">Nastavení nového profilu Chromium</translation>
 <translation id="1396446129537741364">Chromium se pokouší zobrazit hesla.</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
+<translation id="1414973082589232775">Aby bylo možné přehrávat chráněná média pomocí nástroje Rosetta, je třeba restartovat Chromium.</translation>
 <translation id="151962892725702025">Chromium OS nemůže synchronizovat data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="1524282610922162960">Sdílet kartu prohlížeče Chromium</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
@@ -134,6 +135,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5634636535844844681">Chromium vyžaduje systém Windows 7 nebo vyšší.</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
+<translation id="5736967399513123100">Aby prohlížeč Chromium mohl přehrávat chráněná média, je třeba nainstalovat nástroj Rosetta. Chcete ho nainstalovat hned?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Vítejte v prohlížeči Chromium</translation>
 <translation id="5895138241574237353">Restartovat</translation>
@@ -181,6 +183,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před 1 dnem.}few{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dny.}many{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dne.}other{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dny.}}</translation>
 <translation id="6893813176749746474">Prohlížeč Chromium byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
+<translation id="6897548120660295439">Rosetta umožňuje prohlížeči Chromium na této stránce přehrávat chráněná média.</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
 <translation id="6978145336957848883">Slabá hesla lze snadno uhodnout. Chromium vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>

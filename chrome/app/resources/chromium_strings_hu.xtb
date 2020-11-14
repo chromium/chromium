@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1396446129537741364">A Chromium megpróbálja megjeleníteni a jelszavakat.</translation>
 <translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
+<translation id="1414973082589232775">Ahhoz, hogy használhassa a Rosettát védett médiatartalmak lejátszásához, újra kell indítania a Chromiumot.</translation>
 <translation id="151962892725702025">A Chromium OS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem érhető el az Ön domainjénél.</translation>
 <translation id="1524282610922162960">Chromium-lap megosztása</translation>
 <translation id="1553461853655228091">A Chromiumnak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">A Chromium futtatásához Windows 7 vagy újabb verzió szükséges.</translation>
 <translation id="5653831366781983928">Indítsa újra a Chromiumot most</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
+<translation id="5736967399513123100">Ahhoz, hogy engedélyezhesse a Chromiumnak védett médiatartalmak lejátszását, telepítenie kell a Rosettát. Szeretné most telepíteni?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -177,6 +179,7 @@
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: 1 napja.}other{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: {NUM_DAYS} napja.}}</translation>
 <translation id="6893813176749746474">A Chromium frissítése megtörtént, de nem használta a böngészőt legalább 30 napja.</translation>
+<translation id="6897548120660295439">A Rosetta engedélyezi a Chromium számára, hogy védett médiatartalmakat játsszon le ezen az oldalon.</translation>
 <translation id="6964305034639999644">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
 <translation id="6978145336957848883">A gyenge jelszavakat könnyű kitalálni. Engedélyezze a Chromium számára, hogy <ph name="BEGIN_LINK" /> erős jelszavakat hozzon létre Önnek, és megjegyezze őket<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>

@@ -196,6 +196,7 @@
 <translation id="6454142105866844106">Chrome ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Rosetta ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କୁ Chrome ରିଷ୍ଟାର୍ଟ କରିବାକୁ ହେବ।</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
 <translation id="6679975945624592337">ପୃଷ୍ଠଭୂମିରେ Google Chromeକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
@@ -261,6 +262,7 @@
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chromeର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଏହା ସବୁଠାରୁ ଦ୍ରୁତ ଅଟେ।</translation>
+<translation id="861359755029082151">Rosetta ଏହି ପୃଷ୍ଠାରେ ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Chromeକୁ ସକ୍ଷମ କରିଥାଏ।</translation>
 <translation id="8614913330719544658">Google Chrome କୌଣସି ପ୍ରତିକ୍ରିୟା ଦେଉନାହିଁ। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
 <translation id="861702415419836452">Chrome ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ ଆପଣଙ୍କ କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 ମିନିଟ୍‌ରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}other{# ମିନିଟ୍‌ରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
@@ -275,6 +277,7 @@
 <translation id="8834965163890861871">Google Chrome ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କ Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="884296878221830158">ଯେତେବେଳେ ଆପଣ Chrome ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା ହୋମ୍‌ ବଟନ୍‌ କ୍ଲିକ୍ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="8862326446509486874">ସିଷ୍ଟମ୍-ଲେବଲ୍ ସଂସ୍ଥାପନ ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଉପଯୁକ୍ତ ଅଧିକାର ନାହିଁ । ବ୍ୟବସ୍ଥାପକ ଭାବରେ ପୁନଃ ସଂସ୍ଥାପକ ଚଳାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ ।</translation>
+<translation id="8907709077090383765">ସୁରକ୍ଷିତ ମିଡିଆ ଚଲାଇବା ପାଇଁ Chromeକୁ ସକ୍ଷମ କରିବା ନିମନ୍ତେ, ଆପଣଙ୍କୁ Rosetta ଇନଷ୍ଟଲ୍ କରିବାକୁ ହେବ। ଏହାକୁ ଏବେ ଇନଷ୍ଟଲ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="8914504000324227558">Chrome ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />ରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}=1{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}}</translation>

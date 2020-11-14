@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">ನಿಮ್ಮ ಹೊಸ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="1396446129537741364">Chromium ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="1414495520565016063">ನೀವು Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ!</translation>
+<translation id="1414973082589232775">ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕೆ Rosetta ಅನ್ನು ಬಳಸಲು, ನೀವು Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
 <translation id="151962892725702025">ನಿಮ್ಮ ಡೊಮೇನ್‌ನಲ್ಲಿ ಸಿಂಕ್ ಮಾಡುವ ಸೌಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು Chromium OS ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="1524282610922162960">Chromium ಟ್ಯಾಬ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1553461853655228091">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ ಪರಿಸರದ 3D ನಕ್ಷೆಯನ್ನು ರಚಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chromium ಗೆ ಅನುಮತಿ ಬೇಕಾಗಿದೆ</translation>
@@ -130,6 +131,7 @@
 <translation id="5634636535844844681">Chromium ಗೆ Windows 7 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="5653831366781983928">ಇದೀಗ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5698481217667032250">ಈ ಭಾಷೆಯಲ್ಲಿ Chromium ಪ್ರದರ್ಶಿಸು</translation>
+<translation id="5736967399513123100">ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕೆ Chromium ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ನೀವು Rosetta ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. ನೀವು ಈಗಲೇ ಅದನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -175,6 +177,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium ಗೆ ನಕಲಿಸಲಾಗಿದೆ)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium ಅನಗತ್ಯ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ವಾರಕ್ಕೊಮ್ಮೆ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಕೊನೆಯ ಪರಿಶೀಲನೆ: 1 ದಿನದ ಹಿಂದೆ.}one{Chromium ಅನಗತ್ಯ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ವಾರಕ್ಕೊಮ್ಮೆ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಕೊನೆಯ ಪರಿಶೀಲನೆ: {NUM_DAYS} ದಿನಗಳ ಹಿಂದೆ.}other{Chromium ಅನಗತ್ಯ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ವಾರಕ್ಕೊಮ್ಮೆ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಕೊನೆಯ ಪರಿಶೀಲನೆ: {NUM_DAYS} ದಿನಗಳ ಹಿಂದೆ.}}</translation>
 <translation id="6893813176749746474">Chromium ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ, ಆದರೆ ನೀವು ಕನಿಷ್ಠ 30 ದಿನಗಳವರೆಗಾದರೂ ಇದನ್ನು ಬಳಸಿರಲಿಕ್ಕಿಲ್ಲ.</translation>
+<translation id="6897548120660295439">Rosetta, ಈ ಪುಟದಲ್ಲಿ ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡಲು Chromium ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="6964305034639999644">Chromium ಅ&amp;ದೃಶ್ಯ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="6978145336957848883">ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಊಹಿಸಬಹುದು. Chromium <ph name="BEGIN_LINK" />ನಿಮಗಾಗಿ ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು<ph name="END_LINK" /> ಅವಕಾಶ ಮಾಡಿಕೊಡಿ.</translation>
 <translation id="6990124437352146030">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗೆ ಪ್ರವೇಶಿಸಲು Chromium ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>

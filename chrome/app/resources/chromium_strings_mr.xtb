@@ -13,6 +13,7 @@
 <translation id="1315551408014407711">तुमची नवीन Chromium प्रोफाइल सेट करा</translation>
 <translation id="1396446129537741364">Chromium पासवर्ड दर्शविण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1414495520565016063">तुम्ही Chromium मध्ये साइन इन केले आहे!</translation>
+<translation id="1414973082589232775">संरक्षित मीडिया प्ले करण्यासाठी Rosetta सुरू करण्यासाठी, तुम्ही Chromium रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="151962892725702025">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Chromium OS तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
 <translation id="1553461853655228091">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chromium ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
@@ -133,6 +134,7 @@
 <translation id="5634636535844844681">Chromium साठी Windows 7 किंवा नंतरची आवृत्ती आवश्यक आहे.</translation>
 <translation id="5653831366781983928">कृपया आता Chromium रीस्टार्ट करा</translation>
 <translation id="5698481217667032250">Chromium या भाषेत डिस्प्ले करा</translation>
+<translation id="5736967399513123100">संरक्षित मीडिया प्ले करण्यासाठी Chromium सुरू करण्यासाठी, तुम्ही Rosetta इंस्टॉल करणे आवश्यक आहे. तुम्हाला ते आता इंस्टॉल करायचे आहे का?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium वर तुमचे स्‍वागत आहे</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -180,6 +182,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium वर कॉपी केले)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium आठवड्यातून एकदा नकोसे सॉफ्टवेअर शोधण्यासाठी तपासणी करते. शेवटची तपासणी: एका दिवसापूर्वी.}other{Chromium आठवड्यातून एकदा नकोसे सॉफ्टवेअर शोधण्यासाठी तपासणी करते. शेवटची तपासणी: {NUM_DAYS} दिवसांपूर्वी.}}</translation>
 <translation id="6893813176749746474">Chromium अपडेट केले गेले, परंतु तुम्ही ते किमान 30 दिवसांपासून वापरलेले नाही.</translation>
+<translation id="6897548120660295439">या पेजवर संरक्षित मीडिया प्ले करण्यासाठी, Rosetta हे Chromium सुरू करते.</translation>
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="6978145336957848883">कमकुवत पासवर्ड ओळखणे सोपे असते. Chromium ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>

@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Sediakan profil Chromium baharu anda</translation>
 <translation id="1396446129537741364">Chromium sedang cuba memaparkan kata laluan.</translation>
 <translation id="1414495520565016063">Anda log masuk ke Chromium!</translation>
+<translation id="1414973082589232775">Untuk menggunakan Rosetta untuk memainkan media yang dilindungi, anda mesti memulakan semula Chromium.</translation>
 <translation id="151962892725702025">OS Chromium tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="1524282610922162960">Kongsi tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
@@ -132,6 +133,7 @@
 <translation id="5634636535844844681">Chromium memerlukan Windows 7 atau lebih tinggi.</translation>
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
+<translation id="5736967399513123100">Untuk membolehkan Chromium memainkan media yang dilindungi, anda perlu memasang Rosetta. Adakah anda ingin memasang Rosetta sekarang?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -179,6 +181,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: 1 hari yang lalu.}other{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: {NUM_DAYS} hari yang lalu.}}</translation>
 <translation id="6893813176749746474">Chromium telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
+<translation id="6897548120660295439">Rosetta membolehkan Chromium memainkan media yang dilindungi pada halaman ini.</translation>
 <translation id="6964305034639999644">Buka pautan dalam tetingkap inko&amp;gnito Chromium</translation>
 <translation id="6978145336957848883">Kata laluan lemah mudah diteka. Biar Chromium <ph name="BEGIN_LINK" />membuat dan mengingat kata laluan kukuh untuk anda<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>

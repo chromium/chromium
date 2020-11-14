@@ -12,6 +12,7 @@
 <translation id="1315551408014407711">Создайте профиль Chromium</translation>
 <translation id="1396446129537741364">Вводимые пароли будут отображаться в Chromium.</translation>
 <translation id="1414495520565016063">Добро пожаловать в Chromium!</translation>
+<translation id="1414973082589232775">Для запуска приложения Rosetta необходимо перезапустить Chromium.</translation>
 <translation id="151962892725702025">Не удалось синхронизировать данные, поскольку сервис Sync недоступен в вашем домене.</translation>
 <translation id="1524282610922162960">Откройте доступ к вкладке Chromium</translation>
 <translation id="1553461853655228091">Chromium запрашивает доступ к камере, чтобы создавать 3D-карты места, в котором вы находитесь.</translation>
@@ -130,6 +131,7 @@
 <translation id="5634636535844844681">Для работы Chromium необходима ОС Windows 7 или более поздней версии.</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
+<translation id="5736967399513123100">Чтобы воспроизводить в браузере Chromium защищенный контент, требуется установить приложение Rosetta. Сделать это сейчас?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -177,6 +179,7 @@
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium проверяет наличие нежелательного ПО раз в неделю. Последняя проверка: 1 день назад.}one{Chromium проверяет наличие нежелательного ПО раз в неделю. Последняя проверка: {NUM_DAYS} день назад.}few{Chromium проверяет наличие нежелательного ПО раз в неделю. Последняя проверка: {NUM_DAYS} дня назад.}many{Chromium проверяет наличие нежелательного ПО раз в неделю. Последняя проверка: {NUM_DAYS} дней назад.}other{Chromium проверяет наличие нежелательного ПО раз в неделю. Последняя проверка: {NUM_DAYS} дня назад.}}</translation>
 <translation id="6893813176749746474">Chromium был обновлен, однако вы не использовали его в течение последних 30 дней.</translation>
+<translation id="6897548120660295439">Благодаря приложению Rosetta браузер Chromium сможет воспроизводить защищенный контент на этой странице.</translation>
 <translation id="6964305034639999644">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
 <translation id="6978145336957848883">Простые пароли легко подобрать. Разрешите Chromium <ph name="BEGIN_LINK" />создавать и хранить надежные пароли для вас<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Для этого сайта Chromium запрашивает доступ к микрофону.</translation>
