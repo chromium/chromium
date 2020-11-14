@@ -306,6 +306,36 @@ void FillLoopFilterInfo(VADecPictureParameterBufferAV1& va_pic_param,
     va_pic_param.mode_deltas[i] = loop_filter.mode_deltas[i];
 }
 
+void FillQuantizationInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                          const libgav1::QuantizerParameters& quant_param) {
+  va_pic_param.base_qindex = quant_param.base_index;
+  static_assert(
+      libgav1::kPlaneY == 0 && libgav1::kPlaneU == 1 && libgav1::kPlaneV == 2,
+      "Invalid plane index");
+  static_assert(libgav1::kMaxPlanes == 3 &&
+                    ARRAY_SIZE(quant_param.delta_dc) == libgav1::kMaxPlanes &&
+                    ARRAY_SIZE(quant_param.delta_ac) == libgav1::kMaxPlanes,
+                "Invalid size of delta dc/ac array");
+  va_pic_param.y_dc_delta_q = quant_param.delta_dc[0];
+  va_pic_param.u_dc_delta_q = quant_param.delta_dc[1];
+  va_pic_param.v_dc_delta_q = quant_param.delta_dc[2];
+  // quant_param.delta_ac[0] is useless as it is always 0.
+  va_pic_param.u_ac_delta_q = quant_param.delta_ac[1];
+  va_pic_param.v_ac_delta_q = quant_param.delta_ac[2];
+
+  va_pic_param.qmatrix_fields.bits.using_qmatrix = quant_param.use_matrix;
+  if (!quant_param.use_matrix)
+    return;
+  static_assert(ARRAY_SIZE(quant_param.matrix_level) == libgav1::kMaxPlanes,
+                "Invalid size of matrix levels");
+  va_pic_param.qmatrix_fields.bits.qm_y =
+      base::checked_cast<uint16_t>(quant_param.matrix_level[0]);
+  va_pic_param.qmatrix_fields.bits.qm_u =
+      base::checked_cast<uint16_t>(quant_param.matrix_level[1]);
+  va_pic_param.qmatrix_fields.bits.qm_v =
+      base::checked_cast<uint16_t>(quant_param.matrix_level[2]);
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
