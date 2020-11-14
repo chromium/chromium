@@ -24,10 +24,6 @@
 - (void)addCreditCardViewControllerDidCancel:
     (AutofillAddCreditCardViewController*)viewController;
 
-// Notifies the class which conforms to this delegate to 'Use Camera'
-- (void)addCreditCardViewControllerDidUseCamera:
-    (AutofillAddCreditCardViewController*)viewController;
-
 // Checks if a credit card has a valid |cardNumber|.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController

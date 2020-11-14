@@ -106,11 +106,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCollectionsCardPresentationStyleName[];
 extern const char kCollectionsCardPresentationStyleDescription[];
 
-// Title and description for the flag to scan a new credit card using the
-// camera.
-extern const char kCreditCardScannerName[];
-extern const char kCreditCardScannerDescription[];
-
 #if defined(DCHECK_IS_CONFIGURABLE)
 // Title and description for the flag to enable configurable DCHECKs.
 extern const char kDcheckIsFatalName[];

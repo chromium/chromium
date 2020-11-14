@@ -12953,6 +12953,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileAddCreditCard.UseCameraButton">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User tapped on &quot;Use Camera&quot; from the settings add credit card
@@ -13444,6 +13445,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.Close">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User closed the Credit Card Scanner without scanning a credit card.
@@ -13451,6 +13453,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.Error">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User closed the Credit Card Scanner from an error dialog.
@@ -13458,6 +13461,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.ScannedCard">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User scanned a credit card using the Credit Card Scanner.
@@ -13465,6 +13469,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.ScannedCardNumberModified">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User scanned a credit card using the Credit Card Scanner and scanned card
@@ -13473,6 +13478,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.ScannedExpiryMonthModified">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User scanned a credit card using the Credit Card Scanner and scanned card
@@ -13481,6 +13487,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileCreditCardScanner.ScannedExpiryYearModified">
+  <obsolete>Removed from code in November 2020</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User scanned a credit card using the Credit Card Scanner and scanned card

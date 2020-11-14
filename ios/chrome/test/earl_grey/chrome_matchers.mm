@@ -281,10 +281,6 @@ id<GREYMatcher> AddCreditCardCancelButton() {
   return [ChromeMatchersAppInterface addCreditCardCancelButton];
 }
 
-id<GREYMatcher> CreditCardScannerView() {
-  return [ChromeMatchersAppInterface creditCardScannerView];
-}
-
 id<GREYMatcher> ToolsMenuView() {
   return [ChromeMatchersAppInterface toolsMenuView];
 }

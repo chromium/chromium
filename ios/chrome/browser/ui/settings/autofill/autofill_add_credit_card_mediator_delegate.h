@@ -22,9 +22,6 @@
 - (void)creditCardMediatorHasInvalidNickname:
     (AutofillAddCreditCardMediator*)mediator;
 
-// Notifies that the credit card scanner needs to be shown.
-- (void)creditCardMediatorShowScanner:(AutofillAddCreditCardMediator*)mediator;
-
 // Notifies that the credit card is valid or the user cancel the view
 // controller.
 - (void)creditCardMediatorDidFinish:(AutofillAddCreditCardMediator*)mediator;

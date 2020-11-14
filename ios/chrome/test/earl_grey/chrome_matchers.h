@@ -219,9 +219,6 @@ id<GREYMatcher> AddCreditCardButton();
 // card view.
 id<GREYMatcher> AddCreditCardCancelButton();
 
-// Returns matcher for the "Credit Card Scanner" view.
-id<GREYMatcher> CreditCardScannerView();
-
 // Returns matcher for the tools menu table view.
 id<GREYMatcher> ToolsMenuView();
 

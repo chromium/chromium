@@ -115,11 +115,6 @@
   [self.addCreditCardMediatorDelegate creditCardMediatorDidFinish:self];
 }
 
-- (void)addCreditCardViewControllerDidUseCamera:
-    (AutofillAddCreditCardViewController*)viewController {
-  [self.addCreditCardMediatorDelegate creditCardMediatorShowScanner:self];
-}
-
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
             isValidCreditCardNumber:(NSString*)cardNumber {

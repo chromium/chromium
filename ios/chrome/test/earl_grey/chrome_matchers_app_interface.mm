@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
-#import "ios/chrome/browser/ui/settings/credit_card_scanner/credit_card_scanner_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
@@ -504,10 +503,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)addCreditCardCancelButton {
   return grey_accessibilityID(kSettingsAddCreditCardCancelButtonID);
-}
-
-+ (id<GREYMatcher>)creditCardScannerView {
-  return grey_accessibilityID(kCreditCardScannerViewID);
 }
 
 + (id<GREYMatcher>)toolsMenuView {

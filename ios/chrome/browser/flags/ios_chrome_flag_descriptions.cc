@@ -120,11 +120,6 @@ const char kCollectionsCardPresentationStyleDescription[] =
     "When enabled collections are presented using the new iOS13 card "
     "style.";
 
-const char kCreditCardScannerName[] = "Enable the 'Use Camera' button";
-const char kCreditCardScannerDescription[] =
-    "Allow a user to scan a credit card using the credit card camera scanner."
-    "The 'Use Camera' button is located in the 'Add Payment Method' view";
-
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
 const char kDcheckIsFatalDescription[] =

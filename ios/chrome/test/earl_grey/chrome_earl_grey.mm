@@ -908,10 +908,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }
 
-- (BOOL)isCreditCardScannerEnabled {
-  return [ChromeEarlGreyAppInterface isCreditCardScannerEnabled];
-}
-
 - (BOOL)isDemographicMetricsReportingEnabled {
   return [ChromeEarlGreyAppInterface isDemographicMetricsReportingEnabled];
 }

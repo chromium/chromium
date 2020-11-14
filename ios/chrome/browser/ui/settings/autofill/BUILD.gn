@@ -27,7 +27,6 @@ source_set("autofill") {
   ]
   deps = [
     ":constants",
-    ":feature_flags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
@@ -51,7 +50,6 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/autofill/cells",
     "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/settings/credit_card_scanner",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
@@ -68,15 +66,6 @@ source_set("constants") {
     "autofill_constants.h",
     "autofill_constants.mm",
   ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -123,7 +112,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
-    ":feature_flags",
     "//base",
     "//components/autofill/core/browser:test_support",
     "//components/strings:components_strings_grit",

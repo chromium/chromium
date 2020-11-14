@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/settings/autofill/features.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"

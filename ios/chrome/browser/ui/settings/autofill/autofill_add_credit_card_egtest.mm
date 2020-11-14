@@ -5,7 +5,6 @@
 #include "base/ios/ios_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
-#import "ios/chrome/browser/ui/settings/autofill/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -63,12 +62,6 @@ id<GREYMatcher> NicknameField() {
       l10n_util::GetNSStringWithFixup(IDS_IOS_AUTOFILL_NICKNAME));
 }
 
-// Matcher for the 'Use Camera' button in the add credit card view.
-id<GREYMatcher> UseCameraButton() {
-  return ButtonWithAccessibilityLabelId(
-      IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL);
-}
-
 // Matcher for the 'Card Number' text field in the add credit card view.
 id<GREYMatcher> CardNumberTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_CARD_NUMBER);
@@ -104,7 +97,6 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kCreditCardScanner);
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableCardNicknameManagement);
   return config;
@@ -112,8 +104,6 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 - (void)setUp {
   [super setUp];
-  GREYAssertTrue([ChromeEarlGrey isCreditCardScannerEnabled],
-                 @"CreditCardScanner should be enabled");
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
   [[EarlGrey selectElementWithMatcher:AddPaymentMethodButton()]
@@ -140,13 +130,6 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:NicknameField()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (@available(iOS 13, *)) {
-    [[EarlGrey selectElementWithMatcher:UseCameraButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:UseCameraButton()]
-        assertWithMatcher:grey_nil()];
-  }
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::AddCreditCardCancelButton()]

@@ -676,11 +676,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "credit-card-scanner",
-    "owners": [ "gambard", "javierrobles", "bling-flags@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "cros-regions-mode",
     "owners": [ "alemate" ],
     "expiry_milestone": 80
