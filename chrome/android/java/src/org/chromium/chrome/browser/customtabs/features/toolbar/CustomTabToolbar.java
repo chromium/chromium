@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,7 +60,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -130,7 +130,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private TextView mUrlBar;
     private View mLiteStatusView;
     private View mLiteStatusSeparatorView;
-    private UrlBarCoordinator mUrlCoordinator;
     private TextView mTitleBar;
     private ImageButton mIncognitoButton;
     private ImageButton mSecurityButton;
@@ -181,8 +180,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mUrlBar.setEnabled(false);
         mLiteStatusView = findViewById(R.id.url_bar_lite_status);
         mLiteStatusSeparatorView = findViewById(R.id.url_bar_lite_status_separator);
-        mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar);
-        mUrlCoordinator.setAllowFocus(false);
         mTitleBar = findViewById(R.id.title_bar);
         mLocationBarFrameLayout = findViewById(R.id.location_bar_frame_layout);
         mTitleUrlContainer = findViewById(R.id.title_url_container);
@@ -246,20 +243,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      *         state.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
-    public LocationBar createLocationBar(LocationBarModel locationBarModel) {
+    public LocationBar createLocationBar(
+            LocationBarModel locationBarModel, ActionMode.Callback actionModeCallback) {
         mLocationBarModel = locationBarModel;
-        mLocationBar = new CustomTabLocationBar(locationBarModel);
-        mUrlCoordinator.setDelegate(mLocationBar);
+        mLocationBar =
+                new CustomTabLocationBar(locationBarModel, actionModeCallback, (UrlBar) mUrlBar);
         mLocationBar.updateVisualsForState();
         return mLocationBar;
-    }
-
-    /**
-     *
-     * @param actionModeCallback The default callback for text editing action bar to use.
-     */
-    public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback actionModeCallback) {
-        mUrlCoordinator.setActionModeCallback(actionModeCallback);
     }
 
     private void updateCustomActionButtonVisuals(
@@ -616,10 +606,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private class CustomTabLocationBar
             implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer {
         private LocationBarDataProvider mLocationBarDataProvider;
+        private UrlBarCoordinator mUrlCoordinator;
 
-        public CustomTabLocationBar(LocationBarDataProvider locationBarDataProvider) {
+        public CustomTabLocationBar(LocationBarDataProvider locationBarDataProvider,
+                ActionMode.Callback actionModeCallback, UrlBar urlBar) {
             mLocationBarDataProvider = locationBarDataProvider;
             mLocationBarDataProvider.addObserver(this);
+            mUrlCoordinator = new UrlBarCoordinator(urlBar, null, actionModeCallback);
+            mUrlCoordinator.setAllowFocus(false);
+            mUrlCoordinator.setDelegate(this);
         }
 
         public void onNativeLibraryReady() {

@@ -33,6 +33,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -58,6 +59,7 @@ import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -78,12 +80,15 @@ public class VoiceRecognitionHandlerTest {
     Intent mIntent;
     @Mock
     AssistantVoiceSearchService mAssistantVoiceSearchService;
+    @Mock
+    ModalDialogManager mModalDialogManager;
 
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
     private TestVoiceRecognitionHandler mHandler;
     private TestAndroidPermissionDelegate mPermissionDelegate;
     private TestWindowAndroid mWindowAndroid;
+    private ActivityLifecycleDispatcher mLifecycleDispatcher;
     private Tab mTab;
     private List<VoiceResult> mAutocompleteVoiceResults;
 
@@ -304,7 +309,8 @@ public class VoiceRecognitionHandlerTest {
         public TestAutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
                 OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
                 UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
-            super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider);
+            super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
+                    mLifecycleDispatcher, () -> mModalDialogManager, null, null, mDataProvider);
         }
 
         @Override
@@ -499,6 +505,10 @@ public class VoiceRecognitionHandlerTest {
     public void setUp() throws InterruptedException, ExecutionException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
+        mLifecycleDispatcher = mActivityTestRule.getActivity().getLifecycleDispatcher();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity()); });
 
         mDataProvider = new TestDataProvider();
         mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
@@ -506,7 +516,6 @@ public class VoiceRecognitionHandlerTest {
         mPermissionDelegate = new TestAndroidPermissionDelegate();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());
             mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
             mTab = new MockTab(0, false);
         });

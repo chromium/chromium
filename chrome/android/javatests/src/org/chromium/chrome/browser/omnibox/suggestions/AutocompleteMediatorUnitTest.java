@@ -42,6 +42,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -55,6 +56,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -143,6 +145,12 @@ public class AutocompleteMediatorUnitTest {
     LocationBarDataProvider mLocationBarDataProvider;
 
     @Mock
+    ActivityLifecycleDispatcher mLifecycleDispatcher;
+
+    @Mock
+    ModalDialogManager mModalDialogManager;
+
+    @Mock
     Handler mHandler;
 
     private PropertyModel mListModel;
@@ -161,8 +169,8 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mAutocompleteController, mListModel,
-                mHandler);
-        mMediator.setLocationBarDataProvider(mLocationBarDataProvider);
+                mHandler, mLifecycleDispatcher,
+                () -> mModalDialogManager, null, null, mLocationBarDataProvider);
         mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(

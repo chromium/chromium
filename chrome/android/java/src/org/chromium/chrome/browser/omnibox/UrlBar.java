@@ -35,10 +35,11 @@ import androidx.core.util.ObjectsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -71,7 +72,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private UrlTextChangeListener mUrlTextChangeListener;
     private TextWatcher mTextChangedListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
-    private UrlDirectionListener mUrlDirectionListener;
+    private Callback<Integer> mUrlDirectionListener;
 
     /**
      * The gesture detector is used to detect long presses. Long presses require special treatment
@@ -134,20 +135,6 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     private CharSequence mTextForAutofillServices;
     protected boolean mRequestingAutofillStructure;
-
-    /**
-     * Implement this to get updates when the direction of the text in the URL bar changes.
-     * E.g. If the user is typing a URL, then erases it and starts typing a query in Arabic,
-     * the direction will change from left-to-right to right-to-left.
-     */
-    interface UrlDirectionListener {
-        /**
-         * Called whenever the layout direction of the UrlBar changes.
-         * @param layoutDirection the new direction: android.view.View.LAYOUT_DIRECTION_LTR or
-         *                        android.view.View.LAYOUT_DIRECTION_RTL
-         */
-        public void onUrlDirectionChanged(int layoutDirection);
-    }
 
     /**
      * Delegate used to communicate with the content side and the parent layout.
@@ -494,7 +481,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         if (urlDirection != mUrlDirection) {
             mUrlDirection = urlDirection;
             if (mUrlDirectionListener != null) {
-                mUrlDirectionListener.onUrlDirectionChanged(urlDirection);
+                mUrlDirectionListener.onResult(urlDirection);
             }
 
             // Ensure the display text is visible after updating the URL direction.
@@ -516,10 +503,10 @@ public abstract class UrlBar extends AutocompleteEditText {
      * @param listener The UrlDirectionListener to receive callbacks when the url direction changes,
      *     or null to unregister any previously registered listener.
      */
-    public void setUrlDirectionListener(UrlDirectionListener listener) {
+    public void setUrlDirectionListener(Callback<Integer> listener) {
         mUrlDirectionListener = listener;
         if (mUrlDirectionListener != null) {
-            mUrlDirectionListener.onUrlDirectionChanged(mUrlDirection);
+            mUrlDirectionListener.onResult(mUrlDirection);
         }
     }
 

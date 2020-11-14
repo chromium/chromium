@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.view.ActionMode;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,11 +22,17 @@ import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusView;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -38,9 +48,9 @@ import java.util.List;
  *
  * <p>The coordinator creates and owns elements within this component.
  */
-public final class LocationBarCoordinator implements LocationBar, FakeboxDelegate,
-                                                     UrlBar.UrlBarDelegate, NativeInitObserver,
-                                                     LocationBarDataProvider.Observer {
+public final class LocationBarCoordinator implements LocationBar, FakeboxDelegate, UrlBarDelegate,
+                                                     NativeInitObserver, Observer,
+                                                     OmniboxSuggestionsDropdownEmbedder {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
@@ -49,6 +59,12 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
     private SubCoordinator mSubCoordinator;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private LocationBarDataProvider mLocationbarDataProvider;
+    private UrlBarCoordinator mUrlCoordinator;
+    private AutocompleteCoordinator mAutocompleteCoordinator;
+    private StatusCoordinator mStatusCoordinator;
+    private WindowDelegate mWindowDelegate;
+    private View mAutocompleteAnchorView;
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -74,17 +90,23 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
      *         incognito state.
      * @param activityLifecycleDispatcher Allows observation of the activity state.
      */
-    public LocationBarCoordinator(View locationBarLayout,
+    public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
-            LocationBarDataProvider locationBarDataProvider,
-            ToolbarActionModeCallback actionModeCallback, WindowDelegate windowDelegate,
-            WindowAndroid windowAndroid, ActivityTabProvider activityTabProvider,
+            LocationBarDataProvider locationBarDataProvider, ActionMode.Callback actionModeCallback,
+            WindowDelegate windowDelegate, WindowAndroid windowAndroid,
+            ActivityTabProvider activityTabProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
+        mWindowDelegate = windowDelegate;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
+        mLocationbarDataProvider = locationBarDataProvider;
+        mLocationbarDataProvider.addObserver(this);
+        mAutocompleteAnchorView = autocompleteAnchorView;
 
         if (locationBarLayout instanceof LocationBarPhone) {
             mSubCoordinator = new LocationBarCoordinatorPhone((LocationBarPhone) locationBarLayout);
@@ -93,17 +115,34 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
         }
 
-        mLocationbarDataProvider = locationBarDataProvider;
-        mLocationBarLayout.setLocationBarDataProvider(locationBarDataProvider);
-        locationBarDataProvider.addObserver(this);
-        mLocationBarLayout.setProfileSupplier(profileObservableSupplier);
-        mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
-        mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
-                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider,
-                overrideUrlLoadingDelegate);
+        View urlBar = mLocationBarLayout.findViewById(R.id.url_bar);
+        mUrlCoordinator =
+                new UrlBarCoordinator((UrlBar) urlBar, windowDelegate, actionModeCallback);
+        mAutocompleteCoordinator =
+                new AutocompleteCoordinator(mLocationBarLayout, mLocationBarLayout, this,
+                        mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
+                        activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
+        StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
+        mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
+                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
 
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mActivityLifecycleDispatcher.register(this);
+        mUrlCoordinator.setDelegate(this);
+        mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
+        mUrlCoordinator.addUrlTextChangeListener(mStatusCoordinator);
+        mUrlCoordinator.setOnFocusChangedCallback(mLocationBarLayout::onUrlFocusChange);
+
+        // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
+        // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.
+        mUrlCoordinator.setUrlDirectionListener(
+                mCallbackController.makeCancelable(layoutDirection -> {
+                    ViewCompat.setLayoutDirection(mLocationBarLayout, (Integer) layoutDirection);
+                    mAutocompleteCoordinator.updateSuggestionListLayoutDirection();
+                }));
+
+        mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
+        mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
+                locationBarDataProvider, profileObservableSupplier, windowDelegate, windowAndroid,
+                overrideUrlLoadingDelegate);
     }
 
     @Override
@@ -117,6 +156,19 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
             mSubCoordinator.destroy();
             mSubCoordinator = null;
         }
+        if (mUrlCoordinator != null) {
+            mUrlCoordinator = null;
+        }
+        if (mAutocompleteCoordinator != null) {
+            if (mLocationBarLayout != null) {
+                mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
+            }
+            mAutocompleteCoordinator.destroy();
+            mAutocompleteCoordinator = null;
+        }
+        if (mStatusCoordinator != null) {
+            mStatusCoordinator = null;
+        }
         if (mLocationBarLayout != null) {
             mLocationBarLayout.destroy();
             mLocationBarLayout = null;
@@ -124,6 +176,10 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
         if (mLocationbarDataProvider != null) {
             mLocationbarDataProvider.removeObserver(this);
             mLocationbarDataProvider = null;
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
     }
 
@@ -260,6 +316,27 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
     @Override
     public void onUrlChanged() {
         mLocationBarLayout.setUrl(mLocationbarDataProvider.getCurrentUrl());
+    }
+
+    // OmniboxSuggestionsDropdownEmbedder implementation
+    @Override
+    public boolean isTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mLocationBarLayout.getContext());
+    }
+
+    @Override
+    public WindowDelegate getWindowDelegate() {
+        return mWindowDelegate;
+    }
+
+    @Override
+    public View getAnchorView() {
+        return mAutocompleteAnchorView;
+    }
+
+    @Override
+    public View getAlignmentView() {
+        return isTablet() ? mLocationBarLayout : null;
     }
 
     /**

@@ -167,9 +167,12 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
         mSearchBox.setDelegate(this);
-        mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, mProfileSupplier,
-                mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
-                /*activityTabProvider=*/null, /*modalDialogManagerSupplier=*/null,
+        View anchorView = mContentView.findViewById(R.id.toolbar);
+        mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
+                mProfileSupplier, mSearchBoxDataProvider, null, new WindowDelegate(getWindow()),
+                getWindowAndroid(),
+                /*activityTabProvider=*/null, /*modalDialogManagerSupplier=*/
+                getModalDialogManagerSupplier(),
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), /*overrideUrlLoadingDelegate=*/
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,

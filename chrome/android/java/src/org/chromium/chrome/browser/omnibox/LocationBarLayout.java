@@ -25,10 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -38,9 +38,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -51,24 +49,19 @@ import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -80,10 +73,8 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
@@ -94,10 +85,9 @@ import java.util.List;
  * This class represents the location bar where the user types in URLs and
  * search terms.
  */
-public class LocationBarLayout
-        extends FrameLayout implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
-                                       VoiceRecognitionHandler.Delegate,
-                                       AssistantVoiceSearchService.Observer, UrlBarDelegate {
+public class LocationBarLayout extends FrameLayout
+        implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
+                   VoiceRecognitionHandler.Delegate, AssistantVoiceSearchService.Observer {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
     private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
@@ -105,7 +95,6 @@ public class LocationBarLayout
     protected ImageButton mMicButton;
     private boolean mShouldShowMicButtonWhenUnfocused;
     protected UrlBar mUrlBar;
-    private final boolean mIsTablet;
 
     protected UrlBarCoordinator mUrlCoordinator;
     protected AutocompleteCoordinator mAutocompleteCoordinator;
@@ -200,40 +189,9 @@ public class LocationBarLayout
 
         LayoutInflater.from(context).inflate(layoutId, this, true);
 
-        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-
         mDeleteButton = findViewById(R.id.delete_button);
 
         mUrlBar = findViewById(R.id.url_bar);
-
-        mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar);
-        mUrlCoordinator.setDelegate(this);
-
-        OmniboxSuggestionsDropdownEmbedder embedder = new OmniboxSuggestionsDropdownEmbedder() {
-            @Override
-            public boolean isTablet() {
-                return mIsTablet;
-            }
-
-            @Override
-            public WindowDelegate getWindowDelegate() {
-                return mWindowDelegate;
-            }
-
-            @Override
-            public View getAnchorView() {
-                return getRootView().findViewById(R.id.toolbar);
-            }
-
-            @Override
-            public View getAlignmentView() {
-                return mIsTablet ? LocationBarLayout.this : null;
-            }
-        };
-        mAutocompleteCoordinator =
-                new AutocompleteCoordinator(this, this, embedder, mUrlCoordinator);
-        addUrlFocusChangeListener(mAutocompleteCoordinator);
-        mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
 
         mMicButton = findViewById(R.id.mic_button);
 
@@ -249,8 +207,7 @@ public class LocationBarLayout
         mUrlFocusChangeListeners.clear();
 
         if (mAutocompleteCoordinator != null) {
-            removeUrlFocusChangeListener(mAutocompleteCoordinator);
-            mAutocompleteCoordinator.destroy();
+            // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
             mAutocompleteCoordinator = null;
         }
 
@@ -284,21 +241,8 @@ public class LocationBarLayout
 
         StatusView statusView = findViewById(R.id.location_bar_status);
         statusView.setCompositeTouchDelegate(mCompositeTouchDelegate);
-        mStatusCoordinator = new StatusCoordinator(mIsTablet, statusView, mUrlCoordinator);
-        mUrlCoordinator.addUrlTextChangeListener(mStatusCoordinator);
 
-        updateShouldAnimateIconChanges();
         mUrlBar.setOnKeyListener(new UrlBarKeyListener());
-
-        // mLocationBar's direction is tied to this UrlBar's text direction. Icons inside the
-        // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.
-        mUrlCoordinator.setUrlDirectionListener(new UrlBar.UrlDirectionListener() {
-            @Override
-            public void onUrlDirectionChanged(int layoutDirection) {
-                ViewCompat.setLayoutDirection(LocationBarLayout.this, layoutDirection);
-                mAutocompleteCoordinator.updateSuggestionListLayoutDirection();
-            }
-        });
     }
 
     @Override
@@ -330,22 +274,42 @@ public class LocationBarLayout
         }
     }
 
-    public void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier,
-            IncognitoStateProvider incognitoStateProvider,
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+    /**
+     * Initializes LocationBarLayout with dependencies that aren't immediately available at
+     * construction time.
+     *
+     * @param autocompleteCoordinator The coordinator for interacting with the autocomplete
+     *         subsystem.
+     * @param urlCoordinator The coordinator for interacting with the url bar.
+     * @param statusCoordinator The coordinator for interacting with the status icon.
+     * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
+     * @param profileSupplier Supplier of the profile for the currently active TabModel.
+     * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
+     * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
+     */
+    @CallSuper
+    public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
+            @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
+            @NonNull LocationBarDataProvider locationBarDataProvider,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
+            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+        mAutocompleteCoordinator = autocompleteCoordinator;
+        mUrlCoordinator = urlCoordinator;
+        mStatusCoordinator = statusCoordinator;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
-
-        mUrlCoordinator.setWindowDelegate(windowDelegate);
-        mAutocompleteCoordinator.setWindowAndroid(windowAndroid);
-        mAutocompleteCoordinator.setActivityTabProvider(activityTabProvider);
-        mAutocompleteCoordinator.setShareDelegateSupplier(shareDelegateSupplier);
-        mStatusCoordinator.setIncognitoStateProvider(incognitoStateProvider);
-        mStatusCoordinator.setModalDialogManagerSupplier(modalDialogManagerSupplier);
+        mLocationBarDataProvider = locationBarDataProvider;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
+
+        assert profileSupplier != null;
+        assert mProfileSupplier == null;
+        mProfileSupplier = profileSupplier;
+        mProfileSupplierObserver = mCallbackController.makeCancelable(this::setProfile);
+        mProfileSupplier.addObserver(mProfileSupplierObserver);
+
+        updateButtonVisibility();
+        updateShouldAnimateIconChanges();
     }
 
     @Override
@@ -438,10 +402,6 @@ public class LocationBarLayout
         updateButtonVisibility();
     }
 
-    public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
-        mUrlCoordinator.setActionModeCallback(callback);
-    }
-
     @Override
     public boolean didFocusUrlFromFakebox() {
         return mUrlFocusedFromFakebox;
@@ -463,16 +423,16 @@ public class LocationBarLayout
     }
 
     /**
-     * Sets the toolbar that owns this LocationBar.
+     * Override the default LocationBarDataProvider in tests. Production code should use the
+     * {@link #initialize} method instead.
      */
-    public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setLocationBarDataProviderForTesting(
+            LocationBarDataProvider locationBarDataProvider) {
         mLocationBarDataProvider = locationBarDataProvider;
 
-        updateButtonVisibility();
-
-        mAutocompleteCoordinator.setLocationBarDataProvider(locationBarDataProvider);
-        mStatusCoordinator.setLocationBarDataProvider(locationBarDataProvider);
-        mUrlCoordinator.setOnFocusChangedCallback(this::onUrlFocusChange);
+        mAutocompleteCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
+        mStatusCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
     }
 
     @Override
@@ -591,7 +551,6 @@ public class LocationBarLayout
         }
     }
 
-    @Override
     public void backKeyPressed() {
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
@@ -599,7 +558,6 @@ public class LocationBarLayout
         focusCurrentTab();
     }
 
-    @Override
     public void gestureDetected(boolean isLongPress) {
         recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
                                              : OmniboxFocusReason.OMNIBOX_TAP);
@@ -614,14 +572,12 @@ public class LocationBarLayout
         mStatusCoordinator.updateStatusIcon();
     }
 
-    @Override
     public View getViewForUrlBackFocus() {
         Tab tab = getCurrentTab();
         if (tab == null) return null;
         return tab.getView();
     }
 
-    @Override
     public boolean allowKeyboardLearning() {
         if (mLocationBarDataProvider == null) return false;
         return !mLocationBarDataProvider.isIncognito();
@@ -721,8 +677,6 @@ public class LocationBarLayout
         }
 
         mStatusCoordinator.setUseDarkColors(useDarkColors);
-        mStatusCoordinator.setIncognitoBadgeVisibility(
-                mLocationBarDataProvider.isIncognito() && !mIsTablet);
 
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(
