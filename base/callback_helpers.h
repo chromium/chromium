@@ -113,15 +113,15 @@ class BASE_EXPORT ScopedClosureRunner {
  public:
   ScopedClosureRunner();
   explicit ScopedClosureRunner(OnceClosure closure);
-  ScopedClosureRunner(const ScopedClosureRunner&) = delete;
-  ScopedClosureRunner& operator=(const ScopedClosureRunner&) = delete;
+  ScopedClosureRunner(ScopedClosureRunner&& other);
+  // Runs the current closure if it's set, then replaces it with the closure
+  // from |other|. This is akin to how unique_ptr frees the contained pointer in
+  // its move assignment operator. If you need to explicitly avoid running any
+  // current closure, use ReplaceClosure().
+  ScopedClosureRunner& operator=(ScopedClosureRunner&& other);
   ~ScopedClosureRunner();
 
-  ScopedClosureRunner(ScopedClosureRunner&& other);
-
-  // Releases the current closure if it's set and replaces it with the closure
-  // from |other|.
-  ScopedClosureRunner& operator=(ScopedClosureRunner&& other);
+  explicit operator bool() const { return !!closure_; }
 
   // Calls the current closure and resets it, so it wont be called again.
   void RunAndReset();

@@ -11,22 +11,25 @@ ScopedClosureRunner::ScopedClosureRunner() = default;
 ScopedClosureRunner::ScopedClosureRunner(OnceClosure closure)
     : closure_(std::move(closure)) {}
 
-ScopedClosureRunner::~ScopedClosureRunner() {
-  if (!closure_.is_null())
-    std::move(closure_).Run();
-}
-
 ScopedClosureRunner::ScopedClosureRunner(ScopedClosureRunner&& other)
     : closure_(other.Release()) {}
 
 ScopedClosureRunner& ScopedClosureRunner::operator=(
     ScopedClosureRunner&& other) {
-  ReplaceClosure(other.Release());
+  if (this != &other) {
+    RunAndReset();
+    ReplaceClosure(other.Release());
+  }
   return *this;
 }
 
+ScopedClosureRunner::~ScopedClosureRunner() {
+  RunAndReset();
+}
+
 void ScopedClosureRunner::RunAndReset() {
-  std::move(closure_).Run();
+  if (closure_)
+    std::move(closure_).Run();
 }
 
 void ScopedClosureRunner::ReplaceClosure(OnceClosure closure) {

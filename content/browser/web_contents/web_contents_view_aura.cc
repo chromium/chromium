@@ -1070,12 +1070,13 @@ void WebContentsViewAura::StartDragging(
   // If drag is still in progress that means we haven't received drop targeting
   // callback yet. So we have to make sure to delay calling EndDrag until drop
   // is done.
-  if (!drag_in_progress_)
+  if (!drag_in_progress_) {
     EndDrag(std::move(source_rwh_weak_ptr), ConvertToWeb(result_op));
-  else
-    end_drag_runner_ = base::ScopedClosureRunner(base::BindOnce(
+  } else {
+    end_drag_runner_.ReplaceClosure(base::BindOnce(
         &WebContentsViewAura::EndDrag, weak_ptr_factory_.GetWeakPtr(),
         std::move(source_rwh_weak_ptr), ConvertToWeb(result_op)));
+  }
 }
 
 void WebContentsViewAura::UpdateDragCursor(blink::DragOperation operation) {
