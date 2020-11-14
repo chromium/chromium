@@ -108,14 +108,14 @@ public class PaymentRequestTestBridge {
         private final long mOnNotSupportedErrorPtr;
         private final long mOnConnectionTerminatedPtr;
         private final long mOnAbortCalledPtr;
-        private final long mOnCompleteCalledPtr;
+        private final long mOnCompleteHandledPtr;
         private final long mOnMinimalUIReadyPtr;
 
         PaymentRequestNativeObserverBridgeToNativeForTest(long onCanMakePaymentCalledPtr,
                 long onCanMakePaymentReturnedPtr, long onHasEnrolledInstrumentCalledPtr,
                 long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
                 long setAppDescriptionPtr, long onNotSupportedErrorPtr,
-                long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteCalledPtr,
+                long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteHandledPtr,
                 long onMinimalUIReadyPtr) {
             mOnCanMakePaymentCalledPtr = onCanMakePaymentCalledPtr;
             mOnCanMakePaymentReturnedPtr = onCanMakePaymentReturnedPtr;
@@ -126,7 +126,7 @@ public class PaymentRequestTestBridge {
             mOnNotSupportedErrorPtr = onNotSupportedErrorPtr;
             mOnConnectionTerminatedPtr = onConnectionTerminatedPtr;
             mOnAbortCalledPtr = onAbortCalledPtr;
-            mOnCompleteCalledPtr = onCompleteCalledPtr;
+            mOnCompleteHandledPtr = onCompleteHandledPtr;
             mOnMinimalUIReadyPtr = onMinimalUIReadyPtr;
         }
 
@@ -203,8 +203,8 @@ public class PaymentRequestTestBridge {
             nativeResolvePaymentRequestObserverCallback(mOnAbortCalledPtr);
         }
         @Override
-        public void onCompleteCalled() {
-            nativeResolvePaymentRequestObserverCallback(mOnCompleteCalledPtr);
+        public void onCompleteHandled() {
+            nativeResolvePaymentRequestObserverCallback(mOnCompleteHandledPtr);
         }
         @Override
         public void onMinimalUIReady() {

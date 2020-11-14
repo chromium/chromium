@@ -161,7 +161,7 @@ public class PaymentRequestService
         void onNotSupportedError();
         void onConnectionTerminated();
         void onAbortCalled();
-        void onCompleteCalled();
+        void onCompleteHandled();
         void onMinimalUIReady();
         void onPaymentUiServiceCreated(PaymentUiServiceTestInterface uiService);
         void onClosed();
@@ -246,10 +246,10 @@ public class PaymentRequestService
         void onPaymentResponseReady();
 
         /**
-         * Called when the browser acknowledges the renderer's complete call, which indicates that
+         * Called when the browser has handled the renderer's complete call, which indicates that
          * the browser UI has closed.
          */
-        void onCompleteReplied();
+        void onCompletedHandled();
 
         /**
          * Called when the renderer is closing the mojo connection (e.g. upon show promise
@@ -1071,10 +1071,10 @@ public class PaymentRequestService
 
     private void onCompleteHandled() {
         if (sNativeObserverForTest != null) {
-            sNativeObserverForTest.onCompleteCalled();
+            sNativeObserverForTest.onCompleteHandled();
         }
         if (sObserverForTest != null) {
-            sObserverForTest.onCompleteReplied();
+            sObserverForTest.onCompletedHandled();
         }
         if (mClient != null) mClient.onComplete();
     }

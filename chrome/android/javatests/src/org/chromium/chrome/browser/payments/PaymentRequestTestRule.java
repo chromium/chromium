@@ -149,7 +149,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     final CallbackHelper mHasEnrolledInstrumentQueryResponded;
     final CallbackHelper mExpirationMonthChange;
     final CallbackHelper mPaymentResponseReady;
-    final CallbackHelper mCompleteReplied;
+    final CallbackHelper mCompleteHandled;
     final CallbackHelper mRendererClosedMojoConnection;
     private ChromePaymentRequestDelegateImpl mChromePaymentRequestDelegateImpl;
     PaymentRequestUI mUI;
@@ -237,7 +237,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         mShowFailed = new CallbackHelper();
         mCanMakePaymentQueryResponded = new CallbackHelper();
         mHasEnrolledInstrumentQueryResponded = new CallbackHelper();
-        mCompleteReplied = new CallbackHelper();
+        mCompleteHandled = new CallbackHelper();
         mRendererClosedMojoConnection = new CallbackHelper();
         mWebContentsRef = new AtomicReference<>();
         if (testFilePath.equals("about:blank") || testFilePath.startsWith("data:")) {
@@ -331,8 +331,8 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     public CallbackHelper getPaymentResponseReady() {
         return mPaymentResponseReady;
     }
-    public CallbackHelper getCompleteReplied() {
-        return mCompleteReplied;
+    public CallbackHelper getCompleteHandled() {
+        return mCompleteHandled;
     }
     public CallbackHelper getRendererClosedMojoConnection() {
         return mRendererClosedMojoConnection;
@@ -1147,9 +1147,9 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     }
 
     @Override
-    public void onCompleteReplied() {
+    public void onCompletedHandled() {
         ThreadUtils.assertOnUiThread();
-        mCompleteReplied.notifyCalled();
+        mCompleteHandled.notifyCalled();
     }
 
     @Override
