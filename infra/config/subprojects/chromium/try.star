@@ -86,6 +86,7 @@ luci.cq_group(
 
 try_.list_view(
     name = "try",
+    branch_selector = branches.ALL_BRANCHES,
     title = settings.main_list_view_title,
 )
 
