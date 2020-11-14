@@ -676,9 +676,36 @@ bool FillAV1SliceParameters(
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
     const size_t tile_columns,
     base::span<const uint8_t> data,
-    std::vector<VASliceParameterBufferAV1>& slice_params) {
-  NOTIMPLEMENTED();
-  return false;
+    std::vector<VASliceParameterBufferAV1>& va_slice_params) {
+  CHECK_GT(tile_columns, 0u);
+  const uint16_t num_tiles = base::checked_cast<uint16_t>(tile_buffers.size());
+  va_slice_params.resize(num_tiles);
+  for (uint16_t tile = 0; tile < num_tiles; ++tile) {
+    VASliceParameterBufferAV1& va_tile_param = va_slice_params[tile];
+    memset(&va_tile_param, 0, sizeof(VASliceParameterBufferAV1));
+    va_tile_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
+    va_tile_param.tile_row = tile / base::checked_cast<uint16_t>(tile_columns);
+    va_tile_param.tile_column =
+        tile % base::checked_cast<uint16_t>(tile_columns);
+    if (!base::CheckedNumeric<size_t>(tile_buffers[tile].size)
+             .AssignIfValid(&va_tile_param.slice_data_size)) {
+      return false;
+    }
+    CHECK(tile_buffers[tile].data >= data.data());
+    base::CheckedNumeric<uint32_t> safe_va_slice_data_end(
+        va_tile_param.slice_data_offset);
+    safe_va_slice_data_end += va_tile_param.slice_data_size;
+    size_t va_slice_data_end;
+    if (!safe_va_slice_data_end.AssignIfValid(&va_slice_data_end) ||
+        va_slice_data_end > data.size()) {
+      DLOG(ERROR) << "Invalid tile offset and size"
+                  << ", offset=" << va_tile_param.slice_data_size
+                  << ", size=" << va_tile_param.slice_data_offset
+                  << ", entire data size=" << data.size();
+      return false;
+    }
+  }
+  return true;
 }
 }  // namespace
 
