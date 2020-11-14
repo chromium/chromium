@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "third_party/skia/include/core/SkData.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/half_float.h"
@@ -40,6 +39,11 @@
 #endif
 
 namespace {
+
+// The maximum AVIF file size we are willing to decode. This helps libavif
+// detect invalid sizes and offsets in an AVIF file before the file size is
+// known.
+constexpr uint64_t kMaxAvifFileSize = 0x10000000;  // 256 MB
 
 // Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description in the
 // image. This color space is used to create the gfx::ColorTransform for the
@@ -271,11 +275,11 @@ bool AVIFImageDecoder::ImageIsHighBitDepth() {
 }
 
 void AVIFImageDecoder::OnSetData(SegmentReader* data) {
-  // avifDecoder requires all the data be available before reading and cannot
-  // read incrementally as data comes in. See
-  // https://github.com/AOMediaCodec/libavif/issues/11.
-  if (IsAllDataReceived() && !MaybeCreateDemuxer())
-    SetFailed();
+  have_parsed_current_data_ = false;
+  const bool all_data_received = IsAllDataReceived();
+  avif_io_data_.reader = data_.get();
+  avif_io_data_.all_data_received = all_data_received;
+  avif_io_.sizeHint = all_data_received ? data_->size() : kMaxAvifFileSize;
 }
 
 cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
@@ -355,7 +359,7 @@ void AVIFImageDecoder::DecodeToYUV() {
   // libavif cannot decode to an external buffer. So we need to copy from
   // libavif's internal buffer to |image_planes_|.
   // TODO(crbug.com/1099825): Enhance libavif to decode to an external buffer.
-  if (!DecodeImage(0)) {
+  if (DecodeImage(0) != AVIF_RESULT_OK) {
     SetFailed();
     return;
   }
@@ -449,6 +453,18 @@ int AVIFImageDecoder::RepetitionCount() const {
   return decoded_frame_count_ > 1 ? kAnimationLoopInfinite : kAnimationNone;
 }
 
+bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+  if (!IsDecodedSizeAvailable())
+    return false;
+  if (decoded_frame_count_ == 1)
+    return ImageDecoder::FrameIsReceivedAtIndex(index);
+  // frame_buffer_cache_.size() is equal to the return value of
+  // DecodeFrameCount(). Since DecodeFrameCount() returns the number of frames
+  // whose encoded data have been received, we can return true if |index| is
+  // valid for frame_buffer_cache_. See crbug.com/1148577.
+  return index < frame_buffer_cache_.size();
+}
+
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Duration()
@@ -496,15 +512,31 @@ gfx::ColorTransform* AVIFImageDecoder::GetColorTransformForTesting() {
   return color_transform_.get();
 }
 
+void AVIFImageDecoder::ParseMetadata() {
+  if (!UpdateDemuxer())
+    SetFailed();
+}
+
 void AVIFImageDecoder::DecodeSize() {
-  // Because avifDecoder cannot read incrementally as data comes in, we cannot
-  // decode the size until all data is received. When all data is received,
-  // OnSetData() decodes the size right away. So DecodeSize() doesn't need to do
-  // anything.
+  ParseMetadata();
 }
 
 size_t AVIFImageDecoder::DecodeFrameCount() {
-  return Failed() ? frame_buffer_cache_.size() : decoded_frame_count_;
+  if (!Failed())
+    ParseMetadata();
+  if (!IsDecodedSizeAvailable())
+    return frame_buffer_cache_.size();
+  if (decoded_frame_count_ == 1 || IsAllDataReceived())
+    return decoded_frame_count_;
+  // For a multi-frame image, Chrome expects DecodeFrameCount() to return the
+  // number of frames whose encoded data have been received.
+  size_t index;
+  for (index = frame_buffer_cache_.size(); index < decoded_frame_count_;
+       ++index) {
+    if (avifDecoderNthImageReady(decoder_.get(), index) != AVIF_RESULT_OK)
+      break;
+  }
+  return index;
 }
 
 void AVIFImageDecoder::InitializeNewFrame(size_t index) {
@@ -522,16 +554,15 @@ void AVIFImageDecoder::InitializeNewFrame(size_t index) {
 }
 
 void AVIFImageDecoder::Decode(size_t index) {
-  // TODO(dalecurtis): For fragmented AVIF image sequence files we probably want
-  // to allow partial decoding. Depends on if we see frequent use of multi-track
-  // images where there's lots to ignore.
-  if (Failed() || !IsAllDataReceived())
+  if (Failed())
     return;
 
   UpdateAggressivePurging(index);
 
-  if (!DecodeImage(index)) {
-    SetFailed();
+  auto ret = DecodeImage(index);
+  if (ret != AVIF_RESULT_OK) {
+    if (ret != AVIF_RESULT_WAITING_ON_IO)
+      SetFailed();
     return;
   }
 
@@ -587,46 +618,102 @@ bool AVIFImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
   return true;
 }
 
-bool AVIFImageDecoder::MaybeCreateDemuxer() {
-  if (decoder_)
+// static
+avifResult AVIFImageDecoder::ReadFromSegmentReader(avifIO* io,
+                                                   uint32_t read_flags,
+                                                   uint64_t offset,
+                                                   size_t size,
+                                                   avifROData* out) {
+  if (read_flags != 0) {
+    // Unsupported read_flags
+    return AVIF_RESULT_IO_ERROR;
+  }
+
+  AvifIOData* io_data = static_cast<AvifIOData*>(io->data);
+
+  // Sanitize/clamp incoming request
+  if (offset > io_data->reader->size()) {
+    // The offset is past the end of the buffer or available data.
+    return io_data->all_data_received ? AVIF_RESULT_IO_ERROR
+                                      : AVIF_RESULT_WAITING_ON_IO;
+  }
+
+  // It is more convenient to work with a variable of the size_t type. Since
+  // offset <= io_data->reader->size() <= SIZE_MAX, this cast is safe.
+  size_t position = static_cast<size_t>(offset);
+  const size_t available_size = io_data->reader->size() - position;
+  if (size > available_size) {
+    if (!io_data->all_data_received)
+      return AVIF_RESULT_WAITING_ON_IO;
+    size = available_size;
+  }
+
+  out->size = size;
+  const char* data;
+  size_t data_size = io_data->reader->GetSomeData(data, position);
+  if (data_size >= size) {
+    out->data = reinterpret_cast<const uint8_t*>(data);
+    return AVIF_RESULT_OK;
+  }
+
+  io_data->buffer.clear();
+  io_data->buffer.reserve(size);
+  while (size != 0) {
+    data_size = io_data->reader->GetSomeData(data, position);
+    size_t copy_size = std::min(data_size, size);
+    io_data->buffer.insert(io_data->buffer.end(), data, data + copy_size);
+    position += copy_size;
+    size -= copy_size;
+  }
+
+  out->data = io_data->buffer.data();
+  return AVIF_RESULT_OK;
+}
+
+bool AVIFImageDecoder::UpdateDemuxer() {
+  DCHECK(!Failed());
+  if (IsDecodedSizeAvailable())
     return true;
 
-  decoder_ = std::unique_ptr<avifDecoder, void (*)(avifDecoder*)>(
-      avifDecoderCreate(), avifDecoderDestroy);
-  if (!decoder_)
-    return false;
+  if (have_parsed_current_data_)
+    return true;
+  have_parsed_current_data_ = true;
 
-  // TODO(dalecurtis): This may create a second copy of the media data in
-  // memory, which is not great. libavif should provide a read() based API:
-  // https://github.com/AOMediaCodec/libavif/issues/11
-  image_data_ = data_->GetAsSkData();
-  if (!image_data_)
-    return false;
+  if (!decoder_) {
+    decoder_ = std::unique_ptr<avifDecoder, void (*)(avifDecoder*)>(
+        avifDecoderCreate(), avifDecoderDestroy);
+    if (!decoder_)
+      return false;
 
-  // TODO(wtc): Currently libavif always prioritizes the animation, but that's
-  // not correct. It should instead select animation or still image based on the
-  // preferred and major brands listed in the file.
-  if (animation_option_ != AnimationOption::kUnspecified &&
-      avifDecoderSetSource(
-          decoder_.get(), animation_option_ == AnimationOption::kPreferAnimation
-                              ? AVIF_DECODER_SOURCE_TRACKS
-                              : AVIF_DECODER_SOURCE_PRIMARY_ITEM) !=
-          AVIF_RESULT_OK) {
-    return false;
+    // TODO(wtc): Currently libavif always prioritizes the animation, but that's
+    // not correct. It should instead select animation or still image based on
+    // the preferred and major brands listed in the file.
+    if (animation_option_ != AnimationOption::kUnspecified &&
+        avifDecoderSetSource(
+            decoder_.get(),
+            animation_option_ == AnimationOption::kPreferAnimation
+                ? AVIF_DECODER_SOURCE_TRACKS
+                : AVIF_DECODER_SOURCE_PRIMARY_ITEM) != AVIF_RESULT_OK) {
+      return false;
+    }
+
+    // Chrome doesn't use XMP and Exif metadata. Ignoring XMP and Exif will
+    // ensure avifDecoderParse() isn't waiting for some tiny Exif payload hiding
+    // at the end of a file.
+    decoder_->ignoreXMP = AVIF_TRUE;
+    decoder_->ignoreExif = AVIF_TRUE;
+
+    avif_io_.destroy = nullptr;
+    avif_io_.read = ReadFromSegmentReader;
+    avif_io_.write = nullptr;
+    avif_io_.persistent = AVIF_FALSE;
+    avif_io_.data = &avif_io_data_;
+    avifDecoderSetIO(decoder_.get(), &avif_io_);
   }
 
-  // Chrome doesn't use XMP and Exif metadata. Ignoring XMP and Exif will ensure
-  // avifDecoderParse() isn't waiting for some tiny Exif payload hiding at the
-  // end of a file.
-  decoder_->ignoreXMP = AVIF_TRUE;
-  decoder_->ignoreExif = AVIF_TRUE;
-  auto ret = avifDecoderSetIOMemory(decoder_.get(), image_data_->bytes(),
-                                    image_data_->size());
-  if (ret != AVIF_RESULT_OK) {
-    DVLOG(1) << "avifDecoderSetIOMemory failed: " << avifResultToString(ret);
-    return false;
-  }
-  ret = avifDecoderParse(decoder_.get());
+  auto ret = avifDecoderParse(decoder_.get());
+  if (ret == AVIF_RESULT_WAITING_ON_IO)
+    return true;
   if (ret != AVIF_RESULT_OK) {
     DVLOG(1) << "avifDecoderParse failed: " << avifResultToString(ret);
     return false;
@@ -724,12 +811,12 @@ bool AVIFImageDecoder::MaybeCreateDemuxer() {
   return SetSize(container->width, container->height);
 }
 
-bool AVIFImageDecoder::DecodeImage(size_t index) {
+avifResult AVIFImageDecoder::DecodeImage(size_t index) {
   const auto ret = avifDecoderNthImage(decoder_.get(), index);
   // |index| should be less than what DecodeFrameCount() returns, so we should
   // not get the AVIF_RESULT_NO_IMAGES_REMAINING error.
   DCHECK_NE(ret, AVIF_RESULT_NO_IMAGES_REMAINING);
-  return ret == AVIF_RESULT_OK;
+  return ret;
 }
 
 void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,

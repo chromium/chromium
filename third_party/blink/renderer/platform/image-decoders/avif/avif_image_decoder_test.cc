@@ -480,10 +480,12 @@ void TestInvalidStaticImage(const char* avif_file, ErrorPhase error_phase) {
   decoder->SetData(data.get(), true);
 
   if (error_phase == ErrorPhase::kParse) {
+    EXPECT_FALSE(decoder->IsSizeAvailable());
     EXPECT_TRUE(decoder->Failed());
     EXPECT_EQ(0u, decoder->FrameCount());
     EXPECT_FALSE(decoder->DecodeFrameBufferAtIndex(0));
   } else {
+    EXPECT_TRUE(decoder->IsSizeAvailable());
     EXPECT_FALSE(decoder->Failed());
     EXPECT_GT(decoder->FrameCount(), 0u);
     ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
