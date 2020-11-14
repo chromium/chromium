@@ -239,13 +239,31 @@ static bool ExtractImageData(Image* image,
   if (!image)
     return false;
 
-  CanvasColorParams color_params;
-  SkImageInfo info = SkImageInfo::Make(
-      image_size.Width(), image_size.Height(), color_params.GetSkColorType(),
-      color_params.GetSkAlphaType(), color_params.GetSkColorSpace());
-  sk_sp<SkSurface> surface =
-      SkSurface::MakeRaster(info, color_params.GetSkSurfaceProps());
+  // Compute the SkImageInfo for the output.
+  SkImageInfo dst_info = SkImageInfo::Make(
+      image_size.Width(), image_size.Height(), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
+  // Populate |contents| with newly allocated and zero-initialized data, big
+  // enough for |dst_info|.
+  size_t dst_size_bytes = dst_info.computeMinByteSize();
+  {
+    if (SkImageInfo::ByteSizeOverflowed(dst_size_bytes) ||
+        dst_size_bytes > v8::TypedArray::kMaxLength) {
+      return false;
+    }
+    ArrayBufferContents result(dst_size_bytes, 1,
+                               ArrayBufferContents::kNotShared,
+                               ArrayBufferContents::kZeroInitialize);
+    if (result.DataLength() != dst_size_bytes)
+      return false;
+    result.Transfer(contents);
+  }
+
+  // Set |surface| to draw directly to |contents|.
+  const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
+  sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
+      dst_info, contents.Data(), dst_info.minRowBytes(), &disable_lcd_props);
   if (!surface)
     return false;
 
@@ -258,28 +276,10 @@ static bool ExtractImageData(Image* image,
   IntRect image_dest_rect(IntPoint(), image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);
-
   image->Draw(&canvas, flags, FloatRect(image_dest_rect), image_source_rect,
               respect_orientation, Image::kDoNotClampImageToSourceRect,
               Image::kSyncDecode);
-
-  size_t size_in_bytes;
-  if (!StaticBitmapImage::GetSizeInBytes(image_dest_rect, color_params)
-           .AssignIfValid(&size_in_bytes) ||
-      size_in_bytes > v8::TypedArray::kMaxLength) {
-    return false;
-  }
-  ArrayBufferContents result(size_in_bytes, 1, ArrayBufferContents::kNotShared,
-                             ArrayBufferContents::kZeroInitialize);
-  if (result.DataLength() != size_in_bytes)
-    return false;
-  result.Transfer(contents);
-
-  return StaticBitmapImage::CopyToByteArray(
-      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()),
-      base::span<uint8_t>(reinterpret_cast<uint8_t*>(contents.Data()),
-                          contents.DataLength()),
-      image_dest_rect, color_params);
+  return true;
 }
 
 static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
