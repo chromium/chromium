@@ -39,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -288,14 +287,6 @@ public abstract class UrlBar extends AutocompleteEditText {
             mPendingScroll = false;
         }
         fixupTextDirection();
-
-        if (!focused && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // https://crbug.com/1103555: On Android Q+, the URL bar can trigger augmented
-            // Autofill, which disables ordinary Autofill requests for the duration of the
-            // Autofill session. This is worked around by canceling the session when the user
-            // focuses another view.
-            ApiHelperForO.cancelAutofillSession();
-        }
     }
 
     /**
