@@ -408,8 +408,7 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
 }
 
 void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
-                             const libgav1::LoopRestoration& loop_restoration,
-                             bool is_monochrome) {
+                             const libgav1::LoopRestoration& loop_restoration) {
   auto to_frame_restoration_type = [](libgav1::LoopRestorationType lr_type) {
     // Spec. 6.10.15
     switch (lr_type) {
@@ -440,8 +439,7 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
   va_loop_restoration.crframe_restoration_type =
       to_frame_restoration_type(loop_restoration.type[2]);
 
-  const size_t num_planes =
-      is_monochrome ? libgav1::kMaxPlanesMonochrome : libgav1::kMaxPlanes;
+  const size_t num_planes = libgav1::kMaxPlanes;
   const bool use_loop_restoration =
       std::find_if(std::begin(loop_restoration.type),
                    std::begin(loop_restoration.type) + num_planes,
@@ -459,12 +457,219 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
 }
 
 bool FillAV1PictureParameter(const AV1Picture& pic,
-                             const libgav1::ObuSequenceHeader& seq_header,
+                             const libgav1::ObuSequenceHeader& sequence_header,
                              const AV1ReferenceFrameVector& ref_frames,
-                             VADecPictureParameterBufferAV1& pic_param) {
-  memset(&pic_param, 0, sizeof(VADecPictureParameterBufferAV1));
-  NOTIMPLEMENTED();
-  return false;
+                             VADecPictureParameterBufferAV1& va_pic_param) {
+  memset(&va_pic_param, 0, sizeof(VADecPictureParameterBufferAV1));
+  DCHECK_LE(base::strict_cast<uint8_t>(sequence_header.profile), 2u)
+      << "Unknown profile: " << base::strict_cast<int>(sequence_header.profile);
+  va_pic_param.profile = base::strict_cast<uint8_t>(sequence_header.profile);
+
+  if (sequence_header.enable_order_hint) {
+    DCHECK_GT(sequence_header.order_hint_bits, 0);
+    DCHECK_LE(sequence_header.order_hint_bits, 8);
+    va_pic_param.order_hint_bits_minus_1 = sequence_header.order_hint_bits - 1;
+  }
+
+  switch (sequence_header.color_config.bitdepth) {
+    case 8:
+      va_pic_param.bit_depth_idx = 0;
+      break;
+    case 10:
+      va_pic_param.bit_depth_idx = 1;
+      break;
+    case 12:
+      va_pic_param.bit_depth_idx = 2;
+      break;
+    default:
+      NOTREACHED() << "Unknown bit depth: "
+                   << base::strict_cast<int>(
+                          sequence_header.color_config.bitdepth);
+  }
+  switch (sequence_header.color_config.matrix_coefficients) {
+    case libgav1::kMatrixCoefficientsIdentity:
+    case libgav1::kMatrixCoefficientsBt709:
+    case libgav1::kMatrixCoefficientsUnspecified:
+    case libgav1::kMatrixCoefficientsFcc:
+    case libgav1::kMatrixCoefficientsBt470BG:
+    case libgav1::kMatrixCoefficientsBt601:
+    case libgav1::kMatrixCoefficientsSmpte240:
+    case libgav1::kMatrixCoefficientsSmpteYcgco:
+    case libgav1::kMatrixCoefficientsBt2020Ncl:
+    case libgav1::kMatrixCoefficientsBt2020Cl:
+    case libgav1::kMatrixCoefficientsSmpte2085:
+    case libgav1::kMatrixCoefficientsChromatNcl:
+    case libgav1::kMatrixCoefficientsChromatCl:
+    case libgav1::kMatrixCoefficientsIctcp:
+      va_pic_param.matrix_coefficients = base::checked_cast<uint8_t>(
+          sequence_header.color_config.matrix_coefficients);
+      break;
+    default:
+      DLOG(ERROR) << "Invalid matrix coefficients: "
+                  << static_cast<int>(
+                         sequence_header.color_config.matrix_coefficients);
+      return false;
+  }
+
+  DCHECK(!sequence_header.color_config.is_monochrome);
+#define COPY_SEQ_FIELD(a) \
+  va_pic_param.seq_info_fields.fields.a = sequence_header.a
+#define COPY_SEQ_FIELD2(a, b) va_pic_param.seq_info_fields.fields.a = b
+  COPY_SEQ_FIELD(still_picture);
+  COPY_SEQ_FIELD(use_128x128_superblock);
+  COPY_SEQ_FIELD(enable_filter_intra);
+  COPY_SEQ_FIELD(enable_intra_edge_filter);
+  COPY_SEQ_FIELD(enable_interintra_compound);
+  COPY_SEQ_FIELD(enable_masked_compound);
+  COPY_SEQ_FIELD(enable_dual_filter);
+  COPY_SEQ_FIELD(enable_order_hint);
+  COPY_SEQ_FIELD(enable_jnt_comp);
+  COPY_SEQ_FIELD(enable_cdef);
+  COPY_SEQ_FIELD2(mono_chrome, sequence_header.color_config.is_monochrome);
+  COPY_SEQ_FIELD2(subsampling_x, sequence_header.color_config.subsampling_x);
+  COPY_SEQ_FIELD2(subsampling_y, sequence_header.color_config.subsampling_y);
+  COPY_SEQ_FIELD(film_grain_params_present);
+#undef COPY_SEQ_FIELD
+  switch (sequence_header.color_config.color_range) {
+    case libgav1::kColorRangeStudio:
+    case libgav1::kColorRangeFull:
+      COPY_SEQ_FIELD2(color_range,
+                      base::strict_cast<uint32_t>(
+                          sequence_header.color_config.color_range));
+      break;
+    default:
+      NOTREACHED() << "Unknown color range: "
+                   << static_cast<int>(
+                          sequence_header.color_config.color_range);
+  }
+#undef COPY_SEQ_FILED2
+
+  const libgav1::ObuFrameHeader& frame_header = pic.frame_header;
+  const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
+  DCHECK(!!vaapi_pic->display_va_surface() &&
+         !!vaapi_pic->reconstruct_va_surface());
+  if (frame_header.film_grain_params.apply_grain) {
+    DCHECK_NE(vaapi_pic->display_va_surface()->id(),
+              vaapi_pic->reconstruct_va_surface()->id())
+        << "When using film grain synthesis, the display and reconstruct "
+           "surfaces"
+        << " should be different.";
+    va_pic_param.current_frame = vaapi_pic->reconstruct_va_surface()->id();
+    va_pic_param.current_display_picture =
+        vaapi_pic->display_va_surface()->id();
+  } else {
+    DCHECK_EQ(vaapi_pic->display_va_surface()->id(),
+              vaapi_pic->reconstruct_va_surface()->id())
+        << "When not using film grain synthesis, the display and reconstruct"
+        << " surfaces should be the same.";
+    va_pic_param.current_frame = vaapi_pic->display_va_surface()->id();
+    va_pic_param.current_display_picture = VA_INVALID_SURFACE;
+  }
+
+  if (!base::CheckSub<int32_t>(frame_header.width, 1)
+           .AssignIfValid(&va_pic_param.frame_width_minus1) ||
+      !base::CheckSub<int32_t>(frame_header.height, 1)
+           .AssignIfValid(&va_pic_param.frame_height_minus1)) {
+    DLOG(ERROR) << "Invalid frame width and height"
+                << ", width=" << frame_header.width
+                << ", height=" << frame_header.height;
+    return false;
+  }
+
+  static_assert(libgav1::kNumReferenceFrameTypes == 8 &&
+                    ARRAY_SIZE(va_pic_param.ref_frame_map) ==
+                        libgav1::kNumReferenceFrameTypes,
+                "Invalid size of reference frames");
+  // TODO(hiroh): We should start with 1 and set ref_frame_map[0] to
+  // VA_INVALID_SURFACE based on the libva documentation.
+  for (int8_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    const auto* ref_pic =
+        static_cast<const VaapiAV1Picture*>(ref_frames[i].get());
+    va_pic_param.ref_frame_map[i] =
+        ref_pic ? ref_pic->reconstruct_va_surface()->id() : VA_INVALID_SURFACE;
+  }
+
+  static_assert(libgav1::kNumInterReferenceFrameTypes == 7 &&
+                    ARRAY_SIZE(frame_header.reference_frame_index) ==
+                        libgav1::kNumInterReferenceFrameTypes &&
+                    ARRAY_SIZE(va_pic_param.ref_frame_idx) ==
+                        libgav1::kNumInterReferenceFrameTypes,
+                "Invalid size of reference frame indices");
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+    const int8_t index = frame_header.reference_frame_index[i];
+    if (index < 0)
+      continue;
+    CHECK_LT(index, libgav1::kNumReferenceFrameTypes);
+    CHECK_NE(va_pic_param.ref_frame_map[index], VA_INVALID_SURFACE);
+    va_pic_param.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
+  }
+
+  va_pic_param.primary_ref_frame =
+      base::checked_cast<uint8_t>(frame_header.primary_reference_frame);
+  va_pic_param.order_hint = frame_header.order_hint;
+
+  FillSegmentInfo(va_pic_param.seg_info, frame_header.segmentation);
+  FillFilmGrainInfo(va_pic_param.film_grain_info,
+                    frame_header.film_grain_params);
+
+  if (!FillTileInfo(va_pic_param, frame_header.tile_info))
+    return false;
+
+  if (frame_header.use_superres) {
+    DVLOG(2) << "Upscaling (use_superres=1) is not supported";
+    return false;
+  }
+  auto& va_pic_info_fields = va_pic_param.pic_info_fields.bits;
+  va_pic_info_fields.uniform_tile_spacing_flag =
+      frame_header.tile_info.uniform_spacing;
+#define COPY_PIC_FIELD(a) va_pic_info_fields.a = frame_header.a
+  COPY_PIC_FIELD(show_frame);
+  COPY_PIC_FIELD(showable_frame);
+  COPY_PIC_FIELD(error_resilient_mode);
+  COPY_PIC_FIELD(allow_screen_content_tools);
+  COPY_PIC_FIELD(force_integer_mv);
+  COPY_PIC_FIELD(allow_intrabc);
+  COPY_PIC_FIELD(use_superres);
+  COPY_PIC_FIELD(allow_high_precision_mv);
+  COPY_PIC_FIELD(is_motion_mode_switchable);
+  COPY_PIC_FIELD(use_ref_frame_mvs);
+  COPY_PIC_FIELD(allow_warped_motion);
+#undef COPY_PIC_FIELD
+  switch (frame_header.frame_type) {
+    case libgav1::FrameType::kFrameKey:
+    case libgav1::FrameType::kFrameInter:
+    case libgav1::FrameType::kFrameIntraOnly:
+    case libgav1::FrameType::kFrameSwitch:
+      va_pic_info_fields.frame_type =
+          base::strict_cast<uint32_t>(frame_header.frame_type);
+      break;
+    default:
+      NOTREACHED() << "Unknown frame type: "
+                   << base::strict_cast<int>(frame_header.frame_type);
+  }
+  va_pic_info_fields.disable_cdf_update = !frame_header.enable_cdf_update;
+  va_pic_info_fields.disable_frame_end_update_cdf =
+      !frame_header.enable_frame_end_update_cdf;
+
+  CHECK_EQ(frame_header.superres_scale_denominator,
+           libgav1::kSuperResScaleNumerator);
+  va_pic_param.superres_scale_denominator =
+      frame_header.superres_scale_denominator;
+  DCHECK_LE(base::strict_cast<uint8_t>(frame_header.interpolation_filter), 4u)
+      << "Unknown interpolation filter: "
+      << base::strict_cast<int>(frame_header.interpolation_filter);
+  va_pic_param.interp_filter =
+      base::strict_cast<uint8_t>(frame_header.interpolation_filter);
+
+  FillQuantizationInfo(va_pic_param, frame_header.quantizer);
+  FillLoopFilterInfo(va_pic_param, frame_header.loop_filter);
+  FillModeControlInfo(va_pic_param, frame_header);
+  FillLoopRestorationInfo(va_pic_param, frame_header.loop_restoration);
+  FillGlobalMotionInfo(va_pic_param.wm, frame_header.global_motion);
+  FillCdefInfo(
+      va_pic_param, frame_header.cdef,
+      base::checked_cast<uint8_t>(sequence_header.color_config.bitdepth));
+  return true;
 }
 
 bool FillAV1SliceParameters(
