@@ -336,8 +336,13 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
         2;
     const float scale = std::min(diameter, SkFloatToScalar(gfx::kFaviconSize)) /
                         gfx::kFaviconSize;
+    // Translating to/from bounds offset is done to scale around the center
+    // point. This fixes RTL issues where bounds.x() is non-zero. See
+    // https://crbug.com/1147408
+    canvas->Translate(gfx::Vector2d(bounds.x(), bounds.y()));
     canvas->Translate(gfx::Vector2d(offset, offset));
     canvas->Scale(scale, scale);
+    canvas->Translate(gfx::Vector2d(-bounds.x(), -bounds.y()));
   }
 
   canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(), bounds.x(),
