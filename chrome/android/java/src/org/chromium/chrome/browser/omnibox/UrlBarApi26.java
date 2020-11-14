@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewStructure;
 
@@ -30,5 +31,17 @@ public class UrlBarApi26 extends UrlBar {
         mRequestingAutofillStructure = true;
         super.onProvideAutofillStructure(structure, autofillFlags);
         mRequestingAutofillStructure = false;
+    }
+
+    @Override
+    public int getAutofillType() {
+        // https://crbug.com/1103555: Prevent augmented autofill service from taking over the
+        // session by disabling both standard and augmented autofill on versions of Android
+        // where both are supported.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return AUTOFILL_TYPE_NONE;
+        } else {
+            return super.getAutofillType();
+        }
     }
 }
