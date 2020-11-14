@@ -20,6 +20,7 @@ TEST(CPU, RunExtendedInstructions) {
   ASSERT_TRUE(cpu.has_mmx());
   ASSERT_TRUE(cpu.has_sse());
   ASSERT_TRUE(cpu.has_sse2());
+  ASSERT_TRUE(cpu.has_sse3());
 
 // GCC and clang instruction test.
 #if defined(COMPILER_GCC)
@@ -32,10 +33,8 @@ TEST(CPU, RunExtendedInstructions) {
   // Execute an SSE 2 instruction.
   __asm__ __volatile__("psrldq $0, %%xmm0\n" : : : "xmm0");
 
-  if (cpu.has_sse3()) {
-    // Execute an SSE 3 instruction.
-    __asm__ __volatile__("addsubpd %%xmm0, %%xmm0\n" : : : "xmm0");
-  }
+  // Execute an SSE 3 instruction.
+  __asm__ __volatile__("addsubpd %%xmm0, %%xmm0\n" : : : "xmm0");
 
   if (cpu.has_ssse3()) {
     // Execute a Supplimental SSE 3 instruction.
@@ -80,10 +79,8 @@ TEST(CPU, RunExtendedInstructions) {
   // Execute an SSE 2 instruction.
   __asm psrldq xmm0, 0;
 
-  if (cpu.has_sse3()) {
-    // Execute an SSE 3 instruction.
-    __asm addsubpd xmm0, xmm0;
-  }
+  // Execute an SSE 3 instruction.
+  __asm addsubpd xmm0, xmm0;
 
   if (cpu.has_ssse3()) {
     // Execute a Supplimental SSE 3 instruction.

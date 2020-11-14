@@ -750,6 +750,7 @@ config("compiler_cpu_abi") {
       cflags += [
         "-m64",
         "-march=$x64_arch",
+        "-msse3",
       ]
       ldflags += [ "-m64" ]
     } else if (current_cpu == "x86") {
@@ -757,9 +758,8 @@ config("compiler_cpu_abi") {
       ldflags += [ "-m32" ]
       if (!is_nacl) {
         cflags += [
-          "-msse2",
           "-mfpmath=sse",
-          "-mmmx",
+          "-msse3",
         ]
       }
     } else if (current_cpu == "arm") {

@@ -429,7 +429,7 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
 
 bool IsProcessorSupported() {
 #if defined(ARCH_CPU_X86_FAMILY)
-  return base::CPU().has_sse2();
+  return base::CPU().has_sse3();
 #elif defined(ARCH_CPU_ARM64)
   return true;
 #else

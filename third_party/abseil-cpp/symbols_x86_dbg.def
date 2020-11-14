@@ -1333,7 +1333,6 @@ EXPORTS
     ??RByUnixTime@Transition@cctz@time_internal@absl@@QBE_NABU1234@0@Z
     ??RStringReleaser@?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QAE@$$QAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@QAEXVstring_view@2@@Z
     ??Sabsl@@YA?AVuint128@0@V10@@Z
-    ??Uabsl@@YA?AVuint128@0@V10@0@Z
     ??XDuration@absl@@QAEAAV01@N@Z
     ??XDuration@absl@@QAEAAV01@_J@Z
     ??Xint128@absl@@QAEAAV01@V01@@Z
