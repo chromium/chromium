@@ -2348,6 +2348,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HIDE_VISITS_FROM_CCT})
+    @DisabledTest(message = "https://crbug.com/1148855")
     public void testOmniboxHideVisitsFromCctTransitionRemovedWhenOpenInBrowser() throws Exception {
         // Augment the CustomTabsSession to catch open in browser.
         CallbackHelper callbackTriggered = new CallbackHelper();
