@@ -943,9 +943,11 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
   if (!prelude.AtEnd())
     return nullptr;
 
-  // TODO(crbug.com/687225): If the name is invalid (none, decimal, disc and
-  // CSS-wide keywords), should the entire rule be invalid, or does it simply
-  // not define a counter style?
+  if (name_token.GetType() != kIdentToken ||
+      !css_parsing_utils::IsCustomIdent<CSSValueID::kNone, CSSValueID::kDecimal,
+                                        CSSValueID::kDisc>(name_token.Id()))
+    return nullptr;
+
   AtomicString name(name_token.Value().ToString());
 
   if (observer_) {

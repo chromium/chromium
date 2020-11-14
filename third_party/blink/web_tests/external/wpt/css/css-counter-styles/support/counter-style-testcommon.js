@@ -53,3 +53,31 @@ function test_invalid_counter_style_descriptor(descriptor, value) {
   test_counter_style_descriptor(descriptor, value, undefined);
 }
 
+function test_counter_style_name(name, isValid) {
+  let style = document.createElement('style');
+  style.textContent = `@counter-style ${name} { system: symbolic; symbols: 'X' 'Y'; }`;
+  document.head.appendChild(style);
+
+  test(() => {
+    let rule = style.sheet.cssRules[0];
+    if (!isValid) {
+      assert_equals(rule, undefined);
+      return;
+    }
+
+    assert_not_equals(rule, undefined);
+    assert_equals(rule.constructor.name, 'CSSCounterStyleRule');
+    assert_equals(rule.name, name);
+  }, `@counter-style name ${name} is ${isValid ? 'valid' : 'invalid'}`);
+
+  style.remove();
+}
+
+function test_valid_name(name) {
+  test_counter_style_name(name, true);
+}
+
+function test_invalid_name(name) {
+  test_counter_style_name(name, false);
+}
+
