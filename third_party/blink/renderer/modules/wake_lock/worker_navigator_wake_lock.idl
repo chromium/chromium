@@ -7,9 +7,9 @@
 // until System Wake Lock API was split from the Screen Wake Lock API.
 
 [
-  ImplementedAs=WorkerNavigatorWakeLock,
+  ImplementedAs=WakeLock,
   RuntimeEnabled=SystemWakeLock,
   SecureContext
 ] partial interface WorkerNavigator {
-  [CallWith=ScriptState, SameObject] readonly attribute WakeLock wakeLock;
+  [SameObject] readonly attribute WakeLock wakeLock;
 };

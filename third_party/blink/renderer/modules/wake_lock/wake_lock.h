@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace WTF {
 
@@ -28,18 +29,23 @@ class String;
 namespace blink {
 
 class ExceptionState;
-class LocalDOMWindow;
+class NavigatorBase;
 class ScriptState;
 class WakeLockManager;
 
 class MODULES_EXPORT WakeLock final : public ScriptWrappable,
+                                      public Supplement<NavigatorBase>,
                                       public ExecutionContextLifecycleObserver,
                                       public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WakeLock(LocalDOMWindow&);
-  explicit WakeLock(DedicatedWorkerGlobalScope&);
+  static const char kSupplementName[];
+
+  // Getter for navigator.wakelock
+  static WakeLock* wakeLock(NavigatorBase&);
+
+  explicit WakeLock(NavigatorBase&);
 
   ScriptPromise request(ScriptState*,
                         const WTF::String& type,

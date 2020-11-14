@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -26,23 +27,39 @@ namespace blink {
 using mojom::blink::PermissionService;
 using mojom::blink::PermissionStatus;
 
-WakeLock::WakeLock(LocalDOMWindow& window)
-    : ExecutionContextLifecycleObserver(&window),
-      PageVisibilityObserver(window.GetFrame()->GetPage()),
-      permission_service_(&window),
-      managers_{
-          MakeGarbageCollected<WakeLockManager>(&window, WakeLockType::kScreen),
-          MakeGarbageCollected<WakeLockManager>(&window,
-                                                WakeLockType::kSystem)} {}
+// static
+const char WakeLock::kSupplementName[] = "WakeLock";
 
-WakeLock::WakeLock(DedicatedWorkerGlobalScope& worker_scope)
-    : ExecutionContextLifecycleObserver(&worker_scope),
-      PageVisibilityObserver(nullptr),
-      permission_service_(&worker_scope),
-      managers_{MakeGarbageCollected<WakeLockManager>(&worker_scope,
-                                                      WakeLockType::kScreen),
-                MakeGarbageCollected<WakeLockManager>(&worker_scope,
-                                                      WakeLockType::kSystem)} {}
+// static
+WakeLock* WakeLock::wakeLock(NavigatorBase& navigator) {
+  ExecutionContext* context = navigator.GetExecutionContext();
+  if (!context ||
+      (!context->IsWindow() && !context->IsDedicatedWorkerGlobalScope())) {
+    // TODO(https://crbug.com/839117): Remove this check once the Exposed
+    // attribute is fixed to only expose this property in dedicated workers.
+    return nullptr;
+  }
+
+  WakeLock* supplement = Supplement<NavigatorBase>::From<WakeLock>(navigator);
+  if (!supplement && navigator.GetExecutionContext()) {
+    supplement = MakeGarbageCollected<WakeLock>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+WakeLock::WakeLock(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      PageVisibilityObserver(navigator.DomWindow()
+                                 ? navigator.DomWindow()->GetFrame()->GetPage()
+                                 : nullptr),
+      permission_service_(navigator.GetExecutionContext()),
+      managers_{
+          MakeGarbageCollected<WakeLockManager>(navigator.GetExecutionContext(),
+                                                WakeLockType::kScreen),
+          MakeGarbageCollected<WakeLockManager>(navigator.GetExecutionContext(),
+                                                WakeLockType::kSystem)} {}
 
 ScriptPromise WakeLock::request(ScriptState* script_state,
                                 const String& type,
@@ -278,6 +295,7 @@ void WakeLock::Trace(Visitor* visitor) const {
   for (const WakeLockManager* manager : managers_)
     visitor->Trace(manager);
   visitor->Trace(permission_service_);
+  Supplement<NavigatorBase>::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);

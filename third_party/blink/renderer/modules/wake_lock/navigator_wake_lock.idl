@@ -5,7 +5,7 @@
 // https://w3c.github.io/screen-wake-lock/#extensions-to-the-navigator-interface
 
 [
-  ImplementedAs=NavigatorWakeLock,
+  ImplementedAs=WakeLock,
   RuntimeEnabled=WakeLock,
   SecureContext
 ] partial interface Navigator {

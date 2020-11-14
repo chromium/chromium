@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_manager.h"
@@ -114,7 +115,7 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
       MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
   ScriptPromise screen_promise = screen_resolver->Promise();
 
-  auto* wake_lock = MakeGarbageCollected<WakeLock>(*context.DomWindow());
+  auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(WakeLockType::kScreen, screen_resolver);
 
   WakeLockManager* manager =
