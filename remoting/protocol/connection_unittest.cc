@@ -530,8 +530,7 @@ TEST_P(ConnectionTest, Events) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1143311): Test is flaky.
-TEST_P(ConnectionTest, DISABLED_Video) {
+TEST_P(ConnectionTest, Video) {
   Connect();
 
   std::unique_ptr<VideoStream> video_stream =
