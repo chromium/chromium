@@ -574,6 +574,24 @@ std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds(
   return {columns[col_index]};
 }
 
+base::Optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
+    int row_index,
+    int col_index) const {
+  if (virtual_children().empty() || !GetAncestorTableView())
+    return base::nullopt;
+
+  AXVirtualView* ax_cell =
+      GetAncestorTableView()->GetVirtualAccessibilityCell(row_index, col_index);
+  if (!ax_cell)
+    return base::nullopt;
+
+  const ui::AXNodeData& cell_data = ax_cell->GetData();
+  if (cell_data.role == ax::mojom::Role::kCell)
+    return cell_data.id;
+
+  return base::nullopt;
+}
+
 TableView* ViewAXPlatformNodeDelegate::GetAncestorTableView() const {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);

@@ -159,6 +159,8 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
+  base::Optional<int32_t> GetCellId(int row_index,
+                                    int col_index) const override;
 
   // Gets the real View that owns our shallowest virtual ancestor,, if any.
   View* GetOwnerView() const;

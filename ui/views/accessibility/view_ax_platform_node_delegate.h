@@ -88,6 +88,8 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
+  base::Optional<int32_t> GetCellId(int row_index,
+                                    int col_index) const override;
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;

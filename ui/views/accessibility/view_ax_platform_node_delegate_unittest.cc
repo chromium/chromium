@@ -5,15 +5,18 @@
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/base/models/table_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,6 +27,8 @@
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -63,6 +68,34 @@ class TestAXEventObserver : public AXEventObserver {
 };
 
 }  // namespace
+
+class TestTableModel : public ui::TableModel {
+ public:
+  TestTableModel() = default;
+
+  // ui::TableModel:
+  int RowCount() override { return 10; }
+
+  base::string16 GetText(int row, int column_id) override {
+    if (row == -1)
+      return base::string16();
+
+    const char* const cells[5][4] = {
+        {"Orange", "Orange", "South america", "$5"},
+        {"Apple", "Green", "Canada", "$3"},
+        {"Blue berries", "Blue", "Mexico", "$10.3"},
+        {"Strawberries", "Red", "California", "$7"},
+        {"Cantaloupe", "Orange", "South america", "$5"},
+    };
+
+    return base::ASCIIToUTF16(cells[row % 5][column_id]);
+  }
+
+  void SetObserver(ui::TableModelObserver* observer) override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
+};
 
 class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
  public:
@@ -168,6 +201,43 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   Widget* widget_ = nullptr;
   Button* button_ = nullptr;
   Label* label_ = nullptr;
+};
+
+class ViewAXPlatformNodeDelegateTableTest
+    : public ViewAXPlatformNodeDelegateTest {
+ public:
+  void SetUp() override {
+    ViewAXPlatformNodeDelegateTest::SetUp();
+
+    std::vector<ui::TableColumn> columns;
+    columns.push_back(TestTableColumn(0, "Fruit"));
+    columns.push_back(TestTableColumn(1, "Color"));
+    columns.push_back(TestTableColumn(2, "Origin"));
+    columns.push_back(TestTableColumn(3, "Price"));
+
+    model_ = std::make_unique<TestTableModel>();
+    auto table =
+        std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
+    table_ = table.get();
+    widget_->GetContentsView()->AddChildView(
+        TableView::CreateScrollViewWithTable(std::move(table)));
+  }
+
+  ui::TableColumn TestTableColumn(int id, const std::string& title) {
+    ui::TableColumn column;
+    column.id = id;
+    column.title = base::ASCIIToUTF16(title.c_str());
+    column.sortable = true;
+    return column;
+  }
+
+  ViewAXPlatformNodeDelegate* table_accessibility() {
+    return view_accessibility(table_);
+  }
+
+ private:
+  std::unique_ptr<TestTableModel> model_;
+  TableView* table_ = nullptr;  // Owned by parent.
 };
 
 TEST_F(ViewAXPlatformNodeDelegateTest, RoleShouldMatch) {
@@ -423,6 +493,22 @@ TEST_F(ViewAXPlatformNodeDelegateTest, FocusOnMenuClose) {
   run_loop.Run();
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             button_accessibility()->GetFocus());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
+  EXPECT_TRUE(table_accessibility()->GetTableHasColumnOrRowHeaderNode());
+  EXPECT_EQ(size_t{4}, table_accessibility()->GetColHeaderNodeIds().size());
+  EXPECT_TRUE(table_accessibility()->GetColHeaderNodeIds(5).empty());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
+  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(0, 0));
+  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(0, 3));
+  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(9, 3));
+  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(-1, 0));
+  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
+  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));
+  EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, 4));
 }
 
 #if defined(USE_AURA)
