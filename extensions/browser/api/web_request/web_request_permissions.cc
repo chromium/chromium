@@ -270,7 +270,9 @@ bool WebRequestPermissions::HideRequest(
     if (request.web_request_type !=
             extensions::WebRequestResourceType::MAIN_FRAME &&
         request.web_request_type !=
-            extensions::WebRequestResourceType::SUB_FRAME) {
+            extensions::WebRequestResourceType::SUB_FRAME &&
+        request.web_request_type !=
+            extensions::WebRequestResourceType::OBJECT) {
       // TODO(crbug.com/1145496): Remove crash key logging once the DCHECK
       // failure below is fixed.
       static auto* web_request_type_key = base::debug::AllocateCrashKeyString(
@@ -284,10 +286,7 @@ bool WebRequestPermissions::HideRequest(
       base::debug::ScopedCrashKeyString scoped_url(
           url_key, request.url.possibly_invalid_spec());
 
-      DCHECK(request.web_request_type ==
-                 extensions::WebRequestResourceType::MAIN_FRAME ||
-             request.web_request_type ==
-                 extensions::WebRequestResourceType::SUB_FRAME);
+      DCHECK(false);
     }
 
     // Hide sub-frame requests to clientsX.google.com.
