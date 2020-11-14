@@ -409,17 +409,6 @@ ClientView* BubbleDialogDelegate::CreateClientView(Widget* widget) {
   return client_view_;
 }
 
-bool BubbleDialogDelegateView::AcceleratorPressed(
-    const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_DOWN ||
-      accelerator.key_code() == ui::VKEY_UP) {
-    // Move the focus up or down.
-    GetFocusManager()->AdvanceFocus(accelerator.key_code() != ui::VKEY_DOWN);
-    return true;
-  }
-  return View::AcceleratorPressed(accelerator);
-}
-
 Widget* BubbleDialogDelegateView::GetWidget() {
   return View::GetWidget();
 }

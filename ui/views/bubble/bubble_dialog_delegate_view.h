@@ -12,7 +12,6 @@
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -30,10 +29,6 @@
 namespace gfx {
 class Rect;
 }
-
-namespace ui {
-class Accelerator;
-}  // namespace ui
 
 namespace ui_devtools {
 class PageAgentViews;
@@ -411,7 +406,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   void AddedToWidget() override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  protected:
   // Disallow overrides of GetMinimumSize and GetMaximumSize(). These would only
