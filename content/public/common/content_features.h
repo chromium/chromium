@@ -99,6 +99,7 @@ CONTENT_EXPORT extern const base::Feature kNotificationContentImage;
 CONTENT_EXPORT extern const base::Feature kNotificationTriggers;
 CONTENT_EXPORT extern const base::Feature kOriginIsolationHeader;
 CONTENT_EXPORT extern const base::Feature kOriginPolicy;
+CONTENT_EXPORT extern const base::Feature kOpenXrExtendedFeatureSupport;
 CONTENT_EXPORT extern const base::Feature kOverscrollHistoryNavigation;
 CONTENT_EXPORT extern const base::Feature kPeriodicBackgroundSync;
 CONTENT_EXPORT extern const base::Feature kPermissionsPolicyHeader;
