@@ -4063,7 +4063,7 @@
       },
     },
 
-    'paeverywhere_gtests': {
+    'paeverywhere_common_tests': {
       'base_unittests': {},
       'blink_platform_unittests': {},
       'unit_tests': {},
@@ -5920,6 +5920,16 @@
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
       'network_service_in_process_gtests',
+    ],
+
+    'paeverywhere_android_gtests': [
+      'android_smoke_tests',
+      'paeverywhere_common_tests'
+    ],
+
+    'paeverywhere_win_gtests': [
+      'paeverywhere_common_tests',
+      'win_specific_chromium_gtests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [

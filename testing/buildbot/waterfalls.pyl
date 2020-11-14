@@ -2148,7 +2148,7 @@
       },
       'android-paeverywhere-arm-fyi-dbg': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_android_gtests',
         },
         'mixins': [
           'walleye',
@@ -2156,7 +2156,7 @@
       },
       'android-paeverywhere-arm-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_android_gtests',
         },
         'mixins': [
           'walleye',
@@ -2164,7 +2164,7 @@
       },
       'android-paeverywhere-arm64-fyi-dbg': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_android_gtests',
         },
         'mixins': [
           'walleye',
@@ -2172,7 +2172,7 @@
       },
       'android-paeverywhere-arm64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_android_gtests',
         },
         'mixins': [
           'walleye',
@@ -2702,7 +2702,7 @@
       },
       'win-paeverywhere-x64-fyi-dbg': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_win_gtests',
         },
         'mixins': [
           'win10',
@@ -2711,7 +2711,7 @@
       },
       'win-paeverywhere-x64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_win_gtests',
         },
         'mixins': [
           'win10',
@@ -2720,7 +2720,7 @@
       },
       'win-paeverywhere-x86-fyi-dbg': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_win_gtests',
         },
         'mixins': [
           'win10',
@@ -2729,7 +2729,7 @@
       },
       'win-paeverywhere-x86-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'paeverywhere_gtests',
+          'gtest_tests': 'paeverywhere_win_gtests',
         },
         'mixins': [
           'win10',
