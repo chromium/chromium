@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/components/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -182,10 +183,9 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
     return;
   }
 
-  base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>
-      barrier = base::BindRepeating(
-          &OsHooksBarrierInfo::Run,
-          base::Owned(new OsHooksBarrierInfo(std::move(callback))));
+  BarrierCallback barrier = base::BindRepeating(
+      &OsHooksBarrierInfo::Run,
+      base::Owned(new OsHooksBarrierInfo(std::move(callback))));
   CallbackFactory callback_factory = CallbackFactory(barrier);
 
   if (os_hooks[OsHookType::kShortcutsMenu] &&
@@ -231,13 +231,21 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
     callback_factory.CreateCallack(OsHookType::kRunOnOsLogin)
         .Run(/*completed=*/true);
   }
-
   // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
   if (os_hooks[OsHookType::kFileHandlers])
     file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
 
   callback_factory.CreateCallack(OsHookType::kFileHandlers)
+      .Run(/*completed=*/true);
+
+  // There is a chance uninstallation point was created with feature flag
+  // enabled so we need to clean it up regardless of feature flag state.
+  if (os_hooks[OsHookType::kUninstallationViaOsSettings] &&
+      ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+  }
+  callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
       .Run(/*completed=*/true);
 }
 
@@ -488,6 +496,19 @@ void OsIntegrationManager::OnShortcutsCreated(
         FROM_HERE, base::BindOnce(callback_factory.CreateCallack(
                                       OsHookType::kRunOnOsLogin),
                                   /*completed=*/false));
+  }
+
+  if (options.os_hooks[OsHookType::kUninstallationViaOsSettings] &&
+      base::FeatureList::IsEnabled(
+          features::kEnableWebAppUninstallFromOsSettings) &&
+      ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    RegisterUninstallationViaOsSettingsWithOs(
+        app_id, registrar_->GetAppShortName(app_id), profile_);
+    callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
+        .Run(/*completed=*/true);
+  } else {
+    callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
+        .Run(/*completed=*/false);
   }
 }
 

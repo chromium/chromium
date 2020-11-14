@@ -3890,6 +3890,7 @@ test("unit_tests") {
       "../browser/win/jumplist_file_util_unittest.cc",
       "../browser/win/jumplist_update_util_unittest.cc",
       "../browser/win/taskbar_icon_finder_unittest.cc",
+      "../browser/win/uninstallation_via_os_settings_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
       "../common/conflicts/module_watcher_win_unittest.cc",
       "../common/conflicts/remote_module_watcher_win_unittest.cc",

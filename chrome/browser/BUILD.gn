@@ -4666,6 +4666,8 @@ static_library("browser") {
       "win/titlebar_config.h",
       "win/ui_automation_util.cc",
       "win/ui_automation_util.h",
+      "win/uninstallation_via_os_settings.cc",
+      "win/uninstallation_via_os_settings.h",
       "win/util_win_service.cc",
       "win/util_win_service.h",
     ]

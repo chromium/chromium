@@ -67,6 +67,8 @@ source_set("components") {
     "web_app_tab_helper_base.cc",
     "web_app_tab_helper_base.h",
     "web_app_ui_manager.h",
+    "web_app_uninstallation_via_os_settings_registration.cc",
+    "web_app_uninstallation_via_os_settings_registration.h",
     "web_app_url_loader.cc",
     "web_app_url_loader.h",
     "web_app_utils.cc",
@@ -119,6 +121,7 @@ source_set("components") {
       "web_app_shortcut_win.h",
       "web_app_shortcuts_menu_win.cc",
       "web_app_shortcuts_menu_win.h",
+      "web_app_uninstallation_via_os_settings_registration_win.cc",
     ]
   }
 

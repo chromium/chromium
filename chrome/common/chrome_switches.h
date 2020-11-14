@@ -236,6 +236,7 @@ extern const char kPrefetchArgumentBrowserBackground[];
 extern const char kPwaLauncherVersion[];
 extern const char kShowIcons[];
 extern const char kUninstall[];
+extern const char kUninstallAppId[];
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)

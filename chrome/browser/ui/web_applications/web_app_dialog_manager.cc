@@ -73,6 +73,10 @@ void WebAppDialogManager::OnWebAppUninstallDialogClosed(
       base::UmaHistogramBoolean(
           "WebApp.UninstallDialog.AppsPageUninstallSuccess", uninstalled);
       break;
+    case UninstallSource::kOsSettings:
+      base::UmaHistogramBoolean(
+          "WebApp.UninstallDialog.OsSettingsUninstallSuccess", uninstalled);
+      break;
   }
 
   std::move(callback).Run(/*success=*/uninstalled);

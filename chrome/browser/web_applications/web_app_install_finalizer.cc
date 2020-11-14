@@ -329,8 +329,16 @@ void WebAppInstallFinalizer::Shutdown() {
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
   registrar().NotifyWebAppUninstalled(app_id);
-  os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
+  os_integration_manager().UninstallAllOsHooks(
+      app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
+                             weak_ptr_factory_.GetWeakPtr(), app_id,
+                             std::move(callback)));
+}
 
+void WebAppInstallFinalizer::OnUninstallOsHooks(
+    const AppId& app_id,
+    UninstallWebAppCallback callback,
+    OsHooksResults os_hooks_info) {
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);
 

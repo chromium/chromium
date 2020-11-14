@@ -35,6 +35,12 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #endif
 
+#if defined(OS_WIN)
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/gfx/native_widget_types.h"
+#endif  // defined(OS_WIN)
+
 namespace web_app {
 
 namespace {
@@ -48,6 +54,34 @@ bool IsAppInstalled(apps::AppServiceProxy* proxy, const AppId& app_id) {
       });
   return installed;
 }
+
+#if defined(OS_WIN)
+
+// UninstallWebAppWithDialog handles WebApp uninstallation from the
+// Windows Settings.
+void UninstallWebAppWithDialog(
+    const AppId& app_id,
+    Profile* profile,
+    std::unique_ptr<ScopedKeepAlive> keep_browser_alive) {
+  auto* provider = WebAppProvider::Get(profile);
+  if (!provider->registrar().IsLocallyInstalled(app_id)) {
+    // App does not exist and controller is destroyed.
+    return;
+  }
+
+  WebAppUiManagerImpl::Get(profile)->dialog_manager().UninstallWebApp(
+      app_id, WebAppDialogManager::UninstallSource::kOsSettings,
+      gfx::kNullNativeWindow,
+      base::BindOnce(
+          [](std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
+             bool /*uninstalled*/) {
+            // This callback exists to own |keep_browser_alive|,
+            // until after the uninstallation completes.
+          },
+          std::move(keep_browser_alive)));
+}
+
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -288,6 +322,18 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 
   windows_closed_requests_map_.erase(app_id);
 }
+
+#if defined(OS_WIN)
+void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
+    const AppId& app_id) {
+  auto keep_browser_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_UNINSTALLATION_FROM_OS_SETTINGS,
+      KeepAliveRestartOption::DISABLED);
+  WebAppProvider::Get(profile_)->on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(&UninstallWebAppWithDialog, app_id, profile_,
+                                std::move(keep_browser_alive)));
+}
+#endif  //  defined(OS_WIN)
 
 bool WebAppUiManagerImpl::IsBrowserForInstalledApp(Browser* browser) {
   if (browser->profile() != profile_)

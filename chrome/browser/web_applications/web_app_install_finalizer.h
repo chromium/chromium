@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -91,6 +92,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
       std::string old_name,
       const WebApplicationInfo& web_app_info,
       bool success);
+  void OnUninstallOsHooks(const AppId& app_id,
+                          UninstallWebAppCallback callback,
+                          OsHooksResults os_hooks_info);
 
   WebAppRegistrar& GetWebAppRegistrar() const;
 

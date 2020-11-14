@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -836,6 +837,23 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       startup_metric_utils::SetNonBrowserUIDisplayed();
     return true;
   }
+
+#if defined(OS_WIN)
+  // If --uninstall-app-id is specified, remove the target web app.
+  if (command_line.HasSwitch(switches::kUninstallAppId)) {
+    std::string app_id =
+        command_line.GetSwitchValueASCII(switches::kUninstallAppId);
+
+    web_app::WebAppUiManagerImpl::Get(last_used_profile)
+        ->UninstallWebAppFromStartupSwitch(app_id);
+
+    // Return true to allow startup to continue and for the main event loop to
+    // run. The process will shut down if no browser windows are open when the
+    // uninstall completes thanks to UninstallWebAppFromStartupSwitch's
+    // ScopedKeepAlive.
+    return true;
+  }
+#endif  // defined(OS_WIN)
 
   if (command_line.HasSwitch(extensions::switches::kLoadApps) &&
       can_use_last_profile) {

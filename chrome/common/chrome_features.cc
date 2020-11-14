@@ -352,6 +352,10 @@ const base::Feature kEnableIncognitoShortcutOnDesktop{
     "EnableIncognitoShortcutOnDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Enable web app uninstallation from Windows settings or control panel.
+const base::Feature kEnableWebAppUninstallFromOsSettings{
+    "EnableWebAppUninstallFromOsSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_MAC)
 const base::Feature kEnterpriseReportingApiKeychainRecreation{
     "EnterpriseReportingApiKeychainRecreation",

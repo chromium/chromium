@@ -764,6 +764,9 @@ const char kShowIcons[]                     = "show-icons";
 // Runs un-installation steps that were done by chrome first-run.
 const char kUninstall[]                     = "uninstall";
 
+// Specifies that the WebApp with the specified id should be uninstalled.
+const char kUninstallAppId[] = "uninstall-app-id";
+
 // Specifies the version of the Progressive-Web-App launcher that launched
 // Chrome, used to determine whether to update all launchers.
 // NOTE: changing this switch requires adding legacy handling for the previous

@@ -817,6 +817,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     // configured from somewhere else rather than always true.
     options.os_hooks[OsHookType::kFileHandlers] = true;
   }
+  options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
   auto hooks_created_callback =
       base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
                      web_app_info->open_as_window, app_id);
