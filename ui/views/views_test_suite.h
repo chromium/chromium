@@ -17,6 +17,11 @@ class Env;
 }
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 class ViewsTestSuite : public base::TestSuite {
@@ -48,6 +53,17 @@ class ViewsTestSuite : public base::TestSuite {
 
   DISALLOW_COPY_AND_ASSIGN(ViewsTestSuite);
 };
+
+#if defined(USE_OZONE)
+// Skips the X11-specific test on Ozone if the current platform is not X11.
+#define SKIP_TEST_IF_NOT_OZONE_X11()                          \
+  if (features::IsUsingOzonePlatform() &&                     \
+      ui::OzonePlatform::GetPlatformNameForTest() != "x11") { \
+    GTEST_SKIP() << "This test is X11-only";                  \
+  }
+#else
+#define SKIP_TEST_IF_NOT_OZONE_X11()
+#endif
 
 }  // namespace views
 

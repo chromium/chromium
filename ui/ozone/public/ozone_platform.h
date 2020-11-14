@@ -6,6 +6,7 @@
 #define UI_OZONE_PUBLIC_OZONE_PLATFORM_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -168,12 +169,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   static OzonePlatform* GetInstance();
 
   // Returns the current ozone platform name.
-  // TODO(crbug.com/1002674): This is temporary and meant to make it possible
-  // for higher level components to take run-time actions depending on the
-  // current ozone platform selected. Which implies in layering violations,
-  // which are tolerated during the X11 migration to Ozone and must be fixed
-  // once it is done.
-  static const char* GetPlatformName();
+  // Some tests may skip based on the platform name.
+  static std::string GetPlatformNameForTest();
 
   // Factory getters to override in subclasses. The returned objects will be
   // injected into the appropriate layer at startup. Subclasses should not

@@ -34,6 +34,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/views_test_suite.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
@@ -1219,10 +1220,8 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   if (base::mac::IsOS10_10())
     return;  // Fails when swarmed. http://crbug.com/660582
 #endif
-#if defined(USE_X11)
-  if (features::IsUsingOzonePlatform())
-    return;  // TODO(https://crbug.com/1109112): Will be enabled later.
-#endif
+
+  SKIP_TEST_IF_NOT_OZONE_X11();
 
   WidgetAutoclosePtr widget;
   widget.reset(CreateTopLevelNativeWidget());

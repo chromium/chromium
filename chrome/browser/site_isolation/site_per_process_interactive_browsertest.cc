@@ -48,7 +48,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -426,11 +425,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // Verifies against regression of https://crbug.com/702330
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        TabAndMouseFocusNavigation) {
-#if defined(USE_OZONE)
-  // TODO(https://crbug.com/1109696): enable for ozone.
-  if (features::IsUsingOzonePlatform())
-    return;
-#endif
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   ui_test_utils::NavigateToURL(browser(), main_url);

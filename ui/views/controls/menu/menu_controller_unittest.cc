@@ -892,7 +892,7 @@ TEST_F(MenuControllerTest, EventTargeter) {
 TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
   // Run this test only for X11 (either Ozone or non-Ozone).
   if (features::IsUsingOzonePlatform() &&
-      std::strcmp(ui::OzonePlatform::GetPlatformName(), "x11") != 0) {
+      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
     GTEST_SKIP();
   }
 

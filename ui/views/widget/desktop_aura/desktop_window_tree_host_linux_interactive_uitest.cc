@@ -510,9 +510,6 @@ TEST_F(DesktopWindowTreeHostLinuxTest,
 // Chrome even if it not possible to deactivate the window wrt to the x server.
 // This behavior is required by several interactive_ui_tests.
 TEST_F(DesktopWindowTreeHostLinuxTest, Deactivate) {
-  // TODO(1109112): enable this test.
-  if (features::IsUsingOzonePlatform())
-    GTEST_SKIP();
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   ActivationWaiter waiter(static_cast<x11::Window>(
@@ -538,9 +535,6 @@ TEST_F(DesktopWindowTreeHostLinuxTest, Deactivate) {
 // Chrome synchronously switches the window that mouse events are forwarded to
 // when capture is changed.
 TEST_F(DesktopWindowTreeHostLinuxTest, CaptureEventForwarding) {
-  // TODO(1109112): enable this test.
-  if (features::IsUsingOzonePlatform())
-    GTEST_SKIP();
   std::unique_ptr<Widget> widget1(CreateWidget(gfx::Rect(100, 100, 100, 100)));
   aura::Window* window1 = widget1->GetNativeWindow();
   DesktopWindowTreeHostLinux* host1 =
@@ -615,9 +609,6 @@ TEST_F(DesktopWindowTreeHostLinuxTest, CaptureEventForwarding) {
 }
 
 TEST_F(DesktopWindowTreeHostLinuxTest, InputMethodFocus) {
-  // TODO(1109112): enable this test.
-  if (features::IsUsingOzonePlatform())
-    GTEST_SKIP();
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   // Waiter should be created as early as possible so that PropertyNotify has

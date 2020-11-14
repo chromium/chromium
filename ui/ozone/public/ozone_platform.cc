@@ -87,7 +87,7 @@ OzonePlatform* OzonePlatform::GetInstance() {
 }
 
 // static
-const char* OzonePlatform::GetPlatformName() {
+std::string OzonePlatform::GetPlatformNameForTest() {
   return GetOzonePlatformName();
 }
 

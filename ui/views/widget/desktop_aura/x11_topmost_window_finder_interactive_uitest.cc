@@ -114,8 +114,7 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
 #if defined(USE_OZONE)
     // Run tests only for X11 (ozone or not Ozone).
     if (features::IsUsingOzonePlatform() &&
-        std::strcmp(ui::OzonePlatform::GetInstance()->GetPlatformName(),
-                    "x11") != 0) {
+        ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
       // SetUp still is required to be run. Otherwise, ViewsTestBase CHECKs in
       // the dtor.
       DesktopWidgetTestInteractive::SetUp();
