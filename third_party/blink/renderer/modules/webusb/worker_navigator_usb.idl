@@ -9,8 +9,8 @@
     // interface declaration once it's supported.
     //
     // Exposed(DedicatedWorker WebUSBOnDedicatedWorkers),
-    ImplementedAs=WorkerNavigatorUSB,
+    ImplementedAs=USB,
     SecureContext
 ] partial interface WorkerNavigator {
-    [CallWith=ScriptState, SameObject] readonly attribute USB usb;
+    [SameObject] readonly attribute USB usb;
 };
