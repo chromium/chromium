@@ -525,7 +525,6 @@ public abstract class ToolbarLayout
      */
     void onTabOrModelChanged() {
         mTabOrModelChangeRunnable.run();
-        getLocationBar().updateMicButtonState();
     }
 
     /**

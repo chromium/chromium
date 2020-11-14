@@ -746,6 +746,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
+        public void onIncognitoStateChanged() {}
+
+        @Override
         public void updateLoadingState(boolean updateUrl) {
             if (updateUrl) onUrlChanged();
             updateStatusIcon();
@@ -830,9 +833,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void revertChanges() {}
-
-        @Override
-        public void updateMicButtonState() {}
 
         @Nullable
         @Override
