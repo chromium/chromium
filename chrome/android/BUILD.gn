@@ -3014,7 +3014,6 @@ if (is_official_build) {
       apk_name = "apks/$_minimal_apks_filename"
     }
     supersize_input_file = "apks/$_minimal_apks_filename"
-    version = "1"
   }
 }
 
@@ -3100,7 +3099,6 @@ if (is_official_build) {
       trichrome_webview = "apks/$_trichrome_webview_basename"
     }
     supersize_input_file = "apks/$_ssargs_filename"
-    version = "1"
   }
 }
 

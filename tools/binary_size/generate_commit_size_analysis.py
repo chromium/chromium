@@ -91,8 +91,6 @@ def main():
   # * supersize_input_file: Main input for SuperSize, and can be {.apk,
   #   .minimal.apks, .ssargs}. If .ssargs, then the file is copied to the
   #   staging dir.
-  # * version: (Unused by this script) Used by build bots to determine whether
-  #   significant binary package restructure has occurred.
 
   # --size-config-json will replace {--apk-name, --mapping-name}.
   parser.add_argument('--size-config-json',

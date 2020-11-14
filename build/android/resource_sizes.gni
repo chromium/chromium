@@ -81,8 +81,6 @@ template("android_resource_sizes_test") {
 #   to_resource_sizes_py: Scope containing data to pass to resource_sizes.py,
 #     processed by generate_commit_size_analysis.py.
 #   supersize_input_file: Main input for SuperSize.
-#   version: Version number, uses to notify build bots that significant changes
-#     has occurred, so that gs:// should be ignored.
 template("android_size_bot_config") {
   _full_target_name = get_label_info(target_name, "label_no_toolchain")
   _out_json = {
@@ -92,7 +90,6 @@ template("android_size_bot_config") {
                              "mapping_files",
                              "to_resource_sizes_py",
                              "supersize_input_file",
-                             "version",
                            ])
   }
   _output_json_path = "$root_build_dir/config/${invoker.name}_size_config.json"
