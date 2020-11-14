@@ -1,5 +1,6 @@
-// Import a remote origin script.
-import * as module from 'https://{{domains[www1]}}:{{ports[https][0]}}/workers/modules/resources/export-on-load-script.py';
+// This script is meant to be imported by a module worker. It receives a
+// message from the worker and responds with the list of imported modules.
+import * as module from './redirect.py?location=/workers/modules/resources/export-on-load-script.js';
 if ('DedicatedWorkerGlobalScope' in self &&
     self instanceof DedicatedWorkerGlobalScope) {
   self.onmessage = e => {
