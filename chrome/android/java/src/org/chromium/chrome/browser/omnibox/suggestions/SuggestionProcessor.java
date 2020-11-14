@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -16,7 +17,7 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
      * @param position The position of the suggestion in the list.
      * @return Whether this suggestion processor handles this type of suggestion at this position.
      */
-    boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position);
+    boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position);
 
     /**
      * Populate a model for the given suggestion.
@@ -24,5 +25,5 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
      * @param model The model to populate.
      * @param position The position of the suggestion in the list.
      */
-    void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position);
+    void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position);
 }

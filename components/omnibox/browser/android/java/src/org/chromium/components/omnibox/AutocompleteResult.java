@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
+package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
 import java.util.ArrayList;
@@ -48,11 +47,11 @@ public class AutocompleteResult {
         }
     };
 
-    private final List<OmniboxSuggestion> mSuggestions;
+    private final List<AutocompleteMatch> mSuggestions;
     private final SparseArray<GroupDetails> mGroupsDetails;
 
     public AutocompleteResult(
-            List<OmniboxSuggestion> suggestions, SparseArray<GroupDetails> groupsDetails) {
+            List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
         mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
     }
@@ -61,8 +60,7 @@ public class AutocompleteResult {
      * @return List of Omnibox Suggestions.
      */
     @NonNull
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public List<OmniboxSuggestion> getSuggestionsList() {
+    public List<AutocompleteMatch> getSuggestionsList() {
         return mSuggestions;
     }
 
@@ -70,7 +68,6 @@ public class AutocompleteResult {
      * @return Map of Group ID to GroupDetails objects.
      */
     @NonNull
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public SparseArray<GroupDetails> getGroupsDetails() {
         return mGroupsDetails;
     }

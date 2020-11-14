@@ -26,7 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,7 +54,7 @@ public final class TileSuggestionProcessorUnitTest {
     Callback<List<QueryTile>> mSuggestionCallback;
 
     @Mock
-    OmniboxSuggestion mSuggestion;
+    AutocompleteMatch mSuggestion;
 
     @Before
     public void setUp() {

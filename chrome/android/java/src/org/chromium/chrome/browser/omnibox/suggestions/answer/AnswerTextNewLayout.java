@@ -13,9 +13,9 @@ import androidx.annotation.StyleRes;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.SuggestionAnswer;
 
 /**
@@ -35,7 +35,7 @@ class AnswerTextNewLayout extends AnswerText {
      * @param query Query that triggered the suggestion.
      * @return array of AnswerText elements to use to construct suggestion item.
      */
-    static AnswerText[] from(Context context, OmniboxSuggestion suggestion, String query) {
+    static AnswerText[] from(Context context, AutocompleteMatch suggestion, String query) {
         AnswerText[] result = new AnswerText[2];
 
         SuggestionAnswer answer = suggestion.getAnswer();

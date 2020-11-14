@@ -33,7 +33,6 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -47,6 +46,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -92,13 +92,13 @@ public final class EditUrlSuggestionUnitTest {
     private SadTab mSadTab;
 
     @Mock
-    private OmniboxSuggestion mWhatYouTypedSuggestion;
+    private AutocompleteMatch mWhatYouTypedSuggestion;
 
     @Mock
-    private OmniboxSuggestion mOtherSuggestion;
+    private AutocompleteMatch mOtherSuggestion;
 
     @Mock
-    private OmniboxSuggestion mSearchSuggestion;
+    private AutocompleteMatch mSearchSuggestion;
 
     @Mock
     private UrlBarDelegate mUrlBarDelegate;

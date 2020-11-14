@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
+package org.chromium.components.omnibox;
 
 import android.util.SparseArray;
 
@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +27,8 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AutocompleteResultUnitTest {
-    private OmniboxSuggestion buildSuggestionForIndex(int index) {
-        return OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+    private AutocompleteMatch buildSuggestionForIndex(int index) {
+        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText("Dummy Suggestion " + index)
                 .setDescription("Dummy Description " + index)
                 .build();
@@ -37,9 +37,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_sameContentsAreEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         // Element 0: 2 subtypes
@@ -72,9 +72,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_itemsOutOfOrderAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(2), buildSuggestionForIndex(1), buildSuggestionForIndex(3));
 
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
@@ -96,9 +96,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_missingGroupsDetailsAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
@@ -119,9 +119,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_groupsWithDifferentDefaultExpandedStateAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
@@ -143,9 +143,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_extraGroupsDetailsAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
@@ -168,9 +168,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_differentItemsAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
+        List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(4));
 
         AutocompleteResult res1 = new AutocompleteResult(list1, null);
@@ -183,7 +183,7 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_differentGroupsDetailsAreNotEqual() {
-        List<OmniboxSuggestion> list = Arrays.asList(
+        List<AutocompleteMatch> list = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
@@ -211,19 +211,19 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_differentSubtypesAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+        List<AutocompleteMatch> list1 = Arrays.asList(
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .addSubtype(10)
                         .build(),
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .addSubtype(17)
                         .build());
 
-        List<OmniboxSuggestion> list2 = Arrays.asList(
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+        List<AutocompleteMatch> list2 = Arrays.asList(
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .addSubtype(10)
                         .build(),
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .addSubtype(4)
                         .build());
 
@@ -236,9 +236,9 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_newItemsAreNotEqual() {
-        List<OmniboxSuggestion> list1 =
+        List<AutocompleteMatch> list1 =
                 Arrays.asList(buildSuggestionForIndex(1), buildSuggestionForIndex(2));
-        List<OmniboxSuggestion> list2 = Arrays.asList(
+        List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(4));
 
         AutocompleteResult res1 = new AutocompleteResult(list1, null);
@@ -251,8 +251,8 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_emptyListsAreEqual() {
-        final List<OmniboxSuggestion> list1 = new ArrayList<>();
-        final List<OmniboxSuggestion> list2 = new ArrayList<>();
+        final List<AutocompleteMatch> list1 = new ArrayList<>();
+        final List<AutocompleteMatch> list2 = new ArrayList<>();
         AutocompleteResult res1 = new AutocompleteResult(list1, null);
         AutocompleteResult res2 = new AutocompleteResult(list2, null);
         Assert.assertEquals(res1, res2);
@@ -262,7 +262,7 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_nullAndEmptyListsAreEqual() {
-        final List<OmniboxSuggestion> list1 = new ArrayList<>();
+        final List<AutocompleteMatch> list1 = new ArrayList<>();
         AutocompleteResult res1 = new AutocompleteResult(list1, null);
         AutocompleteResult res2 = new AutocompleteResult(null, null);
         Assert.assertEquals(res1, res2);
@@ -272,8 +272,8 @@ public class AutocompleteResultUnitTest {
     @Test
     @SmallTest
     public void autocompleteResult_emptyAndNonEmptyListsAreNotEqual() {
-        List<OmniboxSuggestion> list1 = Arrays.asList(buildSuggestionForIndex(1));
-        final List<OmniboxSuggestion> list2 = new ArrayList<>();
+        List<AutocompleteMatch> list1 = Arrays.asList(buildSuggestionForIndex(1));
+        final List<AutocompleteMatch> list2 = new ArrayList<>();
         AutocompleteResult res1 = new AutocompleteResult(list1, null);
         AutocompleteResult res2 = new AutocompleteResult(list2, null);
         Assert.assertNotEquals(res1, res2);

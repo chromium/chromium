@@ -36,11 +36,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -66,12 +66,12 @@ public class EntitySuggestionProcessorUnitTest {
      * Holds all mechanisms that are required to processSuggestion and validate suggestions.
      */
     class SuggestionTestHelper {
-        // Stores created OmniboxSuggestion
-        protected final OmniboxSuggestion mSuggestion;
+        // Stores created AutocompleteMatch
+        protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.
         protected final PropertyModel mModel;
 
-        private SuggestionTestHelper(OmniboxSuggestion suggestion, PropertyModel model) {
+        private SuggestionTestHelper(AutocompleteMatch suggestion, PropertyModel model) {
             mSuggestion = suggestion;
             mModel = model;
         }
@@ -86,9 +86,8 @@ public class EntitySuggestionProcessorUnitTest {
     /** Create fake Entity suggestion. */
     SuggestionTestHelper createSuggestion(
             String subject, String description, String color, GURL url) {
-        OmniboxSuggestion suggestion =
-                OmniboxSuggestionBuilderForTest
-                        .searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY)
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY)
                         .setDisplayText(subject)
                         .setDescription(description)
                         .setImageUrl(url)

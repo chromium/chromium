@@ -14,7 +14,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableSt
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return true;
     }
 
@@ -71,7 +71,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      * Note that the stock icons do not include Favicon - Favicon is only declared
      * when we know we have a valid and large enough site favicon to present.
      */
-    private @SuggestionIcon int getSuggestionIconType(OmniboxSuggestion suggestion) {
+    private @SuggestionIcon int getSuggestionIconType(AutocompleteMatch suggestion) {
         if (suggestion.isSearchSuggestion()) {
             switch (suggestion.getType()) {
                 case OmniboxSuggestionType.VOICE_SUGGEST:
@@ -96,7 +96,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
     }
 
-    private void updateSuggestionIcon(OmniboxSuggestion suggestion, PropertyModel model) {
+    private void updateSuggestionIcon(AutocompleteMatch suggestion, PropertyModel model) {
         @SuggestionIcon
         int type = getSuggestionIconType(suggestion);
         @DrawableRes
@@ -140,7 +140,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         final @OmniboxSuggestionType int suggestionType = suggestion.getType();
         final boolean isSearchSuggestion = suggestion.isSearchSuggestion();
@@ -184,10 +184,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param shouldHighlight Whether the query should be highlighted.
      * @return The first line of text.
      */
-    private SuggestionSpannable getSuggestedQuery(OmniboxSuggestion suggestion,
+    private SuggestionSpannable getSuggestedQuery(AutocompleteMatch suggestion,
             boolean showDescriptionIfPresent, boolean shouldHighlight) {
         String suggestedQuery = null;
-        List<OmniboxSuggestion.MatchClassification> classifications;
+        List<AutocompleteMatch.MatchClassification> classifications;
         if (showDescriptionIfPresent && !suggestion.getUrl().isEmpty()
                 && !TextUtils.isEmpty(suggestion.getDescription())) {
             suggestedQuery = suggestion.getDescription();
@@ -199,9 +199,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (suggestedQuery == null) {
             assert false : "Invalid suggestion sent with no displayable text";
             suggestedQuery = "";
-            classifications = new ArrayList<OmniboxSuggestion.MatchClassification>();
+            classifications = new ArrayList<AutocompleteMatch.MatchClassification>();
             classifications.add(
-                    new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
+                    new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
         }
 
         SuggestionSpannable str = new SuggestionSpannable(suggestedQuery);

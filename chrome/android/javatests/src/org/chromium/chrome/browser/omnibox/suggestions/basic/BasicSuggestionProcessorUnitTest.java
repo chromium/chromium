@@ -34,8 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
@@ -44,6 +42,8 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -107,7 +107,7 @@ public class BasicSuggestionProcessorUnitTest {
 
     private Bitmap mBitmap;
     private BasicSuggestionProcessor mProcessor;
-    private OmniboxSuggestion mSuggestion;
+    private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
 
     @Before
@@ -124,8 +124,8 @@ public class BasicSuggestionProcessorUnitTest {
      * Create Suggestion for test.
      * Do not use directly; use helper methods to create specific suggestion type instead.
      */
-    private OmniboxSuggestionBuilderForTest createSuggestionBuilder(int type, String title) {
-        return OmniboxSuggestionBuilderForTest.searchWithType(type).setDisplayText(title);
+    private AutocompleteMatchBuilder createSuggestionBuilder(int type, String title) {
+        return AutocompleteMatchBuilder.searchWithType(type).setDisplayText(title);
     }
 
     /** Create bookmark suggestion for test. */

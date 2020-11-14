@@ -53,6 +53,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.PageTransition;
@@ -155,7 +158,7 @@ public class AutocompleteMediatorUnitTest {
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
-    private List<OmniboxSuggestion> mSuggestionsList;
+    private List<AutocompleteMatch> mSuggestionsList;
     private ModelList mSuggestionModels;
 
     @Before
@@ -209,11 +212,10 @@ public class AutocompleteMediatorUnitTest {
      *
      * @return List of suggestions.
      */
-    private List<OmniboxSuggestion> buildDummySuggestionsList(int count, String prefix) {
-        List<OmniboxSuggestion> list = new ArrayList<>();
+    private List<AutocompleteMatch> buildDummySuggestionsList(int count, String prefix) {
+        List<AutocompleteMatch> list = new ArrayList<>();
         for (int index = 0; index < count; ++index) {
-            list.add(OmniboxSuggestionBuilderForTest
-                             .searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+            list.add(AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                              .setDisplayText(prefix + (index + 1))
                              .build());
         }
@@ -352,7 +354,7 @@ public class AutocompleteMediatorUnitTest {
         // We want to follow the same restrictions as the original list (specifically: have a
         // resulting list of suggestions taller than the space in dropdown view), so make sure
         // the list sizes are same.
-        List<OmniboxSuggestion> newList =
+        List<AutocompleteMatch> newList =
                 buildDummySuggestionsList(mSuggestionsList.size(), "SuggestionB");
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(new AutocompleteResult(newList, null), "");

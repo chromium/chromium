@@ -31,9 +31,11 @@ import androidx.collection.ArraySet;
 import org.chromium.base.Function;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -60,7 +62,7 @@ public class CachedZeroSuggestionsManager {
      */
     static AutocompleteResult readFromCache() {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-        List<OmniboxSuggestion> suggestions =
+        List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
         SparseArray<GroupDetails> groupsDetails =
                 CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
@@ -74,14 +76,14 @@ public class CachedZeroSuggestionsManager {
      * @param prefs Shared preferences manager.
      */
     private static void cacheSuggestionList(
-            SharedPreferencesManager prefs, List<OmniboxSuggestion> suggestions) {
+            SharedPreferencesManager prefs, List<AutocompleteMatch> suggestions) {
         int numCachableSuggestions = 0;
 
         // Write 0 here to avoid something wrong in the for loop, and the real size will be updated
         // after the for loop.
         prefs.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE, 0);
         for (int i = 0; i < suggestions.size(); i++) {
-            OmniboxSuggestion suggestion = suggestions.get(i);
+            AutocompleteMatch suggestion = suggestions.get(i);
             if (!shouldCacheSuggestion(suggestion)) continue;
 
             prefs.writeString(KEY_ZERO_SUGGEST_URL_PREFIX.createKey(numCachableSuggestions),
@@ -127,7 +129,7 @@ public class CachedZeroSuggestionsManager {
      */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static List<OmniboxSuggestion> readCachedSuggestionList(SharedPreferencesManager prefs) {
+    static List<AutocompleteMatch> readCachedSuggestionList(SharedPreferencesManager prefs) {
         int size = prefs.readInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE, -1);
         if (size <= 1) {
             // Ignore case where we only have a single item on the list - it's likely
@@ -135,10 +137,10 @@ public class CachedZeroSuggestionsManager {
             size = 0;
         }
 
-        List<OmniboxSuggestion> suggestions = new ArrayList<>(size);
-        List<OmniboxSuggestion.MatchClassification> classifications = new ArrayList<>();
+        List<AutocompleteMatch> suggestions = new ArrayList<>(size);
+        List<AutocompleteMatch.MatchClassification> classifications = new ArrayList<>();
         classifications.add(
-                new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
+                new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
         for (int i = 0; i < size; i++) {
             // TODO(tedchoc): Answers in suggest were previously cached, but that could lead to
             //                stale or misleading answers for cases like weather.  Ignore any
@@ -155,7 +157,7 @@ public class CachedZeroSuggestionsManager {
             String description =
                     prefs.readString(KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX.createKey(i), null);
             int nativeType = prefs.readInt(KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(i),
-                    OmniboxSuggestion.INVALID_TYPE);
+                    AutocompleteMatch.INVALID_TYPE);
             boolean isSearchType =
                     prefs.readBoolean(KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX.createKey(i), false);
             boolean isStarred =
@@ -169,7 +171,7 @@ public class CachedZeroSuggestionsManager {
             byte[] postData =
                     postDataStr == null ? null : Base64.decode(postDataStr, Base64.DEFAULT);
             int groupId = prefs.readInt(
-                    KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(i), OmniboxSuggestion.INVALID_GROUP);
+                    KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(i), AutocompleteMatch.INVALID_GROUP);
 
             Set<Integer> subtypes = null;
             try {
@@ -182,7 +184,7 @@ public class CachedZeroSuggestionsManager {
                 return Collections.emptyList();
             }
 
-            OmniboxSuggestion suggestion = new OmniboxSuggestion(nativeType, subtypes, isSearchType,
+            AutocompleteMatch suggestion = new AutocompleteMatch(nativeType, subtypes, isSearchType,
                     0, 0, displayText, classifications, description, classifications, null, null,
                     url, GURL.emptyGURL(), null, isStarred, isDeletable, postContentType, postData,
                     groupId, null, null, false, null);
@@ -230,7 +232,7 @@ public class CachedZeroSuggestionsManager {
 
         for (int i = 0; i < size; i++) {
             int groupId = prefs.readInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i),
-                    OmniboxSuggestion.INVALID_GROUP);
+                    AutocompleteMatch.INVALID_GROUP);
             String groupTitle =
                     prefs.readString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), null);
             boolean collapsedByDefault = prefs.readBoolean(
@@ -249,10 +251,10 @@ public class CachedZeroSuggestionsManager {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void removeInvalidSuggestionsAndGroupsDetails(
-            List<OmniboxSuggestion> suggestions, SparseArray<GroupDetails> groupsDetails) {
+            List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
         // Remove all group details that have invalid index or title.
         for (int index = groupsDetails.size() - 1; index >= 0; index--) {
-            if (groupsDetails.keyAt(index) == OmniboxSuggestion.INVALID_GROUP
+            if (groupsDetails.keyAt(index) == AutocompleteMatch.INVALID_GROUP
                     || TextUtils.isEmpty(groupsDetails.valueAt(index).title)) {
                 groupsDetails.removeAt(index);
             }
@@ -260,10 +262,10 @@ public class CachedZeroSuggestionsManager {
 
         // Remove all suggestions with no valid URL or pointing to nonexistent groups.
         for (int index = suggestions.size() - 1; index >= 0; index--) {
-            final OmniboxSuggestion suggestion = suggestions.get(index);
+            final AutocompleteMatch suggestion = suggestions.get(index);
             final int groupId = suggestion.getGroupId();
             if (!suggestion.getUrl().isValid() || suggestion.getUrl().isEmpty()
-                    || (groupId != OmniboxSuggestion.INVALID_GROUP
+                    || (groupId != AutocompleteMatch.INVALID_GROUP
                             && groupsDetails.indexOfKey(groupId) < 0)) {
                 suggestions.remove(index);
             }
@@ -273,10 +275,10 @@ public class CachedZeroSuggestionsManager {
     /**
      * Check if the suggestion is needed to be cached.
      *
-     * @param suggestion The OmniboxSuggestion to check.
+     * @param suggestion The AutocompleteMatch to check.
      * @return Whether or not the suggestion can be cached.
      */
-    private static boolean shouldCacheSuggestion(OmniboxSuggestion suggestion) {
+    private static boolean shouldCacheSuggestion(AutocompleteMatch suggestion) {
         return !suggestion.hasAnswer()
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_URL
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_TEXT

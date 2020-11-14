@@ -20,12 +20,12 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -62,7 +62,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY;
     }
 
@@ -76,7 +76,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
-    private void fetchEntityImage(OmniboxSuggestion suggestion, PropertyModel model) {
+    private void fetchEntityImage(AutocompleteMatch suggestion, PropertyModel model) {
         ThreadUtils.assertOnUiThread();
         final GURL url = suggestion.getImageUrl();
         if (url.isEmpty()) return;
@@ -141,7 +141,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         setSuggestionDrawableState(model,
                 SuggestionDrawableState.Builder

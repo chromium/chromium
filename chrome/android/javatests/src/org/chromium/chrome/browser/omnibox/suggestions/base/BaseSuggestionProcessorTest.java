@@ -27,12 +27,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -60,7 +60,7 @@ public class BaseSuggestionProcessorTest {
         }
 
         @Override
-        public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+        public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
             return true;
         }
 
@@ -70,7 +70,7 @@ public class BaseSuggestionProcessorTest {
         }
 
         @Override
-        public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+        public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
             super.populateModel(suggestion, model, position);
             setSuggestionDrawableState(model,
                     SuggestionDrawableState.Builder.forBitmap(mContext, mDefaultBitmap).build());
@@ -86,7 +86,7 @@ public class BaseSuggestionProcessorTest {
     Runnable mRunnable;
 
     private TestBaseSuggestionProcessor mProcessor;
-    private OmniboxSuggestion mSuggestion;
+    private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private Bitmap mBitmap;
     private Bitmap mDefaultBitmap;
@@ -103,7 +103,7 @@ public class BaseSuggestionProcessorTest {
      * Create Suggestion for test.
      */
     private void createSuggestion(int type, GURL url) {
-        mSuggestion = OmniboxSuggestionBuilderForTest.searchWithType(type).setUrl(url).build();
+        mSuggestion = AutocompleteMatchBuilder.searchWithType(type).setUrl(url).build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
     }

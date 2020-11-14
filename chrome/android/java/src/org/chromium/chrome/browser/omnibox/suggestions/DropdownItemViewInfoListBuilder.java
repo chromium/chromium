@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSuggestionProcessor;
@@ -36,6 +35,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -246,15 +248,15 @@ class DropdownItemViewInfoListBuilder {
             mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
         }
 
-        final List<OmniboxSuggestion> newSuggestions = autocompleteResult.getSuggestionsList();
+        final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         final int newSuggestionsCount = newSuggestions.size();
         final List<DropdownItemViewInfo> viewInfoList = new ArrayList<>();
 
         // Match suggestions with their corresponding processors.
-        final List<Pair<OmniboxSuggestion, SuggestionProcessor>> suggestionsPairedWithProcessors =
+        final List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors =
                 new ArrayList<>();
         for (int index = 0; index < newSuggestionsCount; index++) {
-            final OmniboxSuggestion suggestion = newSuggestions.get(index);
+            final AutocompleteMatch suggestion = newSuggestions.get(index);
             final SuggestionProcessor processor = getProcessorForSuggestion(suggestion, index);
             suggestionsPairedWithProcessors.add(new Pair<>(suggestion, processor));
         }
@@ -271,11 +273,11 @@ class DropdownItemViewInfoListBuilder {
         }
 
         // Build ViewInfo structures.
-        int currentGroup = OmniboxSuggestion.INVALID_GROUP;
+        int currentGroup = AutocompleteMatch.INVALID_GROUP;
         for (int index = 0; index < newSuggestionsCount; index++) {
-            final Pair<OmniboxSuggestion, SuggestionProcessor> suggestionAndProcessorPair =
+            final Pair<AutocompleteMatch, SuggestionProcessor> suggestionAndProcessorPair =
                     suggestionsPairedWithProcessors.get(index);
-            final OmniboxSuggestion suggestion = suggestionAndProcessorPair.first;
+            final AutocompleteMatch suggestion = suggestionAndProcessorPair.first;
             final SuggestionProcessor processor = suggestionAndProcessorPair.second;
 
             if (currentGroup != suggestion.getGroupId()) {
@@ -307,7 +309,7 @@ class DropdownItemViewInfoListBuilder {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     int getVisibleSuggestionsCount(
-            List<Pair<OmniboxSuggestion, SuggestionProcessor>> suggestionsPairedWithProcessors) {
+            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
         // For cases where we don't know how many suggestions can fit in the visile screen area,
         // make an assumption regarding the group size.
         if (mDropdownHeight == DROPDOWN_HEIGHT_UNKNOWN) {
@@ -316,15 +318,15 @@ class DropdownItemViewInfoListBuilder {
 
         @Px
         int calculatedSuggestionsHeight = 0;
-        int currentGroup = OmniboxSuggestion.INVALID_GROUP;
+        int currentGroup = AutocompleteMatch.INVALID_GROUP;
         int lastVisibleIndex;
         for (lastVisibleIndex = 0; lastVisibleIndex < suggestionsPairedWithProcessors.size();
                 lastVisibleIndex++) {
             if (calculatedSuggestionsHeight >= mDropdownHeight) break;
 
-            final Pair<OmniboxSuggestion, SuggestionProcessor> pair =
+            final Pair<AutocompleteMatch, SuggestionProcessor> pair =
                     suggestionsPairedWithProcessors.get(lastVisibleIndex);
-            final OmniboxSuggestion suggestion = pair.first;
+            final AutocompleteMatch suggestion = pair.first;
 
             // Include the height of the group header view.
             if (currentGroup != suggestion.getGroupId()) {
@@ -357,7 +359,7 @@ class DropdownItemViewInfoListBuilder {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void groupSuggestionsBySearchVsURL(
-            List<Pair<OmniboxSuggestion, SuggestionProcessor>> suggestionsPairedWithProcessors,
+            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors,
             int numVisibleSuggestions) {
         final int firstIndexWithHeader = findFirstIndexWithHeader(suggestionsPairedWithProcessors);
         final int firstIndexForGrouping =
@@ -373,7 +375,7 @@ class DropdownItemViewInfoListBuilder {
                 Math.min(numVisibleSuggestions, firstIndexWithHeader), firstIndexForGrouping);
 
         // Comparator addressing the suggestion grouping.
-        final Comparator<Pair<OmniboxSuggestion, SuggestionProcessor>> comparator =
+        final Comparator<Pair<AutocompleteMatch, SuggestionProcessor>> comparator =
                 (pair1, pair2) -> {
             if (pair1.first.isSearchSuggestion() != pair2.first.isSearchSuggestion()) {
                 return pair1.first.isSearchSuggestion() ? -1 : 1;
@@ -402,7 +404,7 @@ class DropdownItemViewInfoListBuilder {
 
     /** @return Index of the first suggestion decorated with a suggestion header. */
     private int findFirstIndexWithHeader(
-            List<Pair<OmniboxSuggestion, SuggestionProcessor>> suggestionsPairedWithProcessors) {
+            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
         // Native counterpart ensures that suggestion with group headers always end up at the
         // end of the list. This guarantees that these suggestions are both grouped at the end
         // of the list and that there's nothing more we should do about them. See
@@ -412,7 +414,7 @@ class DropdownItemViewInfoListBuilder {
                 firstIndexWithHeader < suggestionsPairedWithProcessors.size();
                 firstIndexWithHeader++) {
             if (suggestionsPairedWithProcessors.get(firstIndexWithHeader).first.getGroupId()
-                    != OmniboxSuggestion.INVALID_GROUP) {
+                    != AutocompleteMatch.INVALID_GROUP) {
                 break;
             }
         }
@@ -424,7 +426,7 @@ class DropdownItemViewInfoListBuilder {
      *         search vs URL.
      */
     private int findFirstIndexForGrouping(
-            List<Pair<OmniboxSuggestion, SuggestionProcessor>> suggestionsPairedWithProcessors) {
+            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
         int firstIndexForGrouping;
         // Find the first suggestion that will be the subject for grouping by search vs url.
         // Note that the first suggestion is the default match and we never change it.
@@ -451,7 +453,7 @@ class DropdownItemViewInfoListBuilder {
      * @param position Position of the suggestion in the list.
      */
     private SuggestionProcessor getProcessorForSuggestion(
-            OmniboxSuggestion suggestion, int position) {
+            AutocompleteMatch suggestion, int position) {
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             SuggestionProcessor processor = mPriorityOrderedSuggestionProcessors.get(index);
             if (processor.doesProcessSuggestion(suggestion, position)) return processor;

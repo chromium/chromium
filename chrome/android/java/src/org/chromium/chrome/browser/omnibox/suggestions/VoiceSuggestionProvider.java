@@ -9,9 +9,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -83,16 +84,16 @@ class VoiceSuggestionProvider {
 
     /**
      * Adds the currently stored voice recognition results to the current list of
-     * {@link OmniboxSuggestion}s passed in.  Returns the new list to the caller.
-     * @param suggestions The current list of {@link OmniboxSuggestion}s.
+     * {@link AutocompleteMatch}s passed in.  Returns the new list to the caller.
+     * @param suggestions The current list of {@link AutocompleteMatch}s.
      * @param maxVoiceResults The maximum number of voice results that should be added.
-     * @return A new list of {@link OmniboxSuggestion}s, which can include voice results.
+     * @return A new list of {@link AutocompleteMatch}s, which can include voice results.
      */
-    List<OmniboxSuggestion> addVoiceSuggestions(
-            List<OmniboxSuggestion> suggestions, int maxVoiceResults) {
+    List<AutocompleteMatch> addVoiceSuggestions(
+            List<AutocompleteMatch> suggestions, int maxVoiceResults) {
         if (mResults.size() == 0 || maxVoiceResults == 0) return suggestions;
 
-        List<OmniboxSuggestion> newSuggestions = new ArrayList<OmniboxSuggestion>();
+        List<AutocompleteMatch> newSuggestions = new ArrayList<AutocompleteMatch>();
         if (suggestions != null && suggestions.size() > 0) {
             newSuggestions.addAll(suggestions);
         }
@@ -114,22 +115,22 @@ class VoiceSuggestionProvider {
     }
 
     private void addVoiceResultToOmniboxSuggestions(
-            List<OmniboxSuggestion> suggestions, VoiceResult result, float confidenceThreshold) {
+            List<AutocompleteMatch> suggestions, VoiceResult result, float confidenceThreshold) {
         if (doesVoiceResultHaveMatch(suggestions, result)) return;
         if (result.getConfidence() < confidenceThreshold && result.getConfidence() > 0) return;
         GURL voiceUrl =
                 TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(result.getMatch());
         List<MatchClassification> classifications = new ArrayList<>();
         classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
-        suggestions.add(new OmniboxSuggestion(OmniboxSuggestionType.VOICE_SUGGEST, null, true, 0, 1,
+        suggestions.add(new AutocompleteMatch(OmniboxSuggestionType.VOICE_SUGGEST, null, true, 0, 1,
                 result.getMatch(), classifications, null, classifications, null, null, voiceUrl,
-                GURL.emptyGURL(), null, false, false, null, null, OmniboxSuggestion.INVALID_GROUP,
+                GURL.emptyGURL(), null, false, false, null, null, AutocompleteMatch.INVALID_GROUP,
                 null, null, false, null));
     }
 
     private boolean doesVoiceResultHaveMatch(
-            List<OmniboxSuggestion> suggestions, VoiceResult result) {
-        for (OmniboxSuggestion suggestion : suggestions) {
+            List<AutocompleteMatch> suggestions, VoiceResult result) {
+        for (AutocompleteMatch suggestion : suggestions) {
             if (suggestion.getDisplayText().equals(result.getMatch())) return true;
         }
 

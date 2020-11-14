@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -260,10 +262,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     /**
      * Check if the suggestion is created from clipboard.
      *
-     * @param suggestion The OmniboxSuggestion to check.
+     * @param suggestion The AutocompleteMatch to check.
      * @return Whether or not the suggestion is from clipboard.
      */
-    private boolean isSuggestionFromClipboard(OmniboxSuggestion suggestion) {
+    private boolean isSuggestionFromClipboard(AutocompleteMatch suggestion) {
         return suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_TEXT
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE;
@@ -284,7 +286,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param index The index of the suggestion to fetch.
      * @return The suggestion at the given index.
      */
-    public OmniboxSuggestion getSuggestionAt(int index) {
+    public AutocompleteMatch getSuggestionAt(int index) {
         return mAutocompleteResult.getSuggestionsList().get(index);
     }
 
@@ -447,13 +449,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     /**
      * Triggered when the user selects one of the omnibox suggestions to navigate to.
-     * @param suggestion The OmniboxSuggestion which was selected.
+     * @param suggestion The AutocompleteMatch which was selected.
      * @param position Position of the suggestion in the drop down view.
      * @param url The URL associated with the suggestion.
      */
     @Override
     public void onSuggestionClicked(
-            @NonNull OmniboxSuggestion suggestion, int position, @NonNull GURL url) {
+            @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url) {
         if (mShowCachedZeroSuggestResults && !mNativeInitialized) {
             mDeferredOnSelection = new DeferredOnSelectionRunnable(suggestion, position) {
                 @Override
@@ -472,7 +474,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param suggestion The suggestion selected.
      */
     @Override
-    public void onRefineSuggestion(OmniboxSuggestion suggestion) {
+    public void onRefineSuggestion(AutocompleteMatch suggestion) {
         stopAutocomplete(false);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         String refineText = suggestion.getFillIntoEdit();
@@ -489,7 +491,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     }
 
     @Override
-    public void onSwitchToTab(OmniboxSuggestion suggestion, int position) {
+    public void onSwitchToTab(AutocompleteMatch suggestion, int position) {
         Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         if (tab == null || tabWindowManager == null) {
@@ -535,7 +537,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * execute an action before native is initialize.
      */
     @Override
-    public void onSuggestionLongClicked(@NonNull OmniboxSuggestion suggestion, int position) {
+    public void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position) {
         RecordUserAction.record("MobileOmniboxDeleteGesture");
         if (!suggestion.isDeletable()) return;
 
@@ -606,7 +608,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param skipCheck Whether to skip an out of bounds check.
      * @return The url to navigate to.
      */
-    private GURL updateSuggestionUrlIfNeeded(@NonNull OmniboxSuggestion suggestion,
+    private GURL updateSuggestionUrlIfNeeded(@NonNull AutocompleteMatch suggestion,
             int selectedIndex, @NonNull GURL url, boolean skipCheck) {
         // Only called once we have suggestions, and don't have a listener though which we can
         // receive suggestions until the native side is ready, so this is safe
@@ -646,7 +648,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      *         part of the model.
      */
     @SuppressWarnings("ReferenceEquality")
-    private int findSuggestionInAutocompleteResult(OmniboxSuggestion suggestion, int position) {
+    private int findSuggestionInAutocompleteResult(AutocompleteMatch suggestion, int position) {
         if (getSuggestionCount() > position && getSuggestionAt(position) == suggestion) {
             return position;
         }
@@ -742,7 +744,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 || mShowCachedZeroSuggestResults
             : "Native suggestions received before native side intialialized";
 
-        final List<OmniboxSuggestion> newSuggestions = autocompleteResult.getSuggestionsList();
+        final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         if (mDeferredOnSelection != null) {
             mDeferredOnSelection.setShouldLog(newSuggestions.size() > mDeferredOnSelection.mPosition
                     && mDeferredOnSelection.mSuggestion.equals(
@@ -794,7 +796,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param eventTime The timestamp the load was triggered by the user.
      */
     private void findMatchAndLoadUrl(String urlText, long inputStart) {
-        OmniboxSuggestion suggestionMatch;
+        AutocompleteMatch suggestionMatch;
         boolean inSuggestionList = true;
 
         if (getSuggestionCount() > 0
@@ -828,7 +830,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param inputStart The timestamp the input was started.
      * @param inVisibleSuggestionList Whether the suggestion is in the visible suggestion list.
      */
-    private void loadUrlForOmniboxMatch(int matchPosition, @NonNull OmniboxSuggestion suggestion,
+    private void loadUrlForOmniboxMatch(int matchPosition, @NonNull AutocompleteMatch suggestion,
             @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList) {
         SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
@@ -980,11 +982,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     }
 
     private abstract static class DeferredOnSelectionRunnable implements Runnable {
-        protected final OmniboxSuggestion mSuggestion;
+        protected final AutocompleteMatch mSuggestion;
         protected final int mPosition;
         protected boolean mShouldLog;
 
-        public DeferredOnSelectionRunnable(OmniboxSuggestion suggestion, int position) {
+        public DeferredOnSelectionRunnable(AutocompleteMatch suggestion, int position) {
             this.mSuggestion = suggestion;
             this.mPosition = position;
         }
@@ -1038,7 +1040,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param disposition The window open disposition.
      * @param suggestion The suggestion selected.
      */
-    private void recordMetrics(int matchPosition, int disposition, OmniboxSuggestion suggestion) {
+    private void recordMetrics(int matchPosition, int disposition, AutocompleteMatch suggestion) {
         String currentPageUrl = mDataProvider.getCurrentUrl();
         int pageClassification =
                 mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
@@ -1079,7 +1081,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
         int position = -1;
         int suggestionCount = getSuggestionCount();
-        OmniboxSuggestion suggestion = null;
+        AutocompleteMatch suggestion = null;
         // Find the suggestion position and hashCode.
         for (int i = 0; i < suggestionCount; ++i) {
             suggestion = getSuggestionAt(i);

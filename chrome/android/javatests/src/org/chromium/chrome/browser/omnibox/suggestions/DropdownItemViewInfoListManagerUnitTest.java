@@ -27,7 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;

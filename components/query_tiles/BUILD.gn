@@ -9,7 +9,10 @@ if (is_android) {
 
 if (is_android) {
   java_group("java") {
-    deps = [ ":public_java" ]
+    deps = [
+      ":public_java",
+      ":query_tile_java",
+    ]
   }
 }
 
@@ -71,9 +74,19 @@ source_set("factory") {
 }
 
 if (is_android) {
-  android_library("public_java") {
+  android_library("query_tile_java") {
     sources = [
       "android/java/src/org/chromium/components/query_tiles/QueryTile.java",
+    ]
+
+    deps = [
+      "//components/browser_ui/widget/android:java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+    ]
+  }
+
+  android_library("public_java") {
+    sources = [
       "android/java/src/org/chromium/components/query_tiles/QueryTileConstants.java",
       "android/java/src/org/chromium/components/query_tiles/TileProvider.java",
       "android/java/src/org/chromium/components/query_tiles/TileUmaLogger.java",
@@ -82,11 +95,11 @@ if (is_android) {
     ]
 
     deps = [
+      ":query_tile_java",
       "//base:base_java",
       "//base:jni_java",
       "//components/browser_ui/widget/android:java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
       "//ui/android:ui_java",
     ]
 
@@ -106,7 +119,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/query_tiles/TestTileProvider.java" ]
 
     deps = [
-      ":public_java",
+      ":java",
       "//base:base_java",
     ]
   }
@@ -117,7 +130,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/query_tiles/TileUmaLoggerTest.java" ]
 
     deps = [
-      ":public_java",
+      ":java",
       ":test_support_java",
       "//base:base_java",
       "//base:base_junit_test_support",

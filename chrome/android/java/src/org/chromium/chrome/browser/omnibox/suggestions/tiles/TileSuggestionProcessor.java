@@ -8,9 +8,9 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -36,7 +36,7 @@ public class TileSuggestionProcessor implements SuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION;
     }
 
@@ -68,7 +68,7 @@ public class TileSuggestionProcessor implements SuggestionProcessor {
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         List<QueryTile> tiles = suggestion.getQueryTiles();
 
         if (mLastProcessedTiles != null && mLastProcessedTiles.equals(tiles)) return;

@@ -32,8 +32,6 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -42,6 +40,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewPrope
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -65,7 +65,7 @@ public class ClipboardSuggestionProcessorTest {
     Resources mResources;
 
     private ClipboardSuggestionProcessor mProcessor;
-    private OmniboxSuggestion mSuggestion;
+    private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private Bitmap mBitmap;
     private ViewGroup mRootView;
@@ -102,7 +102,7 @@ public class ClipboardSuggestionProcessorTest {
 
     /** Create clipboard suggestion for test. */
     private void createClipboardSuggestion(int type, GURL url, byte[] clipboardImageData) {
-        mSuggestion = OmniboxSuggestionBuilderForTest.searchWithType(type)
+        mSuggestion = AutocompleteMatchBuilder.searchWithType(type)
                               .setIsSearch(type != OmniboxSuggestionType.CLIPBOARD_URL)
                               .setUrl(url)
                               .setClipboardImageData(clipboardImageData)

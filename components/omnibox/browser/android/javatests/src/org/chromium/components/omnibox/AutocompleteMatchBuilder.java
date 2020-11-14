@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
+package org.chromium.components.omnibox;
 
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
@@ -20,15 +19,15 @@ import java.util.Set;
  * Utility class for all omnibox suggestions related tests that aids constructing of Omnibox
  * Suggestions.
  */
-public class OmniboxSuggestionBuilderForTest {
-    // Fields below directly represent fields used in OmniboxSuggestion.java.
+public class AutocompleteMatchBuilder {
+    // Fields below directly represent fields used in AutocompleteMatch.java.
     private @OmniboxSuggestionType int mType;
     private Set<Integer> mSubtypes;
     private boolean mIsSearchType;
     private String mDisplayText;
-    private List<OmniboxSuggestion.MatchClassification> mDisplayTextClassifications;
+    private List<AutocompleteMatch.MatchClassification> mDisplayTextClassifications;
     private String mDescription;
-    private List<OmniboxSuggestion.MatchClassification> mDescriptionClassifications;
+    private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
     private String mFillIntoEdit;
     private GURL mUrl;
@@ -44,35 +43,35 @@ public class OmniboxSuggestionBuilderForTest {
     private List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
-    private List<OmniboxSuggestion.NavsuggestTile> mNavsuggestTiles;
+    private List<AutocompleteMatch.NavsuggestTile> mNavsuggestTiles;
 
     /**
      * Create a suggestion builder for a search suggestion.
      *
      * @return Omnibox suggestion builder that can be further refined by the user.
      */
-    public static OmniboxSuggestionBuilderForTest searchWithType(@OmniboxSuggestionType int type) {
-        return new OmniboxSuggestionBuilderForTest(type)
+    public static AutocompleteMatchBuilder searchWithType(@OmniboxSuggestionType int type) {
+        return new AutocompleteMatchBuilder(type)
                 .setIsSearch(true)
                 .setDisplayText("Dummy Suggestion")
                 .setDescription("Dummy Description")
                 .setUrl(new GURL("http://dummy-website.com/test"));
     }
 
-    public OmniboxSuggestionBuilderForTest(@OmniboxSuggestionType int type) {
+    public AutocompleteMatchBuilder(@OmniboxSuggestionType int type) {
         reset();
         mType = type;
     }
 
-    public OmniboxSuggestionBuilderForTest() {
-        this(OmniboxSuggestion.INVALID_TYPE);
+    public AutocompleteMatchBuilder() {
+        this(AutocompleteMatch.INVALID_TYPE);
     }
 
     /**
      * Reset the Builder to its default state.
      */
     public void reset() {
-        mType = OmniboxSuggestion.INVALID_TYPE;
+        mType = AutocompleteMatch.INVALID_TYPE;
         mSubtypes = new ArraySet<>();
         mIsSearchType = false;
         mDisplayText = null;
@@ -90,26 +89,26 @@ public class OmniboxSuggestionBuilderForTest {
         mIsDeletable = false;
         mPostContentType = null;
         mPostData = null;
-        mGroupId = OmniboxSuggestion.INVALID_GROUP;
+        mGroupId = AutocompleteMatch.INVALID_GROUP;
         mQueryTiles = null;
         mClipboardImageData = null;
         mHasTabMatch = false;
         mNavsuggestTiles = null;
 
         mDisplayTextClassifications.add(
-                new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
+                new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
         mDescriptionClassifications.add(
-                new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
+                new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
     }
 
     /**
-     * Construct OmniboxSuggestion from user set parameters.
+     * Construct AutocompleteMatch from user set parameters.
      * Default/fallback values for not explicitly initialized fields are supplied by the builder.
      *
-     * @return New OmniboxSuggestion.
+     * @return New AutocompleteMatch.
      */
-    public OmniboxSuggestion build() {
-        return new OmniboxSuggestion(mType, mSubtypes, mIsSearchType, mRelevance, mTransition,
+    public AutocompleteMatch build() {
+        return new AutocompleteMatch(mType, mSubtypes, mIsSearchType, mRelevance, mTransition,
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
                 mImageDominantColor, mIsStarred, mIsDeletable, mPostContentType, mPostData,
@@ -120,7 +119,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param text Display text to be used with the built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setDisplayText(String text) {
+    public AutocompleteMatchBuilder setDisplayText(String text) {
         mDisplayText = text;
         return this;
     }
@@ -129,7 +128,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param text Description text to be used with the built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setDescription(String text) {
+    public AutocompleteMatchBuilder setDescription(String text) {
         mDescription = text;
         return this;
     }
@@ -138,7 +137,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param id Group Id for newly built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setGroupId(int id) {
+    public AutocompleteMatchBuilder setGroupId(int id) {
         mGroupId = id;
         return this;
     }
@@ -147,7 +146,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param type Post content type to set for this suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setPostContentType(String type) {
+    public AutocompleteMatchBuilder setPostContentType(String type) {
         mPostContentType = type;
         return this;
     }
@@ -156,7 +155,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param data Post data to set for this suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setPostData(byte[] data) {
+    public AutocompleteMatchBuilder setPostData(byte[] data) {
         mPostData = data;
         return this;
     }
@@ -165,7 +164,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param url URL for the built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setUrl(GURL url) {
+    public AutocompleteMatchBuilder setUrl(GURL url) {
         mUrl = url;
         return this;
     }
@@ -174,7 +173,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param url Image URL for the built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setImageUrl(GURL url) {
+    public AutocompleteMatchBuilder setImageUrl(GURL url) {
         mImageUrl = url;
         return this;
     }
@@ -183,7 +182,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param color Image dominant color to set for built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setImageDominantColor(String color) {
+    public AutocompleteMatchBuilder setImageDominantColor(String color) {
         mImageDominantColor = color;
         return this;
     }
@@ -192,7 +191,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param isSearch Whether built suggestion is a search suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setIsSearch(boolean isSearch) {
+    public AutocompleteMatchBuilder setIsSearch(boolean isSearch) {
         mIsSearchType = isSearch;
         return this;
     }
@@ -201,7 +200,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param isStarred Whether built suggestion is bookmarked.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setIsStarred(boolean isStarred) {
+    public AutocompleteMatchBuilder setIsStarred(boolean isStarred) {
         mIsStarred = isStarred;
         return this;
     }
@@ -210,7 +209,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param answer The answer in the Omnibox suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setAnswer(SuggestionAnswer answer) {
+    public AutocompleteMatchBuilder setAnswer(SuggestionAnswer answer) {
         mAnswer = answer;
         return this;
     }
@@ -219,7 +218,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param clipboardImageData Image data to set for this suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setClipboardImageData(byte[] clipboardImageData) {
+    public AutocompleteMatchBuilder setClipboardImageData(byte[] clipboardImageData) {
         mClipboardImageData = clipboardImageData;
         return this;
     }
@@ -228,7 +227,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param hasTabMatch Whether built suggestion has tab match.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setHasTabMatch(boolean hasTabMatch) {
+    public AutocompleteMatchBuilder setHasTabMatch(boolean hasTabMatch) {
         mHasTabMatch = hasTabMatch;
         return this;
     }
@@ -237,7 +236,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param relevance Relevance score for newly constructed suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setRelevance(int relevance) {
+    public AutocompleteMatchBuilder setRelevance(int relevance) {
         mRelevance = relevance;
         return this;
     }
@@ -246,7 +245,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param type Suggestion type.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setType(@OmniboxSuggestionType int type) {
+    public AutocompleteMatchBuilder setType(@OmniboxSuggestionType int type) {
         mType = type;
         return this;
     }
@@ -255,7 +254,7 @@ public class OmniboxSuggestionBuilderForTest {
      * @param subtype Suggestion subtype.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest addSubtype(int subtype) {
+    public AutocompleteMatchBuilder addSubtype(int subtype) {
         mSubtypes.add(subtype);
         return this;
     }
@@ -264,8 +263,8 @@ public class OmniboxSuggestionBuilderForTest {
      * @param tiles Navsuggest tiles to associate with the suggestion.
      * @return Omnibox suggestion builder.
      */
-    public OmniboxSuggestionBuilderForTest setNavsuggestTiles(
-            List<OmniboxSuggestion.NavsuggestTile> tiles) {
+    public AutocompleteMatchBuilder setNavsuggestTiles(
+            List<AutocompleteMatch.NavsuggestTile> tiles) {
         mNavsuggestTiles = tiles;
         return this;
     }

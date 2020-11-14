@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions;
+package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 
@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
@@ -23,7 +22,7 @@ import java.util.Set;
 /**
  * Container class with information about each omnibox suggestion item.
  */
-public class OmniboxSuggestion {
+public class AutocompleteMatch {
     public static final int INVALID_GROUP = -1;
     public static final int INVALID_TYPE = -1;
 
@@ -100,7 +99,7 @@ public class OmniboxSuggestion {
     private final boolean mHasTabMatch;
     private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
 
-    public OmniboxSuggestion(int nativeType, Set<Integer> subtypes, boolean isSearchType,
+    public AutocompleteMatch(int nativeType, Set<Integer> subtypes, boolean isSearchType,
             int relevance, int transition, String displayText,
             List<MatchClassification> displayTextClassifications, String description,
             List<MatchClassification> descriptionClassifications, SuggestionAnswer answer,
@@ -256,11 +255,11 @@ public class OmniboxSuggestion {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof OmniboxSuggestion)) {
+        if (!(obj instanceof AutocompleteMatch)) {
             return false;
         }
 
-        OmniboxSuggestion suggestion = (OmniboxSuggestion) obj;
+        AutocompleteMatch suggestion = (AutocompleteMatch) obj;
         return mType == suggestion.mType && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
                 && TextUtils.equals(mFillIntoEdit, suggestion.mFillIntoEdit)
                 && TextUtils.equals(mDisplayText, suggestion.mDisplayText)

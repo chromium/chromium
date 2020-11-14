@@ -17,12 +17,12 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -121,7 +121,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param position The position of the button in the list.
      */
     protected void setTabSwitchOrRefineAction(
-            PropertyModel model, OmniboxSuggestion suggestion, int position) {
+            PropertyModel model, AutocompleteMatch suggestion, int position) {
         @DrawableRes
         int icon = 0;
         String iconString = null;
@@ -152,7 +152,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param suggestion Selected suggestion.
      * @param position Position of the suggestion on the list.
      */
-    protected void onSuggestionClicked(@NonNull OmniboxSuggestion suggestion, int position) {
+    protected void onSuggestionClicked(@NonNull AutocompleteMatch suggestion, int position) {
         mSuggestionHost.onSuggestionClicked(suggestion, position, suggestion.getUrl());
     }
 
@@ -162,12 +162,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param suggestion Selected suggestion.
      * @param position Position of the suggestion on the list.
      */
-    protected void onSuggestionLongClicked(@NonNull OmniboxSuggestion suggestion, int position) {
+    protected void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position) {
         mSuggestionHost.onSuggestionLongClicked(suggestion, position);
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         model.set(BaseSuggestionViewProperties.ON_CLICK,
                 () -> onSuggestionClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,

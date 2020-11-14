@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
+  "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
+]

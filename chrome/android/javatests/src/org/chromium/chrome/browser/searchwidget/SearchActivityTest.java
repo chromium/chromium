@@ -55,10 +55,7 @@ import org.chromium.chrome.browser.locale.DefaultSearchEnginePromoDialog.Default
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
@@ -73,6 +70,9 @@ import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -364,19 +364,19 @@ public class SearchActivityTest {
         });
 
         // Cache some mock results to show.
-        OmniboxSuggestion mockSuggestion =
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+        AutocompleteMatch mockSuggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText("https://google.com")
                         .setDescription("https://google.com")
                         .setUrl(new GURL("https://google.com"))
                         .build();
-        OmniboxSuggestion mockSuggestion2 =
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+        AutocompleteMatch mockSuggestion2 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText("https://android.com")
                         .setDescription("https://android.com")
                         .setUrl(new GURL("https://android.com"))
                         .build();
-        List<OmniboxSuggestion> list = new ArrayList<>();
+        List<AutocompleteMatch> list = new ArrayList<>();
         list.add(mockSuggestion);
         list.add(mockSuggestion2);
         AutocompleteResult data = new AutocompleteResult(list, null);
@@ -552,7 +552,7 @@ public class SearchActivityTest {
         int imageSuggestionIndex = INVALID_INDEX;
         // Find the index of the image clipboard suggestion.
         for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); ++i) {
-            OmniboxSuggestion suggestion =
+            AutocompleteMatch suggestion =
                     locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
             if (suggestion != null
                     && suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
@@ -563,7 +563,7 @@ public class SearchActivityTest {
         Assert.assertNotEquals("Cannot find the image clipboard Omnibox suggestion", INVALID_INDEX,
                 imageSuggestionIndex);
 
-        OmniboxSuggestion imageSuggestion =
+        AutocompleteMatch imageSuggestion =
                 locationBar.getAutocompleteCoordinator().getSuggestionAt(imageSuggestionIndex);
         Assert.assertNotNull("The image clipboard suggestion should contains post content type.",
                 imageSuggestion.getPostContentType());
@@ -626,7 +626,7 @@ public class SearchActivityTest {
         int imageSuggestionIndex = INVALID_INDEX;
         // Find the index of the image clipboard suggestion.
         for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); ++i) {
-            OmniboxSuggestion suggestion =
+            AutocompleteMatch suggestion =
                     locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
             if (suggestion != null
                     && suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
@@ -637,7 +637,7 @@ public class SearchActivityTest {
         Assert.assertNotEquals("Cannot find the image clipboard Omnibox suggestion", INVALID_INDEX,
                 imageSuggestionIndex);
 
-        OmniboxSuggestion imageSuggestion =
+        AutocompleteMatch imageSuggestion =
                 locationBar.getAutocompleteCoordinator().getSuggestionAt(imageSuggestionIndex);
 
         Intent intent =
@@ -752,7 +752,7 @@ public class SearchActivityTest {
                     locationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
             Criteria.checkThat(suggestionsDropdown, Matchers.notNullValue());
             for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); i++) {
-                OmniboxSuggestion suggestion =
+                AutocompleteMatch suggestion =
                         locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
                 if (suggestion != null && suggestion.getType() == type) return;
             }

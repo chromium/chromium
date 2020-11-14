@@ -20,13 +20,15 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.NavsuggestTile;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.components.omnibox.AutocompleteMatch.NavsuggestTile;
+import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -148,10 +150,10 @@ public class AutocompleteController {
      * @param text The user's input text to classify (i.e. what they typed in the omnibox)
      * @param focusedFromFakebox Whether the user entered the omnibox by tapping the fakebox on the
      *                           native NTP. This should be false on all other pages.
-     * @return The OmniboxSuggestion specifying where to navigate, the transition type, etc. May
+     * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May
      *         be null if the input is invalid.
      */
-    public OmniboxSuggestion classify(String text, boolean focusedFromFakebox) {
+    public AutocompleteMatch classify(String text, boolean focusedFromFakebox) {
         if (mNativeAutocompleteControllerAndroid != 0) {
             return AutocompleteControllerJni.get().classify(mNativeAutocompleteControllerAndroid,
                     AutocompleteController.this, text, focusedFromFakebox);
@@ -316,7 +318,7 @@ public class AutocompleteController {
     @CalledByNative
     private static AutocompleteResult createAutocompleteResult(
             int suggestionsCount, int groupsCount) {
-        return new AutocompleteResult(new ArrayList<OmniboxSuggestion>(suggestionsCount),
+        return new AutocompleteResult(new ArrayList<AutocompleteMatch>(suggestionsCount),
                 new SparseArray<GroupDetails>(groupsCount));
     }
 
@@ -328,7 +330,7 @@ public class AutocompleteController {
      */
     @CalledByNative
     private static void addOmniboxSuggestionToResult(
-            AutocompleteResult autocompleteResult, OmniboxSuggestion suggestion) {
+            AutocompleteResult autocompleteResult, AutocompleteMatch suggestion) {
         autocompleteResult.getSuggestionsList().add(suggestion);
     }
 
@@ -348,7 +350,7 @@ public class AutocompleteController {
     }
 
     @CalledByNative
-    private static OmniboxSuggestion buildOmniboxSuggestion(int nativeType, int[] nativeSubtypes,
+    private static AutocompleteMatch buildOmniboxSuggestion(int nativeType, int[] nativeSubtypes,
             boolean isSearchType, int relevance, int transition, String contents,
             int[] contentClassificationOffsets, int[] contentClassificationStyles,
             String description, int[] descriptionClassificationOffsets,
@@ -376,7 +378,7 @@ public class AutocompleteController {
             subtypes.add(nativeSubtypes[i]);
         }
 
-        return new OmniboxSuggestion(nativeType, subtypes, isSearchType, relevance, transition,
+        return new AutocompleteMatch(nativeType, subtypes, isSearchType, relevance, transition,
                 contents, contentClassifications, description, descriptionClassifications, answer,
                 fillIntoEdit, url, imageUrl, imageDominantColor, isStarred, isDeletable,
                 postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch,
@@ -395,13 +397,13 @@ public class AutocompleteController {
     }
 
     /**
-     * Verifies whether the given OmniboxSuggestion object has the same hashCode as another
+     * Verifies whether the given AutocompleteMatch object has the same hashCode as another
      * suggestion. This is used to validate that the native AutocompleteMatch object is in sync
      * with the Java version.
      */
     @CalledByNative
     private static boolean isEquivalentOmniboxSuggestion(
-            OmniboxSuggestion suggestion, int hashCode) {
+            AutocompleteMatch suggestion, int hashCode) {
         return suggestion.hashCode() == hashCode;
     }
 
@@ -412,7 +414,7 @@ public class AutocompleteController {
      * and match selection.
      *
      * @param selectedIndex The index of the autocomplete entry selected.
-     * @param hashCode Hash code of the OmniboxSuggestion object that is selected.
+     * @param hashCode Hash code of the AutocompleteMatch object that is selected.
      * @param elapsedTimeSinceInputChange The number of ms between the time the user started
      *                                    typing in the omnibox and the time the user has selected
      *                                    a suggestion.
@@ -436,7 +438,7 @@ public class AutocompleteController {
      * ".1409j0j9" is the encoded elapsed time.
      *
      * @param selectedIndex The index of the autocomplete entry selected.
-     * @param hashCode Hash code of the OmniboxSuggestion object that is selected.
+     * @param hashCode Hash code of the AutocompleteMatch object that is selected.
      * @param elapsedTimeSinceInputChange The number of ms between the time the user started
      *                                    typing in the omnibox and the time the user has selected
      *                                    a suggestion.
@@ -487,7 +489,7 @@ public class AutocompleteController {
                 int pageClassification, boolean preventInlineAutocomplete, boolean preferKeyword,
                 boolean allowExactKeywordMatch, boolean wantAsynchronousMatches, String queryTileId,
                 boolean isQueryStartedFromTiles);
-        OmniboxSuggestion classify(long nativeAutocompleteControllerAndroid,
+        AutocompleteMatch classify(long nativeAutocompleteControllerAndroid,
                 AutocompleteController caller, String text, boolean focusedFromFakebox);
         void stop(long nativeAutocompleteControllerAndroid, AutocompleteController caller,
                 boolean clearResults);

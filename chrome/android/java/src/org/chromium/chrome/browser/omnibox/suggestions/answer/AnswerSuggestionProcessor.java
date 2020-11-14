@@ -15,12 +15,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -53,7 +53,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
         return suggestion.hasAnswer() || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
@@ -70,12 +70,12 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         setStateForSuggestion(model, suggestion, position);
     }
 
-    private void maybeFetchAnswerIcon(PropertyModel model, OmniboxSuggestion suggestion) {
+    private void maybeFetchAnswerIcon(PropertyModel model, AutocompleteMatch suggestion) {
         ThreadUtils.assertOnUiThread();
 
         // Ensure an image fetcher is available prior to requesting images.
@@ -121,7 +121,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      * Sets both lines of the Omnibox suggestion based on an Answers in Suggest result.
      */
     private void setStateForSuggestion(
-            PropertyModel model, OmniboxSuggestion suggestion, int position) {
+            PropertyModel model, AutocompleteMatch suggestion, int position) {
         AnswerText[] details = AnswerTextNewLayout.from(
                 getContext(), suggestion, mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
 
@@ -150,7 +150,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      * Get default suggestion icon for supplied suggestion.
      */
     @DrawableRes
-    int getSuggestionIcon(OmniboxSuggestion suggestion) {
+    int getSuggestionIcon(AutocompleteMatch suggestion) {
         SuggestionAnswer answer = suggestion.getAnswer();
         if (answer != null) {
             switch (answer.getType()) {

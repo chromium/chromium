@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;

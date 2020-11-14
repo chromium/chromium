@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -253,7 +254,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * @param index The index of the suggestion to fetch.
      * @return The suggestion at the given index.
      */
-    public OmniboxSuggestion getSuggestionAt(int index) {
+    public AutocompleteMatch getSuggestionAt(int index) {
         return mMediator.getSuggestionAt(index);
     }
 

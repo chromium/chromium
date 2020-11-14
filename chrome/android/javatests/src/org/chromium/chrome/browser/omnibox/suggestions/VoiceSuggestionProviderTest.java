@@ -19,6 +19,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +34,13 @@ public class VoiceSuggestionProviderTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
-    private static List<OmniboxSuggestion> createDummySuggestions(String... texts) {
-        List<OmniboxSuggestion> suggestions = new ArrayList<OmniboxSuggestion>(texts.length);
+    private static List<AutocompleteMatch> createDummySuggestions(String... texts) {
+        List<AutocompleteMatch> suggestions = new ArrayList<AutocompleteMatch>(texts.length);
         for (int i = 0; i < texts.length; ++i) {
-            suggestions.add(OmniboxSuggestionBuilderForTest
-                                    .searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                                    .setDisplayText(texts[i])
-                                    .build());
+            suggestions.add(
+                    AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                            .setDisplayText(texts[i])
+                            .build());
         }
 
         return suggestions;
@@ -52,39 +54,39 @@ public class VoiceSuggestionProviderTest {
         return results;
     }
 
-    private static boolean assertSuggestionMatchesVoiceResult(OmniboxSuggestion a, VoiceResult b) {
+    private static boolean assertSuggestionMatchesVoiceResult(AutocompleteMatch a, VoiceResult b) {
         return a.getType() == OmniboxSuggestionType.VOICE_SUGGEST && !a.isStarred()
                 && TextUtils.equals(a.getDisplayText(), b.getMatch());
     }
 
-    private void assertArrayStartsWith(List<OmniboxSuggestion> a, List<OmniboxSuggestion> b) {
+    private void assertArrayStartsWith(List<AutocompleteMatch> a, List<AutocompleteMatch> b) {
         Assert.assertTrue((a != null && b != null) || (a == null && b == null));
         if (a == null || b == null) return;
 
         Assert.assertTrue(a.size() >= b.size());
         for (int i = 0; i < b.size(); ++i) {
             Assert.assertEquals(
-                    "The OmniboxSuggestion entries are not the same.", a.get(i), b.get(i));
+                    "The AutocompleteMatch entries are not the same.", a.get(i), b.get(i));
         }
     }
 
     private void assertArrayEndsWith(
-            List<OmniboxSuggestion> a, List<VoiceResult> b, int expectedResultCount) {
+            List<AutocompleteMatch> a, List<VoiceResult> b, int expectedResultCount) {
         Assert.assertTrue((a != null && b != null) || (a == null && b == null));
         if (a == null || b == null) return;
 
         expectedResultCount = Math.min(expectedResultCount, b.size());
         Assert.assertTrue(a.size() >= expectedResultCount);
         for (int i = 0; i < expectedResultCount; ++i) {
-            Assert.assertTrue("The OmniboxSuggestion entry does not match the VoiceResult",
+            Assert.assertTrue("The AutocompleteMatch entry does not match the VoiceResult",
                     assertSuggestionMatchesVoiceResult(
                             a.get(a.size() - expectedResultCount + i), b.get(i)));
         }
     }
 
     private boolean isVoiceResultInSuggestions(
-            List<OmniboxSuggestion> suggestions, VoiceResult result) {
-        for (OmniboxSuggestion suggestion : suggestions) {
+            List<AutocompleteMatch> suggestions, VoiceResult result) {
+        for (AutocompleteMatch suggestion : suggestions) {
             if (assertSuggestionMatchesVoiceResult(suggestion, result)) return true;
         }
 
@@ -97,8 +99,8 @@ public class VoiceSuggestionProviderTest {
     @Feature({"Omnibox"})
     public void testNoSuggestions() {
         VoiceSuggestionProvider provider = new VoiceSuggestionProvider(0.0f, 1.1f);
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("a", "b", "c");
-        List<OmniboxSuggestion> updatedSuggestions = provider.addVoiceSuggestions(suggestions, 10);
+        List<AutocompleteMatch> suggestions = createDummySuggestions("a", "b", "c");
+        List<AutocompleteMatch> updatedSuggestions = provider.addVoiceSuggestions(suggestions, 10);
 
         Assert.assertArrayEquals(suggestions.toArray(), updatedSuggestions.toArray());
     }
@@ -134,7 +136,7 @@ public class VoiceSuggestionProviderTest {
         float[] confidences = new float[] {1.0f, 1.0f, 1.0f};
 
         provider.setVoiceResults(createVoiceResults(texts, confidences));
-        List<OmniboxSuggestion> suggestions = provider.addVoiceSuggestions(null, texts.length);
+        List<AutocompleteMatch> suggestions = provider.addVoiceSuggestions(null, texts.length);
         assertArrayEndsWith(suggestions, provider.getResults(), texts.length);
     }
 
@@ -150,7 +152,7 @@ public class VoiceSuggestionProviderTest {
 
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = provider.addVoiceSuggestions(null, 2);
+        List<AutocompleteMatch> suggestions = provider.addVoiceSuggestions(null, 2);
         assertArrayEndsWith(suggestions, provider.getResults(), 2);
     }
 
@@ -165,8 +167,8 @@ public class VoiceSuggestionProviderTest {
 
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("oa", "ob", "oc");
-        List<OmniboxSuggestion> updatedSuggestions =
+        List<AutocompleteMatch> suggestions = createDummySuggestions("oa", "ob", "oc");
+        List<AutocompleteMatch> updatedSuggestions =
                 provider.addVoiceSuggestions(suggestions, texts.length);
 
         assertArrayStartsWith(updatedSuggestions, suggestions);
@@ -185,8 +187,8 @@ public class VoiceSuggestionProviderTest {
 
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("oa", "ob", "oc");
-        List<OmniboxSuggestion> updatedSuggestions = provider.addVoiceSuggestions(suggestions, 2);
+        List<AutocompleteMatch> suggestions = createDummySuggestions("oa", "ob", "oc");
+        List<AutocompleteMatch> updatedSuggestions = provider.addVoiceSuggestions(suggestions, 2);
 
         assertArrayStartsWith(updatedSuggestions, suggestions);
         assertArrayEndsWith(updatedSuggestions, provider.getResults(), 2);
@@ -203,8 +205,8 @@ public class VoiceSuggestionProviderTest {
         float[] confidences = new float[] {1.0f, 1.0f, 1.0f};
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("oa", "b", "oc");
-        List<OmniboxSuggestion> updatedSuggestions =
+        List<AutocompleteMatch> suggestions = createDummySuggestions("oa", "b", "oc");
+        List<AutocompleteMatch> updatedSuggestions =
                 provider.addVoiceSuggestions(suggestions, texts.length);
 
         Assert.assertEquals(provider.getResults().get(0).getMatch(), texts[0]);
@@ -229,8 +231,8 @@ public class VoiceSuggestionProviderTest {
         float[] confidences = new float[] {1.0f, 0.6f, 0.3f};
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("oa", "ob", "oc");
-        List<OmniboxSuggestion> updatedSuggestions =
+        List<AutocompleteMatch> suggestions = createDummySuggestions("oa", "ob", "oc");
+        List<AutocompleteMatch> updatedSuggestions =
                 provider.addVoiceSuggestions(suggestions, texts.length);
 
         Assert.assertEquals(provider.getResults().get(0).getMatch(), texts[0]);
@@ -255,8 +257,8 @@ public class VoiceSuggestionProviderTest {
         float[] confidences = new float[] {0.8f, 1.0f, 1.0f};
         provider.setVoiceResults(createVoiceResults(texts, confidences));
 
-        List<OmniboxSuggestion> suggestions = createDummySuggestions("oa", "ob", "oc");
-        List<OmniboxSuggestion> updatedSuggestions =
+        List<AutocompleteMatch> suggestions = createDummySuggestions("oa", "ob", "oc");
+        List<AutocompleteMatch> updatedSuggestions =
                 provider.addVoiceSuggestions(suggestions, texts.length);
 
         Assert.assertEquals(provider.getResults().get(0).getMatch(), texts[0]);

@@ -36,14 +36,14 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.SuggestionAnswer.ImageLine;
 import org.chromium.components.omnibox.SuggestionAnswer.TextField;
@@ -81,16 +81,16 @@ public class AnswerSuggestionProcessorUnitTest {
      * Holds all mechanisms that are required to processSuggestion and validate suggestions.
      */
     class SuggestionTestHelper {
-        // Stores created OmniboxSuggestion
-        protected final OmniboxSuggestion mSuggestion;
+        // Stores created AutocompleteMatch
+        protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.
         protected final PropertyModel mModel;
-        // Stores Answer object associated with OmniboxSuggestion (if any).
+        // Stores Answer object associated with AutocompleteMatch (if any).
         private final SuggestionAnswer mAnswer;
         // Current user input, used by calculation suggestion.
         private final String mUserQuery;
 
-        private SuggestionTestHelper(OmniboxSuggestion suggestion, SuggestionAnswer answer,
+        private SuggestionTestHelper(AutocompleteMatch suggestion, SuggestionAnswer answer,
                 PropertyModel model, String userQuery) {
             mSuggestion = suggestion;
             mAnswer = answer;
@@ -140,8 +140,8 @@ public class AnswerSuggestionProcessorUnitTest {
 
     /** Create Calculation Suggestion. */
     SuggestionTestHelper createCalculationSuggestion(String displayText, String userQuery) {
-        OmniboxSuggestion suggestion =
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.CALCULATOR)
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CALCULATOR)
                         .setDisplayText(displayText)
                         .setDescription(userQuery)
                         .build();
@@ -155,8 +155,8 @@ public class AnswerSuggestionProcessorUnitTest {
         SuggestionAnswer answer =
                 new SuggestionAnswer(type, createAnswerImageLine(line1Text, line1Size, null),
                         createAnswerImageLine(line2Text, line2Size, url));
-        OmniboxSuggestion suggestion =
-                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.CALCULATOR)
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CALCULATOR)
                         .setAnswer(answer)
                         .build();
         PropertyModel model = mProcessor.createModel();

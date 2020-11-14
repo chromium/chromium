@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.url.GURL;
 
 /** A mechanism for creating {@link SuggestionViewDelegate}s. */
@@ -15,7 +16,7 @@ public interface SuggestionHost {
      *
      * @param suggestion Suggestion to use to refine Omnibox query.
      */
-    void onRefineSuggestion(@NonNull OmniboxSuggestion suggestion);
+    void onRefineSuggestion(@NonNull AutocompleteMatch suggestion);
 
     /**
      * Triggered when the user selects one of the omnibox suggestions to navigate to.
@@ -25,7 +26,7 @@ public interface SuggestionHost {
      * @param url The specific URL associated with the suggestion to navigate to.
      */
     void onSuggestionClicked(
-            @NonNull OmniboxSuggestion suggestion, int position, @NonNull GURL url);
+            @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url);
 
     /**
      * Triggered when the user long presses the omnibox suggestion.
@@ -33,7 +34,7 @@ public interface SuggestionHost {
      * @param suggestion Long-pressed Suggestion.
      * @param position The position of the suggestion on the list.
      */
-    void onSuggestionLongClicked(@NonNull OmniboxSuggestion suggestion, int position);
+    void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position);
 
     /**
      * Triggered when the user selects a switch to tab action.
@@ -41,7 +42,7 @@ public interface SuggestionHost {
      * @param suggestion Suggestion for which a corresponding tab is already open.
      * @param position The position of the suggestion on the list.
      */
-    void onSwitchToTab(@NonNull OmniboxSuggestion suggestion, int position);
+    void onSwitchToTab(@NonNull AutocompleteMatch suggestion, int position);
 
     /**
      * Toggle expanded state of suggestion items belonging to specific group.

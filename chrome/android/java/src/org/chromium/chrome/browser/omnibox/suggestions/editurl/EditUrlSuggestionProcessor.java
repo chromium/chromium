@@ -12,7 +12,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
@@ -26,6 +25,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -77,7 +77,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(OmniboxSuggestion suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         // The what-you-typed suggestion can potentially appear as the second suggestion in some
         // cases. If the first suggestion isn't the one we want, ignore all subsequent suggestions.
         if (position != 0) return false;
@@ -117,7 +117,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
         if (mOriginalTitle == null) {
@@ -173,7 +173,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    protected void onSuggestionClicked(OmniboxSuggestion suggestion, int position) {
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
         super.onSuggestionClicked(suggestion, position);
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
     }
@@ -205,7 +205,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
      * 2. It's a URL suggestion for the current URL.
      */
     private boolean isSuggestionEquivalentToCurrentPage(
-            OmniboxSuggestion suggestion, GURL pageUrl) {
+            AutocompleteMatch suggestion, GURL pageUrl) {
         switch (suggestion.getType()) {
             case OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED:
                 return TextUtils.equals(suggestion.getFillIntoEdit(),
