@@ -1,14 +1,18 @@
 {
   "mac-updater-builder-rel": {
     "gn_args": {
+      "is_component_build": false,
       "is_debug": false,
-      "is_google_branded": true
+      "is_google_branded": true,
+      "use_goma": true
     }
   },
   "win-updater-builder-rel": {
     "gn_args": {
+      "is_component_build": false,
       "is_debug": false,
-      "is_google_branded": true
+      "is_google_branded": true,
+      "use_goma": true
     }
   }
 }

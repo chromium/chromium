@@ -12,7 +12,7 @@
   "win-updater-try-builder-rel": {
     "gn_args": {
       "dcheck_always_on": true,
-      "is_component_build": false,
+      "is_component_build": true,
       "is_debug": false,
       "is_google_branded": true,
       "symbol_level": 1,

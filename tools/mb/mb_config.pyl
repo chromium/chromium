@@ -1071,8 +1071,8 @@
     },
 
     'tryserver.chromium.updater': {
-       'mac-updater-try-builder-rel': 'updater_release_trybot',
-       'win-updater-try-builder-rel': 'updater_release_trybot',
+       'mac-updater-try-builder-rel': 'updater_release_trybot_mac',
+       'win-updater-try-builder-rel': 'updater_release_trybot_win',
     },
 
     'tryserver.chromium.win': {
@@ -2307,11 +2307,15 @@
     ],
 
     'updater_release_bot': [
-      'updater_on_win_mac', 'release',
+      'updater_on_win_mac', 'release_bot',
     ],
 
-    'updater_release_trybot': [
+    'updater_release_trybot_mac': [
       'updater_on_win_mac', 'release_trybot',
+    ],
+
+    'updater_release_trybot_win': [
+      'updater_on_win_mac', 'shared_release_trybot',
     ],
 
     'ozone_linux_release_bot': [
