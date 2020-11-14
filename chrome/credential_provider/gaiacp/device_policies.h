@@ -14,7 +14,7 @@
 namespace credential_provider {
 
 // Structure to hold the policies for the device.
-struct COMPONENT_EXPORT(GCPW_POLICIES) DevicePolicies {
+struct COMPONENT_EXPORT(GCPW_TASKS) DevicePolicies {
   // Controls whether MDM enrollment is enabled/disabled.
   bool enable_dm_enrollment;
 

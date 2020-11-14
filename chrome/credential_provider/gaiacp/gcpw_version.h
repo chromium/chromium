@@ -13,7 +13,7 @@
 namespace credential_provider {
 
 // A structure to hold the version of GCPW.
-class COMPONENT_EXPORT(GCPW_POLICIES) GcpwVersion {
+class COMPONENT_EXPORT(GCPW_TASKS) GcpwVersion {
  public:
   // Create a default version which is not valid.
   GcpwVersion();

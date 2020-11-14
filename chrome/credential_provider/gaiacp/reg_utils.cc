@@ -65,6 +65,10 @@ constexpr wchar_t kRegUseShorterAccountName[] = L"use_shorter_account_name";
 constexpr wchar_t kEmailDomainsKey[] = L"ed";  // deprecated.
 constexpr wchar_t kEmailDomainsKeyNew[] = L"domains_allowed_to_login";
 
+const wchar_t kLastUserPolicyRefreshTimeRegKey[] = L"last_policy_refresh_time";
+const wchar_t kLastUserExperimentsRefreshTimeRegKey[] =
+    L"last_experiments_refresh_time";
+
 namespace {
 
 constexpr wchar_t kAccountPicturesRootRegKey[] =

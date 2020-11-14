@@ -83,6 +83,14 @@ extern const wchar_t kRegUseShorterAccountName[];
 extern const wchar_t kEmailDomainsKey[];  // Older deprecated key.
 extern const wchar_t kEmailDomainsKeyNew[];
 
+// Registry key where the the last time the policy is refreshed for the user is
+// stored.
+extern const wchar_t kLastUserPolicyRefreshTimeRegKey[];
+
+// Registry key where the the last time the experiments is refreshed for the
+// user is stored.
+extern const wchar_t kLastUserExperimentsRefreshTimeRegKey[];
+
 // Gets any HKLM registry key on the system.
 HRESULT GetMachineRegDWORD(const base::string16& key_name,
                            const base::string16& name,

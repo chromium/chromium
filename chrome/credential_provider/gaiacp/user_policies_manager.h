@@ -17,7 +17,7 @@
 namespace credential_provider {
 
 // Manager used to fetch user policies from GCPW backends.
-class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
+class COMPONENT_EXPORT(GCPW_TASKS) UserPoliciesManager {
  public:
   // Get the user policies manager instance.
   static UserPoliciesManager* Get();
@@ -41,11 +41,6 @@ class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
   // replacing any previously fetched versions.
   virtual HRESULT FetchAndStoreCloudUserPolicies(
       const extension::UserDeviceContext& context);
-
-  // Return the elapsed time delta since the last time the policies were
-  // successfully fetched for the user with |sid|.
-  base::TimeDelta GetTimeDeltaSinceLastPolicyFetch(
-      const base::string16& sid) const;
 
   // Get the URL of GCPW service for HTTP request for fetching user policies
   // when the caller has a valid OAuth token for authentication.

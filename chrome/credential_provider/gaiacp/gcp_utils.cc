@@ -92,6 +92,12 @@ constexpr wchar_t kDefaultMdmUrl[] =
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
 const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
     base::TimeDelta::FromDays(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
+    base::TimeDelta::FromDays(1);
+
+// Path elements for the path where the experiments are stored on disk.
+const wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
+const wchar_t kGcpwUserExperimentsFileName[] = L"ExperimentsFetchResponse";
 
 namespace {
 
@@ -109,6 +115,7 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 #define HANDLE_LANGUAGE(l_, o_) {L## #l_, o_},
         DO_LANGUAGES
 #undef HANDLE_LANGUAGE
+
 };
 
 base::FilePath GetStartupSentinelLocation(const base::string16& version) {
@@ -231,6 +238,23 @@ HRESULT GetGCPWDmTokenInternal(const base::string16& sid,
   }
 
   return S_OK;
+}
+
+// Get the path to the directory under DIR_COMMON_APP_DATA with the given |sid|
+// and |file_dir|.
+base::FilePath GetDirectoryFilePath(const base::string16& sid,
+                                    const base::string16& file_dir) {
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &path)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
+    return base::FilePath();
+  }
+  path = path.Append(GetInstallParentDirectoryName())
+             .Append(kCredentialProviderFolder)
+             .Append(file_dir)
+             .Append(sid);
+  return path;
 }
 
 }  // namespace
@@ -1253,6 +1277,64 @@ base::string16 GetDevelopmentUrl(const base::string16& url,
         base::JoinString({url_prefix + project, "sandbox", final_part}, "."));
   }
   return url;
+}
+
+std::unique_ptr<base::File> GetOpenedFileForUser(
+    const base::string16& sid,
+    uint32_t open_flags,
+    const base::string16& file_dir,
+    const base::string16& file_name) {
+  base::FilePath experiments_dir = GetDirectoryFilePath(sid, file_dir);
+  if (!base::DirectoryExists(experiments_dir)) {
+    base::File::Error error;
+    if (!CreateDirectoryAndGetError(experiments_dir, &error)) {
+      LOGFN(ERROR) << "Experiments data directory could not be created for "
+                   << sid << " Error: " << error;
+      return nullptr;
+    }
+  }
+
+  base::FilePath experiments_file_path = experiments_dir.Append(file_name);
+  std::unique_ptr<base::File> experiments_file(
+      new base::File(experiments_file_path, open_flags));
+
+  if (!experiments_file->IsValid()) {
+    LOGFN(ERROR) << "Error opening experiments file for user " << sid
+                 << " with flags " << open_flags
+                 << " Error: " << experiments_file->error_details();
+    return nullptr;
+  }
+
+  base::File::Error lock_error =
+      experiments_file->Lock(base::File::LockMode::kExclusive);
+  if (lock_error != base::File::FILE_OK) {
+    LOGFN(ERROR)
+        << "Failed to obtain exclusive lock on experiments file! Error: "
+        << lock_error;
+    return nullptr;
+  }
+
+  return experiments_file;
+}
+
+base::TimeDelta GetTimeDeltaSinceLastFetch(const base::string16& sid,
+                                           const base::string16& flag) {
+  wchar_t last_fetch_millis[512];
+  ULONG last_fetch_size = base::size(last_fetch_millis);
+  HRESULT hr = GetUserProperty(sid, flag, last_fetch_millis, &last_fetch_size);
+
+  if (FAILED(hr)) {
+    return base::TimeDelta::Max();
+  }
+
+  int64_t last_fetch_millis_int64;
+  base::StringToInt64(last_fetch_millis, &last_fetch_millis_int64);
+
+  int64_t time_delta_from_last_fetch_ms =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
+      last_fetch_millis_int64;
+
+  return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
 }
 
 }  // namespace credential_provider

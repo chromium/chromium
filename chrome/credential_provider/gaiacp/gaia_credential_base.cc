@@ -40,6 +40,8 @@
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/event_logs_upload_manager.h"
+#include "chrome/credential_provider/gaiacp/experiments_fetcher.h"
+#include "chrome/credential_provider/gaiacp/experiments_manager.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
@@ -808,6 +810,44 @@ HRESULT CreateNewUser(OSUserManager* manager,
   }
 
   return HRESULT_FROM_WIN32(NERR_UserExists);
+}
+
+// If GCPW user policies or experiments are stale, make sure to fetch them
+// before proceeding with the login.
+void GetUserConfigsIfStale(const base::string16& sid,
+                           const base::string16& gaia_id,
+                           const base::string16& access_token) {
+  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
+      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
+    // Save gaia id since it is needed for the cloud policies server request.
+    HRESULT hr = SetUserProperty(sid, kUserId, gaia_id);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "SetUserProperty(id) hr=" << putHR(hr);
+    }
+
+    hr = UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
+        sid, base::UTF16ToUTF8(access_token));
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "Failed fetching user policies for user " << sid
+                   << " Error: " << putHR(hr);
+    }
+  }
+
+  if (ExperimentsManager::Get()->ExperimentsEnabled() &&
+      GetTimeDeltaSinceLastFetch(sid, kLastUserExperimentsRefreshTimeRegKey) >
+          kMaxTimeDeltaSinceLastExperimentsFetch) {
+    HRESULT hr = SetUserProperty(sid, kUserId, gaia_id);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "SetUserProperty(id) hr=" << putHR(hr);
+    }
+
+    hr = ExperimentsFetcher::Get()->FetchAndStoreExperiments(
+        sid, base::UTF16ToUTF8(access_token));
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "Failed fetching experiments for user " << sid
+                   << " Error: " << putHR(hr);
+    }
+  }
 }
 
 }  // namespace
@@ -2492,27 +2532,12 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
                                                                   : "false"));
   }
 
-  base::string16 sid = OLE2CW(user_sid_);
-  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
-      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
-    // Save gaia id since it is needed for the cloud policies server request.
-    base::string16 gaia_id = GetDictString(*authentication_results_, kKeyId);
-    HRESULT hr = SetUserProperty(sid, kUserId, gaia_id);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "SetUserProperty(id) hr=" << putHR(hr);
-    }
-
-    // TODO(crbug.com/976744) Use downscoped token here.
-    base::string16 access_token =
-        GetDictString(*authentication_results_, kKeyAccessToken);
-    hr = UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
-        sid, base::UTF16ToUTF8(access_token));
-    SecurelyClearString(access_token);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "Failed fetching user policies for user " << sid
-                   << " Error: " << putHR(hr);
-    }
-  }
+  base::string16 gaia_id = GetDictString(*authentication_results_, kKeyId);
+  // TODO(crbug.com/976744) Use downscoped token here.
+  base::string16 access_token =
+      GetDictString(*authentication_results_, kKeyAccessToken);
+  GetUserConfigsIfStale(OLE2CW(user_sid_), gaia_id, access_token);
+  SecurelyClearString(access_token);
 
   base::string16 local_password =
       GetDictString(*authentication_results_, kKeyPassword);

@@ -12,7 +12,7 @@
 namespace credential_provider {
 
 // Structure to hold the policies for each user.
-struct COMPONENT_EXPORT(GCPW_POLICIES) UserPolicies {
+struct COMPONENT_EXPORT(GCPW_TASKS) UserPolicies {
   // Controls whether MDM enrollment is enabled/disabled.
   bool enable_dm_enrollment;
 
