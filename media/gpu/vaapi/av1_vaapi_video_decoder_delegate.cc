@@ -384,6 +384,29 @@ void FillCdefInfo(VADecPictureParameterBufferAV1& va_pic_param,
   }
 }
 
+void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
+                         const libgav1::ObuFrameHeader& frame_header) {
+  auto& mode_control = va_pic_param.mode_control_fields.bits;
+  mode_control.delta_q_present_flag = frame_header.delta_q.present;
+  mode_control.log2_delta_q_res = frame_header.delta_q.scale;
+  mode_control.delta_lf_present_flag = frame_header.delta_lf.present;
+  mode_control.log2_delta_lf_res = frame_header.delta_lf.scale;
+  mode_control.delta_lf_multi = frame_header.delta_lf.multi;
+  switch (frame_header.tx_mode) {
+    case libgav1::TxMode::kTxModeOnly4x4:
+    case libgav1::TxMode::kTxModeLargest:
+    case libgav1::TxMode::kTxModeSelect:
+      mode_control.tx_mode = base::strict_cast<uint32_t>(frame_header.tx_mode);
+      break;
+    default:
+      NOTREACHED() << "Unknown tx mode: "
+                   << base::strict_cast<int>(frame_header.tx_mode);
+  }
+  mode_control.reference_select = frame_header.reference_mode_select;
+  mode_control.reduced_tx_set_used = frame_header.reduced_tx_set;
+  mode_control.skip_mode_present = frame_header.skip_mode_present;
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
