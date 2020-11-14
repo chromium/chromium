@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/accessibility/ax_role_properties.h"
 
 namespace blink {
 
@@ -478,7 +479,7 @@ AccessibilitySelectedState AXLayoutObject::IsSelected() const {
   // is marked as required or implied for this element in the ARIA specs.
   // If this object can't follow the focus, then we can't say that it's selected
   // nor that it's not.
-  if (!SelectionShouldFollowFocus())
+  if (!ui::IsSelectRequiredOrImplicit(RoleValue()))
     return kSelectedStateUndefined;
 
   // Selection follows focus, but ONLY in single selection containers, and only
@@ -486,21 +487,43 @@ AccessibilitySelectedState AXLayoutObject::IsSelected() const {
   return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
 }
 
+bool AXLayoutObject::IsSelectedFromFocusSupported() const {
+  // The selection should only follow the focus when the aria-selected attribute
+  // is marked as required or implied for this element in the ARIA specs.
+  // If this object can't follow the focus, then we can't say that it's selected
+  // nor that it's not.
+  // TODO(crbug.com/1143483): Consider allowing more roles.
+  if (!ui::IsSelectRequiredOrImplicit(RoleValue()))
+    return false;
+
+  // https://www.w3.org/TR/wai-aria-1.1/#aria-selected
+  // Any explicit assignment of aria-selected takes precedence over the implicit
+  // selection based on focus.
+  bool is_selected;
+  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected, is_selected))
+    return false;
+
+  // Selection follows focus only when in a single selection container.
+  const AXObject* container = ContainerWidget();
+  if (!container || container->IsMultiSelectable())
+    return false;
+
+  // TODO(crbug.com/1143451): https://www.w3.org/TR/wai-aria-1.1/#aria-selected
+  // If any DOM element in the widget is explicitly marked as selected, the user
+  // agent MUST NOT convey implicit selection for the widget.
+  return true;
+}
+
 // In single selection containers, selection follows focus unless aria_selected
 // is set to false. This is only valid for a subset of elements.
 bool AXLayoutObject::IsSelectedFromFocus() const {
-  if (!SelectionShouldFollowFocus())
+  if (!IsSelectedFromFocusSupported())
     return false;
 
   // A tab item can also be selected if it is associated to a focused tabpanel
   // via the aria-labelledby attribute.
   if (IsTabItem() && IsTabItemSelected())
-    return kSelectedStateTrue;
-
-  // If not a single selection container, selection does not follow focus.
-  AXObject* container = ContainerWidget();
-  if (!container || container->IsMultiSelectable())
-    return false;
+    return true;
 
   // If this object is not accessibility focused, then it is not selected from
   // focus.
@@ -509,11 +532,7 @@ bool AXLayoutObject::IsSelectedFromFocus() const {
       (!focused_object || focused_object->ActiveDescendant() != this))
     return false;
 
-  // In single selection container and accessibility focused => true if
-  // aria-selected wasn't used as an override.
-  bool is_selected;
-  return !HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected,
-                                        is_selected);
+  return true;
 }
 
 // Returns true if the object is marked user-select:none
@@ -526,20 +545,6 @@ bool AXLayoutObject::IsNotUserSelectable() const {
     return false;
 
   return (style->UserSelect() == EUserSelect::kNone);
-}
-
-// Returns true if the node's aria-selected attribute should be set to true
-// when the node is focused. This is true for only a subset of roles.
-bool AXLayoutObject::SelectionShouldFollowFocus() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kListBoxOption:
-    case ax::mojom::blink::Role::kMenuListOption:
-    case ax::mojom::blink::Role::kTab:
-      return true;
-    default:
-      break;
-  }
-  return false;
 }
 
 //

@@ -649,7 +649,7 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       // https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_selection_follows_focus
       // For test purpose, we support select follows focus for all elements, and
       // not just single-selection container elements.
-      if (SupportsSelected(GetData().role)) {
+      if (IsSelectSupported(GetData().role)) {
         ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
         ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelectedFromFocus,
                              true);

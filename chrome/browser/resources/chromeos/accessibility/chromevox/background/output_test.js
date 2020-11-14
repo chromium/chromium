@@ -1124,7 +1124,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
             startRange, cursors.Range.fromNode(outerList.children[0]),
             'navigate');
         assertEquals(
-            'wake up|Tree item| 1 of 3 | level 1 ',
+            'wake up|Tree item|Not selected| 1 of 3 | level 1 ',
             o.speechOutputForTest.string_);
 
         el = outerList.children[2];
@@ -1133,7 +1133,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
             startRange, cursors.Range.fromNode(outerList.children[0]),
             'navigate');
         assertEquals(
-            'drink coffee|Tree item| 2 of 3 | level 1 ',
+            'drink coffee|Tree item|Not selected| 2 of 3 | level 1 ',
             o.speechOutputForTest.string_);
 
         el = outerList.children[3];
@@ -1142,7 +1142,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
             startRange, cursors.Range.fromNode(outerList.children[0]),
             'navigate');
         assertEquals(
-            'cook dinner|Tree item| 3 of 3 | level 1 ',
+            'cook dinner|Tree item|Not selected| 3 of 3 | level 1 ',
             o.speechOutputForTest.string_);
 
         el = innerList.children[0];
@@ -1158,7 +1158,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
             startRange, cursors.Range.fromNode(innerList.children[0]),
             'navigate');
         assertEquals(
-            'meeting|Tree item| 1 of 2 | level 2 ',
+            'meeting|Tree item|Not selected| 1 of 2 | level 2 ',
             o.speechOutputForTest.string_);
 
         el = innerList.children[2];
@@ -1167,7 +1167,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'NestedList', function() {
             startRange, cursors.Range.fromNode(innerList.children[0]),
             'navigate');
         assertEquals(
-            'lunch|Tree item| 2 of 2 | level 2 ',
+            'lunch|Tree item|Not selected| 2 of 2 | level 2 ',
             o.speechOutputForTest.string_);
       });
 });

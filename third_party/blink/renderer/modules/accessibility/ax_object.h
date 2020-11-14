@@ -494,6 +494,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AccessibilitySelectedState IsSelected() const {
     return kSelectedStateUndefined;
   }
+  virtual bool IsSelectedFromFocusSupported() const { return false; }
   // Is the object selected because selection is following focus?
   virtual bool IsSelectedFromFocus() const { return false; }
   virtual bool IsSelectedOptionActive() const { return false; }

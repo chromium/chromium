@@ -404,7 +404,7 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable, true);
 
   if (GetProperty(AXBooleanProperty::SELECTED)) {
-    if (ui::SupportsSelected(out_data->role)) {
+    if (ui::IsSelectSupported(out_data->role)) {
       out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
     } else {
       descriptions.push_back(

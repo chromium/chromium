@@ -95,6 +95,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
   AccessibilityGrabbedState IsGrabbed() const override;
   AccessibilitySelectedState IsSelected() const override;
+  bool IsSelectedFromFocusSupported() const override;
   bool IsSelectedFromFocus() const override;
   bool IsNotUserSelectable() const override;
 
@@ -196,7 +197,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool CanIgnoreSpaceNextTo(LayoutObject*, bool is_after) const;
   bool HasAriaCellRole(Element*) const;
   bool IsPlaceholder() const;
-  bool SelectionShouldFollowFocus() const;
 
   static ax::mojom::blink::TextDecorationStyle
   TextDecorationStyleToAXTextDecorationStyle(

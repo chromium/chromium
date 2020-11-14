@@ -784,5 +784,62 @@ TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
   EXPECT_EQ(li->ParentObjectUnignored(), ul);
 }
 
+TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
+  SetBodyInnerHTML(R"HTML(
+      <input role="combobox" type="search" aria-expanded="true"
+              aria-haspopup="true" aria-autocomplete="list1" aria-owns="list1">
+      <ul id="list1" role="listbox">
+        <li id="option1" role="option" tabindex="-1">Apple</li>
+      </ul>
+      <input role="combobox" type="search" aria-expanded="true"
+              aria-haspopup="true" aria-autocomplete="list2" aria-owns="list2">
+      <ul id="list2" role="listbox">
+        <li id="option2" role="row" tabindex="-1">Apple</li>
+      </ul>
+      <input role="combobox" type="search" aria-expanded="true"
+              aria-haspopup="true" aria-autocomplete="list3" aria-owns="list3">
+      <ul id="list3" role="listbox">
+        <li id="option3" role="option" tabindex="-1"
+            aria-selected="false">Apple</li>
+      </ul>
+      <input role="combobox" type="search" aria-expanded="true"
+              aria-haspopup="true" aria-autocomplete="list4" aria-owns="list4">
+      <ul id="list4" role="listbox">
+        <li id="option4" role="option" tabindex="-1"
+            aria-selected="true">Apple</li>
+        <li id="option5" role="option" tabindex="-1">Orange</li>
+      </ul>
+    )HTML");
+
+  Element* root(GetDocument().documentElement());
+  auto* ax_object_cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  DCHECK(ax_object_cache);
+
+  AXObject* option1 =
+      ax_object_cache->GetOrCreate(root->getElementById("option1"));
+  ASSERT_NE(option1, nullptr);
+  AXObject* option2 =
+      ax_object_cache->GetOrCreate(root->getElementById("option2"));
+  ASSERT_NE(option2, nullptr);
+  AXObject* option3 =
+      ax_object_cache->GetOrCreate(root->getElementById("option3"));
+  ASSERT_NE(option3, nullptr);
+  AXObject* option4 =
+      ax_object_cache->GetOrCreate(root->getElementById("option4"));
+  ASSERT_NE(option4, nullptr);
+  AXObject* option5 =
+      ax_object_cache->GetOrCreate(root->getElementById("option5"));
+  ASSERT_NE(option5, nullptr);
+
+  EXPECT_TRUE(option1->IsSelectedFromFocusSupported());
+  EXPECT_FALSE(option2->IsSelectedFromFocusSupported());
+  EXPECT_FALSE(option3->IsSelectedFromFocusSupported());
+  EXPECT_FALSE(option4->IsSelectedFromFocusSupported());
+  // TODO(crbug.com/1143451): #option5 should not support selection from focus
+  // because #option4 is explicitly selected.
+  EXPECT_TRUE(option5->IsSelectedFromFocusSupported());
+}
+
 }  // namespace test
 }  // namespace blink
