@@ -240,13 +240,12 @@ void TabAndroid::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TabAndroid::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void TabAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void TabAndroid::InitWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean incognito,
     jboolean is_background_tab,
     const JavaParamRef<jobject>& jweb_contents,
@@ -292,7 +291,6 @@ void TabAndroid::InitWebContents(
 
 void TabAndroid::UpdateDelegates(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents_delegate,
     const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
   ContextMenuHelper::FromWebContents(web_contents())
@@ -314,8 +312,7 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents) {
 }
 }  // namespace
 
-void TabAndroid::DestroyWebContents(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj) {
+void TabAndroid::DestroyWebContents(JNIEnv* env) {
   WillRemoveWebContentsFromTab(web_contents());
 
   // Terminate the renderer process if this is the last tab.
@@ -335,8 +332,7 @@ void TabAndroid::DestroyWebContents(JNIEnv* env,
   synced_tab_delegate_->ResetWebContents();
 }
 
-void TabAndroid::ReleaseWebContents(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj) {
+void TabAndroid::ReleaseWebContents(JNIEnv* env) {
   WillRemoveWebContentsFromTab(web_contents());
 
   // Ownership of |released_contents| is assumed by the code that initiated the
@@ -352,7 +348,6 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env,
 
 void TabAndroid::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jint width,
     jint height) {
@@ -364,7 +359,6 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
 
 TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& url,
     const JavaParamRef<jobject>& j_initiator_origin,
     const JavaParamRef<jstring>& j_extra_headers,
@@ -441,7 +435,6 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
 
 void TabAndroid::SetActiveNavigationEntryTitleForUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jurl,
     const JavaParamRef<jstring>& jtitle) {
   DCHECK(web_contents());
@@ -460,8 +453,7 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(
     entry->SetTitle(title);
 }
 
-void TabAndroid::LoadOriginalImage(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void TabAndroid::LoadOriginalImage(JNIEnv* env) {
   content::RenderFrameHost* render_frame_host =
       web_contents()->GetFocusedFrame();
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> renderer;

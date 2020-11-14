@@ -452,9 +452,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             // We load the URL from the tab rather than directly from the ContentView so the tab has
             // a chance of using a prerenderer page is any.
-            int loadType = TabImplJni.get().loadUrl(mNativeTabAndroid, TabImpl.this,
-                    params.getUrl(), params.getInitiatorOrigin(), params.getVerbatimHeaders(),
-                    params.getPostData(), params.getTransitionType(),
+            int loadType = TabImplJni.get().loadUrl(mNativeTabAndroid, params.getUrl(),
+                    params.getInitiatorOrigin(), params.getVerbatimHeaders(), params.getPostData(),
+                    params.getTransitionType(),
                     params.getReferrer() != null ? params.getReferrer().getUrl() : null,
                     // Policy will be ignored for null referrer url, 0 is just a placeholder.
                     // TODO(ppi): Should we pass Referrer jobject and add JNI methods to read it
@@ -680,7 +680,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // destroying the native tab cleanups up any remaining infobars. The infobar container
         // expects all infobars to be cleaned up before its own destruction.
         if (mNativeTabAndroid != 0) {
-            TabImplJni.get().destroy(mNativeTabAndroid, TabImpl.this);
+            TabImplJni.get().destroy(mNativeTabAndroid);
             assert mNativeTabAndroid == 0;
         }
     }
@@ -1029,8 +1029,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     void pushNativePageStateToNavigationEntry() {
         assert mNativeTabAndroid != 0 && getNativePage() != null;
-        TabImplJni.get().setActiveNavigationEntryTitleForUrl(mNativeTabAndroid, TabImpl.this,
-                getNativePage().getUrl(), getNativePage().getTitle());
+        TabImplJni.get().setActiveNavigationEntryTitleForUrl(
+                mNativeTabAndroid, getNativePage().getUrl(), getNativePage().getTitle());
     }
 
     /**
@@ -1063,7 +1063,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     void loadOriginalImage() {
         if (mNativeTabAndroid != 0) {
-            TabImplJni.get().loadOriginalImage(mNativeTabAndroid, TabImpl.this);
+            TabImplJni.get().loadOriginalImage(mNativeTabAndroid);
         }
     }
 
@@ -1198,7 +1198,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             if (bounds != null) {
                 assert mNativeTabAndroid != 0;
                 TabImplJni.get().onPhysicalBackingSizeChanged(
-                        mNativeTabAndroid, TabImpl.this, webContents, bounds.right, bounds.bottom);
+                        mNativeTabAndroid, webContents, bounds.right, bounds.bottom);
             }
             webContents.onShow();
             initWebContents(webContents);
@@ -1287,8 +1287,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             mWebContentsDelegate = createWebContentsDelegate();
 
             assert mNativeTabAndroid != 0;
-            TabImplJni.get().initWebContents(mNativeTabAndroid, TabImpl.this, mIncognito,
-                    isDetached(this), webContents, mSourceTabId, mWebContentsDelegate,
+            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito, isDetached(this),
+                    webContents, mSourceTabId, mWebContentsDelegate,
                     new TabContextMenuPopulatorFactory(
                             mDelegateFactory.createContextMenuPopulatorFactory(this), this));
 
@@ -1352,7 +1352,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
         WebContents webContents = getWebContents();
         if (webContents != null) {
-            TabImplJni.get().updateDelegates(mNativeTabAndroid, TabImpl.this, mWebContentsDelegate,
+            TabImplJni.get().updateDelegates(mNativeTabAndroid, mWebContentsDelegate,
                     new TabContextMenuPopulatorFactory(
                             mDelegateFactory.createContextMenuPopulatorFactory(this), this));
             webContents.notifyRendererPreferenceUpdate();
@@ -1520,9 +1520,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         if (deleteNativeWebContents) {
             // Destruction of the native WebContents will call back into Java to destroy the Java
             // WebContents.
-            TabImplJni.get().destroyWebContents(mNativeTabAndroid, TabImpl.this);
+            TabImplJni.get().destroyWebContents(mNativeTabAndroid);
         } else {
-            TabImplJni.get().releaseWebContents(mNativeTabAndroid, TabImpl.this);
+            TabImplJni.get().releaseWebContents(mNativeTabAndroid);
             // Since the native WebContents is still alive, we need to clear its reference to the
             // Java WebContents. While doing so, it will also call back into Java to destroy the
             // Java WebContents.
@@ -1534,27 +1534,24 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     interface Natives {
         TabImpl fromWebContents(WebContents webContents);
         void init(TabImpl caller);
-        void destroy(long nativeTabAndroid, TabImpl caller);
-        void initWebContents(long nativeTabAndroid, TabImpl caller, boolean incognito,
-                boolean isBackgroundTab, WebContents webContents, int parentTabId,
+        void destroy(long nativeTabAndroid);
+        void initWebContents(long nativeTabAndroid, boolean incognito, boolean isBackgroundTab,
+                WebContents webContents, int parentTabId,
                 TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
-        void updateDelegates(long nativeTabAndroid, TabImpl caller,
-                TabWebContentsDelegateAndroidImpl delegate,
+        void updateDelegates(long nativeTabAndroid, TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
-        void destroyWebContents(long nativeTabAndroid, TabImpl caller);
-        void releaseWebContents(long nativeTabAndroid, TabImpl caller);
-        void onPhysicalBackingSizeChanged(long nativeTabAndroid, TabImpl caller,
-                WebContents webContents, int width, int height);
-        int loadUrl(long nativeTabAndroid, TabImpl caller, String url, Origin initiatorOrigin,
-                String extraHeaders, ResourceRequestBody postData, int transition,
-                String referrerUrl, int referrerPolicy, boolean isRendererInitiated,
-                boolean shoulReplaceCurrentEntry, boolean hasUserGesture,
-                boolean shouldClearHistoryList, long inputStartTimestamp,
+        void destroyWebContents(long nativeTabAndroid);
+        void releaseWebContents(long nativeTabAndroid);
+        void onPhysicalBackingSizeChanged(
+                long nativeTabAndroid, WebContents webContents, int width, int height);
+        int loadUrl(long nativeTabAndroid, String url, Origin initiatorOrigin, String extraHeaders,
+                ResourceRequestBody postData, int transition, String referrerUrl,
+                int referrerPolicy, boolean isRendererInitiated, boolean shoulReplaceCurrentEntry,
+                boolean hasUserGesture, boolean shouldClearHistoryList, long inputStartTimestamp,
                 long intentReceivedTimestamp);
-        void setActiveNavigationEntryTitleForUrl(
-                long nativeTabAndroid, TabImpl caller, String url, String title);
-        void loadOriginalImage(long nativeTabAndroid, TabImpl caller);
+        void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
+        void loadOriginalImage(long nativeTabAndroid);
         void setAddApi2TransitionToFutureNavigations(long nativeTabAndroid, boolean shouldAdd);
         boolean getAddApi2TransitionToFutureNavigations(long nativeTabAndroid);
         void setHideFutureNavigations(long nativeTabAndroid, boolean hide);
