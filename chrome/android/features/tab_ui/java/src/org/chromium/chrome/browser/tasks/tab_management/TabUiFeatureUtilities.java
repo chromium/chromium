@@ -202,4 +202,11 @@ public class TabUiFeatureUtilities {
     public static boolean isLaunchBugFixEnabled() {
         return ENABLE_LAUNCH_BUG_FIX.getValue();
     }
+
+    /**
+     * @return Whether the price tracking feature is enabled and available for use.
+     */
+    public static boolean isPriceTrackingEnabled() {
+        return ENABLE_PRICE_TRACKING.getValue();
+    }
 }

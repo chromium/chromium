@@ -688,6 +688,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_sync_on_48dp.xml",
   "java/res/drawable/ic_toolbar_share_offset_24dp.xml",
   "java/res/drawable/ic_translate.xml",
+  "java/res/drawable/ic_trending_down_black.xml",
   "java/res/drawable/ic_tv_options_input_settings_rotated_grey.xml",
   "java/res/drawable/ic_visibility_black.xml",
   "java/res/drawable/ic_visibility_off_black.xml",

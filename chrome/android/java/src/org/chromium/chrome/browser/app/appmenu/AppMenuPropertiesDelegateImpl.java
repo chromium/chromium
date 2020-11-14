@@ -523,6 +523,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                                 .getTabsWithNoOtherRelatedTabs()
                                 .size()
                         > 1;
+        boolean isPriceTrackingVisible = TabUiFeatureUtilities.isPriceTrackingEnabled()
+                && !DeviceClassManager.enableAccessibilityLayout();
+        boolean isPriceTrackingEnabled = isPriceTrackingVisible;
 
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
@@ -570,6 +573,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (item.getItemId() == R.id.menu_group_tabs) {
                 item.setVisible(isMenuGroupTabsVisible);
                 item.setEnabled(isMenuGroupTabsEnabled);
+            }
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                item.setVisible(isPriceTrackingVisible);
+                item.setEnabled(isPriceTrackingEnabled);
             }
             if (item.getItemId() == R.id.close_all_tabs_menu_id) {
                 boolean hasTabs = mTabModelSelector.getTotalTabCount() > 0;

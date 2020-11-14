@@ -23,7 +23,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -57,9 +56,9 @@ public class OverviewAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testAllMenuItemsWithoutStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -74,8 +73,10 @@ public class OverviewAppMenuTest {
                         || itemId == R.id.new_incognito_tab_menu_id
                         || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
-                        || itemId == R.id.menu_group_tabs || itemId == R.id.preferences_id);
-                if (itemId == R.id.close_all_incognito_tabs_menu_id) {
+                        || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
+                        || itemId == R.id.preferences_id);
+                if (itemId == R.id.close_all_incognito_tabs_menu_id
+                        || itemId == R.id.track_prices_row_menu_id) {
                     assertFalse(item.isVisible());
                 } else {
                     assertTrue(item.isVisible());
@@ -83,17 +84,17 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(6));
+        assertThat(checkedMenuItems, equalTo(7));
     }
 
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testIncognitoAllMenuItemsWithoutStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -108,8 +109,10 @@ public class OverviewAppMenuTest {
                         || itemId == R.id.new_incognito_tab_menu_id
                         || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
-                        || itemId == R.id.menu_group_tabs || itemId == R.id.preferences_id);
-                if (itemId == R.id.close_all_tabs_menu_id) {
+                        || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
+                        || itemId == R.id.preferences_id);
+                if (itemId == R.id.close_all_tabs_menu_id
+                        || itemId == R.id.track_prices_row_menu_id) {
                     assertFalse(item.isVisible());
                 } else {
                     assertTrue(item.isVisible());
@@ -117,16 +120,16 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(6));
+        assertThat(checkedMenuItems, equalTo(7));
     }
 
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.
+    EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testAllMenuItemsWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -143,8 +146,10 @@ public class OverviewAppMenuTest {
                         || itemId == R.id.recent_tabs_menu_id || itemId == R.id.open_history_menu_id
                         || itemId == R.id.downloads_menu_id || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
-                        || itemId == R.id.menu_group_tabs || itemId == R.id.preferences_id);
-                if (itemId == R.id.close_all_incognito_tabs_menu_id) {
+                        || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
+                        || itemId == R.id.preferences_id);
+                if (itemId == R.id.close_all_incognito_tabs_menu_id
+                        || itemId == R.id.track_prices_row_menu_id) {
                     assertFalse(item.isVisible());
                 } else {
                     assertTrue(item.isVisible());
@@ -152,17 +157,17 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(10));
+        assertThat(checkedMenuItems, equalTo(11));
     }
 
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.
+    EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testIncognitoAllMenuItemsWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -179,8 +184,10 @@ public class OverviewAppMenuTest {
                         || itemId == R.id.recent_tabs_menu_id || itemId == R.id.open_history_menu_id
                         || itemId == R.id.downloads_menu_id || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
-                        || itemId == R.id.menu_group_tabs || itemId == R.id.preferences_id);
-                if (itemId == R.id.close_all_tabs_menu_id || itemId == R.id.recent_tabs_menu_id) {
+                        || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
+                        || itemId == R.id.preferences_id);
+                if (itemId == R.id.close_all_tabs_menu_id || itemId == R.id.recent_tabs_menu_id
+                        || itemId == R.id.track_prices_row_menu_id) {
                     assertFalse(item.isVisible());
                 } else {
                     assertTrue(item.isVisible());
@@ -188,16 +195,16 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(10));
+        assertThat(checkedMenuItems, equalTo(11));
     }
 
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.
+    DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsDisabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -217,9 +224,9 @@ public class OverviewAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testGroupTabsIsEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -244,10 +251,10 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsDisabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -266,10 +273,10 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.
+    EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsEnabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -278,6 +285,118 @@ public class OverviewAppMenuTest {
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
             if (item.getItemId() == R.id.menu_group_tabs) {
+                int itemGroupId = item.getGroupId();
+                if (itemGroupId == R.id.OVERVIEW_MODE_MENU) {
+                    assertFalse(item.isVisible());
+                }
+                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
+                    assertTrue(item.isVisible());
+                }
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/false"})
+    public void
+    testTrackPriceOnTabsIsDisabled() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                assertFalse(item.isVisible());
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+    public void
+    testTrackPriceOnTabsIsEnabled() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                int itemGroupId = item.getGroupId();
+                if (itemGroupId == R.id.OVERVIEW_MODE_MENU) {
+                    assertTrue(item.isVisible());
+                }
+                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
+                    assertFalse(item.isVisible());
+                }
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/false"})
+    public void
+    testTrackPriceOnTabsIsDisabledWithStartSurface() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                assertFalse(item.isVisible());
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+    public void
+    testTrackPriceOnTabsIsEnabledWithStartSurface() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
                 int itemGroupId = item.getGroupId();
                 if (itemGroupId == R.id.OVERVIEW_MODE_MENU) {
                     assertFalse(item.isVisible());

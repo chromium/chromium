@@ -139,6 +139,17 @@
         <item android:id="@+id/menu_group_tabs"
             android:title="@string/menu_group_tabs"
             android:icon="@drawable/ic_widgets" />
+        <item android:id="@+id/track_prices_row_menu_id"
+            android:title="@null">
+          <menu>
+              <item android:id="@+id/track_prices_id"
+                android:title="@string/menu_track_prices"
+                android:icon="@drawable/ic_trending_down_black" />
+              <item android:id="@+id/track_prices_check_id"
+                android:title="@null"
+                android:checkable="true" />
+          </menu>
+        </item>
         <item android:id="@id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
@@ -174,6 +185,17 @@
         <item android:id="@id/menu_group_tabs"
             android:title="@string/menu_group_tabs"
             android:icon="@drawable/ic_widgets" />
+        <item android:id="@id/track_prices_row_menu_id"
+            android:title="@null">
+          <menu>
+              <item android:id="@id/track_prices_id"
+                android:title="@string/menu_track_prices"
+                android:icon="@drawable/ic_trending_down_black" />
+              <item android:id="@id/track_prices_check_id"
+                android:title="@null"
+                android:checkable="true" />
+          </menu>
+        </item>
         <item android:id="@id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
