@@ -20,6 +20,42 @@
 
 namespace media {
 namespace {
+
+#define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+
+void FillSegmentInfo(VASegmentationStructAV1& va_seg_info,
+                     const libgav1::Segmentation& segmentation) {
+  auto& va_seg_info_fields = va_seg_info.segment_info_fields.bits;
+  va_seg_info_fields.enabled = segmentation.enabled;
+  va_seg_info_fields.update_map = segmentation.update_map;
+  va_seg_info_fields.temporal_update = segmentation.temporal_update;
+  va_seg_info_fields.update_data = segmentation.update_data;
+
+  static_assert(libgav1::kMaxSegments == 8 && libgav1::kSegmentFeatureMax == 8,
+                "Invalid Segment array size");
+  static_assert(ARRAY_SIZE(segmentation.feature_data) == 8 &&
+                    ARRAY_SIZE(segmentation.feature_data[0]) == 8 &&
+                    ARRAY_SIZE(segmentation.feature_enabled) == 8 &&
+                    ARRAY_SIZE(segmentation.feature_enabled[0]) == 8,
+                "Invalid segmentation array size");
+  static_assert(ARRAY_SIZE(va_seg_info.feature_data) == 8 &&
+                    ARRAY_SIZE(va_seg_info.feature_data[0]) == 8 &&
+                    ARRAY_SIZE(va_seg_info.feature_mask) == 8,
+                "Invalid feature array size");
+  for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
+    for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j)
+      va_seg_info.feature_data[i][j] = segmentation.feature_data[i][j];
+  }
+  for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
+    uint8_t feature_mask = 0;
+    for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j) {
+      if (segmentation.feature_enabled[i][j])
+        feature_mask |= 1 << j;
+    }
+    va_seg_info.feature_mask[i] = feature_mask;
+  }
+}
+
 bool FillAV1PictureParameter(const AV1Picture& pic,
                              const libgav1::ObuSequenceHeader& seq_header,
                              const AV1ReferenceFrameVector& ref_frames,
