@@ -90,7 +90,12 @@ void ScanService::StartScan(
     return;
   }
 
+  scan_job_observer_.reset();
   scan_job_observer_.Bind(std::move(observer));
+  // Unretained is safe here, because `this` owns `scan_job_observer_`, and no
+  // reply callbacks will be invoked once the mojo::Remote is destroyed.
+  scan_job_observer_.set_disconnect_handler(
+      base::BindOnce(&ScanService::CancelScan, base::Unretained(this)));
 
   base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
@@ -104,6 +109,11 @@ void ScanService::StartScan(
       base::BindOnce(&ScanService::OnScanCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   std::move(callback).Run(true);
+}
+
+void ScanService::CancelScan() {
+  lorgnette_scanner_manager_->CancelScan(base::BindOnce(
+      &ScanService::OnCancelCompleted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScanService::BindInterface(
@@ -159,7 +169,6 @@ void ScanService::OnScannerCapabilitiesReceived(
 void ScanService::OnProgressPercentReceived(uint32_t progress_percent,
                                             uint32_t page_number) {
   DCHECK_LE(progress_percent, kMaxProgressPercent);
-  DCHECK(scan_job_observer_.is_connected());
   scan_job_observer_->OnPageProgress(page_number, progress_percent);
 }
 
@@ -171,7 +180,6 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   // vector.
   // In case the last reported progress percent was less than 100, send one
   // final progress event before the page complete event.
-  DCHECK(scan_job_observer_.is_connected());
   scan_job_observer_->OnPageProgress(page_number, kMaxProgressPercent);
   scan_job_observer_->OnPageComplete(
       std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
@@ -208,9 +216,11 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
 }
 
 void ScanService::OnScanCompleted(bool success) {
-  DCHECK(scan_job_observer_.is_connected());
   scan_job_observer_->OnScanComplete(success && !save_failed_);
-  scan_job_observer_.reset();
+}
+
+void ScanService::OnCancelCompleted(bool success) {
+  scan_job_observer_->OnCancelComplete(success);
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {

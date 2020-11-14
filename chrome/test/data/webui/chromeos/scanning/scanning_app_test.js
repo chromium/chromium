@@ -206,6 +206,10 @@ class FakeScanService {
       resolve({success: true});
     });
   }
+
+  cancelScan() {
+    this.methodCalled('cancelScan');
+  }
 }
 
 export function scanningAppTest() {

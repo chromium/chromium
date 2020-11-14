@@ -387,6 +387,12 @@ Polymer({
   },
 
   /**
+   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * @param {boolean} success
+   */
+  onCancelComplete(success) {},
+
+  /**
    * Sets the app state if the state transition is allowed.
    * @param {!AppState} newState
    * @private

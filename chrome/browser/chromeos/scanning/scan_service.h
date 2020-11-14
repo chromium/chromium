@@ -48,6 +48,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
                  scanning::mojom::ScanSettingsPtr settings,
                  mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
                  StartScanCallback callback) override;
+  void CancelScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
@@ -89,6 +90,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
   void OnScanCompleted(bool success);
+
+  // Processes the final result of calling
+  // LorgnetteScannerManager::CancelScan().
+  void OnCancelCompleted(bool success);
 
   // TODO(jschettler): Replace this with a generic helper function when one is
   // available.

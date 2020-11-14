@@ -105,6 +105,10 @@ interface ScanJobObserver {
   // Called when the scan is complete. |success| indicates whether the scan
   // completed successfully.
   OnScanComplete(bool success);
+
+  // Called when canceling the current scan job is complete. |success|
+  // indicates whether the scan job was cancelled successfully.
+  OnCancelComplete(bool success);
 };
 
 // Interface used to obtain information about and interact with connected
@@ -127,4 +131,8 @@ interface ScanService {
   // |observer|. |success| indicates whether the scan started successfully.
   StartScan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings,
       pending_remote<ScanJobObserver> observer) => (bool success);
+
+  // Attempts to cancel the currently running scan job. The success of the
+  // cancel attempt is reported through the ScanJobObserver.
+  CancelScan();
 };

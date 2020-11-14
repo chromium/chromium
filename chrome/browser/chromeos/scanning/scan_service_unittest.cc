@@ -88,6 +88,10 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
 
   void OnScanComplete(bool success) override { scan_success_ = success; }
 
+  void OnCancelComplete(bool success) override {
+    cancel_scan_success_ = success;
+  }
+
   // Creates a pending remote that can be passed in calls to
   // ScanService::StartScan().
   mojo::PendingRemote<mojo_ipc::ScanJobObserver> GenerateRemote() {
@@ -104,10 +108,14 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
     return progress_ == 100 && page_complete_ && scan_success_;
   }
 
+  // Returns true if the cancel scan request completed successfully.
+  bool cancel_scan_success() const { return cancel_scan_success_; }
+
  private:
   uint32_t progress_ = 0;
   bool page_complete_ = false;
   bool scan_success_ = false;
+  bool cancel_scan_success_ = false;
   mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
 };
 
@@ -150,6 +158,12 @@ class ScanServiceTest : public testing::Test {
                    fake_scan_job_observer_.GenerateRemote(), &success);
     scan_service_remote_.FlushForTesting();
     return success;
+  }
+
+  // Performs a cancel scan request.
+  void CancelScan() {
+    scan_service_remote_->CancelScan();
+    scan_service_remote_.FlushForTesting();
   }
 
  protected:
@@ -293,6 +307,23 @@ TEST_F(ScanServiceTest, Scan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
   }
+}
+
+// Test that canceling sends an update to the observer OnCancelComplete().
+TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  mojo_ipc::ScanSettings settings;
+  settings.scan_to_path = temp_dir_.GetPath();
+
+  Scan(scanners[0]->id, settings.Clone());
+  CancelScan();
+  EXPECT_TRUE(fake_scan_job_observer_.cancel_scan_success());
 }
 
 }  // namespace chromeos
