@@ -66685,6 +66685,19 @@
        {}
       ]
      ],
+     "position-absolute-scrollbar-freeze.html": [
+      "ac510f11e9160b1ed646047ed5aa44d2ebaa8a6f",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/position-absolute-scrollbar-freeze-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-fixed-001.html": [
       "a3de19d6d9df95a505c547e48dea3de82af44de5",
       [
@@ -183478,6 +183491,10 @@
       "5e1ccdbc8f04119d90c0d7241918bbcd32c5d750",
       []
      ],
+     "position-absolute-scrollbar-freeze-ref.html": [
+      "d0bf617951f3a9b5e3ae8e4b77e6ff3762b3cde1",
+      []
+     ],
      "reference": {
       "align-baseline-ref.html": [
        "d5b88e8c7dae73b57c7f993260d7cce363eeebaa",
@@ -251009,7 +251026,7 @@
       []
      ],
      "requirements.txt": [
-      "766b9bd914391f558de2e28999cbfcc3f16db8ca",
+      "7c134b89b9583f9f0584450f20e9665cb80e6445",
       []
      ],
      "requirements_android_webview.txt": [
@@ -406914,7 +406931,7 @@
       ]
      ],
      "getinnerhtml.tentative.html": [
-      "64fd78ba8ed0ca4d465c5a3ef8cb496350c69f7c",
+      "bcf5471b5e9e8748c49fbc899788203ead6fc19a",
       [
        null,
        {}
@@ -406949,7 +406966,7 @@
       ]
      ],
      "setinnerhtml.tentative.html": [
-      "f99863c7c1fabfbaee11d5cc90cc81d3e4acebff",
+      "076fdac2b0dda4fadfb1584a8b7650f736e7a908",
       [
        null,
        {}
