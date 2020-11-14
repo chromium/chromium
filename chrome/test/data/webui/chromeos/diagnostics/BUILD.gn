@@ -225,9 +225,9 @@ js_library("routine_section_test") {
     "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
     "//chromeos/components/diagnostics_ui/resources:mojo_interface_provider",
     "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
-    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
     "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
     "//chromeos/components/diagnostics_ui/resources:routine_section",
+    "//chromeos/components/diagnostics_ui/resources:text_badge",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
 }

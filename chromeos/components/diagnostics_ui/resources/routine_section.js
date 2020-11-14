@@ -5,13 +5,16 @@
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_list.js';
+import './text_badge.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RoutineName} from './diagnostics_types.js';
+import {RoutineName, StandardRoutineResult} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
-import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js'
+import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
+import {lookupEnumValueName} from './routine_result_entry.js';
+import {BadgeType} from './text_badge.js';
 
 /**
  * @fileoverview
@@ -29,6 +32,19 @@ Polymer({
    */
   executor_: null,
 
+  /**
+   * @type {boolean}
+   * @private
+   */
+  isRunTestsDisabled_: false,
+
+  /**
+   * Boolean whether last run had at least one failure,
+   * @type {boolean}
+   * @private
+   */
+  hasTestFailure_: false,
+
   properties: {
     /** @type {!Array<!RoutineName>} */
     routines: {
@@ -37,12 +53,22 @@ Polymer({
     },
 
     /**
+     * Overall ExecutionProgress of the routine.
      * @type {!ExecutionProgress}
      * @private
      */
     executionStatus_: {
       type: Number,
       value: ExecutionProgress.kNotStarted,
+    },
+
+    /**
+     * Name of currently running test
+     * @private
+     */
+    currentTestName_: {
+      type: String,
+      value: '',
     },
 
     /** @private */
@@ -55,7 +81,7 @@ Polymer({
     isReportListHidden_: {
       type: Boolean,
       value: true,
-    }
+    },
   },
 
   /** @private */
@@ -67,18 +93,30 @@ Polymer({
   /** @private */
   onRunTestsClicked_() {
     this.isRunTestsDisabled_ = true;
+    this.hasTestFailure_ = false;
     const resultListElem = this.getResultListElem_();
     resultListElem.initializeTestRun(this.routines);
 
     this.executor_ = new RoutineListExecutor(getSystemRoutineController());
+    this.executionStatus_ = ExecutionProgress.kRunning;
     this.executor_
         .runRoutines(
             this.routines,
             (status) => {
-              this.executionStatus_ = status.progress;
+              // TODO(joonbug): Update this function to use localized test name
+              this.currentTestName_ =
+                  lookupEnumValueName(RoutineName, status.routine);
+
+              if (status.result &&
+                  status.result.simpleResult !==
+                      StandardRoutineResult.kTestPassed) {
+                this.hasTestFailure_ = true;
+              }
+
               resultListElem.onStatusUpdate.call(resultListElem, status);
             })
         .then(() => {
+          this.executionStatus_ = ExecutionProgress.kCompleted;
           this.isRunTestsDisabled_ = false;
         });
   },
@@ -90,7 +128,7 @@ Polymer({
   },
 
   /** @protected */
-  isReportButtonHidden_() {
+  isResultAndStatusHidden_() {
     return this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
@@ -98,6 +136,35 @@ Polymer({
   getReportToggleButtonText_() {
     // TODO(joonbug): Localize this string.
     return this.isReportListHidden_ ? 'See Report' : 'Hide Report';
+  },
+
+  /** @protected */
+  getBadgeType_() {
+    if (this.executionStatus_ === ExecutionProgress.kCompleted) {
+      if (this.hasTestFailure_) {
+        return BadgeType.ERROR;
+      }
+      return BadgeType.SUCCESS;
+    }
+    return BadgeType.DEFAULT;
+  },
+
+  /** @protected */
+  getBadgeText_() {
+    // TODO(joonbug): Localize this string.
+    if (this.executionStatus_ === ExecutionProgress.kRunning) {
+      return 'Test running';
+    }
+    return this.hasTestFailure_ ? 'FAILED' : 'SUCCESS';
+  },
+
+  /** @protected */
+  getTextStatus_() {
+    // TODO(joonbug): Localize this string.
+    if (this.executionStatus_ === ExecutionProgress.kRunning) {
+      return `Running ${this.currentTestName_} test`;
+    }
+    return this.hasTestFailure_ ? 'Test failed' : 'Test succeeded';
   },
 
   /** @override */

@@ -5,10 +5,12 @@
 import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://diagnostics/routine_section.js';
 
-import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
+import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
@@ -86,6 +88,24 @@ export function routineSectionTestSuite() {
         dx_utils.getToggleTestReportButtonFromSection(routineSectionElement);
     assertTrue(!!button);
     return button;
+  }
+
+  /**
+   * Returns the status badge.
+   * @return {!TextBadgeElement}
+   */
+  function getStatusBadge() {
+    return /** @type {!TextBadgeElement} */ (
+        routineSectionElement.$$('#testStatusBadge'));
+  }
+
+  /**
+   * Returns the status text.
+   * TODO(joonbug): Update this type for use with assertElementContainsText
+   * @return {?Element}
+   */
+  function getStatusTextElement() {
+    return routineSectionElement.$$('#testStatusText');
   }
 
   /**
@@ -179,7 +199,6 @@ export function routineSectionTestSuite() {
         });
   });
 
-
   test('ClickButtonInitializesResultList', () => {
     /** @type {!Array<!RoutineName>} */
     const routines = [
@@ -240,6 +259,118 @@ export function routineSectionTestSuite() {
           // Second routine should be completed.
           assertEquals(routines[1], entries[1].item.routine);
           assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
+        });
+  });
+
+  test('ResultListStatusSuccess', () => {
+    /** @type {!Array<!RoutineName>} */
+    const routines = [
+      RoutineName.kMemory,
+    ];
+
+    routineController.setFakeStandardRoutineResult(
+        RoutineName.kMemory, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => {
+          // Hidden by default.
+          assertTrue(getStatusBadge().hidden);
+          assertTrue(getStatusTextElement().hidden);
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Badge is visible with test running.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
+          assertEquals(getStatusBadge().value, 'Test running');
+
+          // Text is visible describing which test is being run.
+          assertFalse(getStatusTextElement().hidden);
+          dx_utils.assertElementContainsText(getStatusTextElement(), 'kMemory');
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          // Badge is visible with success.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
+          assertEquals(getStatusBadge().value, 'SUCCESS');
+
+          // Text is visible saying test succeeded.
+          assertFalse(getStatusTextElement().hidden);
+          assertEquals(
+              getStatusTextElement().textContent.trim(), 'Test succeeded');
+        });
+  });
+
+  test('ResultListStatusFail', () => {
+    /** @type {!Array<!RoutineName>} */
+    const routines = [
+      RoutineName.kFloatingPoint,
+      RoutineName.kCpuCache,
+    ];
+
+    routineController.setFakeStandardRoutineResult(
+        RoutineName.kFloatingPoint, StandardRoutineResult.kTestFailed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineName.kCpuCache, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => {
+          // Hidden by default.
+          assertTrue(getStatusBadge().hidden);
+          assertTrue(getStatusTextElement().hidden);
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Badge is visible with test running.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
+          assertEquals(getStatusBadge().value, 'Test running');
+
+          // Text is visible describing which test is being run.
+          assertFalse(getStatusTextElement().hidden);
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'kFloatingPoint');
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          // Badge is still visible with "test running", even though first one
+          // failed.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
+          assertEquals(getStatusBadge().value, 'Test running');
+
+          // Text is visible describing which test is being run.
+          assertFalse(getStatusTextElement().hidden);
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'kCpuCache');
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          // Badge is visible with fail.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.ERROR);
+          assertEquals(getStatusBadge().value, 'FAILED');
+
+          // Text is visible saying test failed.
+          assertFalse(getStatusTextElement().hidden);
+          assertEquals(
+              getStatusTextElement().textContent.trim(), 'Test failed');
         });
   });
 }

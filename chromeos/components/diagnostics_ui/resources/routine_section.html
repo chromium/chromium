@@ -8,8 +8,15 @@
     Run Tests
   </cr-button>
   <cr-button id="toggleReportButton" class="action-button" on-click="onToggleReportClicked_"
-      hidden="[[isReportButtonHidden_(executionStatus_)]]">
+      hidden="[[isResultAndStatusHidden_(executionStatus_)]]">
     [[getReportToggleButtonText_(isReportListHidden_)]]
   </cr-button>
+  <text-badge id="testStatusBadge" badge-type="[[getBadgeType_(executionStatus_)]]"
+      hidden="[[isResultAndStatusHidden_(executionStatus_)]]"
+      value="[[getBadgeText_(executionStatus_)]]">
+  </text-badge>
+  <span id="testStatusText" hidden$="[[isResultAndStatusHidden_(executionStatus_)]]">
+    [[getTextStatus_(executionStatus_, currentTestName_)]]
+  </span>
   <routine-result-list id="resultList" hidden="[[isReportListHidden_]]"></routine-result-list>
 </div>

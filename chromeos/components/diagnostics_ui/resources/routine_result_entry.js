@@ -19,7 +19,7 @@ import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
  * @param {number} enumValue
  * @return {string}
  */
-function lookupEnumValueName(enumType, enumValue) {
+export function lookupEnumValueName(enumType, enumValue) {
   for (const [key, value] of Object.entries(enumType)) {
     if (value === enumValue) {
       return key;
