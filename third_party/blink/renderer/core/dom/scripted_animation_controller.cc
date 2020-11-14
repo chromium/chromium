@@ -69,6 +69,7 @@ void ScriptedAnimationController::Trace(Visitor* visitor) const {
   visitor->Trace(callback_collection_);
   visitor->Trace(event_queue_);
   visitor->Trace(media_query_list_listeners_);
+  visitor->Trace(media_query_list_listeners_set_);
   visitor->Trace(per_frame_events_);
 }
 
@@ -169,7 +170,8 @@ void ScriptedAnimationController::ExecuteFrameCallbacks() {
 
 void ScriptedAnimationController::CallMediaQueryListListeners() {
   MediaQueryListListeners listeners;
-  listeners.Swap(media_query_list_listeners_);
+  listeners.swap(media_query_list_listeners_);
+  media_query_list_listeners_set_.clear();
 
   for (const auto& listener : listeners) {
     listener->NotifyMediaQueryChanged();
@@ -267,8 +269,13 @@ void ScriptedAnimationController::EnqueuePerFrameEvent(Event* event) {
 void ScriptedAnimationController::EnqueueMediaQueryChangeListeners(
     HeapVector<Member<MediaQueryListListener>>& listeners) {
   for (const auto& listener : listeners) {
-    media_query_list_listeners_.insert(listener);
+    if (!media_query_list_listeners_set_.Contains(listener)) {
+      media_query_list_listeners_.push_back(listener);
+      media_query_list_listeners_set_.insert(listener);
+    }
   }
+  DCHECK_EQ(media_query_list_listeners_.size(),
+            media_query_list_listeners_set_.size());
   ScheduleAnimationIfNeeded();
 }
 
