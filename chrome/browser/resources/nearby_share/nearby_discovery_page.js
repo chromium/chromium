@@ -271,35 +271,35 @@ Polymer({
 
   /** @private */
   onSelectedShareTargetChanged_() {
-    // The device list gets removed from the DOM if there are no share targets.
-    if (!this.$.deviceList) {
+    const deviceList = this.$$('#deviceList');
+    if (!deviceList) {
+      // deviceList is in dom-if and may not be found
       return;
     }
 
-    // <iron-list> causes |this.$.deviceList.selectedItem| to be null if tapped
-    // a second time. Manually reselect the last item to preserve selection.
-    if (!this.$.deviceList.selectedItem && this.lastSelectedShareTarget_) {
-      this.$.deviceList.selectItem(this.lastSelectedShareTarget_);
+    // <iron-list> causes |selectedItem| to be null if tapped a second time.
+    // Manually reselect the last item to preserve selection.
+    if (!deviceList.selectedItem && this.lastSelectedShareTarget_) {
+      // Use async to make sure this happens after |selectedItem| gets its
+      // final value.
+      this.async(() => {
+        const deviceList = this.$$('#deviceList');
+        if (!deviceList.selectedItem) {
+          deviceList.selectItem(this.lastSelectedShareTarget_);
+        }
+      });
+    } else {
+      this.lastSelectedShareTarget_ = deviceList.selectedItem;
     }
-    this.lastSelectedShareTarget_ = this.$.deviceList.selectedItem;
   },
 
   /**
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
-   * @return {boolean}
-   * @private
-   */
-  isShareTargetSelected_(shareTarget) {
-    return this.selectedShareTarget === shareTarget;
-  },
-
-  /**
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {boolean} bool
    * @return {string}
    * @private
    */
-  isShareTargetSelectedStr_(shareTarget) {
-    return this.isShareTargetSelected_(shareTarget).toString();
+  boolToString_(bool) {
+    return bool.toString();
   },
 
   /**
