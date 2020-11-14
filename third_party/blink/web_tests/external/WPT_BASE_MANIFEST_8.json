@@ -9914,17 +9914,6 @@
        {}
       ]
      ]
-    },
-    "order-of-events": {
-     "focus-events": {
-      "focus-manual.html": [
-       "391daf7028ce7fdff4f78b542caa2dd7d917a0d2",
-       [
-        null,
-        {}
-       ]
-      ]
-     }
     }
    },
    "vibration": {
@@ -207871,10 +207860,6 @@
      ]
     },
     "cssom": {
-     "CSSCounterStyleRule-expected.txt": [
-      "525f5da12305d001d26d00cfff1e3c8f6ebcf7d7",
-      []
-     ],
      "CSSGroupingRule-insertRule-expected.txt": [
       "44e8aaa155eef7b2f14b1d86cee6ec9de789162a",
       []
@@ -241376,7 +241361,7 @@
       []
      ],
      "import-module-scripts.https-expected.txt": [
-      "6bac8b097c273a972583a8d4c453f22915975bb7",
+      "21e4c43a967459857dd8c8e8e05b14ba2a68c6fc",
       []
      ],
      "import-scripts-redirect.https-expected.txt": [
@@ -242118,6 +242103,10 @@
       ],
       "import-scripts-404.js": [
        "19c7a4b8e561b3d95f10496e92a2c7264d693815",
+       []
+      ],
+      "import-scripts-cross-origin-worker.sub.js": [
+       "b432854db8bc7f8292c43434d8c24a3ffe97dec0",
        []
       ],
       "import-scripts-diff-resource-map-worker.js": [
@@ -257876,6 +257865,10 @@
        "cb762eff806849df46dc758ef7b98b63f27f54c9",
        []
       ],
+      "export-on-load-script.py": [
+       "6cca411e8a85a7fa0d78ced6b32011bda890b7c3",
+       []
+      ],
       "export-on-static-import-script.js": [
        "3f7174eef0beb68a3f36d66d3ed7a73c9074955c",
        []
@@ -257901,7 +257894,7 @@
        []
       ],
       "import-test-cases.js": [
-       "c5830e97eebc88b12a5ed1f600e810df443204f8",
+       "8ad89e8fda11a3923e29128f4835928f9a8c2cb6",
        []
       ],
       "nested-dynamic-import-worker.js": [
@@ -257917,7 +257910,7 @@
        []
       ],
       "new-worker-window.html": [
-       "a7bd2eedef6ab6d639f28e063ccd50aefbbb0528",
+       "32a89fae0ecd59ba7c84870c86f4251d057c5339",
        []
       ],
       "post-message-on-load-worker.js": [
@@ -257932,6 +257925,10 @@
        "699af684a2366fc0aaa8c1e64abf3240489cf7be",
        []
       ],
+      "redirect.py": [
+       "396bd4c4b2dfbb6091779b6f4375245c1a4604d8",
+       []
+      ],
       "static-import-and-then-dynamic-import-worker.js": [
        "2d857a2e90a11af9f52e5d59d15ee30d225deeaf",
        []
@@ -257944,6 +257941,10 @@
        "16f70e9daf4909605746c6614a509afb3cf71ed1",
        []
       ],
+      "static-import-redirect-worker.js": [
+       "8434c1a34e2837c9fde3709ec3d5bed468deeb7e",
+       []
+      ],
       "static-import-remote-origin-credentials-checker-worker.sub.js": [
        "c543cb49616062dc85fbbe7d885c17ada9646728",
        []
@@ -257953,7 +257954,7 @@
        []
       ],
       "static-import-remote-origin-script-worker.sub.js": [
-       "0221a2b8ba775c672d724a9f5946cdc9915db362",
+       "6432dd5d80d0f1c5c05512658dd240f09fa8ae8e",
        []
       ],
       "static-import-same-origin-credentials-checker-worker.js": [
@@ -405912,6 +405913,13 @@
        {}
       ]
      ],
+     "import-scripts-cross-origin.https.html": [
+      "773708a9fbce32a6b17f22d88b9fb6ebc3553710",
+      [
+       null,
+       {}
+      ]
+     ],
      "import-scripts-mime-types.https.html": [
       "1679831d0f2b98aee22898d820373e80079fbe00",
       [
@@ -417545,6 +417553,15 @@
       ],
       "focus-management-expectations.html": [
        "1845c15d71679276b6fbf4a19188d111da5ea70b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "focus.html": [
+       "7942674a70b7941cd1c23cee1251c43524362d57",
        [
         null,
         {
@@ -438039,6 +438056,13 @@
      ],
      "dedicated-worker-import-csp.html": [
       "02b88e82269f370080074eea78a65490c964e3a7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dedicated-worker-import-data-url-cross-origin.html": [
+      "37390947b642ebf1ff80434d6e870a0118d3b0be",
       [
        null,
        {}
