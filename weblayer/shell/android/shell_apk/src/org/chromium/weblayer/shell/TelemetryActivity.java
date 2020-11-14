@@ -40,11 +40,9 @@ import java.util.List;
 public class TelemetryActivity extends FragmentActivity {
     private static final String KEY_MAIN_VIEW_ID = "mainViewId";
 
-    // The trace tag names are the same as WebView's telemetry activity so the perf metric logic can
-    // be shared between them.
-    private static final String START_UP_TRACE_TAG = "WebViewStartupInterval";
-    private static final String LOAD_URL_TRACE_TAG = "WebViewBlankUrlLoadInterval";
-    private static final String DUMMY_TRACE_TAG = "WebViewDummyInterval";
+    private static final String START_UP_TRACE_TAG = "WebLayerStartupInterval";
+    private static final String LOAD_URL_TRACE_TAG = "WebLayerBlankUrlLoadInterval";
+    private static final String DUMMY_TRACE_TAG = "WebLayerDummyInterval";
 
     private Profile mProfile;
     private Fragment mFragment;
