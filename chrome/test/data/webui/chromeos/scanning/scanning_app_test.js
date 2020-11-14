@@ -91,6 +91,7 @@ class FakeScanService {
     this.resolverMap_.set('getScanners', new PromiseResolver());
     this.resolverMap_.set('getScannerCapabilities', new PromiseResolver());
     this.resolverMap_.set('startScan', new PromiseResolver());
+    this.resolverMap_.set('cancelScan', new PromiseResolver());
   }
 
   /**
@@ -313,6 +314,8 @@ export function scanningAppTest() {
     let resolutionSelect;
     /** @type {!CrButtonElement} */
     let scanButton;
+    /** @type {!CrButtonElement} */
+    let cancelButton;
     /** @type {!HTMLElement} */
     let statusText;
     /** @type {!HTMLElement} */
@@ -334,6 +337,8 @@ export function scanningAppTest() {
           resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
           scanButton =
               /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+          cancelButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
           statusText =
               /** @type {!HTMLElement} */ (scanningApp.$$('#statusText'));
           helperText = scanningApp.$$('#scanPreview').$$('#helperText');
@@ -369,6 +374,8 @@ export function scanningAppTest() {
           assertFalse(pageSizeSelect.disabled);
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
+          assertTrue(isVisible(scanButton));
+          assertFalse(isVisible(cancelButton));
           assertEquals('', statusText.textContent.trim());
           assertTrue(isVisible(helperText));
           assertFalse(isVisible(scanProgress));
@@ -391,6 +398,8 @@ export function scanningAppTest() {
           assertTrue(pageSizeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
+          assertFalse(isVisible(scanButton));
+          assertTrue(isVisible(cancelButton));
           assertFalse(isVisible(helperText));
           assertTrue(isVisible(scanProgress));
           assertFalse(isVisible(
@@ -449,10 +458,71 @@ export function scanningAppTest() {
           assertFalse(pageSizeSelect.disabled);
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
+          assertTrue(isVisible(scanButton));
+          assertFalse(isVisible(cancelButton));
           assertTrue(isVisible(helperText));
           assertFalse(isVisible(scanProgress));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+        });
+  });
+
+  test('CancelScan', () => {
+    const expectedScanners = [
+      createScanner(firstScannerId, firstScannerName),
+      createScanner(secondScannerId, secondScannerName)
+    ];
+
+    let capabilities = new Map();
+    capabilities.set(firstScannerId, firstCapabilities);
+    capabilities.set(secondScannerId, secondCapabilities);
+
+    /** @type {!CrButtonElement} */
+    let scanButton;
+    /** @type {!CrButtonElement} */
+    let cancelButton;
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          scanButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+          cancelButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          // Before the scan button is clicked, the scan button should be
+          // visible and enabled, and the cancel button shouldn't be visible.
+          assertFalse(scanButton.disabled);
+          assertTrue(isVisible(scanButton));
+          assertFalse(isVisible(cancelButton));
+
+          // Click the Scan button and wait till the scan is started.
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          // After the scan button is clicked and the scan has started, the scan
+          // button should be disabled and not visible, and the cancel button
+          // should be visible.
+          assertTrue(scanButton.disabled);
+          assertFalse(isVisible(scanButton));
+          assertTrue(isVisible(cancelButton));
+
+          // Simulate a progress update and verify the progress bar and text are
+          // updated correctly.
+          return fakeScanService_.simulateProgress(1, 17);
+        })
+        .then(() => {
+          // Click the cancel button to cancel the scan.
+          cancelButton.click();
+          return fakeScanService_.cancelScan();
+        })
+        .then(() => {
+          // After canceling is complete, the scan button should be visible and
+          // enabled, and the cancel button shouldn't be visible.
+          assertTrue(isVisible(scanButton));
+          assertFalse(isVisible(cancelButton));
         });
   });
 

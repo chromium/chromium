@@ -386,11 +386,27 @@ Polymer({
     return this.i18n(fileSavedText);
   },
 
+  /** @private */
+  onCancelClick_() {
+    assert(this.appState_ === AppState.SCANNING);
+
+    this.scanService_.cancelScan();
+    this.setAppState_(AppState.READY);
+  },
+
   /**
    * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
    */
   onCancelComplete(success) {},
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCancelButton_() {
+    return this.appState_ === AppState.SCANNING;
+  },
 
   /**
    * Sets the app state if the state transition is allowed.

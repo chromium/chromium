@@ -143,8 +143,13 @@
         </iron-collapse>
         <div class="scan-button-container">
           <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
-              disabled$="[[areSettingsDisabled_(appState_)]]">
+              disabled$="[[areSettingsDisabled_(appState_)]]"
+              hidden$="[[shouldShowCancelButton_(appState_)]]">
             [[i18n('scanButtonText')]]
+          </cr-button>
+          <cr-button id="cancelButton" on-click="onCancelClick_"
+              hidden$="[[!shouldShowCancelButton_(appState_)]]">
+            [[i18n('cancelButtonText')]]
           </cr-button>
         </div>
         <p id="statusText">[[statusText_]]</p>
