@@ -1447,5 +1447,24 @@
     "more",
     "less",
     "forced",
+
+    // @counter-style system
+    "cyclic",
+    // fixed,
+    "symbolic",
+    // alphabetic,
+    "numeric",
+    "additive",
+    "extends",
+
+    // @counter-style range
+    // infinite,
+
+    // @counter-style speak-as
+    // auto
+    "bullets",
+    "numbers",
+    "words",
+    // spell-out,
   ],
 }

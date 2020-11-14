@@ -601,6 +601,31 @@ interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText
     method constructor
+interface CSSCounterStyleRule : CSSRule
+    attribute @@toStringTag
+    getter additiveSymbols
+    getter fallback
+    getter name
+    getter negative
+    getter pad
+    getter prefix
+    getter range
+    getter speakAs
+    getter suffix
+    getter symbols
+    getter system
+    method constructor
+    setter additiveSymbols
+    setter fallback
+    setter name
+    setter negative
+    setter pad
+    setter prefix
+    setter range
+    setter speakAs
+    setter suffix
+    setter symbols
+    setter system
 interface CSSFontFaceRule : CSSRule
     attribute @@toStringTag
     getter style
@@ -748,6 +773,7 @@ interface CSSRotate : CSSTransformComponent
 interface CSSRule
     attribute @@toStringTag
     attribute CHARSET_RULE
+    attribute COUNTER_STYLE_RULE
     attribute FONT_FACE_RULE
     attribute IMPORT_RULE
     attribute KEYFRAMES_RULE

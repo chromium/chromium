@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -15,7 +16,84 @@ CSSCounterStyleRule::CSSCounterStyleRule(
 CSSCounterStyleRule::~CSSCounterStyleRule() = default;
 
 String CSSCounterStyleRule::cssText() const {
-  return String();
+  StringBuilder result;
+  result.Append("@counter-style ");
+  result.Append(name());
+  result.Append(" {");
+
+  // Note: The exact serialization isn't well specified.
+  String system_text = system();
+  if (system_text.length()) {
+    result.Append(" system: ");
+    result.Append(system_text);
+    result.Append(";");
+  }
+
+  String symbols_text = symbols();
+  if (symbols_text.length()) {
+    result.Append(" symbols: ");
+    result.Append(symbols_text);
+    result.Append(";");
+  }
+
+  String additive_symbols_text = additiveSymbols();
+  if (additive_symbols_text.length()) {
+    result.Append(" additive-symbols: ");
+    result.Append(additive_symbols_text);
+    result.Append(";");
+  }
+
+  String negative_text = negative();
+  if (negative_text.length()) {
+    result.Append(" negative: ");
+    result.Append(negative_text);
+    result.Append(";");
+  }
+
+  String prefix_text = prefix();
+  if (prefix_text.length()) {
+    result.Append(" prefix: ");
+    result.Append(prefix_text);
+    result.Append(";");
+  }
+
+  String suffix_text = suffix();
+  if (suffix_text.length()) {
+    result.Append(" suffix: ");
+    result.Append(suffix_text);
+    result.Append(";");
+  }
+
+  String pad_text = pad();
+  if (pad_text.length()) {
+    result.Append(" pad: ");
+    result.Append(pad_text);
+    result.Append(";");
+  }
+
+  String range_text = range();
+  if (range_text.length()) {
+    result.Append(" range: ");
+    result.Append(range_text);
+    result.Append(";");
+  }
+
+  String fallback_text = fallback();
+  if (fallback_text.length()) {
+    result.Append(" fallback: ");
+    result.Append(fallback_text);
+    result.Append(";");
+  }
+
+  String speak_as_text = speakAs();
+  if (speak_as_text.length()) {
+    result.Append(" speak-as: ");
+    result.Append(speak_as_text);
+    result.Append(";");
+  }
+
+  result.Append(" }");
+  return result.ToString();
 }
 
 void CSSCounterStyleRule::Reattach(StyleRuleBase* rule) {

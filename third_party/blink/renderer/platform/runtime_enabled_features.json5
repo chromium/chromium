@@ -445,6 +445,7 @@
     {
       // https://drafts.csswg.org/css-counter-styles-3
       name: "CSSAtRuleCounterStyle",
+      status: "test",
     },
     {
       name: "CSSCalcAsInt",
