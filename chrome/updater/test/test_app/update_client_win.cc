@@ -23,16 +23,16 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/win_util.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/update_service.h"
 
 namespace updater {
-
 namespace {
 
 HRESULT CreateUpdaterInterface(Microsoft::WRL::ComPtr<IUpdater>* updater) {
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
 
   if (FAILED(hr)) {

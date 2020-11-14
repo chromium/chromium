@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wrl/client.h>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,6 +14,9 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/updater_version.h"
@@ -149,6 +154,39 @@ void Uninstall() {
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
   SleepFor(5);
+}
+
+// Tests if the typelibs and some of the public, internal, and
+// legacy interfaces are available. Failure to query these interfaces indicates
+// an issue with typelib registration.
+void ExpectInterfacesRegistered() {
+  // IUpdater.
+  Microsoft::WRL::ComPtr<IUnknown> updater_server;
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
+                                              CLSCTX_LOCAL_SERVER,
+                                              IID_PPV_ARGS(&updater_server)));
+  Microsoft::WRL::ComPtr<IUpdater> updater;
+  EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
+
+  // IUpdaterControl.
+  Microsoft::WRL::ComPtr<IUnknown> updater_control_server;
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+      __uuidof(UpdaterControlClass), nullptr, CLSCTX_LOCAL_SERVER,
+      IID_PPV_ARGS(&updater_control_server)));
+  Microsoft::WRL::ComPtr<IUpdaterControl> updater_control;
+  EXPECT_HRESULT_SUCCEEDED(updater_control_server.As(&updater_control));
+
+  // IGoogleUpdate3Web and IAppBundleWeb.
+  Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+      __uuidof(GoogleUpdate3WebUserClass), nullptr, CLSCTX_LOCAL_SERVER,
+      IID_PPV_ARGS(&updater_legacy_server)));
+  Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
+  EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
+  Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
+  EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
 }
 
 }  // namespace test

@@ -23,6 +23,8 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
@@ -33,8 +35,9 @@ namespace updater {
 namespace {
 
 void DeleteComServer(HKEY root) {
-  for (const auto& clsid : {__uuidof(UpdaterClass), CLSID_UpdaterControlClass,
-                            CLSID_GoogleUpdate3WebUserClass}) {
+  for (const auto& clsid :
+       {__uuidof(UpdaterClass), __uuidof(UpdaterControlClass),
+        __uuidof(GoogleUpdate3WebUserClass)}) {
     InstallUtil::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
                                    WorkItem::kWow64Default);
   }
@@ -51,7 +54,7 @@ void DeleteComService() {
                                  WorkItem::kWow64Default);
   if (!installer::InstallServiceWorkItem::DeleteService(
           kWindowsServiceName, base::ASCIIToUTF16(UPDATER_KEY),
-          {CLSID_UpdaterServiceClass}, {}))
+          {__uuidof(UpdaterServiceClass)}, {}))
     LOG(WARNING) << "DeleteService failed.";
 }
 

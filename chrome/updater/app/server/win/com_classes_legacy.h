@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
-#include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/update_service.h"
 
 namespace base {
