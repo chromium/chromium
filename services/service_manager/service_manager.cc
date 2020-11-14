@@ -190,11 +190,6 @@ ServiceManager::~ServiceManager() {
   instances_.clear();
 }
 
-void ServiceManager::SetInstanceQuitCallback(
-    base::OnceCallback<void(const Identity&)> callback) {
-  instance_quit_callback_ = std::move(callback);
-}
-
 ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     const ServiceInstance& source_instance,
     const ServiceFilter& partial_target_filter) {
@@ -404,9 +399,6 @@ void ServiceManager::OnInstanceStopped(const Identity& identity) {
   for (auto& listener : listeners_) {
     listener->OnServiceStopped(identity);
   }
-
-  if (!instance_quit_callback_.is_null())
-    std::move(instance_quit_callback_).Run(identity);
 }
 
 ServiceInstance* ServiceManager::GetExistingInstance(

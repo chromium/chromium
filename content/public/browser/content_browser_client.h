@@ -1086,9 +1086,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) {}
 
-  // Called just before the Service Manager is initialized.
-  virtual void WillStartServiceManager() {}
-
   // Handles a service instance request for a new service instance with identity
   // |identity|. If the client knows how to run the named service, it should
   // bind |*receiver| accordingly, in the browser process.
@@ -1100,11 +1097,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RunServiceInstance(
       const service_manager::Identity& identity,
       mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
-
-  // Allows the embedder to terminate the browser if a specific service instance
-  // quits or crashes.
-  virtual bool ShouldTerminateOnServiceQuit(
-      const service_manager::Identity& id);
 
   // Allows the embedder to amend service manifests for existing services.
   // Specifically, the sets of exposed and required capabilities, interface

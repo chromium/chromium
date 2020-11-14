@@ -200,13 +200,6 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
-bool ShellContentBrowserClient::ShouldTerminateOnServiceQuit(
-    const service_manager::Identity& id) {
-  if (should_terminate_on_service_quit_callback_)
-    return std::move(should_terminate_on_service_quit_callback_).Run(id);
-  return false;
-}
-
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {

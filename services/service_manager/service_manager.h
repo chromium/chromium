@@ -112,12 +112,6 @@ class ServiceManager : public Service {
 
   ~ServiceManager() override;
 
-  // Provide a callback to be notified whenever an instance is destroyed.
-  // Typically the creator of the Service Manager will use this to determine
-  // when some set of services it created are destroyed, so it can shut down.
-  void SetInstanceQuitCallback(
-      base::OnceCallback<void(const Identity&)> callback);
-
   // Directly requests that the Service Manager start a new instance for
   // |service_name| if one is not already running.
   //
@@ -212,7 +206,6 @@ class ServiceManager : public Service {
   ServiceInstance* service_manager_instance_;
 
   mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
-  base::OnceCallback<void(const Identity&)> instance_quit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceManager);
 };

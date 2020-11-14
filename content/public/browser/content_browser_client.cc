@@ -721,11 +721,6 @@ void ContentBrowserClient::RunServiceInstance(
     const service_manager::Identity& identity,
     mojo::PendingReceiver<service_manager::mojom::Service>* receiver) {}
 
-bool ContentBrowserClient::ShouldTerminateOnServiceQuit(
-    const service_manager::Identity& id) {
-  return false;
-}
-
 base::Optional<service_manager::Manifest>
 ContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
   return base::nullopt;

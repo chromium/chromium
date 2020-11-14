@@ -3842,28 +3842,6 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
 
 #endif  // defined(OS_WIN)
 
-void ChromeContentBrowserClient::WillStartServiceManager() {
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-  auto* chrome_feature_list_creator =
-      startup_data_.chrome_feature_list_creator();
-  // This has to run very early before ServiceManagerContext is created.
-  const policy::PolicyMap& policies =
-      chrome_feature_list_creator->browser_policy_connector()
-          ->GetPolicyService()
-          ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                                std::string()));
-  const base::Value* audio_sandbox_enabled_policy_value =
-      policies.GetValue(policy::key::kAudioSandboxEnabled);
-  if (audio_sandbox_enabled_policy_value) {
-    bool force_enable_audio_sandbox;
-    audio_sandbox_enabled_policy_value->GetAsBoolean(
-        &force_enable_audio_sandbox);
-    SetForceAudioServiceSandboxed(force_enable_audio_sandbox);
-  }
-#endif
-}
-
 void ChromeContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,
     const content::OpenURLParams& params,

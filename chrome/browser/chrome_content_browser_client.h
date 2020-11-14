@@ -429,7 +429,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void BindHostReceiverForRenderer(
       content::RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) override;
-  void WillStartServiceManager() override;
   void OpenURL(
       content::SiteInstance* site_instance,
       const content::OpenURLParams& params,

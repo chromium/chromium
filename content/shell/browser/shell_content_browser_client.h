@@ -43,8 +43,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       const MainFunctionParams& parameters) override;
   bool IsHandledURL(const GURL& url) override;
-  bool ShouldTerminateOnServiceQuit(
-      const service_manager::Identity& id) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::string GetAcceptLangs(BrowserContext* context) override;
@@ -129,10 +127,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
     select_client_certificate_callback_ =
         std::move(select_client_certificate_callback);
   }
-  void set_should_terminate_on_service_quit_callback(
-      base::OnceCallback<bool(const service_manager::Identity&)> callback) {
-    should_terminate_on_service_quit_callback_ = std::move(callback);
-  }
   void set_login_request_callback(
       base::OnceCallback<void(bool is_main_frame)> login_request_callback) {
     login_request_callback_ = std::move(login_request_callback);
@@ -183,8 +177,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   static bool allow_any_cors_exempt_header_for_browser_;
 
   base::OnceClosure select_client_certificate_callback_;
-  base::OnceCallback<bool(const service_manager::Identity&)>
-      should_terminate_on_service_quit_callback_;
   base::OnceCallback<void(bool is_main_frame)> login_request_callback_;
   base::RepeatingCallback<void(const network::mojom::URLLoaderFactoryParams*,
                                const url::Origin&,

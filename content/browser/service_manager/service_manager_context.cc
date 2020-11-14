@@ -289,28 +289,6 @@ class ServiceManagerContext::InProcessServiceManagerContext
                                   base::Token{}, base::Token::CreateRandom()),
         std::move(system_remote), metadata.BindNewPipeAndPassReceiver());
     metadata->SetPID(base::GetCurrentProcId());
-
-    service_manager_->SetInstanceQuitCallback(
-        base::BindOnce(&OnInstanceQuitOnServiceManagerThread,
-                       std::move(ui_thread_task_runner)));
-  }
-
-  static void OnInstanceQuitOnServiceManagerThread(
-      scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
-      const service_manager::Identity& id) {
-    ui_thread_task_runner->PostTask(FROM_HERE,
-                                    base::BindOnce(&OnInstanceQuit, id));
-  }
-
-  static void OnInstanceQuit(const service_manager::Identity& id) {
-    if (GetContentClient()->browser()->ShouldTerminateOnServiceQuit(id)) {
-      // Don't LOG(FATAL) because we don't want a browser crash report.
-      LOG(ERROR) << "Terminating because service '" << id.name()
-                 << "' quit unexpectedly.";
-      // Skip shutdown to reduce the risk that other code in the browser will
-      // respond to the service pipe closing.
-      exit(1);
-    }
   }
 
   void ShutDownOnServiceManagerThread() {
@@ -369,8 +347,6 @@ ServiceManagerContext::ServiceManagerContext(
   // ServiceManagerContext must be constructed before anyone can call
   // GetConnectorForIOThread().
   g_io_thread_connector.Get() = system_connection->GetConnector()->Clone();
-
-  GetContentClient()->browser()->WillStartServiceManager();
 
   in_process_context_->Start(
       manifests, std::move(system_remote),
