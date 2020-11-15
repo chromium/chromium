@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
+#include "base/containers/adapters.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/base/features.h"
 #include "cc/layers/layer.h"
@@ -800,20 +801,21 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
 
 // The heuristic for picking a checkerboarding color works as follows:
 //   - During paint, PaintChunker will look for background color display items,
-//     and record the background color of the latest display item with the
-//     largest background or bigger a ratio of the chunk bounds.
+//     and record the blending of background colors if the background is larger
+//     than a ratio of the chunk bounds.
 //   - After layer allocation, the paint chunks assigned to a layer are
 //     examined for a background color annotation.
-//   - The background color of the latest chunk with a background larger than
+//   - The blending of background colors of chunks having background larger than
 //     a ratio of the layer is set as the layer's background color.
 //   - If the above color exists, it's also used as the safe opaque background
 //     color. Otherwise the color of the largest background is used, without the
 //     size requirement, as safe opaque background color should always get a
 //     value if possible.
 static void UpdateBackgroundColor(cc::Layer& layer,
+                                  const EffectPaintPropertyNode& layer_effect,
                                   const PaintChunkSubset& paint_chunks) {
-  SkColor background_color = SK_ColorTRANSPARENT;
-  SkColor safe_opaque_background_color = SK_ColorTRANSPARENT;
+  Vector<Color, 4> background_colors;
+  Color safe_opaque_background_color;
   float safe_opaque_background_area = 0;
   float min_background_area = kMinBackgroundColorCoverageRatio *
                               layer.bounds().width() * layer.bounds().height();
@@ -822,19 +824,37 @@ static void UpdateBackgroundColor(cc::Layer& layer,
     if (chunk.background_color == Color::kTransparent)
       continue;
     if (chunk.background_color_area >= min_background_area) {
-      background_color = chunk.background_color.Rgb();
-      safe_opaque_background_color = background_color;
-      break;
+      Color chunk_background_color = chunk.background_color;
+      const auto& chunk_effect = chunk.properties.Effect().Unalias();
+      if (&chunk_effect != &layer_effect) {
+        if (chunk_effect.UnaliasedParent() != &layer_effect ||
+            !chunk_effect.IsOpacityOnly()) {
+          continue;
+        }
+        chunk_background_color =
+            chunk_background_color.CombineWithAlpha(chunk_effect.Opacity());
+      }
+      background_colors.push_back(chunk_background_color);
+      if (!chunk_background_color.HasAlpha()) {
+        // If this color is opaque, blending it with subsequent colors will have
+        // no effect.
+        break;
+      }
     }
-    if (chunk.background_color_area >= safe_opaque_background_area) {
+    if (chunk.background_color_area > safe_opaque_background_area) {
       // This color will be used only if we don't find proper background_color.
-      safe_opaque_background_color = chunk.background_color.Rgb();
+      safe_opaque_background_color = chunk.background_color;
       safe_opaque_background_area = chunk.background_color_area;
     }
   }
 
-  layer.SetBackgroundColor(background_color);
-  layer.SetSafeOpaqueBackgroundColor(safe_opaque_background_color);
+  Color background_color;
+  for (Color color : base::Reversed(background_colors))
+    background_color = background_color.Blend(color);
+  layer.SetBackgroundColor(background_color.Rgb());
+  layer.SetSafeOpaqueBackgroundColor(background_color == Color::kTransparent
+                                         ? safe_opaque_background_color.Rgb()
+                                         : background_color.Rgb());
 }
 
 static void UpdateTouchActionRegion(
@@ -980,7 +1000,7 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
     PropertyTreeManager* property_tree_manager) {
-  UpdateBackgroundColor(layer, chunks);
+  UpdateBackgroundColor(layer, layer_state.Effect(), chunks);
   UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
       layer, layer_state, chunks, property_tree_manager);
 }

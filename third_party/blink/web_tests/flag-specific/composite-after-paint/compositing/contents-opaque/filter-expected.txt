@@ -9,13 +9,11 @@
     {
       "name": "LayoutNGBlockFlow DIV class='composited container-box'",
       "bounds": [100, 100],
-      "backgroundColor": "#008000",
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow DIV class='composited container-box'",
       "bounds": [100, 100],
-      "backgroundColor": "#008000",
       "transform": 2
     }
   ],

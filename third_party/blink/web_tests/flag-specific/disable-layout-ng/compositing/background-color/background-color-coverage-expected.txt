@@ -2,22 +2,100 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 628],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='target'",
-      "bounds": [620, 620],
+      "name": "LayoutBlockFlow (positioned) DIV id='green1'",
+      "bounds": [170, 170],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='green2'",
+      "bounds": [170, 170],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
+      "name": "LayoutBlockFlow (positioned) DIV id='green3'",
+      "bounds": [110, 110],
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown1'",
+      "bounds": [100, 100],
+      "backgroundColor": "#664C00",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown2'",
+      "bounds": [100, 100],
+      "backgroundColor": "#664C00",
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
+      "bounds": [100, 100],
+      "transform": 5
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 85],
+      "bounds": [85, 15],
+      "transform": 5
+    },
+    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "position": [85, 0],
+      "bounds": [15, 85],
+      "transform": 5
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [85, 85],
+      "bounds": [15, 15],
+      "transform": 5
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664C00",
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
+      "bounds": [100, 100],
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 85],
+      "bounds": [85, 15],
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [85, 0],
+      "bounds": [15, 85],
+      "transform": 6
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [85, 85],
+      "bounds": [15, 15],
+      "transform": 6
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664C00",
+      "transform": 6
     }
   ],
   "transforms": [
@@ -27,7 +105,52 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [200, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [400, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [400, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [600, 200, 0, 1]
       ]
     }
   ]
