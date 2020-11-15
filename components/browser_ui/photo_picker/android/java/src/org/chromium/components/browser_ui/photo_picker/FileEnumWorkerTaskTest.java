@@ -204,7 +204,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
         String[] selectColumns = {MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.DATE_ADDED, MediaStore.Files.FileColumns.MEDIA_TYPE,
                 MediaStore.Files.FileColumns.MIME_TYPE, MediaStore.Files.FileColumns.DATA};
-        String whereClause = "(_data LIKE ? OR _data LIKE ? OR _data LIKE ?) AND _data NOT LIKE ?";
+        String whereClause = "_data LIKE ? OR _data LIKE ? OR _data LIKE ? OR _data LIKE ?";
         String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";
 
         ArgumentCaptor<String[]> argument = ArgumentCaptor.forClass(String[].class);
@@ -220,7 +220,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
         Assert.assertTrue(
                 actualWhereArgs[2], actualWhereArgs[2].contains(Environment.DIRECTORY_DOWNLOADS));
         Assert.assertTrue(actualWhereArgs[3],
-                actualWhereArgs[3].contains(Environment.DIRECTORY_PICTURES + "/Screenshots"));
+                actualWhereArgs[3].contains(Environment.DIRECTORY_DCIM + "/Restored"));
     }
 
     @Test

@@ -118,9 +118,9 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
                 directoryColumnName,
         };
 
-        String whereClause = "(" + directoryColumnName + " LIKE ? OR " + directoryColumnName
-                + " LIKE ? OR " + directoryColumnName + " LIKE ?) AND " + directoryColumnName
-                + " NOT LIKE ?";
+        String whereClause = directoryColumnName + " LIKE ? OR " + directoryColumnName
+                + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
+                + " LIKE ?";
         String additionalClause = "";
         if (mIncludeImages) {
             additionalClause = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -136,13 +136,13 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
         String cameraDir = getCameraDirectory();
         String picturesDir = Environment.DIRECTORY_PICTURES;
         String downloadsDir = Environment.DIRECTORY_DOWNLOADS;
-        String screenshotsDir = Environment.DIRECTORY_PICTURES + "/Screenshots";
+        // Files downloaded from the user's Google Photos library go to a Restored folder.
+        String restoredDir = Environment.DIRECTORY_DCIM + "/Restored";
         if (!BuildInfo.isAtLeastQ()) {
             cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
             picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
             downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
-            screenshotsDir =
-                    Environment.getExternalStoragePublicDirectory(screenshotsDir).toString();
+            restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
         }
 
         String[] whereArgs = new String[] {
@@ -150,8 +150,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
                 cameraDir + "%",
                 picturesDir + "%",
                 downloadsDir + "%",
-                // Exclude low-quality sources, such as the screenshots directory:
-                screenshotsDir + "%",
+                restoredDir + "%",
         };
 
         final String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";
