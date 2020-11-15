@@ -186,7 +186,7 @@ WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
       frame_background_has_alpha_(false),
       demux_(nullptr),
       demux_state_(WEBP_DEMUX_PARSING_HEADER),
-      have_already_parsed_this_data_(false),
+      have_parsed_current_data_(false),
       repetition_count_(kAnimationLoopOnce),
       decoded_height_(0) {
   blend_function_ = (alpha_option == kAlphaPremultiplied)
@@ -259,7 +259,7 @@ bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
 }
 
 void WEBPImageDecoder::OnSetData(SegmentReader* data) {
-  have_already_parsed_this_data_ = false;
+  have_parsed_current_data_ = false;
   // TODO(crbug.com/943519): Modify this approach for incremental YUV (when
   // we don't require IsAllDataReceived() to be true before decoding).
   if (IsAllDataReceived()) {
@@ -302,10 +302,9 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (data_->size() < kWebpHeaderSize)
     return IsAllDataReceived() ? SetFailed() : false;
 
-  if (have_already_parsed_this_data_)
+  if (have_parsed_current_data_)
     return true;
-
-  have_already_parsed_this_data_ = true;
+  have_parsed_current_data_ = true;
 
   if (consolidated_data_ && consolidated_data_->size() >= data_->size()) {
     // Less data provided than last time. |consolidated_data_| is guaranteed
