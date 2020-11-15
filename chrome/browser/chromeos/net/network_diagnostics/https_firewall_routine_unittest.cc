@@ -117,7 +117,8 @@ class HttpsFirewallRoutineTest : public ::testing::Test {
 
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
       TlsProber::NetworkContextGetter network_context_getter,
-      const GURL& url,
+      net::HostPortPair host_port_pair,
+      bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) {
     DCHECK(fake_probe_results_.size() > 0);
 

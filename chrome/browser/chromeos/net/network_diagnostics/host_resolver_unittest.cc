@@ -38,7 +38,6 @@ class HostResolverTest : public ::testing::Test {
  protected:
   const net::HostPortPair kFakeHostPortPair =
       net::HostPortPair::FromString("fake_stun_server.com:80");
-  const GURL kFakeUrl{"https://www.FAKE_HOST_NAME.com:1234/"};
   const net::IPEndPoint kFakeIPAddress{
       net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
   std::unique_ptr<HostResolver> host_resolver_;
@@ -48,39 +47,7 @@ class HostResolverTest : public ::testing::Test {
   FakeNetworkContext fake_network_context_;
 };
 
-TEST_F(HostResolverTest, TestSuccessfulResolutionWithUrl) {
-  auto address_list = net::AddressList(kFakeIPAddress);
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK), address_list);
-  InitializeNetworkContext(std::move(fake_dns_result));
-  HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), base::nullopt};
-  base::RunLoop run_loop;
-  host_resolver_ = std::make_unique<HostResolver>(
-      kFakeUrl, fake_network_context(),
-      base::BindOnce(
-          [](HostResolver::ResolutionResult* resolution_result,
-             base::OnceClosure quit_closure,
-             HostResolver::ResolutionResult& res_result) {
-            resolution_result->result = res_result.result;
-            resolution_result->resolve_error_info =
-                res_result.resolve_error_info;
-            resolution_result->resolved_addresses =
-                res_result.resolved_addresses;
-            std::move(quit_closure).Run();
-          },
-          &resolution_result, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  EXPECT_EQ(resolution_result.result, net::OK);
-  EXPECT_EQ(resolution_result.resolve_error_info,
-            net::ResolveErrorInfo(net::OK));
-  EXPECT_EQ(resolution_result.resolved_addresses.value().size(), 1);
-  EXPECT_EQ(resolution_result.resolved_addresses.value().front(),
-            address_list.front());
-}
-
-TEST_F(HostResolverTest, TestSuccessfulResolutionWithHostPortPair) {
+TEST_F(HostResolverTest, TestSuccessfulResolution) {
   auto address_list = net::AddressList(kFakeIPAddress);
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), address_list);

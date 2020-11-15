@@ -111,7 +111,9 @@ void HttpsFirewallRoutine::ProbeNextUrl() {
 void HttpsFirewallRoutine::AttemptProbe(const GURL& url) {
   // Store the instance of TlsProber.
   tls_prober_ = tls_prober_getter_callback_.Run(
-      base::BindRepeating(&HttpsFirewallRoutine::GetNetworkContext), url,
+      base::BindRepeating(&HttpsFirewallRoutine::GetNetworkContext),
+      net::HostPortPair::FromURL(url),
+      /*negotiate_tls=*/true,
       base::BindOnce(&HttpsFirewallRoutine::OnProbeComplete, weak_ptr(), url));
 }
 
@@ -150,9 +152,11 @@ network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
 
 std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(
     TlsProber::NetworkContextGetter network_context_getter,
-    const GURL& url,
+    net::HostPortPair host_port_pair,
+    bool negotiate_tls,
     TlsProber::TlsProbeCompleteCallback callback) {
-  return std::make_unique<TlsProber>(std::move(network_context_getter), url,
+  return std::make_unique<TlsProber>(std::move(network_context_getter),
+                                     host_port_pair, negotiate_tls,
                                      std::move(callback));
 }
 

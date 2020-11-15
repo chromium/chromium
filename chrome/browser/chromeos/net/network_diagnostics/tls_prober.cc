@@ -55,26 +55,29 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
 }  // namespace
 
 TlsProber::TlsProber(NetworkContextGetter network_context_getter,
-                     const GURL& url,
+                     net::HostPortPair host_port_pair,
+                     bool negotiate_tls,
                      TlsProbeCompleteCallback callback)
     : network_context_getter_(std::move(network_context_getter)),
-      url_(url),
+      host_port_pair_(host_port_pair),
+      negotiate_tls_(negotiate_tls),
       callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
-  DCHECK(url_.is_valid());
+  DCHECK(!host_port_pair_.IsEmpty());
 
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
   DCHECK(network_context);
 
   host_resolver_ = std::make_unique<HostResolver>(
-      net::HostPortPair::FromURL(url_), network_context,
+      host_port_pair, network_context,
       base::BindOnce(&TlsProber::OnHostResolutionComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
-TlsProber::TlsProber() = default;
+TlsProber::TlsProber()
+    : network_context_getter_(base::NullCallback()), negotiate_tls_(false) {}
 
 TlsProber::~TlsProber() = default;
 
@@ -126,6 +129,11 @@ void TlsProber::OnConnectComplete(
     OnDone(result, ProbeExitEnum::kTcpConnectionFailure);
     return;
   }
+  if (!negotiate_tls_) {
+    OnDone(result, ProbeExitEnum::kSuccess);
+    return;
+  }
+
   DCHECK(peer_addr.has_value());
 
   auto pending_receiver =
@@ -138,7 +146,7 @@ void TlsProber::OnConnectComplete(
   tls_client_socket_remote_.set_disconnect_handler(
       base::BindOnce(&TlsProber::OnDisconnect, weak_factory_.GetWeakPtr()));
   tcp_connected_socket_remote_->UpgradeToTLS(
-      net::HostPortPair::FromURL(url_),
+      host_port_pair_,
       /*options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
       std::move(pending_receiver),

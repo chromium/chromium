@@ -25,13 +25,6 @@ HostResolver::ResolutionResult::ResolutionResult(
 
 HostResolver::ResolutionResult::~ResolutionResult() = default;
 
-HostResolver::HostResolver(const GURL& url,
-                           network::mojom::NetworkContext* network_context,
-                           OnResolutionComplete callback)
-    : HostResolver(net::HostPortPair::FromURL(url),
-                   network_context,
-                   std::move(callback)) {}
-
 HostResolver::HostResolver(const net::HostPortPair& host_port_pair,
                            network::mojom::NetworkContext* network_context,
                            OnResolutionComplete callback)

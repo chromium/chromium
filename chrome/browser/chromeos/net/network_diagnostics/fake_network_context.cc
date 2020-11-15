@@ -83,13 +83,15 @@ void FakeNetworkContext::SetTCPConnectCode(
     base::Optional<net::Error>& tcp_connect_code) {
   if (tcp_connect_code.has_value()) {
     tcp_connect_code_ = tcp_connect_code.value();
+    fake_tcp_connected_socket_ = std::make_unique<FakeTCPConnectedSocket>();
   }
 }
 
 void FakeNetworkContext::SetTLSUpgradeCode(
     base::Optional<net::Error>& tls_upgrade_code) {
   if (tls_upgrade_code.has_value()) {
-    fake_tcp_connected_socket_ = std::make_unique<FakeTCPConnectedSocket>();
+    DCHECK(fake_tcp_connected_socket_);
+
     fake_tcp_connected_socket_->set_tls_upgrade_code(tls_upgrade_code.value());
   }
 }

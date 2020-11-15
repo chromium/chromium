@@ -33,12 +33,6 @@ class HostResolver : public network::ResolveHostClientBase {
   };
   using OnResolutionComplete = base::OnceCallback<void(ResolutionResult&)>;
 
-  // Performs the DNS resolution of a specified |url|. Note that |callback|
-  // will not be called until construction is complete.
-  HostResolver(const GURL& url,
-               network::mojom::NetworkContext* network_context,
-               OnResolutionComplete callback);
-
   // Performs the DNS resolution of a specified |host_port_pair|. Note that
   // |callback| will not be called until construction is complete.
   HostResolver(const net::HostPortPair& host_port_pair,
