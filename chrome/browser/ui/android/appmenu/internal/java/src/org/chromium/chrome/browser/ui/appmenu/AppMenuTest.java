@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -53,6 +54,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AppMenuTest extends DummyUiActivityTestCase {
     private AppMenuCoordinatorImpl mAppMenuCoordinator;
     private AppMenuHandlerImpl mAppMenuHandler;
@@ -146,6 +148,8 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         Assert.assertEquals("Popup should be aligned with right of anchor. Anchor rect: " + viewRect
                         + ", popup rect: " + popupRect,
                 viewRect.right, popupRect.right);
+
+        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(null);
     }
 
     @Test
@@ -162,6 +166,7 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         Assert.assertNotEquals("Popup should be offset from right of anchor."
                         + "Anchor rect: " + viewRect + ", popup rect: " + popupRect,
                 viewRect.right, popupRect.right);
+        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(null);
     }
 
     @Test
