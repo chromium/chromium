@@ -88,11 +88,13 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
 }
 
 void MediaInspectorContextImpl::RemovePlayer(WebString playerId) {
-  const auto& player = players_.find(playerId);
-  DCHECK(player != players_.end());
+  const auto& player_iter = players_.find(playerId);
+  DCHECK(player_iter != players_.end());
+  const Member<MediaPlayer>& player = player_iter->value;
+  DCHECK(player);
+
   total_event_count_ -=
-      (player->value->errors.size() + player->value->events.size() +
-       player->value->messages.size());
+      player->errors.size() + player->events.size() + player->messages.size();
   players_.erase(playerId);
 }
 
@@ -134,7 +136,6 @@ void MediaInspectorContextImpl::DestroyPlayer(const WebString& playerId) {
     // unsent players become dead when destroyed.
     unsent_players_.EraseAt(unsent_players_.Find(String(playerId)));
     dead_players_.push_back(playerId);
-    players_.erase(playerId);
   } else {
     expendable_players_.push_back(playerId);
   }
