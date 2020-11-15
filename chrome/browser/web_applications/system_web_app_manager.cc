@@ -56,7 +56,6 @@
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
@@ -338,7 +337,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
     case SystemAppType::SETTINGS:
       return true;
     case SystemAppType::CAMERA:
-      return base::FeatureList::IsEnabled(web_app::kCameraSystemWebApp);
+      return base::FeatureList::IsEnabled(
+          chromeos::features::kCameraSystemWebApp);
     case SystemAppType::TERMINAL:
       return true;
     case SystemAppType::MEDIA:

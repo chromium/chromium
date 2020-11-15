@@ -395,8 +395,10 @@ void ComponentLoader::AddKeyboardApp() {
 }
 
 void ComponentLoader::AddChromeCameraApp() {
-  // TODO(crbug.com/1135280): Remove all the logic here once CCA is fully
-  // migrated to SWA.
+  if (base::FeatureList::IsEnabled(chromeos::features::kCameraSystemWebApp)) {
+    return;
+  }
+
   base::FilePath resources_path;
   if (base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
     AddComponentFromDir(resources_path.Append(extension_misc::kCameraAppPath),

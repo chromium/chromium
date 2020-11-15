@@ -15,10 +15,6 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
 
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
-#if defined(OS_CHROMEOS)
-extern const base::Feature kCameraSystemWebApp;
-#endif  // OS_CHROMEOS
-
 // Returns the base::Feature in |kExternalAppInstallFeatures| that corresponds
 // to |feature_name|. Used by external app install configs to gate installation
 // on features listed in |kExternalAppInstallFeatures|.
