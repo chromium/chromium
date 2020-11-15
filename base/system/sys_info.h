@@ -66,6 +66,12 @@ class BASE_EXPORT SysInfo {
   // on failure.
   static int64_t AmountOfTotalDiskSpace(const FilePath& path);
 
+#if defined(OS_FUCHSIA)
+  // Sets the total amount of disk space to report under the specified |path|.
+  // If |bytes| is -ve then any existing entry for |path| is removed.
+  static void SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes);
+#endif
+
   // Returns system uptime.
   static TimeDelta Uptime();
 

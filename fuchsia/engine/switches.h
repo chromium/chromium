@@ -56,6 +56,9 @@ extern const char kCdmDataDirectory[];
 // Enables reporting of an Android-like User Agent string.
 extern const char kUseLegacyAndroidUserAgent[];
 
+// Soft quota to apply to the Context's persistent data directory, in bytes.
+extern const char kDataQuotaBytes[];
+
 }  // namespace switches
 
 #endif  // FUCHSIA_ENGINE_SWITCHES_H_

@@ -89,33 +89,53 @@ TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/851734): Implementation depends on statvfs, which is not
-// implemented on Fuchsia
-#define MAYBE_AmountOfFreeDiskSpace DISABLED_AmountOfFreeDiskSpace
-#else
-#define MAYBE_AmountOfFreeDiskSpace AmountOfFreeDiskSpace
-#endif
-TEST_F(SysInfoTest, MAYBE_AmountOfFreeDiskSpace) {
+TEST_F(SysInfoTest, AmountOfFreeDiskSpace) {
   // We aren't actually testing that it's correct, just that it's sane.
   FilePath tmp_path;
   ASSERT_TRUE(GetTempDir(&tmp_path));
+#if defined(OS_FUCHSIA)
+  // Fuchsia currently requires "total disk space" be set explicitly.
+  // See crbug.com/1148334.
+  SysInfo::SetAmountOfTotalDiskSpace(tmp_path, 1024);
+#endif
   EXPECT_GE(SysInfo::AmountOfFreeDiskSpace(tmp_path), 0) << tmp_path.value();
 }
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/851734): Implementation depends on statvfs, which is not
-// implemented on Fuchsia
-#define MAYBE_AmountOfTotalDiskSpace DISABLED_AmountOfTotalDiskSpace
-#else
-#define MAYBE_AmountOfTotalDiskSpace AmountOfTotalDiskSpace
-#endif
-TEST_F(SysInfoTest, MAYBE_AmountOfTotalDiskSpace) {
+TEST_F(SysInfoTest, AmountOfTotalDiskSpace) {
   // We aren't actually testing that it's correct, just that it's sane.
   FilePath tmp_path;
   ASSERT_TRUE(GetTempDir(&tmp_path));
+#if defined(OS_FUCHSIA)
+  // Fuchsia currently requires "total disk space" be set explicitly.
+  // See crbug.com/1148334.
+  SysInfo::SetAmountOfTotalDiskSpace(tmp_path, 1024);
+#endif
   EXPECT_GT(SysInfo::AmountOfTotalDiskSpace(tmp_path), 0) << tmp_path.value();
 }
+
+#if defined(OS_FUCHSIA)
+// Verify that specifying total disk space for nested directories matches
+// the deepest-nested.
+TEST_F(SysInfoTest, NestedVolumesAmountOfTotalDiskSpace) {
+  constexpr int64_t kOuterVolumeQuota = 1024;
+  constexpr int64_t kInnerVolumeQuota = kOuterVolumeQuota / 2;
+
+  FilePath tmp_path;
+  ASSERT_TRUE(GetTempDir(&tmp_path));
+  SysInfo::SetAmountOfTotalDiskSpace(tmp_path, kOuterVolumeQuota);
+  const FilePath subdirectory_path = tmp_path.Append("subdirectory");
+  SysInfo::SetAmountOfTotalDiskSpace(subdirectory_path, kInnerVolumeQuota);
+
+  EXPECT_EQ(SysInfo::AmountOfTotalDiskSpace(tmp_path), kOuterVolumeQuota);
+  EXPECT_EQ(SysInfo::AmountOfTotalDiskSpace(subdirectory_path),
+            kInnerVolumeQuota);
+
+  // Remove the inner directory quota setting and check again.
+  SysInfo::SetAmountOfTotalDiskSpace(subdirectory_path, -1);
+  EXPECT_EQ(SysInfo::AmountOfTotalDiskSpace(subdirectory_path),
+            kOuterVolumeQuota);
+}
+#endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
