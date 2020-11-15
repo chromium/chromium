@@ -11,16 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "url/gurl.h"
-
-namespace net {
-class AddressList;
-}
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -39,7 +36,6 @@ class TlsProber {
     kMojoDisconnectFailure,
     kSuccess,
   };
-  class HostResolver;
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using OnConnectCompleteOnUIThreadCallback = base::OnceCallback<
@@ -62,9 +58,7 @@ class TlsProber {
 
   // Processes the results of the DNS resolution done by |host_resolver_|.
   void OnHostResolutionComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses);
+      HostResolver::ResolutionResult& resolution_result);
 
  protected:
   // Test-only constructor.

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/logging.h"
+
 namespace chromeos {
 namespace network_diagnostics {
 
@@ -30,8 +32,8 @@ void FakeNetworkContext::CreateHostResolver(
     mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
   DCHECK(!resolver_);
   resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver));
-  resolver_->set_fake_dns_results(std::move(fake_dns_results_));
   resolver_->set_disconnect_during_host_resolution(host_resolution_disconnect_);
+  resolver_->SetFakeDnsResult(std::move(fake_dns_result_));
 }
 
 void FakeNetworkContext::CreateTCPConnectedSocket(
@@ -59,6 +61,24 @@ void FakeNetworkContext::CreateTCPConnectedSocket(
                           mojo::ScopedDataPipeProducerHandle());
 }
 
+void FakeNetworkContext::CreateUDPSocket(
+    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+    mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
+  if (udp_connection_attempt_disconnect_) {
+    receiver.reset();
+    listener.reset();
+    return;
+  }
+
+  // Bind the receiver if UDP connection is successful.
+  if (udp_connect_code_ == net::OK) {
+    DCHECK(fake_udp_socket_);
+
+    fake_udp_socket_->BindReceiver(std::move(receiver));
+    fake_udp_socket_->BindRemote(std::move(listener));
+  }
+}
+
 void FakeNetworkContext::SetTCPConnectCode(
     base::Optional<net::Error>& tcp_connect_code) {
   if (tcp_connect_code.has_value()) {
@@ -72,6 +92,42 @@ void FakeNetworkContext::SetTLSUpgradeCode(
     fake_tcp_connected_socket_ = std::make_unique<FakeTCPConnectedSocket>();
     fake_tcp_connected_socket_->set_tls_upgrade_code(tls_upgrade_code.value());
   }
+}
+
+void FakeNetworkContext::SetUdpConnectCode(net::Error udp_connect_code) {
+  fake_udp_socket_ = std::make_unique<FakeUdpSocket>();
+  fake_udp_socket_->set_udp_connect_code(udp_connect_code);
+}
+
+void FakeNetworkContext::SetUdpSendCode(net::Error udp_send_code) {
+  DCHECK(fake_udp_socket_);
+
+  fake_udp_socket_->set_udp_send_code(udp_send_code);
+}
+
+void FakeNetworkContext::SetDisconnectDuringUdpSendAttempt(bool disconnect) {
+  DCHECK(fake_udp_socket_);
+
+  fake_udp_socket_->set_disconnect_during_udp_send_attempt(disconnect);
+}
+
+void FakeNetworkContext::SetUdpOnReceivedCode(net::Error udp_on_received_code) {
+  DCHECK(fake_udp_socket_);
+
+  fake_udp_socket_->set_udp_on_received_code(udp_on_received_code);
+}
+
+void FakeNetworkContext::SetUdpOnReceivedData(
+    base::span<const uint8_t> udp_on_received_data) {
+  DCHECK(fake_udp_socket_);
+
+  fake_udp_socket_->set_udp_on_received_data(std::move(udp_on_received_data));
+}
+
+void FakeNetworkContext::SetDisconnectDuringUdpReceiveAttempt(bool disconnect) {
+  DCHECK(fake_udp_socket_);
+
+  fake_udp_socket_->set_disconnect_during_udp_receive_attempt(disconnect);
 }
 
 }  // namespace network_diagnostics

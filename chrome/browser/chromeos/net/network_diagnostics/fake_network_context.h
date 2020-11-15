@@ -7,9 +7,13 @@
 
 #include <deque>
 #include <memory>
+#include <utility>
 
+#include "base/containers/span.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_tcp_connected_socket.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/fake_udp_socket.h"
 #include "services/network/test/test_network_context.h"
 
 namespace chromeos {
@@ -20,6 +24,8 @@ namespace network_diagnostics {
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext();
+  FakeNetworkContext(const FakeNetworkContext&) = delete;
+  FakeNetworkContext& operator=(const FakeNetworkContext&) = delete;
   ~FakeNetworkContext() override;
 
   // network::TestNetworkContext:
@@ -36,16 +42,40 @@ class FakeNetworkContext : public network::TestNetworkContext {
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateTCPConnectedSocketCallback callback) override;
 
-  // Sets the fake TCP connect code.
+  void CreateUDPSocket(
+      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener) override;
+
+  // Sets the fake TCP connect code. TODO(khegde): Change this to
+  // SetTCPConnectCompleteCode.
   void SetTCPConnectCode(base::Optional<net::Error>& tcp_connect_code);
 
   // Sets the fake TLS upgrade code.
   void SetTLSUpgradeCode(base::Optional<net::Error>& tls_upgrade_code);
 
-  // Sets the fake dns results.
-  void set_fake_dns_results(
-      std::deque<FakeHostResolver::DnsResult*> fake_dns_results) {
-    fake_dns_results_ = std::move(fake_dns_results);
+  // Sets the fake UDP connect code.
+  void SetUdpConnectCode(net::Error udp_connect_code);
+
+  // Sets the fake UDP send code.
+  void SetUdpSendCode(net::Error udp_send_code);
+
+  // Sets the state to mimic a fake disconnect during a UDP send attempt.
+  void SetDisconnectDuringUdpSendAttempt(bool disconnect);
+
+  // Sets the fake UDP on received code.
+  void SetUdpOnReceivedCode(net::Error udp_on_received_code);
+
+  // Sets the fake UDP on received data.
+  void SetUdpOnReceivedData(base::span<const uint8_t> udp_on_received_data);
+
+  // Sets the state to mimic a fake disconnect after receiving successful send
+  // confirmation, but before receiving any data.
+  void SetDisconnectDuringUdpReceiveAttempt(bool disconnect);
+
+  // Sets the fake DNS result. Used to test a single host resolution.
+  void set_fake_dns_result(
+      std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result) {
+    fake_dns_result_ = std::move(fake_dns_result);
   }
 
   // If set to true, the binding pipe will be disconnected when attempting to
@@ -66,15 +96,28 @@ class FakeNetworkContext : public network::TestNetworkContext {
     tls_upgrade_attempt_disconnect_ = disconnect;
   }
 
+  // If set to true, the binding pipe will be disconnected when attempting to
+  // connect.
+  void set_disconnect_during_udp_connection_attempt(bool disconnect) {
+    udp_connection_attempt_disconnect_ = disconnect;
+  }
+
  private:
   // Fake host resolver.
   std::unique_ptr<FakeHostResolver> resolver_;
   // Fake DNS lookup results.
   std::deque<FakeHostResolver::DnsResult*> fake_dns_results_;
+  // Fake DNS lookup result.
+  std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result_;
   // Provides the TCP socket functionality for tests.
   std::unique_ptr<FakeTCPConnectedSocket> fake_tcp_connected_socket_;
+  // Provides the UDP socket functionality for tests.
+  std::unique_ptr<FakeUdpSocket> fake_udp_socket_;
   // TCP connect code corresponding to the connection attempt.
   net::Error tcp_connect_code_ = net::OK;
+  // UDP connect code corresponding to the connection attempt.
+  net::Error udp_connect_code_ = net::OK;
+
   // Used to mimic the scenario where network::mojom::HostResolver receiver
   // is disconnected.
   bool host_resolution_disconnect_ = false;
@@ -84,6 +127,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
   // Used to mimic the scenario where network::mojom::TLSClientSocket receiver
   // is disconnected.
   bool tls_upgrade_attempt_disconnect_ = false;
+  // Used to mimic the scenario where network::mojom::UDPSocket receiver is
+  // disconnected while connecting.
+  bool udp_connection_attempt_disconnect_ = false;
 };
 
 }  // namespace network_diagnostics

@@ -54,89 +54,6 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
 
 }  // namespace
 
-class TlsProber::HostResolver : public network::ResolveHostClientBase {
- public:
-  HostResolver(network::mojom::NetworkContext* network_context,
-               TlsProber* tls_prober);
-  HostResolver(const HostResolver&) = delete;
-  HostResolver& operator=(const HostResolver&) = delete;
-  ~HostResolver() override;
-
-  // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
-
-  // Performs the DNS resolution.
-  void Run(const GURL& url);
-
-  network::mojom::NetworkContext* network_context() const {
-    return network_context_;
-  }
-
- private:
-  void CreateHostResolver();
-  void OnMojoConnectionError();
-
-  network::mojom::NetworkContext* network_context_ = nullptr;  // Unowned
-  TlsProber* tls_prober_;                                      // Unowned
-  mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
-  mojo::Remote<network::mojom::HostResolver> host_resolver_;
-};
-
-TlsProber::HostResolver::HostResolver(
-    network::mojom::NetworkContext* network_context,
-    TlsProber* tls_prober)
-    : network_context_(network_context), tls_prober_(tls_prober) {
-  DCHECK(network_context_);
-  DCHECK(tls_prober_);
-}
-
-TlsProber::HostResolver::~HostResolver() = default;
-
-void TlsProber::HostResolver::OnComplete(
-    int result,
-    const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
-  receiver_.reset();
-  host_resolver_.reset();
-
-  tls_prober_->OnHostResolutionComplete(result, resolve_error_info,
-                                        resolved_addresses);
-}
-
-void TlsProber::HostResolver::Run(const GURL& url) {
-  CreateHostResolver();
-  DCHECK(host_resolver_);
-  DCHECK(!receiver_.is_bound());
-
-  network::mojom::ResolveHostParametersPtr parameters =
-      network::mojom::ResolveHostParameters::New();
-  parameters->dns_query_type = net::DnsQueryType::A;
-  parameters->source = net::HostResolverSource::DNS;
-  parameters->cache_usage =
-      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
-
-  host_resolver_->ResolveHost(net::HostPortPair::FromURL(url),
-                              net::NetworkIsolationKey::CreateTransient(),
-                              std::move(parameters),
-                              receiver_.BindNewPipeAndPassRemote());
-}
-
-void TlsProber::HostResolver::CreateHostResolver() {
-  network_context()->CreateHostResolver(
-      net::DnsConfigOverrides(), host_resolver_.BindNewPipeAndPassReceiver());
-  // Disconnect handler will be invoked if the network service crashes.
-  host_resolver_.set_disconnect_handler(base::BindOnce(
-      &HostResolver::OnMojoConnectionError, base::Unretained(this)));
-}
-
-void TlsProber::HostResolver::OnMojoConnectionError() {
-  OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
-}
-
 TlsProber::TlsProber(NetworkContextGetter network_context_getter,
                      const GURL& url,
                      TlsProbeCompleteCallback callback)
@@ -151,9 +68,10 @@ TlsProber::TlsProber(NetworkContextGetter network_context_getter,
       network_context_getter_.Run();
   DCHECK(network_context);
 
-  host_resolver_ = std::make_unique<HostResolver>(network_context, this);
-  DCHECK(host_resolver_);
-  host_resolver_->Run(url);
+  host_resolver_ = std::make_unique<HostResolver>(
+      net::HostPortPair::FromURL(url_), network_context,
+      base::BindOnce(&TlsProber::OnHostResolutionComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 TlsProber::TlsProber() = default;
@@ -161,15 +79,15 @@ TlsProber::TlsProber() = default;
 TlsProber::~TlsProber() = default;
 
 void TlsProber::OnHostResolutionComplete(
-    int result,
-    const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    HostResolver::ResolutionResult& resolution_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool success = result == net::OK && !resolved_addresses->empty() &&
-                 resolved_addresses.has_value();
+  host_resolver_.reset();
+  bool success = resolution_result.result == net::OK &&
+                 !resolution_result.resolved_addresses->empty() &&
+                 resolution_result.resolved_addresses.has_value();
   if (!success) {
-    OnDone(result, ProbeExitEnum::kDnsFailure);
+    OnDone(resolution_result.result, ProbeExitEnum::kDnsFailure);
     return;
   }
 
@@ -187,7 +105,8 @@ void TlsProber::OnHostResolutionComplete(
   DCHECK(network_context);
 
   network_context->CreateTCPConnectedSocket(
-      /*local_addr=*/base::nullopt, resolved_addresses.value(),
+      /*local_addr=*/base::nullopt,
+      resolution_result.resolved_addresses.value(),
       /*options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
       std::move(pending_receiver), /*observer=*/mojo::NullRemote(),

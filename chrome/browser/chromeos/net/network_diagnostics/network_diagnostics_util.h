@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_UTIL_H_
 
+#include <array>
+#include <cstdint>
 #include <string>
 #include <vector>
 
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -19,6 +22,9 @@ namespace util {
 
 // Generate 204 path.
 extern const char kGenerate204Path[];
+
+// STUN packet header size.
+constexpr int kStunHeaderSize = 20;
 
 // Returns the Gstatic host suffix. Network diagnostic routines attach a random
 // prefix to |kGstaticHostSuffix| to get a complete hostname.
@@ -77,6 +83,12 @@ std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
 
 // Returns the profile associated with this account.
 Profile* GetUserProfile();
+
+// Returns a STUN packet with a header defined in RFC 5389.
+const std::array<uint8_t, kStunHeaderSize>& GetStunHeader();
+
+// Returns the traffic annotation tag for STUN traffic.
+net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag();
 
 }  // namespace util
 

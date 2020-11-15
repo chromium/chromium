@@ -149,6 +149,39 @@ Profile* GetUserProfile() {
   return profile;
 }
 
+const std::array<uint8_t, kStunHeaderSize>& GetStunHeader() {
+  static std::array<uint8_t, kStunHeaderSize> stun_header = {
+      0x00, 0x01, 0x00, 0x00, 0x21, 0x12, 0xa4, 0x42, 0x79, 0x64,
+      0x66, 0x36, 0x66, 0x53, 0x42, 0x73, 0x76, 0x77, 0x76, 0x75};
+
+  return stun_header;
+}
+
+net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag() {
+  return net::DefineNetworkTrafficAnnotation("network_diagnostics_routines",
+                                             R"(
+      semantics {
+        sender: "NetworkDiagnosticsRoutines"
+        description:
+            "Routines send network traffic to hosts in order to "
+            "validate the internet connection on a device."
+        trigger:
+            "A routine attempts a socket connection or makes an http/s "
+            "request."
+        data:
+          "For UDP connections, data is sent along with the origin "
+          "(scheme-host-port). The primary purpose of the UDP prober is to "
+          "send a STUN packet header to a STUN server. For TCP connections, "
+          "only the origin is sent. No user identifier is sent along with the "
+          "data."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+      }
+  )");
+}
+
 }  // namespace util
 
 }  // namespace network_diagnostics

@@ -43,13 +43,13 @@ void FakeHostResolver::ResolveHost(
     receiver_.reset();
     return;
   }
-  mojo::Remote<network::mojom::ResolveHostClient> response_client(
-      std::move(pending_response_client));
-  DnsResult* result = fake_dns_results_.front();
-  DCHECK(result);
-  fake_dns_results_.pop_front();
-  response_client->OnComplete(result->result_, result->resolve_error_info_,
-                              result->resolved_addresses_);
+  response_client_.Bind(std::move(pending_response_client));
+
+  DCHECK(fake_dns_result_);
+  response_client_->OnComplete(fake_dns_result_->result_,
+                               fake_dns_result_->resolve_error_info_,
+                               fake_dns_result_->resolved_addresses_);
+  fake_dns_result_.release();
 }
 
 void FakeHostResolver::MdnsListen(
@@ -58,6 +58,13 @@ void FakeHostResolver::MdnsListen(
     mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
   NOTIMPLEMENTED();
+}
+
+void FakeHostResolver::SetFakeDnsResult(
+    std::unique_ptr<DnsResult> fake_dns_result) {
+  DCHECK(!fake_dns_result_);
+
+  fake_dns_result_ = std::move(fake_dns_result);
 }
 
 }  // namespace network_diagnostics
