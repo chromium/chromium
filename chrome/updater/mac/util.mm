@@ -4,13 +4,16 @@
 
 #import "chrome/updater/mac/util.h"
 
+#include <pwd.h>
 #include <unistd.h>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/version.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util.h"
 
 namespace updater {
 namespace {
@@ -66,6 +69,43 @@ base::FilePath GetUpdaterExecutablePath() {
   return GetVersionedUpdaterFolderPath()
       .Append(ExecutableFolderPath())
       .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+}
+
+bool PathOwnedByUser(const base::FilePath& path) {
+  struct passwd* result = nullptr;
+  struct passwd user_info = {};
+  char pwbuf[2048] = {};
+  uid_t user_uid = geteuid();
+
+  int error = getpwuid_r(user_uid, &user_info, pwbuf, sizeof(pwbuf), &result);
+
+  if (error) {
+    VLOG(1) << "Failed to get user info.";
+    return true;
+  }
+
+  if (result == nullptr) {
+    VLOG(1) << "No entry for user.";
+    return true;
+  }
+
+  base::stat_wrapper_t stat_info = {};
+  if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
+    DPLOG(ERROR) << "Failed to get information on path " << path.value();
+    return false;
+  }
+
+  if (S_ISLNK(stat_info.st_mode)) {
+    DLOG(ERROR) << "Path " << path.value() << " is a symbolic link.";
+    return false;
+  }
+
+  if (stat_info.st_uid != user_uid) {
+    DLOG(ERROR) << "Path " << path.value() << " is owned by the wrong user.";
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace updater

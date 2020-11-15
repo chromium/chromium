@@ -18,6 +18,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_version.h"
@@ -181,6 +182,75 @@ TEST_F(IntegrationTest, RegisterTestApp) {
   ExpectActive();
   Uninstall();
 }
+
+TEST_F(IntegrationTest, UnregisterUninstalledApp) {
+  RegisterTestApp();
+  ExpectInstalled();
+  ExpectActiveVersion(UPDATER_VERSION_STRING);
+  ExpectActive();
+
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+    base::FilePath fake_ecp =
+        persisted_data->GetExistenceCheckerPath(kTestAppId)
+            .Append(FILE_PATH_LITERAL("NOT_THERE"));
+    persisted_data->SetExistenceCheckerPath(kTestAppId, fake_ecp);
+
+    PrefsCommitPendingWrites(global_prefs->GetPrefService());
+
+    EXPECT_EQ(fake_ecp.value(),
+              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
+  }
+
+  RunWake(0);
+
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+    EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),
+              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
+  }
+
+  Uninstall();
+  Clean();
+}
+
+TEST_F(IntegrationTest, UnregisterUnownedApp) {
+  RegisterTestApp();
+  ExpectInstalled();
+  ExpectActiveVersion(UPDATER_VERSION_STRING);
+  ExpectActive();
+
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+    base::FilePath fake_ecp{FILE_PATH_LITERAL("/Library")};
+    persisted_data->SetExistenceCheckerPath(kTestAppId, fake_ecp);
+
+    PrefsCommitPendingWrites(global_prefs->GetPrefService());
+
+    EXPECT_EQ(fake_ecp.value(),
+              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
+  }
+
+  RunWake(0);
+
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+    EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),
+              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
+  }
+
+  Uninstall();
+  Clean();
+}
+
 #endif  // OS_MAC
 
 #if defined(OS_WIN)

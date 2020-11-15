@@ -13,6 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/updater/configurator.h"
@@ -20,7 +22,9 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/update_client.h"
 
 namespace updater {
 
@@ -28,23 +32,48 @@ ControlServiceImpl::ControlServiceImpl(
     scoped_refptr<updater::Configurator> config)
     : config_(config),
       persisted_data_(
-          base::MakeRefCounted<PersistedData>(config_->GetPrefService())) {}
+          base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
+      update_client_(update_client::UpdateClientFactory(config_)),
+      number_of_pings_remaining_(0) {}
 
 void ControlServiceImpl::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  UnregisterMissingApps();
-  MaybeCheckForUpdates(std::move(callback));
+  callback_ = std::move(callback);
+  UnregisterMissingApps(GetRegisteredApps());
 }
 
 void ControlServiceImpl::InitializeUpdateService(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
   std::move(callback).Run();
 }
 
-void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
+std::vector<ControlServiceImpl::AppInfo>
+ControlServiceImpl::GetRegisteredApps() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<AppInfo> apps_to_unregister;
+  for (const std::string& app_id : persisted_data_->GetAppIds()) {
+    if (app_id == kUpdaterAppId)
+      continue;
+
+    const base::FilePath ecp = persisted_data_->GetExistenceCheckerPath(app_id);
+    if (!ecp.empty()) {
+      apps_to_unregister.push_back(
+          AppInfo(app_id, persisted_data_->GetProductVersion(app_id), ecp));
+    }
+  }
+  return apps_to_unregister;
+}
+
+bool ControlServiceImpl::WaitingOnUninstallPings() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return number_of_pings_remaining_ > 0;
+}
+
+void ControlServiceImpl::MaybeCheckForUpdates() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  scoped_refptr<UpdateServiceImpl> update_service =
+      base::MakeRefCounted<UpdateServiceImpl>(config_);
 
   const base::Time lastUpdateTime =
       config_->GetPrefService()->GetTime(kPrefUpdateTime);
@@ -57,12 +86,9 @@ void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
     VLOG(0) << "Skipping checking for updates:  "
             << timeSinceUpdate.InMinutes();
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+                                                     std::move(callback_));
     return;
   }
-
-  scoped_refptr<UpdateServiceImpl> update_service =
-      base::MakeRefCounted<UpdateServiceImpl>(config_);
 
   update_service->UpdateAll(
       base::DoNothing(),
@@ -78,22 +104,81 @@ void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
             }
             std::move(closure).Run();
           },
-          base::BindOnce(std::move(callback)), config_));
+          base::BindOnce(std::move(callback_)), config_));
 }
 
-void ControlServiceImpl::UnregisterMissingApps() {
+void ControlServiceImpl::UnregisterMissingApps(std::vector<AppInfo> apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& app_id : persisted_data_->GetAppIds()) {
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ControlServiceImpl::GetAppIDsToRemove, this, apps),
+      base::BindOnce(&ControlServiceImpl::RemoveAppIDsAndSendUninstallPings,
+                     this));
+}
+
+void ControlServiceImpl::UnregisterMissingAppsDone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeCheckForUpdates();
+}
+
+std::vector<ControlServiceImpl::PingInfo> ControlServiceImpl::GetAppIDsToRemove(
+    std::vector<AppInfo> apps) {
+  std::vector<PingInfo> app_ids_to_remove;
+  for (const auto& app : apps) {
     // Skip if app_id is equal to updater app id.
-    if (app_id == kUpdaterAppId)
+    if (app.app_id_ == kUpdaterAppId)
       continue;
 
-    const base::FilePath ecp = persisted_data_->GetExistenceCheckerPath(app_id);
-    if (!ecp.empty() && !base::PathExists(ecp)) {
-      if (!persisted_data_->RemoveApp(app_id))
-        VLOG(0) << "Could not remove registration of app " << app_id;
+    if (!base::PathExists(app.ecp_)) {
+      app_ids_to_remove.push_back(PingInfo(app.app_id_, app.app_version_,
+                                           kUninstallPingReasonUninstalled));
+    } else if (!PathOwnedByUser(app.ecp_)) {
+      app_ids_to_remove.push_back(PingInfo(app.app_id_, app.app_version_,
+                                           kUninstallPingReasonUserNotAnOwner));
     }
   }
+
+  return app_ids_to_remove;
+}
+
+void ControlServiceImpl::RemoveAppIDsAndSendUninstallPings(
+    std::vector<PingInfo> app_ids_to_remove) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (app_ids_to_remove.empty()) {
+    UnregisterMissingAppsDone();
+    return;
+  }
+
+  for (const auto& app_id_to_remove : app_ids_to_remove) {
+    const auto app_id = app_id_to_remove.app_id_;
+    const int ping_reason = app_id_to_remove.ping_reason_;
+    const base::Version app_version = app_id_to_remove.app_version_;
+
+    if (persisted_data_->RemoveApp(app_id)) {
+      VLOG(1) << "Uninstall ping for app id: " << app_id
+              << ". Ping reason: " << ping_reason;
+      number_of_pings_remaining_++;
+      update_client_->SendUninstallPing(
+          app_id, app_version, ping_reason,
+          base::BindOnce(&ControlServiceImpl::UninstallPingSent, this));
+    } else {
+      VLOG(0) << "Could not remove registration of app " << app_id;
+    }
+  }
+}
+
+void ControlServiceImpl::UninstallPingSent(update_client::Error error) {
+  number_of_pings_remaining_--;
+
+  if (error != update_client::Error::NONE)
+    VLOG(0) << __func__ << ": Error: " << static_cast<int>(error);
+
+  if (!WaitingOnUninstallPings())
+    std::move(
+        base::BindOnce(&ControlServiceImpl::UnregisterMissingAppsDone, this))
+        .Run();
 }
 
 void ControlServiceImpl::Uninitialize() {

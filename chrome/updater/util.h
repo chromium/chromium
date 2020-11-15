@@ -37,6 +37,9 @@ bool GetBaseDirectory(base::FilePath* path);
 // %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a User install.
 bool GetVersionedDirectory(base::FilePath* path);
 
+// Returns true if the user running the updater also owns the |path|.
+bool PathOwnedByUser(const base::FilePath& path);
+
 // Initializes logging for an executable.
 void InitLogging(const base::FilePath::StringType& filename);
 

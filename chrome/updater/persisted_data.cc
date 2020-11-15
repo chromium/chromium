@@ -67,7 +67,14 @@ void PersistedData::SetFingerprint(const std::string& id,
 base::FilePath PersistedData::GetExistenceCheckerPath(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::FilePath().AppendASCII(GetString(id, kECP));
+#if defined(OS_WIN)
+  base::FilePath::StringType ecp;
+  const std::string str = GetString(id, kECP);
+  return base::UTF8ToWide(str.c_str(), str.size(), &ecp) ? base::FilePath(ecp)
+                                                         : base::FilePath();
+#else
+  return base::FilePath(GetString(id, kECP));
+#endif  // OS_WIN
 }
 
 void PersistedData::SetExistenceCheckerPath(const std::string& id,

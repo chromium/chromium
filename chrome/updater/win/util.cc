@@ -387,4 +387,10 @@ base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
   return token_handle;
 }
 
+bool PathOwnedByUser(const base::FilePath& path) {
+  // TODO(crbug.com/1147094): Implement for Win.
+
+  return true;
+}
+
 }  // namespace updater

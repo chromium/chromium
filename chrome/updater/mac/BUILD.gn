@@ -87,6 +87,7 @@ source_set("util") {
 
   deps = [
     "//base",
+    "//chrome/updater:base",
     "//chrome/updater:version_header",
   ]
 

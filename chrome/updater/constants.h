@@ -204,6 +204,9 @@ constexpr int kPolicyAutomaticUpdatesOnly = 3;
 constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
+constexpr int kUninstallPingReasonUninstalled = 0;
+constexpr int kUninstallPingReasonUserNotAnOwner = 1;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_
