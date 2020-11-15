@@ -199,7 +199,7 @@ void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
 }
 
 void ConnectionManagerImpl::OnConnectionTimeout() {
-  PA_LOG(WARNING) << "AttemptionConnection() has timed out. Closing connection "
+  PA_LOG(WARNING) << "AttemptConnection() has timed out. Closing connection "
                   << "attempt.";
 
   connection_attempt_.reset();
