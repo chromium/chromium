@@ -68,6 +68,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoTutorialIPHUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoTutorialTryNowTracker.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialListCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/metrics/VideoTutorialMetrics.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerCoordinator.java",
     ]
 

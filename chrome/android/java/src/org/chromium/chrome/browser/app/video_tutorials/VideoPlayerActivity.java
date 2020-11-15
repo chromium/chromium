@@ -81,10 +81,11 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
     }
 
     /** Called to launch this activity to play a given video tutorial. */
-    static void playVideoTutorial(Context context, Tutorial tutorial) {
+    public static void playVideoTutorial(Context context, @FeatureType int featureType) {
         Intent intent = new Intent();
         intent.setClass(context, VideoPlayerActivity.class);
-        intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_TUTORIAL, tutorial.featureType);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_TUTORIAL, featureType);
         context.startActivity(intent);
     }
 
