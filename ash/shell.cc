@@ -175,8 +175,6 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/components/bloom/public/cpp/bloom_controller.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -566,14 +564,7 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   // Ash doesn't properly remove pre-target-handlers.
   ui::EventHandler::DisableCheckTargets();
 
-  // AccelerometerReader is important for screen orientation so we need
-  // USER_VISIBLE priority.
-  // Use CONTINUE_ON_SHUTDOWN to avoid blocking shutdown since the data reading
-  // could get blocked on certain devices. See https://crbug.com/1023989.
-  AccelerometerReader::GetInstance()->Initialize(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
+  AccelerometerReader::GetInstance()->Initialize();
 
   login_screen_controller_ =
       std::make_unique<LoginScreenController>(system_tray_notifier_.get());

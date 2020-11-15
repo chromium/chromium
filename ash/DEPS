@@ -62,6 +62,7 @@ include_rules = [
   "+chromeos/components/proximity_auth/public/mojom",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",
+  "+chromeos/components/sensors",
   "+chromeos/constants",
   # TODO(https://crbug.com/940810): Eliminate this.
   "+chromeos/dbus/initialize_dbus_client.h",

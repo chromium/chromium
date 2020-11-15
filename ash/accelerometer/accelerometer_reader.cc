@@ -4,22 +4,31 @@
 
 #include "ash/accelerometer/accelerometer_reader.h"
 
+#include <grp.h>
+
 #include "ash/accelerometer/accelerometer_file_reader.h"
+#include "ash/accelerometer/accelerometer_provider_mojo.h"
 #include "base/memory/singleton.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
+
+namespace {
+
+// Group name of IIO Service, used to check if IIO Service exists.
+constexpr char kIioServiceGroupName[] = "iioservice";
+
+}  // namespace
 
 // static
 AccelerometerReader* AccelerometerReader::GetInstance() {
   return base::Singleton<AccelerometerReader>::get();
 }
 
-void AccelerometerReader::Initialize(
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
-  DCHECK(sequenced_task_runner.get());
-
-  accelerometer_provider_->PrepareAndInitialize(sequenced_task_runner);
+void AccelerometerReader::Initialize() {
+  accelerometer_provider_->PrepareAndInitialize();
 }
 
 void AccelerometerReader::AddObserver(Observer* observer) {
@@ -52,8 +61,19 @@ void AccelerometerReader::SetECLidAngleDriverStatusForTesting(
       ec_lid_angle_driver_status);
 }
 
-AccelerometerReader::AccelerometerReader()
-    : accelerometer_provider_(new AccelerometerFileReader()) {}
+AccelerometerReader::AccelerometerReader() {
+  char buf[1024];
+  struct group result;
+  struct group* resultp;
+
+  if (HANDLE_EINTR(getgrnam_r(kIioServiceGroupName, &result, buf, sizeof(buf),
+                              &resultp)) < 0 ||
+      !resultp) {
+    accelerometer_provider_ = new AccelerometerFileReader();
+  } else {
+    accelerometer_provider_ = new AccelerometerProviderMojo();
+  }
+}
 
 AccelerometerReader::~AccelerometerReader() = default;
 

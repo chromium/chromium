@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerometer/accelerometer_constants.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -26,6 +27,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/platform_thread.h"
@@ -78,11 +81,6 @@ constexpr char kLegacyAccelerometerScanIndexPathFormatString[] =
 constexpr char kAccelerometerScanIndexPathFormatString[] =
     "scan_elements/in_accel_%s_index";
 
-// The names of the accelerometers. Matches up with the enum AccelerometerSource
-// in ash/accelerometer/accelerometer_types.h.
-constexpr char kAccelerometerNames[ACCELEROMETER_SOURCE_COUNT][5] = {"lid",
-                                                                     "base"};
-
 // The axes on each accelerometer. The order was changed on kernel 3.18+.
 constexpr char kAccelerometerAxes[][2] = {"x", "y", "z"};
 constexpr char kLegacyAccelerometerAxes[][2] = {"y", "x", "z"};
@@ -92,9 +90,6 @@ constexpr size_t kMaxAsciiUintLength = 21;
 
 // The size of individual values.
 constexpr size_t kDataSize = 2;
-
-// The number of axes for which there are acceleration readings.
-constexpr int kNumberOfAxes = 3;
 
 // The size of data in one reading of the accelerometers.
 constexpr int kSizeOfReading = kDataSize * kNumberOfAxes;
@@ -150,9 +145,14 @@ AccelerometerFileReader::AccelerometerFileReader()
     : observers_(
           new base::ObserverListThreadSafe<AccelerometerReader::Observer>()) {}
 
-void AccelerometerFileReader::PrepareAndInitialize(
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
-  task_runner_ = sequenced_task_runner;
+void AccelerometerFileReader::PrepareAndInitialize() {
+  // AccelerometerReader is important for screen orientation so we need
+  // USER_VISIBLE priority.
+  // Use CONTINUE_ON_SHUTDOWN to avoid blocking shutdown since the datareading
+  // could get blocked on certain devices. See https://crbug.com/1023989.
+  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   initialization_state_ = State::INITIALIZING;
 
@@ -287,8 +287,8 @@ void AccelerometerFileReader::InitializeInternal() {
               3 * static_cast<int>(configuration_.count)) {
         const char* axis = legacy_cross_accel ? kLegacyAccelerometerAxes[j]
                                               : kAccelerometerAxes[j];
-        LOG(ERROR) << "Field index for " << kAccelerometerNames[i] << " "
-                   << axis << " axis out of bounds.";
+        LOG(ERROR) << "Field index for " << kLocationStrings[i] << " " << axis
+                   << " axis out of bounds.";
         initialization_state_ = State::FAILED;
         return;
       }
@@ -438,12 +438,12 @@ bool AccelerometerFileReader::InitializeAccelerometer(
     const base::FilePath& name,
     const std::string& location) {
   size_t config_index = 0;
-  for (; config_index < base::size(kAccelerometerNames); ++config_index) {
-    if (location == kAccelerometerNames[config_index])
+  for (; config_index < base::size(kLocationStrings); ++config_index) {
+    if (location == kLocationStrings[config_index])
       break;
   }
 
-  if (config_index >= base::size(kAccelerometerNames)) {
+  if (config_index >= base::size(kLocationStrings)) {
     LOG(ERROR) << "Unrecognized location: " << location << " for device "
                << name.MaybeAsASCII() << "\n";
     return false;
@@ -487,11 +487,11 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
       base::FilePath(kAccelerometerDevicePath).Append(name.BaseName());
   // Read configuration of each accelerometer axis from each accelerometer from
   // /sys/bus/iio/devices/iio:deviceX/.
-  for (size_t i = 0; i < base::size(kAccelerometerNames); ++i) {
+  for (size_t i = 0; i < base::size(kLocationStrings); ++i) {
     configuration_.has[i] = false;
     // Read scale of accelerometer.
-    std::string accelerometer_scale_path = base::StringPrintf(
-        kLegacyScaleNameFormatString, kAccelerometerNames[i]);
+    std::string accelerometer_scale_path =
+        base::StringPrintf(kLegacyScaleNameFormatString, kLocationStrings[i]);
     // Read the scale for all axes.
     int scale_divisor = 0;
     if (!ReadFileToInt(iio_path.Append(accelerometer_scale_path.c_str()),
@@ -507,9 +507,9 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
     configuration_.has[i] = true;
     for (size_t j = 0; j < base::size(kLegacyAccelerometerAxes); ++j) {
       configuration_.scale[i][j] = base::kMeanGravityFloat / scale_divisor;
-      std::string accelerometer_index_path = base::StringPrintf(
-          kLegacyAccelerometerScanIndexPathFormatString,
-          kLegacyAccelerometerAxes[j], kAccelerometerNames[i]);
+      std::string accelerometer_index_path =
+          base::StringPrintf(kLegacyAccelerometerScanIndexPathFormatString,
+                             kLegacyAccelerometerAxes[j], kLocationStrings[i]);
       if (!ReadFileToInt(iio_path.Append(accelerometer_index_path.c_str()),
                          &(configuration_.index[i][j]))) {
         configuration_.has[i] = false;

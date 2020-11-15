@@ -19,6 +19,8 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+enum class State { INITIALIZING, SUCCESS, FAILED };
+
 enum class ECLidAngleDriverStatus { UNKNOWN, SUPPORTED, NOT_SUPPORTED };
 
 class AccelerometerProviderInterface;
@@ -39,8 +41,7 @@ class ASH_EXPORT AccelerometerReader {
 
   static AccelerometerReader* GetInstance();
 
-  void Initialize(
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+  void Initialize();
 
   // Add/Remove observers.
   void AddObserver(Observer* observer);
@@ -79,10 +80,8 @@ class ASH_EXPORT AccelerometerReader {
 class AccelerometerProviderInterface
     : public base::RefCountedThreadSafe<AccelerometerProviderInterface> {
  public:
-  // Prepare and start async initialization. SetSensorClient function
-  // contains actual code for initialization.
-  virtual void PrepareAndInitialize(
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) = 0;
+  // Prepare and start async initialization.
+  virtual void PrepareAndInitialize() = 0;
 
   // Add/Remove observers.
   virtual void AddObserver(AccelerometerReader::Observer* observer) = 0;
@@ -103,6 +102,9 @@ class AccelerometerProviderInterface
 
  protected:
   virtual ~AccelerometerProviderInterface() = default;
+
+  // The current initialization state of reader.
+  State initialization_state_ = State::INITIALIZING;
 
   // State of ChromeOS EC lid angle driver, if SUPPORTED, it means EC can handle
   // lid angle calculation.

@@ -15,8 +15,6 @@
 
 namespace ash {
 
-enum class State { INITIALIZING, SUCCESS, FAILED };
-
 // Work that runs on a base::TaskRunner. It determines the accelerometer
 // configuration, and reads the data. Upon a successful read it will notify
 // all observers.
@@ -28,8 +26,7 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   AccelerometerFileReader& operator=(const AccelerometerFileReader&) = delete;
 
   // AccelerometerProviderInterface:
-  void PrepareAndInitialize(
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) override;
+  void PrepareAndInitialize() override;
   void AddObserver(AccelerometerReader::Observer* observer) override;
   void RemoveObserver(AccelerometerReader::Observer* observer) override;
   void StartListenToTabletModeController() override;
@@ -48,8 +45,9 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   // Tracks if accelerometer initialization is completed.
   void CheckInitStatus();
 
-  // With ChromeOS EC lid angle driver present, accelerometer read is cancelled
-  // in clamshell mode, and triggered when entering tablet mode.
+  // With ChromeOS EC lid angle driver present, it's triggered when the device
+  // is physically used as a tablet (even thought its UI might be in clamshell
+  // mode), cancelled otherwise.
   void TriggerRead();
   void CancelRead();
 
@@ -129,9 +127,6 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   void ReadFileAndNotify();
 
   void SetEmitEventsInternal(bool emit_events);
-
-  // The current initialization state of reader.
-  State initialization_state_ = State::INITIALIZING;
 
   // True if periodical accelerometer read is on.
   bool accelerometer_read_on_ = false;
