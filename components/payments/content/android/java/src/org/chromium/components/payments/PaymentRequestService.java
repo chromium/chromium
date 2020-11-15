@@ -369,14 +369,6 @@ public class PaymentRequestService
     }
 
     /**
-     * Sets that the payment details is no longer pending to be updated because the promise that
-     * was passed into PaymentRequest.show() has been resolved.
-     */
-    public void resetWaitingForUpdatedDetails() {
-        mIsShowWaitingForUpdatedDetails = false;
-    }
-
-    /**
      * Called to open a new PaymentHandler UI on the showing PaymentRequest.
      * @param url The url of the payment app to be displayed in the UI.
      * @return The WebContents of the payment handler that's just opened when the opening is
@@ -557,7 +549,7 @@ public class PaymentRequestService
      * @param paymentApp The payment app to be invoked.
      * @param paymentResponseHelper The helper to create and fill the response to send to the
      *         merchant. The helper should have this instance as the delegate {@link
-     *         PaymentResponseHelperInterface.PaymentResponseRequesterDelegate}.
+     *         PaymentResponseHelperInterface.PaymentResponseResultCallback}.
      */
     public void invokePaymentApp(
             PaymentApp paymentApp, PaymentResponseHelperInterface paymentResponseHelper) {
@@ -726,25 +718,9 @@ public class PaymentRequestService
         return mIsUserGestureShow;
     }
 
-    /**
-     * Records that PaymentRequest.show() was invoked with a user gesture.
-     * @param userGestureShow Whether it is invoked with a user gesture.
-     */
-    public void setUserGestureShow(boolean userGestureShow) {
-        mIsUserGestureShow = userGestureShow;
-    }
-
     /** @return Whether the current payment request service has called show(). */
     public boolean isCurrentPaymentRequestShowing() {
         return mIsCurrentPaymentRequestShowing;
-    }
-
-    /**
-     * Records whether the current payment request service has called show().
-     * @param isShowing Whether show() has been called.
-     */
-    public void setCurrentPaymentRequestShowing(boolean isShowing) {
-        mIsCurrentPaymentRequestShowing = isShowing;
     }
 
     /**
@@ -864,11 +840,6 @@ public class PaymentRequestService
         if (TextUtils.isEmpty(mRejectShowErrorMessage)) {
             mRejectShowErrorMessage = errorMessage;
         }
-    }
-
-    /** @return Whether the created payment apps includes any autofill payment app. */
-    public boolean getHasNonAutofillApp() {
-        return mHasNonAutofillApp;
     }
 
     /**
@@ -1223,11 +1194,6 @@ public class PaymentRequestService
     /** Invokes {@link PaymentRequestClient.onPayerDetailChange}. */
     public void onPayerDetailChange(PayerDetail detail) {
         if (mClient != null) mClient.onPayerDetailChange(detail);
-    }
-
-    /** Invokes {@link PaymentRequestClient.onError}. */
-    public void onError(int error, String errorMessage) {
-        if (mClient != null) mClient.onError(error, errorMessage);
     }
 
     /** Invokes {@link PaymentRequestClient.warnNoFavicon}. */

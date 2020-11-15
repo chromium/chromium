@@ -81,7 +81,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     private final PaymentUiService mPaymentUiService;
     private final PaymentOptions mPaymentOptions;
-    private final boolean mRequestShipping;
     private boolean mWasRetryCalled;
 
     private boolean mHasClosed;
@@ -136,7 +135,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
         mPaymentOptions = paymentRequestService.getPaymentOptions();
         assert mPaymentOptions != null;
-        mRequestShipping = mPaymentOptions.requestShipping;
 
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
@@ -640,7 +638,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         }
 
         mPaymentUiService.onPaymentRequestComplete(result,
-                /*onMinimalUiErroredAndClosed=*/this::close, onCompleteHandled::run);
+                /*onMinimalUiErroredAndClosed=*/this::close, onCompleteHandled);
     }
 
     // Implement BrowserPaymentRequest:

@@ -76,7 +76,7 @@ public class MinimalUICoordinator {
     /**
      * Shows the minimal UI.
      *
-     * @param chromeActivity  The activity where the UI should be shown.
+     * @param context         The context where the UI should be shown.
      * @param app             The app that contains the details to display and can be invoked
      *                        upon user confirmation.
      * @param formatter       Formats the account balance amount according to its currency.
@@ -137,7 +137,7 @@ public class MinimalUICoordinator {
      * has closed.
      * @param observer The observer to notify when the UI has closed.
      */
-    public void showCompleteAndClose(CompleteAndCloseObserver observer) {
+    private void showCompleteAndClose(CompleteAndCloseObserver observer) {
         mMediator.showCompleteAndClose(observer);
     }
 

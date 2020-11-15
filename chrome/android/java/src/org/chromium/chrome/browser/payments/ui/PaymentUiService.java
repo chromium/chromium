@@ -224,7 +224,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         }
 
         /** A callback invoked when the Payment Request UI is closed. */
-        public void onPaymentRequestUiClosed() {
+        private void onPaymentRequestUiClosed() {
             assert mPaymentRequestUI == null;
             mShouldShowDialog = false;
         }
@@ -1215,7 +1215,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         mJourneyLogger.setNumberOfSuggestionsShown(
                 Section.SHIPPING_ADDRESS, addresses.size(), hasCompleteShippingAddress);
 
-        int missingFields = 0;
+        int missingFields;
         if (addresses.isEmpty()) {
             // All fields are missing.
             missingFields = AutofillAddress.CompletionStatus.INVALID_RECIPIENT
