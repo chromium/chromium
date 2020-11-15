@@ -109,6 +109,7 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   static constexpr size_t kMaxNumConsumedBytesInTask = 64 * 1024;
 
  private:
+  class Buffer;
   class DelegatingBytesConsumer;
 
   // ResponseBodyLoaderClient implementation.
@@ -120,13 +121,13 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
   String DebugName() const override { return "ResponseBodyLoader"; }
-
+  // When |buffer_data_while_suspended_| is true, we'll save the response body
+  // read when suspended.
+  Member<Buffer> body_buffer_;
   Member<BytesConsumer> bytes_consumer_;
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;
   const Member<ResponseBodyLoaderClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  Vector<char> buffered_data_;
-  size_t bytes_remaining_in_buffer_ = 0;
   bool started_ = false;
   bool aborted_ = false;
   bool suspended_ = false;
@@ -135,6 +136,7 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   bool fail_signal_is_pending_ = false;
   bool cancel_signal_is_pending_ = false;
   bool in_two_phase_read_ = false;
+  const bool buffer_data_while_suspended_;
 };
 
 }  // namespace blink

@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
@@ -431,7 +433,25 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
   EXPECT_EQ("xyzabc", client->GetData());
 }
 
-TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspended) {
+class ResponseBodyLoaderLoadingTasksUnfreezableTest
+    : public ResponseBodyLoaderTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  ResponseBodyLoaderLoadingTasksUnfreezableTest() {
+    if (BufferDataWhileSuspended()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kLoadingTasksUnfreezable);
+    }
+  }
+
+  bool BufferDataWhileSuspended() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
+       ReadDataFromConsumerWhileSuspended) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
@@ -449,12 +469,17 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspended) {
   consumer->Add(Command(Command::kData, "llo"));
   consumer->Add(Command(Command::kWait));
   consumer->Add(Command(Command::kData, "wo"));
-  // ResponseBodyLoader will buffer data when deferred, and won't notify the
-  // client until it's resumed.
+
+  // If kLoadingTasksUnfreezable is enabled, ResponseBodyLoader will buffer data
+  // when deferred, and won't notify the client until it's resumed.
   EXPECT_FALSE(consumer->IsCommandsEmpty());
   consumer->TriggerOnStateChange();
-  while (!consumer->IsCommandsEmpty()) {
-    task_runner->RunUntilIdle();
+  if (BufferDataWhileSuspended()) {
+    while (!consumer->IsCommandsEmpty()) {
+      task_runner->RunUntilIdle();
+    }
+  } else {
+    EXPECT_FALSE(consumer->IsCommandsEmpty());
   }
 
   EXPECT_EQ("he", client->GetData());
@@ -473,7 +498,8 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspended) {
   EXPECT_FALSE(client->LoadingIsFailed());
 }
 
-TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspendedLong) {
+TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
+       ReadDataFromConsumerWhileSuspendedLong) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
@@ -489,13 +515,19 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspendedLong) {
   body_loader->Suspend();
   std::string body(70000, '*');
   consumer->Add(Command(Command::kDataAndDone, body.c_str()));
-  // ResponseBodyLoader will buffer data when deferred, and won't notify the
-  // client until it's resumed.
+
+  // If kLoadingTasksUnfreezable is enabled, ResponseBodyLoader will buffer data
+  // when deferred, and won't notify the client until it's resumed.
   EXPECT_FALSE(consumer->IsCommandsEmpty());
   consumer->TriggerOnStateChange();
-  while (!consumer->IsCommandsEmpty()) {
-    task_runner->RunUntilIdle();
+  if (BufferDataWhileSuspended()) {
+    while (!consumer->IsCommandsEmpty()) {
+      task_runner->RunUntilIdle();
+    }
+  } else {
+    EXPECT_FALSE(consumer->IsCommandsEmpty());
   }
+
   EXPECT_EQ("", client->GetData());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -507,6 +539,10 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspendedLong) {
   EXPECT_TRUE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ResponseBodyLoaderLoadingTasksUnfreezableTest,
+                         ::testing::Bool());
 
 TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
