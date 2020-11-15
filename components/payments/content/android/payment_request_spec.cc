@@ -97,6 +97,12 @@ PaymentRequestSpec::GetPaymentDetails(JNIEnv* env) {
       env, mojom::PaymentDetails::Serialize(&spec_->details_ptr()));
 }
 
+base::android::ScopedJavaLocalRef<jbyteArray>
+PaymentRequestSpec::GetPaymentOptions(JNIEnv* env) {
+  return base::android::ToJavaByteArray(
+      env, mojom::PaymentOptions::Serialize(&spec_->payment_options()));
+}
+
 base::android::ScopedJavaLocalRef<jobjectArray>
 PaymentRequestSpec::GetMethodData(JNIEnv* env) {
   return SerializeToJavaArrayOfByteArrays(env, spec_->method_data());

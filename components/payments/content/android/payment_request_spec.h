@@ -61,6 +61,9 @@ class PaymentRequestSpec {
   // Returns the payment details.
   base::android::ScopedJavaLocalRef<jbyteArray> GetPaymentDetails(JNIEnv* env);
 
+  // Returns the payment options.
+  base::android::ScopedJavaLocalRef<jbyteArray> GetPaymentOptions(JNIEnv* env);
+
   // Returns the method data.
   base::android::ScopedJavaLocalRef<jobjectArray> GetMethodData(JNIEnv* env);
 

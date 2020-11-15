@@ -56,8 +56,17 @@ public class PaymentRequestSpec {
     }
 
     /**
+     * @return The payment options specified by the merchant. This method cannot be used after the
+     *         instance is destroyed.
+     */
+    public PaymentOptions getPaymentOptions() {
+        return PaymentOptions.deserialize(
+                ByteBuffer.wrap(PaymentRequestSpecJni.get().getPaymentOptions(mNativePointer)));
+    }
+
+    /**
      * @return The map of supported payment method identifiers and corresponding payment
-     * method specific data. This value is still available after the instance is destroyed.
+     * method specific data. This method cannot be used after the instance is destroyed.
      */
     public Map<String, PaymentMethodData> getMethodData() {
         Map<String, PaymentMethodData> methodDataMap = new ArrayMap<>();
@@ -74,7 +83,7 @@ public class PaymentRequestSpec {
     /**
      * A mapping from method names to modifiers, which include modified totals and additional line
      * items. Used to display modified totals for each payment apps, modified total in order
-     * summary, and additional line items in order summary. This value is still available after the
+     * summary, and additional line items in order summary. This method cannot be used after the
      * instance is destroyed.
      */
     public Map<String, PaymentDetailsModifier> getModifiers() {
@@ -91,8 +100,8 @@ public class PaymentRequestSpec {
     }
 
     /**
-     * @return The id of the request, found in PaymentDetails. This value is still available after
-     *         the instance is destroyed.
+     * @return The id of the request, found in PaymentDetails. This method cannot be used after the
+     *         instance is destroyed.
      */
     public String getId() {
         return getPaymentDetails().id;
@@ -100,8 +109,8 @@ public class PaymentRequestSpec {
 
     /**
      * The raw shipping options, as it was received from the website. This data is passed to the
-     * payment app when the app is responsible for handling shipping address. This value is still
-     * available after the instance is destroyed.
+     * payment app when the app is responsible for handling shipping address. This method cannot be
+     * used after the instance is destroyed.
      */
     public List<PaymentShippingOption> getRawShippingOptions() {
         PaymentDetails details = getPaymentDetails();
@@ -112,7 +121,7 @@ public class PaymentRequestSpec {
 
     /**
      * The raw items in the shopping cart, as they were received from the website. This data is
-     * passed to the payment app. This value is still available after the instance is destroyed.
+     * passed to the payment app. This method cannot be used after the instance is destroyed.
      */
     public List<PaymentItem> getRawLineItems() {
         PaymentDetails details = getPaymentDetails();
@@ -123,13 +132,16 @@ public class PaymentRequestSpec {
 
     /**
      * The raw total amount being charged, as it was received from the website. This data is passed
-     * to the payment app. This value is still available after the instance is destroyed.
+     * to the payment app. This method cannot be used after the instance is destroyed.
      */
     public PaymentItem getRawTotal() {
         return getPaymentDetails().total;
     }
 
-    /** @return The payment details specified in the payment request. */
+    /**
+     * @return The payment details specified in the payment request. This method cannot be used
+     *         after the instance is destroyed.
+     */
     public PaymentDetails getPaymentDetails() {
         return PaymentDetails.deserialize(
                 ByteBuffer.wrap(PaymentRequestSpecJni.get().getPaymentDetails(mNativePointer)));
@@ -192,5 +204,6 @@ public class PaymentRequestSpec {
         void destroy(long nativePaymentRequestSpec);
         byte[] getPaymentDetails(long nativePaymentRequestSpec);
         byte[][] getMethodData(long nativePaymentRequestSpec);
+        byte[] getPaymentOptions(long nativePaymentRequestSpec);
     }
 }
