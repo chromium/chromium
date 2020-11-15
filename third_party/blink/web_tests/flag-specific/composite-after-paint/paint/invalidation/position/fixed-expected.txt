@@ -10,6 +10,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='t'",
       "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "invalidations": [
         [0, 0, 100, 100]
@@ -38,7 +39,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 64, 0, 1]
+        [8, 100, 0, 1]
       ]
     }
   ]

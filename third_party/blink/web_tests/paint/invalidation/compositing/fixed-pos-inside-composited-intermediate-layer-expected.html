@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<style>
+.compositedBehind {
+  width: 500px;
+  height: 500px;
+  background-color: cyan;
+}
+
+.containerOverlapsComposited {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 100px;
+  height: 30000px;
+  background-color: green;
+}
+
+.fixed {
+  position: relative;
+  top: 125px;
+  left: 25px;
+  background-color: lime;
+  width: 50px;
+  height: 50px;
+}
+
+</style>
+
+<script>
+onload = () => {
+  window.scrollTo(0, 100);
+};
+</script>
+
+<div class="compositedBehind"> </div>
+
+<div class="containerOverlapsComposited">
+  <div class="fixed"></div>
+</div>

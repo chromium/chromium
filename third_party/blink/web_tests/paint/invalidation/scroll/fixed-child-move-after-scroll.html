@@ -17,11 +17,10 @@
   </script>
 </head>
   <body onload="scrollAndRepaint()" style="height: 3000px;">
-    <!-- Using 99% opacity on fixed pos elements to ensure they are not automatically promoted. -->
-    <div style="position: fixed: opacity: 0.99; top: 0; left: 0;">
-      <p style="position: absolute; top: 210px">You should see a yellow rect on the left, and a green one on the right. No red pixels.</p>
-      <div id="toMove" style="width: 100px; height: 100px; background-color: red; position: fixed; opacity: 0.99; top: 70px; left: 10px;"></div>
-      <div style="width: 100px; height: 100px; background-color: yellow; position: absolute; top: 270px; left: 10px; z-index: -5;"></div>
+    <p style="position: absolute; top: 210px">You should see a yellow rect on the left, and a green one on the right. No red pixels.</p>
+    <div id="fixedParent" style="position: fixed; top: 0; left: 0;">
+      <div id="toMove" style="width: 100px; height: 100px; background-color: red; position: fixed; top: 70px; left: 10px;"></div>
     </div>
+    <div style="width: 100px; height: 100px; background-color: yellow; position: absolute; top: 270px; left: 10px; z-index: -5;"></div>
   </body>
 </html>
