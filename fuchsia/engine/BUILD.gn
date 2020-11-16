@@ -303,6 +303,8 @@ test("web_engine_browsertests") {
     "browser/cast_streaming_browsertest.cc",
     "browser/content_directory_browsertest.cc",
     "browser/context_impl_browsertest.cc",
+    "browser/fake_navigation_policy_provider.cc",
+    "browser/fake_navigation_policy_provider.h",
     "browser/fake_semantic_tree.cc",
     "browser/fake_semantic_tree.h",
     "browser/fake_semantics_manager.cc",
@@ -310,6 +312,7 @@ test("web_engine_browsertests") {
     "browser/frame_impl_browsertest.cc",
     "browser/headless_browsertest.cc",
     "browser/media_browsertest.cc",
+    "browser/navigation_policy_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

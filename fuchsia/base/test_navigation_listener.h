@@ -57,6 +57,9 @@ class TestNavigationListener : public fuchsia::web::NavigationEventListener {
   // Returns the title.
   std::string title() { return current_state_.title(); }
 
+  // Returns the current navigation state.
+  fuchsia::web::NavigationState* current_state() { return &current_state_; }
+
   // Register a callback which intercepts the execution of the event
   // acknowledgement callback. |before_ack| takes ownership of the
   // acknowledgement callback and the responsibility for executing it.
