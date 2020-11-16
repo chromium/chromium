@@ -658,9 +658,13 @@ def DepsOfType(wanted_type, configs):
   return [c for c in configs if c['type'] == wanted_type]
 
 
-def GetAllDepsConfigsInOrder(deps_config_paths):
+def GetAllDepsConfigsInOrder(deps_config_paths, filter_func=None):
   def GetDeps(path):
-    return GetDepConfig(path)['deps_configs']
+    config = GetDepConfig(path)
+    if filter_func and not filter_func(config):
+      return []
+    return config['deps_configs']
+
   return build_utils.GetSortedTransitiveDependencies(deps_config_paths, GetDeps)
 
 
@@ -1235,6 +1239,18 @@ def main(argv):
     # for these libraries will get pulled in along with the resources.
     android_resources_library_deps = _DepsFromPathsWithFilters(
         deps_configs_paths, allowlist=['java_library']).All('java_library')
+  if is_apk_or_module_target:
+    # android_resources deps which had recursive_resource_deps set should not
+    # have the manifests from the recursively collected deps added to this
+    # module. This keeps the manifest declarations in the child DFMs, since they
+    # will have the Java implementations.
+    def ExcludeRecursiveResourcesDeps(config):
+      return not config.get('includes_recursive_resources', False)
+
+    extra_manifest_deps = [
+        GetDepConfig(p) for p in GetAllDepsConfigsInOrder(
+            deps_configs_paths, filter_func=ExcludeRecursiveResourcesDeps)
+    ]
 
   base_module_build_config = None
   if options.base_module_build_config:
@@ -1475,6 +1491,7 @@ def main(argv):
           c['package_name'] for c in android_resources_library_deps
           if 'package_name' in c
       ]
+      config['deps_info']['includes_recursive_resources'] = True
 
     # For feature modules, remove any resources that already exist in the base
     # module.
@@ -1980,7 +1997,7 @@ def main(argv):
             config['uncompressed_assets'], locale_paks)
 
     config['extra_android_manifests'] = []
-    for c in all_deps:
+    for c in extra_manifest_deps:
       config['extra_android_manifests'].extend(
           c.get('mergeable_android_manifests', []))
 
