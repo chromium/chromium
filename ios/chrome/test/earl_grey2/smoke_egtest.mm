@@ -264,8 +264,8 @@
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByKilling];
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_text(@"Restore")];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
