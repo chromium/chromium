@@ -32,7 +32,9 @@ enum class EasyUnlockIconId;
 
 // Contains a textfield and a submit button. When the display password button
 // feature is enabled, the textfield contains a button in the form of an eye
-// icon that the user can click on to reveal the password.
+// icon that the user can click on to reveal the password. Submitting a password
+// will make it read only and prevent further submissions until the controller
+// sets ReadOnly to false again.
 //
 // This view is always rendered via layers.
 //

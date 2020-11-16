@@ -40,6 +40,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
     ~TestApi();
 
     views::View* code_input();
+    base::Optional<std::string> GetCode();
 
    private:
     LoginPinInputView* const view_;
@@ -82,6 +83,9 @@ class ASH_EXPORT LoginPinInputView : public views::View {
 
   // Current field length.
   size_t length_;
+
+  // Whether the field is read only.
+  bool is_read_only_ = false;
 
   // The input field owned by this view.
   LoginPinInput* code_input_ = nullptr;

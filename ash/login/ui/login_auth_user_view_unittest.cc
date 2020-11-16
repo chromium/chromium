@@ -323,6 +323,76 @@ TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldMode) {
   }
 }
 
+// Tests that clicking on the digits on the pin pad inserts digits on the
+// password field, but it does not when the field is read only.
+TEST_P(LoginAuthUserViewUnittest, PinPadWorksForPasswordField) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  LoginPasswordView::TestApi password_test(auth_test.password_view());
+
+  // Set up PIN without auto submit.
+  SetAuthPin(/*autosubmit_length*/ 0);
+
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+  const auto password = base::ASCIIToUTF16("123");
+
+  // Click on "1" "2" and "3"
+  pin_pad_api.ClickOnDigit(1);
+  pin_pad_api.ClickOnDigit(2);
+  pin_pad_api.ClickOnDigit(3);
+
+  EXPECT_EQ(password_test.textfield()->GetText(), password);
+
+  // Set the field to read only. Clicking on the digits has no effect.
+  auth_test.password_view()->SetReadOnly(true);
+  pin_pad_api.ClickOnDigit(4);
+  pin_pad_api.ClickOnDigit(5);
+  pin_pad_api.ClickOnDigit(6);
+
+  EXPECT_EQ(password_test.textfield()->GetText(), password);
+}
+
+// Tests that clicking on the digits on the pin pad inserts digits on the
+// PIN input field, but it does not when the field is read only.
+TEST_P(LoginAuthUserViewUnittest, PinPadWorksForPinInputField) {
+  if (!autosubmit_feature_enabled_)
+    return;
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginAuthUserView::TestApi auth_test(view_);
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
+  SetUserCount(1);
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           "123456", /*password*/
+                           true,     /*authenticated_by_pin*/
+                           _ /*callback*/));
+
+  // Set up PIN with auto submit.
+  SetAuthPin(/*autosubmit_length*/ 6);
+
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+  const auto pin = std::string("123456");
+
+  // Click on "1" "2" and "3"
+  pin_pad_api.ClickOnDigit(1);
+  pin_pad_api.ClickOnDigit(2);
+  pin_pad_api.ClickOnDigit(3);
+
+  // Ignore input when read only.
+  auth_test.pin_input_view()->SetReadOnly(true);
+  pin_pad_api.ClickOnDigit(0);
+  auth_test.pin_input_view()->SetReadOnly(false);
+
+  pin_pad_api.ClickOnDigit(4);
+  pin_pad_api.ClickOnDigit(5);
+  pin_pad_api.ClickOnDigit(6);
+
+  ASSERT_TRUE(pin_input_test.GetCode().has_value());
+  EXPECT_EQ(pin_input_test.GetCode().value(), pin);
+  base::RunLoop().RunUntilIdle();
+}
+
 // Tests the correctness of InputFieldModes used for PIN autosubmit.
 TEST_P(LoginAuthUserViewUnittest, PinAutosubmitFieldModes) {
   LoginAuthUserView::TestApi auth_test(view_);

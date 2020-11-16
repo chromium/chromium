@@ -87,6 +87,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
   if (last_field_active && complete) {
     base::Optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
+    SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }
 }
@@ -130,6 +131,10 @@ LoginPinInputView::TestApi::~TestApi() = default;
 
 views::View* LoginPinInputView::TestApi::code_input() {
   return view_->code_input_;
+}
+
+base::Optional<std::string> LoginPinInputView::TestApi::GetCode() {
+  return view_->code_input_->GetCode();
 }
 
 LoginPinInputView::LoginPinInputView() : length_(kDefaultLength) {
@@ -182,6 +187,7 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
+  is_read_only_ = false;
   Layout();
   SetVisible(true);
 }
@@ -198,10 +204,12 @@ void LoginPinInputView::Backspace() {
 
 void LoginPinInputView::InsertDigit(int digit) {
   DCHECK(code_input_);
-  code_input_->InsertDigit(digit);
+  if (!is_read_only_)
+    code_input_->InsertDigit(digit);
 }
 
 void LoginPinInputView::SetReadOnly(bool read_only) {
+  is_read_only_ = read_only;
   code_input_->SetReadOnly(read_only);
 }
 

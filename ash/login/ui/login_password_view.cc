@@ -654,6 +654,9 @@ void LoginPasswordView::Clear() {
 }
 
 void LoginPasswordView::InsertNumber(int value) {
+  if (textfield_->GetReadOnly())
+    return;
+
   if (!textfield_->HasFocus()) {
     // RequestFocus on textfield to activate cursor.
     textfield_->RequestFocus();
@@ -810,6 +813,7 @@ void LoginPasswordView::SubmitPassword() {
   DCHECK(IsPasswordSubmittable());
   if (textfield_->GetReadOnly())
     return;
+  SetReadOnly(true);
   on_submit_.Run(textfield_->GetText());
 }
 
