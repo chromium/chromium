@@ -65,27 +65,6 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
   ipc_targets_[static_cast<size_t>(IpcTag::GDI_GDIDLLINITIALIZE)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETSTOCKOBJECT)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::USER_REGISTERCLASSW)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_ENUMDISPLAYMONITORS)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_ENUMDISPLAYDEVICES)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_GETMONITORINFO)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETCERTIFICATE)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETCERTIFICATESIZE)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETOPMINFORMATION)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETOPMRANDOMNUMBER)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(
-      IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(
-      IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS)] = dispatcher;
   process_mitigations_win32k_dispatcher_.reset(dispatcher);
 
   dispatcher = new SignedDispatcher(policy_);

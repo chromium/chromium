@@ -791,8 +791,7 @@ ResultCode SandboxWin::AddAppContainerPolicy(TargetPolicy* policy,
 }
 
 // static
-ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy,
-                                               bool enable_opm) {
+ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy) {
 #if !defined(NACL_WIN64)
   // Win32k Lockdown is supported on Windows 8+.
   if (base::win::GetVersion() < base::win::Version::WIN8)
@@ -807,16 +806,8 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy,
   if (result != SBOX_ALL_OK)
     return result;
 
-  result = policy->AddRule(TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
-                           enable_opm ? TargetPolicy::IMPLEMENT_OPM_APIS
-                                      : TargetPolicy::FAKE_USER_GDI_INIT,
-                           nullptr);
-  if (result != SBOX_ALL_OK)
-    return result;
-  if (enable_opm)
-    policy->SetEnableOPMRedirection();
-
-  return result;
+  return policy->AddRule(TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
+                         TargetPolicy::FAKE_USER_GDI_INIT, nullptr);
 #else
   return SBOX_ALL_OK;
 #endif
@@ -984,7 +975,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
     return result;
 
   if (process_type == switches::kRendererProcess) {
-    result = SandboxWin::AddWin32kLockdownPolicy(policy.get(), false);
+    result = SandboxWin::AddWin32kLockdownPolicy(policy.get());
     if (result != SBOX_ALL_OK)
       return result;
   }

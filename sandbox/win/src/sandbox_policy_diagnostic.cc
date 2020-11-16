@@ -172,30 +172,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "RegisterClassW";
     case IpcTag::CREATETHREAD:
       return "CreateThread";
-    case IpcTag::USER_ENUMDISPLAYMONITORS:
-      return "EnumDisplayMonitors";
-    case IpcTag::USER_ENUMDISPLAYDEVICES:
-      return "EnumDisplayDevices";
-    case IpcTag::USER_GETMONITORINFO:
-      return "GetMonitorInfo";
-    case IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS:
-      return "CreateOPMProtectedOutputs";
-    case IpcTag::GDI_GETCERTIFICATE:
-      return "GetCertificate";
-    case IpcTag::GDI_GETCERTIFICATESIZE:
-      return "GetCertificateSize";
-    case IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT:
-      return "DestroyOPMProtectedOutput";
-    case IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT:
-      return "ConfigureOPMProtectedOutput";
-    case IpcTag::GDI_GETOPMINFORMATION:
-      return "GetOPMInformation";
-    case IpcTag::GDI_GETOPMRANDOMNUMBER:
-      return "GetOPMRandomNumber";
-    case IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE:
-      return "GetSuggestedOPMProtectedOutputArraySize";
-    case IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS:
-      return "SetOPMSigningKeyAndSequenceNumbers";
     case IpcTag::NTCREATESECTION:
       return "NtCreateSection";
     case IpcTag::LAST:

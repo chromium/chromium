@@ -59,9 +59,6 @@ class TargetPolicy {
     FAKE_USER_GDI_INIT,     // Fakes user32 and gdi32 initialization. This can
                             // be used to allow the DLLs to load and initialize
                             // even if the process cannot access that subsystem.
-    IMPLEMENT_OPM_APIS,     // Implements FAKE_USER_GDI_INIT and also exposes
-                            // IPC calls to handle Output Protection Manager
-                            // APIs.
     SIGNED_ALLOW_LOAD       // Allows loading the module when CIG is enabled.
   };
 
@@ -256,11 +253,6 @@ class TargetPolicy {
   // Adds a restricting random SID to the restricted SIDs list as well as
   // the default DACL.
   virtual void AddRestrictingRandomSid() = 0;
-
-  // Enable OPM API redirection when in Win32k lockdown.
-  virtual void SetEnableOPMRedirection() = 0;
-  // Enable OPM API emulation when in Win32k lockdown.
-  virtual bool GetEnableOPMRedirection() = 0;
 
   // Configure policy to use an AppContainer profile. |package_name| is the
   // name of the profile to use. Specifying True for |create_profile| ensures

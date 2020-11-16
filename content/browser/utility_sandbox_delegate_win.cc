@@ -189,8 +189,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
   }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kSharingService) {
-    auto result =
-        sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy, false);
+    auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
 

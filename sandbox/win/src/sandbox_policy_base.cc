@@ -111,7 +111,6 @@ PolicyBase::PolicyBase()
       lowbox_sid_(nullptr),
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
-      enable_opm_redirection_(false),
       effective_token_(nullptr) {
   ::InitializeCriticalSection(&lock_);
   dispatcher_.reset(new TopLevelDispatcher(this));
@@ -634,14 +633,6 @@ HANDLE PolicyBase::GetStdoutHandle() {
 
 HANDLE PolicyBase::GetStderrHandle() {
   return stderr_handle_;
-}
-
-void PolicyBase::SetEnableOPMRedirection() {
-  enable_opm_redirection_ = true;
-}
-
-bool PolicyBase::GetEnableOPMRedirection() {
-  return enable_opm_redirection_;
 }
 
 ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,

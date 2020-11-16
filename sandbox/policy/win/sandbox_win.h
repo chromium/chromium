@@ -57,8 +57,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
                                           const wchar_t* sid);
 
   // Add the win32k lockdown policy on supported OS.
-  static ResultCode AddWin32kLockdownPolicy(TargetPolicy* policy,
-                                            bool enable_opm);
+  static ResultCode AddWin32kLockdownPolicy(TargetPolicy* policy);
 
   // Add the AppContainer sandbox profile to the policy. |sandbox_type|
   // determines what policy is enabled. |appcontainer_id| is used to create

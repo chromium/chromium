@@ -75,8 +75,6 @@ class PolicyBase final : public TargetPolicy {
   void AddHandleToShare(HANDLE handle) override;
   void SetLockdownDefaultDacl() override;
   void AddRestrictingRandomSid() override;
-  void SetEnableOPMRedirection() override;
-  bool GetEnableOPMRedirection() override;
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override;
   scoped_refptr<AppContainerProfile> GetAppContainerProfile() override;
@@ -192,7 +190,6 @@ class PolicyBase final : public TargetPolicy {
   // This list contains handles other than the stderr/stdout handles which are
   // shared with the target at times.
   base::HandlesToInheritVector handles_to_share_;
-  bool enable_opm_redirection_;
 
   scoped_refptr<AppContainerProfileBase> app_container_profile_;
 

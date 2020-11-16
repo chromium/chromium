@@ -113,8 +113,6 @@ class TestTargetPolicy : public TargetPolicy {
   void AddHandleToShare(HANDLE handle) override {}
   void SetLockdownDefaultDacl() override {}
   void AddRestrictingRandomSid() override {}
-  void SetEnableOPMRedirection() override {}
-  bool GetEnableOPMRedirection() override { return false; }
 
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override {
