@@ -101,7 +101,6 @@
 #include "weblayer/browser/browser_controls_container_view.h"
 #include "weblayer/browser/browser_controls_navigation_state_handler.h"
 #include "weblayer/browser/controls_visibility_reason.h"
-#include "weblayer/browser/http_auth_handler_impl.h"
 #include "weblayer/browser/java/jni/TabImpl_jni.h"
 #include "weblayer/browser/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_proxy.h"
@@ -548,28 +547,6 @@ void TabImpl::ShowContextMenu(const content::ContextMenuParams& params) {
 #endif
 }
 
-void TabImpl::ShowHttpAuthPrompt(HttpAuthHandlerImpl* auth_handler) {
-  CHECK(!auth_handler_);
-  auth_handler_ = auth_handler;
-#if defined(OS_ANDROID)
-  JNIEnv* env = AttachCurrentThread();
-  GURL url = auth_handler_->url();
-  Java_TabImpl_showHttpAuthPrompt(
-      env, java_impl_, base::android::ConvertUTF8ToJavaString(env, url.host()),
-      base::android::ConvertUTF8ToJavaString(env, url.spec()));
-#endif
-}
-
-void TabImpl::CloseHttpAuthPrompt() {
-  if (!auth_handler_)
-    return;
-  auth_handler_ = nullptr;
-#if defined(OS_ANDROID)
-  JNIEnv* env = AttachCurrentThread();
-  Java_TabImpl_closeHttpAuthPrompt(env, java_impl_);
-#endif
-}
-
 #if defined(OS_ANDROID)
 // static
 void TabImpl::DisableAutofillSystemIntegrationForTesting() {
@@ -769,21 +746,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> TabImpl::GetData(JNIEnv* env) {
 jboolean TabImpl::IsRendererControllingBrowserControlsOffsets(JNIEnv* env) {
   return browser_controls_navigation_state_handler_
       ->IsRendererControllingOffsets();
-}
-
-void TabImpl::SetHttpAuth(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username,
-    const base::android::JavaParamRef<jstring>& password) {
-  auth_handler_->Proceed(
-      base::android::ConvertJavaStringToUTF16(env, username),
-      base::android::ConvertJavaStringToUTF16(env, password));
-  CloseHttpAuthPrompt();
-}
-
-void TabImpl::CancelHttpAuth(JNIEnv* env) {
-  auth_handler_->Cancel();
-  CloseHttpAuthPrompt();
 }
 
 base::android::ScopedJavaLocalRef<jstring> TabImpl::RegisterWebMessageCallback(

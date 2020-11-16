@@ -29,7 +29,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -86,7 +85,7 @@ import java.util.Set;
  * Implementation of ITab.
  */
 @JNINamespace("weblayer")
-public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
+public final class TabImpl extends ITab.Stub {
     private static int sNextId = 1;
     // Map from id to TabImpl.
     private static final Map<Integer, TabImpl> sTabMap = new HashMap<Integer, TabImpl>();
@@ -105,7 +104,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     // before attached, there are code paths that may trigger calling methods before set.
     @Nullable
     private BrowserImpl mBrowser;
-    private LoginPrompt mLoginPrompt;
     /**
      * The AutofillProvider that integrates with system-level autofill. This is null until
      * updateFromBrowser() is invoked.
@@ -868,27 +866,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         getBrowser().destroyTab(this);
     }
 
-    @CalledByNative
-    private void showHttpAuthPrompt(String host, String url) {
-        mLoginPrompt = new LoginPrompt(mBrowser.getContext(), host, url, this);
-        mLoginPrompt.show();
-    }
-
-    @CalledByNative
-    private void closeHttpAuthPrompt() {
-        mLoginPrompt = null;
-    }
-
-    @Override
-    public void cancel() {
-        TabImplJni.get().cancelHttpAuth(mNativeTab);
-    }
-
-    @Override
-    public void proceed(String username, String password) {
-        TabImplJni.get().setHttpAuth(mNativeTab, username, password);
-    }
-
     @Override
     public void registerWebMessageCallback(
             String jsObjectName, List<String> allowedOrigins, IWebMessageCallbackClient client) {
@@ -1168,8 +1145,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         boolean setData(long nativeTabImpl, String[] data);
         String[] getData(long nativeTabImpl);
         boolean isRendererControllingBrowserControlsOffsets(long nativeTabImpl);
-        void setHttpAuth(long nativeTabImpl, String username, String password);
-        void cancelHttpAuth(long nativeTabImpl);
         String registerWebMessageCallback(long nativeTabImpl, String jsObjectName,
                 String[] allowedOrigins, IWebMessageCallbackClient client);
         void unregisterWebMessageCallback(long nativeTabImpl, String jsObjectName);
