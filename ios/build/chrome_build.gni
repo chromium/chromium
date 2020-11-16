@@ -6,6 +6,11 @@ import("//build/config/chrome_build.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/mac/symbols.gni")
 
+# Xcode 12.0 or higher is required to build Chromium on iOS. This file should
+# only be included when building Chromium, not other related projects (cronet,
+# webrtc, ...).
+assert(xcode_version_int >= 1200, "Xcode 12.0 or higher is required.")
+
 declare_args() {
   # Enable widget extensions.
   ios_enable_content_widget_extension = true
@@ -31,6 +36,9 @@ declare_args() {
   # Enable multi-window configuration in Info.plist. Includes all the effects of
   # setting |ios_enable_scene_startup| to |true|.
   ios_enable_multi_window = true
+
+  # Controls whether ScreenTime API is used.
+  ios_enable_screen_time = true
 
   # When set the main plist CFBundleVersion will be set to ios_lock_to_version,
   # followed by the milestone and patch in one tuple, e.g. 86.0.4240.8720 where
@@ -67,18 +75,17 @@ declare_args() {
   ios_chrome_cpe_entitlements_additions = []
 }
 
-# ScreenTime is only available in iOS 14.0+ SDK. It is not available either
-# in the iOS support libraries used by "catalyst" environment.
-ios_enable_screen_time =
-    xcode_version_int >= 1200 && target_environment != "catalyst"
-
-# Some extensions uses API that are not available in "catalyst" environment.
 if (target_environment == "catalyst") {
+  # Some extensions uses API that are not available in "catalyst" environment.
   ios_enable_content_widget_extension = false
   ios_enable_search_widget_extension = false
   ios_enable_credential_provider_extension = false
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
+
+  # ScreenTime framework is not available in the iOS support libraries provided
+  # by "catalyst" environment.
+  ios_enable_screen_time = false
 }
 
 # Configure whether breakpad support is enabled.
