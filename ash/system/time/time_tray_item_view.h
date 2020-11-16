@@ -33,6 +33,7 @@ class TimeTrayItemView : public TrayItemView, public SessionObserver {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   TimeView* time_view_ = nullptr;

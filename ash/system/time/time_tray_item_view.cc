@@ -4,6 +4,7 @@
 
 #include "ash/system/time/time_tray_item_view.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/model/clock_model.h"
@@ -45,6 +46,12 @@ void TimeTrayItemView::OnSessionStateChanged(
 
 const char* TimeTrayItemView::GetClassName() const {
   return "TimeTrayItemView";
+}
+
+void TimeTrayItemView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  time_view_->SetTextColor(
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
 }
 
 }  // namespace tray
