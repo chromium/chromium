@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
+import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
@@ -434,6 +435,8 @@ public class ProcessInitializationHandler {
                 () -> OfflineContentAvailabilityStatusProvider.getInstance());
         deferredStartupHandler.addDeferredTask(
                 () -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
+        deferredStartupHandler.addDeferredTask(
+                () -> VideoTutorialShareHelper.saveUrlsToSharedPrefs());
     }
 
     private void initChannelsAsync() {

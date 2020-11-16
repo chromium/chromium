@@ -725,6 +725,7 @@ public final class ChromePreferenceKeys {
 
     public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
+    public static final String VIDEO_TUTORIALS_SHARE_URL_SET = "Chrome.VideoTutorials.ShareUrls";
     public static final String VR_EXIT_TO_2D_COUNT = "VR_EXIT_TO_2D_COUNT";
     public static final String VR_FEEDBACK_OPT_OUT = "VR_FEEDBACK_OPT_OUT";
 
@@ -835,7 +836,8 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
-                TWA_DISCLOSURE_SEEN_PACKAGES
+                TWA_DISCLOSURE_SEEN_PACKAGES,
+                VIDEO_TUTORIALS_SHARE_URL_SET
         );
         // clang-format on
     }

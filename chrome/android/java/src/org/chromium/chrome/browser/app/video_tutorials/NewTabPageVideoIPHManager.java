@@ -124,7 +124,7 @@ public class NewTabPageVideoIPHManager {
 
     @VisibleForTesting
     protected void launchVideoPlayer(Tutorial tutorial) {
-        VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
+        VideoPlayerActivity.playVideoTutorial(mContext, tutorial.featureType);
     }
 
     @VisibleForTesting

@@ -42,6 +42,6 @@ public class VideoTutorialListActivity extends SynchronousInitializationActivity
     }
 
     private void onTutorialSelected(Tutorial tutorial) {
-        VideoPlayerActivity.playVideoTutorial(this, tutorial);
+        VideoPlayerActivity.playVideoTutorial(this, tutorial.featureType);
     }
 }

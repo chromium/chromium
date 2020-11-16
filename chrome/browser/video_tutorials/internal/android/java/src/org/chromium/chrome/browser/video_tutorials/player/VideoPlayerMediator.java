@@ -177,6 +177,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
     private void share() {
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.SHARE);
+        VideoTutorialUtils.launchShareIntent(mContext, mTutorial);
     }
 
     private void close() {

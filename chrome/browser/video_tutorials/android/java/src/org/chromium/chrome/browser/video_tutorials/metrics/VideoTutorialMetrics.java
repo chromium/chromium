@@ -33,7 +33,8 @@ public class VideoTutorialMetrics {
     // Please treat this list as append only and keep it in sync with
     // VideoTutorials.UserAction in enums.xml.
     @IntDef({UserAction.CHANGE_LANGUAGE, UserAction.WATCH_NEXT_VIDEO, UserAction.TRY_NOW,
-            UserAction.SHARE, UserAction.CLOSE, UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER})
+            UserAction.SHARE, UserAction.CLOSE, UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER,
+            UserAction.OPEN_SHARED_VIDEO, UserAction.INVALID_SHARE_URL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UserAction {
         int CHANGE_LANGUAGE = 0;
@@ -42,7 +43,9 @@ public class VideoTutorialMetrics {
         int SHARE = 3;
         int CLOSE = 4;
         int BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER = 5;
-        int NUM_ENTRIES = 6;
+        int OPEN_SHARED_VIDEO = 6;
+        int INVALID_SHARE_URL = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /** Called to record various user actions on the video player. */

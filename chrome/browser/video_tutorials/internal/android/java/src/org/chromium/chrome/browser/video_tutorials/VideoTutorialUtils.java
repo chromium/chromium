@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.video_tutorials;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 
 import java.util.List;
 import java.util.Locale;
@@ -13,6 +18,31 @@ import java.util.Locale;
  * Handles various feature utility functions associated with video tutorials UI.
  */
 public class VideoTutorialUtils {
+    private static final String TAG = "VideoTutorialShare";
+
+    /**
+     * Creates and launches an Intent that allows sharing a video tutorial.
+     */
+    public static void launchShareIntent(Context context, Tutorial tutorial) {
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, tutorial.shareUrl);
+        startShareIntent(context, intent);
+    }
+
+    private static void startShareIntent(Context context, Intent intent) {
+        try {
+            context.startActivity(Intent.createChooser(
+                    intent, context.getString(R.string.share_link_chooser_title)));
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Cannot find activity for sharing");
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot start activity for sharing, exception: " + e);
+        }
+    }
+
     /**
      * Converts a duration string in ms to a human-readable form.
      * @param videoLengthSeconds The video length in seconds.
