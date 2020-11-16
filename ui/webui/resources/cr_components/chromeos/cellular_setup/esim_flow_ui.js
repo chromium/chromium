@@ -5,7 +5,6 @@
 cr.define('cellular_setup', function() {
   /** @enum{string} */
   /* #export */ const ESimPageName = {
-    PROFILE_LOADING: 'profileLoadingPage',
     PROFILE_DISCOVERY: 'profileDiscoveryPage',
     ESIM: 'activationCodePage',
     FINAL: 'finalPage',
@@ -33,7 +32,6 @@ cr.define('cellular_setup', function() {
        */
       selectedESimPageName_: {
         type: String,
-        // TODO(crbug.com/1093185) Make initial page PROFILE_LOADING.
         value: ESimPageName.PROFILE_DISCOVERY,
       },
 

@@ -16,7 +16,7 @@ js_modulizer("modulize") {
     "provisioning_page_test.js",
     "psim_flow_ui_test.js",
     "setup_selection_flow_test.js",
-    "setup_loading_page_test.js",
+    "sim_detect_page_test.js",
     "fake_cellular_setup_delegate.js",
     "fake_cellular_setup_remote.js",
     "fake_media_devices.js",

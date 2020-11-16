@@ -5,9 +5,9 @@
 cr.define('cellularSetup', function() {
   /** @enum{string} */
   /* #export */ const PSimPageName = {
-    SIM_DETECT: 'simDetectPage',
-    PROVISIONING: 'provisioningPage',
-    FINAL: 'finalPage',
+    SIM_DETECT: 'sim-detect-page',
+    PROVISIONING: 'provisioning-page',
+    FINAL: 'final-page',
   };
 
   /** @enum{string} */
@@ -104,7 +104,7 @@ cr.define('cellularSetup', function() {
 
       /**
        * DOM Element for the current selected sub-page.
-       * @private {!SetupLoadingPageElement|!ProvisioningPageElement|
+       * @private {!SimDetectPageElement|!ProvisioningPageElement|
        *           !FinalPageElement}
        */
       selectedPage_: Object,
