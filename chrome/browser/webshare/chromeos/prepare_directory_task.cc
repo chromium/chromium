@@ -47,6 +47,8 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
 
 void PrepareDirectoryTask::OnPrepareDirectory(base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (result != base::File::FILE_OK)
+    VLOG(1) << "Could not create directory for shared files";
   std::move(callback_).Run((result == base::File::FILE_OK)
                                ? blink::mojom::ShareError::OK
                                : blink::mojom::ShareError::PERMISSION_DENIED);

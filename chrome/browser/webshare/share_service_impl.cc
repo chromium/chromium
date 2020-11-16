@@ -139,11 +139,13 @@ void ShareServiceImpl::Share(const std::string& title,
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   if (!web_contents) {
+    VLOG(1) << "Cannot share after navigating away";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 
   if (files.size() > kMaxSharedFileCount) {
+    VLOG(1) << "Share too large: " << files.size() << " files";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
@@ -156,6 +158,8 @@ void ShareServiceImpl::Share(const std::string& title,
 
     if (IsDangerousFilename(file->name) ||
         IsDangerousMimeType(file->blob->content_type)) {
+      VLOG(1) << "File type is not supported: " << file->name
+              << " has mime type " << file->blob->content_type;
       std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
       return;
     }

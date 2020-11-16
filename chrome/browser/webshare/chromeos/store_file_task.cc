@@ -109,6 +109,7 @@ void StoreFileTask::OnCalculatedSize(uint64_t total_size,
   DCHECK_EQ(total_size, expected_content_size);
 
   if (expected_content_size > available_space_) {
+    VLOG(1) << "Share too large: " << expected_content_size << " bytes";
     std::move(callback_).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }

@@ -85,6 +85,8 @@ void SharesheetClient::Share(
 
   // The SharesheetClient only shows one share sheet at a time.
   if (current_share_.has_value() || !web_contents()) {
+    VLOG(1) << "Cannot share when an existing share is in progress, or after "
+               "navigating away";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }

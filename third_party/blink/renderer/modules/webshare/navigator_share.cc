@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_share_data.h"
@@ -207,13 +208,15 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  ExecutionContext* const execution_context =
+      ExecutionContext::From(script_state);
+
   // The feature policy is currently not enforced.
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
-  window->CountUse(
-      ExecutionContext::From(script_state)
-              ->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kWebShare)
-          ? WebFeature::kWebSharePolicyAllow
-          : WebFeature::kWebSharePolicyDisallow);
+  window->CountUse(execution_context->IsFeatureEnabled(
+                       mojom::blink::FeaturePolicyFeature::kWebShare)
+                       ? WebFeature::kWebSharePolicyAllow
+                       : WebFeature::kWebSharePolicyDisallow);
 
   if (client_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -222,6 +225,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   }
 
   if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+    VLOG(1) << "Share without transient activation (user gesture)";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
@@ -257,6 +261,9 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 
     if (files.size() > kMaxSharedFileCount ||
         total_bytes > kMaxSharedFileBytes) {
+      execution_context->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "Permission denied");
       return ScriptPromise();
