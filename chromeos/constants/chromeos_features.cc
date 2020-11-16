@@ -342,10 +342,6 @@ const base::Feature kClipboardHistorySimpleRender{
 const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to launch IME service with an 'ime' sandbox.
-const base::Feature kEnableImeSandbox{"EnableImeSandbox",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable restriction of symlink traversal on user-supplied filesystems.
 const base::Feature kFsNosymfollow{"FsNosymfollow",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
@@ -693,10 +689,6 @@ bool IsHostnameSettingEnabled() {
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
-}
-
-bool IsImeSandboxEnabled() {
-  return base::FeatureList::IsEnabled(kEnableImeSandbox);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {

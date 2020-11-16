@@ -1379,11 +1379,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-cros-ime-sandbox",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-cros-ime-service-decoder",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 91

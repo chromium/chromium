@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 #define CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/service_process_host.h"
 #include "sandbox/policy/sandbox_type.h"
 
@@ -25,10 +24,7 @@ class ImeService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<chromeos::ime::mojom::ImeService>() {
-  if (chromeos::features::IsImeSandboxEnabled())
-    return sandbox::policy::SandboxType::kIme;
-
-  return sandbox::policy::SandboxType::kUtility;
+  return sandbox::policy::SandboxType::kIme;
 }
 
 // chromeos::tts::mojom::TtsService

@@ -38,15 +38,11 @@ enum SimpleDownloadError {
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  if (chromeos::features::IsImeSandboxEnabled()) {
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kSystemLatinPhysicalTyping)) {
-      input_engine_ = std::make_unique<SystemEngine>(this);
-    } else {
-      input_engine_ = std::make_unique<DecoderEngine>(this);
-    }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kSystemLatinPhysicalTyping)) {
+    input_engine_ = std::make_unique<SystemEngine>(this);
   } else {
-    input_engine_ = std::make_unique<InputEngine>();
+    input_engine_ = std::make_unique<DecoderEngine>(this);
   }
 }
 

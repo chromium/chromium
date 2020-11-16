@@ -4253,10 +4253,6 @@ const char kImeServiceDecoderDescription[] =
     "Controls whether ChromeOS system IME works with the NaCl decoders or "
     "the decoders loaded in the IME service.";
 
-const char kImeServiceSandboxName[] = "Use CrOS 'ime' sandbox";
-const char kImeServiceSandboxDescription[] =
-    "Controls whether the IME service on CrOS uses the 'ime' sandbox.";
-
 const char kIntentHandlingSharingName[] = "Intent handling for sharing";
 const char kIntentHandlingSharingDescription[] =
     "Support sharing in Chrome OS intent handling.";
