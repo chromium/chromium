@@ -662,7 +662,7 @@ void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
   GetRemoteStorageControl()->PerformStorageCleanup(std::move(callback));
 }
 
-void ServiceWorkerRegistry::PrepareForDeleteAndStarOver() {
+void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
   should_schedule_delete_and_start_over_ = false;
   GetRemoteStorageControl()->Disable();
   is_storage_disabled_ = true;

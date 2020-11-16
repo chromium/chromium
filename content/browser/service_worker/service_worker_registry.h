@@ -235,7 +235,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
   void PerformStorageCleanup(base::OnceClosure callback);
   // Disables the internal storage to prepare for error recovery.
-  void PrepareForDeleteAndStarOver();
+  void PrepareForDeleteAndStartOver();
   // Deletes this registry and internal storage, then starts over for error
   // recovery.
   void DeleteAndStartOver(StatusCallback callback);
