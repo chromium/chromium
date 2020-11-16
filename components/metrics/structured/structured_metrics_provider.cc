@@ -24,6 +24,62 @@ using PrefReadError = ::PersistentPrefStore::PrefReadError;
 constexpr char kAssociatedEventsKey[] = "associated";
 constexpr char kIndependentEventsKey[] = "independent";
 
+// Given a Value representing a string containing a uint, return a uint64_t. If
+// the Value is not a string or the conversion fails, returns nullopt.
+base::Optional<uint64_t> StringValueToUint(const base::Value* string_value) {
+  DCHECK(string_value);
+  DCHECK(string_value->is_string());
+  if (!string_value || !string_value->is_string()) {
+    LogInternalError(StructuredMetricsError::kFailedUintConversion);
+    return base::nullopt;
+  }
+
+  uint64_t result = 0;
+  if (!base::StringToUint64(string_value->GetString(), &result)) {
+    LogInternalError(StructuredMetricsError::kFailedUintConversion);
+    return base::nullopt;
+  }
+  return result;
+}
+
+// Populate the structured_event repeated field of an |uma_proto| using an
+// |events| list.
+void PopulateUmaProto(const base::Value* events,
+                      ChromeUserMetricsExtension* uma_proto) {
+  DCHECK(events->is_list());
+  for (const auto& event : events->GetList()) {
+    auto* event_proto = uma_proto->add_structured_event();
+
+    const auto event_name_hash = StringValueToUint(event.FindKey("name"));
+    if (!event_name_hash)
+      continue;
+    event_proto->set_event_name_hash(event_name_hash.value());
+
+    const auto user_event_id = StringValueToUint(event.FindKey("id"));
+    if (!user_event_id)
+      continue;
+    event_proto->set_profile_event_id(user_event_id.value());
+
+    for (const auto& metric : event.FindKey("metrics")->GetList()) {
+      auto* metric_proto = event_proto->add_metrics();
+      const auto name_hash = StringValueToUint(metric.FindKey("name"));
+      if (!name_hash)
+        continue;
+      metric_proto->set_name_hash(name_hash.value());
+
+      const auto* value = metric.FindKey("value");
+      if (value->is_string()) {
+        const auto hmac = StringValueToUint(value);
+        if (!hmac)
+          continue;
+        metric_proto->set_value_hmac(hmac.value());
+      } else if (value->is_int()) {
+        metric_proto->set_value_int64(value->GetInt());
+      }
+    }
+  }
+}
+
 }  // namespace
 
 int StructuredMetricsProvider::kMaxEventsPerUpload = 100;
@@ -209,54 +265,8 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
   if (!recording_enabled_ || !initialized_)
     return;
 
-  // TODO(crbug.com/1016655): Memory usage UMA metrics for unsent logs would be
-  // useful as a canary for performance issues. base::Value::EstimateMemoryUsage
-  // perhaps.
-
   base::Value* events = GetEventsList(EventBase::IdentifierType::kUmaId);
-  for (const auto& event : events->GetList()) {
-    auto* event_proto = uma_proto->add_structured_event();
-
-    uint64_t event_name_hash;
-    if (!base::StringToUint64(event.FindKey("name")->GetString(),
-                              &event_name_hash)) {
-      LogInternalError(StructuredMetricsError::kFailedUintConversion);
-      continue;
-    }
-    event_proto->set_event_name_hash(event_name_hash);
-
-    uint64_t user_event_id;
-    if (!base::StringToUint64(event.FindKey("id")->GetString(),
-                              &user_event_id)) {
-      LogInternalError(StructuredMetricsError::kFailedUintConversion);
-      continue;
-    }
-    event_proto->set_profile_event_id(user_event_id);
-
-    for (const auto& metric : event.FindKey("metrics")->GetList()) {
-      auto* metric_proto = event_proto->add_metrics();
-      uint64_t name_hash;
-      if (!base::StringToUint64(metric.FindKey("name")->GetString(),
-                                &name_hash)) {
-        LogInternalError(StructuredMetricsError::kFailedUintConversion);
-        continue;
-      }
-      metric_proto->set_name_hash(name_hash);
-
-      const auto* value = metric.FindKey("value");
-      if (value->is_string()) {
-        uint64_t hmac;
-        if (!base::StringToUint64(value->GetString(), &hmac)) {
-          LogInternalError(StructuredMetricsError::kFailedUintConversion);
-          continue;
-        }
-        metric_proto->set_value_hmac(hmac);
-      } else if (value->is_int()) {
-        metric_proto->set_value_int64(value->GetInt());
-      }
-    }
-  }
-
+  PopulateUmaProto(events, uma_proto);
   LogNumEventsInUpload(events->GetList().size());
   events->ClearList();
 }
