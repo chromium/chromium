@@ -11,6 +11,8 @@ option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.feed.core.proto.wire";
 option java_outer_classname = "FeedQueryProto";
 
+import "components/feed/core/proto/wire/chrome_fulfillment_info.proto";
+
 message FeedQuery {
   enum RequestReason {
     // Bucket for any not listed. Should not be used (prefer adding a new
@@ -49,4 +51,7 @@ message FeedQuery {
   // Used to fetch the next page when scrolling copied from
   // Token.next_page_token
   optional bytes page_token = 2;
+
+  // Information on how to do content fulfillment for Chrome.
+  optional ChromeFulfillmentInfo chrome_fulfillment_info = 3;
 }

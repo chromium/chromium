@@ -4,9 +4,12 @@
 
 syntax = "proto2";
 
-package feedwire;
+package feedwire1;
 
 option optimize_for = LITE_RUNTIME;
+
+option java_package = "org.chromium.components.feed.core.proto.wire";
+option java_outer_classname = "ChromeFulfillmentInfoProto";
 
 // Information on how to do content fulfillment for Chrome.
 message ChromeFulfillmentInfo {

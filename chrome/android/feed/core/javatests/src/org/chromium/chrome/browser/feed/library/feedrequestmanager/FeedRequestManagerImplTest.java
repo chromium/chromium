@@ -467,28 +467,66 @@ public class FeedRequestManagerImplTest {
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
-    public void testTriggerRefresh_dismissNoticeCard() throws Exception {
-        // Simulate enough views and clicks.
+    public void testTriggerRefresh_acknowledgeNoticeCard_whenClicksThresholdReached()
+            throws Exception {
+        // Simulate enough clicks.
         when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(1);
-        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(3);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(0);
 
-        assertTrue(mRequestManager.shouldDismissNoticeCard());
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        HttpRequest httpRequest = mFakeNetworkClient.getLatestRequest();
+        assertHttpRequestFormattedCorrectly(httpRequest, mContext);
+
+        assertTrue(getRequestFromHttpRequest(httpRequest)
+                           .getExtension(FeedRequest.feedRequest)
+                           .getFeedQuery()
+                           .getChromeFulfillmentInfo()
+                           .getNoticeCardAcknowledged());
     }
 
     @Test
-    public void testTriggerRefresh_dontDismissNoticeCard_whenFeatureDisabled() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void testTriggerRefresh_acknowledgeNoticeCard_whenViewsThresholdReached()
+            throws Exception {
+        // Simulate enough views.
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(0);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(3);
+
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        HttpRequest httpRequest = mFakeNetworkClient.getLatestRequest();
+        assertHttpRequestFormattedCorrectly(httpRequest, mContext);
+
+        assertTrue(getRequestFromHttpRequest(httpRequest)
+                           .getExtension(FeedRequest.feedRequest)
+                           .getFeedQuery()
+                           .getChromeFulfillmentInfo()
+                           .getNoticeCardAcknowledged());
+    }
+
+    @Test
+    public void testTriggerRefresh_dontAcknowledgeNoticeCard_whenFeatureDisabled()
+            throws Exception {
         // Simulate enough views and clicks.
         when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(1);
         when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(3);
 
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
 
-        assertFalse(mRequestManager.shouldDismissNoticeCard());
+        HttpRequest httpRequest = mFakeNetworkClient.getLatestRequest();
+        assertHttpRequestFormattedCorrectly(httpRequest, mContext);
+
+        assertFalse(getRequestFromHttpRequest(httpRequest)
+                            .getExtension(FeedRequest.feedRequest)
+                            .getFeedQuery()
+                            .getChromeFulfillmentInfo()
+                            .getNoticeCardAcknowledged());
     }
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
-    public void testTriggerRefresh_dontDismissNoticeCard_whenCountThresholdsNotReached()
+    public void testTriggerRefresh_dontAcknowledgeNoticeCard_whenCountThresholdsNotReached()
             throws Exception {
         // Simulate not enough views nor clicks.
         when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(0);
@@ -496,7 +534,14 @@ public class FeedRequestManagerImplTest {
 
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
 
-        assertFalse(mRequestManager.shouldDismissNoticeCard());
+        HttpRequest httpRequest = mFakeNetworkClient.getLatestRequest();
+        assertHttpRequestFormattedCorrectly(httpRequest, mContext);
+
+        assertFalse(getRequestFromHttpRequest(httpRequest)
+                            .getExtension(FeedRequest.feedRequest)
+                            .getFeedQuery()
+                            .getChromeFulfillmentInfo()
+                            .getNoticeCardAcknowledged());
     }
 
     @Test
