@@ -253,10 +253,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Releases the |va_surfaces| and destroys |va_context_id_|.
   void DestroyContextAndSurfaces(std::vector<VASurfaceID> va_surfaces);
 
-  // Creates a VAContextID of |size| (unless it's a Vpp context in which case
-  // |size| is ignored and 0x0 is used instead). The client is responsible for
-  // releasing said context via DestroyContext() or DestroyContextAndSurfaces(),
-  // or it will be released on dtor.
+  // Creates a VA Context of |size| and sets |va_context_id_|. In the case of a
+  // VPP VaapiWrapper, |size| is ignored and 0x0 is used to create the context.
+  // The client is responsible for releasing it via DestroyContext() or
+  // DestroyContextAndSurfaces(), or it will be released on dtor.
   virtual bool CreateContext(const gfx::Size& size) WARN_UNUSED_RESULT;
 
   // Destroys the context identified by |va_context_id_|.
@@ -434,7 +434,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
  private:
   friend class base::RefCountedThreadSafe<VaapiWrapper>;
 
-  FRIEND_TEST_ALL_PREFIXES(VaapiTest, LowQualityEncodingSetting);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, ScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVABufferMapping);
@@ -471,11 +470,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                          const VABufferDescriptor& va_buffer)
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_) WARN_UNUSED_RESULT;
 
-  // Queries whether |va_profile_| and |va_entrypoint_| support encoding quality
-  // setting and, if available, configures it to its maximum value, for lower
-  // consumption and maximum speed.
-  void MaybeSetLowQualityEncoding_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
-
   const CodecMode mode_;
 
   // Pointer to VADisplayState's member |va_lock_|. Guaranteed to be valid for
@@ -490,8 +484,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // DestroyContext() or DestroyContextAndSurfaces().
   VAContextID va_context_id_;
 
-  // Profile and entrypoint configured for the corresponding |va_context_id_|.
-  VAProfile va_profile_;
+  //Entrypoint configured for the corresponding context
   VAEntrypoint va_entrypoint_;
 
   // Data queued up for HW codec, to be committed on next execution.

@@ -32,7 +32,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/stl_util.h"
-#include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -242,7 +241,7 @@ bool IsGen9Gpu() {
   constexpr int kSkyLakeModelId = 0x5E;
   constexpr int kSkyLake_LModelId = 0x4E;
   constexpr int kApolloLakeModelId = 0x5c;
-  static const base::NoDestructor<base::CPU> cpuid;
+  static base::NoDestructor<base::CPU> cpuid;
   static const bool is_gen9_gpu = cpuid->family() == kPentiumAndLaterFamily &&
                                   (cpuid->model() == kSkyLakeModelId ||
                                    cpuid->model() == kSkyLake_LModelId ||
@@ -260,7 +259,7 @@ bool IsGen95Gpu() {
   constexpr int kGeminiLakeModelId = 0x7A;
   constexpr int kCometLakeModelId = 0xA5;
   constexpr int kCometLake_LModelId = 0xA6;
-  static const base::NoDestructor<base::CPU> cpuid;
+  static base::NoDestructor<base::CPU> cpuid;
   static const bool is_gen95_gpu = cpuid->family() == kPentiumAndLaterFamily &&
                                    (cpuid->model() == kKabyLakeModelId ||
                                     cpuid->model() == kKabyLake_LModelId ||
@@ -268,22 +267,6 @@ bool IsGen95Gpu() {
                                     cpuid->model() == kCometLakeModelId ||
                                     cpuid->model() == kCometLake_LModelId);
   return is_gen95_gpu;
-}
-
-// Returns true if the SoC is considered a low power one, i.e. it's an Intel
-// Pentium, Celeron, or a Core Y-series. See go/intel-socs-101 or
-// https://www.intel.com/content/www/us/en/processors/processor-numbers.html.
-bool IsLowPowerIntelProcessor() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_core_y_processor =
-      base::MatchPattern(cpuid->cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
-
-  static const bool is_low_power_intel =
-      cpuid->family() == kPentiumAndLaterFamily &&
-      (base::Contains(cpuid->cpu_brand(), "Pentium") ||
-       base::Contains(cpuid->cpu_brand(), "Celeron") || is_core_y_processor);
-  return is_low_power_intel;
 }
 
 bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
@@ -757,25 +740,25 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
   if (!IsModeEncoding(mode))
     return true;
 
-  if (profile == VAProfileJPEGBaseline)
-    return true;
-
-  if (mode == VaapiWrapper::kEncode)
-    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
-  if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
-    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CQP});
+  if (profile != VAProfileJPEGBaseline) {
+    if (mode == VaapiWrapper::kEncode)
+      required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
+    if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
+      required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CQP});
+  }
 
   constexpr VAProfile kSupportedH264VaProfilesForEncoding[] = {
       VAProfileH264ConstrainedBaseline, VAProfileH264Main, VAProfileH264High};
   // VAConfigAttribEncPackedHeaders is H.264 specific.
   if (base::Contains(kSupportedH264VaProfilesForEncoding, profile)) {
-    // Encode with Packed header if the driver supports.
-    VAConfigAttrib attrib{};
+    // Encode with Packed header if a driver supports.
+    VAConfigAttrib attrib;
     attrib.type = VAConfigAttribEncPackedHeaders;
     const VAStatus va_res =
         vaGetConfigAttributes(va_display, profile, entrypoint, &attrib, 1);
     if (va_res != VA_STATUS_SUCCESS) {
-      LOG(ERROR) << "vaGetConfigAttributes failed: " << vaProfileStr(profile);
+      LOG(ERROR) << "vaGetConfigAttributes failed for "
+                 << vaProfileStr(profile);
       return false;
     }
 
@@ -958,7 +941,6 @@ void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
                      << vaEntrypointStr(entrypoint);
           continue;
         }
-
         supported_profile_infos.push_back(profile_info);
       }
     }
@@ -1677,10 +1659,6 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
       flag, empty_va_surfaces_ids_pointer, empty_va_surfaces_ids_size,
       &va_context_id_);
   VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVACreateContext);
-
-  if (IsModeEncoding(mode_) && IsLowPowerIntelProcessor())
-    MaybeSetLowQualityEncoding_Locked();
-
   return va_res == VA_STATUS_SUCCESS;
 }
 
@@ -2164,8 +2142,9 @@ bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
   attrib.type = VAConfigAttribEncMaxRefFrames;
 
   base::AutoLock auto_lock(*va_lock_);
-  VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile,
-                                          va_entrypoint_, &attrib, 1);
+  VAStatus va_res =
+      vaGetConfigAttributes(va_display_, va_profile,
+                            va_entrypoint_, &attrib, 1);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAGetConfigAttributes, false);
 
   *max_ref_frames = attrib.value;
@@ -2317,9 +2296,7 @@ VaapiWrapper::VaapiWrapper(CodecMode mode)
       va_lock_(VADisplayState::Get()->va_lock()),
       va_display_(NULL),
       va_config_id_(VA_INVALID_ID),
-      va_context_id_(VA_INVALID_ID),
-      va_profile_(VAProfileNone),
-      va_entrypoint_(kVAEntrypointInvalid) {}
+      va_context_id_(VA_INVALID_ID) {}
 
 VaapiWrapper::~VaapiWrapper() {
   // Destroy ScopedVABuffer before VaapiWrappers are destroyed to ensure
@@ -2351,7 +2328,7 @@ bool VaapiWrapper::Initialize(CodecMode mode, VAProfile va_profile) {
       vaCreateConfig(va_display_, va_profile, entrypoint,
                      required_attribs.empty() ? nullptr : &required_attribs[0],
                      required_attribs.size(), &va_config_id_);
-  va_profile_ = va_profile;
+
   va_entrypoint_ = entrypoint;
 
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
@@ -2579,42 +2556,6 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
     return false;
 
   return memcpy(mapping.data(), va_buffer.data, va_buffer.size);
-}
-
-void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {
-  DCHECK(IsModeEncoding(mode_));
-  va_lock_->AssertAcquired();
-
-  // Query if encoding quality (VAConfigAttribEncQualityRange) is supported, and
-  // if so, use the associated value for lowest quality and power consumption.
-  VAConfigAttrib attrib{};
-  attrib.type = VAConfigAttribEncQualityRange;
-  const VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile_,
-                                                va_entrypoint_, &attrib, 1);
-  if (va_res != VA_STATUS_SUCCESS) {
-    LOG(ERROR) << "vaGetConfigAttributes failed: " << vaProfileStr(va_profile_);
-    return;
-  }
-  // From libva's va.h: 'A value less than or equal to 1 means that the
-  // encoder only has a single "quality setting,"'.
-  if (attrib.value == VA_ATTRIB_NOT_SUPPORTED || attrib.value <= 1u)
-    return;
-
-  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) +
-                           sizeof(VAEncMiscParameterBufferQualityLevel);
-  std::vector<char> temp(temp_size);
-
-  auto* const va_buffer =
-      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
-  va_buffer->type = VAEncMiscParameterTypeQualityLevel;
-  auto* const enc_quality =
-      reinterpret_cast<VAEncMiscParameterBufferQualityLevel*>(va_buffer->data);
-  enc_quality->quality_level = attrib.value;
-
-  const bool success =
-      SubmitBuffer_Locked({VAEncMiscParameterBufferType, temp_size, va_buffer});
-  LOG_IF(ERROR, !success) << "Error setting encoding quality to "
-                          << enc_quality->quality_level;
 }
 
 }  // namespace media
