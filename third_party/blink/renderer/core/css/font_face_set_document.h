@@ -81,8 +81,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
  protected:
   bool InActiveContext() const override;
   FontSelector* GetFontSelector() const override {
-    // TODO(Fserb): tracking down crbug.com/988125, can be DCHECK later.
-    CHECK(IsMainThread());
+    DCHECK(IsMainThread());
     return GetDocument()->GetStyleEngine().GetFontSelector();
   }
 
