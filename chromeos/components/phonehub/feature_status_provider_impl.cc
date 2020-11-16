@@ -29,9 +29,21 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 
-bool DoesDeviceSupportPhoneHubHost(const RemoteDeviceRef& device) {
-  return device.GetSoftwareFeatureState(SoftwareFeature::kPhoneHubHost) !=
-         SoftwareFeatureState::kNotSupported;
+bool IsEligiblePhoneHubHost(const RemoteDeviceRef& device) {
+  // Device must be capable of being a multi-device host.
+  if (device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) ==
+      SoftwareFeatureState::kNotSupported) {
+    return false;
+  }
+
+  if (device.GetSoftwareFeatureState(SoftwareFeature::kPhoneHubHost) ==
+      SoftwareFeatureState::kNotSupported) {
+    return false;
+  }
+
+  // Device must have a synced Bluetooth public address, which is used to
+  // bootstrap Phone Hub connections.
+  return !device.bluetooth_public_address().empty();
 }
 
 bool IsEligibleForFeature(
@@ -71,28 +83,13 @@ bool IsEligibleForFeature(
   // If there is a host device available, check if the device is eligible for
   // Phonehub.
   if (host_status.second.has_value())
-    return DoesDeviceSupportPhoneHubHost(*(host_status.second));
+    return IsEligiblePhoneHubHost(*(host_status.second));
 
   // Otherwise, check if there is any available remote device that is
   // eligible for Phonehub.
   for (const RemoteDeviceRef& device : remote_devices) {
-    // Device must be capable of being a multi-device host.
-    if (device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) ==
-        SoftwareFeatureState::kNotSupported) {
-      continue;
-    }
-
-    // Device must be capable of being a Phone Hub host.
-    if (!DoesDeviceSupportPhoneHubHost(device)) {
-      continue;
-    }
-
-    // Device must have a synced Bluetooth public address, which is used to
-    // bootstrap Phone Hub connections.
-    if (device.bluetooth_public_address().empty())
-      continue;
-
-    return true;
+    if (IsEligiblePhoneHubHost(device))
+      return true;
   }
 
   // If none of the devices return true above, there are no phones capable of
