@@ -141,3 +141,19 @@ optimize_webui("build") {
     "//ui/webui/resources:preprocess",
   ]
 }
+
+optimize_webui("build_background") {
+  host = "audio_player"
+
+  input = preprocess_folder
+  js_module_in_files = [ "main_background.m.js" ]
+
+  js_out_files = [ "main_background.m.rollup.js" ]
+
+  deps = [
+    ":main_background.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
+}

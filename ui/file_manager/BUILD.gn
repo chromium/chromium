@@ -84,7 +84,10 @@ preprocess_grit("preprocess_static") {
   in_folder = "./"
   out_folder = preprocess_folder
 
-  in_files = [ "audio_player/js/main.m.js" ]
+  in_files = [
+    "audio_player/js/main.m.js",
+    "audio_player/js/main_background.m.js",
+  ]
 
   deps = [ "//ui/file_manager/audio_player/js:main.m" ]
 }
@@ -95,10 +98,21 @@ preprocess_grit("preprocess_generated") {
   out_folder = preprocess_folder
 
   in_files = [
+    # Audio Player:
+    "audio_player/js/error_util.m.js",
+    "audio_player/js/test_util.m.js",
+    "audio_player/js/background.m.js",
+
     # Base:
     "base/js/app_util.m.js",
     "base/js/volume_manager_types.m.js",
     "base/js/mediasession_types.m.js",
+
+    # Common:
+    "file_manager/common/js/async_util.m.js",
+    "file_manager/common/js/util.m.js",
+    "file_manager/common/js/file_type.m.js",
+    "file_manager/common/js/files_app_entry_types.m.js",
 
     # Externs:
     "externs/entry_location.m.js",
@@ -107,12 +121,27 @@ preprocess_grit("preprocess_generated") {
     "externs/volume_info.m.js",
     "externs/volume_info_list.m.js",
     "externs/volume_manager.m.js",
+
+    # Files app Background:
+    "file_manager/background/js/app_windows.m.js",
+    "file_manager/background/js/app_window_wrapper.m.js",
+    "file_manager/background/js/background_base.m.js",
+    "file_manager/background/js/entry_location_impl.m.js",
+    "file_manager/background/js/volume_manager_factory.m.js",
+    "file_manager/background/js/volume_manager_impl.m.js",
+    "file_manager/background/js/volume_info_impl.m.js",
+    "file_manager/background/js/volume_info_list_impl.m.js",
+    "file_manager/background/js/test_util_base.m.js",
+    "file_manager/background/js/volume_manager_util.m.js",
   ]
 
   deps = [
+    "//ui/file_manager/audio_player/js:modulize",
     "//ui/file_manager/base/js:modulize",
     "//ui/file_manager/externs:modulize",
     "//ui/file_manager/externs/background:modulize",
+    "//ui/file_manager/file_manager/background/js:modulize",
+    "//ui/file_manager/file_manager/common/js:modulize",
   ]
 }
 
@@ -124,12 +153,20 @@ generate_grd("build_grd") {
 
   input_files_base_dir =
       rebase_path("$target_gen_dir/preprocessed", root_gen_dir)
-  input_files = [ "../audio_player/js/main.m.rollup.js" ]
+  input_files = [
+    "../audio_player/js/main.m.rollup.js",
+    "../audio_player/js/main_background.m.rollup.js",
+  ]
 
-  resource_path_rewrites =
-      [ "../audio_player/js/main.m.rollup.js|audio_player/js/main.m.js" ]
+  resource_path_rewrites = [
+    "../audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
+    "../audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
+  ]
 
-  deps = [ "//ui/file_manager/audio_player/js:build" ]
+  deps = [
+    "//ui/file_manager/audio_player/js:build",
+    "//ui/file_manager/audio_player/js:build_background",
+  ]
 }
 
 # Resources for the JS modules.
