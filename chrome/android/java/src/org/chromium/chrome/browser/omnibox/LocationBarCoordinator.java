@@ -187,11 +187,6 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
         return mLocationBarLayout.getSecurityIconView();
     }
 
-    @Override
-    public void updateMicButtonState() {
-        mLocationBarLayout.updateMicButtonState();
-    }
-
     @Nullable
     @Override
     public View getViewForUrlBackFocus() {
@@ -260,6 +255,11 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
     @Override
     public void onUrlChanged() {
         mLocationBarLayout.setUrl(mLocationbarDataProvider.getCurrentUrl());
+    }
+
+    @Override
+    public void onIncognitoStateChanged() {
+        mLocationBarLayout.updateMicButtonState();
     }
 
     /**

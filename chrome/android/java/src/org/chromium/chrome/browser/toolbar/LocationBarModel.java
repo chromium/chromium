@@ -106,6 +106,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     /**
      * Sets the tab that contains the information to be displayed in the toolbar.
+     *
      * @param tab The tab associated currently with the toolbar.
      * @param isIncognito Whether the incognito model is currently selected, which must match the
      *                    passed in tab if non-null.
@@ -113,7 +114,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public void setTab(Tab tab, boolean isIncognito) {
         assert tab == null || tab.isIncognito() == isIncognito;
         mTab = tab;
-        mIsIncognito = isIncognito;
+        if (mIsIncognito != isIncognito) {
+            mIsIncognito = isIncognito;
+            notifyIncognitoStateChanged();
+        }
         updateUsingBrandColor();
         notifyTitleChanged();
         notifyUrlChanged();
@@ -283,6 +287,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @Override
     public boolean isIncognito() {
         return mIsIncognito;
+    }
+
+    private void notifyIncognitoStateChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onIncognitoStateChanged();
+        }
     }
 
     /**

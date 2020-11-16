@@ -76,15 +76,12 @@ public interface LocationBar extends Destroyable {
      */
     View getSecurityIconView();
 
-    /** Updates the state of the mic button if there is one. */
-    void updateMicButtonState();
 
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
     @Nullable
     default VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return null;
     }
-
     /**
      * Returns a (@link FakeboxDelegate}.
      *

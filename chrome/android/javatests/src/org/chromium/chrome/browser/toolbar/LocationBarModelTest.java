@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -16,25 +22,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Tests for LocationBarModel.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocationBarModelTest {
     @Rule
@@ -57,9 +72,9 @@ public class LocationBarModelTest {
                 getCurrentTabId(mActivityTestRule.getActivity()));
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        Assert.assertEquals("Didn't close all tabs.", 0,
+        assertEquals("Didn't close all tabs.", 0,
                 ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
-        Assert.assertEquals("LocationBarModel is still trying to show a tab.", Tab.INVALID_TAB_ID,
+        assertEquals("LocationBarModel is still trying to show a tab.", Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
     }
 
@@ -88,13 +103,107 @@ public class LocationBarModelTest {
         });
     }
 
+    /** Provides parameters for different types of transitions between tabs. */
+    public static class IncognitoTransitionParamProvider implements ParameterProvider {
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            List<ParameterSet> result = new ArrayList<>(8);
+            for (boolean fromIncognito : Arrays.asList(true, false)) {
+                for (boolean toIncognito : Arrays.asList(true, false)) {
+                    result.add(new ParameterSet()
+                                       .value(fromIncognito, toIncognito)
+                                       .name(String.format(
+                                               "from_%b_to_%b", fromIncognito, toIncognito)));
+                }
+            }
+            return result;
+        }
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    public void testOnIncognitoStateChange_switchTab(boolean fromIncognito, boolean toIncognito) {
+        // Add a regular tab next to the one created in setup.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        // Add two incognito tabs.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        LocationBarModel locationBarModel =
+                activity.getToolbarManager().getLocationBarModelForTesting();
+        LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
+        doAnswer((invocation) -> {
+            assertEquals(toIncognito, locationBarModel.isIncognito());
+            return null;
+        })
+                .when(observer)
+                .onIncognitoStateChanged();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().selectModel(fromIncognito);
+            locationBarModel.addObserver(observer);
+
+            // Switch to an existing tab.
+            mActivityTestRule.getActivity().getTabModelSelector().selectModel(/*incognito=*/
+                    toIncognito);
+            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().setIndex(
+                    0, TabSelectionType.FROM_USER);
+        });
+
+        assertEquals(toIncognito, locationBarModel.isIncognito());
+        if (fromIncognito != toIncognito) {
+            verify(observer).onIncognitoStateChanged();
+        } else {
+            verify(observer, times(0)).onIncognitoStateChanged();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    public void testOnIncognitoStateChange_newTab(boolean fromIncognito, boolean toIncognito) {
+        // Add a regular tab next to the one created in setup.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        // Add two incognito tabs.
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        LocationBarModel locationBarModel =
+                activity.getToolbarManager().getLocationBarModelForTesting();
+        LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
+        doAnswer((invocation) -> {
+            assertEquals(toIncognito, locationBarModel.isIncognito());
+            return null;
+        })
+                .when(observer)
+                .onIncognitoStateChanged();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().selectModel(fromIncognito);
+            locationBarModel.addObserver(observer);
+        });
+
+        // Switch to a new tab.
+        mActivityTestRule.loadUrlInNewTab("about:blank", toIncognito);
+
+        assertEquals(toIncognito, locationBarModel.isIncognito());
+        if (fromIncognito != toIncognito) {
+            verify(observer).onIncognitoStateChanged();
+        } else {
+            verify(observer, times(0)).onIncognitoStateChanged();
+        }
+    }
+
     private void assertDisplayAndEditText(
             ToolbarDataProvider dataProvider, String displayText, String editText) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UrlBarData urlBarData = dataProvider.getUrlBarData();
-            Assert.assertEquals(
+            assertEquals(
                     "Display text did not match", displayText, urlBarData.displayText.toString());
-            Assert.assertEquals("Editing text did not match", editText, urlBarData.editingText);
+            assertEquals("Editing text did not match", editText, urlBarData.editingText);
         });
     }
 
