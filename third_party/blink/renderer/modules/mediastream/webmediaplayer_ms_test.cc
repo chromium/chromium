@@ -617,7 +617,6 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void RequestPlay() override {}
   void RequestPause() override {}
-  void RequestMuted(bool muted) override {}
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
   Features GetFeatures() override { return Features(); }

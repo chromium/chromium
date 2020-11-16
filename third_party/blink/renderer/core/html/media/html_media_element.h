@@ -452,7 +452,6 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInAutoPIP() const override { return false; }
   void RequestPlay() final;
   void RequestPause() final;
-  void RequestMuted(bool muted) final;
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
 

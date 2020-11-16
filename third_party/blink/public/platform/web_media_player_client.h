@@ -167,9 +167,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Request the player to pause playback.
   virtual void RequestPause() = 0;
 
-  // Request the player to mute/unmute.
-  virtual void RequestMuted(bool muted) = 0;
-
   // Request the player to enter picture-in-picture.
   virtual void RequestEnterPictureInPicture() = 0;
 

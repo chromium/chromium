@@ -276,7 +276,6 @@ bool RendererWebMediaPlayerDelegate::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(RendererWebMediaPlayerDelegate, msg)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Pause, OnMediaDelegatePause)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Play, OnMediaDelegatePlay)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Muted, OnMediaDelegateMuted)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekForward,
                         OnMediaDelegateSeekForward)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekBackward,
@@ -355,13 +354,6 @@ void RendererWebMediaPlayerDelegate::OnMediaDelegatePlay(int player_id) {
     }
     observer->OnPlay();
   }
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateMuted(int player_id,
-                                                          bool muted) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnMuted(muted);
 }
 
 void RendererWebMediaPlayerDelegate::OnMediaDelegateSeekForward(

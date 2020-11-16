@@ -44,7 +44,6 @@ class MockWebMediaPlayerDelegateObserver
   MOCK_METHOD0(OnIdleTimeout, void());
   MOCK_METHOD0(OnPlay, void());
   MOCK_METHOD0(OnPause, void());
-  MOCK_METHOD1(OnMuted, void(bool));
   MOCK_METHOD1(OnSeekForward, void(double));
   MOCK_METHOD1(OnSeekBackward, void(double));
   MOCK_METHOD0(OnEnterPictureInPicture, void());

@@ -156,7 +156,6 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(RequestPlay, void());
   MOCK_METHOD0(RequestPause, void());
-  MOCK_METHOD1(RequestMuted, void(bool));
   MOCK_METHOD0(RequestEnterPictureInPicture, void());
   MOCK_METHOD0(RequestExitPictureInPicture, void());
   MOCK_METHOD0(GetFeatures, Features(void));

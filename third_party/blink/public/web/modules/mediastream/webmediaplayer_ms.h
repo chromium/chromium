@@ -179,7 +179,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void OnIdleTimeout() override;
   void OnPlay() override;
   void OnPause() override;
-  void OnMuted(bool muted) override;
   void OnSeekForward(double seconds) override;
   void OnSeekBackward(double seconds) override;
   void OnEnterPictureInPicture() override;
