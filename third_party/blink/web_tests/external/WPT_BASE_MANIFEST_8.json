@@ -232437,7 +232437,7 @@
      []
     ],
     "input-events-get-target-ranges.js": [
-     "6b922cdf03930ace471c9df2ddb58f74b1b24850",
+     "f9404e07a5564c64a2863a1329728517fedd5ca7",
      []
     ]
    },
@@ -378006,6 +378006,37 @@
       }
      ]
     ],
+    "input-events-get-target-ranges-deleting-in-list-items.tentative.html": [
+     "2671fefa7cfc975cfc53de6859e394c445cb11f3",
+     [
+      "input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Backspace,ol",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Backspace,ul",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ol",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ul",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "input-events-get-target-ranges-during-and-after-dispatch.tentative.html": [
      "be4656d04a84fada7f8b318a1df97ea062c39a95",
      [
@@ -378019,6 +378050,40 @@
      "440e37dcade0cec5f7ab3e466072177f08ec09f0",
      [
       null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html": [
+     "cebddac4c5b38d7575f42607f7b4128f0d0bc139",
+     [
+      "input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Backspace",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Delete",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "input-events-get-target-ranges-joining-dl-elements.tentative.html": [
+     "3e51dab7755e3bca9f3a29ab71b8f3a9922ce049",
+     [
+      "input-events/input-events-get-target-ranges-joining-dl-elements.tentative.html?Backspace",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-joining-dl-elements.tentative.html?Delete",
       {
        "testdriver": true,
        "timeout": "long"
