@@ -38,7 +38,7 @@ public class SizeListenableLinearLayout extends LinearLayout {
             // when that happens. A correct fix is to make the BottomSheet always listen for layout
             // changes (it currently does that only if there is no ContentSizeListener attached to
             // the BottomSheetContent).
-            mListener.onSizeChanged(-1, bottom - top, -1, -1);
+            mListener.onSizeChanged(right - left, bottom - top, -1, -1);
         }
     }
 

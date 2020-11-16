@@ -342,10 +342,6 @@ class BottomSheet extends FrameLayout
                 mContainerHeight = bottom - top;
                 mScrollableHeight = mContainerHeight + mToolbarShadowHeight;
 
-                // TODO(https://crbug.com/1148421): Remove this update once we can handle
-                // mContentWidth update in onContentSizeChanged
-                mContentWidth = mContainerWidth;
-
                 if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
                     if (mCurrentState == SheetState.HALF && !isHalfStateEnabled()) {
                         setSheetState(SheetState.FULL, false);
@@ -1272,6 +1268,7 @@ class BottomSheet extends FrameLayout
     private void onContentSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         boolean heightChanged = mContentDesiredHeight != height;
         mContentDesiredHeight = height;
+        mContentWidth = width;
 
         if (heightChanged && mCurrentState == SheetState.SCROLLING) {
             endAnimations();
