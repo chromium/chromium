@@ -124,6 +124,9 @@ chrome.fileManagerPrivate = {
     // Returns opened|message_sent|failed|empty.
     setTimeout(callback, 0, 'failed');
   },
+  getContentMetadata: (entry, mimeType, includeImages, callback) => {
+    setTimeout(callback, 0);
+  },
   getContentMimeType: (entry, callback) => {
     setTimeout(callback, 0, '');
   },
