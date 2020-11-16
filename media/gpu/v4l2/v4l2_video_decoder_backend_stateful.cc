@@ -106,6 +106,10 @@ void V4L2StatefulVideoDecoderBackend::EnqueueDecodeTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
+  if (!buffer->end_of_stream()) {
+    has_pending_requests_ = true;
+  }
+
   decode_request_queue_.push(
       DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
 
@@ -443,10 +447,9 @@ bool V4L2StatefulVideoDecoderBackend::InitiateFlush(
   client_->InitiateFlush();
   flush_cb_ = std::move(flush_cb);
 
-  // Special case: if our CAPTURE queue is not streaming, we cannot receive
-  // the CAPTURE buffer with the LAST flag set that signals the end of flush.
-  // In this case, we should complete the flush immediately.
-  if (!output_queue_->IsStreaming())
+  // Special case: if we haven't received any decoding request, we could
+  // complete the flush immediately.
+  if (!has_pending_requests_)
     return CompleteFlush();
 
   // Send the STOP command to the V4L2 device. The device will let us know
@@ -491,6 +494,7 @@ bool V4L2StatefulVideoDecoderBackend::CompleteFlush() {
   // Resume decoding if data is available.
   ScheduleDecodeWork();
 
+  has_pending_requests_ = false;
   return true;
 }
 
@@ -611,6 +615,8 @@ void V4L2StatefulVideoDecoderBackend::ClearPendingRequests(
     std::move(decode_request_queue_.front().decode_cb).Run(status);
     decode_request_queue_.pop();
   }
+
+  has_pending_requests_ = false;
 }
 
 // TODO(b:149663704) move into helper function shared between both backends?
