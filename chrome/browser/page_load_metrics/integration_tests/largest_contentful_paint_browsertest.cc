@@ -132,9 +132,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
       lcp_timestamps[2].value());
 }
 
-// TODO(crbug.com/1135527): Flaky.
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       DISABLED_LargestContentfulPaint_SubframeInput) {
+                       LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetMainFrame(), 0);
