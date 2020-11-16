@@ -71,7 +71,7 @@ HEADER = _header(
         ),
         _oncall(
             name = "Chromium Branches",
-            branch_selector = branches.NOT_MAIN,
+            branch_selector = branches.STANDARD_BRANCHES,
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-branch-sheriff",
         ),
         _oncall(
@@ -204,7 +204,7 @@ HEADER = _header(
             links = [
                 _link(
                     text = "android",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.android".format(settings.project),
                     alt = "Chromium Android console",
                 ),
@@ -215,7 +215,7 @@ HEADER = _header(
                 ),
                 _link(
                     text = "dawn",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.dawn".format(settings.project),
                     alt = "Chromium Dawn console",
                 ),
@@ -226,13 +226,13 @@ HEADER = _header(
                 ),
                 _link(
                     text = "fyi",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.fyi".format(settings.project),
                     alt = "Chromium FYI console",
                 ),
                 _link(
                     text = "gpu",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.gpu".format(settings.project),
                     alt = "Chromium GPU console",
                 ),
@@ -258,7 +258,7 @@ HEADER = _header(
                 ),
                 _link(
                     text = "chromiumos",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.LTS_MILESTONE,
                     url = "/p/{}/g/chromium.chromiumos".format(settings.project),
                     alt = "ChromiumOS console",
                 ),
@@ -287,7 +287,7 @@ HEADER = _header(
             links = [
                 _link(
                     text = "android",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.android/builders".format(settings.project),
                     alt = "Android",
                 ),
@@ -298,7 +298,7 @@ HEADER = _header(
                 ),
                 _link(
                     text = "blink",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.blink/builders".format(settings.project),
                     alt = "Blink",
                 ),
@@ -309,19 +309,19 @@ HEADER = _header(
                 ),
                 _link(
                     text = "chromiumos",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.LTS_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.chromiumos/builders".format(settings.project),
                     alt = "ChromiumOS",
                 ),
                 _link(
                     text = "linux",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.linux/builders".format(settings.project),
                     alt = "Linux",
                 ),
                 _link(
                     text = "mac",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.mac/builders".format(settings.project),
                     alt = "Mac",
                 ),
@@ -332,7 +332,7 @@ HEADER = _header(
                 ),
                 _link(
                     text = "win",
-                    branch_selector = branches.ALL_BRANCHES,
+                    branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.win/builders".format(settings.project),
                     alt = "Win",
                 ),
@@ -383,7 +383,7 @@ HEADER = _header(
             ],
         ),
         _console_group(
-            branch_selector = branches.NOT_MAIN,
+            branch_selector = branches.STANDARD_BRANCHES,
             console_ids = ["{}/{}".format(settings.project, c) for c in [
                 "chromium",
                 "chromium.win",
@@ -393,6 +393,12 @@ HEADER = _header(
                 "chromium.memory",
                 "chromium.gpu",
                 "chromium.android",
+            ]],
+        ),
+        _console_group(
+            branch_selector = branches.LTS_BRANCHES,
+            console_ids = ["{}/{}".format(settings.project, c) for c in [
+                "chromium.chromiumos",
             ]],
         ),
     ],
