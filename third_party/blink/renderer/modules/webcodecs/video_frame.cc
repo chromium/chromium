@@ -503,8 +503,10 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                  exception_state);
   }
 
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported VideoFrame.");
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      String(("Unsupported VideoFrame: " + local_frame->AsHumanReadableString())
+                 .c_str()));
   return ScriptPromise();
 }
 
