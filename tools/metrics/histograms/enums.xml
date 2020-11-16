@@ -38295,8 +38295,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1772226972" label="ur-t-i0-und_old">
     Urdu transliteration (obsolete)
   </int>
-  <int value="1783807851" label="nacl_mozc_us_old">
-    Google Japanese Input (for US keyboard) (obsolete)
+  <int value="1783807851" label="nacl_mozc_us">
+    Google Japanese Input (for US keyboard)
   </int>
   <int value="1842376130" label="vkd_ta_typewriter">
     Tamil keyboard (Typewriter)
