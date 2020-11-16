@@ -5905,7 +5905,6 @@ crbug.com/1093198 external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing [
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Pass Failure ]
 
 # Sheriff 2020-06-10
-crbug.com/1093429 [ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Failure ]
 crbug.com/1093709 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Pass Failure ]
 
 # Sheriff 2020-06-11
