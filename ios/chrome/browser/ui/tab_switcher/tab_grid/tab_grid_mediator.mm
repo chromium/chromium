@@ -29,7 +29,7 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -46,10 +46,11 @@
 #endif
 
 namespace {
-// Constructs a GridItem from a |web_state|.
-GridItem* CreateItem(web::WebState* web_state) {
+// Constructs a TabSwitcherItem from a |web_state|.
+TabSwitcherItem* CreateItem(web::WebState* web_state) {
   TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
-  GridItem* item = [[GridItem alloc] initWithIdentifier:tab_helper->tab_id()];
+  TabSwitcherItem* item =
+      [[TabSwitcherItem alloc] initWithIdentifier:tab_helper->tab_id()];
   // chrome://newtab (NTP) tabs have no title.
   if (IsURLNtp(web_state->GetVisibleURL())) {
     item.hidesTitle = YES;
@@ -58,7 +59,7 @@ GridItem* CreateItem(web::WebState* web_state) {
   return item;
 }
 
-// Constructs an array of GridItems from a |web_state_list|.
+// Constructs an array of TabSwitcherItems from a |web_state_list|.
 NSArray* CreateItems(WebStateList* web_state_list) {
   NSMutableArray* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {

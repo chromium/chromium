@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -57,7 +57,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The local model backing the collection view.
-@property(nonatomic, strong) NSMutableArray<GridItem*>* items;
+@property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if |self.items| is
 // empty. This bookkeeping is done to set the correct selection on
 // |-viewWillAppear:|.
@@ -110,7 +110,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (instancetype)init {
   if (self = [super init]) {
-    _items = [[NSMutableArray<GridItem*> alloc] init];
+    _items = [[NSMutableArray<TabSwitcherItem*> alloc] init];
     _showsSelectionUpdates = YES;
   }
   return self;
@@ -351,7 +351,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (itemIndex >= self.items.count)
       itemIndex = self.items.count - 1;
 
-    GridItem* item = self.items[itemIndex];
+    TabSwitcherItem* item = self.items[itemIndex];
     cell =
         [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
                                                   forIndexPath:indexPath];
@@ -397,7 +397,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       base::checked_cast<NSUInteger>(destinationIndexPath.item);
   // Update |items| before informing the delegate, so the state of the UI
   // is correctly represented before any updates occur.
-  GridItem* item = self.items[source];
+  TabSwitcherItem* item = self.items[source];
   [self.items removeObjectAtIndex:source];
   [self.items insertObject:item atIndex:destination];
   self.hasChangedOrder = YES;
@@ -466,7 +466,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Return an empty array because the plus sign cell should not be dragged.
     return @[];
   }
-  GridItem* item = self.items[indexPath.item];
+  TabSwitcherItem* item = self.items[indexPath.item];
   return @[ [self.dragDropHandler dragItemForItemWithID:item.identifier] ];
 }
 
@@ -610,12 +610,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - GridConsumer
 
-- (void)populateItems:(NSArray<GridItem*>*)items
+- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
 #ifndef NDEBUG
   // Consistency check: ensure no IDs are duplicated.
   NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-  for (GridItem* item in items) {
+  for (TabSwitcherItem* item in items) {
     [identifiers addObject:item.identifier];
   }
   CHECK_EQ(identifiers.count, items.count);
@@ -637,7 +637,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateFractionVisibleOfLastItem];
 }
 
-- (void)insertItem:(GridItem*)item
+- (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
     selectedItemID:(NSString*)selectedItemID {
   // Consistency check: |item|'s ID is not in |items|.
@@ -729,7 +729,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
              scrollPosition:UICollectionViewScrollPositionNone];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item {
+- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
   if ([self indexOfItemWithID:itemID] == NSNotFound)
     return;
   // Consistency check: |item|'s ID is either |itemID| or not in |items|.
@@ -750,7 +750,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (fromIndex == toIndex)
     return;
   auto modelUpdates = ^{
-    GridItem* item = self.items[fromIndex];
+    TabSwitcherItem* item = self.items[fromIndex];
     [self.items removeObjectAtIndex:fromIndex];
     [self.items insertObject:item atIndex:toIndex];
   };
@@ -881,9 +881,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Returns the index in |self.items| of the first item whose identifier is
 // |identifier|.
 - (NSUInteger)indexOfItemWithID:(NSString*)identifier {
-  auto selectedTest = ^BOOL(GridItem* item, NSUInteger index, BOOL* stop) {
-    return [item.identifier isEqualToString:identifier];
-  };
+  auto selectedTest =
+      ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
+        return [item.identifier isEqualToString:identifier];
+      };
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
 
@@ -891,7 +892,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // asynchronously with information from |item|. Updates the |cell|'s theme to
 // this view controller's theme. This view controller becomes the delegate for
 // the cell.
-- (void)configureCell:(GridCell*)cell withItem:(GridItem*)item {
+- (void)configureCell:(GridCell*)cell withItem:(TabSwitcherItem*)item {
   DCHECK(cell);
   DCHECK(item);
   cell.delegate = self;

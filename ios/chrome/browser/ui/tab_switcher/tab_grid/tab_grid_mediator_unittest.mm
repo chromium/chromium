@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -161,16 +161,16 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
 @synthesize items = _items;
 @synthesize selectedItemID = _selectedItemID;
 
-- (void)populateItems:(NSArray<GridItem*>*)items
+- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
   self.selectedItemID = selectedItemID;
   self.items = [NSMutableArray array];
-  for (GridItem* item in items) {
+  for (TabSwitcherItem* item in items) {
     [self.items addObject:item.identifier];
   }
 }
 
-- (void)insertItem:(GridItem*)item
+- (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
     selectedItemID:(NSString*)selectedItemID {
   [self.items insertObject:item.identifier atIndex:index];
@@ -187,7 +187,7 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
   self.selectedItemID = selectedItemID;
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item {
+- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
   NSUInteger index = [self.items indexOfObject:itemID];
   self.items[index] = item.identifier;
 }

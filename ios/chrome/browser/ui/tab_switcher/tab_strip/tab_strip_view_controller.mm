@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_controller.h"
 
 #import "base/allocator/partition_allocator/partition_alloc.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,7 +24,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @interface TabStripViewController ()
 
 // The local model backing the collection view.
-@property(nonatomic, strong) NSMutableArray<GridItem*>* items;
+@property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 // Identifier of the selected item. This value is disregarded if |self.items| is
 // empty.
 @property(nonatomic, copy) NSString* selectedItemID;
@@ -66,7 +66,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (itemIndex >= self.items.count)
     itemIndex = self.items.count - 1;
 
-  GridItem* item = self.items[itemIndex];
+  TabSwitcherItem* item = self.items[itemIndex];
   TabStripCell* cell = (TabStripCell*)[collectionView
       dequeueReusableCellWithReuseIdentifier:kReuseIdentifier
                                 forIndexPath:indexPath];
@@ -77,12 +77,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - TabStripConsumer
 
-- (void)populateItems:(NSArray<GridItem*>*)items
+- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
 #ifndef NDEBUG
   // Consistency check: ensure no IDs are duplicated.
   NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-  for (GridItem* item in items) {
+  for (TabSwitcherItem* item in items) {
     [identifiers addObject:item.identifier];
   }
   CHECK_EQ(identifiers.count, items.count);
@@ -93,7 +93,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView reloadData];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item {
+- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
   if ([self indexOfItemWithID:itemID] == NSNotFound)
     return;
   // Consistency check: |item|'s ID is either |itemID| or not in |items|.
@@ -113,7 +113,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Configures |cell|'s title synchronously, and favicon asynchronously with
 // information from |item|. Updates the |cell|'s theme to this view controller's
 // theme.
-- (void)configureCell:(TabStripCell*)cell withItem:(GridItem*)item {
+- (void)configureCell:(TabStripCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
     cell.itemIdentifier = item.identifier;
     cell.titleLabel.text = item.title;
@@ -132,9 +132,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Returns the index in |self.items| of the first item whose identifier is
 // |identifier|.
 - (NSUInteger)indexOfItemWithID:(NSString*)identifier {
-  auto selectedTest = ^BOOL(GridItem* item, NSUInteger index, BOOL* stop) {
-    return [item.identifier isEqualToString:identifier];
-  };
+  auto selectedTest =
+      ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
+        return [item.identifier isEqualToString:identifier];
+      };
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
 

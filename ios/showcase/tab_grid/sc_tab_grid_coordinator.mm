@@ -7,8 +7,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -43,9 +43,9 @@
   self.baseViewController.hidesBarsOnSwipe = YES;
   [self.baseViewController pushViewController:self.viewController animated:YES];
 
-  NSMutableArray<GridItem*>* items = [[NSMutableArray alloc] init];
+  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 10; i++) {
-    GridItem* item = [[GridItem alloc]
+    TabSwitcherItem* item = [[TabSwitcherItem alloc]
         initWithIdentifier:[NSString stringWithFormat:@"incogitem%d", i]];
     item.title = @"YouTube - Cat Videos";
     [items addObject:item];
@@ -54,7 +54,7 @@
                                             selectedItemID:items[0].identifier];
   items = [[NSMutableArray alloc] init];
   for (int i = 0; i < 10; i++) {
-    GridItem* item = [[GridItem alloc]
+    TabSwitcherItem* item = [[TabSwitcherItem alloc]
         initWithIdentifier:[NSString stringWithFormat:@"item%d", i]];
     item.title = @"The New York Times - Breaking News";
     [items addObject:item];
