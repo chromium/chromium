@@ -59,6 +59,10 @@ class PermissionChip : public views::View,
   // BubbleOwnerDelegate:
   bool IsBubbleShowing() const override;
 
+  PermissionPromptBubbleView* prompt_bubble_for_testing() {
+    return prompt_bubble_;
+  }
+
  private:
   void ChipButtonPressed();
   void Collapse();

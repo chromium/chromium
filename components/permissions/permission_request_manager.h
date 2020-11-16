@@ -171,6 +171,8 @@ class PermissionRequestManager
     view_factory_ = std::move(view_factory);
   }
 
+  PermissionPrompt* view_for_testing() { return view_.get(); }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
