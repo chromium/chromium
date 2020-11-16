@@ -16,7 +16,6 @@ dictionary GPUBindGroupLayoutEntry {
     GPUTextureViewDimension viewDimension = "2d";
 
     GPUTextureComponentType textureComponentType = "float";
-    boolean multisampled = false;
 
     GPUTextureFormat storageTextureFormat;
 };

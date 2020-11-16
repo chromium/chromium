@@ -47,12 +47,10 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   void insertDebugMarker(String markerLabel);
   void setPipeline(GPURenderPipeline* pipeline);
 
-  void setIndexBuffer(GPUBuffer* buffer, uint64_t offset, uint64_t size);
   void setIndexBuffer(GPUBuffer* buffer,
                       const WTF::String& format,
                       uint64_t offset,
-                      uint64_t size,
-                      ExceptionState& exception_state);
+                      uint64_t size);
   void setVertexBuffer(uint32_t slot,
                        const GPUBuffer* buffer,
                        uint64_t offset,

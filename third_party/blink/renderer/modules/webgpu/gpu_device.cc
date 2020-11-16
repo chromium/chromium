@@ -79,12 +79,6 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   GetProcs().deviceSetDeviceLostCallback(GetHandle(),
                                          lost_callback_->UnboundCallback(),
                                          lost_callback_->AsUserdata());
-
-  if (extension_name_list_.Contains("textureCompressionBC")) {
-    AddConsoleWarning(
-        "The extension name 'textureCompressionBC' is deprecated: use "
-        "'texture-compression-bc' instead");
-  }
 }
 
 GPUDevice::~GPUDevice() {

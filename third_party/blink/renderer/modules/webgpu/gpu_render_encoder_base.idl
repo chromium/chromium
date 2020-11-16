@@ -10,17 +10,7 @@
     void setPipeline(GPURenderPipeline pipeline);
 
     void setIndexBuffer(GPUBuffer buffer,
-                        optional GPUSize64 offset = 0,
-                        optional GPUSize64 size = 0);
-    // TODO: the format argument here should be a GPUIndexFormat enum, but that
-    // is causing problems with the bindings generator when paired with the
-    // overload. The above overload is deprecated and will be removed soon,
-    // which will allow us to use the correct type here. In the meantime we'll
-    // validate that the given string is one of the expected enum values
-    // manually.
-    [RaisesException]
-    void setIndexBuffer(GPUBuffer buffer,
-                        DOMString format,
+                        GPUIndexFormat format,
                         optional GPUSize64 offset = 0,
                         optional GPUSize64 size = 0);
 

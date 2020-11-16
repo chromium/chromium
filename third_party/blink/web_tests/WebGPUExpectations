@@ -38,6 +38,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visib
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,invalidBuffer:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]
