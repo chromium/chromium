@@ -15,20 +15,10 @@ interface PageHandlerFactory {
 // Lives in the browser process. A renderer uses this to control/query the
 // backend of the app.
 interface PageHandler {
-  // Getter example.
-  GetFoo() => (string foo);
-  // Setter example.
-  SetFoo(string foo);
-  // Fire-an-forget action example.
-  DoABarrelRoll();
 };
 
 // Lives in the renderer process. The browser uses this to send status
 // updates to the web page in the renderer and in rare cases to fetch
 // some info from there.
 interface Page {
-  // Notification example.
-  OnSomethingHappened(string something, string other);
-  // Reverse getter example. Unlikely something like that will be needed.
-  GetBar(string foo) => (string bar);
 };

@@ -17,29 +17,5 @@ FileManagerPageHandler::FileManagerPageHandler(
 
 FileManagerPageHandler::~FileManagerPageHandler() = default;
 
-void FileManagerPageHandler::GetFoo(GetFooCallback callback) {
-  std::move(callback).Run(foo_);
-}
-
-void FileManagerPageHandler::SetFoo(const std::string& foo) {
-  foo_ = foo;
-}
-
-void FileManagerPageHandler::DoABarrelRoll() {
-  barrel_roll_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(1),
-      base::BindOnce(&FileManagerPageHandler::OnBarrelRollDone,
-                     base::Unretained(this)));
-}
-
-void FileManagerPageHandler::OnBarrelRollDone() {
-  page_->GetBar(foo_, base::BindOnce(&FileManagerPageHandler::OnBarReceived,
-                                     base::Unretained(this)));
-}
-
-void FileManagerPageHandler::OnBarReceived(const std::string& bar) {
-  page_->OnSomethingHappened(foo_, bar);
-}
-
 }  // namespace file_manager
 }  // namespace chromeos
