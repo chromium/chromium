@@ -277,8 +277,11 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
 
 // Encode multiple videos simultaneously from start to finish.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
-  // The minimal number of concurrent encoders we expect to be supported.
-  constexpr size_t kMinSupportedConcurrentEncoders = 3;
+  // Run two encoders for larger resolutions to avoid creating shared memory
+  // buffers during the test on lower end devices.
+  constexpr gfx::Size k1080p(1920, 1080);
+  const size_t kMinSupportedConcurrentEncoders =
+      g_env->Video()->Resolution().GetArea() >= k1080p.GetArea() ? 2 : 3;
 
   auto config = GetDefaultConfig();
   std::vector<std::unique_ptr<VideoEncoder>> encoders(
