@@ -216,9 +216,6 @@ void KidsChromeManagementClient::MakeHTTPRequest(
   StartFetching(requests_in_progress_.begin());
 }
 
-// Helpful reading for the next 4 methods:
-// https://chromium.googlesource.com/chromium/src.git/+/master/docs/callback.md#partial-binding-of-parameters-currying
-
 void KidsChromeManagementClient::StartFetching(
     KidsChromeRequestList::iterator it) {
   KidsChromeManagementRequest* req = it->get();

@@ -78,7 +78,7 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
   // Notifies AppActivityRegistry if there is a change in ChromeAppState.
   void MaybeNotifyStateChange(base::Time timestamp);
 
-  // Calculates whether the Chrome app is kActive, kActiveWhitelisted or
+  // Calculates whether the Chrome app is kActive, kActiveAllowlisted or
   // kInactive.
   ChromeAppActivityState CalculateChromeAppActivityState() const;
 

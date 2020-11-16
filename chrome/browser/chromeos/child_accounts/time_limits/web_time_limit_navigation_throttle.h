@@ -15,7 +15,7 @@ class NavigationHandle;
 
 namespace chromeos {
 
-// Throttles non whitelisted navigation for WebContents when time limit has
+// Throttles disallowed navigation for WebContents when time limit has
 // been reached. It blocks the navigation and loads the web time limit error
 // page in the blocked WebContents.
 class WebTimeLimitNavigationThrottle : public content::NavigationThrottle {
