@@ -38,8 +38,10 @@ gfx::NativeView GetParentView() {
   return parent;
 }
 
+// Delay messages when window is shown until after normal ChromeVox
+// announcements are done.
 constexpr base::TimeDelta kTtsShowDelay =
-    base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta::FromMilliseconds(1200);
 
 }  // namespace
 
@@ -70,9 +72,9 @@ void TtsHandler::Speak(const std::string& text) {
       content::TtsUtterance::Create(profile_);
   utterance->SetText(text);
   utterance->SetEventDelegate(this);
+  utterance->SetCanEnqueue(true);
 
   auto* tts_controller = content::TtsController::GetInstance();
-  tts_controller->Stop();
   tts_controller->SpeakOrEnqueue(std::move(utterance));
 }
 

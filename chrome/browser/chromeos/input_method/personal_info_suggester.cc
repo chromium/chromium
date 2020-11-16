@@ -123,9 +123,9 @@ void TtsHandler::Speak(const std::string& text) {
       content::TtsUtterance::Create(profile_);
   utterance->SetText(text);
   utterance->SetEventDelegate(this);
+  utterance->SetCanEnqueue(true);
 
   auto* tts_controller = content::TtsController::GetInstance();
-  tts_controller->Stop();
   tts_controller->SpeakOrEnqueue(std::move(utterance));
 }
 
