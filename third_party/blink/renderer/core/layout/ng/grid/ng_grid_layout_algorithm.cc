@@ -1201,14 +1201,8 @@ void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
 
-  // TODO(ikilpatrick): We need a slightly different constraint space API now.
-  // Instead of a "shrink-to-fit" bit, we should have a "is-stretched" bit to
-  // indicate if 'auto' should stretch to fill the available space. This should
-  // apply to both the inline, and block axis. E.g.
-  // IsInlineSizeStretched / IsBlockSizeStretched or similar.
-  builder.SetIsFixedBlockSize(item_style.LogicalHeight().IsAuto() &&
-                              grid_item.is_block_axis_stretched);
   builder.SetStretchInlineSizeIfAuto(grid_item.is_inline_axis_stretched);
+  builder.SetStretchBlockSizeIfAuto(grid_item.is_block_axis_stretched);
 
   scoped_refptr<const NGLayoutResult> result =
       grid_item.node.Layout(builder.ToConstraintSpace());

@@ -141,7 +141,17 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
   void SetStretchInlineSizeIfAuto(bool b) {
-    space_.bitfields_.stretch_inline_size_if_auto = b;
+    if (LIKELY(is_in_parallel_flow_))
+      space_.bitfields_.stretch_inline_size_if_auto = b;
+    else
+      space_.bitfields_.stretch_block_size_if_auto = b;
+  }
+
+  void SetStretchBlockSizeIfAuto(bool b) {
+    if (LIKELY(is_in_parallel_flow_))
+      space_.bitfields_.stretch_block_size_if_auto = b;
+    else
+      space_.bitfields_.stretch_inline_size_if_auto = b;
   }
 
   void SetIsPaintedAtomically(bool b) {

@@ -2042,6 +2042,16 @@ bool LayoutBox::IsOverrideLogicalHeightDefinite() const {
   return extra_input_ && extra_input_->is_override_block_size_definite;
 }
 
+bool LayoutBox::StretchInlineSizeIfAuto() const {
+  NOT_DESTROYED();
+  return extra_input_ && extra_input_->stretch_inline_size_if_auto;
+}
+
+bool LayoutBox::StretchBlockSizeIfAuto() const {
+  NOT_DESTROYED();
+  return extra_input_ && extra_input_->stretch_block_size_if_auto;
+}
+
 bool LayoutBox::HasOverrideLogicalHeight() const {
   NOT_DESTROYED();
   if (extra_input_ && extra_input_->override_block_size)
@@ -5048,12 +5058,15 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalWidthRespectingMinMaxWidth(
 
 LayoutUnit LayoutBox::ComputeReplacedLogicalWidthUsing(
     SizeType size_type,
-    const Length& logical_width) const {
+    Length logical_width) const {
   NOT_DESTROYED();
   DCHECK(size_type == kMinSize || size_type == kMainOrPreferredSize ||
          !logical_width.IsAuto());
   if (size_type == kMinSize && logical_width.IsAuto())
     return AdjustContentBoxLogicalWidthForBoxSizing(LayoutUnit());
+  if (size_type == kMainOrPreferredSize && logical_width.IsAuto() &&
+      StretchInlineSizeIfAuto())
+    logical_width = Length::FillAvailable();
 
   switch (logical_width.GetType()) {
     case Length::kFixed:
@@ -5176,12 +5189,15 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightRespectingMinMaxHeight(
 
 LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
     SizeType size_type,
-    const Length& logical_height) const {
+    Length logical_height) const {
   NOT_DESTROYED();
   DCHECK(size_type == kMinSize || size_type == kMainOrPreferredSize ||
          !logical_height.IsAuto());
   if (size_type == kMinSize && logical_height.IsAuto())
     return AdjustContentBoxLogicalHeightForBoxSizing(LayoutUnit());
+  if (size_type == kMainOrPreferredSize && logical_height.IsAuto() &&
+      StretchBlockSizeIfAuto())
+    logical_height = Length::FillAvailable();
 
   switch (logical_height.GetType()) {
     case Length::kFixed:

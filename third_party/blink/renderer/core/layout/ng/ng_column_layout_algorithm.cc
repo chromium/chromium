@@ -999,9 +999,12 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   LayoutUnit max = ResolveMaxBlockLength(
       ConstraintSpace(), style, BorderPadding(), style.LogicalMaxHeight(),
       LengthResolvePhase::kLayout);
-  LayoutUnit extent = ResolveMainBlockLength(
-      ConstraintSpace(), style, BorderPadding(), style.LogicalHeight(),
-      kIndefiniteSize, LengthResolvePhase::kLayout);
+  LayoutUnit extent = kIndefiniteSize;
+  if (!style.LogicalHeight().IsAuto()) {
+    extent = ResolveMainBlockLength(ConstraintSpace(), style, BorderPadding(),
+                                    style.LogicalHeight(), kIndefiniteSize,
+                                    LengthResolvePhase::kLayout);
+  }
   if (extent != kIndefiniteSize) {
     // A specified height/width will just constrain the maximum length.
     max = std::min(max, extent);

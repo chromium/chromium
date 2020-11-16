@@ -244,6 +244,7 @@ inline LayoutUnit ResolveMainBlockLength(
     LengthResolvePhase phase,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
+  DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(
                    constraint_space, length, phase,
@@ -265,6 +266,7 @@ inline LayoutUnit ResolveMainBlockLength(
     LengthResolvePhase phase,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
+  DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(
                    constraint_space, length, phase,
@@ -272,7 +274,7 @@ inline LayoutUnit ResolveMainBlockLength(
     return intrinsic_block_size_func();
 
   LayoutUnit intrinsic_block_size = kIndefiniteSize;
-  if (length.IsAutoOrContentOrIntrinsic())
+  if (length.IsContentOrIntrinsic())
     intrinsic_block_size = intrinsic_block_size_func();
 
   return ResolveBlockLengthInternal(

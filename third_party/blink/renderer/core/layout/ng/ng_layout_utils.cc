@@ -60,7 +60,10 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
 inline bool BlockLengthMayChange(const Length& length,
                                  const NGConstraintSpace& new_space,
                                  const NGConstraintSpace& old_space) {
-  if (length.IsFillAvailable()) {
+  DCHECK_EQ(new_space.StretchBlockSizeIfAuto(),
+            old_space.StretchBlockSizeIfAuto());
+  if (length.IsFillAvailable() ||
+      (length.IsAuto() && new_space.StretchBlockSizeIfAuto())) {
     if (new_space.AvailableSize().block_size !=
         old_space.AvailableSize().block_size)
       return true;
@@ -85,6 +88,8 @@ bool SizeMayChange(const NGBlockNode& node,
             old_space.IsFixedBlockSizeIndefinite());
   DCHECK_EQ(new_space.StretchInlineSizeIfAuto(),
             old_space.StretchInlineSizeIfAuto());
+  DCHECK_EQ(new_space.StretchBlockSizeIfAuto(),
+            old_space.StretchBlockSizeIfAuto());
   DCHECK_EQ(new_space.TableCellChildLayoutMode(),
             old_space.TableCellChildLayoutMode());
 

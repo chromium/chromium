@@ -1010,6 +1010,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideLogicalHeight() const;
   LayoutUnit OverrideLogicalWidth() const;
   bool IsOverrideLogicalHeightDefinite() const;
+  bool StretchInlineSizeIfAuto() const;
+  bool StretchBlockSizeIfAuto() const;
   bool HasOverrideLogicalHeight() const;
   bool HasOverrideLogicalWidth() const;
   void SetOverrideLogicalHeight(LayoutUnit);
@@ -1400,13 +1402,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       SizeType,
       const Length& height,
       LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ComputeReplacedLogicalWidthUsing(SizeType,
-                                              const Length& width) const;
+  LayoutUnit ComputeReplacedLogicalWidthUsing(SizeType, Length width) const;
   LayoutUnit ComputeReplacedLogicalWidthRespectingMinMaxWidth(
       LayoutUnit logical_width,
       ShouldComputePreferred = kComputeActual) const;
-  LayoutUnit ComputeReplacedLogicalHeightUsing(SizeType,
-                                               const Length& height) const;
+  LayoutUnit ComputeReplacedLogicalHeightUsing(SizeType, Length height) const;
   LayoutUnit ComputeReplacedLogicalHeightRespectingMinMaxHeight(
       LayoutUnit logical_height) const;
 

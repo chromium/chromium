@@ -283,6 +283,10 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
     input->is_override_block_size_definite =
         !space.IsFixedBlockSizeIndefinite();
   }
+  input->stretch_inline_size_if_auto = space.StretchInlineSizeIfAuto();
+  input->stretch_block_size_if_auto =
+      space.StretchBlockSizeIfAuto() &&
+      space.AvailableSize().block_size != kIndefiniteSize;
 }
 
 bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,

@@ -163,9 +163,6 @@ TEST_F(NGLengthUtilsTest, testResolveInlineLength) {
 TEST_F(NGLengthUtilsTest, testResolveBlockLength) {
   EXPECT_EQ(LayoutUnit(90), ResolveMainBlockLength(Length::Percent(30)));
   EXPECT_EQ(LayoutUnit(150), ResolveMainBlockLength(Length::Fixed(150)));
-  EXPECT_EQ(LayoutUnit(0), ResolveMainBlockLength(Length::Auto()));
-  EXPECT_EQ(LayoutUnit(300), ResolveMainBlockLength(Length::FillAvailable()));
-
   EXPECT_EQ(LayoutUnit(300), ResolveMainBlockLength(Length::FillAvailable()));
 }
 

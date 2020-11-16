@@ -202,7 +202,6 @@ LayoutUnit ResolveBlockLengthInternal(
       }
       return value;
     }
-    case Length::kAuto:
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
@@ -212,7 +211,7 @@ LayoutUnit ResolveBlockLengthInternal(
       // border and padding. We cannot check for this if we are
       // block-fragmented, though, because then the block-start border/padding
       // may be in a different fragmentainer than the block-end border/padding.
-      if (intrinsic_size != LayoutUnit(-1) &&
+      if (intrinsic_size != kIndefiniteSize &&
           !constraint_space.HasBlockFragmentation())
         DCHECK_GE(intrinsic_size, border_padding.BlockSum());
 #endif  // DCHECK_IS_ON()
@@ -222,6 +221,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
       FALLTHROUGH;
+    case Length::kAuto:
     case Length::kNone:
     default:
       NOTREACHED();
@@ -557,17 +557,17 @@ namespace {
 
 // Computes the block-size for a fragment, ignoring the fixed block-size if set.
 LayoutUnit ComputeBlockSizeForFragmentInternal(
-    const NGConstraintSpace& constraint_space,
+    const NGConstraintSpace& space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     base::Optional<LayoutUnit> inline_size,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
-  MinMaxSizes min_max = ComputeMinMaxBlockSize(
-      constraint_space, style, border_padding, intrinsic_size,
-      opt_percentage_resolution_block_size_for_min_max);
-  const Length& logical_height = style.LogicalHeight();
+  MinMaxSizes min_max =
+      ComputeMinMaxBlockSize(space, style, border_padding, intrinsic_size,
+                             opt_percentage_resolution_block_size_for_min_max);
+  Length logical_height = style.LogicalHeight();
   // Scrollable percentage-sized children of table cells, in the table
   // "measure" phase contribute nothing to the row height measurement.
   // See: https://drafts.csswg.org/css-tables-3/#row-layout
@@ -580,19 +580,24 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   // things to consider, would be checking the row and row-group, and also other
   // properties, such as {min,max}-block-size.
   if (logical_height.IsPercentOrCalc() &&
-      constraint_space.TableCellChildLayoutMode() ==
+      space.TableCellChildLayoutMode() ==
           NGTableCellChildLayoutMode::kMeasureRestricted &&
       (style.OverflowBlockDirection() == EOverflow::kAuto ||
        style.OverflowBlockDirection() == EOverflow::kScroll))
     return min_max.min_size;
 
+  const bool is_logical_height_auto = logical_height.IsAuto();
+  if (is_logical_height_auto) {
+    logical_height = space.StretchBlockSizeIfAuto() ? Length::FillAvailable()
+                                                    : Length::FitContent();
+  }
   // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
   // they need to respect aspect ratio.
-  LayoutUnit extent = ResolveMainBlockLength(
-      constraint_space, style, border_padding, logical_height, intrinsic_size,
-      LengthResolvePhase::kLayout,
-      opt_percentage_resolution_block_size_for_min_max);
-  if (UNLIKELY((extent == kIndefiniteSize || logical_height.IsAuto()) &&
+  LayoutUnit extent =
+      ResolveMainBlockLength(space, style, border_padding, logical_height,
+                             intrinsic_size, LengthResolvePhase::kLayout,
+                             opt_percentage_resolution_block_size_for_min_max);
+  if (UNLIKELY((extent == kIndefiniteSize || is_logical_height_auto) &&
                !style.AspectRatio().IsAuto() && inline_size)) {
     extent =
         BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),

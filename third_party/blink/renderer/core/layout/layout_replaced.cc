@@ -133,7 +133,7 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
 bool LayoutReplaced::HasReplacedLogicalHeight() const {
   NOT_DESTROYED();
   if (StyleRef().LogicalHeight().IsAuto())
-    return false;
+    return StretchBlockSizeIfAuto();
 
   if (StyleRef().LogicalHeight().IsSpecified()) {
     if (HasAutoHeightOrContainingBlockWithAutoHeight())
@@ -762,7 +762,7 @@ LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
 LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
     ShouldComputePreferred should_compute_preferred) const {
   NOT_DESTROYED();
-  if (!StyleRef().LogicalWidth().IsAuto()) {
+  if (!StyleRef().LogicalWidth().IsAuto() || StretchInlineSizeIfAuto()) {
     return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
         ComputeReplacedLogicalWidthUsing(kMainOrPreferredSize,
                                          StyleRef().LogicalWidth()),
@@ -778,7 +778,8 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
       ConstrainIntrinsicSizeToMinMax(intrinsic_sizing_info);
 
   if (StyleRef().LogicalWidth().IsAuto()) {
-    bool computed_height_is_auto = StyleRef().LogicalHeight().IsAuto();
+    bool computed_height_is_auto =
+        StyleRef().LogicalHeight().IsAuto() && !StretchBlockSizeIfAuto();
 
     // If 'height' and 'width' both have computed values of 'auto' and the
     // element also has an intrinsic width, then that intrinsic width is the
