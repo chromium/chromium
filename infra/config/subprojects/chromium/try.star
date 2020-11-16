@@ -848,7 +848,11 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia-compile-x64-dbg",
     tryjob = try_.job(
-        experiment_percentage = 50,
+        location_regexp = [
+            ".+/[+]/base/fuchsia/.+",
+            ".+/[+]/fuchsia/.+",
+            ".+/[+]/media/fuchsia/.+",
+        ],
     ),
 )
 

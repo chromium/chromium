@@ -221,6 +221,13 @@ builder.
   Path regular expressions:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
+* [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia-compile-x64-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia-compile-x64-dbg))
+
+  Path regular expressions:
+  * [`//base/fuchsia/.+`](https://cs.chromium.org/chromium/src/base/fuchsia/)
+  * [`//fuchsia/.+`](https://cs.chromium.org/chromium/src/fuchsia/)
+  * [`//media/fuchsia/.+`](https://cs.chromium.org/chromium/src/media/fuchsia/)
+
 * [ios-simulator-cronet](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-cronet) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-cronet)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-cronet))
 
   Path regular expressions:
@@ -356,9 +363,6 @@ as required builders.
 
 * [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-x86-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-x86-rel))
   * Experiment percentage: 100
-
-* [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia-compile-x64-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia-compile-x64-dbg))
-  * Experiment percentage: 50
 
 * [ios-simulator-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-coverage-exp))
   * Experiment percentage: 3
