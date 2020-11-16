@@ -60,8 +60,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.DaysBetweenRepeatedOriginEvictions" units="units"
-    expires_after="2020-11-29">
+    expires_after="2021-11-29">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The number of days since an origin was last chosen to be evicted from the
     storage, recorded each time the origin is evicted (except for the first
@@ -190,8 +191,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentUsedForTemporaryStorage2" units="%"
-    expires_after="2020-11-29">
+    expires_after="2021-11-29">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is being use for temporary storage.
     Logged when collecting usage information.
