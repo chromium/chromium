@@ -147,9 +147,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
 
   bool IsPasswordOrNoneInputFieldFocused();
 
-  // Returns true if an text input field is focused.
-  bool IsInputFieldFocused();
-
   // Gets the reason how the focused text input client was focused.
   TextInputClient::FocusReason GetClientFocusReason() const;
 

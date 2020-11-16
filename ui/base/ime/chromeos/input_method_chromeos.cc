@@ -844,10 +844,6 @@ bool InputMethodChromeOS::IsPasswordOrNoneInputFieldFocused() {
   return type == TEXT_INPUT_TYPE_NONE || type == TEXT_INPUT_TYPE_PASSWORD;
 }
 
-bool InputMethodChromeOS::IsInputFieldFocused() {
-  return GetTextInputType() != TEXT_INPUT_TYPE_NONE;
-}
-
 TextInputClient::FocusReason InputMethodChromeOS::GetClientFocusReason() const {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetFocusReason() : TextInputClient::FOCUS_REASON_NONE;
