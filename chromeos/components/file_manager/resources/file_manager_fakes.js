@@ -137,6 +137,122 @@ window.chrome.metricsPrivate = {
   recordValue: (metricName, value) => {},
 };
 
+window.BackgroundWindowSWA = class {
+  constructor() {
+    /**
+     * @type {!FileBrowserBackground|!FileBrowserBackgroundFull}
+     */
+    this.background = new FileBrowserBackgroundFull();
+
+    /**
+     * @type {!Object}
+     */
+    this.launcher = {
+      /** @param {Object=} appState App state. */
+      launchFileManager(appState) {
+        window.fileManagerLaunchNewWindow(appState);
+      },
+    };
+
+    /**
+     * @type {!DriveSyncHandler}
+     */
+    this.driveSyncHandler = new DriveSyncHandler();
+  }
+
+  /**
+   * @param {Window} window
+   */
+  registerDialog(window) {}
+}
+
+window.FileBrowserBackground = class {
+  constructor() {
+    /**
+     * Dialogs
+     * @type {!Object<!Window>}
+     */
+    this.dialogs;
+
+    /**
+     * String assets. Notable difference here: files app extern defines
+     * this string object on FileBrowserBackgroundFull.
+     * @type {Object<string>}
+     */
+    this.stringData;
+  }
+
+  /**
+   * @param {function()} callback Ready callback.
+   */
+  ready(callback) {
+    window.fileManagerLoadScript('strings.js').then(() => {
+      this.stringData = window.loadTimeData.data_;
+      window.loadTimeData.data_ = null;
+      callback();
+    });
+  }
+}
+
+window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
+  constructor() {
+    super();
+
+    /**
+     * @type {!DriveSyncHandler}
+     */
+    this.driveSyncHandler;
+
+    /**
+     * @type {!ProgressCenter}
+     */
+    this.progressCenter = new ProgressCenter();
+
+    /**
+     * @type {FileOperationManager}
+     */
+    this.fileOperationManager = new FileOperationManager();
+
+    /**
+     * @type {!importer.ImportRunner}
+     */
+    this.mediaImportHandler = new MediaImportHandler();
+
+    /**
+     * @type {!importer.MediaScanner}
+     */
+    this.mediaScanner = new MediaScanner();
+
+    /**
+     * @type {!importer.HistoryLoader}
+     */
+    this.historyLoader = new HistoryLoader();
+
+    /**
+     * @type {!Crostini}
+     */
+    this.crostini = new Crostini();
+
+    /**
+     * @private @type {VolumeManager}
+     */
+    this.volumeManagerInstance_;
+  }
+
+  /**
+   * Returns VolumeManager instance.
+   * @public
+   * @return {!VolumeManager}
+   */
+  getVolumeManager() {
+    if (!this.volumeManagerInstance_) {
+      this.volumeManagerInstance_ = new VolumeManager();
+    }
+
+    return this.volumeManagerInstance_;
+  }
+}
+
 window.DriveSyncHandler = class extends EventTarget {
   /**
    * Returns the completed event name.
@@ -159,48 +275,6 @@ window.DriveSyncHandler = class extends EventTarget {
    * @return {boolean} Whether the handler is syncing items or not.
    */
   get syncing() {}
-}
-
-window.BackgroundPageFake = class {
-  constructor() {
-    /**
-     * @type {FileBrowserBackground}
-     */
-    this.background;
-
-    /**
-     * @type {!Object}
-     */
-    this.launcher = {};
-
-    /**
-     * @private @type {VolumeManager}
-     */
-    this.volumeManagerInstance_;
-
-    /**
-     * @type {!VolumeManagerFactory}
-     */
-    this.volumeManagerFactory = /** @type {!Object} */ ({
-      /** @return {!VolumeManager} */
-      getInstance() {
-        if (!this.volumeManagerInstance_) {
-          this.volumeManagerInstance_ = new VolumeManager();
-        }
-        return this.volumeManagerInstance_;
-      },
-    });
-
-    /**
-     * @type {!DriveSyncHandler}
-     */
-    this.driveSyncHandler = new DriveSyncHandler();
-  }
-
-  /**
-   * @param {Window} window
-   */
-  registerDialog(window) {}
 }
 
 window.VolumeManager = class {
@@ -388,64 +462,6 @@ window.VolumeInfoListFake = class {
       }
     }
     return -1;
-  }
-}
-
-window.FileBrowserBackground = class {
-  constructor() {
-    /** @type {!Object<!Window>} */
-    this.dialogs;
-  }
-  /**
-   * @param {function()} callback
-   */
-  ready(callback) {}
-}
-
-window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
-  constructor() {
-    super();
-
-    /**
-     * @type {!DriveSyncHandler}
-     */
-    this.driveSyncHandler;
-
-    /**
-     * @type {!ProgressCenter}
-     */
-    this.progressCenter;
-
-    /**
-     * String assets.
-     * @type {Object<string>}
-     */
-    this.stringData;
-
-    /**
-     * @type {FileOperationManager}
-     */
-    this.fileOperationManager;
-
-    /**
-     * @type {!importer.ImportRunner}
-     */
-    this.mediaImportHandler;
-
-    /**
-     * @type {!importer.MediaScanner}
-     */
-    this.mediaScanner;
-
-    /**
-     * @type {!importer.HistoryLoader}
-     */
-    this.historyLoader;
-
-    /**
-     * @type {!Crostini}
-     */
-    this.crostini;
   }
 }
 
