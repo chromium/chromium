@@ -13,7 +13,7 @@ class GalleryJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageEncoderTest) {
-  RunTestURL("image_editor/image_encoder_unittest_gen.html");
+  RunTestURL("image_editor/image_encoder_unittest.m_gen.html");
 }
 
 // Disabled on ASan builds due to a consistent failure. https://crbug.com/762831
@@ -23,7 +23,7 @@ IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageEncoderTest) {
 #define MAYBE_ExifEncoderTest ExifEncoderTest
 #endif
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, MAYBE_ExifEncoderTest) {
-  RunTestURL("image_editor/exif_encoder_unittest_gen.html");
+  RunTestURL("image_editor/exif_encoder_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageViewTest) {

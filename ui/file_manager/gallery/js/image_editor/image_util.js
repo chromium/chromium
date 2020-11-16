@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+/* eslint-disable no-var */
+
+// clang-format off
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 // Namespace object for the utilities.
 var ImageUtil = {};
 
@@ -88,7 +99,7 @@ ImageUtil.between = function(min, value, max) {
  * @constructor
  * @struct
  */
-function ImageRect(left, top, width, height) {
+/* #export */ function ImageRect(left, top, width, height) {
   this.left = left;
   this.top = top;
   this.width = width;
@@ -490,3 +501,6 @@ ImageUtil.ensureCanvas = function(imgOrCanvas) {
  * @const
  */
 ImageUtil.FILE_TYPES = ['jpg', 'png', 'gif', 'bmp', 'webp'];
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {ImageUtil};

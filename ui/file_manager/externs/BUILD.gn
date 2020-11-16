@@ -37,6 +37,16 @@ js_library("entry_location.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("exif_entry.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/exif_entry.m.js" ]
+
+  deps = [
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("files_app_entry_interfaces.m") {
   sources = [
     "$root_gen_dir/ui/file_manager/externs/files_app_entry_interfaces.m.js",
@@ -105,6 +115,7 @@ js_modulizer("modulize") {
   input_files = [
     "background_window.js",
     "entry_location.js",
+    "exif_entry.js",
     "files_app_entry_interfaces.js",
     "metadata_worker_window.js",
     "volume_info.js",

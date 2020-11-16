@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
+// clang-format off
+// #import {ImageEncoder} from './image_encoder.m.js';
+// #import * as wrappedExif from '../../../file_manager/foreground/js/metadata/exif_constants.m.js'; const {Exif} = wrappedExif;
+// #import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js'
+// #import {ExifEntry} from '../../../externs/exif_entry.m.js';
+// clang-format on
+
 /**
  * The Exif metadata encoder.
  * Uses the metadata format as defined by ExifParser.
@@ -10,7 +20,7 @@
  * @extends {ImageEncoder.MetadataEncoder}
  * @struct
  */
-function ExifEncoder(originalMetadata) {
+/* #export */ function ExifEncoder(originalMetadata) {
   ImageEncoder.MetadataEncoder.apply(this, arguments);
   /**
    * Image File Directory obtained from EXIF header.
@@ -473,7 +483,7 @@ ExifEncoder.findOrCreateTag = function(directory, id, opt_format,
  * @constructor
  * @struct
  */
-function ByteWriter(arrayBuffer, offset, opt_length) {
+/* #export */ function ByteWriter(arrayBuffer, offset, opt_length) {
   var length = opt_length || (arrayBuffer.byteLength - offset);
   this.view_ = new DataView(arrayBuffer, offset, length);
   this.littleEndian_ = false;

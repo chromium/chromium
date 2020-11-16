@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DuplicateFinderTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExifParser) {
-  RunTestURL("foreground/js/metadata/exif_parser_unittest_gen.html");
+  RunTestURL("foreground/js/metadata/exif_parser_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExternalMetadataProvider) {

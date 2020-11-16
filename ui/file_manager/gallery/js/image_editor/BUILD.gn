@@ -5,6 +5,17 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_type_check("closure_compile_jsmodules") {
+  uses_js_modules = true
+  deps = [
+    ":exif_encoder.m",
+    ":image_encoder.m",
+    ":image_util.m",
+    ":test_util.m",
+  ]
+}
 
 js_type_check("closure_compile_module") {
   deps = [
@@ -48,12 +59,31 @@ js_library("exif_encoder") {
   externs_list = [ "//ui/file_manager/externs/exif_entry.js" ]
 }
 
-js_unittest("exif_encoder_unittest") {
+js_library("exif_encoder.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/gallery/js/image_editor/exif_encoder.m.js",
+  ]
   deps = [
-    ":exif_encoder",
-    ":test_util",
-    "//ui/file_manager/file_manager/foreground/js/metadata:exif_parser",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":image_encoder.m",
+    "//ui/file_manager/externs:exif_entry.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("exif_encoder_unittest.m") {
+  deps = [
+    ":exif_encoder.m",
+    ":image_encoder.m",
+    ":test_util.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/externs:metadata_worker_window.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:byte_reader.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_parser.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
   ]
 }
 
@@ -117,12 +147,26 @@ js_library("image_encoder") {
   ]
 }
 
-js_unittest("image_encoder_unittest") {
+js_library("image_encoder.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/gallery/js/image_editor/image_encoder.m.js",
+  ]
   deps = [
-    ":image_encoder",
-    ":test_util",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_parser",
+    ":image_util.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("image_encoder_unittest.m") {
+  deps = [
+    ":image_encoder.m",
+    ":test_util.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
   ]
   externs_list = [ "//ui/file_manager/externs/metadata_worker_window.js" ]
 }
@@ -161,6 +205,15 @@ js_library("image_util") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
 
+js_library("image_util.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/gallery/js/image_editor/image_util.m.js",
+  ]
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("image_view") {
   deps = [
     ":image_buffer",
@@ -185,6 +238,14 @@ js_unittest("image_view_unittest") {
 js_library("test_util") {
 }
 
+js_library("test_util.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/gallery/js/image_editor/test_util.m.js" ]
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("viewport") {
   deps = [
     ":image_util",
@@ -192,19 +253,41 @@ js_library("viewport") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html") {
+js_test_gen_html("js_test_gen_html_modules") {
   deps = [
-    ":exif_encoder_unittest",
-    ":image_encoder_unittest",
-    ":image_view_unittest",
+    ":exif_encoder_unittest.m",
+    ":image_encoder_unittest.m",
   ]
+  js_module = true
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+      ]
+}
+
+js_test_gen_html("js_test_gen_html") {
+  deps = [ ":image_view_unittest" ]
   mocks = [ "//ui/file_manager/file_manager/foreground/js/metadata/metadata_dispatcher_mock_deps.js" ]
 }
 
 group("closure_compile") {
   testonly = true
   deps = [
+    ":closure_compile_jsmodules",
     ":closure_compile_module",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
+  ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "exif_encoder.js",
+    "image_encoder.js",
+    "image_util.js",
+    "test_util.js",
   ]
 }

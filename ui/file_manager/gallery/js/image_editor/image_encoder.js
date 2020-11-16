@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
+// clang-format off
+// #import * as wrappedImageUtil from './image_util.m.js'; const {ImageUtil} = wrappedImageUtil;
+// #import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js'
+// clang-format on
+
 /**
  * A namespace class for image encoding functions. All methods are static.
  * @constructor
  */
-function ImageEncoder() {}
+/* #export */ function ImageEncoder() {}
 
 /**
  * The value 360 px is enough in the Files app grid view for HiDPI devices.

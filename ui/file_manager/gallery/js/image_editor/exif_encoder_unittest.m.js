@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {ByteReader} from '../../../file_manager/foreground/js/metadata/byte_reader.m.js';
+import {ExifParser} from '../../../file_manager/foreground/js/metadata/exif_parser.m.js';
+import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';
+import {ExifEncoder} from './exif_encoder.m.js';
+import {ImageEncoder} from './image_encoder.m.js';
+import {getSampleCanvas} from './test_util.m.js';
 
 /**
  * @implements {MetadataParserLogger}
@@ -21,7 +28,7 @@ class NoLogger {
 /**
  * Test case for ordinal exif encoding and decoding.
  */
-function testExifEncodeAndDecode() {
+export function testExifEncodeAndDecode() {
   const canvas = getSampleCanvas();
   const data = canvas.toDataURL('image/jpeg');
 
@@ -166,7 +173,7 @@ function largeExifDataTestHelper_(largeFieldValueSize, expectThumbnail) {
 /**
  * Test case when other exif data is small as the thumbnail can fit in.
  */
-function testLargeExifDataSmallCase() {
+export function testLargeExifDataSmallCase() {
   // 158 bytes: other exif data except value of the large field.
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
@@ -177,7 +184,7 @@ function testLargeExifDataSmallCase() {
 /**
  * Test case when other exif data is large as the thumbnail can just fit in.
  */
-function testLargeExifDataBoundaryCase() {
+export function testLargeExifDataBoundaryCase() {
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
           ExifEncoder.THUMBNAIL_METADATA_SIZE - 158,
@@ -187,7 +194,7 @@ function testLargeExifDataBoundaryCase() {
 /**
  * Test case when other exif data is large as the thumbnail cannot fit in.
  */
-function testLargeExifDataExceedsCase() {
+export function testLargeExifDataExceedsCase() {
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
           ExifEncoder.THUMBNAIL_METADATA_SIZE - 158 + 1,

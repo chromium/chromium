@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {ByteWriter} from '../../../../gallery/js/image_editor/exif_encoder.m.js';
+import {ByteReader} from './byte_reader.m.js';
+import * as wrappedExif from './exif_constants.m.js';
+import {ExifParser} from './exif_parser.m.js';
+const {Exif} = wrappedExif;
+import {ExifEntry} from '../../../../externs/exif_entry.m.js';
+import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+
 /**
  * Creates a directory with specified tag. This method only supports string
  * format tag, which is longer than 4 characters.
@@ -68,7 +77,7 @@ function parseExifData_(bytes) {
 /**
  * Tests that parsed exif strings have a null character termination.
  */
-function testWithoutNullCharacterTermination() {
+export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
   writeDirectory_(data, /** @type {!ExifEntry} */ ({
