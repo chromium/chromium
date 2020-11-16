@@ -175,6 +175,9 @@ template("my_template") {
 }
 ```
 
+This scheme ensures that subtargets defined in templates do not conflict with
+top-level targets.
+
 ### Variables
 Prefix variables within templates and targets with an underscore. For example:
 
