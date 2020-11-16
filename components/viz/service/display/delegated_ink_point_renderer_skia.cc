@@ -21,8 +21,10 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
     return;
 
   if (!path_.isEmpty() && canvas) {
+    canvas->save();
+
     SkRect bounds = gfx::RectFToSkRect(metadata_->presentation_area());
-    canvas->saveLayer(SkCanvas::SaveLayerRec(&bounds, nullptr));
+    canvas->clipRect(bounds);
 
     SkPaint paint;
     paint.setAntiAlias(true);
