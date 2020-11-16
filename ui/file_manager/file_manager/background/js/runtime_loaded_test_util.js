@@ -7,7 +7,6 @@
  * extension under test at runtime to populate testing functionality.
  */
 
-
 /**
  * @typedef {{
  *   attributes:Object<string>,
@@ -1016,32 +1015,27 @@ test.util.sync.launcherSearchOpenResult = fileURL => {
  * @param {function(*)} callback Callback function with results returned by the
  *     script.
  */
-test.util.async.getFilesUnderVolume = (volumeType, names, callback) => {
-  const displayRootPromise =
-      volumeManagerFactory.getInstance().then(volumeManager => {
-        const volumeInfo =
-            volumeManager.getCurrentProfileVolumeInfo(volumeType);
-        return volumeInfo.resolveDisplayRoot();
-      });
+test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
+  const volumeManager = await window.background.getVolumeManager();
+  const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+  const displayRoot = await volumeInfo.resolveDisplayRoot();
 
-  const retrievePromise = displayRootPromise.then(displayRoot => {
-    const filesPromise = names.map(name => {
-      // TODO(crbug.com/880130): Remove this conditional.
-      if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
-        name = 'Downloads/' + name;
-      }
-      return new Promise(displayRoot.getFile.bind(displayRoot, name, {}));
-    });
-    return Promise.all(filesPromise)
-        .then(aa => {
-          return util.entriesToURLs(aa);
-        })
-        .catch(() => {
-          return [];
-        });
+  const filesPromise = names.map(name => {
+    // TODO(crbug.com/880130): Remove this conditional.
+    if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
+      name = 'Downloads/' + name;
+    }
+    return new Promise(displayRoot.getFile.bind(displayRoot, name, {}));
   });
 
-  retrievePromise.then(callback);
+  try {
+    const urls = await Promise.all(filesPromise);
+    const result = util.entriesToURLs(urls);
+    callback(result);
+  } catch (error) {
+    console.error(error);
+    callback([]);
+  }
 };
 
 /**
@@ -1050,14 +1044,19 @@ test.util.async.getFilesUnderVolume = (volumeType, names, callback) => {
  * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
  * @param {function(boolean)} callback Function receives true on success.
  */
-test.util.async.unmount = (volumeType, callback) => {
-  volumeManagerFactory.getInstance().then((volumeManager) => {
-    const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+test.util.async.unmount = async (volumeType, callback) => {
+  const volumeManager = await window.background.getVolumeManager();
+  const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+  try {
     if (volumeInfo) {
-      volumeManager.unmount(
-          volumeInfo, callback.bind(null, true), callback.bind(null, false));
+      await volumeManager.unmount(volumeInfo);
+      callback(true);
+      return;
     }
-  });
+  } catch (error) {
+    console.error(error);
+  }
+  callback(false);
 };
 
 /**
@@ -1175,7 +1174,7 @@ test.util.sync.getA11yAnnounces = contentWindow => {
  *   number of volumes.
  */
 test.util.async.getVolumesCount = callback => {
-  return volumeManagerFactory.getInstance().then((volumeManager) => {
+  return window.background.getVolumeManager().then((volumeManager) => {
     callback(volumeManager.volumeInfoList.length);
   });
 };
@@ -1183,9 +1182,11 @@ test.util.async.getVolumesCount = callback => {
 /**
  * Sets/Resets a flag that causes file copy operations to always fail in test.
  * @param {boolean} enable True to force errors.
+ * @suppress {checkTypes} Remove suppress when migrating Files app. This is only
+ *     used for Files app.
  */
 test.util.sync.forceErrorsOnFileOperations = (contentWindow, enable) => {
-  fileOperationUtil.forceErrorForTest = enable;
+  window.background.forceFileOperationErrorForTest(enable);
   return enable;
 };
 
@@ -1221,6 +1222,8 @@ test.util.sync.reload = () => {
 
 /**
  * Tells background page progress center to never notify a completed operation.
+ * @suppress {checkTypes} Remove suppress when migrating Files app. This is only
+ *     used for Files app.
  */
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
   window.background.progressCenter.neverNotifyCompleted();
