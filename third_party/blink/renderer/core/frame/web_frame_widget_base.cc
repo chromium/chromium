@@ -621,6 +621,7 @@ void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
         hit_node->GetLayoutObject()->IsEmbeddedObject() && html_element &&
         html_element->IsPluginElement()) {
       mouse_capture_element_ = To<HTMLPlugInElement>(hit_node);
+      SetMouseCapture(true);
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("input", "capturing mouse",
                                         TRACE_ID_LOCAL(this));
     }
@@ -1740,8 +1741,10 @@ WebInputEventResult WebFrameWidgetBase::HandleCapturedMouseEvent(
   HTMLPlugInElement* element = mouse_capture_element_;
 
   // Not all platforms call mouseCaptureLost() directly.
-  if (input_event.GetType() == WebInputEvent::Type::kMouseUp)
+  if (input_event.GetType() == WebInputEvent::Type::kMouseUp) {
+    SetMouseCapture(false);
     MouseCaptureLost();
+  }
 
   AtomicString event_type;
   switch (input_event.GetType()) {
