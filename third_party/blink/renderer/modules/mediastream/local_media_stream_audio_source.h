@@ -22,7 +22,7 @@ class LocalFrame;
 // using the parameters and session ID found in MediaStreamDevice, just before
 // the first track is connected. Audio data is transported directly to the
 // tracks (i.e., there is no audio processing).
-class MODULES_EXPORT LocalMediaStreamAudioSource
+class MODULES_EXPORT LocalMediaStreamAudioSource final
     : public MediaStreamAudioSource,
       public media::AudioCapturerSource::CaptureCallback {
  public:

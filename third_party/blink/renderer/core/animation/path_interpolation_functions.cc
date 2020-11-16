@@ -100,7 +100,7 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
                                 path_seg_types, style_path->GetWindRule()));
 }
 
-class UnderlyingPathSegTypesChecker
+class UnderlyingPathSegTypesChecker final
     : public InterpolationType::ConversionChecker {
  public:
   ~UnderlyingPathSegTypesChecker() final = default;

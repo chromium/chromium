@@ -12,7 +12,8 @@
 
 namespace blink {
 
-class CORE_EXPORT CoopAccessViolationReportBody : public LocationReportBody {
+class CORE_EXPORT CoopAccessViolationReportBody final
+    : public LocationReportBody {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

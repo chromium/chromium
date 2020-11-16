@@ -34,7 +34,7 @@ const StyleImage* GetStyleImage(const CSSProperty& property,
 }
 }  // namespace
 
-class CSSImageNonInterpolableValue : public NonInterpolableValue {
+class CSSImageNonInterpolableValue final : public NonInterpolableValue {
  public:
   ~CSSImageNonInterpolableValue() final = default;
 
@@ -165,7 +165,7 @@ bool CSSImageInterpolationType::EqualNonInterpolableValues(
       To<CSSImageNonInterpolableValue>(*b));
 }
 
-class UnderlyingImageChecker
+class UnderlyingImageChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   UnderlyingImageChecker(const InterpolationValue& underlying)
@@ -203,7 +203,7 @@ InterpolationValue CSSImageInterpolationType::MaybeConvertInitial(
   return nullptr;
 }
 
-class InheritedImageChecker
+class InheritedImageChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedImageChecker(const CSSProperty& property,

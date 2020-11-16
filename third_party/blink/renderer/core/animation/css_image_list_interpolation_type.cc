@@ -18,7 +18,7 @@
 
 namespace blink {
 
-class UnderlyingImageListChecker
+class UnderlyingImageListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingImageListChecker(const InterpolationValue& underlying)
@@ -65,7 +65,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertStyleImageList(
       });
 }
 
-class InheritedImageListChecker
+class InheritedImageListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedImageListChecker(const CSSProperty& property,

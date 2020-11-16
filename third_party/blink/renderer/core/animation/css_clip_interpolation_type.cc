@@ -88,7 +88,7 @@ class InheritedClipChecker : public CSSInterpolationType::CSSConversionChecker {
   const Vector<Length> inherited_length_list_;
 };
 
-class CSSClipNonInterpolableValue : public NonInterpolableValue {
+class CSSClipNonInterpolableValue final : public NonInterpolableValue {
  public:
   ~CSSClipNonInterpolableValue() final = default;
 
@@ -121,7 +121,7 @@ struct DowncastTraits<CSSClipNonInterpolableValue> {
   }
 };
 
-class UnderlyingAutosChecker
+class UnderlyingAutosChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingAutosChecker(const ClipAutos& underlying_autos)

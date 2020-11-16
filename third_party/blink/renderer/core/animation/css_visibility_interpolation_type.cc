@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class CSSVisibilityNonInterpolableValue : public NonInterpolableValue {
+class CSSVisibilityNonInterpolableValue final : public NonInterpolableValue {
  public:
   ~CSSVisibilityNonInterpolableValue() final = default;
 
@@ -59,7 +59,7 @@ struct DowncastTraits<CSSVisibilityNonInterpolableValue> {
   }
 };
 
-class UnderlyingVisibilityChecker
+class UnderlyingVisibilityChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingVisibilityChecker(EVisibility visibility)

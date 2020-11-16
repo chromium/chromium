@@ -11,7 +11,8 @@
 
 namespace blink {
 
-class CORE_EXPORT CSSDefaultNonInterpolableValue : public NonInterpolableValue {
+class CORE_EXPORT CSSDefaultNonInterpolableValue final
+    : public NonInterpolableValue {
  public:
   ~CSSDefaultNonInterpolableValue() final = default;
 

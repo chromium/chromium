@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class CSSFontVariationSettingsNonInterpolableValue
+class CSSFontVariationSettingsNonInterpolableValue final
     : public NonInterpolableValue {
  public:
   ~CSSFontVariationSettingsNonInterpolableValue() final = default;
@@ -65,7 +65,8 @@ static bool TagsMatch(const NonInterpolableValue& a,
   return GetTags(a) == GetTags(b);
 }
 
-class UnderlyingTagsChecker : public InterpolationType::ConversionChecker {
+class UnderlyingTagsChecker final
+    : public InterpolationType::ConversionChecker {
  public:
   explicit UnderlyingTagsChecker(const Vector<uint32_t>& tags) : tags_(tags) {}
   ~UnderlyingTagsChecker() final = default;
@@ -79,7 +80,7 @@ class UnderlyingTagsChecker : public InterpolationType::ConversionChecker {
   const Vector<uint32_t> tags_;
 };
 
-class InheritedFontVariationSettingsChecker
+class InheritedFontVariationSettingsChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit InheritedFontVariationSettingsChecker(

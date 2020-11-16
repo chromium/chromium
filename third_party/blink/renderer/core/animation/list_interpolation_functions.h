@@ -81,7 +81,7 @@ class CORE_EXPORT ListInterpolationFunctions {
                                             const NonInterpolableValue* b);
 };
 
-class CORE_EXPORT NonInterpolableList : public NonInterpolableValue {
+class CORE_EXPORT NonInterpolableList final : public NonInterpolableValue {
  public:
   ~NonInterpolableList() final = default;
 

@@ -40,7 +40,7 @@ namespace blink {
 //
 // There should only be one instance of AudioRendererMixerManager per render
 // thread.
-class BLINK_MODULES_EXPORT AudioRendererMixerManager
+class BLINK_MODULES_EXPORT AudioRendererMixerManager final
     : public media::AudioRendererMixerPool {
  public:
   ~AudioRendererMixerManager() final;

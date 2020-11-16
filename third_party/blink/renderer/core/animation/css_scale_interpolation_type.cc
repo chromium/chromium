@@ -81,7 +81,7 @@ class InheritedScaleChecker
 
 }  // namespace
 
-class CSSScaleNonInterpolableValue : public NonInterpolableValue {
+class CSSScaleNonInterpolableValue final : public NonInterpolableValue {
  public:
   ~CSSScaleNonInterpolableValue() final = default;
 

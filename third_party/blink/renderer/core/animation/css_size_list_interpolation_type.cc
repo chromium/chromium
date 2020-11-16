@@ -18,7 +18,7 @@
 
 namespace blink {
 
-class UnderlyingSizeListChecker
+class UnderlyingSizeListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingSizeListChecker(const NonInterpolableList& underlying_list)
@@ -47,7 +47,7 @@ class UnderlyingSizeListChecker
   scoped_refptr<const NonInterpolableList> underlying_list_;
 };
 
-class InheritedSizeListChecker
+class InheritedSizeListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedSizeListChecker(const CSSProperty& property,
