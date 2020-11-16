@@ -81,6 +81,7 @@ import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -2068,6 +2069,12 @@ public class AwContents implements SmartClipProvider {
         AwContentsJni.get().setExtraHeadersForUrl(mNativeAwContents, AwContents.this,
                 params.getUrl(), params.getExtraHttpRequestHeadersString());
         params.setExtraHeaders(new HashMap<String, String>());
+
+        // Ideally, the URL would only be "fixed" for user input (e.g. for URLs
+        // entered into the Omnibox), but some WebView API consumers rely on
+        // the legacy behavior where all navigations were subject to the
+        // "fixing".  See also https://crbug.com/1145717.
+        params.setUrl(UrlFormatter.fixupUrl(params.getUrl()).getPossiblyInvalidSpec());
 
         mNavigationController.loadUrl(params);
 

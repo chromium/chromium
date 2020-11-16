@@ -508,7 +508,7 @@ public class LoadDataWithBaseUrlTest {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         mActivityTestRule.loadDataWithBaseUrlAsync(
                 mAwContents, pageHtml, "text/html", false, invalidBaseUrl, null);
-        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42");
+        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42+42");
         onPageFinishedHelper.waitForCallback(callCount);
         // Verify that the load succeeds. The actual base url is undefined.
         Assert.assertEquals(

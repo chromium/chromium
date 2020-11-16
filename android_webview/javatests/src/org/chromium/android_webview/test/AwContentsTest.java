@@ -809,6 +809,40 @@ public class AwContentsTest {
         Assert.assertEquals(0, consoleHelper.getMessages().size());
     }
 
+    /**
+     * Regression test for https://crbug.com/1145717. Load a URL that requires fixing and verify
+     * that the legacy behavior is preserved (i.e. that the URL is fixed + that no crashes happen in
+     * the product).
+     *
+     * The main test verification is that there are no crashes.  In particular, this test tries
+     * to verify that the `loadUrl` call above won't trigger:
+     * - NOTREACHED and DwoC in content::NavigationRequest's constructor for about: scheme
+     *   navigations that aren't about:blank nor about:srcdoc
+     * - CHECK in content::NavigationRequest::GetOriginForURLLoaderFactory caused by the
+     *   mismatch between the result of this method and the "about:" process lock.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testLoadUrlAboutVersion() throws Throwable {
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        mActivityTestRule.runOnUiThread(() -> {
+            // "about:safe-browsing" will be rewritten by
+            // components.url_formatter.UrlFormatter.fixupUrl into
+            // "chrome://safe-browsing/".
+            //
+            // Note that chrome://safe-browsing/ is one of very few chrome://... URLs that work
+            // in Android WebView.  In particular, chrome://version/ wouldn't work.
+            awContents.loadUrl("about:safe-browsing");
+        });
+
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(
+                0, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals("chrome://safe-browsing/", awContents.getLastCommittedUrl());
+    }
+
     private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
