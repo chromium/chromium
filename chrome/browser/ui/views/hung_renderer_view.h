@@ -155,6 +155,8 @@ class HungRendererDialogView : public views::DialogDelegateView,
   // Returns true if the frame is in the foreground.
   static bool IsFrameActive(content::WebContents* contents);
 
+  views::TableView* table_for_testing() { return hung_pages_table_; }
+
   virtual void ShowForWebContents(
       content::WebContents* contents,
       content::RenderWidgetHost* render_widget_host,
