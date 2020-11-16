@@ -288,7 +288,7 @@ class ResponseBodyLoader::Buffer final
   void AddChunk(const char* buffer, size_t available) {
     Vector<char> new_chunk;
     new_chunk.Append(buffer, available);
-    buffered_data_.emplace_back(new_chunk);
+    buffered_data_.emplace_back(std::move(new_chunk));
   }
 
   // Dispatches the frontmost chunk in |buffered_data_|. Returns the size of
