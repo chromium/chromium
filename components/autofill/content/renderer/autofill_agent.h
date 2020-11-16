@@ -34,6 +34,7 @@ namespace blink {
 class WebNode;
 class WebView;
 class WebFormControlElement;
+class WebFormElement;
 template <typename T>
 class WebVector;
 }  // namespace blink
@@ -194,6 +195,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element) override;
   bool ShouldSuppressKeyboard(
       const blink::WebFormControlElement& element) override;
+  void FormElementReset(const blink::WebFormElement& form) override;
 
   void HandleFocusChangeComplete();
 

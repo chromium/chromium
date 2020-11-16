@@ -34,6 +34,7 @@
 namespace blink {
 
 class WebFormControlElement;
+class WebFormElement;
 class WebInputElement;
 class WebKeyboardEvent;
 class WebNode;
@@ -70,6 +71,9 @@ class WebAutofillClient {
   virtual bool ShouldSuppressKeyboard(const WebFormControlElement&) {
     return false;
   }
+
+  // Called when the given form element is reset.
+  virtual void FormElementReset(const WebFormElement&) {}
 
  protected:
   virtual ~WebAutofillClient() = default;

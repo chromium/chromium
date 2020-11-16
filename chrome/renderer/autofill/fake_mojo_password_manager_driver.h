@@ -32,6 +32,8 @@ class FakeMojoPasswordManagerDriver
 
   // mojom::PasswordManagerDriver:
   // TODO(crbug.com/948062): Migrate the other methods to GMock as well.
+  MOCK_METHOD1(PasswordFormCleared, void(const autofill::FormData&));
+
   MOCK_METHOD0(ShowTouchToFill, void());
 
   MOCK_METHOD4(ShowPasswordSuggestions,

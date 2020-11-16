@@ -103,6 +103,7 @@ class ContentPasswordManagerDriver
   void InformAboutUserInput(const autofill::FormData& form_data) override;
   void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
                                   submission_indication_event) override;
+  void PasswordFormCleared(const autofill::FormData& form_data) override;
   void RecordSavePasswordProgress(const std::string& log) override;
   void UserModifiedPasswordField() override;
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,

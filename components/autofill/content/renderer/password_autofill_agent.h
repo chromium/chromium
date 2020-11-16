@@ -223,6 +223,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   std::unique_ptr<FormData> GetFormDataFromUnownedInputElements();
 
+  // Notification that form was cleared. This can be used as a signal of
+  // a successful submission for change password forms.
+  void InformAboutFormClearing(const blink::WebFormElement& form);
+
   bool logging_state_active() const { return logging_state_active_; }
 
   // Determine whether the current frame is allowed to access the password

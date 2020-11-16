@@ -209,6 +209,10 @@ class PasswordManager : public PasswordManagerInterface {
   // Resets pending credentials.
   void ResetPendingCredentials();
 
+  // Notification that password form was cleared by the website.
+  void OnPasswordFormCleared(PasswordManagerDriver* driver,
+                             const autofill::FormData& form_data);
+
   // Returns true if a form manager is processing a password update.
   bool IsFormManagerPendingPasswordUpdate() const;
 

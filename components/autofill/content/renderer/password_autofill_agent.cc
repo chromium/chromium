@@ -1373,6 +1373,34 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
       &button_titles_cache_);
 }
 
+void PasswordAutofillAgent::InformAboutFormClearing(
+    const WebFormElement& form) {
+  DCHECK(FrameCanAccessPasswordManager());
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDetectFormSubmissionOnFormClear)) {
+    return;
+  }
+  for (const auto& element : form.GetFormControlElements()) {
+    FieldRendererId element_id(element.UniqueRendererFormControlId());
+    // Notify PasswordManager if |form| has password fields that have user typed
+    // input or input autofilled on user trigger.
+    if (element.FormControlTypeForAutofill() == "password" &&
+        (field_data_manager_->DidUserType(element_id) ||
+         field_data_manager_->WasAutofilledOnUserTrigger(element_id))) {
+      const form_util::ExtractMask extract_mask =
+          static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
+                                              form_util::EXTRACT_OPTIONS);
+      FormData form_data;
+      if (WebFormElementToFormData(form, WebFormControlElement(),
+                                   field_data_manager_.get(), extract_mask,
+                                   &form_data, nullptr)) {
+        GetPasswordManagerDriver()->PasswordFormCleared(form_data);
+      }
+      return;
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PasswordAutofillAgent, private:
 

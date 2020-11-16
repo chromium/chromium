@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/external_popup_menu.h"
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
@@ -1177,6 +1178,12 @@ void ChromeClientImpl::BatterySavingsChanged(LocalFrame& main_frame,
   WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()
       ->BatterySavingsChanged(savings);
+}
+
+void ChromeClientImpl::FormElementReset(HTMLFormElement& element) {
+  Document& doc = element.GetDocument();
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
+    fill_client->FormElementReset(WebFormElement(&element));
 }
 
 }  // namespace blink

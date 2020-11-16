@@ -83,6 +83,7 @@ class FileChooser;
 class Frame;
 class FullscreenOptions;
 class HTMLFormControlElement;
+class HTMLFormElement;
 class HTMLInputElement;
 class HTMLSelectElement;
 class HitTestLocation;
@@ -524,6 +525,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void BatterySavingsChanged(LocalFrame& main_frame,
                                      WebBatterySavingsFlags savings) = 0;
+
+  virtual void FormElementReset(HTMLFormElement& element) {}
 
  protected:
   ChromeClient() = default;
