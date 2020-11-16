@@ -923,7 +923,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   gfx::PointF filters_origin(8765.4f, 4567.8f);
   gfx::RectF tex_coord_rect(1.f, 1.f, 1234.f, 5678.f);
   const float backdrop_filter_quality = 1.0f;
-  const bool can_use_backdrop_filter_cache = true;
+  const bool intersects_damage_under = true;
 
   CompositorRenderPassDrawQuad* render_pass_quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
@@ -931,7 +931,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
                            resource_id4, mask_uv_rect, mask_texture_size,
                            filters_scale, filters_origin, tex_coord_rect,
                            force_anti_aliasing_off, backdrop_filter_quality,
-                           can_use_backdrop_filter_cache);
+                           intersects_damage_under);
 
   const gfx::Rect rect5(123, 567, 91011, 13141);
   const ResourceId resource_id5(1337);
@@ -1015,8 +1015,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
             out_render_pass_draw_quad->force_anti_aliasing_off);
   EXPECT_EQ(backdrop_filter_quality,
             out_render_pass_draw_quad->backdrop_filter_quality);
-  EXPECT_EQ(can_use_backdrop_filter_cache,
-            out_render_pass_draw_quad->can_use_backdrop_filter_cache);
+  EXPECT_EQ(intersects_damage_under,
+            out_render_pass_draw_quad->intersects_damage_under);
 
   const TextureDrawQuad* out_texture_draw_quad =
       TextureDrawQuad::MaterialCast(output->quad_list.ElementAt(4));

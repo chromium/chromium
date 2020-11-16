@@ -27,8 +27,7 @@ void RenderPassDrawQuadInternal::ExtendValue(
   cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);
   value->SetBoolean("force_anti_aliasing_off", force_anti_aliasing_off);
   value->SetDouble("backdrop_filter_quality", backdrop_filter_quality);
-  value->SetBoolean("can_use_backdrop_filter_cache",
-                    can_use_backdrop_filter_cache);
+  value->SetBoolean("intersects_damage_under", intersects_damage_under);
 }
 
 }  // namespace viz

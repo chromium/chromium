@@ -51,10 +51,9 @@ struct CompositorRenderPassQuadState {
 
   bool force_anti_aliasing_off;
   float backdrop_filter_quality;
-  // If the quad has backdrop filters, this flag indicates if the cached
-  // backdrop filtered result can be used instead of having to recompute the
-  // filter operation.
-  bool can_use_backdrop_filter_cache;
+  // Indicates if the quad intersects any damage coming from quads under it
+  // rendering to the same target.
+  bool intersects_damage_under;
 };
 
 struct SolidColorQuadState {

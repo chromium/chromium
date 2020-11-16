@@ -90,7 +90,7 @@ bool StructTraits<
   }
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
   quad->backdrop_filter_quality = data.backdrop_filter_quality();
-  quad->can_use_backdrop_filter_cache = data.can_use_backdrop_filter_cache();
+  quad->intersects_damage_under = data.intersects_damage_under();
   return true;
 }
 

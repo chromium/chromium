@@ -173,7 +173,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   // Recursively walks through the render pass and updates the
-  // |can_use_backdrop_filter_cache| flag on all RenderPassDrawQuads(RPDQ).
+  // |intersects_damage_under| flag on all RenderPassDrawQuads(RPDQ).
   // The function returns the damage rect of the render pass in its own content
   // space.
   //  - |render_pass_entry| specifies the render pass in the entry map to be

@@ -203,7 +203,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   gfx::RectF tex_coord_rect(1, 1, 255, 254);
   bool force_anti_aliasing_off = false;
   float backdrop_filter_quality = 1.0f;
-  bool can_use_backdrop_filter_cache = true;
+  bool intersects_damage_under = true;
 
   CompositorRenderPassId copied_render_pass_id{235};
   CREATE_SHARED_STATE();
@@ -212,7 +212,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
                      mask_resource_id, mask_uv_rect, mask_texture_size,
                      filters_scale, filters_origin, tex_coord_rect,
                      force_anti_aliasing_off, backdrop_filter_quality,
-                     can_use_backdrop_filter_cache, copied_render_pass_id);
+                     intersects_damage_under, copied_render_pass_id);
   EXPECT_EQ(DrawQuad::Material::kCompositorRenderPass, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(copied_render_pass_id, copy_quad->render_pass_id);
@@ -225,8 +225,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   EXPECT_EQ(tex_coord_rect.ToString(), copy_quad->tex_coord_rect.ToString());
   EXPECT_EQ(force_anti_aliasing_off, copy_quad->force_anti_aliasing_off);
   EXPECT_EQ(backdrop_filter_quality, copy_quad->backdrop_filter_quality);
-  EXPECT_EQ(can_use_backdrop_filter_cache,
-            copy_quad->can_use_backdrop_filter_cache);
+  EXPECT_EQ(intersects_damage_under, copy_quad->intersects_damage_under);
 }
 
 TEST(DrawQuadTest, CopySolidColorDrawQuad) {

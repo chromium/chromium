@@ -200,12 +200,12 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
     static Quad RenderPassQuad(CompositorRenderPassId id,
                                const gfx::Transform& transform,
-                               bool can_use_backdrop_filter_cache) {
+                               bool intersects_damage_under) {
       Quad quad;
       quad.material = DrawQuad::Material::kCompositorRenderPass;
       quad.render_pass_id = id;
       quad.transform = transform;
-      quad.can_use_backdrop_filter_cache = can_use_backdrop_filter_cache;
+      quad.intersects_damage_under = intersects_damage_under;
       return quad;
     }
 
@@ -229,7 +229,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     // Set when material==DrawQuad::Material::kCompositorRenderPass.
     CompositorRenderPassId render_pass_id;
     gfx::Transform transform;
-    bool can_use_backdrop_filter_cache;
+    bool intersects_damage_under;
 
    private:
     Quad()
@@ -284,7 +284,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
         break;
       case DrawQuad::Material::kCompositorRenderPass:
         AddRenderPassQuad(pass, desc.render_pass_id, desc.transform,
-                          desc.can_use_backdrop_filter_cache);
+                          desc.intersects_damage_under);
         break;
       case DrawQuad::Material::kYuvVideoContent:
         AddYUVVideoQuad(pass, desc.rect);
@@ -331,8 +331,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
         EXPECT_EQ(
             expected_quad.render_pass_id,
             CompositorRenderPassId{uint64_t{render_pass_quad->render_pass_id}});
-        EXPECT_EQ(expected_quad.can_use_backdrop_filter_cache,
-                  render_pass_quad->can_use_backdrop_filter_cache);
+        EXPECT_EQ(expected_quad.intersects_damage_under,
+                  render_pass_quad->intersects_damage_under);
         break;
       }
       default:
@@ -401,18 +401,18 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
   static void AddRenderPassQuad(CompositorRenderPass* pass,
                                 CompositorRenderPassId render_pass_id,
                                 const gfx::Transform& transform,
-                                bool can_use_backdrop_filter_cache) {
+                                bool intersects_damage_under) {
     gfx::Rect output_rect = gfx::Rect(0, 0, 5, 5);
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), output_rect, false, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-    quad->SetAll(
-        shared_state, output_rect, output_rect, /*needs_blending=*/true,
-        render_pass_id, 0, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
-        gfx::PointF(), gfx::RectF(), /*force_anti_aliasing_off=*/false,
-        /*backdrop_filter_quality=*/1.0f, can_use_backdrop_filter_cache);
+    quad->SetAll(shared_state, output_rect, output_rect,
+                 /*needs_blending=*/true, render_pass_id, 0, gfx::RectF(),
+                 gfx::Size(), gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
+                 /*force_anti_aliasing_off=*/false,
+                 /*backdrop_filter_quality=*/1.0f, intersects_damage_under);
   }
 
   static void AddYUVVideoQuad(CompositorRenderPass* pass,
@@ -3666,7 +3666,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       SurfaceId(kArbitraryFrameSinkId3, id4)));
 }
 
-// Tests the behavior of |can_use_backdrop_filter_cache| flag on a
+// Tests the behavior of |intersects_damage_under| flag on a
 // CompositorRenderPassDrawQuad, which should reset to false if the damage from
 // quads below drawing to the same target intersects the RPDQ's rect, or
 // otherwise remain unchanged.
@@ -3704,16 +3704,15 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   // The frame of the root surface has two render passes.
   // - the first pass has a solid color quad,
   // - the second pass has a render pass quad (RPDQ) with its
-  // |can_use_backdrop_filter_cache| set to true and a surface quad
-  // embedding the child surface.
+  // |intersects_damage_under| set to true and a surface quad embedding the
+  // child surface.
   std::vector<Quad> render_pass_1_quads = {
       Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(5, 5))};
   std::vector<Quad> render_pass_2_quads = {
-      // We will verify the correctness of the |can_use_backdrop_filter_cache|
-      // flag
+      // We will verify the correctness of the |intersects_damage_under| flag
       // on this quad.
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/true),
+                           /*intersects_damage_under=*/true),
       Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(90, 90),
                         /*stretch_content_to_fill_bounds=*/false,
@@ -3761,13 +3760,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
     // The |quad_to_test| (20,30 80x80) intersects with damage below, which is
     // union of surface quad damage (0,0 70x70) and root surface damage (0,0
-    // 100x100), so its |can_use_backdrop_filter_cache| is reset to false.
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    // 100x100), so its |intersects_damage_under| is reset to false.
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 
   // Resubmit root frame and since there'll be no damage under the RPDQ with the
-  // |can_use_backdrop_filter_cache|, the flag retains its
-  // original value (true).
+  // |intersects_damage_under|, the flag retains its original value (true).
   {
     CompositorFrame root_frame = MakeEmptyCompositorFrame();
     AddPasses(&root_frame.render_pass_list, root_passes,
@@ -3797,13 +3795,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    // No damage under |quad_to_test| and its |can_use_backdrop_filter_cache|
-    // retains its value.
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    // No damage under |quad_to_test| and its |intersects_damage_under| retains
+    // its value.
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
-  // Damage on the child surface doesn't intersect the RPDQ
-  // with |can_use_backdrop_filter_cache|.
+  // Damage on the child surface doesn't intersect the RPDQ with
+  // |intersects_damage_under|.
   {
     CompositorFrame child_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_frame.render_pass_list, child_passes,
@@ -3832,13 +3830,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
     // The |quad_to_test| (20,30 80x80) doesn't intersect the damage from the
-    // surface quad below (10,10 10x10) and the |can_use_backdrop_filter_cache|
+    // surface quad below (10,10 10x10) and the |intersects_damage_under|
     // retains its value of true.
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
-  // Damage on the child surface intersects the RPDQ
-  // with |can_use_backdrop_filter_cache|.
+  // Damage on the child surface intersects the RPDQ with
+  // |intersects_damage_under|.
   {
     CompositorFrame child_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_frame.render_pass_list, child_passes,
@@ -3866,19 +3864,19 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    // The |quad_to_test| (20,30 80x80) intersects the damage from the
-    // surface quad below (60,60 10x10) and the |can_use_backdrop_filter_cache|
-    // resets to false.
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    // The |quad_to_test| (20,30 80x80) intersects the damage from the surface
+    // quad below (60,60 10x10) and the |intersects_damage_under| resets to
+    // false.
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 }
 
-// Tests the behavior of |can_use_backdrop_filter_cache| flag on a
+// Tests the behavior of |intersects_damage_under| flag on a
 // CompositorRenderPassDrawQuad. When damage under the RPDQ is coming from quads
 // that draw to a different render target, it should not affect the
-// |can_use_backdrop_filter_cache| flag. However, if merging happens, the RPDQ
-// on root render pass of the surface being merged should take damage from all
-// quads under it in the same final render target.
+// |intersects_damage_under| flag. However, if merging happens, the RPDQ on root
+// render pass of the surface being merged should take damage from all quads
+// under it in the same final render target.
 TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
        RPDQBackdropFilterCacheFlagTest2) {
   auto second_support = std::make_unique<CompositorFrameSinkSupport>(
@@ -3897,13 +3895,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   // The child surface has two passes:
   // - the first pass contains a color quad.
   // - the second pass contains an RPDQ referencing the first pass and having a
-  // |can_use_backdrop_filter_cache| flag set to true. This flag is going to be
+  // |intersects_damage_under| flag set to true. This flag is going to be
   // the subject of this test.
   std::vector<Quad> child_rp1_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
   std::vector<Quad> child_rp2_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/true)};
+                           /*intersects_damage_under=*/true)};
 
   std::vector<Pass> child_passes = {
       Pass(child_rp1_quads, CompositorRenderPassId{1}, child_surface_size),
@@ -4010,19 +4008,18 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     // 1) Without merging, for the first aggregation, the child surface has
     // damage from its root render pass (0,0 60x60). |quad_to_test| is on the
     // root render pass of the child surface, so no damage is under it and its
-    // |can_use_backdrop_filter_cache| remains unchanged (true).
+    // |intersects_damage_under| remains unchanged (true).
     // 2) With merging, the |quad_to_test| would be merged to the root pass of
     // the root surface. The damage from below (0,0 100x100), which is the total
     // of the damage from second surface quad (0,0 80x80) and from root render
     // pass (0,0 100x100), is transformed into the local space of the child
     // surface as (-20,-30 100x100) and it intersects |quad_to_test|(0,0 60x60),
-    // so its |can_use_backdrop_filter_cache| resets to false.
-    EXPECT_EQ(!AllowMerge(), rp_quad->can_use_backdrop_filter_cache);
+    // so its |intersects_damage_under| resets to false.
+    EXPECT_EQ(!AllowMerge(), rp_quad->intersects_damage_under);
   }
 
   // Resubmit child frame and since there'll be no damage under the RPDQ with
-  // the |can_use_backdrop_filter_cache|, the flag retains its original value
-  // (true).
+  // the |intersects_damage_under|, the flag retains its original value (true).
   {
     CompositorFrame child_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_frame.render_pass_list, child_passes,
@@ -4054,12 +4051,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
     // With or without merging, the |quad_to_test| (0,0 60x60) has no damage
-    // from under it, so its |can_use_backdrop_filter_cache| remains unchanged.
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    // from under it, so its |intersects_damage_under| remains unchanged.
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
-  // Damage on the second surface doesn't intersect the RPDQ
-  // with |can_use_backdrop_filter_cache|.
+  // Damage on the second surface doesn't intersect the RPDQ with
+  // |intersects_damage_under|.
   {
     CompositorFrame second_surface_frame = MakeEmptyCompositorFrame();
     AddPasses(&second_surface_frame.render_pass_list, second_surface_passes,
@@ -4094,17 +4091,16 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
     // 1) Without merging, the |quad_to_test| (0,0 60x60) doesn't have any
-    // damage coming from under it and its |can_use_backdrop_filter_cache| flag
+    // damage coming from under it and its |intersects_damage_under| flag
     // remains unchanged (true).
-    // 2) With merging, the |quad_to_test| (0,0 60x60)
-    // doesn't intersect the damage from under it transformed into its local
-    // space (-10,-20 10x10), and its |can_use_backdrop_filter_cache| flag
-    // remains unchanged (true).
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    // 2) With merging, the |quad_to_test| (0,0 60x60) doesn't intersect the
+    // damage from under it transformed into its local space (-10,-20 10x10),
+    // and its |intersects_damage_under| flag remains unchanged (true).
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
-  // Damage on the second surface intersects the RPDQ
-  // with |can_use_backdrop_filter_cache|.
+  // Damage on the second surface intersects the RPDQ with
+  // |intersects_damage_under|.
   {
     CompositorFrame second_surface_frame = MakeEmptyCompositorFrame();
     AddPasses(&second_surface_frame.render_pass_list, second_surface_passes,
@@ -4139,17 +4135,17 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
     // 1) Without merging, the |quad_to_test| (0,0 60x60) doesn't have any
-    // damage from under it and its |can_use_backdrop_filter_cache| remains
-    // unchanged (true).
+    // damage from under it and its |intersects_damage_under| remains unchanged
+    // (true).
     // 2) With merging, the |quad_to_test| (0,0 60x60) intersects the damage
     // passed on from second surface and transformed into the child local space
-    // (40,30 10x10) and its |can_use_backdrop_filter_cache| resets to false.
-    EXPECT_EQ(!AllowMerge(), rp_quad->can_use_backdrop_filter_cache);
+    // (40,30 10x10) and its |intersects_damage_under| resets to false.
+    EXPECT_EQ(!AllowMerge(), rp_quad->intersects_damage_under);
   }
 }
 
-// Tests that RenderPassDrawQud's |can_use_backdrop_filter_cache| flag is
-// updated correctly with surface damage.
+// Tests that RenderPassDrawQud's |intersects_damage_under| flag is updated
+// correctly with surface damage.
 TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
        RPDQCanUseBackdropFilterCache) {
   auto parent_support = std::make_unique<CompositorFrameSinkSupport>(
@@ -4213,13 +4209,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5))};
 
   std::vector<Quad> render_pass_2_quads = {
-      // Set the |can_use_backdrop_filter_cache| of this
-      // CompositorRenderPassDrawQuad to be true. This is the quad that
-      // we are testing here. The |can_use_backdrop_filter_cache|
-      // should be updated correctly based on the damage of the
-      // SurfaceDrawQuad under it.
+      // Set the |intersects_damage_under| of this CompositorRenderPassDrawQuad
+      // to be true. This is the quad that we are testing here. The
+      // |intersects_damage_under| should be updated correctly based on the
+      // damage of the SurfaceDrawQuad under it.
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/true),
+                           /*intersects_damage_under=*/true),
       Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false,
@@ -4274,11 +4269,11 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 
-  // Resubmit root frame, |can_use_backdrop_filter_cache| retains its
-  // original value (true).
+  // Resubmit root frame, |intersects_damage_under| retains its original value
+  // (true).
   {
     CompositorFrame root_frame = MakeEmptyCompositorFrame();
     AddPasses(&root_frame.render_pass_list, root_passes,
@@ -4300,16 +4295,16 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     ASSERT_EQ(expected_num_passes_after_aggregation,
               aggregated_pass_list.size());
 
-    // There is no damage from under |quad_to_test| so
-    // |can_use_backdrop_filter_cache| remains true.
+    // There is no damage from under |quad_to_test| so |intersects_damage_under|
+    // remains true.
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
   // Change in inner surface that overlaps with the testing quad causes
-  // |can_use_backdrop_filter_cache| to become false.
+  // |intersects_damage_under| to become false.
   {
     CompositorFrame child_frame = MakeEmptyCompositorFrame();
     AddPasses(&child_frame.render_pass_list, child_passes,
@@ -4348,11 +4343,11 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 
-  // No Surface changed, |can_use_backdrop_filter_cache| retains its
-  // original value (true).
+  // No Surface changed, |intersects_damage_under| retains its original value
+  // (true).
   {
     CompositorFrame root_frame = MakeEmptyCompositorFrame();
     AddPasses(&root_frame.render_pass_list, root_passes,
@@ -4375,20 +4370,18 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     ASSERT_EQ(expected_num_passes_after_aggregation,
               aggregated_pass_list.size());
 
-    // There is no damage from under |quad_to_test| so
-    // |can_use_backdrop_filter_cache| remains true.
-
+    // There is no damage from under |quad_to_test| so |intersects_damage_under|
+    // remains true.
     const auto* quad_to_test = aggregated_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 }
 
-// Verifies the |can_use_backdrop_filter_cache| flag on a
-// CompositorRenderPassDrawQuad is updated correctly in cases involving a child
-// surface that is embedded twice in the root surface and whose damage affects
-// the flag.
+// Verifies the |intersects_damage_under| flag on a CompositorRenderPassDrawQuad
+// is updated correctly in cases involving a child surface that is embedded
+// twice in the root surface and whose damage affects the flag.
 TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
        RPDQCanUseBackdropFilterCacheTestWithMultiplyEmbeddedSurface) {
   // Add a callback for when the surface is damaged.
@@ -4427,7 +4420,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   //     render pass with a scale transform applied.
   //  4) The fourth one contains three render pass draw quads.
   //        - one referencing the first render pass with a translation, and its
-  //           |can_use_backdrop_filter_cache| is the target of this test.
+  //           |intersects_damage_under| is the target of this test.
   //        - one referencing the third render pass with another translation
   //           transform applied
   //        - one referencing the second render pass with no transform.
@@ -4492,7 +4485,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         aggregated_frame.render_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 
   // Resubmit root frame.
@@ -4516,12 +4509,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
               aggregated_pass_list.size());
 
     // There's no damage under |quad_to_test| (2,2 5x5) and the
-    // |can_use_backdrop_filter_cache| flag of |quad_to_test| remains true.
+    // |intersects_damage_under| flag of |quad_to_test| remains true.
     const auto* quad_to_test =
         aggregated_frame.render_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
   {
@@ -4545,7 +4538,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     //  (50,70 20x20).
     //  The above two damage rects are from under |quad_to_test|, and the
     //  unioned damage rect (10,10 60x80) doesn't intersects the quad's rect
-    //  of (2,2 5x5), so |can_use_backdrop_filter_cache| flag of |quad_to_test|
+    //  of (2,2 5x5), so |intersects_damage_under| flag of |quad_to_test|
     //  remains true.
 
     // The aggregated damage rect would be union of the above damage rects
@@ -4567,12 +4560,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         aggregated_frame_2.render_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_TRUE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_TRUE(rp_quad->intersects_damage_under);
   }
 
   {
     // Damage the child surface at (10,10 10x10) and translate
-    // the quad with |can_use_backdrop_filter_cache| to be tested by (12,12).
+    // the quad with |intersects_damage_under| to be tested by (12,12).
     CompositorFrame child_frame_2 = MakeEmptyCompositorFrame();
     AddPasses(&child_frame_2.render_pass_list, child_passes,
               &child_frame_2.metadata.referenced_surfaces);
@@ -4583,8 +4576,8 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
                                        std::move(child_frame_2));
 
-    // The total translation of the quad with |can_use_backdrop_filter_cache|
-    // to be tested is now (12,12)
+    // The total translation of the quad with |intersects_damage_under| to be
+    // tested is now (12,12)
     gfx::Transform& tr =
         const_cast<gfx::Transform&>(root_passes.back().quads[0].transform);
     tr.Translate(10, 10);
@@ -4611,13 +4604,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
 
     //  The unioned damage rect from under |quad_to_test| (10,10 60x80)
     //  intersects the quad's rect of (12,12 5x5), so
-    //  |can_use_backdrop_filter_cache| flag of |quad_to_test| becomes false.
+    //  |intersects_damage_under| flag of |quad_to_test| becomes false.
 
     const auto* quad_to_test =
         aggregated_frame_2.render_pass_list.back()->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_FALSE(rp_quad->intersects_damage_under);
   }
 }
 
@@ -4642,10 +4635,10 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
   std::vector<Quad> child_rp2_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/false)};
+                           /*intersects_damage_under=*/false)};
   std::vector<Quad> child_rp3_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{2}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/false)};
+                           /*intersects_damage_under=*/false)};
   std::vector<Pass> child_passes = {
       Pass(child_rp1_quads, CompositorRenderPassId{1}, child_surface_size),
       Pass(child_rp2_quads, CompositorRenderPassId{2}, child_surface_size),
@@ -4782,10 +4775,10 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
   std::vector<Quad> child_rp2_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/false)};
+                           /*intersects_damage_under=*/false)};
   std::vector<Quad> child_rp3_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{2}, gfx::Transform(),
-                           /*can_use_backdrop_filter_cache=*/false)};
+                           /*intersects_damage_under=*/false)};
   std::vector<Pass> child_passes = {
       Pass(child_rp1_quads, CompositorRenderPassId{1}, child_surface_size),
       Pass(child_rp2_quads, CompositorRenderPassId{2}, child_surface_size),

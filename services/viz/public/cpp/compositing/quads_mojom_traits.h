@@ -259,10 +259,10 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
     return quad->backdrop_filter_quality;
   }
 
-  static bool can_use_backdrop_filter_cache(const viz::DrawQuad& input) {
+  static bool intersects_damage_under(const viz::DrawQuad& input) {
     const viz::CompositorRenderPassDrawQuad* quad =
         viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
-    return quad->can_use_backdrop_filter_cache;
+    return quad->intersects_damage_under;
   }
 
   static bool Read(viz::mojom::CompositorRenderPassQuadStateDataView data,

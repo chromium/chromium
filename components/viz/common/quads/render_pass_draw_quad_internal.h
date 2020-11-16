@@ -41,10 +41,9 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
 
   bool force_anti_aliasing_off;
 
-  // If the quad has backdrop filters, this flag indicates if the cached
-  // backdrop filtered result can be used instead of having to recompute the
-  // filter operation.
-  mutable bool can_use_backdrop_filter_cache;
+  // Indicates if this quad intersects any damage from quads under it rendering
+  // to the same target.
+  mutable bool intersects_damage_under;
 
   ResourceId mask_resource_id() const {
     return resources.ids[kMaskResourceIdIndex];

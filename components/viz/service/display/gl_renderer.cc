@@ -1066,7 +1066,7 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
   auto bg_texture_it =
       render_pass_backdrop_textures_.find(quad->render_pass_id);
   if (bg_texture_it != render_pass_backdrop_textures_.end()) {
-    if (quad->can_use_backdrop_filter_cache)
+    if (quad->intersects_damage_under)
       return bg_texture_it->second;
     else
       render_pass_backdrop_textures_.erase(bg_texture_it);
@@ -1203,7 +1203,7 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
   }
 
   sk_sp<SkImage> filtered_image_texture = FinalizeImage(surface);
-  if (quad->can_use_backdrop_filter_cache) {
+  if (quad->intersects_damage_under) {
     render_pass_backdrop_textures_[params->quad->render_pass_id] =
         filtered_image_texture;
   }

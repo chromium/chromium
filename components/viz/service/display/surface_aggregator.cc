@@ -1428,22 +1428,22 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // |damage_rect|, |damage_from_parent| and |surface_root_rp_damage|
       // either are or can possible contain damage from under the quad, so if
       // they intersect the quad render pass output rect, we have to invalidate
-      // the |can_use_backdrop_filter_cache| flag. Note the intersection test
-      // can be done against backdrop filter bounds as an improvement.
+      // the |intersects_damage_under| flag. Note the intersection test can be
+      // done against backdrop filter bounds as an improvement.
       bool intersects_current_damage =
           rect_in_target_space.Intersects(damage_rect);
       bool intersects_damage_from_parent =
           rect_in_target_space.Intersects(damage_from_parent);
-      // The |can_use_backdrop_filter_cache| flag hints if the current quad
-      // intersects any damage from any quads below in the same surface. If the
-      // flag is false, it means the intersecting damage is from quads above it
-      // or from itself.
+      // The |intersects_damage_under| flag hints if the current quad intersects
+      // any damage from any quads below in the same surface. If the flag is
+      // false, it means the intersecting damage is from quads above it or from
+      // itself.
       bool intersects_damage_from_surface =
           rect_in_target_space.Intersects(surface_root_rp_damage) &&
-          !render_pass_quad->can_use_backdrop_filter_cache;
+          !render_pass_quad->intersects_damage_under;
       if (intersects_current_damage || intersects_damage_from_parent ||
           intersects_damage_from_surface) {
-        render_pass_quad->can_use_backdrop_filter_cache = false;
+        render_pass_quad->intersects_damage_under = false;
 
         if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
           // The damage from under the quad intersects quad render pass output

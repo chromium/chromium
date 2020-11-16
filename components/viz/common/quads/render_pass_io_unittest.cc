@@ -317,18 +317,18 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
       CompositorRenderPassListFromDict(dict0.value(), &render_pass_list));
   base::Value dict1 = CompositorRenderPassListToDict(render_pass_list);
   // Since the test file doesn't contain the field
-  // 'can_use_backdrop_filter_cache' in its CompositorRenderPassDrawQuad, I'm
+  // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
   base::Value* list = dict1.FindListKey("render_pass_list");
   for (size_t i = 0; i < list->GetList().size(); ++i) {
     base::Value* quad_list = list->GetList()[i].FindListKey("quad_list");
 
     for (size_t ii = 0; ii < quad_list->GetList().size(); ++ii) {
-      if (const base::Value* extra_value = quad_list->GetList()[ii].FindKey(
-              "can_use_backdrop_filter_cache")) {
+      if (const base::Value* extra_value =
+              quad_list->GetList()[ii].FindKey("intersects_damage_under")) {
         EXPECT_FALSE(extra_value->GetBool());
-        ASSERT_TRUE(quad_list->GetList()[ii].RemoveKey(
-            "can_use_backdrop_filter_cache"));
+        ASSERT_TRUE(
+            quad_list->GetList()[ii].RemoveKey("intersects_damage_under"));
       }
     }
   }

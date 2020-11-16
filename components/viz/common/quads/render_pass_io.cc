@@ -1060,8 +1060,8 @@ void CompositorRenderPassDrawQuadToDict(
                      draw_quad->backdrop_filter_quality);
   dict->SetBoolKey("force_anti_aliasing_off",
                    draw_quad->force_anti_aliasing_off);
-  dict->SetBoolKey("can_use_backdrop_filter_cache",
-                   draw_quad->can_use_backdrop_filter_cache);
+  dict->SetBoolKey("intersects_damage_under",
+                   draw_quad->intersects_damage_under);
   DCHECK_GE(1u, draw_quad->resources.count);
 }
 
@@ -1233,8 +1233,8 @@ bool CompositorRenderPassDrawQuadFromDict(
       dict.FindDoubleKey("backdrop_filter_quality");
   base::Optional<bool> force_anti_aliasing_off =
       dict.FindBoolKey("force_anti_aliasing_off");
-  base::Optional<bool> can_use_backdrop_filter_cache =
-      dict.FindBoolKey("can_use_backdrop_filter_cache");
+  base::Optional<bool> intersects_damage_under =
+      dict.FindBoolKey("intersects_damage_under");
 
   if (!render_pass_id || !mask_uv_rect || !mask_texture_size ||
       !filters_scale || !filters_origin || !tex_coord_rect ||
@@ -1266,8 +1266,7 @@ bool CompositorRenderPassDrawQuadFromDict(
       common.needs_blending, t_render_pass_id, mask_resource_id, t_mask_uv_rect,
       t_mask_texture_size, t_filters_scale, t_filters_origin, t_tex_coord_rect,
       force_anti_aliasing_off.value(), backdrop_filter_quality.value(),
-      can_use_backdrop_filter_cache ? can_use_backdrop_filter_cache.value()
-                                    : false);
+      intersects_damage_under ? intersects_damage_under.value() : false);
   return true;
 }
 

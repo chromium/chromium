@@ -53,7 +53,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
               const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality,
-              bool can_use_backdrop_filter_cache);
+              bool intersects_damage_under);
 
   CompositorRenderPassId render_pass_id;
 
