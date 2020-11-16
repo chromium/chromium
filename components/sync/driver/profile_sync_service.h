@@ -209,7 +209,8 @@ class ProfileSyncService : public SyncService,
 
 #if defined(OS_ANDROID)
   // Persists the fact that sync should no longer respect whether Android master
-  // sync is enabled. Only called on Android.
+  // sync is enabled. This will be respected for the current syncing account
+  // (if one exists) and any future ones. Only called on Android.
   void SetDecoupledFromAndroidMasterSync();
 
   // Gets the persisted information of whether sync should no longer respect

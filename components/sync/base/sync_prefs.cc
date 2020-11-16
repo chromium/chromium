@@ -226,9 +226,6 @@ void SyncPrefs::ClearLocalSyncTransportData() {
   pref_service_->ClearPref(prefs::kSyncCacheGuid);
   pref_service_->ClearPref(prefs::kSyncBirthday);
   pref_service_->ClearPref(prefs::kSyncBagOfChips);
-#if defined(OS_ANDROID)
-  pref_service_->ClearPref(prefs::kSyncDecoupledFromAndroidMasterSync);
-#endif  // defined(OS_ANDROID)
 
   // No need to clear kManaged, kEnableLocalSyncBackend or kLocalSyncBackendDir,
   // since they're never actually set as user preferences.
