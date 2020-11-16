@@ -371,7 +371,6 @@ if (is_win || is_mac || is_linux || is_lacros) {
     testonly = true
     deps = [
       ":cast_benchmarks",
-      ":cast_receiver_app",
       ":cast_sender_app",
       ":cast_simulator",
       ":generate_barcode_video",
@@ -396,36 +395,6 @@ if (is_win || is_mac || is_linux || is_lacros) {
       "//testing/gtest",
       "//ui/gfx/geometry",
     ]
-  }
-
-  executable("cast_receiver_app") {
-    testonly = true
-    sources = [ "test/receiver.cc" ]
-    public_deps = []
-    deps = [
-      ":common",
-      ":net",
-      ":receiver",
-      ":test_support",
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//media:test_support",
-      "//net",
-      "//ui/base:features",
-      "//ui/gfx/geometry",
-    ]
-
-    if (use_x11) {
-      sources += [
-        "test/linux_output_window.cc",
-        "test/linux_output_window.h",
-      ]
-      public_deps += [ "//ui/gfx/x" ]
-      deps += [
-        "//cc/paint",
-        "//ui/base/x",
-      ]
-    }
   }
 
   executable("cast_sender_app") {
