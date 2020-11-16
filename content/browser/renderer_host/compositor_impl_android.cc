@@ -367,6 +367,9 @@ void CompositorImpl::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
 
 void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
                                 bool can_be_used_with_surface_control) {
+  can_be_used_with_surface_control &=
+      !root_window_->ApplyDisableSurfaceControlWorkaround();
+
   JNIEnv* env = base::android::AttachCurrentThread();
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
 

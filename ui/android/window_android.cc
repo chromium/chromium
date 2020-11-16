@@ -243,6 +243,12 @@ void WindowAndroid::Force60HzRefreshRateIfNeeded() {
   Java_WindowAndroid_setPreferredRefreshRate(env, GetJavaObject(), 60.f);
 }
 
+bool WindowAndroid::ApplyDisableSurfaceControlWorkaround() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_WindowAndroid_applyDisableSurfaceControlWorkaround(
+      env, GetJavaObject());
+}
+
 bool WindowAndroid::HasPermission(const std::string& permission) {
   JNIEnv* env = AttachCurrentThread();
   return Java_WindowAndroid_hasPermission(
