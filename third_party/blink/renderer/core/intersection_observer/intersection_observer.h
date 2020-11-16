@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -102,6 +103,7 @@ class CORE_EXPORT IntersectionObserver final
       const Vector<float>& thresholds,
       Document* document,
       EventCallback callback,
+      LocalFrameUkmAggregator::MetricId ukm_metric_id,
       DeliveryBehavior behavior = kDeliverDuringPostLifecycleSteps,
       ThresholdInterpretation semantics = kFractionOfTarget,
       DOMHighResTimeStamp delay = 0,
@@ -160,6 +162,8 @@ class CORE_EXPORT IntersectionObserver final
   }
 
   bool ComputeIntersections(unsigned flags);
+
+  LocalFrameUkmAggregator::MetricId GetUkmMetricId() const;
 
   void SetNeedsDelivery();
   DeliveryBehavior GetDeliveryBehavior() const;

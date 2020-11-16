@@ -37,7 +37,8 @@ class IntersectionObserverController
   // whether an IntersectionObserver needs to do any work. The return value
   // communicates whether observer->trackVisibility() is true for any tracked
   // observer.
-  bool ComputeIntersections(unsigned flags);
+  bool ComputeIntersections(unsigned flags,
+                            LocalFrameUkmAggregator& ukm_aggregator);
 
   // The second argument indicates whether the Element is a target of any
   // observers for which observer->trackVisibility() is true.

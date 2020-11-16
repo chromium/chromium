@@ -96,6 +96,7 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
         WTF::BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
         IntersectionObserver::kDeliverDuringPostLayoutSteps,
         IntersectionObserver::kFractionOfTarget, 0 /* delay */,
         false /* track_visibility */, false /* always report_root_bounds */,

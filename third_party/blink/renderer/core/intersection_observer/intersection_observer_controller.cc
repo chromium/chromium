@@ -60,7 +60,9 @@ void IntersectionObserverController::DeliverNotifications(
   }
 }
 
-bool IntersectionObserverController::ComputeIntersections(unsigned flags) {
+bool IntersectionObserverController::ComputeIntersections(
+    unsigned flags,
+    LocalFrameUkmAggregator& ukm_aggregator) {
   needs_occlusion_tracking_ = false;
   if (GetExecutionContext()) {
     TRACE_EVENT0("blink",
@@ -69,14 +71,18 @@ bool IntersectionObserverController::ComputeIntersections(unsigned flags) {
     HeapVector<Member<IntersectionObserver>> observers_to_process;
     CopyToVector(tracked_explicit_root_observers_, observers_to_process);
     for (auto& observer : observers_to_process) {
-      if (observer->HasObservations())
+      if (observer->HasObservations()) {
+        SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator, observer->GetUkmMetricId());
         needs_occlusion_tracking_ |= observer->ComputeIntersections(flags);
-      else
+      } else {
         tracked_explicit_root_observers_.erase(observer);
+      }
     }
     HeapVector<Member<IntersectionObservation>> observations_to_process;
     CopyToVector(tracked_implicit_root_observations_, observations_to_process);
     for (auto& observation : observations_to_process) {
+      SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator,
+                               observation->Observer()->GetUkmMetricId());
       observation->ComputeIntersection(flags);
       needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
     }

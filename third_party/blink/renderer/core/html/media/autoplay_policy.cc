@@ -200,7 +200,8 @@ void AutoplayPolicy::StartAutoplayMutedWhenVisible() {
   autoplay_intersection_observer_ = IntersectionObserver::Create(
       {}, {IntersectionObserver::kMinimumThreshold}, &element_->GetDocument(),
       WTF::BindRepeating(&AutoplayPolicy::OnIntersectionChangedForAutoplay,
-                         WrapWeakPersistent(this)));
+                         WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kMediaIntersectionObserver);
   autoplay_intersection_observer_->observe(element_);
 }
 

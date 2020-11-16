@@ -2001,6 +2001,12 @@ be describing additional metrics about the same event.
       First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="DisplayLockIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for
+      DisplayLockDocumentState, in microseconds.
+    </summary>
+  </metric>
   <metric name="ForcedStyleAndLayout">
     <summary>
       The time spent in forced style recalc and layouts, between navigation and
@@ -2032,16 +2038,34 @@ be describing additional metrics about the same event.
       and First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="JavascriptIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for javascript observers, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="Layout">
     <summary>
       The time spent in layout document lifecycle work, between navigation and
       First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="LazyLoadIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for lazy loading, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="MainFrame">
     <summary>
       The time spent in ProxyMain::BeginMainFrame, between navigation and First
       Contentful Paint, in microseconds.
+    </summary>
+  </metric>
+  <metric name="MediaIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for media elements, in
+      microseconds.
     </summary>
   </metric>
   <metric name="Paint">
@@ -2426,6 +2450,26 @@ be describing additional metrics about the same event.
       int in the range [0,100].
     </summary>
   </metric>
+  <metric name="DisplayLockIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for
+      DisplayLockDocumentState, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DisplayLockIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      DisplayLockDocumentState, in microseconds.
+    </summary>
+  </metric>
   <metric name="ForcedStyleAndLayout">
     <summary>
       The time taken by forced style recalc and layouts in microseconds between
@@ -2720,6 +2764,26 @@ be describing additional metrics about the same event.
       observer state. An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="JavascriptIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for javascript observers, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="JavascriptIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      Javascript observers, in microseconds.
+    </summary>
+  </metric>
   <metric name="Layout">
     <summary>
       The time taken for layout for the main frame in microseconds during the
@@ -2746,6 +2810,26 @@ be describing additional metrics about the same event.
     <summary>
       The percentage of the main frame time used in layout work. An int in the
       range [0,100].
+    </summary>
+  </metric>
+  <metric name="LazyLoadIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for lazy loading, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="LazyLoadIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      lazy loading, in microseconds.
     </summary>
   </metric>
   <metric name="MainFrame">
@@ -2801,6 +2885,26 @@ be describing additional metrics about the same event.
       the following values to determine if a reason was present:
       CompositorAnimation: 1, MainThreadAnimation: 2, PinchZoom: 4, RAF: 8,
       TouchScroll: 16, Universal: 32, Video: 64 and WheelScroll: 128.
+    </summary>
+  </metric>
+  <metric name="MediaIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for media elements, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MediaIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      media elements, in microseconds.
     </summary>
   </metric>
   <metric name="Paint">

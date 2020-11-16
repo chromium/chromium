@@ -39,6 +39,9 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
   // TODO(szager): Add tests for the synchronous delivery code path. There is
   // already some indirect coverage by unit tests exercising features that rely
   // on it, but we should have some direct coverage in here.
+  LocalFrameUkmAggregator::MetricId GetUkmMetricId() const override {
+    return LocalFrameUkmAggregator::kJavascriptIntersectionObserver;
+  }
   IntersectionObserver::DeliveryBehavior GetDeliveryBehavior() const override {
     return IntersectionObserver::kPostTaskToDeliver;
   }

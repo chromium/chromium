@@ -185,7 +185,8 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
             GetLazyImageLoadingViewportDistanceThresholdPx(*root_document))},
         {std::numeric_limits<float>::min()}, root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                           WrapWeakPersistent(this)));
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
   }
   lazy_load_intersection_observer_->observe(element);
 
@@ -262,7 +263,8 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
     visibility_metrics_observer_ = IntersectionObserver::Create(
         {}, {std::numeric_limits<float>::min()}, root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
-                           WrapWeakPersistent(this)));
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
   }
   visibility_metrics_observer_->observe(image_element);
 }

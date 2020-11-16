@@ -184,7 +184,8 @@ void VideoWakeLock::StartIntersectionObserver() {
       {}, {IntersectionObserver::kMinimumThreshold},
       &VideoElement().GetDocument(),
       WTF::BindRepeating(&VideoWakeLock::OnVisibilityChanged,
-                         WrapWeakPersistent(this)));
+                         WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kMediaIntersectionObserver);
   intersection_observer_->observe(&VideoElement());
 }
 

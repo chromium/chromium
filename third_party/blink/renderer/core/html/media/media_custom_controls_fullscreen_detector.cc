@@ -111,6 +111,7 @@ void MediaCustomControlsFullscreenDetector::Attach() {
       WTF::BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kMediaIntersectionObserver,
       IntersectionObserver::kDeliverDuringPostLifecycleSteps,
       IntersectionObserver::kFractionOfRoot, 0, false, true);
   viewport_intersection_observer_->observe(&VideoElement());
