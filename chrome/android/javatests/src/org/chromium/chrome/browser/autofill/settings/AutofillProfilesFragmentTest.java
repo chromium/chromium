@@ -112,9 +112,39 @@ public class AutofillProfilesFragmentTest {
                         AutofillProfilesFragment.PREF_NEW_PROFILE);
         Assert.assertNotNull(addProfile);
 
-        // Try to add an incomplete profile.
+        // Add an incomplete profile.
         updatePreferencesAndWait(autofillProfileFragment, addProfile, new String[] {"Mike Doe"},
-                R.id.editor_dialog_done_button, true);
+                R.id.editor_dialog_done_button, false);
+
+        // Incomplete profile should still be added.
+        Assert.assertEquals(7 /* One toggle + one add button + five profiles. */,
+                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
+        AutofillProfileEditorPreference addedProfile =
+                (AutofillProfileEditorPreference) fragment.findPreference("Mike Doe");
+        Assert.assertNotNull(addedProfile);
+        activity.finish();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAddProfileWithInvalidPhone() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillProfilesFragment autofillProfileFragment =
+                (AutofillProfilesFragment) activity.getMainFragment();
+
+        // Check the preferences on the initial screen.
+        Assert.assertEquals(6 /* One toggle + one add button + four profiles. */,
+                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
+        PreferenceFragmentCompat fragment = (PreferenceFragmentCompat) activity.getMainFragment();
+        AutofillProfileEditorPreference addProfile =
+                (AutofillProfileEditorPreference) fragment.findPreference(
+                        AutofillProfilesFragment.PREF_NEW_PROFILE);
+        Assert.assertNotNull(addProfile);
+
+        // Try to add a profile with invalid phone.
+        updatePreferencesAndWait(autofillProfileFragment, addProfile,
+                new String[] {"", "", "", "", "", "", "123"}, R.id.editor_dialog_done_button, true);
         activity.finish();
     }
 
@@ -254,10 +284,12 @@ public class AutofillProfilesFragmentTest {
         // The keyboard is shown as soon as AutofillProfileEditorPreference comes into view.
         waitForKeyboardStatus(true, activity);
 
+        final List<EditText> fields =
+                fragment.getEditorDialogForTest().getEditableTextFieldsForTest();
+        // Ensure the first text field is focused.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { fields.get(0).requestFocus(); });
         // Hide the keyboard.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields =
-                    fragment.getEditorDialogForTest().getEditableTextFieldsForTest();
             KeyboardVisibilityDelegate.getInstance().hideKeyboard(fields.get(0));
         });
         // Check that the keyboard is hidden.

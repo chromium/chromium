@@ -52,11 +52,12 @@ public class AddressEditor
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
-    private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
-    private final CountryAwarePhoneNumberValidator mPhoneValidator;
     @Purpose
     private final int mPurpose;
+    private final boolean mCheckRequiredFields;
     private final boolean mSaveToDisk;
+    private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
+    private final CountryAwarePhoneNumberValidator mPhoneValidator;
     @Nullable
     private AutofillProfileBridge mAutofillProfileBridge;
     @Nullable
@@ -84,10 +85,11 @@ public class AddressEditor
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditor(@Purpose int purpose, boolean saveToDisk) {
-        mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
-        mPhoneValidator = new CountryAwarePhoneNumberValidator();
         mPurpose = purpose;
+        mCheckRequiredFields = mPurpose != Purpose.AUTOFILL_SETTINGS;
         mSaveToDisk = saveToDisk;
+        mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
+        mPhoneValidator = new CountryAwarePhoneNumberValidator(!mCheckRequiredFields);
     }
 
     /**
@@ -155,7 +157,7 @@ public class AddressEditor
      *         ...                <-- field order, presence, required, and labels depend on country.
      * [ an address field    ]  /
      * [ an address field    ] /
-     * [ phone number field  ] <----- phone is always present and required.
+     * [ phone number field  ] <----- phone is always present.
      * [ email address field ] <----- only present if purpose is Purpose.AUTOFILL_SETTINGS.
      */
     @Override
@@ -248,13 +250,16 @@ public class AddressEditor
                     EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
         }
 
-
-        // Phone number is present and required for all countries.
+        // Phone number is present for all countries.
         if (mPhoneField == null) {
+            String requiredErrorMessage = mCheckRequiredFields
+                    ? mContext.getString(
+                            R.string.pref_edit_dialog_field_required_validation_message)
+                    : null;
             mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
                     mContext.getString(R.string.autofill_profile_editor_phone_number),
                     mPhoneNumbers, mPhoneFormatter, mPhoneValidator, null /* valueIconGenerator */,
-                    mContext.getString(R.string.pref_edit_dialog_field_required_validation_message),
+                    requiredErrorMessage,
                     mContext.getString(R.string.payments_phone_invalid_validation_message),
                     null /* value */);
         }
@@ -288,13 +293,19 @@ public class AddressEditor
             cancelCallback.onResult(toEdit);
         });
 
-        // If the user clicks [Done], save changes on disk, mark the address "complete," and send it
-        // back to the caller.
+        // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
+        // and send it back to the caller.
         mEditor.setDoneCallback(() -> {
             mAdminAreasLoaded = true;
             PersonalDataManager.getInstance().cancelPendingGetSubKeys();
             commitChanges(mProfile);
-            address.completeAddress(mProfile);
+            if (mCheckRequiredFields) {
+                address.completeAddress(mProfile);
+            } else {
+                // The address cannot be marked "complete" because it has not been checked
+                // for all required fields.
+                address.updateAddress(mProfile);
+            }
             doneCallback.onResult(address);
         });
 
@@ -506,12 +517,12 @@ public class AddressEditor
 
             // Libaddressinput formats do not always require the full name (RECIPIENT), but
             // PaymentRequest does.
-            if (component.isRequired || component.id == AddressField.RECIPIENT) {
-                field.setRequiredErrorMessage(mContext.getString(
-                        R.string.pref_edit_dialog_field_required_validation_message));
-            } else {
-                field.setRequiredErrorMessage(null);
-            }
+            field.setRequiredErrorMessage(mCheckRequiredFields
+                                    && (component.isRequired
+                                            || component.id == AddressField.RECIPIENT)
+                            ? mContext.getString(
+                                    R.string.pref_edit_dialog_field_required_validation_message)
+                            : null);
 
             field.setCustomErrorMessage(getAddressError(component.id));
             mEditor.addField(field);
@@ -526,6 +537,16 @@ public class AddressEditor
     private static class CountryAwarePhoneNumberValidator implements EditorFieldValidator {
         @Nullable
         private String mCountryCode;
+        private boolean mAllowEmptyValue;
+
+        /**
+         * Builds a country based phone number validator.
+         *
+         * @param allowEmptyValue whether null or 0-length string is considered valid.
+         */
+        CountryAwarePhoneNumberValidator(boolean allowEmptyValue) {
+            mAllowEmptyValue = allowEmptyValue;
+        }
 
         /**
          * Sets the country code used to validate the phone number.
@@ -542,8 +563,9 @@ public class AddressEditor
             // invalid, crbug.com/736387.
             // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
             // updated frequently (daily) to do more strict validation.
-            return value != null
-                    && PhoneNumberUtil.isPossibleNumber(value.toString(), mCountryCode);
+            return TextUtils.isEmpty(value)
+                    ? mAllowEmptyValue
+                    : PhoneNumberUtil.isPossibleNumber(value.toString(), mCountryCode);
         }
 
         @Override

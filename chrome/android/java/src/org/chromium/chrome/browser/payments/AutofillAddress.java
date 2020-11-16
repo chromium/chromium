@@ -93,12 +93,25 @@ public class AutofillAddress extends EditableOption {
     }
 
     /**
-     * Updates the address and marks it "complete." Called after the user has edited this address.
+     * Updates the address and marks it "complete".
+     * Called after the user has edited this address.
      * Updates the identifier and labels.
      *
      * @param profile The new profile to use.
      */
     public void completeAddress(AutofillProfile profile) {
+        updateAddress(profile);
+        assert mIsComplete;
+    }
+
+    /**
+     * Updates the address and its completeness if needed.
+     * Called after the user has edited this address.
+     * Updates the identifier and labels.
+     *
+     * @param profile The new profile to use.
+     */
+    public void updateAddress(AutofillProfile profile) {
         // Since the profile changed, our cached labels are now out of date. Set them to null so the
         // labels are recomputed next time they are needed.
         mShippingLabelWithCountry = null;
@@ -109,7 +122,6 @@ public class AutofillAddress extends EditableOption {
         updateIdentifierAndLabels(mProfile.getGUID(), mProfile.getFullName(), mProfile.getLabel(),
                 mProfile.getPhoneNumber());
         checkAndUpdateAddressCompleteness();
-        assert mIsComplete;
     }
 
     /**
