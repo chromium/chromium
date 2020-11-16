@@ -90,6 +90,7 @@ import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -270,12 +271,13 @@ public class AppBannerManagerTest {
         });
     }
 
-    private AppBannerManager getAppBannerManager(Tab tab) {
-        return AppBannerManager.forTab(tab);
+    private AppBannerManager getAppBannerManager(WebContents webContents) {
+        return AppBannerManager.forWebContents(webContents);
     }
 
     private void waitForBannerManager(Tab tab) {
-        CriteriaHelper.pollUiThread(() -> !getAppBannerManager(tab).isRunningForTesting());
+        CriteriaHelper.pollUiThread(
+                () -> !getAppBannerManager(tab.getWebContents()).isRunningForTesting());
     }
 
     private void navigateToUrlAndWaitForBannerManager(
@@ -288,7 +290,8 @@ public class AppBannerManagerTest {
     private void waitUntilAppDetailsRetrieved(
             ChromeActivityTestRule<? extends ChromeActivity> rule, final int numExpected) {
         CriteriaHelper.pollUiThread(() -> {
-            AppBannerManager manager = getAppBannerManager(rule.getActivity().getActivityTab());
+            AppBannerManager manager =
+                    getAppBannerManager(rule.getActivity().getActivityTab().getWebContents());
             Criteria.checkThat(mDetailsDelegate.mNumRetrieved, Matchers.is(numExpected));
             Criteria.checkThat(manager.isRunningForTesting(), Matchers.is(false));
         });
@@ -309,7 +312,7 @@ public class AppBannerManagerTest {
     private static String getExpectedDialogTitle(Tab tab) throws Exception {
         String title = ThreadUtils.runOnUiThreadBlocking(() -> {
             return TabUtils.getActivity(tab).getString(
-                    AppBannerManager.getHomescreenLanguageOption(tab).titleTextId);
+                    AppBannerManager.getHomescreenLanguageOption(tab.getWebContents()).titleTextId);
         });
         return title;
     }

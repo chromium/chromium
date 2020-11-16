@@ -35,6 +35,7 @@ public class AddToHomescreenCoordinator {
     @VisibleForTesting
     ModalDialogManager mModalDialogManager;
     private WindowAndroid mWindowAndroid;
+    // May be null during tests.
     private Tab mTab;
 
     @VisibleForTesting
@@ -104,7 +105,8 @@ public class AddToHomescreenCoordinator {
         AddToHomescreenMediator addToHomescreenMediator =
                 new AddToHomescreenMediator(model, mWindowAndroid);
         PropertyModelChangeProcessor.create(model,
-                initView(AppBannerManager.getHomescreenLanguageOption(mTab),
+                initView(AppBannerManager.getHomescreenLanguageOption(
+                                 mTab == null ? null : mTab.getWebContents()),
                         addToHomescreenMediator),
                 AddToHomescreenViewBinder::bind);
         return addToHomescreenMediator;

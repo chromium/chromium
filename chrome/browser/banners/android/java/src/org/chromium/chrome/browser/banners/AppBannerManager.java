@@ -17,14 +17,13 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Manages an AppBannerInfoBar for a Tab.
+ * Manages an AppBannerInfoBar for a WebContents.
  *
  * The AppBannerManager is responsible for fetching details about native apps to display in the
  * banner. The actual observation of the WebContents (which triggers the automatic creation and
@@ -165,9 +164,10 @@ public class AppBannerManager {
     }
 
     /** Returns the language option to use for the add to homescreen dialog and menu item. */
-    public static InstallStringPair getHomescreenLanguageOption(Tab currentTab) {
-        AppBannerManager manager = currentTab != null ? AppBannerManager.forTab(currentTab) : null;
-        if (manager != null && manager.getIsPwa(currentTab)) {
+    public static InstallStringPair getHomescreenLanguageOption(WebContents webContents) {
+        AppBannerManager manager =
+                webContents != null ? AppBannerManager.forWebContents(webContents) : null;
+        if (manager != null && manager.getIsPwa(webContents)) {
             return PWA_PAIR;
         } else {
             return NON_PWA_PAIR;
@@ -205,19 +205,18 @@ public class AppBannerManager {
     }
 
     /** Returns the AppBannerManager object. This is owned by the C++ banner manager. */
-    public static AppBannerManager forTab(Tab tab) {
+    public static AppBannerManager forWebContents(WebContents contents) {
         ThreadUtils.assertOnUiThread();
-        return AppBannerManagerJni.get().getJavaBannerManagerForWebContents(tab.getWebContents());
+        return AppBannerManagerJni.get().getJavaBannerManagerForWebContents(contents);
     }
 
     /**
-     * Checks whether the tab has navigated to a PWA.
-     * @param tab The tab to check.
-     * @return true if the tab has been determined to contain a PWA.
+     * Checks whether the renderer has navigated to a PWA.
+     * @param contents The web contents to check.
+     * @return true if the site has been determined to contain a PWA.
      */
-    public boolean getIsPwa(Tab tab) {
-        return !TextUtils.equals(
-                "", AppBannerManagerJni.get().getInstallableWebAppName(tab.getWebContents()));
+    public boolean getIsPwa(WebContents contents) {
+        return !TextUtils.equals("", AppBannerManagerJni.get().getInstallableWebAppName(contents));
     }
 
     @NativeMethods

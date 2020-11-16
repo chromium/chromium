@@ -637,12 +637,13 @@ public class PortalsTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(tab.getTitle(), Matchers.is("Web app banner test page"));
         });
-        CriteriaHelper.pollUiThread(() -> !AppBannerManager.forTab(tab).isRunningForTesting());
+        CriteriaHelper.pollUiThread(
+                () -> !AppBannerManager.forWebContents(tab.getWebContents()).isRunningForTesting());
         TouchCommon.singleClickView(tab.getView());
 
         String expectedDialogTitle = ThreadUtils.runOnUiThreadBlocking(() -> {
             return mActivityTestRule.getActivity().getString(
-                    AppBannerManager.getHomescreenLanguageOption(tab).titleTextId);
+                    AppBannerManager.getHomescreenLanguageOption(tab.getWebContents()).titleTextId);
         });
         UiObject dialogUiObject = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                                           .findObject(new UiSelector().text(expectedDialogTitle));
