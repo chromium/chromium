@@ -148,6 +148,20 @@
       Se questo criterio viene impostato su vero, la funzionalità verrà attivata e gli utenti potranno modificarla.
       Per impostazione predefinita questo criterio è impostato su falso, il che significa che non vengono suggerite emoji e gli utenti non possono ignorarlo.</translation>
 <translation id="1243570869342663665">Controlla il filtro dei contenuti per adulti di SafeSites.</translation>
+<translation id="1244309789361056660">Questo criterio è stato rimosso in M87 e le home directory vengono automaticamente integrate a ext4 all'accesso.
+      La configurazione del criterio consente di specificare l'azione da eseguire quando la home directory dell'utente è stata creata con la crittografia ecryptfs. A meno che le home directory con crittografia ecryptfs non eseguano la migrazione alla crittografia ext4, l'esecuzione delle app Android potrebbe interrompersi.
+
+      L'impostazione del criterio su:
+
+      * Migrate (o su opzioni non supportate come AskUser o AskForEcryptfsArcUsers) implica la migrazione automatica delle directory a ext4 all'accesso, senza richiedere il consenso dell'utente.
+
+      * Wipe o MinimalMigrate implica che, all'accesso, le nuove home directory con crittografia ext4 sostituiscano le directory con crittografia ecryptfs precedenti. Per aiutare l'utente a evitare di effettuare ripetuti accessi, MinimalMigrates tenta di conservare i token di accesso.
+
+      * DisallowArc, o la sua mancata configurazione, impedisce la migrazione e interrompe l'esecuzione delle app Android dell'utente.
+
+      Il criterio non si applica agli utenti kiosk.
+
+      Avviso: Wipe e MinimalMigrate comportano la rimozione dei dati locali.</translation>
 <translation id="1247850578871017740">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.</translation>
@@ -571,13 +585,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="201557587962247231">Frequenza dei caricamenti del rapporto sullo stato del dispositivo</translation>
 <translation id="2017301949684549118">URL per abb web da installare automaticamente.</translation>
 <translation id="2017459564744167827">Vedi <ph name="REFERENCE_URL" /> per ulteriori informazioni su schema e formattazione.</translation>
-<translation id="2018836497795982119">Consente di specificare in millisecondi il periodo di tempo per cui vengono richieste informazioni sui criteri relativi agli utenti al servizio di gestione del dispositivo.
-
-      Se questo criterio viene impostato, il valore predefinito di tre ore viene ignorato. L'intervallo dei valori validi per questo criterio è compreso tra 1800000 (30 minuti) e 86400000 (un giorno). I valori non compresi in questo intervallo verranno bloccati al relativo limite. Se la piattaforma supporta le notifiche relative ai criteri, il ritardo dell'aggiornamento verrà impostato su 24 ore perché è previsto che le notifiche relative ai criteri forzino l'aggiornamento automatico quando cambiano i criteri.
-
-      Se questo criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizzerà il valore predefinito di tre ore.
-
-      Se la piattaforma supporta le notifiche relative ai criteri, il ritardo dell'aggiornamento verrà impostato su 24 ore (vengono ignorati tutti i valori predefiniti e il valore di questo criterio) perché è previsto che le notifiche relative ai criteri forzino l'aggiornamento automatico quando cambiano i criteri, rendendo superflui aggiornamenti più frequenti.</translation>
 <translation id="2024476116966025075">Configura il nome di dominio richiesto per i client di accesso remoto</translation>
 <translation id="2024821084720338323">Se viene attivata la funzionalità di <ph name="PRODUCT_NAME" />, i timer di JavaScript nelle schede in background vengono limitati e uniti in modo aggressivo ed eseguiti non più di una volta al minuto dopo che la pagina è stata in background per almeno cinque minuti.
 
@@ -787,13 +794,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio è impostato su Fast, se possibile <ph name="PRODUCT_NAME" /> eviterà la rasterizzazione: ridurre la quantità di rasterizzazione può contribuire a diminuire le dimensioni dei processi di stampa e aumentare la velocità di stampa.
 
       Se il criterio non è impostato, <ph name="PRODUCT_NAME" /> opererà in modalità Full.</translation>
-<translation id="2336221492251647548">Se il criterio è impostato su True, la tastiera sullo schermo è attivata all'accesso. Se il criterio è impostato su False, la tastiera sullo schermo è disattivata all'accesso.
-
-      Se imposti il criterio, gli utenti possono attivare o disattivare temporaneamente la tastiera sullo schermo. Quando la schermata di accesso viene ricaricata o rimane inattiva per un minuto, la tastiera sullo schermo torna allo stato originale.
-
-      Se il criterio non è impostato, la tastiera sullo schermo è disattivata nella schermata di accesso. Gli utenti possono attivarla in qualsiasi momento e il suo stato nella schermata di accesso persiste per tutti gli utenti.
-
-          Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
 <translation id="2349117476121456297">Se il criterio è impostato su True, i tasti della fila superiore della tastiera riprodurranno i comandi dei tasti funzione. Per ripristinare il comportamento dei tasti multimediali, è necessario premere il tasto per la ricerca.
 
@@ -1005,11 +1005,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 Se attivi o disattivi questa impostazione, gli utenti non potranno cambiarla o ignorarla.
 
 Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o meno la funzione proxy di compressione dei dati.</translation>
-<translation id="2575738503503093841">Consente di specificare il ritardo massimo in millisecondi tra la ricezione dell'invalidamento di un criterio e il recupero del nuovo criterio da parte del servizio di gestione del dispositivo.
-
-      Se questo criterio viene impostato, il suo valore sostituisce il valore predefinito di 10.000 millisecondi. I valori validi di questo criterio sono compresi tra 1000 (1 secondo) e 300.000 (5 minuti). I valori non compresi in questo intervallo verranno bloccati al relativo limite.
-
-      Se questo criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizzerà il valore predefinito di 10.000 millisecondi.</translation>
 <translation id="257788512393330403">Richiedi inserimento della password ogni sei ore</translation>
 <translation id="2587719089023392205">Imposta <ph name="PRODUCT_NAME" /> come browser predefinito</translation>
 <translation id="2588252329503406673">La configurazione del criterio consente di impostare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando non viene rilevata alcuna attività utente per un determinato periodo di tempo durante la visualizzazione della schermata di accesso. Il criterio consente di controllare diverse impostazioni. Per conoscere la semantica e gli intervalli di valori di ognuna di esse, consulta i relativi criteri che controllano la gestione dell'alimentazione all'interno di una sessione.
@@ -1027,7 +1022,7 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se la norma è impostata su false, l'accelerazione hardware verrà disattivata.</translation>
 <translation id="259289618675490104">Se il criterio viene impostato su "All" (valore 0) o se non viene configurato, gli utenti possono gestire i certificati. Se viene impostato su "None" (valore 2), gli utenti possono soltanto visualizzare i certificati, ma non possono gestirli.
 
-      Se il criterio viene impostato su "UserOnly", gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
+      Se il criterio viene impostato su "UserOnly" (valore 1), gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2604182581880595781">Configura le norme relative alla funzione Condivisioni file di rete</translation>
@@ -1152,9 +1147,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
-<translation id="2791750069439339908">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene interrotta la ricarica della batteria. Si basa su una percentuale del livello di ricarica della batteria. Il valore del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> deve essere inferiore di almeno 5 punti percentuali rispetto a quello del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, viene applicata la modalità di ricarica della batteria di <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
 <translation id="2796714419743648316">Lista consentita limiti di utilizzo per app</translation>
 <translation id="2796896367838042659">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
@@ -1655,10 +1647,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
       Tieni presente che in precedenza questo criterio è stato erroneamente abilitato su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
 <translation id="348495353354674884">Attiva tastiera virtuale</translation>
-<translation id="3487623755010328395">
-        Se è impostata questa norma, <ph name="PRODUCT_NAME" /> proverà a registrarsi e ad applicare a tutti i profili la norma relativa alla cloud associata.
-
-        Il valore di questa norma è un token di registrazione che è possibile recuperare dalla Console amministrazione Google.</translation>
 <translation id="3492834335089638487">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per un dispositivo.
 
       Se il valore di questo criterio non viene impostato, la funzionalità viene considerata vietata.
@@ -1772,12 +1760,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se il criterio viene impostato su Disattivato, l'avvio tramite CA viene disabilitato.
 
       Se viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il riavvio tramite CA viene disattivato e gli utenti non possono modificare questa impostazione.</translation>
-<translation id="3660510274595679517">
-        Se questo criterio viene impostato su true, la registrazione alla gestione della cloud è obbligatoria e blocca il processo di avvio di Chrome, qualora l'esito fosse negativo.
-
-        Se questo criterio non viene impostato o viene impostato su false, la registrazione alla gestione della cloud è facoltativa e non blocca il processo di avvio di Chrome, anche qualora l'esito fosse negativo.
-
-        Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina e può essere impostato tramite il file di criteri registry o GPO su Windows, plist su Mac e JSON su Linux.</translation>
 <translation id="3660562134618097814">Trasferisci i cookie dell'IdP SAML durante l'accesso</translation>
 <translation id="3691155504326059225">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab venga impostato come URL della pagina iniziale dell'utente.
 
@@ -1817,7 +1799,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3709266154059827597">Configura blacklist per l'installazione delle estensioni</translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3715569262675717862">Autenticazione basata su certificati client</translation>
-<translation id="3727476641336727380">A meno che <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> sia impostato su Disattivato, la mancata configurazione o l'impostazione del criterio <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> su Attivato, consente i wakelock dello schermo per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock dello schermo tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
+<translation id="3727476641336727380">A meno che <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> non sia impostato su Disattivato, la mancata configurazione o l'impostazione del criterio <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> su Attivato consente i wakelock dello schermo per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock dello schermo tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock dello schermo vengono retrocesse a richieste di wakelock del sistema.</translation>
 <translation id="3727675072430693164">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware relative ai componenti SoC.
@@ -2011,7 +1993,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se il criterio dello sfondo del dispositivo non viene impostato, è il criterio dello sfondo dell'utente a definire cosa mostrare se si imposta il criterio dello sfondo del dispositivo.</translation>
 <translation id="3964298692570794635">Consenti contenuti non sicuri su questi siti</translation>
 <translation id="3965339130942650562">Timeout fino a esecuzione uscita utente non attivo</translation>
-<translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su Vero e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
+<translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su True e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente lo shelf</translation>
@@ -2032,9 +2014,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se la norma è impostata su False, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> non verranno visualizzati gli utenti esistenti. Verrà visualizzata la normale schermata di accesso (richiesta di email utente e password o telefono) o la schermata interstiziale SAML (se attivata tramite la norma <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a meno che non sia stata configurata una sessione gestita. Quando viene configurata una sessione gestita, verranno visualizzati solo gli account della sessione gestita, consentendo di selezionarne uno.
 
       Tieni presente che questa norma non influisce sull'eliminazione o meno dei dati utenti locali sul dispositivo.</translation>
-<translation id="4009527123617846557">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene avviata la ricarica della batteria. Si basa su una percentuale del livello di esaurimento della batteria. Il valore deve essere di almeno 5 punti percentuali inferiore a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, viene applicata la modalità di ricarica standard della batteria.</translation>
 <translation id="4010738624545340900">Consenti richiamo di finestre di dialogo di selezione file</translation>
 <translation id="401260868452018796">Posiziona la shelf nella parte inferiore dello schermo</translation>
 <translation id="4012737788880122133">Se questa norma viene impostata su True, gli aggiornamenti automatici vengono disattivati.
@@ -2042,6 +2021,15 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 Se questa norma non viene configurata o viene impostata su False, i dispositivi <ph name="PRODUCT_OS_NAME" /> controllano automaticamente la disponibilità di aggiornamenti.
 
 Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per consentire agli utenti di ricevere gli aggiornamenti software e le correzioni di sicurezza fondamentali. Disattivare gli aggiornamenti automatici potrebbe mettere a rischio gli utenti.</translation>
+<translation id="4016367078069682737">Questo criterio è stato rimosso da M61.
+
+      Consente di specificare il comportamento di un dispositivo con ecryptfs e richiede la transizione alla crittografia ext4.
+
+      Se il criterio viene impostato su "DisallowArc", le app Android vengono disattivate per tutti gli utenti sul dispositivo (incluse quelle che dispongono già della crittografia ext4) e agli utenti non verrà offerta la possibilità di migrazione dalla crittografia ecryptfs alla crittografia ext4.
+
+      Se il criterio viene impostato su "AllowMigration", gli utenti con le home directory criptate tramite ecryptfs hanno la possibilità di eseguirne la migrazione alla crittografia ext4 in base alle necessità (al momento quando Android N sarà disponibile sul dispositivo).
+
+      Non viene applicato alle app kiosk, che vengono migrate automaticamente. Se non viene configurato, il dispositivo si comporta come se fosse stato scelto "DisallowArc".</translation>
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
@@ -2075,7 +2063,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
 <translation id="4103177213841380258">Questo criterio consente di gestire l'accesso alle funzionalità controllabili nell'UI di rilevamento dei dispositivi locali (<ph name="CHROME_DEVICES_LINK" />), in cui vengono mostrati i dispositivi rilevabili accanto all'utente, nonché i dispositivi cloud a cui è registrato. Su tutti i sistemi operativi tranne <ph name="PRODUCT_OS_NAME" />, l'UI di rilevamento dei dispositivi locali consente inoltre agli utenti di aggiungere a <ph name="CLOUD_PRINT_NAME" /> stampanti classiche collegate ai propri computer.
 
-      Se il criterio non viene configurato, questa funzionalità viene attivata.</translation>
+      Se il criterio non viene configurato, questa funzionalità rimane attiva.</translation>
 <translation id="4103289232974211388">Reindirizza a IdP SAML dopo la conferma dell'utente</translation>
 <translation id="4105884561459127998">Consente di configurare il tipo di autenticazione per gli accessi SAML.
 
@@ -2360,6 +2348,15 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se viene selezionata l'opzione "Non attiva", non è possibile aprire le pagine in Modalità di navigazione in incognito.
 
       Se viene selezionata l'opzione "Forzata", è possibile aprire le pagine SOLTANTO in Modalità di navigazione in incognito. Tieni presente che l'opzione "Forzata" non funziona per Android-on-Chrome.</translation>
+<translation id="4594467366027975448">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizza per memorizzare la copia di roaming dei profili.
+
+      Se il criterio viene configurato, <ph name="PRODUCT_NAME" /> utilizza la directory indicata per memorizzare la copia di roaming dei profili se è stato attivato il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />. Se il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> viene disattivato o se non viene configurato, il valore memorizzato in questo criterio non viene utilizzato.
+
+      Visita il sito https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables per consultare un elenco di variabili utilizzabili.
+
+      Sulle piattaforme non Windows, il criterio deve essere configurato affinché i profili di roaming funzionino.
+
+      Se non viene configurato su Windows, viene utilizzato il percorso di profilo di roaming predefinito.</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
 <translation id="4604931264910482931">Configura lista nera di messaggi nativi</translation>
 <translation id="4607416370554533118">La configurazione del criterio consente di creare un elenco di pattern URL che specifica i siti per cui Chrome può selezionare automaticamente un certificato client. Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
@@ -2570,7 +2567,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se questo criterio è impostato su false, in <ph name="PRODUCT_NAME" /> non sarà possibile creare nuovi profili da Gestione utenti.</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
-<translation id="4978405676361550165">Se viene impostata la norma "OffHours", i criteri relativi ai dispositivi specificate vengono ignorate (vengono usate le impostazioni predefinite dei criteri) durante gli intervalli di tempo definiti. I criteri relativi ai dispositivi vengono riapplicati da Chrome ogni volta che inizia o finisce il periodo definito in "OffHours". L'utente verrà informato e obbligato a uscire dall'account quando vengono cambiate le impostazioni relative alla fine del periodo "OffHours" e ai criteri relativi ai dispositivi (ad esempio se l'utente ha eseguito l'accesso con un account non consentito).</translation>
 <translation id="4980635395568992380">Tipo di dati:</translation>
 <translation id="4983201894483989687">Consenti esecuzione dei plug-in obsoleti</translation>
 <translation id="4986560318567565414">Percorso a Chrome per cambiare il browser alternativo.</translation>
@@ -2998,13 +2994,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 
       Questo criterio non viene applicato agli switch del canale.</translation>
 <translation id="5526701598901867718">Tutto (non sicuro)</translation>
-<translation id="5529037166721644841">Consente di specificare in millisecondi il periodo di tempo per cui vengono richieste informazioni sui criteri relativi al dispositivo al servizio di gestione del dispositivo.
-
-      Se questa norma viene impostata, il valore predefinito di tre ore viene ignorato. L'intervallo dei valori validi per questa norma è compreso tra 1800000 (30 minuti) e 86400000 (un giorno). I valori non compresi in questo intervallo verranno bloccati al relativo limite.
-
-      Se questa norma non viene impostata, <ph name="PRODUCT_OS_NAME" /> utilizzerà il valore predefinito di tre ore.
-
-      Se la piattaforma supporta le notifiche relative ai criteri, il ritardo dell'aggiornamento verrà impostato su 24 ore (vengono ignorati tutti i valori predefiniti e il valore di questa norma) perché è previsto che le notifiche relative ai criteri forzino l'aggiornamento automatico quando cambiano i criteri, rendendo superflui aggiornamenti più frequenti.</translation>
 <translation id="5530347722229944744">Blocca download potenzialmente pericolosi</translation>
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
 <translation id="5540753481451194959">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
@@ -3187,6 +3176,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se è impostato su True, le informazioni sui VPD del dispositivo vengono segnalate.
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
+<translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5770738360657678870">Canale Dev (potrebbe essere instabile)</translation>
 <translation id="5774856474228476867">URL di ricerca del provider di ricerca predefinito</translation>
 <translation id="5775235485119094648">Carica la batteria mentre si trova in un intervallo stabilito.</translation>
@@ -3206,7 +3196,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Questo comportamento non viene attivato se Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per l'attivazione forzata di Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5836064773277134605">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto</translation>
-<translation id="5837898601525273156">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> viene configurato, l'impostazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> su Attivato consente di mantenere attivo il criterio di gestione della modalità di ricarica avanzata della batteria (se supportato dal dispositivo). Tramite un algoritmo di ricarica standard e altre tecniche al di fuori dell'orario di lavoro, questa modalità consente agli utenti di ottimizzare le condizioni della batteria Durante l'orario di lavoro, il sistema utilizza una ricarica express, consentendo alla batteria di ricaricarsi più rapidamente. Specifica quando il sistema viene utilizzato con maggiore frequenza ogni giorno e per quanto tempo tramite l'ora di inizio e la durata.
+<translation id="5837898601525273156">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> viene configurato, l'impostazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> su Attivato consente di mantenere attivo il criterio di gestione della modalità di ricarica avanzata della batteria (se supportato dal dispositivo). Tramite un algoritmo di ricarica standard e altre tecniche al di fuori dell'orario di lavoro, questa modalità consente agli utenti di ottimizzare le condizioni della batteria. Durante l'orario di lavoro, il sistema utilizza una ricarica express, consentendo alla batteria di ricaricarsi più rapidamente. Specifica quando il sistema viene utilizzato con maggiore frequenza ogni giorno e per quanto tempo tramite l'ora di inizio e la durata.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità di ricarica avanzata della batteria rimane disabilitata.
 
@@ -3285,12 +3275,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
 <translation id="5898486742390981550">Quando più utenti eseguono l'accesso, solo l'utente principale può utilizzare le app Android.</translation>
 <translation id="5901427587865226597">Solo stampa fronte/retro</translation>
-<translation id="5903898512448364160">
-      Se il criterio viene impostato su true, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
-      Se il criterio viene impostato su false o non viene configurato, in caso di conflitto il criterio relativo alla piattaforma prevale sul criterio relativo al cloud.
-
-      Questo criterio è disponibile soltanto come criterio obbligatorio relativo alla piattaforma del computer e interessa unicamente i criteri relativi al cloud in ambito computer.
-      </translation>
 <translation id="5905473632148429217">Attiva controlli OCSP/CRL online</translation>
 <translation id="5907283448020542268">A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i Servizi di geolocalizzazione rimangono disattivati durante la configurazione.
 
@@ -3357,9 +3341,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Se viene usato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per gli utenti. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
-<translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
+<translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> non venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
 
-      Se il criterio non viene configurato, è possibile applicare la modalità di ricarica standard della batteria (se supportata dal dispositivo) e gli utenti non possono modificarlo.
+      Se il criterio non viene configurato (se l'impostazione è supportata dal dispositivo), viene applicata la modalità di ricarica standard della batteria e gli utenti non possono modificarlo.
 
       Nota: se viene selezionata la modalità di ricarica personalizzata della batteria, vengono specificati anche i criteri <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
@@ -3368,6 +3352,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6070667616071269965">Layout da tastiera della schermata di accesso del dispositivo</translation>
 <translation id="6074963268421707432">Non consentire la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="6074964551275531965">Imposta il periodo di tempo per le notifiche relative agli aggiornamenti</translation>
+<translation id="6075316301208933536">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene interrotta la ricarica della batteria, in base alla percentuale di carica. Il valore del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> deve essere inferiore di almeno 5 punti percentuali rispetto a quello del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, viene applicata la modalità di ricarica della batteria di <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
 <translation id="6082161804984853051">L'impostazione del criterio determina l'utilizzo da parte di <ph name="PRODUCT_NAME" /> della directory che fornisci per l'archiviazione dei file memorizzati nella cache sul disco, indipendentemente dalla specificazione del flag --disk-cache-dir da parte degli utenti.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.
@@ -3481,13 +3468,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Ciò espone gli utenti a rischi di sicurezza correlati all'esecuzione del sottosistema audio senza limitazione tramite sandbox.
       Se questo criterio non viene impostato, verrà usata la configurazione predefinita per la sandbox dell'audio, che potrebbe differire in base alla piattaforma.
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
-<translation id="6255387031094435995">Consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello.
-
-        Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini, purché abbiano lo stesso ambito e lo stesso livello, i valori verranno uniti nel nuovo elenco dei criteri.
-
-        Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini, ma anche tra ambito e/o livello, verrà applicato il criterio con la priorità massima.
-
-        Se un criterio non si trova nell'elenco, nel caso in cui ci siano conflitti tra origine, ambito e/o livello, verrà applicato il criterio con la priorità massima.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
 <translation id="6273015149273504999">
@@ -3623,7 +3603,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
 <translation id="6473623140202114570">Configura l'elenco di domini sui quali Navigazione sicura non attiverà avvisi.</translation>
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
-<translation id="6478261301433199402">La configurazione del criterio consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare il criterio come stringa in formato JSON, per cui il campo <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> specifica dove l'immagine viene scaricata e il campo <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> come hash SHA-256 utilizzato per verificare l'integrità del download.</translation>
+<translation id="6478261301433199402">La configurazione del criterio consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare il criterio come stringa in formato JSON, con <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> che specifica da dove viene scaricata l'immagine e l'hash SHA-256 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> utilizzato per verificare l'integrità del download.</translation>
 <translation id="6485813825811798133">La configurazione del criterio consente di elencare pattern URL che specificano quale sito non può richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> viene applicato a tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -4089,6 +4069,9 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
       Queste norme consentono di configurare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per un determinato periodo di tempo.</translation>
+<translation id="7030205756530739128">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene avviata la ricarica della batteria, in base alla percentuale di carica. Il valore deve essere di almeno 5 punti percentuali inferiore a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, viene applicata la modalità di ricarica standard della batteria.</translation>
 <translation id="7032813174556919004">Disattiva DNS over HTTPS</translation>
 <translation id="7033778618670823541">Questo criterio consente di specificare un elenco di origini (URL) o modelli di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
 
@@ -4248,15 +4231,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7207095846245296855">Forza il filtro SafeSearch di Google</translation>
 <translation id="7211368186050418507">Non rilevare mai automaticamente il fuso orario</translation>
 <translation id="7216442368414164495">Consenti agli utenti di attivare i rapporti estesi di Navigazione sicura</translation>
-<translation id="7222749588229362483">Consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello.
-
-        L'unione avviene tra le chiavi di livello superiore del dizionario da ciascuna origine. In caso di conflitto tra chiavi, viene applicata quella che proviene dall'origine con la priorità massima.
-
-        Se un criterio è nell'elenco, in caso di conflitto tra due origini, purché facciano riferimento agli stessi ambiti e allo stesso livello, i valori verranno uniti in un nuovo dizionario del criterio.
-
-        Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini, ma anche tra ambito e/o livello, verrà applicato il criterio con la priorità massima.
-
-        Se un criterio non si trova nell'elenco, nel caso in cui ci siano conflitti tra origine, ambito e/o livello, verrà applicato il criterio con la priorità massima.</translation>
 <translation id="7229975860249300121">Contiene un'espressione regolare che viene usata per stabilire quali Account Google possono essere impostati come account principali del browser in <ph name="PRODUCT_NAME" /> (ossia l'account che viene scelto durante la procedura di attivazione della sincronizzazione).
 
       Viene visualizzato un errore appropriato se un utente cerca di impostare un account principale del browser con un nome utente non corrispondente allo schema indicato.
@@ -4554,7 +4528,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> sostituisce questo criterio.</translation>
 <translation id="7632147323011514740">Intervalli in cui è possibile avviare la procedura di aggiornamento delle istantanee dei dati ARC per le sessioni Ospite gestite</translation>
 <translation id="7632724434767231364">Nome della libreria GSSAPI</translation>
-<translation id="7635106595080609261">La mancata configurazione o l'impostazione del criterio su Attivato, consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
+<translation id="7635106595080609261">La mancata configurazione o l'impostazione del criterio su Attivato consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
 
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
@@ -4630,9 +4604,6 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
 
       Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
-<translation id="7724592140967451156">Se il criterio è impostato su true, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se il criterio è impostato su false, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
-
-      Se il criterio non viene configurato, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="7731026922044991970">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su tutti i siti</translation>
 <translation id="7732907212083471072">Criteri rimossi</translation>
 <translation id="77379430721695807">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
@@ -4676,7 +4647,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se viene impostato su Disattivato, agli utenti non viene richiesta alcuna password per sbloccare il dispositivo quando è in modalità di sospensione.
 
-      Se non viene configurato, gli utenti possono scegliere se dover inserire una password o meno per sbloccare il dispositivo quando è in modalità di sospensione.</translation>
+      Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo quando è in modalità di sospensione.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
@@ -4795,11 +4766,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8006219716745491366">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> consente di specificare un elenco di URL alternativi per l'estrazione dei termini di ricerca dal motore di ricerca. Gli URL devono includere la stringa <ph name="SEARCH_TERM_MARKER" />.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> non viene configurato, per l'estrazione dei termini di ricerca non vengono utilizzati URL alternativi.</translation>
-<translation id="8009554972280451023">Se attivi questa impostazione, le impostazioni memorizzate nei profili <ph name="PRODUCT_NAME" />, come i preferiti, i dati della compilazione automatica, le password e così via, saranno scritte anche in un file memorizzato nella cartella del profilo utente Roaming o in una posizione specificata dall'amministratore tramite la norma <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Se si attiva questa norma, viene disattivata la sincronizzazione nella cloud.
-
-      Se questa norma viene disattivata o non viene impostata, saranno utilizzati solo i normali profili locali.
-
-      La norma <ph name="SYNC_DISABLED_POLICY_NAME" /> consente di disattivare la sincronizzazione di tutti i dati e sostituisce la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8011935490612940798">Controlla la funzionalità di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="8027265928215448940">Elenco di impostazioni per i servizi dei connettori di Chrome Enterprise da applicare al connettore di Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene scaricato in Chrome.
@@ -5073,6 +5039,13 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su true o non viene impostato, all'utente viene concesso l'accesso root ai contenitori Crostini.
       Se il criterio viene impostato su false, all'utente non viene concesso l'accesso root ai contenitori Crostini nuovi ed esistenti.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
+<translation id="8417750118762775739">Se il criterio viene impostato su Disattivato, i popup indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /> possono accedere (tramite JavaScript) alla pagina che ha richiesto l'apertura del popup.
+
+      Se il criterio viene impostato su Attivato o se non viene configurato, la proprietà <ph name="WINDOW_OPENER_PROPERTY" /> viene impostata su <ph name="NULL_VALUE" />, a meno che l'ancoraggio specifichi <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Questo criterio verrà rimosso nella versione 95 di <ph name="PRODUCT_NAME" />.
+
+      Visita la pagina https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Questo criterio è deprecato. Utilizza il criterio "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di specificare quale host di messaggistica nativo non è soggetto all'elenco di host non consentiti. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
@@ -5191,9 +5164,9 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
-<translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita, l'indirizzo MAC designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
+<translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita l'indirizzo MAC del dock designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
 
-      Se "DeviceDockMacAddress" viene selezionato o se il criterio non viene configurato, viene utilizzato l'indirizzo MAC designato del dock.
+      Se "DeviceDockMacAddress" viene selezionato o se il criterio non viene configurato, viene utilizzato l'indirizzo MAC del dock designato per il dispositivo.
 
       Se "DeviceNicMacAddress" viene selezionato, viene utilizzato l'indirizzo MAC NIC (Network Interface Controller) del dispositivo.
 
@@ -5419,15 +5392,6 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="8947415621777543415">Segnala posizione del dispositivo</translation>
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
-<translation id="8952317565138994125">Consente di disattivare la sincronizzazione dei dati in <ph name="PRODUCT_NAME" /> tramite servizi di sincronizzazione in hosting su Google e di impedire agli utenti di modificare questa impostazione.
-
-      Se attivi questa impostazione, gli utenti non potranno modificarla o sostituirla in <ph name="PRODUCT_NAME" />.
-
-      Se questa norma non viene impostata, gli utenti potranno scegliere se utilizzare o meno Google Sync.
-
-      Per disattivare completamente Google Sync, si consiglia di disattivare il servizio Google Sync nella Console amministrazione Google.
-
-      Questa norma non deve essere attivata quando la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> è attiva, perché tale funzione ha la stessa funzionalità lato client. La sincronizzazione in hosting su Google viene completamente disattivata in questo caso.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8959992920425111821">Configurazione predefinita</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>

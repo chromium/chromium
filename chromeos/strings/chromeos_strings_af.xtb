@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">DNS-traagheid</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Pas op skandeergebied</translation>
 <translation id="1397738625398125236">Deurgang kan gepieng word</translation>
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
@@ -14,8 +15,10 @@
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
+<translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
 <translation id="1734367976349034509">Hierdie toestel is onder ondernemingbestuur</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
@@ -41,6 +44,7 @@
 <translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3188257591659621405">My lêers</translation>
+<translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
@@ -62,11 +66,13 @@
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
 <translation id="4027485274696301677">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="ENROLLMENT_DOMAIN" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="4034824040120875894">Drukker</translation>
+<translation id="4131410914670010031">Swart en wit</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Geskandeerde lêers is gestoor!</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
@@ -87,7 +93,6 @@
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Laat loop</translation>
-<translation id="4991056862642197104">Plaas jou dokument, en klik Skandeer om te begin</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="520299634122159966">Geen skandeerders is beskikbaar nie</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
@@ -108,6 +113,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6048107060512778456">Misluk – Papierknoop</translation>
+<translation id="6050189528197190982">Grysskaal</translation>
 <translation id="6058625436358447366">Voer jou ou en nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
 <translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
@@ -120,12 +126,14 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
+<translation id="65587193855025101">Plat oppervlak</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
+<translation id="6839141349259399400">Kan jy nie aan skandeerders koppel nie?</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -135,9 +143,11 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7855434858642800953">Geskandeerde lêer is gestoor!</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
+<translation id="8160445423316272678">Plaas jou dokument op die skandeerder en kies <ph name="SPAN_BEGIN" />Skandeer<ph name="SPAN_END" /> om te begin</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8294431847097064396">Bron</translation>
@@ -149,11 +159,14 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>
 <translation id="8726019395068607495">Gestop – deur is oop</translation>
+<translation id="8730621377337864115">Gedoen</translation>
 <translation id="8747900814994928677">Bevestig verandering</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>
 </translationbundle>

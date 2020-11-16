@@ -304,6 +304,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2102495993840063010">Android apps</translation>
 <translation id="2107021941795971877">Print supports</translation>
 <translation id="2108755909498034140">Restart your computer</translation>
+<translation id="2111166930115883695">Press space to play</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Ignored because it was overridden by <ph name="POLICY_NAME" />.</translation>
@@ -521,6 +522,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3010559122411665027">List entry "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3016780570757425217">Know your location</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, press tab then enter to remove suggestion.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Wrong policy type</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -763,6 +765,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Screen capture was resumed.</translation>
 <translation id="4067947977115446013">Add Valid Address</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
@@ -847,6 +850,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
+<translation id="4302514097724775343">Tap the dino to play</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Your file couldn’t be accessed</translation>
 <translation id="4305817255990598646">Switch</translation>
@@ -1175,7 +1179,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="560412284261940334">Management not supported</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">This site could be fake or fraudulent. Chrome recommends leaving now.</translation>
 <translation id="5610142619324316209">Checking the connection</translation>
 <translation id="5610807607761827392">You can manage cards and addresses in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Translate this page with Google Translate</translation>
@@ -1247,6 +1250,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5905445707201418379">Blocked according to <ph name="ORIGIN" />'s origin policy.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
+<translation id="5913377024445952699">Screen capture paused</translation>
 <translation id="59174027418879706">Enabled</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">On</translation>
@@ -1259,6 +1263,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Edit Contact Info</translation>
 <translation id="5967867314010545767">Remove from history</translation>
+<translation id="5968793460449681917">On every visit</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1474,6 +1479,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6895330447102777224">Your card is confirmed</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
+<translation id="6907293445143367439">Allow <ph name="SITE_NAME" /> to:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wants to get full control of your MIDI devices</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
@@ -1909,6 +1915,7 @@ Additional details:
 <translation id="8574899947864779331">Use Touch ID to confirm cards faster</translation>
 <translation id="858637041960032120">Add phone no.</translation>
 <translation id="8589998999637048520">Best quality</translation>
+<translation id="8600271352425265729">Only this time</translation>
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8606726445206553943">Use your MIDI devices</translation>
 <translation id="8612761427948161954">Hi <ph name="USERNAME" />,
@@ -1918,6 +1925,7 @@ Additional details:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8625384913736129811">Save This Card to This Device</translation>
+<translation id="8627040765059109009">Screen capture resumed</translation>
 <translation id="8657078576661269990">Your administrator has blocked sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME_1" /> and <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="867224526087042813">Signature</translation>
@@ -2065,6 +2073,7 @@ Additional details:
 <translation id="939736085109172342">New folder</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="950736567201356821">Triple punch top</translation>
+<translation id="951941430552851965">Screen capture was paused by your administrator due to content on your screen.</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>

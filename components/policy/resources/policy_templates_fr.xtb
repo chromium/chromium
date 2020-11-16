@@ -148,6 +148,20 @@
       Si cette règle est définie sur "True", la fonctionnalité est activée, et l'utilisateur peut la modifier.
       Cette règle est définie par défaut sur "False". Aucun emoji n'est alors suggéré, et l'utilisateur ne peut pas ignorer ce paramètre.</translation>
 <translation id="1243570869342663665">Contrôler le filtrage SafeSites des contenus réservés aux adultes.</translation>
+<translation id="1244309789361056660">Cette règle a été supprimée dans M87 et les répertoires personnels feront l'objet d'une migration automatique vers le chiffrement ext4 à la connexion.
+      Permet de spécifier l'action à effectuer lorsque le répertoire personnel de l'utilisateur a été créé avec un chiffrement eCryptfs. À moins que les répertoires personnels chiffrés avec eCryptfs ne fassent l'objet d'une migration vers le chiffrement ext4, les applications Android risquent de cesser de fonctionner.
+
+      Notez également les points suivants :
+
+      * Si cette règle est définie sur "Migrate" (ou sur une option non acceptée, comme "AskUser" ou "AskForEcryptfsArcUsers"), les répertoires sont migrés automatiquement vers ext4 lorsque l'utilisateur se connecte, sans lui en demander l'autorisation.
+
+      * Si cette règle est définie sur "Wipe" ou sur "MinimalMigrate", les nouveaux répertoires personnels avec chiffrement ext4 remplacent les anciens, chiffrés avec eCryptfs. Pour éviter à l'utilisateur d'avoir à se reconnecter plusieurs fois, la valeur "MinimalMigrate" essaie de conserver les jetons de connexion.
+
+      * Si cette règle est définie sur "DisallowArc" ou qu'elle n'est pas configurée, la migration est impossible, et les applications Android de l'utilisateur cessent de fonctionner.
+
+      Cette règle ne s'applique pas aux utilisateurs de kiosque.
+
+      Avertissement : Les valeurs "Wipe" et "MinimalMigrate" entraînent la suppression des données locales.</translation>
 <translation id="1247850578871017740">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
 
       Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut contourner le processus.</translation>
@@ -592,13 +606,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="201557587962247231">Fréquence d'importation des rapports sur l'état de l'appareil</translation>
 <translation id="2017301949684549118">URL des applications Web à installer de façon silencieuse.</translation>
 <translation id="2017459564744167827">Consultez la page <ph name="REFERENCE_URL" /> pour en savoir plus sur le schéma et le formatage.</translation>
-<translation id="2018836497795982119">Indique la fréquence en millisecondes à laquelle le service de gestion des appareils est interrogé sur les informations concernant les règles relatives aux utilisateurs.
-
-      La définition de cette règle remplace la valeur par défaut de 3 heures. Les valeurs valides pour cette règle sont comprises entre 1 800 000 (30 minutes) et 86,4 millions (1 jour). Toutes les valeurs non comprises dans cette plage seront nivelées à la limite respective. Si la plate-forme est compatible avec les notifications relatives aux règles, le délai d'actualisation est défini par défaut sur 24 heures. De plus, la règle est actualisée automatiquement chaque fois qu'elle est modifiée.
-
-      Si cette règle n'est pas définie, la valeur par défaut de 3 heures est appliquée dans <ph name="PRODUCT_NAME" />.
-
-      Notez que si la plate-forme est compatible avec les notifications relatives aux règles, le délai d'actualisation sera défini sur 24 heures (ignorant ainsi toutes les valeurs par défaut et celle de cette règle). En effet, les notifications relatives aux règles forceront une actualisation automatique chaque fois qu'une règle est modifiée, ce qui rend inutile toute actualisation supplémentaire.</translation>
 <translation id="2024476116966025075">Configurer le nom de domaine requis pour les clients d'accès à distance</translation>
 <translation id="2024821084720338323">Si elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> limite et regroupe de façon agressive les minuteurs JavaScript dans les onglets en arrière-plan. Par conséquent, ceux-ci ne s'exécutent pas plus d'une fois par minute après la mise en arrière-plan d'une page pendant au moins cinq minutes.
 
@@ -812,13 +819,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si elle est définie sur "Fast", <ph name="PRODUCT_NAME" /> évite la rastérisation autant que possible, ce qui permet de réduire la taille des tâches d'impression et d'augmenter la vitesse d'impression.
 
       Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> fonctionne en mode "Full".</translation>
-<translation id="2336221492251647548">Définissez cette règle sur "True" pour activer le clavier virtuel sur l'écran de connexion. Définissez-la sur "False" pour désactiver le clavier virtuel sur l'écran de connexion.
-
-      Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver le clavier virtuel. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, il revient à son état d'origine.
-
-      Si cette règle n'est pas définie, le clavier virtuel est désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment. Dans ce cas, il reste activé d'un utilisateur à l'autre.
-
-          Remarque : <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="2345547870894930157">Activer DNS-over-HTTPS sans solution de secours à risque</translation>
 <translation id="2349117476121456297">Si vous définissez cette règle sur "True", les touches de la première rangée du clavier deviennent des touches de fonction. Le comportement d'origine des touches multimédias est rétabli en appuyant sur la touche de recherche.
 
@@ -1024,11 +1024,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous activez ou désactivez ce paramètre, les utilisateurs ne peuvent pas le modifier ni le remplacer.
 
       Si cette règle n'est pas définie, l'utilisateur peut décider s'il veut ou non utiliser la fonctionnalité de proxy pour la compression de données.</translation>
-<translation id="2575738503503093841">Spécifie le délai maximal en millisecondes entre la réception du rejet d'une règle et la récupération de la nouvelle règle auprès du service de gestion de l'appareil.
-
-      La définition de cette règle remplace la valeur par défaut de 10 000 millisecondes. Les valeurs valides pour cette règle sont comprises entre 1 000 millisecondes (1 seconde) et 300 000 millisecondes (5 minutes). Toute valeur se situant hors de cette plage sera rapportée à la valeur limite la plus proche.
-
-      En l'absence de définition de cette règle, la valeur par défaut de 10 000 millisecondes est utilisée dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="257788512393330403">La saisie du mot de passe est requise toutes les six heures</translation>
 <translation id="2587719089023392205">Définir <ph name="PRODUCT_NAME" /> comme navigateur par défaut</translation>
 <translation id="2588252329503406673">Cette règle vous permet de configurer le comportement de <ph name="PRODUCT_OS_NAME" /> lorsque l'utilisateur reste inactif pendant un certain temps quand l'écran de connexion est affiché. Elle contrôle de nombreux paramètres. Pour connaître la signification et les plages de valeurs de ces paramètres, consultez les règles correspondantes qui contrôlent la gestion de l'alimentation au cours d'une session.
@@ -1039,7 +1034,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       * L'action à effectuer par défaut en cas d'inactivité lors du fonctionnement sur une source d'alimentation CA est la fermeture.
 
-      Si cette règle ou l'un de ses paramètres ne sont pas configurés, les valeurs par défaut des différents paramètres d'alimentation sont alors utilisées.</translation>
+      Si cette règle ou l'un de ses paramètres ne sont pas configurés, les valeurs par défaut des différents paramètres de gestion de l'alimentation sont alors utilisées.</translation>
 <translation id="2592091433672667839">Durée d'inactivité préalable à l'affichage de l'économiseur d'écran sur l'écran de connexion en mode Point de vente</translation>
 <translation id="2592162121850992309">Si cette règle est définie sur "True" ou n'est pas configurée, l'accélération matérielle est activée, sauf si une certaine fonctionnalité GPU figure sur la liste noire.
 
@@ -1171,9 +1166,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2787774054174244402">Si vous définissez cette règle sur "True", les utilisateurs ne peuvent pas modifier les fichiers stockés sur les périphériques de stockage externes.
 
       À moins que les supports de stockage externes ne soient bloqués, si vous définissez la règle ExternalStorageReadOnly sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent créer et modifier des fichiers sur les périphériques de stockage externes accessibles en écriture. (Vous pouvez bloquer les supports de stockage externes en définissant la règle ExternalStorageDisable sur "True".)</translation>
-<translation id="2791750069439339908">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage auquel la recharge de la batterie doit s'arrêter (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" doit être supérieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />".
-
-      Si cette règle n'est pas configurée, le mode <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de recharge de la batterie est alors appliqué.</translation>
 <translation id="2796714419743648316">Liste d'autorisation des limites de temps spécifiques à chaque application</translation>
 <translation id="2796896367838042659">Cette règle détermine les applications et URL qui doivent être ajoutées à la liste blanche concernant les restrictions d'utilisation spécifiques pour chaque application.
         La liste blanche configurée est appliquée aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné avec des limites de temps spécifiques à chaque application.
@@ -1673,10 +1665,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Notez que cette règle était auparavant activée par erreur sous Android. En outre, cette fonctionnalité n'a jamais été entièrement compatible avec Android.</translation>
 <translation id="348495353354674884">Activer le clavier virtuel</translation>
-<translation id="3487623755010328395">
-        Si cette règle est activée, <ph name="PRODUCT_NAME" /> tente de s'enregistrer et d'appliquer la règle relative au cloud associée à tous les profils.
-
-        La valeur de cette règle est un jeton d'inscription qui peut être récupéré depuis la console d'administration Google.</translation>
 <translation id="3492834335089638487">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) pour un appareil.
 
       Si la valeur de cette règle n'est pas définie, la règle est considérée comme non autorisée.
@@ -1788,12 +1776,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée, le démarrage au branchement de l'alimentation CA l'est également.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le démarrage au branchement de l'alimentation CA est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
-<translation id="3660510274595679517">
-        Si cette règle est définie sur "True", il est indispensable d'activer la gestion cloud. Dans le cas contraire, le processus de lancement de Chrome s'interrompt.
-
-        Si cette règle n'est pas configurée ou est définie sur "False", il n'est pas obligatoire d'activer la gestion cloud et cela n'aura aucune incidence sur le processus de lancement de Chrome.
-
-        Cette règle est utilisée pour l'activation de la règle relative au cloud au niveau de la machine (pour les ordinateurs de bureau). Elle peut être définie sur le registre ou les GPO sur Windows, le fichier plist sur Mac, et le fichier de règle JSON sur Linux.</translation>
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
 <translation id="3691155504326059225">Si cette règle est activée, la page "Nouvel onglet" est définie comme page d'accueil de l'utilisateur. Toute URL de page d'accueil est ignorée. Si cette règle est désactivée, la page d'accueil de l'utilisateur ne sera jamais la page "Nouvel onglet", sauf si l'URL de la page d'accueil est définie sur "chrome://newtab".
 
@@ -1804,6 +1786,32 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
+<translation id="3704727923488731211">Permet d'établir la liste des règles visant à empêcher les fuites de données sur <ph name="PRODUCT_OS_NAME" />.
+      Une fuite de données peut se produire lors d'un copier-coller de données, d'un transfert de fichiers, d'une impression, d'un partage ou d'une capture d'écran, etc.
+
+      Chaque règle se compose des éléments suivants :
+      - Une liste de sources définies sous la forme d'URL. Les données de ces sources sont considérées comme confidentielles, et les restrictions leur sont appliquées.
+      - Une liste de destinations définies sous la forme d'URL ou de composants, et pour lesquelles le partage de données confidentielles est autorisé ou non.
+      - Une liste de restrictions à appliquer aux données des sources.
+
+      Les règles peuvent être ajoutées aux fins suivantes :
+      - Contrôler les données du presse-papiers partagées entre les sources et les destinations.
+      - Contrôler les captures d'écran de n'importe quelle source.
+      - Contrôler l'impression de n'importe quelle source.
+      - Contrôler l'écran de confidentialité lorsque l'une des sources est visible.
+      - Contrôler le partage d'écran de n'importe quelle source.
+
+      Le niveau de restriction peut être défini sur "BLOCK" ou "ALLOW".
+      - Si la restriction est définie sur "BLOCK", l'action concernée n'est pas autorisée.
+      - Si la restriction est définie sur "ALLOW", l'action est autorisée.
+
+      Remarques :
+      - La restriction "PRIVACY_SCREEN" n'empêche pas d'activer l'écran de confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur "BLOCK".
+      - Les destinations ne peuvent pas être vides si l'une des restrictions est la restriction "CLIPBOARD". Toutefois, elles n'ont aucune incidence pour les autres restrictions.
+      - La restriction "CLIPBOARD" ne fait pas la différence entre "CROSTINI" et "PLUGIN_VM". Si l'un de ces éléments est sélectionné pour bloquer ou autoriser le partage de données, la règle s'applique aux deux.
+      - Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format.
+
+      Si la règle n'est pas configurée, aucune restriction n'est appliquée.</translation>
 <translation id="3709266154059827597">Configurer la liste noire d'installation des extensions</translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3715569262675717862">Authentification basée sur les certificats client</translation>
@@ -2022,9 +2030,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur False, <ph name="PRODUCT_OS_NAME" /> n'affiche pas les utilisateurs existants sur l'écran de connexion. L'écran de connexion habituel (demandant l'e-mail et le mot de passe ou le numéro de téléphone de l'utilisateur) ou l'écran interstitiel SAML (si autorisé via la règle <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) s'affiche, à moins qu'une session gérée ne soit configurée. Lorsqu'une session gérée est configurée, seuls les comptes de la session gérée s'affichent, et permettent d'en choisir un.
 
       Cette règle ne change en rien le stockage ou la suppression des informations sur l'utilisateur par l'appareil.</translation>
-<translation id="4009527123617846557">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la batterie doit commencer à se recharger (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de cette règle doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
-
-      Si cette règle n'est pas configurée, le mode standard de recharge de la batterie est appliqué.</translation>
 <translation id="4010738624545340900">Autoriser l'appel des boîtes de dialogue de sélection de fichiers</translation>
 <translation id="401260868452018796">Placer l'étagère au bas de l'écran</translation>
 <translation id="4012737788880122133">Désactive les mises à jour automatiques lorsque cette règle est définie sur "True".
@@ -2032,6 +2037,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Les appareils <ph name="PRODUCT_OS_NAME" /> recherchent automatiquement les mises à jour lorsque ce paramètre n'est pas configuré ou lorsqu'il est défini sur "False".
 
       Avertissement : Il est recommandé de ne pas désactiver les mises à jour automatiques afin que les utilisateurs continuent de recevoir les mises à jour logicielles et les correctifs de sécurité essentiels. La désactivation des mises à jour automatiques pourrait constituer un risque pour les utilisateurs.</translation>
+<translation id="4016367078069682737">Cette règle a été supprimée dans M61.
+
+      Indique le comportement à adopter par un appareil qui a été fourni avec eCryptfs et qui doit faire la transition vers un chiffrement ext4.
+
+      Si cette règle est définie sur "DisallowArc", les applications Android seront désactivées pour tous les utilisateurs de l'appareil (y compris ceux utilisant déjà le chiffrement ext4), et la migration d'eCryptfs vers ext4 ne sera proposée à aucun utilisateur.
+
+      Si cette règle est définie sur "AllowMigration", les utilisateurs disposant d'un répertoire d'accueil eCryptfs pourront le faire migrer vers un chiffrement ext4 si nécessaire (à l'heure actuelle, proposé lorsqu'Android N est disponible sur l'appareil).
+
+      Cette règle ne s'applique pas aux applications kiosque, qui sont migrées automatiquement. Si vous ne définissez pas de valeur pour cette règle, l'appareil se comportera par défaut comme si elle était définie sur "DisallowArc".</translation>
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
@@ -2350,6 +2364,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si l'option "Désactivé" est sélectionnée, l'utilisateur ne peut pas ouvrir des pages en mode navigation privée.
 
       Si l'option "Forcé" est sélectionnée, l'utilisateur peut ouvrir des pages UNIQUEMENT en mode navigation privée. Sachez que l'option "Forcé" ne fonctionne pas avec un appareil Android sur Chrome.</translation>
+<translation id="4594467366027975448">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour stocker la copie itinérante des profils.
+
+      Si vous définissez cette règle, <ph name="PRODUCT_NAME" /> utilise le répertoire fourni pour stocker la copie itinérante des profils si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> est activée. Si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> est désactivée ou si elle n'est pas configurée, la valeur enregistrée dans cette règle n'est pas utilisée.
+
+      Pour connaître la liste des variables acceptées, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.
+
+      Sur les plates-formes autres que Windows, les profils itinérants ne fonctionnent pas si cette règle n'est pas configurée.
+
+      Sous Windows, si cette règle n'est pas configurée, le chemin du profil itinérant par défaut sera utilisé.</translation>
 <translation id="4600786265870346112">Activer le grand curseur</translation>
 <translation id="4604931264910482931">Configurer la liste noire de messagerie native</translation>
 <translation id="4607416370554533118">Permet de définir une liste de formats d'URL indiquant les sites pour lesquels Chrome peut sélectionner automatiquement un certificat client. Cette valeur doit être un ensemble de dictionnaires convertis en chaînes JSON, chacun d'entre eux se présentant sous la forme <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, où <ph name="URL_PATTERN_PLACEHOLDER" /> correspond à un schéma de paramètre de contenu. Le filtre <ph name="FILTER_PLACEHOLDER" /> limite les certificats client parmi lesquels le navigateur effectue une sélection automatique. Indépendamment du filtre, seuls les certificats correspondant à la demande de certificat du serveur sont sélectionnés.
@@ -2558,7 +2581,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'autorisera pas la création de profils à partir du gestionnaire d'utilisateurs.</translation>
 <translation id="4970855112942626932">Désactiver la connexion au navigateur</translation>
-<translation id="4978405676361550165">Si la règle de désactivation OffHours est définie, les règles spécifiées relatives aux appareils sont ignorées (utilisation des paramètres par défaut de ces règles) pendant la période définie. Les règles relatives aux appareils sont de nouveau appliquées par Chrome à chaque événement lorsque la période de désactivation OffHours commence ou se termine. L'utilisateur recevra une notification, puis il sera obligé de se déconnecter à la fin de la période de désactivation OffHours et lorsque les paramètres des règles relatives aux appareils sont modifiés (par exemple, si l'utilisateur est connecté avec un compte non autorisé).</translation>
 <translation id="4980635395568992380">Type de données :</translation>
 <translation id="4983201894483989687">Autoriser l'exécution de plug-ins obsolètes</translation>
 <translation id="4986560318567565414">Chemin d'accès pour basculer vers Chrome à partir du navigateur secondaire.</translation>
@@ -2989,13 +3011,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Cette règle ne concerne pas les changements de version.</translation>
 <translation id="5526701598901867718">Tous les types de chiffrement (option non sécurisée)</translation>
-<translation id="5529037166721644841">Indique la fréquence en millisecondes à laquelle le service de gestion des appareils est interrogé sur les informations concernant les règles relatives aux appareils.
-
-      La définition de cette règle remplace la valeur par défaut de 3 heures. Les valeurs valides pour cette règle sont comprises entre 1 800 000 (30 minutes) et 86,4 millions (1 jour). Les valeurs situées en dehors de cette plage sont remplacées par la valeur limite la plus proche.
-
-      Si cette règle n'est pas définie, la valeur par défaut de 3 heures est appliquée dans <ph name="PRODUCT_OS_NAME" />.
-
-      Notez que si la plate-forme est compatible avec les notifications relatives aux règles, le délai d'actualisation sera défini sur 24 heures (ignorant ainsi toutes les valeurs par défaut et celle de cette règle). En effet, les notifications relatives aux règles forceront une actualisation automatique chaque fois qu'une règle est modifiée, ce qui rend inutile toute actualisation supplémentaire.</translation>
 <translation id="5530347722229944744">Bloquer les téléchargements potentiellement dangereux</translation>
 <translation id="5535973522252703021">Liste blanche des serveurs de délégation Kerberos</translation>
 <translation id="5540753481451194959">Permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
@@ -3176,6 +3191,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si elle est définie sur "True", les informations concernant les données VPD de l'appareil sont transmises.
       Les données vitales du produit (VPD) sont un ensemble de données de configuration et d'informations (numéros de pièce et de série, par exemple) associées à l'appareil.</translation>
 <translation id="5765780083710877561">Description :</translation>
+<translation id="5766438888216077649">Ne définissez pas <ph name="WINDOW_OPENER_PROPERTY" /> pour les liens ciblant <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5770738360657678870">Version en développement (peut être instable)</translation>
 <translation id="5774856474228476867">URL de recherche du moteur de recherche par défaut</translation>
 <translation id="5775235485119094648">Recharge de la batterie tant que le niveau de charge défini n'est pas atteint.</translation>
@@ -3274,12 +3290,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5897913798715600338">Recharge de la batterie à l'aide d'une technologie de recharge rapide.</translation>
 <translation id="5898486742390981550">Lorsque plusieurs personnes sont connectées, l'utilisateur principal est le seul à pouvoir se servir des applications Android.</translation>
 <translation id="5901427587865226597">Impression recto verso seulement</translation>
-<translation id="5903898512448364160">
-      Si cette règle est définie sur "True", la règle relative au cloud prévaut en cas de conflit avec celle concernant les plates-formes.
-      Si cette règle est définie sur "False" ou n'est pas configurée, la règle relative aux plates-formes prévaut en cas de conflit avec celle concernant le cloud.
-
-      Cette règle est uniquement disponible en tant que règle obligatoire de plate-forme de machines et n'affecte que les règles relatives au cloud s’appliquant aux machines.
-      </translation>
 <translation id="5905473632148429217">Activer les contrôles OCSP/CRL en ligne</translation>
 <translation id="5907283448020542268">Configurer <ph name="GLS_ENABLED" /> active les services de localisation Google lors de la configuration initiale, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
 
@@ -3357,6 +3367,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6070667616071269965">Dispositions de clavier de l'écran de connexion de l'appareil</translation>
 <translation id="6074963268421707432">Interdire à tous les sites d'afficher des notifications sur le bureau</translation>
 <translation id="6074964551275531965">Définir la période d'affichage des notifications de mise à jour</translation>
+<translation id="6075316301208933536">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la recharge de la batterie doit s'arrêter (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
+
+      Si cette règle n'est pas configurée, le mode <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de recharge de la batterie est alors appliqué.</translation>
 <translation id="6082161804984853051">Si cette règle est configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire que vous indiquez pour stocker les fichiers mis en cache sur le disque, que l'utilisateur spécifie ou non l'option "--disk-cache-dir".
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire de cache par défaut. Toutefois, l'utilisateur peut modifier ce paramètre avec l'option de ligne de commande "--disk-cache-dir".
@@ -3466,13 +3479,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Les utilisateurs sont alors exposés à des risques de sécurité liés à l'exécution du sous-système audio hors bac à sable.
       Si cette règle n'est pas configurée, la valeur par défaut du bac à sable est appliquée pour le processus audio (laquelle peut varier en fonction des plates-formes).
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable audio si la configuration des logiciels de sécurité qu'elles utilisent interfère avec le bac à sable.</translation>
-<translation id="6255387031094435995">Permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes.
-
-        En cas de conflit entre deux sources pour une règle figurant dans la liste, les valeurs sont fusionnées dans une nouvelle liste de règles si les champs d'application et le niveau sont les mêmes.
-
-        En cas de conflit entre deux sources pour une règle figurant dans la liste, la règle avec la plus haute priorité est appliquée si les champs d'application et/ou le niveau sont différents.
-
-        En cas de conflit entre deux sources pour une règle ne figurant pas dans la liste, la règle avec la plus haute priorité est appliquée si les champs d'application et/ou le niveau sont différents.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
 <translation id="6265892395051519509">Autoriser l'accès aux capteurs sur ces sites</translation>
 <translation id="6273015149273504999">
@@ -3894,7 +3900,7 @@ Si vous sélectionnez les options suivantes :
 
       Si cette règle est désactivée, un message d'erreur s'affiche à la place.</translation>
 <translation id="6821268164692776674">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive"</translation>
-<translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 MiB) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
+<translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
 <translation id="682408981080798691">Si cette règle est activée ou qu'elle n'est pas configurée, la règle d'intégrité du code du moteur de rendu est activée.
 
       Si elle est désactivée, cela aura une incidence sur la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement dangereux pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec le logiciel tiers qui doit s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
@@ -4068,6 +4074,9 @@ Si vous sélectionnez les options suivantes :
 <translation id="7027785306666625591">Configurer la gestion de l'alimentation dans <ph name="PRODUCT_OS_NAME" />
 
       Ces règles vous permettent de configurer le comportement du système d'exploitation "<ph name="PRODUCT_OS_NAME" />" lorsque l'utilisateur est inactif pendant un certain temps.</translation>
+<translation id="7030205756530739128">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la batterie doit commencer à se recharger (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de cette règle doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
+
+      Si cette règle n'est pas configurée, le mode standard de recharge de la batterie est appliqué.</translation>
 <translation id="7032813174556919004">Désactiver DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">Permet d'établir la liste des origines (URL) ou des modèles de nom d'hôte (comme *.example.com) pour lesquels les restrictions de sécurité sur les origines non sécurisées ne s'appliquent pas. Par exemple, les organisations peuvent indiquer des origines pour les anciennes applications qui ne peuvent pas déployer TLS, ou configurer un serveur intermédiaire pour les développements Web internes. Les développeurs peuvent ainsi tester des fonctionnalités nécessitant des contextes sécurisés, sans avoir à déployer TLS sur ce serveur intermédiaire. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans la barre d'adresse.
 
@@ -4226,15 +4235,6 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7207095846245296855">Forcer Google SafeSearch</translation>
 <translation id="7211368186050418507">Ne jamais détecter automatiquement le fuseau horaire</translation>
 <translation id="7216442368414164495">Permettre aux utilisateurs d'activer la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
-<translation id="7222749588229362483">Permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes.
-
-        La fusion consiste à fusionner les clés de premier niveau du dictionnaire de chaque source. En cas de conflit entre des clés, la clé provenant de la source avec la plus haute priorité est appliquée.
-
-        En cas de conflit entre deux sources pour une règle figurant dans la liste, les valeurs sont fusionnées dans un nouveau dictionnaire de règles si les champs d'application et le niveau sont les mêmes.
-
-        En cas de conflit entre deux sources pour une règle figurant dans la liste, la règle avec la plus haute priorité est appliquée si les champs d'application et/ou le niveau sont différents.
-
-        En cas de conflit entre deux sources pour une règle ne figurant pas dans la liste, la règle avec la plus haute priorité est appliquée si les champs d'application et/ou le niveau sont différents.</translation>
 <translation id="7229975860249300121">Contient une expression régulière utilisée pour déterminer quels comptes Google peuvent être configurés comme comptes de navigation principaux sur <ph name="PRODUCT_NAME" /> (par exemple, le compte choisi au moment d'activer la synchronisation).
 
       Le message d'erreur approprié s'affiche si l'utilisateur essaie de définir un compte de navigation principal dont l'identifiant ne correspond pas à ce format.
@@ -4612,9 +4612,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7724161903134898864">Si cette règle est définie sur "1", les sites Web peuvent afficher des pop-up. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher de pop-up.
 
       Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="7724592140967451156">Si cette règle est définie sur "True", les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est définie sur "False", ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
-
-      Si cette règle n'est pas configurée, les cookies tiers sont activés. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7731026922044991970">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur tous les sites</translation>
 <translation id="7732907212083471072">Règles supprimées</translation>
 <translation id="77379430721695807">Permet d'établir la liste des URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture vidéo est autorisé sans invite.
@@ -4782,11 +4779,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8006219716745491366">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> vous permet d'établir la liste des URL alternatives pour extraire des termes de recherche du moteur de recherche. Ces URL doivent inclure la chaîne <ph name="SEARCH_TERM_MARKER" />.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> n'est pas configurée, aucune URL alternative n'est utilisée pour extraire les termes de recherche.</translation>
-<translation id="8009554972280451023">Si vous activez cette option, les paramètres stockés dans les profils <ph name="PRODUCT_NAME" />, comme les favoris, les données de saisie automatique et les mots de passe, sont également enregistrés dans un fichier stocké dans le dossier des profils utilisateur itinérants ou à un emplacement défini par l'administrateur tel que spécifié dans la règle <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. L'activation de cette règle entraîne la désactivation de la synchronisation cloud.
-
-      Si cette règle est désactivée ou si elle n'est pas configurée, seuls les profils locaux standards sont utilisés.
-
-      La règle <ph name="SYNC_DISABLED_POLICY_NAME" /> entraîne la désactivation de la synchronisation de toutes les données, remplaçant ainsi <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8011935490612940798">Contrôler la fonctionnalité <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
 <translation id="8027265928215448940">Liste des services des connecteurs Chrome Enterprise à appliquer au connecteur <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise, qui se déclenche lorsqu'un fichier est téléchargé dans Chrome.
@@ -4828,7 +4820,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8059164285174960932">URL où les clients d'accès à distance doivent obtenir leur jeton d'authentification</translation>
 <translation id="8076521374016204899">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.
 
-      En revanche, si cette règle est désactivée, les utilisateurs ne peuvent pas verrouiller l'écran (ils peuvent uniquement se déconnecter de leur session utilisateur.).</translation>
+      En revanche, si cette règle est désactivée, les utilisateurs ne peuvent pas verrouiller l'écran (ils peuvent uniquement se déconnecter de leur session utilisateur).</translation>
 <translation id="8077245272412229388">Permet d'ajouter des comptes Kerberos préremplis. Si les identifiants Kerberos et de connexion sont les mêmes, un compte peut être configuré pour réutiliser les identifiants de connexion en définissant respectivement "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" et "<ph name="PASSWORD_PLACEHOLDER" />" comme compte principal et mot de passe, afin que le ticket Kerberos puisse être récupéré automatiquement, sauf si l’authentification à deux facteurs est configurée. Les utilisateurs ne peuvent pas modifier de comptes avec cette règle.
 
           Si cette règle est activée, la liste des comptes qu'elle définit est ajoutée aux paramètres de comptes Kerberos.
@@ -5059,6 +5051,13 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si la règle est définie sur "true" ou n'est pas définie, l'utilisateur a accès à la racine des conteneurs Crostini.
       Si la règle est définie sur "false", l'utilisateur n'a pas accès à la racine des conteneurs Crostini (existants ou nouveaux).</translation>
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
+<translation id="8417750118762775739">Si cette règle est désactivée, les fenêtres pop-up ciblant <ph name="BLANK_PAGE_NAME" /> pourront accéder (via JavaScript) à la page qui a demandé l'ouverture de la fenêtre pop-up.
+
+      Si cette règle est activée ou qu'elle n'est pas configurée, la propriété <ph name="WINDOW_OPENER_PROPERTY" /> sera définie sur <ph name="NULL_VALUE" />, sauf si l'ancre indique <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Cette règle sera supprimée dans la version 95 de <ph name="PRODUCT_NAME" />.
+
+      Pour en savoir plus, consultez l'article https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Cette règle est obsolète (veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place).
 
       Cette règle permet de déterminer les hôtes de messagerie native à exclure de la liste noire. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
@@ -5418,15 +5417,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8947415621777543415">Indiquer l'emplacement de l'appareil</translation>
 <translation id="8948062138228904066">Liste d'autorisation des serveurs d'authentification</translation>
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
-<translation id="8952317565138994125">Désactive la synchronisation des données dans <ph name="PRODUCT_NAME" /> à l'aide des services de synchronisation hébergés par Google et empêche les utilisateurs de modifier ce paramètre.
-
-      Si vous activez ce paramètre, les utilisateurs ne peuvent pas le modifier ni le remplacer dans <ph name="PRODUCT_NAME" />.
-
-      Si cette règle n'est pas configurée, Google Sync est disponible et l'utilisateur peut décider de l'utiliser ou non.
-
-      Pour désactiver totalement Google Sync, nous vous conseillons de désactiver le service Google Sync dans la console d'administration Google.
-
-      Cette règle ne doit pas être activée si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> l'est également, car elles partagent la même fonctionnalité côté client. Dans ce cas, le service de synchronisation hébergé par Google est totalement désactivé.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8959992920425111821">Configuration par défaut</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>

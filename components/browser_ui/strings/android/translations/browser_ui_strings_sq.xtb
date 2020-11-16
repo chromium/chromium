@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Sajti <ph name="SITE_NAME" /> u shtua</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
+<translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1431402976894535801">Blloko sajtet që të mos dinë kur je i pranishëm</translation>
 <translation id="1446450296470737166">Lejo kontrollin e plotë të pajisjeve MIDI</translation>
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Lejo sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="4468959413250150279">Hiq zërin për një sajt specifik.</translation>
 <translation id="4479647676395637221">Pyet përpara se të lejohen sajtet të përdorin kamerën (rekomandohet)</translation>
+<translation id="4505788138578415521">URL e zgjeruar</translation>
 <translation id="4534723447064627427">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te mikrofoni yt, aktivizo gjithashtu mikrofonin në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>

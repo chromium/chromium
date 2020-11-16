@@ -1180,7 +1180,6 @@
 <translation id="560412284261940334">ការគ្រប់គ្រងមិនត្រូវបានគាំទ្រទេ</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">គេហទំព័រ​នេះ​អាចក្លែងក្លាយ ឬ​បោកប្រាស់។ Chrome សូមណែនាំឱ្យ​ចាកចេញ​ឥឡូវនេះ។</translation>
 <translation id="5610142619324316209">ពិនិត្យការតភ្ជាប់</translation>
 <translation id="5610807607761827392">អ្នក​អាច​គ្រប់គ្រង​កាត​ និង​អាសយដ្ឋាន​នៅក្នុង​ <ph name="BEGIN_LINK" />ការកំណត់​<ph name="END_LINK" />។</translation>
 <translation id="561165882404867731">បកប្រែទំព័រនេះដោយប្រើ Google បកប្រែ</translation>
@@ -1252,6 +1251,7 @@
 <translation id="5901630391730855834">លឿង</translation>
 <translation id="5905445707201418379">បានទប់ស្កាត់​ដោយ​ផ្អែកលើ​គោលការណ៍​ដើម​របស់ <ph name="ORIGIN" /> ។</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (បានធ្វើសមកាលកម្ម)</translation>
+<translation id="5913377024445952699">បានផ្អាក​ការថត​អេក្រង់</translation>
 <translation id="59174027418879706">បានបើកដំណើរការ</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">បើក</translation>
@@ -1924,6 +1924,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">គ្មាន​ពាក្យសម្ងាត់​ដែលត្រូវគ្នាទេ។ បង្ហាញ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក​ទាំងអស់។</translation>
 <translation id="8625384913736129811">រក្សាទុកបណ្ណនេះទៅក្នុងឧបករណ៍នេះ</translation>
+<translation id="8627040765059109009">បានបន្ត​ការថត​អេក្រង់</translation>
 <translation id="8657078576661269990">អ្នកគ្រប់គ្រង​របស់អ្នកបានទប់ស្កាត់​ការចែករំលែក​ពី <ph name="ORIGIN_NAME" /> ទៅ <ph name="VM_NAME_1" /> និង <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">ការ​សង្ខេប​អំពី​ការបញ្ជាទិញ, <ph name="TOTAL_LABEL" />, ព័ត៌មាន​លម្អិត​បន្ថែម</translation>
 <translation id="867224526087042813">ហត្ថលេខា</translation>

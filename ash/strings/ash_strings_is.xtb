@@ -103,7 +103,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Smelltu til að staðfesta þessa breytingu. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Flýtileiðinni til að opna verkstjórn hefur verið breytt. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
-<translation id="1924640696879807758">Úr símanum</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
 <translation id="1951012854035635156">Aðstoðarmaður</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222338659135520253">Innskráningar krafist</translation>
-<translation id="22546648640907338">Snertiflatarbendingunni til að opna Yfirlit var breytt. Strjúktu upp með þremur fingrum til að opna Yfirlit.</translation>
 <translation id="225680501294068881">Leitar að tækjum...</translation>
 <translation id="2268130516524549846">Slökkt á Bluetooth</translation>
 <translation id="2268813581635650749">Skrá alla út</translation>
@@ -148,7 +146,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2352467521400612932">Stillingar penna</translation>
 <translation id="2354174487190027830">Virkjar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
-<translation id="2361223922412143600">Snertiflatarbendingunni til að loka Yfirliti var breytt. Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
 <translation id="2365393535144473978">Ef kveikt er á farsímagögnum verður kveikt á Bluetooth.</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
@@ -177,7 +174,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2617342710774726426">SIM-kortið er læst</translation>
 <translation id="2621713457727696555">Læst</translation>
-<translation id="2640255526076764619">Snertiflatarbending til að skipta yfir í fyrra skrifborð breyttist. Strjúktu til vinstri með fjórum fingrum til að skipta yfir í fyrra skrifborð.</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2658778018866295321">Smella og draga</translation>
 <translation id="2700493154570097719">Veldu lyklaborð</translation>
@@ -396,7 +392,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4705716602320768426">Skrá ábendingu</translation>
-<translation id="4710243778082831592">Stillingar innsláttaraðferðar</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4744944742468440486">Upplýsingar sem tengjast vali þínu</translation>
@@ -527,7 +522,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6018164090099858612">Hættir í spegilstillingu</translation>
 <translation id="602001110135236999">Fletta til vinstri</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />, stjórnað af kerfisstjóra</translation>
-<translation id="6029337736376922061">Snertiflatarbendingunni til að skipta yfir í næsta skrifborð var breytt. Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð.</translation>
 <translation id="6030495522958826102">Valmynd færð neðst í vinstra horn skjásins.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6043212731627905357">Þessum skjá lyndir ekki vel við <ph name="DEVICE_TYPE" /> (skjárinn er ekki studdur).</translation>
@@ -618,7 +612,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6910714959251846841">Þessi uppfærsla krefst þess að þú djúphreinsir tækið þitt. Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Ekki var hægt að bera kennsl á snjallkortið þitt. Reyndu aftur.</translation>
 <translation id="6945221475159498467">Velja</translation>
-<translation id="6953890208095195458">Stjórnandi stöðvaði skjáupptöku vegna efnis á skjánum þínum.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6972754398087986839">Byrja</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
@@ -672,7 +665,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Kerfisstjóri hefur lokað á skjámyndatöku af efni skjásins.</translation>
 <translation id="7548434653388805669">Háttatími</translation>
 <translation id="7551643184018910560">Festa á hillu</translation>
 <translation id="7561982940498449837">Loka valmynd</translation>
@@ -845,7 +837,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="9070640332319875144">Stillingar hjálpara</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> þar til rafhlaðan tæmist.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9077515519330855811">Efnisstýringar, í spilun <ph name="MEDIA_TITLE" /></translation>
+<translation id="9077515519330855811">Efnisstjórnun, spilar <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Strjúktu upp til að fara á heimaskjáinn</translation>
 <translation id="9080206825613744995">Hljóðnemi er í notkun.</translation>

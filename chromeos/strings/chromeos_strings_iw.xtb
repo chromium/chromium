@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1468664791493211953">מבצעים</translation>
@@ -14,8 +15,10 @@
 <translation id="1482734542997480527">הניהול של המכשיר הזה נעשה מהדומיין <ph name="ENROLLMENT_DOMAIN" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1734367976349034509">המכשיר הזה מנוהל על ידי ארגון</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
@@ -41,6 +44,7 @@
 <translation id="3083667275341675831">אבחון קישוריות</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
+<translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
@@ -62,11 +66,13 @@
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="ENROLLMENT_DOMAIN" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="4034824040120875894">מדפסת</translation>
+<translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">הקבצים שנסרקו נשמרו!</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
 <translation id="445059817448385655">סיסמה ישנה</translation>
@@ -87,7 +93,6 @@
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4985509611418653372">הרצה</translation>
-<translation id="4991056862642197104">כדי להתחיל, יש למקם את המסמך וללחוץ על 'סריקה'</translation>
 <translation id="5094480857972195099">המשתמש הזה מנוהל על ידי <ph name="ENROLLMENT_DOMAIN" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="520299634122159966">אין סורקים זמינים</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
@@ -106,8 +111,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
-<translation id="6040143037577758943">סגור</translation>
+<translation id="6040143037577758943">סגירה</translation>
 <translation id="6048107060512778456">נכשלה – חסימת נייר</translation>
+<translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
@@ -120,12 +126,14 @@
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
+<translation id="65587193855025101">שטוח</translation>
 <translation id="6564646048574748301">נכשלה – לא ניתן להתחבר אל המדפסת</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
+<translation id="6839141349259399400">לא ניתן להתחבר לסורקים?</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -135,9 +143,11 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
+<translation id="7855434858642800953">נשמר הקובץ שנסרק!</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
+<translation id="8160445423316272678">כדי להתחיל, יש למקם את המסמך על הסורק וללחוץ על <ph name="SPAN_BEGIN" />סריקה<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8294431847097064396">מקור</translation>
@@ -149,11 +159,14 @@
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
+<translation id="8730621377337864115">בוצע</translation>
 <translation id="8747900814994928677">אישור השינוי</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 </translationbundle>

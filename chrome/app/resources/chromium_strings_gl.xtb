@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">Preguntar ao abrir Chromium</translation>
 <translation id="1396446129537741364">Chromium está tentando mostrar contrasinais.</translation>
 <translation id="1414495520565016063">Iniciaches sesión en Chromium.</translation>
+<translation id="1414973082589232775">Se queres usar Rosetta para reproducir contido multimedia protexido, debes reiniciar Chromium.</translation>
 <translation id="151962892725702025">Chromium non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="1524282610922162960">Compartir unha pestana de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">Chromium require Windows 7 ou unha versión posterior.</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
 <translation id="5698481217667032250">Mostrar Chromium neste idioma</translation>
+<translation id="5736967399513123100">Para permitir que Chromium reproduza contido multimedia protexido, debes instalar Rosetta. Queres facelo agora?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -177,6 +179,7 @@
 <translation id="6857782730669500492">Chromium: <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiouse en Chromium)</translation>
 <translation id="6893813176749746474">Actualizouse Chromium, pero non o utilizas desde hai polo menos 30 días.</translation>
+<translation id="6897548120660295439">Rosetta permite que Chromium reproduza contido multimedia protexido nesta páxina.</translation>
 <translation id="6964305034639999644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chromium</translation>
 <translation id="6978145336957848883">Os contrasinais pouco seguros son fáciles de adiviñar. Permite que Chromium <ph name="BEGIN_LINK" />cree e lembre contrasinais seguros por ti<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder ao micrófono neste sitio</translation>

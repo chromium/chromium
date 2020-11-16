@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1625959690469240009">Site ayarlarını açmak için <ph name="BROWSER_NAME" /> tarayıcıyı güncelleyin veya yeniden yükleyin</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> uygulaması şu uygulamayı gerektiriyor:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> uygulaması web tarayıcısı gerektiriyor</translation>
 <translation id="3858759029325727987">Bu uygulamayı destekleyen bir tarayıcı seçin:</translation>

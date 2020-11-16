@@ -1176,7 +1176,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="560412284261940334">Gestão não suportada</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Este site pode ser falso ou fraudulento. O Chrome recomenda que saia agora.</translation>
 <translation id="5610142619324316209">Verificar a ligação</translation>
 <translation id="5610807607761827392">Pode gerir cartões e endereços nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1248,6 +1247,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
+<translation id="5913377024445952699">Captura de ecrã em pausa</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Ativado</translation>
@@ -1919,6 +1919,7 @@ Detalhes adicionais:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Não existem palavras-passe correspondentes. Mostrar todas as palavras-passe guardadas.</translation>
 <translation id="8625384913736129811">Guardar este cartão neste dispositivo</translation>
+<translation id="8627040765059109009">Captura de ecrã retomada</translation>
 <translation id="8657078576661269990">O seu administrador bloqueou a partilha de <ph name="ORIGIN_NAME" /> com as VMs <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" />.</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="867224526087042813">Assinatura</translation>

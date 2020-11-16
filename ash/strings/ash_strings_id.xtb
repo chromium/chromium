@@ -103,7 +103,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Pintasan untuk membuka pengelola tugas telah berubah. Gunakan <ph name="NEW_SHORTCUT" /> sebagai ganti <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik otomatis</translation>
-<translation id="1924640696879807758">Dari Ponsel</translation>
 <translation id="1928739107511554905">Untuk mendapatkan update, gunakan layar sentuh untuk menyalakan ulang Chromebook dengan keyboard yang disertakan.</translation>
 <translation id="1951012854035635156">Asisten</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2222338659135520253">Perlu login</translation>
-<translation id="22546648640907338">Gestur touchpad untuk masuk ke Ringkasan telah diubah. Geser ke atas dengan tiga jari untuk masuk ke Ringkasan.</translation>
 <translation id="225680501294068881">Memindai perangkat...</translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
@@ -148,7 +146,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2352467521400612932">Setelan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
-<translation id="2361223922412143600">Gestur touchpad untuk keluar dari Ringkasan telah diubah. Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan.</translation>
 <translation id="2365393535144473978">Mengaktifkan data seluler akan mengaktifkan Bluetooth.</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2390318262976603432">Setelan Lokal</translation>
@@ -177,7 +174,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2617342710774726426">Kartu SIM terkunci</translation>
 <translation id="2621713457727696555">Aman</translation>
-<translation id="2640255526076764619">Gestur touchpad untuk beralih ke desktop sebelumnya telah diubah. Geser ke kiri dengan empat jari untuk beralih ke desktop sebelumnya.</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2658778018866295321">Klik dan tarik</translation>
 <translation id="2700493154570097719">Setel keyboard Anda</translation>
@@ -327,6 +323,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
 <translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="4121728057981832179">Mesin virtual sedang menggunakan mikrofon Anda</translation>
+<translation id="4126167871198063089">Keluar dari Klik untuk Diucapkan</translation>
 <translation id="4129129681837227511">Untuk melihat notifikasi di layar kunci, buka kunci untuk mengubah setelan</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="DOMAIN" /></translation>
@@ -386,6 +383,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4570957409596482333">Tombol Klik untuk Diucapkan</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Tampilkan pratinjau</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
@@ -396,7 +394,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4705716602320768426">Kirim masukan</translation>
-<translation id="4710243778082831592">Setelan IME</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
@@ -434,11 +431,13 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />d</translation>
 <translation id="4975771730019223894">Tampilkan badge aplikasi</translation>
+<translation id="5003993274120026347">Kalimat berikutnya</translation>
 <translation id="5019169674188023236">Sepertinya Bluetooth atau Wi-Fi Anda dinonaktifkan di <ph name="DEVICE_TYPE" />. Periksa koneksi Anda untuk menggunakan Phone Hub.</translation>
 <translation id="5030687792513154421">Waktu habis</translation>
 <translation id="5033299697334913360">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
 <translation id="5035389544768382859">Konfirmasi Konfigurasi Layar</translation>
+<translation id="504465286040788597">Paragraf sebelumnya</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
@@ -478,6 +477,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="554893713779400387">Aktifkan dikte</translation>
 <translation id="556042886152191864">Tombol</translation>
 <translation id="5571066253365925590">Bluetooth diaktifkan</translation>
+<translation id="557563299383177668">Paragraf berikutnya</translation>
 <translation id="558849140439112033">Tarik untuk memilih area yang akan diambil gambarnya</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk menonaktifkan masukan lisan.</translation>
@@ -527,7 +527,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
-<translation id="6029337736376922061">Gestur touchpad untuk beralih ke desktop berikutnya telah diubah. Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya.</translation>
 <translation id="6030495522958826102">Menu dipindahkan ke pojok kiri bawah layar.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6043212731627905357">Monitor ini tidak dapat berfungsi dengan <ph name="DEVICE_TYPE" /> Anda (monitor tidak didukung).</translation>
@@ -671,7 +670,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Kemampuan mengambil tangkapan layar konten di layar diblokir oleh administrator Anda.</translation>
 <translation id="7548434653388805669">Waktunya tidur</translation>
 <translation id="7551643184018910560">Pin ke rak</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
@@ -730,6 +728,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8029247720646289474">Koneksi hotspot gagal</translation>
 <translation id="8029629653277878342">Perlu PIN atau sandi untuk keamanan tambahan</translation>
 <translation id="8030169304546394654">Diputuskan</translation>
+<translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
 <translation id="8048123526339889627">Setelan Bluetooth</translation>
 <translation id="8054466585765276473">Menghitung masa pakai baterai.</translation>
@@ -868,6 +867,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="921989828232331238">Orang tuamu mengunci perangkat untuk hari ini</translation>
 <translation id="9220525904950070496">Hapus akun</translation>
 <translation id="923686485342484400">Tekan Control Shift Q dua kali untuk keluar.</translation>
+<translation id="925832987464884575">Sembunyikan pratinjau</translation>
 <translation id="938963181863597773">Apa saja daftar acara di kalender saya?</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="98515147261107953">Lanskap</translation>

@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ट्ज़) के साथ काम नहीं करता है. इस रिज़ॉल्यूशन को <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) में बदला गया. बदलावों को सेव करने के लिए 'पुष्टि करें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा किया जाएगा.</translation>
 <translation id="1919743966458266018">काम के प्रबंधक को खोलने का शॉर्टकट बदल गया है. कृपया <ph name="OLD_SHORTCUT" /> के बजाय <ph name="NEW_SHORTCUT" /> का उपयोग करें.</translation>
 <translation id="1923539912171292317">अपने-आप क्‍लिक</translation>
-<translation id="1924640696879807758">फ़ोन से</translation>
 <translation id="1928739107511554905">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करने के लिए टचस्क्रीन का इस्तेमाल करें.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@
 <translation id="2208323208084708176">संयुक्त डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2222338659135520253">साइन इन करना ज़रूरी है</translation>
-<translation id="22546648640907338">खास जानकारी देखने के लिए, टचपैड पर हाथ के जेस्चर (हाव-भाव) में बदलाव किया गया है. खास जानकारी देखने के लिए, स्क्रीन पर तीन उंगलियों से ऊपर की ओर स्वाइप करें.</translation>
 <translation id="225680501294068881">डिवाइस स्कैन किए जा रहे हैं...</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम किया गया</translation>
 <translation id="2268813581635650749">सभी को साइन आउट करें</translation>
@@ -148,7 +146,6 @@
 <translation id="2352467521400612932">स्टाइलस की सेटिंग</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय हो रहा है</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
-<translation id="2361223922412143600">खास जानकारी बंद करने के लिए, टचपैड पर हाथ के जेस्चर (हाव-भाव) में बदलाव किया गया है. खास जानकारी बंद करने के लिए, स्क्रीन पर तीन उंगलियों से नीचे की ओर स्वाइप करें.</translation>
 <translation id="2365393535144473978">मोबाइल डेटा चालू करने से ब्लूटूथ चालू हो जाएगा.</translation>
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
 <translation id="2390318262976603432">स्थान-भाषा की सेटिंग</translation>
@@ -177,7 +174,6 @@
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
-<translation id="2640255526076764619">पिछले डेस्क पर स्विच करने के लिए, टचपैड के जेस्चर (हाव-भाव) में बदलाव हुआ है. पिछले डेस्क पर स्विच करने के लिए, चार उंगलियों से बाईं ओर स्वाइप करें.</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2658778018866295321">क्लिक करके खींचें और छोड़ें</translation>
 <translation id="2700493154570097719">अपना कीबोर्ड सेट करें</translation>
@@ -351,7 +347,7 @@
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="4302592941791324970">उपलब्ध नहीं है</translation>
 <translation id="4303223480529385476">स्टेटस बताने वाली जगह को बड़ा करें</translation>
-<translation id="4315586716182276649">अपने फ़ोन का इंटरनेट कनेक्शन बेहतर बनाएं, 'परेशान न करें' सुविधा को कंट्रोल करें, और अपने डिवाइस का पता लगाएं. अपने फ़ोन में Chrome पर चालू किए गए टैब <ph name="DEVICE_TYPE" /> पर देखें.</translation>
+<translation id="4315586716182276649">अपने फ़ोन का इंटरनेट कनेक्शन बेहतर बनाएं. साथ ही, 'परेशान न करें' सुविधा को कंट्रोल करें और अपने डिवाइस का पता लगाएं. अपने फ़ोन में Chrome पर चालू किए गए टैब <ph name="DEVICE_TYPE" /> पर देखें.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">आपने 'हाई कंट्रास्ट' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -397,7 +393,6 @@
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
 <translation id="4705716602320768426">सुझाव/शिकायत/राय दें</translation>
-<translation id="4710243778082831592">IME की सेटिंग</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4744944742468440486">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी</translation>
@@ -528,7 +523,6 @@
 <translation id="6018164090099858612">मिरर मोड से बाहर निकाला जा रहा है</translation>
 <translation id="602001110135236999">बाईं ओर स्क्रोल करें</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
-<translation id="6029337736376922061">अगले डेस्क पर स्विच करने के लिए, टचपैड के जेस्चर (हाव-भाव) में बदलाव हुआ है. अगले डेस्क पर स्विच करने के लिए, चार उंगलियों से बाईं ओर स्वाइप करें.</translation>
 <translation id="6030495522958826102">मेन्यू, स्क्रीन के सबसे नीचे बाएं कोने में चला गया है.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6043212731627905357">यह मॉनीटर आपके <ph name="DEVICE_TYPE" /> के साथ काम नहीं कर रहा है (मॉनीटर समर्थित नहीं है).</translation>
@@ -672,7 +666,6 @@
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">स्क्रीन पर मौजूद कॉन्टेंट का स्क्रीन कैप्चर लेने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है.</translation>
 <translation id="7548434653388805669">सोने का समय हो गया</translation>
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
@@ -736,7 +729,7 @@
 <translation id="8054466585765276473">बैटरी समय की गणना की जा रही है.</translation>
 <translation id="8061464966246066292">उच्च स्क्रीन की रोशनी</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> को स्‍क्रीन कास्‍ट करना बंद करें</translation>
-<translation id="8108657971283652031">अपने फ़ोन का इंटरनेट कनेक्शन बेहतर बनाएं, 'परेशान न करें' सुविधा को कंट्रोल करें, और अपने फ़ोन का पता लगाएं. अपने फ़ोन में Chrome पर चालू किए गए टैब <ph name="DEVICE_TYPE" /> पर देखें.</translation>
+<translation id="8108657971283652031">अपने फ़ोन का इंटरनेट कनेक्शन बेहतर बनाएं. साथ ही, 'परेशान न करें' सुविधा को कंट्रोल करें और अपने फ़ोन का पता लगाएं. अपने फ़ोन में Chrome पर चालू किए गए टैब <ph name="DEVICE_TYPE" /> पर देखें.</translation>
 <translation id="8113423164597455979">चालू, सभी ऐप</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>

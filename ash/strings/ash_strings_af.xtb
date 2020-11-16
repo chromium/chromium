@@ -103,7 +103,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> steun nie <ph name="SPECIFIED_RESOLUTION" /> nie (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1919743966458266018">Die kortpad om die taakbestuurder oop te maak, het verander. Gebruik asseblief <ph name="NEW_SHORTCUT" /> pleks van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
-<translation id="1924640696879807758">Vanaf foon</translation>
 <translation id="1928739107511554905">Vir 'n opdatering van jou sleutelbord moet jy die raakskerm gebruik om jou Chromebook met die sleutelbord aangeheg, te herbegin.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2208323208084708176">Verenigde werkskermmodus</translation>
 <translation id="2220572644011485463">PIN of wagwoord</translation>
 <translation id="2222338659135520253">Aanmelding word vereis</translation>
-<translation id="22546648640907338">Die raakpaneelgebaar om by Oorsig in te gaan, het verander. Swiep met drie vingers op om by Oorsig in te gaan.</translation>
 <translation id="225680501294068881">Skandeer tans vir toestelle …</translation>
 <translation id="2268130516524549846">Bluetooth gedeaktiveer</translation>
 <translation id="2268813581635650749">Meld almal af</translation>
@@ -148,7 +146,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2352467521400612932">Stilusinstellings</translation>
 <translation id="2354174487190027830">Aktiveer tans <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Gaan voort</translation>
-<translation id="2361223922412143600">Die raakpaneelgebaar om Oorsig te verlaat, het verander. Swiep met drie vingers af om Oorsig te verlaat.</translation>
 <translation id="2365393535144473978">As mobiele data geaktiveer word, sal dit Bluetooth aktiveer.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
 <translation id="2390318262976603432">Locale-instellings</translation>
@@ -177,7 +174,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2596078834055697711">Neem vensterskermkiekie</translation>
 <translation id="2617342710774726426">SIM-kaart is gesluit</translation>
 <translation id="2621713457727696555">Beveilig</translation>
-<translation id="2640255526076764619">Die raakpaneelgebaar om na die vorige lessenaar toe te wissel, het verander. Swiep met vier vingers links om na die vorige lessenaar toe te wissel.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2658778018866295321">Klik en sleep</translation>
 <translation id="2700493154570097719">Stel jou sleutelbord</translation>
@@ -328,6 +324,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4112140312785995938">Soek agtertoe</translation>
 <translation id="4114315158543974537">Skakel Foonsentrum aan</translation>
 <translation id="4121728057981832179">'n Virtuele masjien gebruik tans jou mikrofoon</translation>
+<translation id="4126167871198063089">Verlaat Hardoplees</translation>
 <translation id="4129129681837227511">Om kennisgewings op jou sluitskerm te sien, ontsluit om die instelling te verander</translation>
 <translation id="4146833061457621061">Speel musiek</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> bestuur deur <ph name="DOMAIN" /></translation>
@@ -387,6 +384,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4570957409596482333">Hardoplees-knoppie</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Wys voorskoue</translation>
 <translation id="4585337515783392668">Hou op om op 'n onbekende ontvanger uit te saai</translation>
 <translation id="4596144739579517758">Donkertema is af</translation>
 <translation id="4623167406982293031">Verifieer rekening</translation>
@@ -397,7 +395,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4696813013609194136">Ontsluit toestel met ouerkode</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
 <translation id="4705716602320768426">Dien terugvoer in</translation>
-<translation id="4710243778082831592">IME-instellings</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
@@ -435,11 +432,13 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u. <ph name="MINUTES" /> m. <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Programkentekens</translation>
+<translation id="5003993274120026347">Volgende sin</translation>
 <translation id="5019169674188023236">Dit lyk of jou Bluetooth of wi-fi op jou <ph name="DEVICE_TYPE" /> afgeskakel is. Gaan jou verbinding na om Foonsentrum te gebruik.</translation>
 <translation id="5030687792513154421">Die tyd is om</translation>
 <translation id="5033299697334913360">Klik enige plek om volskerm vas te vang</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> het aan 'n nuwe foon gekoppel</translation>
 <translation id="5035389544768382859">Bevestig vertoonskermopstelling</translation>
+<translation id="504465286040788597">Vorige paragraaf</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
@@ -479,6 +478,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="554893713779400387">Wissel diktering</translation>
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5571066253365925590">Bluetooth geaktiveer</translation>
+<translation id="557563299383177668">Volgende paragraaf</translation>
 <translation id="558849140439112033">Sleep om 'n area te kies om vas te vang</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Druk Ctrl + Alt + Z om gesproke terugvoer te deaktiveer.</translation>
@@ -528,7 +528,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6018164090099858612">Verlaat tans spieëlmodus</translation>
 <translation id="602001110135236999">Rollees links</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
-<translation id="6029337736376922061">Die raakpaneelgebaar om na die volgende lessenaar toe te wissel, het verander. Swiep met vier vingers regs om na die volgende lessenaar toe te wissel.</translation>
 <translation id="6030495522958826102">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6043212731627905357">Hierdie monitor werk nie saam met jou <ph name="DEVICE_TYPE" /> nie (die monitor is nie gesteun nie).</translation>
@@ -619,7 +618,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6910714959251846841">Hierdie opdatering vereis dat jou toestel 'n kragwas kry. Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
 <translation id="6945221475159498467">Kies</translation>
-<translation id="6953890208095195458">Skermopname is deur jou administrateur gestop weens inhoud op jou skerm.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom aan die gang</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
@@ -673,7 +671,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7526573455193969409">Netwerk kan gemonitor word</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Jou administrateur blokkeer die vermoë om 'n skermskoot van die inhoud op jou skerm te neem.</translation>
 <translation id="7548434653388805669">Slaaptyd</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
@@ -732,6 +729,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8029247720646289474">Kon nie aan warmkol koppel nie</translation>
 <translation id="8029629653277878342">PIN of wagwoord word vereis vir meer sekuriteit</translation>
 <translation id="8030169304546394654">Ontkoppel</translation>
+<translation id="8036504271468642248">Vorige sin</translation>
 <translation id="8042893070933512245">Maak toeganklikheidinstellingskieslys oop</translation>
 <translation id="8048123526339889627">Bluetooth-instellings</translation>
 <translation id="8054466585765276473">Bereken tans batterytyd.</translation>
@@ -870,6 +868,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="921989828232331238">Jou ouer het jou toestel vir die dag gesluit</translation>
 <translation id="9220525904950070496">Verwyder rekening</translation>
 <translation id="923686485342484400">Druk Ctrl Shift Q twee keer om af te meld.</translation>
+<translation id="925832987464884575">Versteek voorskoue</translation>
 <translation id="938963181863597773">Wat is op my kalender?</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="98515147261107953">Landskap</translation>

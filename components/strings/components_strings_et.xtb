@@ -1175,7 +1175,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="560412284261940334">Haldust ei toetata</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">See sait võib olla võlts või petturlik. Chrome soovitab kohe lahkuda.</translation>
 <translation id="5610142619324316209">Kontrollige ühendust</translation>
 <translation id="5610807607761827392">Kaarte ja aadresse saate hallata menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tõlkige see leht rakendusega Google'i tõlge</translation>
@@ -1247,6 +1246,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5905445707201418379">Blokeeritud saidi <ph name="ORIGIN" /> lähtekohareegli tõttu.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sünkroonitud)</translation>
+<translation id="5913377024445952699">Ekraanikuva jäädvustamine on peatatud</translation>
 <translation id="59174027418879706">Lubatud</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Sees</translation>
@@ -1918,6 +1918,7 @@ Lisateave:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ühtivaid paroole ei ole. Vaadake kõiki salvestatud paroole.</translation>
 <translation id="8625384913736129811">Salvesta kaart sellesse seadmesse</translation>
+<translation id="8627040765059109009">Ekraanikuva jäädvustamine jätkub</translation>
 <translation id="8657078576661269990">Administraator blokeeris jagamise saidilt <ph name="ORIGIN_NAME" /> virtuaalmasinatesse <ph name="VM_NAME_1" /> ja <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Tellimuse kokkuvõte, <ph name="TOTAL_LABEL" />, rohkem üksikasju</translation>
 <translation id="867224526087042813">Allkiri</translation>

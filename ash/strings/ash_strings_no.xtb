@@ -103,7 +103,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klikk på Bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Snarveien for å åpne oppgavebehandlingen er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
-<translation id="1924640696879807758">Fra telefonen</translation>
 <translation id="1928739107511554905">For å laste ned oppdateringen, bruk berøringsskjermen til å starte Chromebooken på nytt med tastaturet tilkoblet.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222338659135520253">Pålogging kreves</translation>
-<translation id="22546648640907338">Styreflatebevegelsen for å åpne Oversikt er endret. Sveip opp med tre fingre for å åpne Oversikt.</translation>
 <translation id="225680501294068881">Leter etter enheter ...</translation>
 <translation id="2268130516524549846">Bluetooth er deaktivert</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
@@ -148,7 +146,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
-<translation id="2361223922412143600">Styreflatebevegelsen for å lukke Oversikt er endret. Sveip ned med tre fingre for å lukke Oversikt.</translation>
 <translation id="2365393535144473978">Hvis du slår på mobildata, blir Bluetooth også slått på.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
@@ -177,7 +174,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Sikret</translation>
-<translation id="2640255526076764619">Styreflatebevegelsen for å bytte til forrige skrivebord er endret. Sveip til venstre med fire fingre for å bytte til forrige skrivebord.</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
@@ -327,6 +323,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
 <translation id="4121728057981832179">En virtuell maskin bruker mikrofonen din</translation>
+<translation id="4126167871198063089">Avslutt Tekstopplesing</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> administreres av <ph name="DOMAIN" /></translation>
@@ -386,6 +383,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4570957409596482333">Tekstopplesingsknapp</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
@@ -396,7 +394,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
 <translation id="4705716602320768426">Send tilbakemelding</translation>
-<translation id="4710243778082831592">IME-innstillinger</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
@@ -434,11 +431,13 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Appmerking</translation>
+<translation id="5003993274120026347">Neste setning</translation>
 <translation id="5019169674188023236">Det ser ut som om Bluetooth eller Wi-Fi er slått av på <ph name="DEVICE_TYPE" />. Kontrollér tilkoblingen din for å bruke Telefonstyring.</translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
 <translation id="5033299697334913360">Klikk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> koblet til en ny telefon</translation>
 <translation id="5035389544768382859">Bekreft skjermkonfigurasjon</translation>
+<translation id="504465286040788597">Forrige avsnitt</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
@@ -478,6 +477,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="554893713779400387">Slå av/på diktering</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5571066253365925590">Bluetooth er aktivert</translation>
+<translation id="557563299383177668">Neste avsnitt</translation>
 <translation id="558849140439112033">Dra for å velge området du vil ta bilde av</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
@@ -527,7 +527,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6018164090099858612">Avslutter speilingsmodus</translation>
 <translation id="602001110135236999">Rull til venstre</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
-<translation id="6029337736376922061">Styreflatebevegelsen for å bytte til neste skrivebord er endret. Sveip til høyre med fire fingre for å bytte til neste skrivebord.</translation>
 <translation id="6030495522958826102">Menyen ble flyttet til nedre venstre hjørne av skjermen.</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>
@@ -618,7 +617,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6910714959251846841">Denne oppdateringen krever en powerwash av enheten din. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6945221475159498467">Velg</translation>
-<translation id="6953890208095195458">Administratoren din har stanset skjermopptaket på grunn av innholdet på skjermen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
@@ -672,7 +670,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Administratoren din har blokkert muligheten til å gjøre opptak av innholdet på skjermen.</translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
@@ -731,6 +728,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8029247720646289474">Tilkoblingen til Wi-Fi-sonen mislyktes</translation>
 <translation id="8029629653277878342">PIN-kode eller passord kreves for mer sikkerhet</translation>
 <translation id="8030169304546394654">Frakoblet</translation>
+<translation id="8036504271468642248">Forrige setning</translation>
 <translation id="8042893070933512245">Åpne menyen for tilgjengelighetsinnstillinger</translation>
 <translation id="8048123526339889627">Bluetooth-innstillinger</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
@@ -869,6 +867,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="921989828232331238">Forelderen din har låst enheten din for dagen</translation>
 <translation id="9220525904950070496">Fjern konto</translation>
 <translation id="923686485342484400">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
+<translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="98515147261107953">Liggende</translation>

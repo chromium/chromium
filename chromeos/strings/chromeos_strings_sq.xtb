@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1468664791493211953">Ofertat</translation>
@@ -14,8 +15,10 @@
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
 <translation id="1734367976349034509">Kjo pajisje menaxhohet nga ndërmarrja</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
@@ -37,9 +40,11 @@
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
+<translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3083667275341675831">Diagnostikimi i lidhshmërisë</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
+<translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
@@ -49,6 +54,7 @@
 <translation id="3515615323037921860">Printimet</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
 <translation id="38114475217616659">Fshi të gjithë historikun</translation>
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
@@ -60,11 +66,13 @@
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4027485274696301677">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="ENROLLMENT_DOMAIN" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="4034824040120875894">Printeri</translation>
+<translation id="4131410914670010031">Bardhezi</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Skedarët e skanuar u ruajtën!</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
@@ -80,6 +88,7 @@
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4808449224298348341">U anulua printimi i "<ph name="DOCUMENT_TITLE" />"</translation>
+<translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -103,6 +112,7 @@
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6048107060512778456">Dështoi - Bllokim letre</translation>
+<translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
@@ -115,23 +125,28 @@
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
+<translation id="65587193855025101">Shtrat i sheshtë</translation>
 <translation id="6564646048574748301">Dështoi - Printeri është i paarritshëm</translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
+<translation id="6839141349259399400">Nuk mund të lidhesh me skanerët?</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7805768142964895445">Statusi</translation>
+<translation id="7855434858642800953">Skedari i skanuar u ruajt!</translation>
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
+<translation id="8160445423316272678">Vendose dokumentin tënd në skaner dhe zgjidh <ph name="SPAN_BEGIN" />Skano<ph name="SPAN_END" /> për të filluar</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8294431847097064396">Burimi</translation>
@@ -143,11 +158,14 @@
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>
 <translation id="8723108084122415655">Rrjeti jo i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8726019395068607495">Ndaloi - Dera e hapur</translation>
+<translation id="8730621377337864115">U krye</translation>
 <translation id="8747900814994928677">Konfirmo ndryshimin</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8910721771319628100">Rrjeti i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8919837981463578619">Dështoi - Tabakaja mungon</translation>
 <translation id="8928727111548978589">Dështoi - Nuk ka letër</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
 </translationbundle>

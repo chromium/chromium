@@ -61,7 +61,7 @@
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{‏נחסם קובץ cookie אחד}two{‏נחסמו # קובצי cookie}many{‏נחסמו # קובצי cookie}other{‏נחסמו # קובצי cookie}}</translation>
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">מורחב - לחץ כדי לכווץ.</translation>
+<translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2653659639078652383">שליחה</translation>
@@ -98,7 +98,7 @@
 <translation id="3594780231884063836">השתקת הסרטון</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
-<translation id="3744111561329211289">סינכרון ברקע</translation>
+<translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -141,7 +141,7 @@
 <translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
 <translation id="5123685120097942451">כרטיסיית גלישה בסתר</translation>
 <translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
-<translation id="528192093759286357">כדי לצאת ממסך מלא, גרור מלמעלה וגע בלחצן 'הקודם'.</translation>
+<translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בלחצן 'הקודם'.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5313967007315987356">הוספת אתר</translation>
@@ -176,7 +176,7 @@
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
-<translation id="6040143037577758943">סגור</translation>
+<translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
@@ -286,7 +286,7 @@
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8702612070107455751">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
-<translation id="8725066075913043281">נסה שוב</translation>
+<translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8737217482364735741">‏פעולה זו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">בחירת תמונה</translation>

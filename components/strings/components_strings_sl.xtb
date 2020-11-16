@@ -1176,7 +1176,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="560412284261940334">Upravljanje ni podprto</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">To spletno mesto je lahko lažno ali goljufivo. Chrome predlaga, da ga takoj zapustite.</translation>
 <translation id="5610142619324316209">preveriti povezavo</translation>
 <translation id="5610807607761827392">Kartice in naslove je mogoče upravljati v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Prevajanje te strani z Google Prevajalnikom</translation>
@@ -1248,6 +1247,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5905445707201418379">Blokirano v skladu s pravilnikom izvora za <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizirano)</translation>
+<translation id="5913377024445952699">Začasno zaustavljeno zajemanje slike zaslona</translation>
 <translation id="59174027418879706">Omogočeno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Vklopljeno</translation>
@@ -1919,6 +1919,7 @@ Dodatne podrobnosti:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ni gesel, ki bi se ujemala. Prikaži vsa shranjena gesla.</translation>
 <translation id="8625384913736129811">Shrani to kartico v tej napravi</translation>
+<translation id="8627040765059109009">Nadaljevanje zajemanja slike zaslona</translation>
 <translation id="8657078576661269990">Skrbnik je blokiral deljenje vsebine iz vira <ph name="ORIGIN_NAME" /> z navideznima računalnikoma <ph name="VM_NAME_1" /> in <ph name="VM_NAME_2" />.</translation>
 <translation id="8663226718884576429">Povzetek naročila, <ph name="TOTAL_LABEL" />, več podrobnosti</translation>
 <translation id="867224526087042813">Podpis</translation>

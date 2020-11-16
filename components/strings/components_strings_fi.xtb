@@ -1177,7 +1177,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
 <translation id="5605670050355397069">Kierrevihko</translation>
 <translation id="5607240918979444548">Arkkitehti-C</translation>
-<translation id="5608165884683734521">Tämä voi olla vilpillinen tai valesivusto. Chrome suosittelee siltä poistumista.</translation>
 <translation id="5610142619324316209">Tarkista yhteys.</translation>
 <translation id="5610807607761827392">Voit hallita kortteja ja osoitteita <ph name="BEGIN_LINK" />Asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Käännä tämä sivu Google Kääntäjällä</translation>
@@ -1249,6 +1248,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> estää tämän alkuperäkäytännössään.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronoitu)</translation>
+<translation id="5913377024445952699">Näytön tallennus keskeytetty</translation>
 <translation id="59174027418879706">Käytössä</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Päällä</translation>
@@ -1921,6 +1921,7 @@ Lisätietoja:
 <translation id="8622948367223941507">Laki-ekstra</translation>
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8625384913736129811">Tallenna kortti tälle laitteelle</translation>
+<translation id="8627040765059109009">Näytön tallennusta jatkettu</translation>
 <translation id="8657078576661269990">Järjestelmänvalvoja on estänyt sivustolta <ph name="ORIGIN_NAME" /> jakamisen näille: <ph name="VM_NAME_1" /> ja <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
 <translation id="867224526087042813">Allekirjoitus</translation>

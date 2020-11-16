@@ -1166,7 +1166,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="560412284261940334">No se admite la administración.</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Este sitio podría ser falso o fraudulento. Chrome te recomienda que salgas de él ahora.</translation>
 <translation id="5610142619324316209">Comprobar la conexión.</translation>
 <translation id="5610807607761827392">Puedes administrar tarjetas y direcciones en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduce esta página con Google Traductor</translation>
@@ -1238,6 +1237,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5905445707201418379">Se bloqueó conforme a la política de origen de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5913377024445952699">Se pausó la captura de pantalla</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Sí</translation>
@@ -1910,6 +1910,7 @@ Detalles adicionales:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8625384913736129811">Guardar esta tarjeta para este dispositivo</translation>
+<translation id="8627040765059109009">Se reanudó la captura de pantalla</translation>
 <translation id="8657078576661269990">Tu administrador no permite que <ph name="ORIGIN_NAME" /> comparta contenido con <ph name="VM_NAME_1" /> y <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resumen del pedido, <ph name="TOTAL_LABEL" />, Más detalles</translation>
 <translation id="867224526087042813">Firma</translation>

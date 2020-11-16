@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Bookmarks saved on your other devices will appear here.</translation>
 <translation id="1113597929977215864">Show simplified view</translation>
+<translation id="1118561384561215815">Get help with tasks on the web</translation>
 <translation id="1123070903960493543">How you interact with Chrome, settings that you’ve selected, details of Chrome crashes</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1754404134430936718">Text copied</translation>
+<translation id="1772137089884020309">List of bookmark folders is closed</translation>
 <translation id="1782483593938241562">End date <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
@@ -181,6 +183,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
+<translation id="230155349749732438">To use this setting <ph name="BEGIN_LINK" />Make searches and browsing better<ph name="END_LINK" /> must be turned on</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
 <translation id="2321958826496381788">Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.</translation>
@@ -204,6 +207,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2450907520913474542">Learn about topics on websites without leaving the page. Touch to search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results and other details.
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
+<translation id="2459390580524506445">Enhanced voice search</translation>
 <translation id="246532703174860178">Share</translation>
 <translation id="2478076885740497414">Install app</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
@@ -272,6 +276,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2956410042958133412">This account is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
 <translation id="2962095958535813455">Switched to incognito tabs</translation>
 <translation id="2979025552038692506">Selected Incognito Tab</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
@@ -304,7 +309,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> unread pages</translation>
 <translation id="321773570071367578">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome as a security key</translation>
 <translation id="3232754137068452469">Web App</translation>
@@ -316,11 +320,13 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3269956123044984603">To get your tabs from your other devices, turn on “Auto-sync data” in Android account settings.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
+<translation id="3284510035090979597">Proactive help</translation>
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
 <translation id="32895400574683172">Notifications are allowed</translation>
 <translation id="3290991969712132877">To get here quicker, add this page to your home screen from the 'More options' button</translation>
 <translation id="3295530008794733555">Browse faster. Use less data.</translation>
+<translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3315103659806849044">You are currently customising your Sync and Google service settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
@@ -423,6 +429,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Delete app data?</translation>
+<translation id="4095189195365058471">Read later <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Help make Chrome better by sending usage statistics and crash reports to Google.</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4116038641877404294">Download pages to use them offline</translation>
@@ -515,6 +522,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 download complete.}other{# downloads complete.}}</translation>
 <translation id="4766678251456904326">Add account to device</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 download scheduled.}other{# downloads scheduled.}}</translation>
+<translation id="4791358705705538979">Helps you complete tasks, such as checkout, throughout the web</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
@@ -620,6 +628,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5524843473235508879">Redirect blocked.</translation>
 <translation id="5527082711130173040">Chrome needs location access to scan for devices. <ph name="BEGIN_LINK1" />Update permissions<ph name="END_LINK1" />. Location access is also <ph name="BEGIN_LINK2" />turned off for this device<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Close incognito tabs</translation>
+<translation id="5530920986376047241">You can save pages to your reading list to find them again</translation>
 <translation id="5534640966246046842">Site copied</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
@@ -641,7 +650,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> will use <ph name="LANGUAGE" /> on restart.</translation>
-<translation id="5691211010013816086">You have <ph name="READING_LIST_COUNT" /> pages</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
 <translation id="5697688514913266141">Your file will be saved to <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -665,6 +673,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5797070761912323120">Google may use your history to personalise Search, ads and other Google services</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# hour ago}other{# hours ago}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="5810864297166300463">Web assistance</translation>
 <translation id="5814131985548525293">Type here or tap the voice icon to start</translation>
 <translation id="5817918615728894473">Pair</translation>
 <translation id="583281660410589416">Unknown</translation>
@@ -699,6 +708,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5982307838673692400">Open an Incognito tab</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6005538289190791541">Suggested password</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
 <translation id="6014293228235665243">Unread</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
@@ -859,6 +869,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passwords</translation>
+<translation id="7030675613184250187">You can save pages to your reading list to find them again or read offline</translation>
 <translation id="703523980599857277">Change home page</translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
@@ -879,6 +890,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7177466738963138057">You can change this later in Settings</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
+<translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7189372733857464326">Waiting for Google Play Services to finish updating</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
@@ -886,7 +898,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7274013316676448362">Blocked site</translation>
 <translation id="7286572596625053347">Change <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
-<translation id="7291387454912369099">Assistant Triggered Checkout</translation>
 <translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>
@@ -932,6 +943,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7577900504646297215">Manage interests</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file downloaded}other{<ph name="FILES_DOWNLOADED_MANY" /> files downloaded}}</translation>
+<translation id="7583262514280211622">You’ll find your reading list here</translation>
 <translation id="7588219262685291874">Turn on dark theme when your device's Battery Saver is on</translation>
 <translation id="7593557518625677601">Open Android settings and re-enable Android system sync to start Chrome sync</translation>
 <translation id="7596558890252710462">Operating system</translation>
@@ -963,6 +975,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7772375229873196092">Close <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
+<translation id="7786595606756654269">Google Assistant provides a better voice experience for searching the web and engaging with sites that you have open. Google Assistant will receive the URL and contents of sites that you use with it.</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -988,6 +1001,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7967911570373677897">To scan a QR code, change your settings so that Chrome can use your camera</translation>
+<translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
@@ -1018,6 +1032,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8137558756159375272">Touch to Search sends the selected word and the current page as context to Google Search. You can turn it off in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Assistant will appear when it detects that it can help you on supported websites</translation>
 <translation id="8156139159503939589">What languages do you read?</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
@@ -1048,6 +1063,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8372925856448695381"><ph name="LANG" /> is ready.</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8407396331882458341">1. Choose <ph name="APP_NAME" />\n2. Tap 'Always'</translation>
+<translation id="8410695015584479363">Track prices</translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
@@ -1115,6 +1131,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8920114477895755567">Waiting for details of parents.</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
+<translation id="8928626432984354940">List of bookmark folders opened at half height</translation>
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8951232171465285730">Chrome has saved you <ph name="MEGABYTES" /> MB</translation>
@@ -1166,6 +1183,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="93753284658583800">Home page changed</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Enter passphrase</translation>
+<translation id="948039501338975565">List of bookmark folders</translation>
 <translation id="95817756606698420">Chrome can use <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for search in China. You can change this in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Install this app</translation>
 <translation id="968900484120156207">Pages that you visit appear here</translation>

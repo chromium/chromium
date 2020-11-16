@@ -103,7 +103,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> no admite el valor de resolución <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz), por lo que se cambió a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" /> se restablecerá la configuración anterior.</translation>
 <translation id="1919743966458266018">Se modificó el acceso directo para abrir el administrador de tareas. Utiliza <ph name="NEW_SHORTCUT" /> en vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
-<translation id="1924640696879807758">Del teléfono</translation>
 <translation id="1928739107511554905">Para obtener la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -126,11 +125,10 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
-<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Volver a intentar</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Se requiere el acceso a la cuenta</translation>
-<translation id="22546648640907338">Se cambió el gesto del panel táctil para acceder a Recientes. Si quieres realizar esta acción, desliza tres dedos hacia arriba.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Salir de todo</translation>
@@ -148,7 +146,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">Se cambió el gesto del panel táctil para salir de Recientes. Si quieres realizar esta acción, desliza tres dedos hacia abajo.</translation>
 <translation id="2365393535144473978">Si habilitas los datos móviles, se habilitará Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
@@ -177,7 +174,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
-<translation id="2640255526076764619">Se cambió el gesto del panel táctil para ir al escritorio anterior. Para realizar esta acción, desliza cuatro dedos hacia la izquierda.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
 <translation id="2700493154570097719">Establecer el teclado</translation>
@@ -328,6 +324,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4121728057981832179">Una máquina virtual está usando el micrófono</translation>
+<translation id="4126167871198063089">Salir de Seleccionar para pronunciar</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4149156641122542261">Dispositivo <ph name="DEVICE_TYPE" /> administrado por <ph name="DOMAIN" /></translation>
@@ -387,6 +384,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4570957409596482333">Botón de Seleccionar para pronunciar</translation>
 <translation id="4577274620589681794">Pasó el tiempo indicado · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4585337515783392668">Dejar de transmitir en un receptor desconocido</translation>
 <translation id="4596144739579517758">El Tema oscuro está desactivado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -397,7 +395,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
-<translation id="4710243778082831592">Configuración de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>
@@ -435,11 +432,13 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Insignias de apps</translation>
+<translation id="5003993274120026347">Oración siguiente</translation>
 <translation id="5019169674188023236">Parece que la conexión Bluetooth o Wi-Fi está desactivada en tu <ph name="DEVICE_TYPE" />. Revisa la conexión para usar Phone Hub.</translation>
 <translation id="5030687792513154421">Se acabó el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
 <translation id="5035236842988137213">Se conectó el dispositivo <ph name="DEVICE_NAME" /> a un teléfono nuevo</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
+<translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5078796286268621944">Número de PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea más funciones del Asistente.</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
@@ -479,6 +478,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
+<translation id="557563299383177668">Párrafo siguiente</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -528,7 +528,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
-<translation id="6029337736376922061">Se cambió el gesto del panel táctil para ir al escritorio siguiente. Para realizar esta acción, desliza cuatro dedos hacia la derecha.</translation>
 <translation id="6030495522958826102">El menú se movió a la esquina inferior izquierda de la pantalla.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -606,7 +605,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6777216307882431711">Se están cargando los dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6803622936009808957">No se pudieron reflejar las pantallas porque no se encontraron resoluciones compatibles. En su lugar, se activó el escritorio extendido.</translation>
-<translation id="6816797338148849397">Se muestra información sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
+<translation id="6816797338148849397">Información disponible sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
 <translation id="6818242057446442178">Volver palabra por palabra</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
 <translation id="6850010208275816200">La app actual se muestra en pantalla completa. Deberás salir de este modo si la app solicita tu contraseña.</translation>
@@ -672,7 +671,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">El administrador no permite tomar capturas del contenido de tu pantalla.</translation>
 <translation id="7548434653388805669">Es hora de ir a la cama</translation>
 <translation id="7551643184018910560">Fijar en la biblioteca</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
@@ -731,6 +729,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8029247720646289474">No se pudo establecer la conexión con el hotspot</translation>
 <translation id="8029629653277878342">Se requiere el PIN o la contraseña por cuestiones de seguridad</translation>
 <translation id="8030169304546394654">Desconectado</translation>
+<translation id="8036504271468642248">Oración anterior</translation>
 <translation id="8042893070933512245">Abrir el menú de configuración de accesibilidad</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
@@ -869,6 +868,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="921989828232331238">Tus padres bloquearon el dispositivo por el día</translation>
 <translation id="9220525904950070496">Eliminar cuenta</translation>
 <translation id="923686485342484400">Presiona Control Mayús Q dos veces para salir.</translation>
+<translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938963181863597773">¿Qué eventos tengo en mi calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="98515147261107953">Horizontal</translation>

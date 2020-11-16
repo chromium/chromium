@@ -1177,7 +1177,6 @@
 <translation id="560412284261940334">Η διαχείριση δεν υποστηρίζεται</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Αυτός ο ιστότοπος μπορεί να είναι ψεύτικος ή μη νόμιμος. Το Chrome συνιστά να αποχωρήσετε τώρα.</translation>
 <translation id="5610142619324316209">Ελέγξτε τη σύνδεση</translation>
 <translation id="5610807607761827392">Μπορείτε να διαχειριστείτε τις κάρτες και τις διευθύνσεις στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Μεταφράστε αυτήν τη σελίδα με τη Μετάφραση Google.</translation>
@@ -1249,6 +1248,7 @@
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5905445707201418379">Αποκλείστηκε σύμφωνα με την πολιτική προέλευσης του <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (συγχρονισμένο)</translation>
+<translation id="5913377024445952699">Η καταγραφή οθόνης τέθηκε σε παύση</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Ενεργοποιημένο</translation>
@@ -1921,6 +1921,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Δεν αντιστοιχούν κωδικοί πρόσβασης. Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης.</translation>
 <translation id="8625384913736129811">Αποθήκευση αυτής της κάρτας στη συγκεκριμένη συσκευή</translation>
+<translation id="8627040765059109009">Η καταγραφή οθόνης συνεχίζεται</translation>
 <translation id="8657078576661269990">Ο διαχειριστής έχει αποκλείσει την κοινοποίηση αυτού του περιεχομένου από <ph name="ORIGIN_NAME" /> σε <ph name="VM_NAME_1" /> και <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="867224526087042813">Υπογραφή</translation>

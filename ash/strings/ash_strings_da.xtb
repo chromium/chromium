@@ -103,7 +103,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik på Bekræft for at anvende ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Genvejen til at åbne Jobliste er ændret. Brug <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klik</translation>
-<translation id="1924640696879807758">Fra telefon</translation>
 <translation id="1928739107511554905">Brug touchskærmen til at genstarte din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2208323208084708176">Samlet skrivebordstilstand</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2222338659135520253">Login er påkrævet</translation>
-<translation id="22546648640907338">Den touchpladebevægelse, der blev brugt til at åbne oversigten, har ændret sig. Stryg opad med tre fingre for at åbne oversigten.</translation>
 <translation id="225680501294068881">Søger efter enheder...</translation>
 <translation id="2268130516524549846">Bluetooth er deaktiveret</translation>
 <translation id="2268813581635650749">Log alle ud</translation>
@@ -148,7 +146,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2352467521400612932">Indstillinger for styluspen</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsæt</translation>
-<translation id="2361223922412143600">Den touchpladebevægelser, der blev brugt til at lukke oversigten, har ændret sig. Stryg nedad med tre fingre for at lukke oversigten.</translation>
 <translation id="2365393535144473978">Bluetooth aktiveres, når du aktiverer mobildata.</translation>
 <translation id="2369165858548251131">"Hej" på kinesisk</translation>
 <translation id="2390318262976603432">Lokale indstillinger</translation>
@@ -177,7 +174,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2596078834055697711">Tag screenshot af vinduet</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
-<translation id="2640255526076764619">Den touchpladebevægelse, der blev brugt til at skifte til forrige skrivebord, har ændret sig. Stryg mod venstre med fire fingre for at skifte til forrige skrivebord.</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2658778018866295321">Klik og træk</translation>
 <translation id="2700493154570097719">Angiv dit tastatur</translation>
@@ -327,6 +323,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
 <translation id="4114315158543974537">Aktivér Phone Hub</translation>
 <translation id="4121728057981832179">En virtuel maskine anvender din mikrofon</translation>
+<translation id="4126167871198063089">Afslut Tekstoplæsning</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
 <translation id="4146833061457621061">Spil musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> administreres af <ph name="DOMAIN" /></translation>
@@ -386,6 +383,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4570957409596482333">Knap for Tekstoplæsning</translation>
 <translation id="4577274620589681794">Tiden er gået · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4623167406982293031">Bekræft konto</translation>
@@ -396,7 +394,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
 <translation id="4705716602320768426">Giv feedback</translation>
-<translation id="4710243778082831592">IME-indstillinger</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="4734965478015604180">Vandret</translation>
 <translation id="4744944742468440486">Oplysninger relateret til det, du har markeret</translation>
@@ -434,11 +431,13 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4961318399572185831">Cast skærm</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t., <ph name="MINUTES" /> min. og <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Appbadges</translation>
+<translation id="5003993274120026347">Næste sætning</translation>
 <translation id="5019169674188023236">Det ser ud til, at Bluetooth eller Wi-Fi er deaktiveret på din <ph name="DEVICE_TYPE" />. Tjek din forbindelse, hvis du vil bruge Telefonstyring.</translation>
 <translation id="5030687792513154421">Tiden er gået</translation>
 <translation id="5033299697334913360">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har oprettet forbindelse til en ny telefon</translation>
 <translation id="5035389544768382859">Bekræft skærmkonfiguration</translation>
+<translation id="504465286040788597">Forrige afsnit</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
@@ -478,6 +477,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="554893713779400387">Slå diktering til/fra</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5571066253365925590">Bluetooth er aktiveret</translation>
+<translation id="557563299383177668">Næste afsnit</translation>
 <translation id="558849140439112033">Træk for at vælge et område, der skal tages billeder af</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> d. <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
@@ -527,7 +527,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6018164090099858612">Lukker spejltilstand</translation>
 <translation id="602001110135236999">Rul til venstre</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
-<translation id="6029337736376922061">Den touchpladebevægelse, der blev brugt til at skifte til næste skrivebord, har ændret sig. Stryg mod højre med fire fingre for at skifte til næste skrivebord.</translation>
 <translation id="6030495522958826102">Menuen blev flyttet til nederste venstre hjørne af skærmen.</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
@@ -672,7 +671,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Muligheden for at tage et screenshot af indholdet på din skærm er blevet blokeret af din administrator.</translation>
 <translation id="7548434653388805669">Det er sengetid</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7561982940498449837">Luk menu</translation>
@@ -731,6 +729,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8029247720646289474">Der kunne ikke oprettes forbindelse til hotspot</translation>
 <translation id="8029629653277878342">Der kræves en pinkode eller adgangskode som ekstra sikkerhed</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
+<translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
@@ -869,6 +868,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="921989828232331238">Din forælder har låst din enhed resten af dagen</translation>
 <translation id="9220525904950070496">Fjern konto</translation>
 <translation id="923686485342484400">Tryk på Control+Shift+Q to gange for at logge ud.</translation>
+<translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="98515147261107953">Liggende</translation>

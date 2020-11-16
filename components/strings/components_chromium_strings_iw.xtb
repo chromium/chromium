@@ -17,7 +17,7 @@
           ‏&gt;
           הגדרות LAN
           ולבטל את הבחירה באפשרות "שימוש בשרת proxy עבור רשת LAN‏".</translation>
-<translation id="48558539577516920">‏שנה את הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chromium
+<translation id="48558539577516920">‏שינוי הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chromium
           לגשת לרשת.</translation>
 <translation id="580822234363523061">‏יש לעבור אל
           תפריט Chromium‏ &gt;
@@ -36,8 +36,8 @@
         ולבטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
         אם פעולה זו אינה פותרת את הבעיה, מומלץ לבחור שוב באפשרות זו
         לקבלת ביצועים משופרים.</translation>
-<translation id="8187289872471304532">‏עבור אל
+<translation id="8187289872471304532">‏יש לעבור אל
           'יישומים' &gt; 'העדפות מערכת' &gt; 'רשת' &gt; 'מתקדם' &gt; שרתי Proxy'
-          ובטל את הבחירה בשרתי proxy שנבחרו.</translation>
+          ולבטל את הבחירה בשרתי proxy שנבחרו.</translation>
 <translation id="8684913864886094367">‏כיבוי Chromium לא בוצע כהלכה.</translation>
 </translationbundle>

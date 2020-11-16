@@ -1176,7 +1176,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="560412284261940334">Hantering stöds inte</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Den här webbplatsen kan vara falsk eller bedräglig. Chrome rekommenderar att du lämnar den nu.</translation>
 <translation id="5610142619324316209">kontrollera anslutningen</translation>
 <translation id="5610807607761827392">Du hanterar kort och adresser under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Översätt den här sidan med Google Översätt</translation>
@@ -1248,6 +1247,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5905445707201418379">Blockerad i enlighet med ursprungsprincipen på <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniserade)</translation>
+<translation id="5913377024445952699">Skärmbild/skärminspelning har pausats</translation>
 <translation id="59174027418879706">Aktiverad</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">På</translation>
@@ -1920,6 +1920,7 @@ Mer information:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Inga matchande lösenord. Visa alla sparade lösenord.</translation>
 <translation id="8625384913736129811">Spara kortet på enheten</translation>
+<translation id="8627040765059109009">Skärmbilder/skärminspelningar har återupptagits</translation>
 <translation id="8657078576661269990">Administratören har blockerat delning från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME_1" /> och <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="867224526087042813">Signatur</translation>

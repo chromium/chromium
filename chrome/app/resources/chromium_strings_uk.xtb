@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Запитувати, коли відкривається Chromium</translation>
 <translation id="1396446129537741364">Chromium намагається показати паролі.</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
+<translation id="1414973082589232775">Щоб відтворювати захищений медіаконтент за допомогою додатка Rosetta, потрібно перезапустити Chromium.</translation>
 <translation id="151962892725702025">ОС Chromium не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
 <translation id="1553461853655228091">Chromium потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Для роботи Chromium потрібно мати ОС Windows 7 або новішої версії.</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
+<translation id="5736967399513123100">Щоб відтворювати в Chromium захищений медіаконтент, потрібно встановити додаток Rosetta. Зробити це зараз?</translation>
 <translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -175,6 +177,7 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
 <translation id="6893813176749746474">Chromium оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
+<translation id="6897548120660295439">Завдяки додатку Rosetta у веб-переглядачі Chromium можна відтворювати захищений медіаконтент на цій сторінці.</translation>
 <translation id="6964305034639999644">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="6978145336957848883">Ненадійні паролі можна легко вгадати. Тому радимо <ph name="BEGIN_LINK" />створювати й зберігати безпечні паролі<ph name="END_LINK" /> в Chromium.</translation>
 <translation id="6990124437352146030">Chromium потрібен дозвіл на використання мікрофона, щоб надати цьому сайту доступ до нього</translation>

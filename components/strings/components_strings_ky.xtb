@@ -1175,7 +1175,6 @@
 <translation id="560412284261940334">Башкаруу колдоого алынбайт</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Бул жалган сайт болушу мүмкүн. Chrome бул сайттан дароо чыгууну сунуштайт.</translation>
 <translation id="5610142619324316209">Туташууну текшерип көрүңүз</translation>
 <translation id="5610807607761827392">Карточкаларды жана даректерди <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
 <translation id="561165882404867731">Бул баракты Google Котормочуда которуңуз</translation>
@@ -1247,6 +1246,7 @@
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> баштапкы саясатына ылайык бөгөттөлдү.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (шайкештирилген)</translation>
+<translation id="5913377024445952699">Экранды тартуу тындырылды</translation>
 <translation id="59174027418879706">Иштетилген</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Күйүк</translation>
@@ -1918,6 +1918,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Дал келген сырсөздөр жок. Бардык сакталган сырсөздөрдү көрсөтүү.</translation>
 <translation id="8625384913736129811">Бул карточка ушул түзмөктө сакталсын</translation>
+<translation id="8627040765059109009">Экранды тартуу улантылды</translation>
 <translation id="8657078576661269990">Администраторуңуз <ph name="ORIGIN_NAME" /> сайтын <ph name="VM_NAME_1" /> жана <ph name="VM_NAME_2" /> менен бөлүшүүгө тыюу салып койгон</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="867224526087042813">Колтамга</translation>

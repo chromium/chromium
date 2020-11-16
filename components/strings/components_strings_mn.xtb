@@ -1177,7 +1177,6 @@
 <translation id="560412284261940334">Удирдлагын зүгээс зөвшөөрөл олгоогүй байна</translation>
 <translation id="5605670050355397069">Тайлан</translation>
 <translation id="5607240918979444548">Архитектур-C</translation>
-<translation id="5608165884683734521">Энэ сайт хуурамч эсвэл залилангийн шинжтэй байж болно. Chrome одоо орхихыг санал болгож байна.</translation>
 <translation id="5610142619324316209">Холболтыг шалгаж байна</translation>
 <translation id="5610807607761827392">Та карт, хаягийг <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="561165882404867731">Энэ хуудсыг Google Орчуулагчаар орчуулах</translation>
@@ -1249,6 +1248,7 @@
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />-н үндсэн удирдамжийн дагуу хориглосон.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синк хийсэн)</translation>
+<translation id="5913377024445952699">Дэлгэцийн зураг авахыг түр зогсоосон</translation>
 <translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Асаалттай</translation>
@@ -1919,6 +1919,7 @@
 <translation id="8622948367223941507">Хууль ёсны-Нэмэлт</translation>
 <translation id="8623885649813806493">Таарах нууц үг алга. Бүх хадгалсан нууц үгийг харуулна уу.</translation>
 <translation id="8625384913736129811">Энэ картыг энэ төхөөрөмжид хадгалах</translation>
+<translation id="8627040765059109009">Дэлгэцийн зураг авахыг үргэлжлүүлсэн</translation>
 <translation id="8657078576661269990">Таны администратор <ph name="ORIGIN_NAME" />-с <ph name="VM_NAME_1" /> болон <ph name="VM_NAME_2" />-тай хуваалцахыг блоклосон</translation>
 <translation id="8663226718884576429">Захиалгын дүн, <ph name="TOTAL_LABEL" />, Дэлгэрэнгүй</translation>
 <translation id="867224526087042813">Гарын үсэг</translation>

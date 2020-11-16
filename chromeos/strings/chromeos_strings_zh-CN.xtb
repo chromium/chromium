@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1734367976349034509">此设备是受企业管理的设备</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
@@ -37,6 +38,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="3008341117444806826">刷新</translation>
+<translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3083667275341675831">网络连接诊断</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3188257591659621405">我的文件</translation>
@@ -49,6 +51,7 @@
 <translation id="3515615323037921860">打印任务</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3749289110408117711">文件名</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
@@ -60,6 +63,7 @@
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4027485274696301677">此 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理。管理员可以远程配置此设备。</translation>
 <translation id="4034824040120875894">打印机</translation>
+<translation id="4131410914670010031">黑白色</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
@@ -80,6 +84,7 @@
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
+<translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4932733599132424254">日期</translation>
@@ -90,6 +95,7 @@
 请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">重新运行诊断例程</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">请立即设置一个新密码</translation>
@@ -98,10 +104,12 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">托管</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6048107060512778456">失败 - 卡纸了</translation>
+<translation id="6050189528197190982">灰度</translation>
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
@@ -125,6 +133,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -142,7 +151,9 @@
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
+<translation id="8730621377337864115">完成</translation>
 <translation id="8747900814994928677">确认更改</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>

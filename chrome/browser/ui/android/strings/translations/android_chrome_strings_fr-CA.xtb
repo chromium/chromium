@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
+<translation id="1538801903729528855">Une meilleure expérience vocale sur le Web</translation>
 <translation id="1543538514740974167">Arrivez ici plus rapidement</translation>
 <translation id="1544826120773021464">Pour gérer votre compte Google, touchez le bouton « Gérer le compte »</translation>
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1918175104945982129">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, ouverte à mi-hauteur</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1922362554271624559">Langues suggérées</translation>
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Site interrompu</translation>
 <translation id="2067805253194386918">texte</translation>
 <translation id="2068748236079642969">Regarder la vidéo suivante</translation>
+<translation id="2074143993849053708">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, fermée</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Profitez de la synchronisation et d'une expérience personnalisée sur tous vos appareils</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
@@ -279,6 +282,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3006881078666935414">Aucune donnée d'utilisation</translation>
 <translation id="3016635187733453316">Assurez-vous que cet appareil est connecté à Internet</translation>
 <translation id="3029704984691124060">Mots de passe multitermes différents</translation>
+<translation id="3031225630520268969">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant</translation>
 <translation id="3034163383943672781">Début prévu du téléchargement : <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Le paramètre Position est désactivé, activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -300,7 +304,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> pages non lues</translation>
 <translation id="321773570071367578">Si vous avez oublié votre phrase de passe ou souhaitez modifier ce paramètre, veuillez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome comme clé de sécurité</translation>
 <translation id="3232754137068452469">Application Web</translation>
@@ -437,6 +440,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes de sécurité</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
+<translation id="4263656433980196874">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, ouverte à pleine hauteur</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +627,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5581519193887989363">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />.</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5599455543593328020">Mode de navigation privée</translation>
+<translation id="5599941490345670218">L'Assistant Google peut effectuer des actions sur des sites Web à votre place</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>
 <translation id="5620928963363755975">Trouvez vos fichiers et vos pages dans Téléchargements à partir du bouton Plus d'options</translation>
 <translation id="5626134646977739690">Nom :</translation>
@@ -635,7 +640,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> utilisera la langue suivante au redémarrage : <ph name="LANGUAGE" />.</translation>
-<translation id="5691211010013816086">Vous avez <ph name="READING_LIST_COUNT" /> pages</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
 <translation id="5697688514913266141">Votre fichier sera enregistré dans <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifier<ph name="END_LINK2" />.</translation>
@@ -853,6 +857,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7027549951530753705">Élément restauré : <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mots de passe</translation>
+<translation id="7030675613184250187">Vous pouvez enregistrer des pages dans votre liste de lecture pour les retrouver plus tard ou pour les lire hors ligne</translation>
 <translation id="703523980599857277">Modifier la page d'accueil</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
@@ -880,7 +885,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7286572596625053347">Ne plus utiliser <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Impossible de renommer l'élément</translation>
-<translation id="7291387454912369099">Paiement assisté</translation>
 <translation id="7293171162284876153">Pour démarrer la synchronisation, activez l'option « Synchroniser vos données Chrome ».</translation>
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="729975465115245577">Votre appareil ne dispose pas d'une application pour stocker le fichier de mots de passe.</translation>
@@ -1148,6 +1152,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="9155898266292537608">Vous pouvez également effectuer une recherche d'un simple toucher sur un mot</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9191031968346938109">Ajouter à…</translation>
+<translation id="919615279147764192">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant. Cette information peut être stockée dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Dernière vérification : il y a 1 minute}one{Dernière vérification : il y a # minute}other{Dernière vérification : il y a # minutes}}</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9206873250291191720">A</translation>

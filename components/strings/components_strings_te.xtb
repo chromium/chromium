@@ -732,7 +732,7 @@
 <translation id="388632593194507180">పర్యవేక్షణ గుర్తించబడింది</translation>
 <translation id="3886948180919384617">స్టాకర్ 3</translation>
 <translation id="3890664840433101773">ఇమెయిల్‌ను జోడించండి</translation>
-<translation id="3897092660631435901">మెను</translation>
+<translation id="3897092660631435901">మెనూ</translation>
 <translation id="3901925938762663762">కార్డ్ గడువు సమయం ముగిసింది</translation>
 <translation id="3906600011954732550">B5-అదనం</translation>
 <translation id="3906954721959377182">టాబ్లెట్</translation>
@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">నిర్వహణకు మద్దతు లేదు</translation>
 <translation id="5605670050355397069">లెడ్జర్</translation>
 <translation id="5607240918979444548">ఆర్కిటెక్చర్-C</translation>
-<translation id="5608165884683734521">ఈ సైట్ నకిలీ లేదా మోసపూరితమైనది కావచ్చు. ఇప్పుడే నిష్క్రమించమని Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="5610142619324316209">కనెక్షన్‌ను తనిఖీ చేయడం</translation>
 <translation id="5610807607761827392">మీరు కార్డ్‌లు మరియు చిరునామాలను <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో నిర్వహించగలరు.</translation>
 <translation id="561165882404867731">Google Translateతో ఈ పేజీని అనువదించండి</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> యొక్క ఆరిజిన్ ఎర్రర్ విధానం ప్రకారం బ్లాక్ చేయబడింది.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సమకాలీకరించబడింది)</translation>
+<translation id="5913377024445952699">స్క్రీన్‌ను క్యాప్చర్ పాజ్ చేయబడింది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ఆన్ చేయబడ్డాయి</translation>
@@ -1919,6 +1919,7 @@
 <translation id="8622948367223941507">చట్ట సంబంధితం-అదనం</translation>
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
 <translation id="8625384913736129811">ఈ కార్డ్‌ను ఈ పరికరానికి సేవ్ చేయి</translation>
+<translation id="8627040765059109009">స్క్రీన్ క్యాప్చర్ కొనసాగించబడింది</translation>
 <translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> నుండి <ph name="VM_NAME_1" />, <ph name="VM_NAME_2" />లకు షేర్ చేయడాన్ని మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు</translation>
 <translation id="8663226718884576429">ఆర్డర్ సారాంశం, <ph name="TOTAL_LABEL" />, మరిన్ని వివరాలు</translation>
 <translation id="867224526087042813">సంతకం</translation>

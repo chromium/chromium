@@ -24,8 +24,10 @@
 <translation id="1126928665165112660">Sem itálico</translation>
 <translation id="113582498867142724">Coleção de <ph name="TAG" /> com <ph name="NUM" /> itens</translation>
 <translation id="1161762950103988776">Saltar</translation>
+<translation id="1164857107703583584">Podem ser utilizados comandos de avanço para navegar eficazmente numa página Web.</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1188858454923323853">complementar</translation>
+<translation id="1189258430971676908">Área para praticar: listas pendentes</translation>
 <translation id="1195238899008218998">Posfácio</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -68,11 +70,13 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
+<translation id="1411043317877497323">Área para praticar</translation>
 <translation id="141454040365657399">Cabeçalho da página</translation>
 <translation id="1417889266572670458">Azul-marinho</translation>
 <translation id="1431911867058218151">Ameixa</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">Objeto de gráficos</translation>
+<translation id="1465097259579587977">Reiniciar orientação rápida</translation>
 <translation id="1480046233931937785">Créditos</translation>
 <translation id="1487494366197411587">No Chromebook, a tecla Pesquisar está imediatamente acima da tecla Shift esquerda.</translation>
 <translation id="1498498210836053409">Desativar o modo fixo ao editar o texto (modo fixo inteligente)</translation>
@@ -83,6 +87,7 @@
 <translation id="1524531499102321782">Linha braille seguinte</translation>
 <translation id="1542513807034338907">Desloque-se para a página anterior.</translation>
 <translation id="1546370775711804143">Barra de deslocamento</translation>
+<translation id="1551572888042734032">Verão</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559739829547075274">Navegar para trás</translation>
 <translation id="1565432156062359693">Não existe nenhuma lista seguinte.</translation>
@@ -110,6 +115,7 @@
 <translation id="1714116687360794776">Contador</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">ftr</translation>
+<translation id="1730447754326314349">Damos-lhe as boas-vindas ao tutorial do ChromeVox. Para sair deste tutorial em qualquer altura, prima a tecla Escape no canto superior esquerdo do teclado. Para desativar o ChromeVox, mantenha premidas as teclas Control e Alt e prima Z. Quando pretender, utilize a barra de espaços para avançar para a aula seguinte.</translation>
 <translation id="174268867904053074">Gráfico seguinte</translation>
 <translation id="1756785467854861272">Magenta-escuro</translation>
 <translation id="1765245556747822181">Deslizar rapidamente com um dedo para cima</translation>
@@ -154,9 +160,11 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nenhum texto disponível para este item.</translation>
 <translation id="2127747486437921899">Itálico</translation>
+<translation id="2152179395627233441">Fechar área para praticar</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Clicar no item atual</translation>
 <translation id="2179452035581866348">O ChromeVox utiliza sons para lhe dar informações essenciais e adicionais. Pode utilizar estes sons para navegar mais rapidamente ao aprender o que significa cada som. Quando se sentir mais à vontade, pode desativar as descrições detalhadas na fala e contar com elas para obter informações essenciais acerca da página. Segue-se uma lista completa de sons e do respetivo significado.</translation>
+<translation id="2183409941723714159">Navegação com a tecla Tab</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{parêntese direito}other{# parênteses direitos}}</translation>
 <translation id="2197863150503783129">Castanho sela</translation>
 <translation id="2199994615414171367">Matemática anterior</translation>
@@ -176,6 +184,7 @@
 <translation id="2318372665160196757">Principal</translation>
 <translation id="2329324941084714723">Painel de separadores</translation>
 <translation id="2347456970887948350">Um link</translation>
+<translation id="2365384324219615024">Também pode premir Enter para ativar itens. Por exemplo, pode utilizar a tecla Enter para enviar texto num formulário. Para continuar, prima Enter.</translation>
 <translation id="2381733276052567791">Ativar ou desativar a síntese de voz</translation>
 <translation id="2390264819538553347">Para avançar, prima Enter. Para retroceder, prima a tecla de retrocesso.</translation>
 <translation id="2398579267367951220">Escreva para pesquisar a página. Prima Enter para avançar para o resultado, as setas para cima ou para baixo para procurar resultados, continue a escrever para alterar a sua pesquisa ou prima Escape para cancelar.</translation>
@@ -199,6 +208,8 @@
 <translation id="2523609930580546572">Tutorial do ChromeVox</translation>
 <translation id="2525706221823668172">Atalhos de teclado do Chromebook</translation>
 <translation id="2553108862507765288">erro gramatical</translation>
+<translation id="2556326187583116255">Toque com 2 dedos para parar qualquer leitura atual</translation>
+<translation id="2573256689920773241">Navegação básica</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2582407057977008361">À parte</translation>
 <translation id="2592212930811759050">Toque duas vezes para começar a editar.</translation>
@@ -210,6 +221,7 @@
 <translation id="2638785836053527382">Transferência de <ph name="FILE_NAME" /> retomada</translation>
 <translation id="2639750663247012216">Modificador do ChromeVox</translation>
 <translation id="2644542693584024604">erro ortográfico</translation>
+<translation id="2651441758640020174">Experimente selecionar a sua estação favorita na lista.</translation>
 <translation id="2654172656519784359">Avançar uma palavra</translation>
 <translation id="2661530546602071611">Aviso</translation>
 <translation id="2673280813984708147">está a editar</translation>
@@ -235,6 +247,7 @@
 <translation id="2808001342598757276">Clarear ecrã</translation>
 <translation id="2811019999044652585">Para avançar para outras partes do ecrã, como barras de ferramentas ou o tabuleiro do sistema, prima Control + Avançar. Num Chromebook, a tecla Avançar está imediatamente acima da tecla número 2.</translation>
 <translation id="2811204574343810641">Linha</translation>
+<translation id="2816868829355607410">Área para praticar: comandos de avanço</translation>
 <translation id="2841013758207633010">Tempo</translation>
 <translation id="2843432675592278677">Não existe nenhum ponto de referência ARIA anterior.</translation>
 <translation id="2843814945404750166">Verde seco escuro</translation>
@@ -270,6 +283,7 @@
 <translation id="3060756054951570867">menu <ph name="TITLE" /> aberto</translation>
 <translation id="3060880924447482063">Deslize rapidamente para a esquerda ou para a direita para mover por item.</translation>
 <translation id="3070245424257836917">Deslizar rapidamente com três dedos para cima</translation>
+<translation id="307516670110542567">Orientação rápida</translation>
 <translation id="3078345202707391975">Título de nível 2 seguinte</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Deslocar para trás</translation>
@@ -298,6 +312,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{espaço}other{# espaços}}</translation>
 <translation id="3179119189286472195">Sem link</translation>
 <translation id="320041337977930740">Alterar o estilo do ecrã para intercalado</translation>
+<translation id="3206698050650195442">Sair do tutorial</translation>
 <translation id="3208346789712025453">Não existe nenhum controlo seguinte.</translation>
 <translation id="321072937702597574">Orquídea</translation>
 <translation id="3218691001991391708">cole <ph name="TEXT" />.</translation>
@@ -326,6 +341,8 @@
 <translation id="335581015389089642">Voz</translation>
 <translation id="3356951775008366684">Anunciar a pronúncia fonética da palavra</translation>
 <translation id="3359142382821736686">seprtr</translation>
+<translation id="3363015957057974366">Também pode utilizar a tecla Tab para avançar para o item interativo seguinte no ecrã. A tecla Tab está localizada diretamente acima da tecla Pesquisar. Para continuar, prima a tecla Tab.</translation>
+<translation id="3366946046494222386">Tutorial <ph name="TOPIC" />, <ph name="LESSONS" /> aulas</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{mais}other{# sinais de mais}}</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3389259863310851658">Campo anterior do formulário</translation>
@@ -333,6 +350,7 @@
 <translation id="3406283310380167331">Mostrar lista de formulários</translation>
 <translation id="3414400929511680526">Azul alice</translation>
 <translation id="3418936350470374046">Não existe nenhuma célula abaixo.</translation>
+<translation id="3435494200763325275">Navegação com a tecla Tab continuada</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Parcialmente premido</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, desligar</translation>
@@ -348,6 +366,7 @@
 <translation id="3538907380453898475">lstdscrções</translation>
 <translation id="3549141990712742152">corte <ph name="TEXT" />.</translation>
 <translation id="3564729643041517261">O estilo atual do ecrã é lado a lado.</translation>
+<translation id="3570904478351465021">Inverno</translation>
 <translation id="3573145950452451508">Rodapé da página</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3589661172894441357">Glossário</translation>
@@ -355,12 +374,15 @@
 <translation id="3594207934078151302">Verde marinho médio</translation>
 <translation id="3599054940393788245">Não em matemática</translation>
 <translation id="360241989769010433">Agradecimentos</translation>
+<translation id="3616016838842055984">Se for apresentado um item no qual pretenda clicar, prima Pesquisar + Espaço. Experimente agora para continuar.</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3622350485154495700">Tocar duas vezes com um dedo</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{acento grave}other{# acentos graves}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dólar}other{# sinais de dólar}}</translation>
 <translation id="3659787053479271466">alrt</translation>
+<translation id="366419593095697301">Sugestão: prima Escape se pretender sair deste tutorial.</translation>
+<translation id="3676062394766691318">Depois de configurar o dispositivo, pode voltar e ver mais tutoriais ao premir Pesquisar + O e, em seguida, T.</translation>
 <translation id="3681531118904532409">Papaia</translation>
 <translation id="3692274950075847560">P:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Rasurado</translation>
@@ -382,6 +404,7 @@
 <translation id="3856075812838139784">Apenas leitura</translation>
 <translation id="3857141338659865495">Azul-turquesa médio</translation>
 <translation id="3870295413168340326">Não existe nenhum cabeçalho de nível 3 anterior.</translation>
+<translation id="3887399638190992181">Teclas essenciais</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrlh</translation>
@@ -401,6 +424,7 @@
 <translation id="4004802134384979325">marcada</translation>
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Deslocar para baixo</translation>
+<translation id="4035381225449278841">Primavera</translation>
 <translation id="4047216625641135770">Mark</translation>
 <translation id="4053520724192563562">Verde-lima</translation>
 <translation id="4054936709456751127">sts</translation>
@@ -506,6 +530,7 @@
 <translation id="4846428657345567687">Bem-vindo ao ChromeVox!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Não existe nenhum widget multimédia anterior.</translation>
+<translation id="4855927945655956315">Teclas essenciais: Control</translation>
 <translation id="4862744964787595316">Sem negrito</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Ativar registo TTS</translation>
@@ -521,6 +546,7 @@
 <translation id="4973717656530883744">Máx.: <ph name="X" /></translation>
 <translation id="4974612477719259470">Não existe nenhum botão anterior.</translation>
 <translation id="4979404613699303341">Botão anterior</translation>
+<translation id="4982917827052020884">Comecemos com algumas teclas que irá utilizar regularmente. A tecla Control pode ser utilizada para parar qualquer leitura atual. Pode encontrar a tecla Control no canto inferior esquerdo do teclado. Para continuar, prima a tecla Control.</translation>
 <translation id="4983588134362688868">Ir para o início da página</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, janela</translation>
 <translation id="4993152509206108683">Velocidade: <ph name="PERCENT" />%</translation>
@@ -532,6 +558,7 @@
 <translation id="5041394372352067729">Mover linha braille para o início da página</translation>
 <translation id="5042770794184672516">Aumentar o volume de voz</translation>
 <translation id="5042992464904238023">Conteúdo da Web</translation>
+<translation id="5045870649377683106">Agora, procure a tecla Shift do lado esquerdo, que está logo acima da tecla Control. Para continuar, prima a tecla Shift do lado esquerdo.</translation>
 <translation id="5050015258024679800">Título de nível 4 anterior</translation>
 <translation id="5054047268577924192">Item de lista anterior</translation>
 <translation id="5085453135206054947">Vermelho violeta pálido</translation>
@@ -542,9 +569,11 @@
 <translation id="5111640677200759579">Cabeçalho da coluna</translation>
 <translation id="5115892389597951922">Registo do ChromeVox</translation>
 <translation id="5119330972669454698">Madeira</translation>
+<translation id="5130133513489020984">Aula anterior</translation>
 <translation id="513774504516943387">lnk</translation>
 <translation id="5138912041966667164">Azul-ardósia médio</translation>
 <translation id="5140016802771803559">Azul magenta escuro</translation>
+<translation id="5142101052131610456">Todas as aulas</translation>
 <translation id="5158275234811857234">Capa</translation>
 <translation id="5170206230005240598">Legendas braille ativadas.</translation>
 <translation id="5183440668879371625">Linha braille anterior</translation>
@@ -553,6 +582,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Sair</translation>
 <translation id="5302089807023311274">Referência bibliográfica</translation>
+<translation id="530391007967514163">Experimente avançar por cabeçalho para navegar no texto abaixo.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, separador</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5310788376443009632">removido:</translation>
@@ -583,10 +613,12 @@
 <translation id="5452267669091857717">Não existe nenhum cabeçalho de nível 1 seguinte.</translation>
 <translation id="5455441614648621694">Complementar</translation>
 <translation id="5462510922370980473">Lista de páginas</translation>
+<translation id="5495517933067991341">Teclas essenciais: Shift</translation>
 <translation id="549602578321198708">Palavra</translation>
 <translation id="5513242761114685513">Menu de contexto</translation>
 <translation id="551361796444814639">Azul médio</translation>
 <translation id="552195134157544755">Botão de opção</translation>
+<translation id="5522423213731659107">Orientação rápida concluída!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Cinzento médio</translation>
 <translation id="5549179427201066174">Ative ou desative as respostas sonoras (ícones sonoros).</translation>
@@ -600,6 +632,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />, botão de opção desmarcado</translation>
 <translation id="5601172225407283979">Executar ação predefinida</translation>
 <translation id="5608798115546226984">Preenchimento automático inline</translation>
+<translation id="5616029807486814372">Aula seguinte</translation>
 <translation id="561939826962581046">hora</translation>
 <translation id="5623778242535476823">rbtn</translation>
 <translation id="5623842676595125836">Registo</translation>
@@ -608,6 +641,7 @@
 <translation id="5653397561111110475">Utilizar as funcionalidades de acessibilidade do ecrã tátil do Chromebook</translation>
 <translation id="5655682562155942719">Comandos para avançar</translation>
 <translation id="56637627897541303">Área de texto</translation>
+<translation id="5669637233317991674">Prima Pesquisar + seta para a direita ou Pesquisar + seta para a esquerda para navegar nesta aula</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Ponto de referência</translation>
@@ -631,9 +665,11 @@
 <translation id="5850707923114094062">Deslocar para trás</translation>
 <translation id="5851548754964597211">Lista de separadores</translation>
 <translation id="5866042630553435010">Parcialmente marcado</translation>
+<translation id="5866210856231860256">Prima Pesquisar + seta para a direita ou Pesquisar + seta para a esquerda para procurar aulas sobre este tópico</translation>
 <translation id="5867591286054666064">Durante este tutorial, prima qualquer tecla para ouvir o respetivo nome.</translation>
 <translation id="5869546221129391014">Grelha</translation>
 <translation id="5876817486144482042">Diminuir volume de voz</translation>
+<translation id="5878206664863390311">Prima Pesquisar + seta para a direita ou Pesquisar + seta para a esquerda para procurar tópicos</translation>
 <translation id="5878908838135392163">Azul-pólvora</translation>
 <translation id="588108970619830498">Reponha as definições da síntese de voz para os valores predefinidos.</translation>
 <translation id="5891934789323004067">Tabela</translation>
@@ -680,6 +716,7 @@
 <translation id="6254901459154107917">Área de texto editável seguinte</translation>
 <translation id="6259464875943891919">Saiu de <ph name="TYPE" />.</translation>
 <translation id="6282062888058716985">nav</translation>
+<translation id="6295699829709583154">Teclas essenciais: Pesquisar</translation>
 <translation id="6305702903308659374">Reproduzir num volume normal mesmo se o ChromeVox estiver a falar</translation>
 <translation id="6307969636681130414">Premido</translation>
 <translation id="6315652249189065725">Abrir menu de atalhos de teclado</translation>
@@ -698,6 +735,7 @@
 <translation id="6385591741672306837">coluna</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Desative todos os filtros de eventos</translation>
+<translation id="6411569524720229058">Outono</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dois pontos}other{# sinais de dois pontos}}</translation>
 <translation id="6444046323172968959">Caixa de diálogo de alerta</translation>
@@ -733,6 +771,7 @@
 <translation id="6730312624811567147">Utilize Pesquisar Esquerda ou Direita para Home ou End, Pesquisar Control Esquerda ou Direita para Control Home ou End e Pesquisar Cima ou Baixo para Page Up ou Down.</translation>
 <translation id="6736510033526053669">separador criado</translation>
 <translation id="675895815784134693">pgbar</translation>
+<translation id="6759710362319508545">Recursos</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786800275320335305">Artigo</translation>
 <translation id="6793101435925451627">lstbx</translation>
@@ -744,6 +783,7 @@
 <translation id="6858047746862060282">Prólogo</translation>
 <translation id="6859876496651143278">Deslizar com um dedo para a esquerda</translation>
 <translation id="6865519907510167493">Erro ortográfico</translation>
+<translation id="6873188295213080042">Sugestão: mantenha premida a tecla Pesquisar e prima as teclas de seta para navegar.</translation>
 <translation id="6894148351896207544">Diga a data e hora atuais.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897341342232909480">Mover para a esquerda</translation>
@@ -809,14 +849,17 @@
 <translation id="7308519659008003150">Não existe nenhum campo de formulário anterior.</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">parcialmente selecionado</translation>
+<translation id="7344012264516629579">Os comandos de avanço adicionais incluem, entre outros, avançar por link, botão e caixa de verificação. Pode encontrar uma lista completa de comandos de avanço nos menus do ChromeVox, que podem ser abertos ao premir Pesquisar + Ponto.</translation>
 <translation id="7356165926712028380">Mudar para braille de 8 pontos</translation>
 <translation id="7356610683936413584">Detalhe da lista de descrições</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{e comercial}other{# e comerciais}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Azul-ardósia</translation>
+<translation id="7393979322571982935">Sons e definições</translation>
 <translation id="739763518212184081">Linha anterior</translation>
 <translation id="7400575256015741911">Erro ortográfico detetado</translation>
 <translation id="7408482676469142474">tbl</translation>
+<translation id="7419264136822406994">Pode utilizar Shift + Tab para mover para o item interativo anterior. Para continuar, prima Shift + Tab.</translation>
 <translation id="7425395583360211003">retorno</translation>
 <translation id="7429415133937917139">Simula a saída de um ecrã em braille atualizável
     no painel do ChromeVox na parte superior do ecrã.</translation>
@@ -844,6 +887,7 @@
 <translation id="762020119231868829">Interrompe todos os widgets de multimédia atualmente em reprodução</translation>
 <translation id="7625690649919402823">Tabela seguinte</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
+<translation id="7637342083105831460">Prima Pesquisar + seta para a direita para encontrar a área para praticar ou o botão Aula seguinte. Em seguida, prima Pesquisar + Espaço para ativar.</translation>
 <translation id="7639968568612851608">Cinzento-escuro</translation>
 <translation id="7663318257180412551">Título 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{hora}other{horas}}</translation>
@@ -883,6 +927,7 @@
 <translation id="794091007957014205">{COUNT,plural, =1{arroba}other{# sinais de arroba}}</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7948364528129376623">Não existe nenhum link visitado seguinte.</translation>
+<translation id="7952460583030260752">Referências de comandos</translation>
 <translation id="7965147473449754028">menu fechado</translation>
 <translation id="7968340748835037139">Verde-escuro</translation>
 <translation id="7972507042926081808">Chocolate</translation>
@@ -912,6 +957,8 @@
 <translation id="812886159861361726">A transferência do ficheiro <ph name="FILE_NAME" /> foi interrompida</translation>
 <translation id="8129445297241948503">Não existe nenhuma célula acima.</translation>
 <translation id="8138880386467279117">Tocar</translation>
+<translation id="8146613869421949343">Em seguida, irá saber mais sobre a tecla Pesquisar. A tecla Pesquisar é utilizada em combinação com outras teclas dos comandos do ChromeVox. A tecla Pesquisar está imediatamente acima da tecla Shift do lado esquerdo. Para continuar, prima a tecla Pesquisar.</translation>
+<translation id="816818801578874684">Este é o primeiro cabeçalho. Prima Pesquisar + H para avançar para o cabeçalho seguinte.</translation>
 <translation id="8173092779156526980">Deslize rapidamente com quatro dedos para a esquerda.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{sublinhado}other{# sublinhados}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -952,6 +999,7 @@
 <translation id="8473540203671727883">Pronunciar o texto sob o rato</translation>
 <translation id="8476408756881832830">Colocar reprodução em pausa quando o ChromeVox estiver a falar</translation>
 <translation id="8476508772960940536">vista geral das janelas</translation>
+<translation id="8480873377842220259">Agora, irá aprender alguma navegação básica. Pode manter premida a tecla Pesquisar e premir as teclas de seta para se deslocar no ecrã. Para continuar, prima Pesquisar + seta para a direita.</translation>
 <translation id="8503360654911991865">Diminuir nível de detalhe da navegação</translation>
 <translation id="8520472399088452386">Botão giratório</translation>
 <translation id="8534394844575788431">Formatação</translation>
@@ -966,6 +1014,7 @@
 <translation id="8603071050456974042">Painel do ChromeVox</translation>
 <translation id="8606621670302093223">Controlo de data</translation>
 <translation id="8613709718990529335">Creme-alaranjado</translation>
+<translation id="8614129468475308349">Muito bem! Aprendeu as noções básicas do ChromeVox. Pode voltar a assistir ao tutorial ou sair do mesmo ao encontrar e clicar num botão abaixo.</translation>
 <translation id="8625173877182443267">Não existe nenhum cabeçalho de nível 6 seguinte.</translation>
 <translation id="8628186274519446680">Tomate</translation>
 <translation id="8638532244051952400">Anunciar coordenadas da célula atual</translation>
@@ -973,15 +1022,19 @@
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8653646212587894517">Mostrar lista de links</translation>
 <translation id="8656888282555543604">Ativar o registo de braille</translation>
+<translation id="8659501358298941449">Listas pendentes</translation>
 <translation id="867187640362843212">Título 5</translation>
+<translation id="8693391540059827073">A minha estação favorita</translation>
 <translation id="8696284982970258155">Melão</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{traço vertical}other{# traços verticais}}</translation>
+<translation id="8741370088760768424">Sugestão: prima Pesquisar + Espaço para ativar o item atual.</translation>
 <translation id="8743786158317878347">inserir o conteúdo estruturado, por exemplo, tabelas</translation>
 <translation id="8747966237988593539">Lista ordenada</translation>
 <translation id="8749988712346667988">Prateado</translation>
 <translation id="875769700429317857">A transferência de <ph name="FILE_NAME" /> foi concluída</translation>
 <translation id="8767968232364267681">Título de nível 4 seguinte</translation>
 <translation id="8770473310765924354">sair do conteúdo estruturado, por exemplo, tabelas</translation>
+<translation id="8775203254697638994">Por vezes, terá de selecionar um item numa lista pendente. Para o fazer, expanda primeiro a lista ao premir Pesquisar + Espaço. Em seguida, utilize as teclas de seta para cima e para baixo para selecionar um item. Por fim, reduza a lista ao premir Pesquisar + Espaço.</translation>
 <translation id="8779057862865475116">Não existe nenhum link anterior.</translation>
 <translation id="8796411681063377102">Título de nível 3 seguinte</translation>
 <translation id="8823311177246872527">Página <ph name="CURRENTPAGE" /> de <ph name="TOTALPAGES" /></translation>
@@ -1003,6 +1056,8 @@
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Esquecer</translation>
+<translation id="8989104346085848538">Para parar qualquer voz do ChromeVox atual, prima a tecla Control.</translation>
+<translation id="9014206344398081366">Tutorial do ChromeVox</translation>
 <translation id="9040132695316389094">Título 1</translation>
 <translation id="9061884144798498064">Selecionar uma tabela de braille de 8 pontos:</translation>
 <translation id="9065283790526219006">+popup</translation>

@@ -1166,7 +1166,6 @@
 <translation id="560412284261940334">አስተዳደር አይደገፍም</translation>
 <translation id="5605670050355397069">ሌጀር</translation>
 <translation id="5607240918979444548">ስነ-ሕንጻ-C</translation>
-<translation id="5608165884683734521">ይህ ጣቢያ ሐሰተኛ ወይም አጭበርባሪ ሊሆን ይችላል። Chrome አሁኑኑ ትቶ መውጣትን ይመክራል።</translation>
 <translation id="5610142619324316209">ግንኙነቱን መፈተሽ</translation>
 <translation id="5610807607761827392">ካርዶችን እና አድራሻዎችን በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ ማቀናበር ይችላሉ።</translation>
 <translation id="561165882404867731">በGoogle ትርጉም አማካኝነት ይህን ገጽ ይተርጉሙ</translation>
@@ -1238,6 +1237,7 @@
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5905445707201418379">በ <ph name="ORIGIN" /> የደህንነት መመሪያ መሠረት ታግዷል።</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ሰምሯል)</translation>
+<translation id="5913377024445952699">የማያ ገጽ ቀረጻ ባለበት ቆሟል</translation>
 <translation id="59174027418879706">ነቅቷል</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">አብራ</translation>
@@ -1910,6 +1910,7 @@
 <translation id="8622948367223941507">የህግ-ተጨማሪ</translation>
 <translation id="8623885649813806493">ምንም ተዛማጅ የይለፍ ቃላት የሉም። ሁሉንም የተቀመጡ የይለፍ ቃላትን አሳይ።</translation>
 <translation id="8625384913736129811">ይህን ካርድ ወደዚህ መሣሪያ አስቀምጥ</translation>
+<translation id="8627040765059109009">የማያ ገጽ ቀረጻ ከቆመበት ቀጥሏል</translation>
 <translation id="8657078576661269990">የእርስዎ አስተዳዳሪ ከ<ph name="ORIGIN_NAME" /> ለ<ph name="VM_NAME_1" /> እና <ph name="VM_NAME_2" /> ማጋራትን አግደዋል</translation>
 <translation id="8663226718884576429">የትዕዛዝ ማጠቃለያ፣ <ph name="TOTAL_LABEL" />፣ ተጨማሪ ዝርዝሮች</translation>
 <translation id="867224526087042813">ፊርማ</translation>

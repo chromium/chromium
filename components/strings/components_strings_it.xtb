@@ -1173,7 +1173,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="560412284261940334">Gestione non supportata</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Il sito potrebbe essere falso o fraudolento. Chrome ti consiglia di uscire immediatamente.</translation>
 <translation id="5610142619324316209">Verificare la connessione</translation>
 <translation id="5610807607761827392">Puoi gestire carte e indirizzi nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduci la pagina con Google Traduttore</translation>
@@ -1245,6 +1244,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5905445707201418379">Bloccato secondo la norma di partenza di <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizzati)</translation>
+<translation id="5913377024445952699">Acquisizione schermo in pausa</translation>
 <translation id="59174027418879706">Attivato</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">On</translation>
@@ -1915,6 +1915,7 @@ Ulteriori dettagli:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nessuna password corrispondente. Mostra tutte le password salvate.</translation>
 <translation id="8625384913736129811">Salva la carta su questo dispositivo</translation>
+<translation id="8627040765059109009">Acquisizione schermo ripresa</translation>
 <translation id="8657078576661269990">L'amministratore ha bloccato la condivisione da <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Riepilogo ordine, <ph name="TOTAL_LABEL" />, altri dettagli</translation>
 <translation id="867224526087042813">Firma</translation>

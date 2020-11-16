@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">စီမံရေးရာမှ အကူအညီမရနိုင်ပါ။</translation>
 <translation id="5605670050355397069">လယ်ဂျာ</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ဤဝဘ်ဆိုက်သည် အတု သို့မဟုတ် လှည့်ဖြားမှု ဖြစ်နိုင်သည်။ ယခုထွက်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="5610142619324316209">ချိတ်ဆက်မှုကို စစ်ဆေးနေသည်</translation>
 <translation id="5610807607761827392">ကတ်နှင့် လိပ်စာများကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် စီမံနိုင်သည်။</translation>
 <translation id="561165882404867731">ဤစာမျက်နှာကို Google Translate သုံး၍ ဘာသာပြန်ပါ</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> ၏ ရင်းမြစ် မူဝါဒအရ ပိတ်ထားသည်။</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (စင့်ခ်လုပ်ထားသည်)</translation>
+<translation id="5913377024445952699">ဖန်သားပြင်ရိုက်ယူမှုကို ခဏရပ်လိုက်သည်</translation>
 <translation id="59174027418879706">ဖွင့်ထားသည်</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ဖွင့်ထားသည်</translation>
@@ -1919,6 +1919,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">စကားဝှက်များ မတူညီပါ။ သိမ်းထားသော စကားဝှက်အားလုံးကို ပြပါ။</translation>
 <translation id="8625384913736129811">ဤကဒ်ကို ဤစက်ပစ္စည်းတွင် သိမ်းရန်</translation>
+<translation id="8627040765059109009">ဖန်သားပြင်ရိုက်ယူမှုကို ဆက်လုပ်သည်</translation>
 <translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> မှ <ph name="VM_NAME_1" /> နှင့် <ph name="VM_NAME_2" /> သို့ မျှဝေခြင်းကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="8663226718884576429">မှာယူမှု အနှစ်ချုပ်၊ <ph name="TOTAL_LABEL" />၊ နောက်ထပ် အသေးစိတ်အချက်အလက်များ</translation>
 <translation id="867224526087042813">လက်မှတ်</translation>

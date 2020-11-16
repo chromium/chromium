@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Perguntar quando o Chromium abrir</translation>
 <translation id="1396446129537741364">O Chromium está a tentar mostrar palavras-passe.</translation>
 <translation id="1414495520565016063">Tem sessão iniciada no Chromium!</translation>
+<translation id="1414973082589232775">Para utilizar o Rosetta para reproduzir conteúdo multimédia protegido, tem de reiniciar o Chromium.</translation>
 <translation id="151962892725702025">O SO Chromium não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
 <translation id="1553461853655228091">O Chromium necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">O Chromium requer o Windows 7 ou superior.</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
+<translation id="5736967399513123100">Para permitir que o Chromium reproduza conteúdo multimédia protegido, tem de instalar o Rosetta. Pretende instalá-lo agora?</translation>
 <translation id="5820394555380036790">SO Chromium</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -175,6 +177,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>
 <translation id="6893813176749746474">O Chromium foi atualizado, mas já não o utiliza há, pelo menos, 30 dias.</translation>
+<translation id="6897548120660295439">O Rosetta permite que o Chromium reproduza o conteúdo multimédia protegido nesta página.</translation>
 <translation id="6964305034639999644">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="6978145336957848883">As palavras-passe fracas são fáceis de adivinhar. Permita que o Chromium <ph name="BEGIN_LINK" />crie e memorize palavra-passes fortes<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">O Chromium necessita de autorização de acesso ao microfone para este site.</translation>

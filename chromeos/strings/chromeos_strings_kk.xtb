@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS түрлендіргіші бар</translation>
 <translation id="1734367976349034509">Бұл құрылғыны ұйым басқарады</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="ENROLLMENT_DOMAIN" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="4932733599132424254">Күні</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
-<translation id="4991056862642197104">Құжатты орналастырыңыз, бастау үшін "Сканерлеу" түймесін басыңыз.</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> бұл пайдаланушыны басқарады және параметрлер мен пайдаланушы әрекеттерін қашықтан бақылай алады.</translation>
 <translation id="520299634122159966">Қолжетімді сканерлер жоқ.</translation>
 <translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
@@ -107,6 +108,7 @@
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6048107060512778456">Сәтсіз: қағаз кептеліп қалды</translation>
+<translation id="6050189528197190982">Сұр шкаласы</translation>
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
@@ -148,7 +150,9 @@
 <translation id="871560550817059752">Сәтсіз: сия бітіп қалды</translation>
 <translation id="8723108084122415655">Әдепкі емес желі кідірісі шекті мәннен асады.</translation>
 <translation id="8726019395068607495">Тоқтатылды: есігі ашық</translation>
+<translation id="8730621377337864115">Дайын</translation>
 <translation id="8747900814994928677">Өзгерісті растау</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>

@@ -103,7 +103,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1888656773939766144">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Skyra pakeista į <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Pakeistas užduočių tvarkytuvės atidarymo spartusis klavišas. Naudokite <ph name="NEW_SHORTCUT" /> vietoje <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
-<translation id="1924640696879807758">Iš telefono</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="2222338659135520253">Reikia prisijungti</translation>
-<translation id="22546648640907338">Jutiklinės dalies gestas, kuriuo galima apsilankyti „Apžvalgos“ skiltyje, pakeistas. Perbraukite aukštyn trimis pirštais, kad apsilankytumėte „Apžvalgos“ skiltyje.</translation>
 <translation id="225680501294068881">Ieškoma įrenginių...</translation>
 <translation id="2268130516524549846">„Bluetooth“ neleidžiama</translation>
 <translation id="2268813581635650749">Atjungti visus</translation>
@@ -148,7 +146,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2352467521400612932">Rašiklio nustatymai</translation>
 <translation id="2354174487190027830">Aktyvinamas „<ph name="NAME" />“</translation>
 <translation id="2359808026110333948">Tęskite</translation>
-<translation id="2361223922412143600">Jutiklinės dalies gestas, kuriuo galima išeiti iš „Apžvalgos“ skilties, pakeistas. Perbraukite žemyn trimis pirštais, kad išeitumėte iš „Apžvalgos“ skilties.</translation>
 <translation id="2365393535144473978">Įgalinus mobiliojo ryšio duomenis bus įgalintas „Bluetooth“.</translation>
 <translation id="2369165858548251131">„Labas“ kinų kalba</translation>
 <translation id="2390318262976603432">Lokalės nustatymai</translation>
@@ -177,7 +174,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2596078834055697711">Sukurti lango ekrano kopiją</translation>
 <translation id="2617342710774726426">SIM kortelė užrakinta</translation>
 <translation id="2621713457727696555">Apsaugota</translation>
-<translation id="2640255526076764619">Jutiklinės dalies gestas, kuriuo galima perjungti į ankstesnį darbalaukį, pakeistas. Perbraukite į kairę keturiais pirštais, kad perjungtumėte į ankstesnį darbalaukį.</translation>
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2658778018866295321">Spustelėti ir vilkti</translation>
 <translation id="2700493154570097719">Klaviatūros nustatymas</translation>
@@ -327,6 +323,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4112140312785995938">Prasukti atgal</translation>
 <translation id="4114315158543974537">„Phone Hub“ įjungimas</translation>
 <translation id="4121728057981832179">Virtualus įrenginys naudoja mikrofoną</translation>
+<translation id="4126167871198063089">Išjungti teksto ištarimo funkciją</translation>
 <translation id="4129129681837227511">Jei norite matyti pranešimus užrakinimo ekrane, atrakinkite ir pakeiskite nustatymą</translation>
 <translation id="4146833061457621061">„Play music“ (Leisk muziką)</translation>
 <translation id="4149156641122542261">„<ph name="DEVICE_TYPE" />“ tvarko <ph name="DOMAIN" /></translation>
@@ -386,6 +383,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
 <translation id="4570957409596482333">Funkcijos „Teksto ištarimas“ mygtukas</translation>
 <translation id="4577274620589681794">Laikas baigėsi · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Rodyti peržiūras</translation>
 <translation id="4585337515783392668">Sustabdyti perdavimą į nežinomą imtuvą</translation>
 <translation id="4596144739579517758">Tamsioji tema išjungta</translation>
 <translation id="4623167406982293031">Patvirtinti paskyrą</translation>
@@ -396,7 +394,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
 <translation id="4705716602320768426">Pateikti atsiliepimų</translation>
-<translation id="4710243778082831592">IMRP nustatymai</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
@@ -434,11 +431,13 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4961318399572185831">Perduoti ekraną</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> val. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
+<translation id="5003993274120026347">Kitas sakinys</translation>
 <translation id="5019169674188023236">Panašu, kad jūsų „Bluetooth“ arba „Wi-Fi“ ryšys išjungtas „<ph name="DEVICE_TYPE" />“ įrenginyje. Patikrinkite ryšį, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="5030687792513154421">Laikas baigėsi</translation>
 <translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
 <translation id="5035389544768382859">Ekrano konfigūracijos patvirtinimas</translation>
+<translation id="504465286040788597">Ankstesnė pastraipa</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
@@ -478,6 +477,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="554893713779400387">Perjungti diktavimą</translation>
 <translation id="556042886152191864">Mygtukas</translation>
 <translation id="5571066253365925590">„Bluetooth“ įgalinta</translation>
+<translation id="557563299383177668">Kita pastraipa</translation>
 <translation id="558849140439112033">Vilkdami pasirinkite norimą užfiksuoti vietą</translation>
 <translation id="5597451508971090205"><ph name="DATE" />, <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">Paspauskite „Ctrl“ + „Alt“ + Z, kad išjungtumėte ekrano skaitymą balsu.</translation>
@@ -527,7 +527,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6018164090099858612">Išjungiamas atvaizdavimo režimas</translation>
 <translation id="602001110135236999">Slinkti kairėn</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
-<translation id="6029337736376922061">Jutiklinės dalies gestas, kuriuo galima perjungti į kitą darbalaukį, pakeistas. Perbraukite į dešinę keturiais pirštais, kad perjungtumėte į kitą darbalaukį.</translation>
 <translation id="6030495522958826102">Meniu perkeltas į apatinį kairįjį ekrano kampą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6043212731627905357">Šis monitorius nesuderinamas su jūsų „<ph name="DEVICE_TYPE" />“ (monitorius nepalaikomas).</translation>
@@ -671,7 +670,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Administratorius užblokavo galimybę fiksuoti ekraną ir jame rodomą turinį.</translation>
 <translation id="7548434653388805669">Laikas eiti miegoti</translation>
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
 <translation id="7561982940498449837">Uždaryti meniu</translation>
@@ -730,6 +728,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8029247720646289474">Nepavyko prisijungti prie viešosios interneto prieigos taško</translation>
 <translation id="8029629653277878342">Norint užtikrinti patikimesnę apsaugą reikalingas PIN kodas arba slaptažodis</translation>
 <translation id="8030169304546394654">Atjungta</translation>
+<translation id="8036504271468642248">Ankstesnis sakinys</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
 <translation id="8048123526339889627">„Bluetooth“ nustatymai</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
@@ -868,6 +867,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="921989828232331238">Vienas iš tėvų užrakino įrenginį dienai</translation>
 <translation id="9220525904950070496">Pašalinti paskyrą</translation>
 <translation id="923686485342484400">Jei norite atsijungti, du kartus paspauskite „Control“ + „Shift“ + Q.</translation>
+<translation id="925832987464884575">Peržiūrų slėpimas</translation>
 <translation id="938963181863597773">„What's on my calendar?“ (Kas mano kalendoriuje?)</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="98515147261107953">Gulsčias</translation>

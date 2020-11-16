@@ -322,6 +322,7 @@
 <translation id="4905417359854579806">Připraveno k zálohování: <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">Pevné</translation>
 <translation id="4935975195727477204">Květina gazánie</translation>
+<translation id="4942961016321891903">malajálamština (fonetická)</translation>
 <translation id="4943368462779413526">Americký fotbal</translation>
 <translation id="4961158930123534723">1 soubor sdílen s nástrojem Parallels Desktop</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -395,8 +396,10 @@
 <translation id="5524517123096967210">Soubor se nepodařilo načíst.</translation>
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Výpočet velikosti</translation>
+<translation id="5551831234974556292">maltština</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Americká klávesnice Dvorak</translation>
+<translation id="5623849870004487514">nepálština s fonetickou klávesnicí</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
 <translation id="5678784840044122290">Aplikace pro Linux bude k dispozici v Terminálu a může se pro ni také zobrazovat ikona ve Spouštěči.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Odpojení od archivu nebo virtuálního disku nelze provést<ph name="END_BOLD" />
@@ -426,6 +429,7 @@
 <translation id="5912396950572065471">Formát</translation>
 <translation id="5913638992615760742">Kopírování se nezdařilo, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">maráthština</translation>
 <translation id="5955954492236143329">Počet položek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Možnosti řazení</translation>
@@ -486,6 +490,7 @@
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6718273304615422081">Komprimování...</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
+<translation id="6767296108234383966">malajálamština (přepis)</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Spravovat sdílení v systému Linux</translation>
@@ -520,6 +525,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalace se nezdařila.</translation>
 <translation id="7040138676081995583">Otevřít v aplikaci...</translation>
+<translation id="7096940708283911567">urijština</translation>
 <translation id="7100897339030255923">Vybrané položky: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Koupit větší úložiště...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;vyhledat na Disku&lt;/em&gt;</translation>
@@ -543,6 +549,7 @@
 <translation id="7489215562877293245">Nalezeno: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Připraveno k zálohování na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">nepálština s klávesnicí InScript</translation>
 <translation id="7505167922889582512">Zobrazit skryté soubory</translation>
 <translation id="7508545000531937079">Prezentace</translation>
 <translation id="751507702149411736">běloruština</translation>

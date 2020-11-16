@@ -54,7 +54,6 @@
 <translation id="6600954340915313787">Skopírovaná do prehliadača Chrome</translation>
 <translation id="6648150602980899529">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chrome. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z Chromu odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="6676840375528380067">Chcete vymazať údaje Chromu z tohto zariadenia?</translation>
-<translation id="6707926552788741012">Keď povolíte prístup k polohe, Chrome ju odošle predvolenému vyhľadávaču a webom, ktorým ste to povolili. Weby na základe vašej polohy zvyčajne zobrazujú miestne informácie, napríklad správy alebo obchody nablízku.</translation>
 <translation id="6822673484890854830">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova neskôr.</translation>
 <translation id="7124339256045485976">Udržuje Chrome aktuálny</translation>
 <translation id="7161390184744336561">Prehliadač Google Chrome je zastaraný.</translation>
@@ -77,4 +76,5 @@
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>
 <translation id="8459495907675268833">Vybraté údaje boli odstránené z Chromu a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="9135668017386497357">Ak Chromu povolíte prístup k polohe, odošle ju predvolenému vyhľadávaču a všetkým webom, ktorým to povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
 </translationbundle>

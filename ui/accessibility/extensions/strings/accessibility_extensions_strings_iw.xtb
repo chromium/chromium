@@ -13,10 +13,10 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2179565792157161713">פתיחת תיאור ארוך בכרטיסייה חדשה</translation>
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
-<translation id="2394933097471027016">נסה עכשיו - דפדוף עם סמן מופעל תמיד בדף זה!</translation>
+<translation id="2394933097471027016">רוצה לנסות עכשיו? דפדוף עם סמן מופעל תמיד בדף זה!</translation>
 <translation id="2471847333270902538">ערכת צבעים עבור <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
-<translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שתוכל לבחור טקסט באמצעות המקלדת.</translation>
+<translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שניתן לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בוחרים את השורה המכילה את הכוכבים העמומים ביותר:</translation>
 <translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לפקד, מתבצע מיקוד אוטומטי בהם. יש להקיש על ‎&lt;span class='key'&gt;Enter&lt;/span&gt;‎ כדי ללחוץ על קישור או על לחצן. ‎&lt;/p&gt; &lt;p&gt;‎כאשר פקד ממוקד (כגון תיבת טקסט או תיבת רשימה) לוכד מקשי חצים, יש להקיש על ‎&lt;span class='key'&gt;Esc&lt;/span&gt;‎ ולאחר מכן על מקש החץ שמאלה או ימינה, כדי להמשיך דפדוף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎לחלופין, אפשר להקיש על ‎&lt;span class='key'&gt;Tab&lt;/span&gt;‎ כדי לעבור לפקד הבא הניתן למיקוד. ‎&lt;/p&gt;‎</translation>
 <translation id="3252573918265662711">הגדרות</translation>
@@ -43,7 +43,7 @@
 <translation id="5594989420907487559">הפעלה של אנימציות פעם אחת בלבד, או השבתת אנימציות לחלוטין.</translation>
 <translation id="5631241868147802353">ברירת מחדל של ערכת צבעים:</translation>
 <translation id="5650358096585648000">משוב חזותי</translation>
-<translation id="5710185147685935461">שנה או הפוך את ערכת הצבעים כך שדפי אינטרנט יהיו קלים לקריאה.</translation>
+<translation id="5710185147685935461">שינוי או הפיכה של ערכת הצבעים כך שדפי אינטרנט יהיו קלים לקריאה.</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="595639123821853262">גווני אפור הפוכים</translation>
 <translation id="6017514345406065928">ירוק</translation>
@@ -56,7 +56,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="7379645913608427028">דרגה</translation>
 <translation id="7384431257964758081">ניגודיות גבוהה מופעלת</translation>
-<translation id="7586636300921797327">שלב 2: כוון את המחוון עד שכל הכוכבים יוצגו בשורה שנבחרה</translation>
+<translation id="7586636300921797327">שלב 2: מכוונים את המחוון עד שכל הכוכבים יוצגו בשורה שנבחרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="786423340267544509">‏הוספת גבול לאלמנטים עם מסגרות aria-describedat או longdesc.</translation>
 <translation id="7942349550061667556">אדום</translation>

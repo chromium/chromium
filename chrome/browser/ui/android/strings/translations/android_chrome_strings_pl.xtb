@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Zrzut ekranu</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
+<translation id="1118561384561215815">Pomoc dotycząca zadań w sieci</translation>
 <translation id="1123070903960493543">Sposób interakcji z Chrome, wybrane ustawienia, szczegóły awarii przeglądarki Chrome</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1129510026454351943">Szczegóły: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1754404134430936718">Tekst został skopiowany</translation>
+<translation id="1772137089884020309">Lista folderów zakładek jest zamknięta</translation>
 <translation id="1782483593938241562">Data zakończenia: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792959175193046959">W dowolnej chwili możesz zmienić domyślną lokalizację pobierania</translation>
@@ -181,6 +183,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2286841657746966508">Adres rozliczeniowy</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
+<translation id="230155349749732438">Aby można było używać tego ustawienia, musi być włączona opcja <ph name="BEGIN_LINK" />Ulepsz wyszukiwanie i przeglądanie<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
@@ -304,7 +307,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3211426585530211793">Usunięto: <ph name="ITEM_TITLE" /></translation>
-<translation id="3211503082155944789">Nieprzeczytane strony: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome jako klucz bezpieczeństwa</translation>
 <translation id="3232754137068452469">Aplikacja internetowa</translation>
@@ -316,6 +318,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="3269956123044984603">Aby korzystać z kart ze swoich pozostałych urządzeń, włącz opcję „Autosynchronizacja danych” w ustawieniach konta na urządzeniu z Androidem.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
+<translation id="3284510035090979597">Aktywna pomoc</translation>
 <translation id="3285080554353377245">Filmy na temat korzystania z Chrome</translation>
 <translation id="3288003805934695103">Odśwież stronę</translation>
 <translation id="32895400574683172">Powiadomienia są włączone</translation>
@@ -423,6 +426,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4084682180776658562">Dodaj do zakładek</translation>
 <translation id="4084712963632273211">Opublikowane na <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />wyświetlone przez Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
+<translation id="4095189195365058471">Przeczytaj później <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4116038641877404294">Pobierz strony, by przeglądać je w trybie offline</translation>
@@ -515,6 +519,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Ukończono pobieranie 1 pliku.}few{Ukończono pobieranie # plików.}many{Ukończono pobieranie # plików.}other{Ukończono pobieranie # pliku.}}</translation>
 <translation id="4766678251456904326">Dodaj konto do urządzenia</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zaplanowano pobranie 1 pliku.}few{Zaplanowano pobranie # plików.}many{Zaplanowano pobranie # plików.}other{Zaplanowano pobranie # pliku.}}</translation>
+<translation id="4791358705705538979">Pomaga wykonywać różne czynności w internecie (np. dokonywać płatności)</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
@@ -641,7 +646,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5683547024293500885">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5686790454216892815">Nazwa pliku jest za długa</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> będzie używać języka: <ph name="LANGUAGE" /> po ponownym uruchomieniu.</translation>
-<translation id="5691211010013816086">Masz <ph name="READING_LIST_COUNT" /> stron(y)</translation>
 <translation id="569536719314091526">Możesz przetłumaczyć tę stronę na dowolny język, używając przycisku Więcej opcji</translation>
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5697688514913266141">Plik zostanie zapisany w katalogu <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edytuj<ph name="END_LINK2" /></translation>
@@ -665,6 +669,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5797070761912323120">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania, reklamy i działanie innych usług</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
+<translation id="5810864297166300463">Pomoc dotycząca sieci</translation>
 <translation id="5814131985548525293">Wpisz coś tutaj lub kliknij ikonę mikrofonu, by wyszukiwać głosem</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -859,6 +864,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7030675613184250187">Na liście Do przeczytania możesz zapisywać strony, które chcesz przeczytać ponownie lub do których chcesz mieć dostęp offline</translation>
 <translation id="703523980599857277">Zmień stronę główną</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
@@ -879,6 +885,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
+<translation id="718926126787620637">Lista folderów zakładek otwarta na całą wysokość</translation>
 <translation id="7189372733857464326">Czekam na zakończenie aktualizacji Usług Google Play</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7233236755231902816">Aby wyświetlać strony internetowe w swoim języku, pobierz najnowszą wersję Chrome</translation>
@@ -886,7 +893,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7274013316676448362">Zablokowana witryna</translation>
 <translation id="7286572596625053347">Zmienić język <ph name="LANGUAGE" /> na inny?</translation>
 <translation id="7290209999329137901">Nie można zmienić nazwy</translation>
-<translation id="7291387454912369099">Płatność przez Asystenta</translation>
 <translation id="7293171162284876153">Aby rozpocząć synchronizację, włącz „Synchronizuj dane Chrome”.</translation>
 <translation id="7293429513719260019">Wybierz język</translation>
 <translation id="729975465115245577">Na urządzeniu nie ma aplikacji umożliwiającej zapisanie pliku z hasłami.</translation>
@@ -1018,6 +1024,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8127542551745560481">Edytuj stronę główną</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8137558756159375272">Funkcja „Dotknij, by wyszukać” wysyła zaznaczone słowo i bieżącą stronę jako kontekst do wyszukiwarki Google. Możesz ją wyłączyć w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Asystent pojawi się, gdy wykryje, że może Ci pomóc (na obsługiwanych stronach)</translation>
 <translation id="8156139159503939589">W jakich językach umiesz czytać?</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
@@ -1115,6 +1122,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8912362522468806198">Konta Google</translation>
 <translation id="8920114477895755567">Oczekiwanie na informacje o rodzicach.</translation>
 <translation id="8922289737868596582">Pobierz strony, używając przycisku Więcej opcji, by korzystać z nich w trybie offline</translation>
+<translation id="8928626432984354940">Lista folderów zakładek otwarta do połowy wysokości</translation>
 <translation id="8937772741022875483">Usunąć Twoją aktywność w Chrome z Cyfrowej równowagi?</translation>
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
 <translation id="8951232171465285730">Chrome pozwolił Ci zaoszczędzić <ph name="MEGABYTES" /> MB</translation>
@@ -1166,6 +1174,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="93753284658583800">Strona główna została zmieniona</translation>
 <translation id="938850635132480979">Błąd: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Wpisz hasło</translation>
+<translation id="948039501338975565">Lista folderów zakładek</translation>
 <translation id="95817756606698420">Chrome może używać <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> do wyszukiwania w Chinach. Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Zainstaluj tę aplikację</translation>
 <translation id="968900484120156207">Tutaj pojawią się strony, które odwiedzisz</translation>

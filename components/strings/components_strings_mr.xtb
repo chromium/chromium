@@ -1175,7 +1175,6 @@
 <translation id="560412284261940334">व्यवस्थापन समर्थित नाही</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ही साइट बनावट किंवा कपटपूर्ण असू शकते. आता सोडून देण्याची Chrome शिफारस करते.</translation>
 <translation id="5610142619324316209">कनेक्शन तपासणे</translation>
 <translation id="5610807607761827392">तुम्ही कार्ड आणि पत्ते <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="561165882404867731">या पेजचे Google Translate यासह भाषांतर करा</translation>
@@ -1247,6 +1246,7 @@
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> च्या मूळ धोरणानुसार ब्लॉक केले आहे.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक केलेले)</translation>
+<translation id="5913377024445952699">स्‍क्रीन कॅप्‍चर थांबवले आहे</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">सुरू करा</translation>
@@ -1919,6 +1919,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">जुळणारे कोणतेही पासवर्ड नाहीत. सेव्ह केलेले सर्व पासवर्ड दाखवा.</translation>
 <translation id="8625384913736129811">या डिव्हाइसवर हे कार्ड सेव्‍ह करा</translation>
+<translation id="8627040765059109009">स्‍क्रीन कॅप्‍चर पुन्हा सुरू केले आहे</translation>
 <translation id="8657078576661269990">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME_1" /> आणि <ph name="VM_NAME_2" /> वर शेअर करणे ब्लॉक केले</translation>
 <translation id="8663226718884576429">ऑर्डर सारांश, <ph name="TOTAL_LABEL" />, आणखी तपशील</translation>
 <translation id="867224526087042813">स्वाक्षरी</translation>

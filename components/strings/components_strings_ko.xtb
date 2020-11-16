@@ -1165,7 +1165,6 @@
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">허위 또는 사기성 사이트일 수 있습니다. Chrome에서는 사이트에서 지금 바로 나갈 것을 권장합니다.</translation>
 <translation id="5610142619324316209">연결 확인</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 카드와 주소를 관리할 수 있습니다.</translation>
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
@@ -1237,6 +1236,7 @@
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />의 기존 정책에 따라 차단됨</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />(동기화됨)</translation>
+<translation id="5913377024445952699">화면 캡처가 일시중지됨</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">사용</translation>
@@ -1907,6 +1907,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
 <translation id="8625384913736129811">이 기기에 카드 저장</translation>
+<translation id="8627040765059109009">화면 캡처가 다시 시작됨</translation>
 <translation id="8657078576661269990">관리자가 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME_1" /> 및 <ph name="VM_NAME_2" /> 가상 머신으로 공유하는 작업을 차단했습니다.</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="867224526087042813">서명</translation>

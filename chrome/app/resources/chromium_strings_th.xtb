@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">ถามเมื่อมีการเปิด Chromium</translation>
 <translation id="1396446129537741364">Chromium กำลังพยายามแสดงรหัสผ่าน</translation>
 <translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
+<translation id="1414973082589232775">คุณต้องรีสตาร์ท Chromium เพื่อใช้ Rosetta ในการเล่นสื่อที่มีการป้องกัน</translation>
 <translation id="151962892725702025">Chromium OS ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากการซิงค์ไม่พร้อมให้บริการสำหรับโดเมนของคุณ</translation>
 <translation id="1524282610922162960">แชร์แท็บ Chromium</translation>
 <translation id="1553461853655228091">Chromium ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Chromium ต้องใช้ Windows 7 ขึ้นไป</translation>
 <translation id="5653831366781983928">โปรดรีสตาร์ท Chromium ตอนนี้เลย</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
+<translation id="5736967399513123100">คุณต้องติดตั้ง Rosetta เพื่อให้ Chromium เล่นสื่อที่มีการป้องกันได้ ต้องการติดตั้งตอนนี้เลยไหม</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -175,6 +177,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (คัดลอกไปยัง Chromium)</translation>
 <translation id="6893813176749746474">Chromium ได้รับการอัปเดตแล้ว แต่คุณไม่ได้ใช้งานมาไม่ต่ำกว่า 30 วันแล้ว</translation>
+<translation id="6897548120660295439">Rosetta ช่วยให้ Chromium เล่นสื่อที่มีการป้องกันในหน้านี้ได้</translation>
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="6978145336957848883">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chromium <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
 <translation id="6990124437352146030">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนของคุณสำหรับเว็บไซต์นี้</translation>

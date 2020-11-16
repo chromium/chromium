@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Aquí aparecerán os marcadores que gardases noutros dispositivos.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
+<translation id="1118561384561215815">Obter axuda ao realizar tarefas</translation>
 <translation id="1123070903960493543">A túa forma de interactuar con Chrome, as opcións de configuración que seleccionases e os detalles sobre os fallos de Chrome</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -77,6 +78,7 @@
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
+<translation id="1538801903729528855">Mellora a túa experiencia de busca por voz na Web</translation>
 <translation id="1543538514740974167">Accede aquí máis rápido</translation>
 <translation id="1544826120773021464">Para xestionar a túa conta de Google, toca o botón Xestionar conta</translation>
 <translation id="1549000191223877751">Mover a outra ventá</translation>
@@ -101,6 +103,7 @@
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
+<translation id="1772137089884020309">A lista de cartafoles de marcadores está pechada</translation>
 <translation id="1782483593938241562">Data de finalización: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
 <translation id="1792959175193046959">Cambia a localización de descarga predeterminada en calquera momento</translation>
@@ -117,6 +120,7 @@
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1918175104945982129">A interface de consentimento para a busca por voz a través do Asistente está aberta ata a metade da pantalla</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1922362554271624559">Idiomas suxeridos</translation>
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
@@ -147,6 +151,7 @@
 <translation id="2056878612599315956">O sitio está en pausa</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
+<translation id="2074143993849053708">A interface de consentimento para a busca por voz a través do Asistente está pechada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincroniza e personaliza o contido en todos os dispositivos</translation>
 <translation id="2100273922101894616">Inicio de sesión automático</translation>
@@ -178,6 +183,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
+<translation id="230155349749732438">Para poder usar esta opción de configuración, debes activar <ph name="BEGIN_LINK" />Mellorar as buscas e a navegación<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
 <translation id="2321958826496381788">Arrastra o control desprazable ata que poidas ler con comodidade. O texto debe ter polo menos este tamaño despois de facer dobre clic nun parágrafo.</translation>
@@ -279,6 +285,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3006881078666935414">Non hai datos de uso</translation>
 <translation id="3016635187733453316">Asegúrate de que este dispositivo estea conectado a Internet</translation>
 <translation id="3029704984691124060">Os contrasinais non coinciden</translation>
+<translation id="3031225630520268969">Interface de consentimento para a busca por voz a través do Asistente</translation>
 <translation id="3034163383943672781">A descarga iniciarase o <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter axuda<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">A localización está desactivada. Actívaa na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
@@ -300,7 +307,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3211426585530211793">Eliminouse <ph name="ITEM_TITLE" /></translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> páxinas sen ler</translation>
 <translation id="321773570071367578">Se esqueciches o teu contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
@@ -312,6 +318,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3269093882174072735">Cargar imaxe</translation>
 <translation id="3269956123044984603">Activa Sincronización automática de datos, na configuración da conta de Android, para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
+<translation id="3284510035090979597">Axuda proactiva</translation>
 <translation id="3285080554353377245">Vídeos sobre como usar Chrome</translation>
 <translation id="3288003805934695103">Volver cargar a páxina</translation>
 <translation id="32895400574683172">Permítese mostrar notificacións</translation>
@@ -419,6 +426,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084712963632273211">Contido publicado por <ph name="PUBLISHER_ORIGIN" /> e <ph name="BEGIN_DEEMPHASIZED" />ofrecido por Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
+<translation id="4095189195365058471">Ler máis tarde <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
@@ -437,6 +445,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
+<translation id="4263656433980196874">A interface de consentimento para a busca por voz a través do Asistente está aberta a pantalla completa</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">capturadepantalla_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -510,6 +519,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 descarga completada.}other{# descargas completadas.}}</translation>
 <translation id="4766678251456904326">Engadir conta ao dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Hai 1 descarga programada.}other{Hai # descargas programadas.}}</translation>
+<translation id="4791358705705538979">Axúdache a completar tarefas, como o procesamento de compras, na Web</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
@@ -623,6 +633,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5581519193887989363">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar.</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
+<translation id="5599941490345670218">O Asistente de Google pode completar accións por ti nos sitios web</translation>
 <translation id="5620163320393916465">Non hai contrasinais gardados</translation>
 <translation id="5620928963363755975">A través do botón Máis opcións, atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="5626134646977739690">Nome:</translation>
@@ -635,7 +646,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5683547024293500885">Chrome non puido buscar actualizacións</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> usará o <ph name="LANGUAGE" /> despois do reinicio.</translation>
-<translation id="5691211010013816086">Tes <ph name="READING_LIST_COUNT" /> páxinas</translation>
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
 <translation id="5697688514913266141">O teu ficheiro gardarase en <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Editar<ph name="END_LINK2" />.</translation>
@@ -659,6 +669,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5797070761912323120">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Hai # hora}other{Hai # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
+<translation id="5810864297166300463">Asistencia na Web</translation>
 <translation id="5814131985548525293">Para comezar, escribe aquí ou toca a icona de micrófono</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="583281660410589416">Descoñecido</translation>
@@ -853,6 +864,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
 <translation id="7027549951530753705">Restaurouse <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Contrasinais</translation>
+<translation id="7030675613184250187">Podes gardar páxinas na túa lista de lecturas para atopalas de novo ou lelas sen conexión</translation>
 <translation id="703523980599857277">Cambiar páxina de inicio</translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
@@ -873,6 +885,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7177466738963138057">Podes cambiar esta opción máis tarde en Configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
+<translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7189372733857464326">Esperando a que os servizos de Google Play rematen de actualizarse</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
@@ -880,7 +893,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
 <translation id="7286572596625053347">Queres cambiar o idioma (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Non está dispoñible a opción de cambiar o nome</translation>
-<translation id="7291387454912369099">Pago activado polo Asistente</translation>
 <translation id="7293171162284876153">Para iniciar a sincronización, activa a opción Sincronizar os teus datos de Chrome.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="729975465115245577">O dispositivo non ten unha aplicación para almacenar o ficheiro de contrasinais.</translation>
@@ -1012,6 +1024,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8127542551745560481">Editar páxina de inicio</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8137558756159375272">A función Tocar para buscar envía a palabra seleccionada e a páxina actual como contexto para a busca de Google. Podes desactivar esta opción na <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">O Asistente aparecerá cando detecte que pode axudarche nos sitios web compatibles con esta función</translation>
 <translation id="8156139159503939589">Que idiomas sabes ler?</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
@@ -1109,6 +1122,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8920114477895755567">Agardando pola información dos pais.</translation>
 <translation id="8922289737868596582">Para ver as páxinas cando non teñas conexión, descárgaas a través do botón Máis opcións</translation>
+<translation id="8928626432984354940">A lista de cartafoles de marcadores está aberta a media pantalla</translation>
 <translation id="8937772741022875483">Queres quitar a túa actividade de Chrome de Benestar dixital?</translation>
 <translation id="8942627711005830162">Abrir noutra ventá</translation>
 <translation id="8951232171465285730">Chrome permitiuche aforrar <ph name="MEGABYTES" /> MB</translation>
@@ -1148,6 +1162,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9191031968346938109">Engadir a…</translation>
+<translation id="919615279147764192">Para axudarche a completar tarefas, Google recibirá os URL e os contidos dos sitios nos que uses o Asistente, ademais da información que envíes a través del. Esta información pode almacenarse na túa Conta de Google. Podes desactivar o Asistente de Google na configuración de Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1159,6 +1174,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="93753284658583800">A páxina de inicio cambiou</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
+<translation id="948039501338975565">Lista de cartafoles de marcadores</translation>
 <translation id="95817756606698420">Chrome pode utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para a busca en China. Podes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Instalar esta aplicación</translation>
 <translation id="968900484120156207">As páxinas que visites aparecerán aquí</translation>

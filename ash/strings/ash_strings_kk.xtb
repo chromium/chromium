@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығын қолдамайды. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1919743966458266018">Тапсырмалар реттегішін ашатын пернелер тіркесімі өзгертілді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
-<translation id="1924640696879807758">Телефоннан</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222338659135520253">Есептік жазбаға кіру керек</translation>
-<translation id="22546648640907338">"Жалпы көрініс" бөліміне кіруге арналған сенсорлық тақта қимылы өзгеріп кетті. Үш саусақпен жоғары сырғытып, "Жалпы көрініс" бөліміне кіріңіз.</translation>
 <translation id="225680501294068881">Құрылғылар ізделуде…</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
 <translation id="2268813581635650749">Барлығын шығару</translation>
@@ -148,7 +146,6 @@
 <translation id="2352467521400612932">Стилус параметрлері</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
-<translation id="2361223922412143600">"Жалпы көрініс" бөлімінен шығуға арналған сенсорлық тақта қимылы өзгеріп кетті. Үш саусақпен төмен сырғытып, "Жалпы көрініс" бөлімінен шығыңыз.</translation>
 <translation id="2365393535144473978">Мобильдік деректерді қоссаңыз, Bluetooth да іске қосылады.</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
 <translation id="2390318262976603432">Тіл параметрлері</translation>
@@ -177,7 +174,6 @@
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
-<translation id="2640255526076764619">Алдыңғы жұмыс үстеліне ауысуға арналған сенсорлық тақта қимылы өзгеріп кетті. Алдыңғы жұмыс үстеліне ауысу үшін төрт саусақпен солға қарай сырғытыңыз.</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2658778018866295321">Басу және сүйреу</translation>
 <translation id="2700493154570097719">Пернетақтаны орнатыңыз</translation>
@@ -396,7 +392,6 @@
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
 <translation id="4705716602320768426">Пікір жіберу</translation>
-<translation id="4710243778082831592">IME параметрлері</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4734965478015604180">Көлденең</translation>
 <translation id="4744944742468440486">Таңдауға қатысты ақпарат</translation>
@@ -527,7 +522,6 @@
 <translation id="6018164090099858612">Айна режимінен шығуда</translation>
 <translation id="602001110135236999">Солға айналдыру</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
-<translation id="6029337736376922061">Келесі жұмыс үстеліне ауысуға арналған сенсорлық тақта қимылы өзгеріп кетті. Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
 <translation id="6030495522958826102">Мәзір экранның төменгі сол жақ бұрышына жылжытылды.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6043212731627905357">Бұл монитор <ph name="DEVICE_TYPE" /> құрылғысымен үйлеспейді (мониторға қолдау көрсетілмейді).</translation>
@@ -538,7 +532,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
 <translation id="607652042414456612">Компьютеріңізді жақын жердегі Bluetooth құрылғылары анықтай алады. <ph name="ADDRESS" /> мекенжайымен және "<ph name="NAME" />" атауымен көрсетіледі</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
-<translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогін ашу</translation>
+<translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогтік терезесін ашу</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
 <translation id="6164005077879661055">Бақылаудағы пайдаланушыға қатысты барлық файлдар мен жергілікті деректер осы бақылаудағы пайдаланушы алып тасталғаннан кейін біржола жойылады. Осы бақылаудағы пайдаланушының кірген веб-сайттар мен параметрлері <ph name="MANAGEMENT_URL" /> сілтемесіндегі басқарушыға көрінуі мүмкін.</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
@@ -574,7 +568,7 @@
 <translation id="6520517963145875092">Түсіру үшін терезені таңдаңыз</translation>
 <translation id="652139407789908527">Жаңарту кезінде экраныңыз әдеттегіден ұзағырақ уақыт (бір минутқа дейін) өшіп тұрады. Жаңарту кезінде қуат түймесін баспаңыз.</translation>
 <translation id="6528179044667508675">Мазаламау</translation>
-<translation id="65320610082834431">Эмодзилер</translation>
+<translation id="65320610082834431">Эмоджилер</translation>
 <translation id="6537270692134705506">Экранды түсіріп алу</translation>
 <translation id="6537924328260219877">Сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефон батареясы: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
@@ -671,7 +665,6 @@
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Экрандағы мазмұнның суретін түсіруге әкімші тыйым салған.</translation>
 <translation id="7548434653388805669">Ұйықтайтын уақыт болды</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>

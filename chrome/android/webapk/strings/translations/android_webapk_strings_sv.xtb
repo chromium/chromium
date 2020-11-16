@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1625959690469240009">Uppdatera eller installera om <ph name="BROWSER_NAME" /> om du vill öppna webbplatsinställningarna</translation>
 <translation id="1700971771753530690">Följande app krävs för <ph name="APP_NAME" />:</translation>
 <translation id="2697679025356221813">En webbläsare krävs för <ph name="APP_NAME" /></translation>
 <translation id="3858759029325727987">Välj en webbläsare som stöder den här appen:</translation>

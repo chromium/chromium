@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
+<translation id="1538801903729528855">वेब पर वॉइस सर्च का बेहतर अनुभव पाएं</translation>
 <translation id="1543538514740974167">यहां तेज़ी से पहुंचें</translation>
 <translation id="1544826120773021464">अपना Google खाता प्रबंधित करने के लिए, "खाता प्रबंधित करें" बटन पर टैप करें</translation>
 <translation id="1549000191223877751">अन्य विंडो में ले जाएं</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
+<translation id="1918175104945982129">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति आधी स्क्रीन में खुली हुई है</translation>
 <translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>
 <translation id="1922362554271624559">सुझाई गई भाषाएं</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">साइट रोकी गई</translation>
 <translation id="2067805253194386918">टेक्स्ट</translation>
 <translation id="2068748236079642969">अगला वीडियो देखें</translation>
+<translation id="2074143993849053708">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति अब नहीं है</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">सभी डिवाइस में सिंक करना और मनमुताबिक बनाना</translation>
 <translation id="2100273922101894616">अपने आप साइन इन करने की सुविधा</translation>
@@ -279,6 +282,7 @@
 <translation id="3006881078666935414">कोई उपयोग डेटा नहीं</translation>
 <translation id="3016635187733453316">पक्का करें कि इस डिवाइस को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="3029704984691124060">पासफ़्रेज़ मिलान नहीं करते</translation>
+<translation id="3031225630520268969">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति</translation>
 <translation id="3034163383943672781">डाउनलोड <ph name="DATE" /> को शुरू होगा.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">स्थान सेवा बंद है, उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
@@ -300,7 +304,6 @@
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208584281581115441">अभी देखें</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मिटाया गया</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> पेजों को पढ़ा नहीं गया है</translation>
 <translation id="321773570071367578">अगर आप अपना 'पासफ़्रेज़' भूल गए हैं या यह सेटिंग बदलना चाहते हैं, तो <ph name="BEGIN_LINK" /> सिंक रीसेट करें<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
@@ -437,6 +440,7 @@
 <translation id="4248098802131000011">डेटा के गलत इस्तेमाल और दूसरी सुरक्षा समस्याओं से अपने पासवर्ड सुरक्षित रखें</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">ओपन सोर्स लाइसेंस</translation>
+<translation id="4263656433980196874">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति पूरी स्क्रीन में खुली हुई है.</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +627,7 @@
 <translation id="5581519193887989363">आप जब चाहें तब <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> में जाकर किसी भी चीज़ को सिंक करने का विकल्प चुन सकते हैं.</translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
+<translation id="5599941490345670218">Google Assistant सभी वेबसाइटों पर आपके निर्देश के मुताबिक काम कर सकती है</translation>
 <translation id="5620163320393916465">पासवर्ड सेव नहीं किए गए हैं</translation>
 <translation id="5620928963363755975">ज़्यादा विकल्प बटन से डाउनलोड में जाकर अपनी फ़ाइलें और पेज पाएं</translation>
 <translation id="5626134646977739690">नाम:</translation>
@@ -635,7 +640,6 @@
 <translation id="5683547024293500885">Chrome, अपडेट की जांच नहीं कर सकता</translation>
 <translation id="5686790454216892815">फ़ाइल का नाम बहुत लंबा है</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> रीस्टार्ट होने पर <ph name="LANGUAGE" /> इस्तेमाल करेगा.</translation>
-<translation id="5691211010013816086">आपने <ph name="READING_LIST_COUNT" /> पेजों को अब तक नहीं पढ़ा है</translation>
 <translation id="569536719314091526">'ज़्यादा विकल्प' बटन से इस पेज का अनुवाद किसी भी भाषा में करें</translation>
 <translation id="5696597120588531049">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रहने में मदद कर सकता है</translation>
 <translation id="5697688514913266141">आपकी फ़ाइल <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> में सेव की जाएगी. <ph name="BEGIN_LINK2" />बदलाव करें<ph name="END_LINK2" />.</translation>
@@ -853,6 +857,7 @@
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7030675613184250187">आप पेजों को, पढ़ने की चीज़ों की सूची में सेव कर सकते हैं, ताकि आप उन्हें आसानी से दोबारा खोज सकें या उन्हें ऑफ़लाइन पढ़ सकें</translation>
 <translation id="703523980599857277">होम पेज बदलें</translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
@@ -880,7 +885,6 @@
 <translation id="7274013316676448362">अवरोधित साइट</translation>
 <translation id="7286572596625053347">क्या आप <ph name="LANGUAGE" /> को बदलना चाहते हैं?</translation>
 <translation id="7290209999329137901">नाम बदलने की सुविधा उपलब्ध नहीं है</translation>
-<translation id="7291387454912369099">Assistant के ज़रिए अपने आप भरें</translation>
 <translation id="7293171162284876153">सिंक शुरू करने के लिए, "अपना Chrome डेटा सिंक करें" को चालू करें.</translation>
 <translation id="7293429513719260019">भाषा चुनें</translation>
 <translation id="729975465115245577">आपके डिवाइस में पासवर्ड फ़ाइल को स्टोर करने वाला कोई ऐप्लिकेशन नहीं है.</translation>
@@ -1148,6 +1152,7 @@
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="9191031968346938109">इनमें जोड़ें…</translation>
+<translation id="919615279147764192">टास्क पूरे करने में आपकी मदद के लिए, Google उन साइटों के यूआरएल और कॉन्टेंट का इस्तेमाल करेगा जिन पर आप Assistant का इस्तेमाल करते हैं. साथ ही, Google उस जानकारी का भी इस्तेमाल करेगा जिसे आपने Assistant की मदद से सबमिट किया है. हो सकता है कि यह जानकारी आपके Google खाते में सेव हो. आप Chrome की सेटिंग में जाकर, Assistant को बंद कर सकते हैं.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>

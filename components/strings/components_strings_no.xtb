@@ -1176,7 +1176,6 @@ brukere av denne nettleseren.</translation>
 <translation id="560412284261940334">Administrering støttes ikke</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Dette nettstedet kan være falskt eller prøve å svindle deg. Chrome anbefaler at du forlater det nå.</translation>
 <translation id="5610142619324316209">Sjekk tilkoblingen</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Oversett denne siden med Google Oversetter</translation>
@@ -1248,6 +1247,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5905445707201418379">Blokkert i samsvar med opphavsregelen for <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronisert)</translation>
+<translation id="5913377024445952699">Skjermopptaket er satt på pause</translation>
 <translation id="59174027418879706">Aktivert</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">På</translation>
@@ -1918,6 +1918,7 @@ Mer informasjon:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
 <translation id="8625384913736129811">Lagre dette kortet på denne enheten</translation>
+<translation id="8627040765059109009">Skjermopptaket er gjenopptatt</translation>
 <translation id="8657078576661269990">Administratoren din har blokkert deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME_1" /> og <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="867224526087042813">Signatur</translation>

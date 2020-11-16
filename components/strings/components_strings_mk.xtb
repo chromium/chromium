@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">Управувањето не е поддржано</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Сајтов може да е лажен или измамнички. Chrome препорачува да го напуштите веднаш.</translation>
 <translation id="5610142619324316209">Да ја проверите врската</translation>
 <translation id="5610807607761827392">Може да управувате со картичките и адресите во <ph name="BEGIN_LINK" />„Поставки“<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Преведете ја страницава со „Преведи на Google“</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5905445707201418379">Блокирано согласно правилото за потекло на <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирани)</translation>
+<translation id="5913377024445952699">Снимањето на екранот е паузирано</translation>
 <translation id="59174027418879706">Овозможено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Вклучено</translation>
@@ -1919,6 +1919,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Нема лозинки што се совпаѓаат. Прикажи ги сите зачувани лозинки.</translation>
 <translation id="8625384913736129811">Зачувај ја картичкава на уредов</translation>
+<translation id="8627040765059109009">Снимањето на екранот продолжи</translation>
 <translation id="8657078576661269990">Администраторот го блокирал споделувањето од <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Краток преглед на нарачка, <ph name="TOTAL_LABEL" />, повеќе детали</translation>
 <translation id="867224526087042813">Потпис</translation>

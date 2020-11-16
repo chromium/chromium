@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1625959690469240009">Pour ouvrir les paramètres du site, mettez à jour ou réinstallez <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> nécessite l'application suivante :</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> nécessite un navigateur Web</translation>
 <translation id="3858759029325727987">Sélectionnez un navigateur compatible avec cette application :</translation>

@@ -17,7 +17,7 @@
 <translation id="1369915414381695676">เพิ่มเว็บไซต์ <ph name="SITE_NAME" /> แล้ว</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
-<translation id="1415402041810619267">URL แบบตัดให้สั้นลง</translation>
+<translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1431402976894535801">บล็อกเว็บไซต์ไม่ให้ทราบว่าคุณใช้งานอยู่</translation>
 <translation id="1446450296470737166">ควบคุมอุปกรณ์ MIDI ได้สมบูรณ์</translation>
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -122,7 +122,7 @@
 <translation id="445467742685312942">อนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="4468959413250150279">ปิดเสียงไซต์ที่ต้องการ</translation>
 <translation id="4479647676395637221">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้กล้องถ่ายรูปของคุณ (แนะนำ)</translation>
-<translation id="4505788138578415521">URL แบบขยาย</translation>
+<translation id="4505788138578415521">ขยาย URL แล้ว</translation>
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="4570913071927164677">รายละเอียด</translation>
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>

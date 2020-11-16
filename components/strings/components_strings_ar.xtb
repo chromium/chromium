@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">الإدارة غير متوفرة</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">‏قد يكون هذا الموقع الإلكتروني مزيفًا أو احتياليًا. ينصح Chrome بمغادرة هذا الموقع الإلكتروني الآن.</translation>
 <translation id="5610142619324316209">التحقق من الاتصال</translation>
 <translation id="5610807607761827392">يمكنك إدارة البطاقات والعناوين في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">‏ترجمة هذه الصفحة باستخدام "ترجمة Google"</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5905445707201418379">تم الحظر وفقًا لسياسة المصدر <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (تمت المزامنة)</translation>
+<translation id="5913377024445952699">إيقاف وضع "التقاط الشاشة" مؤقتًا</translation>
 <translation id="59174027418879706">تم التفعيل</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">مفعّل</translation>
@@ -1920,6 +1920,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ما مِن كلمات مرور مطابقة. يمكنك عرض جميع كلمات المرور المحفوظة.</translation>
 <translation id="8625384913736129811">حفظ هذه البطاقة إلى هذا الجهاز</translation>
+<translation id="8627040765059109009">استئناف وضع "التقاط الشاشة"</translation>
 <translation id="8657078576661269990">حظر المشرف إمكانية المشاركة من <ph name="ORIGIN_NAME" /> إلى <ph name="VM_NAME_1" /> و<ph name="VM_NAME_2" />.</translation>
 <translation id="8663226718884576429">ملخّص الطلب و<ph name="TOTAL_LABEL" /> وتفاصيل إضافية</translation>
 <translation id="867224526087042813">التوقيع</translation>

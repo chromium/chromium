@@ -1165,7 +1165,6 @@
 <translation id="560412284261940334">管理はサポートされていません</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">偽のサイトまたは不正なサイトの可能性があります。このサイトから離れることをおすすめします。</translation>
 <translation id="5610142619324316209">接続を確認する</translation>
 <translation id="5610807607761827392">カードと住所は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="561165882404867731">Google 翻訳でこのページを翻訳する</translation>
@@ -1237,6 +1236,7 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> のオリジン ポリシーに沿ってブロックしました。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
+<translation id="5913377024445952699">画面キャプチャが一時停止されました</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">オン</translation>
@@ -1909,6 +1909,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8625384913736129811">このカード情報をこのデバイスに保存する</translation>
+<translation id="8627040765059109009">画面キャプチャが再開されました</translation>
 <translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME_1" /> および <ph name="VM_NAME_2" /> への共有は、管理者によってブロックされています</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="867224526087042813">署名</translation>

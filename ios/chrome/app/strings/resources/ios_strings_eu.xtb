@@ -7,7 +7,7 @@
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
 <translation id="1047726139967079566">Ezarri laster-marka orriari…</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
-<translation id="105093091697134113">Hirugarren baten isilpekotasun-urratze baten eraginpean egon dira kontu hauen pasahitzak, edo webgune engainagarri batean erabili dira. Kontua babesteko, aldatu pasahitzok berehala.</translation>
+<translation id="105093091697134113">Kontu hauen pasahitzak agerian geratu dira hirugarrenen datuen isilpekotasuna urratu den batean, edo webgune engainagarri batean erabili dira. Kontua babesteko, aldatu pasahitzok berehala.</translation>
 <translation id="1063454504051558093">Erabili beste pasahitz bat…</translation>
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Ezin izan da inprimatu.</translation>
 <translation id="1125564390852150847">Sortu beste fitxa bat.</translation>
 <translation id="1145536944570833626">Ezabatu lehendik dauden datuak.</translation>
+<translation id="1147031633655575115"><ph name="USER" /> gisa hasi duzu saioa</translation>
 <translation id="1154690515305205900">Ezin da sortu nabarmendutako testura daraman esteka.</translation>
 <translation id="1157749421655780457">Eman kokapena atzitzeko baimena…</translation>
 <translation id="1165039591588034296">Errorea</translation>
@@ -268,6 +269,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3892144330757387737">Historia aurkituko duzu hemen</translation>
 <translation id="3897092660631435901">Menua</translation>
+<translation id="3913386780052199712">Chrome-n saioa hasita daukazu</translation>
 <translation id="3915450441834151894">Webgunearen informazioa</translation>
 <translation id="3922310737605261887">Bilatu kopiatu duzun testua</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>

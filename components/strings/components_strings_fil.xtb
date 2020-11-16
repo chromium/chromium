@@ -1176,7 +1176,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Puwedeng maging peke o mapanloko ang site na ito. Inirerekomenda ng Chrome na umalis ngayon.</translation>
 <translation id="5610142619324316209">Suriin ang koneksyon</translation>
 <translation id="5610807607761827392">Maaari mong pamahalaan ang mga card at address sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Isalin ang page na ito gamit ang Google Translate</translation>
@@ -1248,6 +1247,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5905445707201418379">Na-black ayon sa patakaran ng pinagmulan ng <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (naka-sync)</translation>
+<translation id="5913377024445952699">Na-pause ang screen capture</translation>
 <translation id="59174027418879706">Pinagana</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Naka-on</translation>
@@ -1919,6 +1919,7 @@ Mga karagdagang detalye:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Walang tumutugmang password. Ipakita ang lahat ng naka-save na password.</translation>
 <translation id="8625384913736129811">I-save ang Card na Ito sa Device na Ito</translation>
+<translation id="8627040765059109009">Ipinagpatuloy ang screen capture</translation>
 <translation id="8657078576661269990">Na-block ng iyong administrator ang pagbabahagi mula sa <ph name="ORIGIN_NAME" /> sa <ph name="VM_NAME_1" /> at <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Buod ng Order, <ph name="TOTAL_LABEL" />, Higit pang Detalye</translation>
 <translation id="867224526087042813">Lagda</translation>

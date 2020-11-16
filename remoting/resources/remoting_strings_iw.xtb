@@ -66,7 +66,7 @@
 <translation id="4155497795971509630">חלק מהרכיבים הדרושים חסרים. יש לוודא שהתקנת את הגרסה העדכנית ביותר של התוכנה ולנסות שוב.</translation>
 <translation id="4176825807642096119">קוד גישה</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
-<translation id="4240294130679914010">‏מסיר ההתקנה של מארח Chromoting</translation>
+<translation id="4240294130679914010">‏הסרת ההתקנה של מארח Chromoting מתבצעת</translation>
 <translation id="4277736576214464567">קוד הגישה אינו חוקי. יש לנסות שוב.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4405930547258349619">ספריית ליבה</translation>
@@ -80,7 +80,7 @@
 <translation id="4741792197137897469">‏האימות נכשל. יש להיכנס שוב ל-Chrome.</translation>
 <translation id="4784508858340177375">‏המארח X קרס או שלא הופעל.</translation>
 <translation id="4798680868612952294">אפשרויות עכבר</translation>
-<translation id="4804818685124855865">נתק</translation>
+<translation id="4804818685124855865">ניתוק</translation>
 <translation id="4808503597364150972">יש להזין את קוד האימות של <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">מארח</translation>
 <translation id="4867841927763172006">‏שליחת PrtScn</translation>
@@ -91,7 +91,7 @@
 <translation id="5170982930780719864">מזהה מארח לא חוקי.</translation>
 <translation id="5204575267916639804">שאלות נפוצות</translation>
 <translation id="5222676887888702881">יציאה</translation>
-<translation id="5234764350956374838">סגור</translation>
+<translation id="5234764350956374838">סגירה</translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="533625276787323658">אין מחשבים שניתן להתחבר אליהם</translation>
@@ -106,7 +106,7 @@
 <translation id="5823658491130719298">‏במחשב שאליו רוצים לגשת מרחוק, יש לפתוח את Chrome ולהיכנס אל <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">אפשרויות תצוגה</translation>
 <translation id="6033507038939587647">אפשרויות מקלדת</translation>
-<translation id="6040143037577758943">סגור</translation>
+<translation id="6040143037577758943">סגירה</translation>
 <translation id="6062854958530969723">אתחול המארח נכשל.</translation>
 <translation id="6099500228377758828">‏שירות Chrome Remote Desktop</translation>
 <translation id="6122191549521593678">אונליין</translation>
@@ -116,7 +116,7 @@
 <translation id="6284412385303060032">המארח הפועל במסך הכניסה למסוף כבה כדי לתמוך במצב הסתרה, על ידי מעבר אל מארח הפועל בסשן ספציפי למשתמש.</translation>
 <translation id="6542902059648396432">דיווח על בעיה...</translation>
 <translation id="6583902294974160967">תמיכה</translation>
-<translation id="6612717000975622067">‏שלח Ctrl-Alt-Del</translation>
+<translation id="6612717000975622067">‏שליחת Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">שיתוף</translation>
 <translation id="6681800064886881394">‏Copyright © 2013 Google Inc.‎. כל הזכויות שמורות.</translation>
 <translation id="677755392401385740">המארח הופעל עבור המשתמש: <ph name="HOST_USERNAME" />.</translation>
@@ -141,7 +141,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
 <translation id="7678209621226490279">עגינה לשמאל</translation>
-<translation id="7693372326588366043">רענן את רשימת המארחים</translation>
+<translation id="7693372326588366043">רענון רשימת המארחים</translation>
 <translation id="7714222945760997814">דיווח על הבעיה</translation>
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
 <translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>

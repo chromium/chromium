@@ -103,7 +103,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur Confirmer pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Le raccourci qui permet d'ouvrir le gestionnaire de tâches a changé. Veuillez utiliser <ph name="NEW_SHORTCUT" /> à la place de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
-<translation id="1924640696879807758">À partir du téléphone</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier associé.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
-<translation id="22546648640907338">Le geste à effectuer sur le pavé tactile pour activer le mode Aperçu a changé. Balayez l'écran vers le haut avec trois doigts pour activer le mode Aperçu.</translation>
 <translation id="225680501294068881">Recherche d'appareils en cours…</translation>
 <translation id="2268130516524549846">La connectivité Bluetooth est désactivée</translation>
 <translation id="2268813581635650749">Tous déconnecter</translation>
@@ -148,7 +146,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
-<translation id="2361223922412143600">Le geste à effectuer sur le pavé tactile pour quitter le mode Aperçu a changé. Balayez l'écran vers le bas avec trois doigts pour quitter le mode Aperçu.</translation>
 <translation id="2365393535144473978">L'activation des données mobiles activera le Bluetooth.</translation>
 <translation id="2369165858548251131">Comment dit-on « Bonjour » en chinois?</translation>
 <translation id="2390318262976603432">Paramètres régionaux</translation>
@@ -177,7 +174,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
-<translation id="2640255526076764619">Le geste à effectuer sur le pavé tactile pour passer au bureau précédent a changé : vous devez à présent le balayer vers la gauche avec quatre doigts.</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquez et faites glisser</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -396,7 +392,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4705716602320768426">Classer le commentaire</translation>
-<translation id="4710243778082831592">Paramètres d'éditeur de mode d'entrée (IME)</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
@@ -527,7 +522,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6018164090099858612">Fermeture du mode miroir</translation>
 <translation id="602001110135236999">Faire défiler vers la gauche</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
-<translation id="6029337736376922061">Le geste à effectuer sur le pavé tactile pour afficher le bureau suivant a changé : vous devez à présent le balayer vers la droite avec quatre doigts.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé vers le coin inférieur gauche de l'écran.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6043212731627905357">Ce moniteur n'est pas compatible avec votre <ph name="DEVICE_TYPE" /> (le moniteur n'est pas pris en charge).</translation>
@@ -671,7 +665,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">La fonctionnalité permettant de capturer du contenu à l'écran a été bloquée par votre administrateur.</translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>

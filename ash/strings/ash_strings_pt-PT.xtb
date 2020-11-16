@@ -103,7 +103,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não suporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">O atalho para abrir o Gestor de tarefas foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
-<translation id="1924640696879807758">Do Telemóvel</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222338659135520253">É necessário iniciar sessão.</translation>
-<translation id="22546648640907338">O gesto do touchpad para aceder à Vista geral foi alterado. Deslize rapidamente para cima com três dedos para aceder à Vista geral.</translation>
 <translation id="225680501294068881">A procurar dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268813581635650749">Term. sess. de todos</translation>
@@ -148,7 +146,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2352467521400612932">Definições da caneta stylus</translation>
 <translation id="2354174487190027830">A ativar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">O gesto do touchpad para sair da Vista geral foi alterado. Deslize rapidamente para baixo com três dedos para sair da Vista geral.</translation>
 <translation id="2365393535144473978">A ativação dos dados móveis ativa o Bluetooth.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Definições locais</translation>
@@ -177,7 +174,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
-<translation id="2640255526076764619">O gesto do touchpad para mudar para o espaço de trabalho anterior foi alterado. Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
@@ -327,6 +323,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
 <translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
 <translation id="4121728057981832179">Uma máquina virtual está a utilizar o seu microfone.</translation>
+<translation id="4126167871198063089">Sair de Selecionar para falar</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
 <translation id="4146833061457621061">Tocar música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gerido por <ph name="DOMAIN" /></translation>
@@ -386,6 +383,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4570957409596482333">Botão Selecionar para falar</translation>
 <translation id="4577274620589681794">Acabou o tempo · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Mostrar pré-visualizações</translation>
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4623167406982293031">Validar conta</translation>
@@ -396,7 +394,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4705716602320768426">Envie comentários</translation>
-<translation id="4710243778082831592">Definições do IME</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
@@ -434,11 +431,13 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Emblemas de apps</translation>
+<translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5019169674188023236">Parece que o Bluetooth ou o Wi-Fi estão desativados no <ph name="DEVICE_TYPE" />. Verifique a sua ligação para utilizar o Phone Hub.</translation>
 <translation id="5030687792513154421">O tempo terminou</translation>
 <translation id="5033299697334913360">Clique em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
 <translation id="5035389544768382859">Confirme a configuração do ecrã</translation>
+<translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
@@ -478,6 +477,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5571066253365925590">Bluetooth ativado</translation>
+<translation id="557563299383177668">Parágrafo seguinte</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área a capturar.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Prima Ctrl + Alt + Z para desativar os feedback de voz.</translation>
@@ -527,7 +527,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
-<translation id="6029337736376922061">O gesto do touchpad para mudar para o espaço de trabalho seguinte foi alterado. Deslize rapidamente para a direita com quatro dedos para mudar para o espaço de trabalho seguinte.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo do ecrã.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor está em conflito com o seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
@@ -618,7 +617,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6910714959251846841">Para efetuar esta atualização, é necessário efetuar o Powerwash do dispositivo. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
-<translation id="6953890208095195458">A gravação de ecrã foi interrompida pelo seu administrador devido a conteúdo no ecrã.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Começar</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
@@ -672,7 +670,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">A capacidade de tirar uma captura de ecrã do conteúdo no ecrã está bloqueada pelo administrador.</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
@@ -731,6 +728,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8029247720646289474">Falha na ligação à zona Wi-Fi</translation>
 <translation id="8029629653277878342">É necessário um PIN ou uma palavra-passe para uma maior segurança.</translation>
 <translation id="8030169304546394654">Desligado</translation>
+<translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de definições de acessibilidade</translation>
 <translation id="8048123526339889627">Definições de Bluetooth</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
@@ -869,6 +867,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="921989828232331238">Os teus pais bloquearam o dispositivo para o resto do dia</translation>
 <translation id="9220525904950070496">Remover conta</translation>
 <translation id="923686485342484400">Prima Control Shift Q duas vezes para terminar sessão.</translation>
+<translation id="925832987464884575">Ocultar pré-visualizações</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="98515147261107953">Horizontal</translation>

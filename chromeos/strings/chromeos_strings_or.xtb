@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
 <translation id="1644574205037202324">ଇତିବୃତ୍ତି</translation>
 <translation id="1662989795263954667">ବନ୍ଦ ହୋଇଯାଇଛି - ସ୍ୟାହି ସରିଯାଇଛି</translation>
+<translation id="1703835215927279855">ଲେଟର୍</translation>
 <translation id="1706391837335750954">DNS ରିଜଲଭର୍ ଉପସ୍ଥିତ ଅଛି</translation>
 <translation id="1734367976349034509">ଏହି ଡିଭାଇସ୍ ଏଣ୍ଟରପ୍ରାଇଜ୍ ପରିଚାଳିତ ଅଟେ</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ଏହି <ph name="DEVICE_TYPE" />ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="4034824040120875894">ପ୍ରିଣ୍ଟର୍‌</translation>
+<translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4227825898293920515"><ph name="TIME" />ରେ ପାସ୍‌ୱାର୍ଡର ମିଆଦ ଶେଷ ହେଉଛି</translation>
 <translation id="4238516577297848345">କୌଣସି ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ଚାଲୁ ନାହିଁ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
@@ -87,13 +89,13 @@
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
-<translation id="4991056862642197104">ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟ ରଖନ୍ତୁ ଏବଂ ଆରମ୍ଭ କରିବାକୁ 'ସ୍କାନ୍ କରନ୍ତୁ'ରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ୍ ଭାବେ ସେଟିଂସ୍ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="520299634122159966">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5212543919916444558">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ରେ ମୁଁ କିଛି ଖୋଜିପାଇଲି ନାହିଁ ଯାହାଦ୍ୱାରା ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବି।
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">ରୁଟିନଗୁଡ଼ିକୁ ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
@@ -102,10 +104,12 @@
 <translation id="5431318178759467895">ରଙ୍ଗ</translation>
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6048107060512778456">ବିଫଳ ହୋଇଛି - କାଗଜ ଅଟକି ଯାଇଛି</translation>
+<translation id="6050189528197190982">ଗ୍ରେସ୍କେଲ୍</translation>
 <translation id="6058625436358447366">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ଏବଂ ନୂଆ ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ ଲେଖନ୍ତୁ</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -147,7 +151,9 @@
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8723108084122415655">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8726019395068607495">ବନ୍ଦ ହୋଇଯାଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
+<translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8747900814994928677">ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>

@@ -1174,7 +1174,6 @@
 <translation id="560412284261940334">Gestionarea nu este acceptată</translation>
 <translation id="5605670050355397069">Registru</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Acest site poate fi fals sau fraudulos. Chrome îți recomandă să ieși acum.</translation>
 <translation id="5610142619324316209">să verifici conexiunea;</translation>
 <translation id="5610807607761827392">Poți să gestionezi cardurile și adresele în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tradu această pagină cu Google Traducere</translation>
@@ -1246,6 +1245,7 @@
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5905445707201418379">Blocat conform politicii de origine de la <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizat)</translation>
+<translation id="5913377024445952699">Funcție de realizare a capturilor întreruptă</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">activate</translation>
@@ -1918,6 +1918,7 @@ Detalii suplimentare:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8625384913736129811">Salvează cardul pe acest dispozitiv</translation>
+<translation id="8627040765059109009">Funcție de realizare a capturilor reluată</translation>
 <translation id="8657078576661269990">Administratorul a blocat permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME_1" /> și la <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Rezumatul comenzii, <ph name="TOTAL_LABEL" />, Mai multe detalii</translation>
 <translation id="867224526087042813">Semnătura</translation>

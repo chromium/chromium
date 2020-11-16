@@ -1165,7 +1165,6 @@
 <translation id="560412284261940334">მართვა არ არის მხარდაჭერილი</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ეს საიტი შეიძლება იყოს ყალბი ან თაღლითური. Chrome გირჩევთ გასვლას.</translation>
 <translation id="5610142619324316209">კავშირის შემოწმება</translation>
 <translation id="5610807607761827392">ბარათებისა და მისამართების მართვა <ph name="BEGIN_LINK" />პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
 <translation id="561165882404867731">თარგმნეთ ეს გვერდი Google Translate-ის მეშვეობით</translation>
@@ -1237,6 +1236,7 @@
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5905445707201418379">დაბლოკილია <ph name="ORIGIN" />-ის წყაროს წესების შესაბამისად.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (სინქრონიზებული)</translation>
+<translation id="5913377024445952699">ეკრანის აღბეჭდვა დაპაუზდა</translation>
 <translation id="59174027418879706">ჩართული</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ჩართული</translation>
@@ -1908,6 +1908,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">შესატყვისი პაროლები არ არის. ყველა შენახული პაროლის ჩვენება.</translation>
 <translation id="8625384913736129811">ბარათის შენახვა ამ მოწყობილობაზე</translation>
+<translation id="8627040765059109009">ეკრანის აღბეჭდვა გაგრძელდა</translation>
 <translation id="8657078576661269990">თქვენმა ადმინისტრატორმა დაბლოკა <ph name="ORIGIN_NAME" />-დან <ph name="VM_NAME_1" />-სა და <ph name="VM_NAME_2" />-ზე გაზიარება</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
 <translation id="867224526087042813">ხელმოწერა</translation>

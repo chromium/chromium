@@ -1165,7 +1165,6 @@
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">這可能是偽造的網站或詐騙網站，Chrome 建議你立即離開。</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中管理信用卡和地址資訊。</translation>
 <translation id="561165882404867731">使用 Google 翻譯來翻譯這個頁面</translation>
@@ -1237,6 +1236,7 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5905445707201418379">已根據「<ph name="ORIGIN" />」的來源政策加以封鎖。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
+<translation id="5913377024445952699">已暫停擷取螢幕畫面</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">開啟</translation>
@@ -1908,6 +1908,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">找不到相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8625384913736129811">將這張信用卡儲存到這個裝置</translation>
+<translation id="8627040765059109009">已繼續擷取螢幕畫面</translation>
 <translation id="8657078576661269990">系統管理員已禁止將資料從 <ph name="ORIGIN_NAME" /> 分享到 <ph name="VM_NAME_1" /> 和 <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">訂單摘要：<ph name="TOTAL_LABEL" />，更多詳細資料</translation>
 <translation id="867224526087042813">簽名</translation>

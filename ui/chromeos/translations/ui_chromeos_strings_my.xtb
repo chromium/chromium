@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1000498691615767391">ဖွင့်ရန် ဖိုလ်ဒါကို ရွေးပါ</translation>
+<translation id="1016731229041675999">အာရဗီ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="102325055885714714">တမီးလ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1035094536595558507">ဆလိုက် မြင်ကွင်း</translation>
 <translation id="1047956942837015229">အရာ <ph name="COUNT" />ခုကို ဖျက်နေ...</translation>
 <translation id="1049926623896334335">Word စာတမ်း</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာရွှေ့ပါ။</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
+<translation id="1082570120854863773">တရုတ် (ရိုးရာ) ပင်ယင်</translation>
 <translation id="1119069657431255176">Bzip2 စနစ်ဖြင့် ချုံ့ထားသော tar ဖိုင်မှတ်တမ်း</translation>
 <translation id="1120073797882051782">ဟံဂူလ် Romaja</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> တွေ့ပါသည်။
@@ -41,10 +44,13 @@
 <translation id="1378727793141957596">Google Drive မှကြိုဆိုပါသည်!</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1395262318152388157">ဆလိုက်ဒါးကို ရှာပါ</translation>
+<translation id="1411401459521499147">စံကီးဘုတ်ဖြင့် ရိုမေးနီးယား</translation>
+<translation id="14286271616944851">ပါရှား</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ဖိုင်တွဲသို့ ရွှေ့ထားသည်။</translation>
 <translation id="1464724975715666883">မှားယွင်းမှု ၁ ခု</translation>
+<translation id="1466220122465387403">အင်္ဂလိပ်အခြေခံကီးဘုတ်ဖြင့် ဆိုရာနီကဒ်</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="1472351751615457820">ဂရိ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1474339897586437869">" <ph name="FILENAME" /> " ကို အပ်လုဒ် လုပ်မရခဲ့ပါ။ သင်၏ Google Drive ထဲတွင် နေရာ မလုံလောက်ပါ။</translation>
@@ -59,6 +65,7 @@
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1622022025445651011">ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
+<translation id="1649464394998806860">အသံထွက် AATSEEL ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="1673103856845176271">လုံခြုံရေးအချက်လက်များကြောင့် ဤဖိုင်အား အသုံးပြု၍ မရပါ။</translation>
@@ -89,9 +96,11 @@
 <translation id="1995337122023280937">ဖိုင်တည်နေရာသို့ သွားရန်</translation>
 <translation id="2001796770603320721">Drive တွင် စီမံပါ</translation>
 <translation id="2009067268969781306">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းသည် ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
+<translation id="2016165510591645686">တရုတ် ပင်ယင်</translation>
 <translation id="2028997212275086731">RAR စနစ်ဖြင့် ချုံ့ထားသော ဖိုင်မှတ်တမ်း</translation>
 <translation id="2046702855113914483">ခေါက်ဆွဲ</translation>
 <translation id="2060251957438343874">ဂျာမန် (ဂျာမနီ)</translation>
+<translation id="2060392775416297569">တရုတ် ချန်ကျီ</translation>
 <translation id="2066433303065022982">ဟီဘရူး အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="2070909990982335904">အစက်ဖြင့်စသော အမည်များသည် စနစ်တွက် ဖြစ်သည်။ ကျေးဇူးပြု၍ အခြားအမည်ရွေးပါ။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
@@ -123,11 +132,13 @@
 <translation id="2453576648990281505">ဖိုင်မှာ ရှိနှင့်နေပြီ</translation>
 <translation id="2464079411014186876">ရေခဲမုန့်</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2484472280211296077">တမီးလ် အသံထွက်</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ခုဖျက်ပြီးပြီ</translation>
 <translation id="2541377937973966830">ဤဖိုင်တွဲအတွင်းရှိ အကြောင်းအရာများက ဖတ်ရန်သီးသန့် ဖြစ်သည်။ လုပ်ဆောင်ချက်အချို့ကို မပံ့ပိုးပါ။</translation>
 <translation id="2542049655219295786">Google ဇယား</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> သို့ထည့်ပါ</translation>
+<translation id="255285553751745003">ဗီယက်နမ် Telex</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">စာရွက်များ</translation>
 <translation id="2563185590376525700">ဖား</translation>
@@ -140,11 +151,13 @@
 <translation id="2664412712123763093">ဖိုင်တည်နေရာ</translation>
 <translation id="2672394958563893062">အမှား ကြုံခဲ့သည်။ အစမှ ပြန်လည်စတင်ရန် ကလစ်ပါ။</translation>
 <translation id="2676946222714718093">ဖွင့်ပြနေသည်က</translation>
+<translation id="2718873684053049373">တရုတ် တာ့ရီ</translation>
 <translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2781645665747935084">ဘယ်လ်ဂျီယံ</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="2787047795752739979">မူရင်းကို ဖျက်ရေးရန်</translation>
+<translation id="2798201218072736543">ပေါ်တူဂီ (ဘရာဇီး)</translation>
 <translation id="2822854841007275488">အာရပ်</translation>
 <translation id="2843806747483486897">ပုံသေကို ပြောင်းရန်...</translation>
 <translation id="2850124913210091882">အရံသိမ်းဆည်းသည်</translation>
@@ -167,12 +180,14 @@
 <translation id="3003633581067744647">ပုံသေးမြင်ကွင်းသို့ ပြောင်းရန်</translation>
 <translation id="3007214526293698309">အချိုးအစား သတ်မှတ်ရန်</translation>
 <translation id="303198083543495566">ပထဝီ</translation>
+<translation id="3040867506619073727">ဆင်ဟာလာ</translation>
 <translation id="3057861065630527966">သင့်ဓာတ်ပုံများနှင့် ဗီဒီယိုများကို အရံသိမ်းဆည်းပါ</translation>
 <translation id="3067790092342515856">Windows ဖိုင်များ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> နှင့်မျှဝေပါ</translation>
 <translation id="3083975830683400843">Chromebit များ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">လုပ်ပြီး</translation>
+<translation id="3171711500892772766">တယ်လူဂူ အသံထွက်</translation>
 <translation id="3182237543071236785">အင်္ဂလိပ် (ယူကေ)</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3197563288998582412">ယူကေဒီဘိုရ</translation>
@@ -211,6 +226,7 @@
 <translation id="357479282490346887">လီသွေနီယံ</translation>
 <translation id="3603385196401704894">ကနေဒါမွေး ပြင်သစ်</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
+<translation id="3608699648194837100">တမီးလ် ITRANS</translation>
 <translation id="3609785682760573515">စင့်က် လုပ်နေ...</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
@@ -221,6 +237,7 @@
 <translation id="3645531960514756307">ဖိုင်တွဲကို ပင်ဖြုတ်ရန်</translation>
 <translation id="3685122418104378273">မိုဘိုင်း ဒေတာကို အသုံးပြုချိန်မှာ ပုံသေအားဖြင့် Google ဒရိုက်ဗ် စင့်ကို ပိတ်ထားသည်။</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ကို ပယ်ဖျက်မည်။</translation>
+<translation id="3717701509378976246">အာမေးနီးယား</translation>
 <translation id="3726463242007121105">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မထောက်ပံ့သောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="3741243925913727067">Google Drive သို့သင့်မီဒီယာ၏ ဓာတ်ပုံများနှင့် ဗီဒီယိုများကို အရံသိမ်းဆည်းမည်။</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
@@ -259,6 +276,7 @@
 <translation id="4261901459838235729">Google မိတ်ဆက်ပြွ</translation>
 <translation id="4290535918735525311">Linux နှင့် မျှဝေထားသည့် ဖိုင်တွဲ ၁ ခု</translation>
 <translation id="4299729908419173967">ဘရာဇီးလ်</translation>
+<translation id="4305486654020746131">ပန်ချာပီ</translation>
 <translation id="4309915981827077375">အထွေထွေ အချက်အလက်</translation>
 <translation id="4315949787858895817">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="4326192123064055915">ကော်ဖီ</translation>
@@ -266,6 +284,7 @@
 <translation id="4364327530094270451">ဖရဲသီး</translation>
 <translation id="4372884569765913867">၁x၁</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
+<translation id="4406790547322756995">TCVN ကီးဘုတ်ဖြင့် ဗီယက်နမ်</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4470564870223067757">ဟံဂူလ် ၂ စုံ</translation>
 <translation id="4477219268485577442">ဘာလ်ဂေရီယမ် အသံထွက်</translation>
@@ -284,8 +303,10 @@
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>
 <translation id="4627439232948440198">သင်္သကရိုက်</translation>
 <translation id="4631887759990505102">အနုပညာရှင်</translation>
+<translation id="463813589602055304">တရုတ် ဝူဘီ</translation>
 <translation id="4656293982926141856">ဒီကွန်ပျူတာ</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
+<translation id="4669979276126590335">ဆားဘီးယား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="4690246192099372265">ဆွီဒင်</translation>
 <translation id="4693155481716051732">ဆူရှီ</translation>
 <translation id="4694604912444486114">မျောက်</translation>
@@ -296,8 +317,10 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ဓာတ်ပုံများ အရံသိမ်းဆည်းပြီးပါပြီ</translation>
 <translation id="4725511304875193254">ခွေးငယ်လေး</translation>
 <translation id="4732760563705710320">ဆောရီး၊ ဤဗွီဒီယိုအား သင့် cast စက်တွင် ကြည့်မရပါ။</translation>
+<translation id="4733240808404733495">TIS 820-2531 ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="4734518477988699048">ထည့်သွင်းသည့်တန်ဖိုးသည် မှန်ကန်မှုမရှိပါ။</translation>
 <translation id="4737050008115666127">ဆင်းသက်ခြင်း</translation>
+<translation id="4738570502598323051">InScript ကီးဘုတ်ဖြင့် တမီးလ်</translation>
 <translation id="4747271164117300400">မက်ဆီဒိုးနီးယန်း</translation>
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
 <translation id="4763055924467562718">ကန်နာဒါ အသံထွက်</translation>
@@ -309,6 +332,7 @@
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
 <translation id="4823651846660089135">စက်ပစ္စည်းကို ဖတ်ခွင့်သာရှိသည်</translation>
 <translation id="4839847978919684242">အရာ <ph name="SELCTED_FILES_COUNT" />ခု ရွေးထား</translation>
+<translation id="4842306555839940112">တယ်လူဂူ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="4843566743023903107">Chromebase များ</translation>
 <translation id="4849981557599196363">ဂျာမန် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
@@ -322,6 +346,7 @@
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ကို မိတ္ထူပွားရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="4924638091161556692">ဖြေရှင်းပြီး</translation>
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
+<translation id="4942961016321891903">မလေယာလမ် အသံထွက်</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
@@ -382,6 +407,7 @@
 <translation id="5368191757080475556">Linux နှင့် ဖိုင်တွဲကို မျှဝေရန်</translation>
 <translation id="5402367795255837559">မျက်မမြင်စာ</translation>
 <translation id="5418923334382419584">မြန်မာ ကီးဘုတ်</translation>
+<translation id="5427022459704612663">ဗီယက်နမ် VIQR</translation>
 <translation id="5428105026674456456">စပိန်</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> အတွက် ရလဒ်မရှိပါ။</translation>
 <translation id="5449551289610225147">စကားဝှက် မမှန်ကန်ပါ</translation>
@@ -395,8 +421,11 @@
 <translation id="5524517123096967210">ဖိုင်ကို ဖတ်ရန် အဖြစ် မပြုလုပ်နိုင်ပါ။</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ပုံ</translation>
 <translation id="5534520101572674276">ဆိုက</translation>
+<translation id="5551831234974556292">မော်လတာ</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
+<translation id="5601917305267643189">စပိန် (စပိန်)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5623849870004487514">အသံထွက်ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5678784840044122290">Linux အပလီကေးရှင်းကို သင်၏ Terminal အတွင်းတွင်ရနိုင်ပြီး သင်၏ Launcher တွင်လည်း သင်္ကေတပြနိုင်ပါသည်။</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုကို ချိတ်ဆက်မှုဖြုတ်၍မရပါ<ph name="END_BOLD" />
@@ -419,6 +448,7 @@
 <translation id="5833610766403489739">ဒီဖိုင်မှာ တစ်နေရာရာကို ရောက်သွားပြီ။ ကျေးဇူးပြုပြီး သင်၏ ဒေါင်းလုဒ် နေရာ ဆက်တင်ကို စစ်ကြည့်ပြီး ထပ်စမ်းပါ။</translation>
 <translation id="5838451609423551646">ထည့်သွင်းမှုအားလုံးကို ရွေးချယ်မှုမှ ဖယ်ရှားထားသည်။</translation>
 <translation id="5838825566232597749">US Workman နိုင်ငံတကာ</translation>
+<translation id="5846013392911797712">Kedmanee ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="5850516540536751549">ဒီဖိုင် ပုံစံကို မပံု့ပိုးပါ။ ကျေးဇူးပြုပြီး <ph name="BEGIN_LINK" />Chrome ဝဘ် စတိုး<ph name="END_LINK" />ကို ဝင်ကြည့်လျက် ဒီဖိုင် ပုံစံကို ဖွင့်ပေးနိုင်သည့် အက်ပ်ကို ရှာယူပါ။
     <ph name="BEGIN_LINK_HELP" />ပိုမို လေ့လာရန်<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ဤတွင် ကြည့်စရာ မရှိပါ...</translation>
@@ -426,6 +456,7 @@
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">မာရာသီ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
@@ -435,6 +466,7 @@
 <translation id="60357267506638014">ချက် QWERTY</translation>
 <translation id="604001903249547235">မိုးတိမ် အရံသိမ်းဆည်းခြင်း</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
+<translation id="6041767187407754614">တရုတ် အမြန်</translation>
 <translation id="6074825444536523002">Google ပုံစံ</translation>
 <translation id="6096979789310008754">ရှာဖွေမှုစာသားကို ရှင်းလင်းထားသည်၊ ဖိုင်နှင့် ဖိုင်တွဲများအားလုံးကို ပြထားသည်</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ ရွှေ့နေသည်</translation>
@@ -486,10 +518,12 @@
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6718273304615422081">ဇစ်ပိတ်နေ...</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
+<translation id="6767296108234383966">မလေယာလမ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
 <translation id="6806699711453372963">Linux မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="6808193438228982088">မြေခွေး</translation>
+<translation id="6819938753873901684">တီဂရင်းညာ</translation>
 <translation id="6820687829547641339">Gzip စနစ်ဖြင့် ချုံ့ထားသော tar ဖိုင်မှတ်တမ်း</translation>
 <translation id="6823166707458800069">ဤဖိုင်တွဲတွင်သိမ်းထားသည့် ဖိုင်အားလုံးကို အွန်လိုင်းတွင် အလိုအလျောက် အရန်သိမ်းသည်။</translation>
 <translation id="6825883775269213504">ရုရှား</translation>
@@ -498,6 +532,7 @@
 <translation id="6862635236584086457">ဒီဖိုလ်ဒါ ထဲမှာ သိမ်းဆည်းထားသည့် ဖိုင်များ အားလုံးကို အွန်လိုင်းမှာ အလိုအလျောက် ဘက်အာပ် လုပ်ပေးသည်</translation>
 <translation id="6876155724392614295">စက်ဘီး</translation>
 <translation id="6878261347041253038">ဒေဝနာဂရီ ကီးဘုတ် (Phonetic)</translation>
+<translation id="6878301034829092662">အသံထွက် YaZHert ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="6885780034956018177">ခရု</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6898028766943174120">အောက်ရှိ နောက်ထပ်ဖိုင်တွဲများ...</translation>
@@ -520,14 +555,20 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="7040138676081995583">ဖွင့်ရန် သုံးရမည်မှာ...</translation>
+<translation id="7096940708283911567">အိုဒီယာ</translation>
 <translation id="7100897339030255923">အရာ <ph name="COUNT" /> ခုကို ရွေးထား</translation>
 <translation id="7106346894903675391">နောက်ထပ်သိုလှောင်မှု ဝယ်မည်...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="714369685015246514">တရုတ်လက်ကွက် အခင်းအကျင်း</translation>
+<translation id="7155751472708812680">အာရဗီအခြေခံ ကီးဘုတ်ဖြင့် ဆိုရာနီကဒ်</translation>
+<translation id="7169438078134535111">F ကီးဘုတ်ဖြင့် တူရကီ</translation>
 <translation id="7170467426996704624">အက္ခရာဖလှယ်မှု (salam → ሰላም)</translation>
+<translation id="7173380554947442031">ဗီယက်နမ် VNI</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ဖိုင်ကို အဖြစ် သိမ်းရန်</translation>
+<translation id="7221999925319694720">တရုတ် ကျူရင်</translation>
 <translation id="7238097264433196391">ဒရိုက်ဗ်အမည်</translation>
 <translation id="7248671827512403053">အပလီကေးရှင်း</translation>
 <translation id="7268659760406822741">ရရှိနိုင်သော ဝန်ဆောင်မှုများ</translation>
@@ -543,6 +584,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> တွေ့ပါသည်
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးရန် အဆင်သင့်ဖြစ်ပါပြီ</translation>
+<translation id="7498032756958781551">InScript ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>
 <translation id="7508545000531937079">ဆလိုက်ရှိုး</translation>
 <translation id="751507702149411736">ဘယ်လာရုရှမ်း</translation>
@@ -593,6 +635,7 @@
 <translation id="7881969471599061635">စာတန်းထိုးခြင်းကို ပိတ်ပါ</translation>
 <translation id="78946041517601018">မျှဝေထားသော ဒရိုက်ဗ်များ</translation>
 <translation id="7898607018410277265">ဂူဂျာရာသီ ကီးဘုတ် (အသံထွက်အသစ်)</translation>
+<translation id="7908150161525408421">စပိန် (လက်တင်အမေရိက)</translation>
 <translation id="7908793776359722643">အကန့်ခွဲတစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်တွင်သိမ်းထားသော ဒေတာအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="7925686952655276919">စင့်ခ်လုပ်ရန် အတွက် မိုဘိုင်းဒေတာကို မသုံးပါနှင့်</translation>
 <translation id="7928710562641958568">ကိရိယာကို ထုတ်ပစ်ရန်</translation>
@@ -600,6 +643,7 @@
 <translation id="7953739707111622108">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မသိသောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="7969525169268594403">ဆလိုဗင်နီးယား</translation>
 <translation id="7982283708762922719">အမြင့်</translation>
+<translation id="7988940501536183135">အသံထွက်ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="8008366997883261463">ဂျက် ရစဲလ် တယ်ရီယာ</translation>
 <translation id="8028993641010258682">ဆိုက်</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
@@ -619,8 +663,10 @@
 <translation id="8154842056504218462">ထည့်သွင်းမှုအားလုံး ရွေးချယ်ထားသည်။</translation>
 <translation id="8157684860301034423">အက်ပ်အချက်အလက်များကို ရယူ၍မရပါ။</translation>
 <translation id="8157939133946352716">၇x၅</translation>
+<translation id="8159982522558068586">လက်နှိပ်စက်ကီးဘုတ်ဖြင့် တမီးလ်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8193175696669055101">ကိရိယာ မော်ဒယ်လ်</translation>
+<translation id="8196481879028929035">ပေါ်တူဂီ (ပေါ်တူဂီ)</translation>
 <translation id="8208580316430297579">ပုံ</translation>
 <translation id="8223479393428528563">အင်တာနက်ပေါ်တွင်မရှိသည့်အခါ အသုံးပြုရန်အတွက် ဤဖိုင်များအား သိမ်းရန်  အွန်လိုင်းပေါ်ပြန်လာပြီး ဖိုင်များအား ညာဘက်ကလစ်ခေါက်ပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ရွေးချယ်စရာအား ရွေးချယ်ပါ။</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
@@ -653,6 +699,10 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ခုအား စင့်လုပ်နေခြင်း...</translation>
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
+<translation id="8608272065177710825">အသံထွက်ကီးဘုတ်ဖြင့် ဘူလ်ဂေးရီးယား</translation>
+<translation id="8619608420536266892">Tamil99 ကီးဘုတ်ဖြင့် တမီးလ်</translation>
+<translation id="863846969551842412">ကွမ်တုံ</translation>
+<translation id="8669047053197791123">Pattachote ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="8669949407341943408">ရွှေ့ပေးနေ...</translation>
 <translation id="8688649574682805922">ဂျာမန် (ဆွစ်ဇာလန်)</translation>
 <translation id="8694836330346852143">အူရဒူ</translation>

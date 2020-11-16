@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1625959690469240009">साइट की सेटिंग खोलने के लिए, <ph name="BROWSER_NAME" /> को अपडेट या फिर से इंस्टॉल करें</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> को इन ऐप्लिकेशन की ज़रूरत है:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> को वेब ब्राउज़र की ज़रूरत है</translation>
 <translation id="3858759029325727987">वह ब्राउज़र चुनें जिस पर यह ऐप्लिकेशन काम कर सके:</translation>

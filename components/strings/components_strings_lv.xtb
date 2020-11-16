@@ -1173,7 +1173,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Šī vietne varētu būt viltota vai krāpnieciska. Chrome iesaka pamest vietni tūlīt.</translation>
 <translation id="5610142619324316209">Pārbaudiet savienojumu.</translation>
 <translation id="5610807607761827392">Varat pārvaldīt karšu un adrešu informāciju sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tulkojiet šīs lapas saturu, izmantojot Google tulkotāju.</translation>
@@ -1245,6 +1244,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5905445707201418379">Bloķēts, pamatojoties uz <ph name="ORIGIN" /> izcelsmes politiku.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (veikta sinhronizācija)</translation>
+<translation id="5913377024445952699">Ekrānuzņēmumu izveide ir pārtraukta</translation>
 <translation id="59174027418879706">Iespējots</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Iesl.</translation>
@@ -1917,6 +1917,7 @@ Papildu informācija:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nav atbilstošu paroļu. Rādīt visas saglabātās paroles.</translation>
 <translation id="8625384913736129811">Saglabāt šo karti šajā ierīcē</translation>
+<translation id="8627040765059109009">Ekrānuzņēmumu izveide atsākta</translation>
 <translation id="8657078576661269990">Jūsu administrators bloķēja <ph name="ORIGIN_NAME" /> satura kopīgošanu ar <ph name="VM_NAME_1" /> un <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
 <translation id="867224526087042813">Iespiedloksne</translation>

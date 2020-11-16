@@ -1165,7 +1165,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="560412284261940334">Gerenciamento não suportado</translation>
 <translation id="5605670050355397069">Tabloide</translation>
 <translation id="5607240918979444548">Arch C</translation>
-<translation id="5608165884683734521">Este site pode ser falso ou conter fraude. O Chrome recomenda sair imediatamente.</translation>
 <translation id="5610142619324316209">Verificar a conexão</translation>
 <translation id="5610807607761827392">É possível gerenciar cartões e endereços em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1237,6 +1236,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5913377024445952699">Captura de tela pausada</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ativado</translation>
@@ -1909,6 +1909,7 @@ Mais detalhes:
 <translation id="8622948367223941507">Legal extra</translation>
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
+<translation id="8627040765059109009">Captura de tela retomada</translation>
 <translation id="8657078576661269990">O administrador bloqueou o compartilhamento de <ph name="ORIGIN_NAME" /> com <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="867224526087042813">Assinatura</translation>

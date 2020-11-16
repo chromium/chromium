@@ -317,6 +317,7 @@
 <translation id="214556005048008348">পেমেন্ট বাতিল করুন</translation>
 <translation id="2147827593068025794">পটভূমি সিঙ্ক</translation>
 <translation id="2148613324460538318">কার্ড যোগ করুন</translation>
+<translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
 <translation id="2154054054215849342">আপনার ডোমেনের জন্য সিঙ্ক উপলভ্য নেই</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
@@ -1170,12 +1171,12 @@
 <translation id="5571083550517324815">এই ঠিকানা থেকে পিক-আপ করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="5580958916614886209">আপনার মেয়াদ শেষের মাস পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="5586446728396275693">কোনও ঠিকানা সংরক্ষণ করা নেই</translation>
+<translation id="5593349413089863479">কানেকশন সম্পূর্ণ সুরক্ষিত নয়</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5598944008576757369">পেমেন্টের পদ্ধতি বেছে নিন</translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">এই সাইটটি জাল বা প্রতারণামূলক হতে পারে। Chrome এখনই আপনাকে সাইটটি ছেড়ে বেরিয়ে আসতে সাজেস্ট করছে।</translation>
 <translation id="5610142619324316209">সংযোগ পরীক্ষা করে দেখুন</translation>
 <translation id="5610807607761827392">আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কার্ড এবং ঠিকানাগুলি পরিচালনা করতে পারেন।</translation>
 <translation id="561165882404867731">Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করুন</translation>
@@ -1247,6 +1248,7 @@
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> সার্ভারের 'অরিজিন নীতি' অনুযায়ী ব্লক করা হয়েছে।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (সিঙ্ক হয়েছে)</translation>
+<translation id="5913377024445952699">স্ক্রিন ক্যাপচার পজ করা হয়েছে</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">চালু করা আছে</translation>
@@ -1917,6 +1919,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8625384913736129811">এই ডিভাইসে এই কার্ডটি সেভ করুন</translation>
+<translation id="8627040765059109009">স্ক্রিন ক্যাপচার আবার চালু করা হয়েছে</translation>
 <translation id="8657078576661269990">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME_1" /> ও <ph name="VM_NAME_2" />-এ শেয়ার করা ব্লক করে দিয়েছেন</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
 <translation id="867224526087042813">স্বাক্ষর</translation>

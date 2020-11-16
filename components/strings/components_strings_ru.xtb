@@ -1164,7 +1164,6 @@
 <translation id="560412284261940334">Управление устройствами не поддерживается</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Этот сайт может оказаться поддельным или мошенническим. Советуем покинуть его прямо сейчас.</translation>
 <translation id="5610142619324316209">Проверьте подключение к Интернету.</translation>
 <translation id="5610807607761827392">Сведения о картах и адресах можно изменить в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Перевести эту страницу с помощью Google Переводчика</translation>
@@ -1236,6 +1235,7 @@
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5905445707201418379">Заблокировано в соответствии с политикой в отношении источников <ph name="ORIGIN" /></translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (данные синхронизируются)</translation>
+<translation id="5913377024445952699">Съемка экрана приостановлена</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ВКЛ</translation>
@@ -1907,6 +1907,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Нет подходящих паролей. Показать все сохраненные пароли.</translation>
 <translation id="8625384913736129811">Сохранить карту на этом устройстве</translation>
+<translation id="8627040765059109009">Съемка экрана возобновлена</translation>
 <translation id="8657078576661269990">Возможность делиться контентом с сайта <ph name="ORIGIN_NAME" /> с виртуальными машинами <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /> заблокирована администратором.</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="867224526087042813">Подпись</translation>

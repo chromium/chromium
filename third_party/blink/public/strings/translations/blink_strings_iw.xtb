@@ -110,12 +110,12 @@
 <translation id="4248100235867064564">שורת תפריטים</translation>
 <translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
 <translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4384249794467006333">לתמונה הזו לא נוספה תווית. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה השמאלית העליונה כדי לקבל תיאורי תמונה.</translation>
+<translation id="4384249794467006333">לתמונה הזו אין תוויות. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה השמאלית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4384583879834880242">שאלות ותשובות</translation>
 <translation id="4444765639179266822">נראה שכתובים כאן הדברים הבאים: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">הפניה למילון מונחים</translation>
 <translation id="4522570452068850558">פרטים</translation>
-<translation id="4576178047100686001">לתמונה הזו לא נוספה תווית. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה הימנית העליונה כדי לקבל תיאורי תמונה.</translation>
+<translation id="4576178047100686001">לתמונה הזו אין תוויות. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה הימנית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4597532268155981612">טופס</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -246,7 +246,7 @@
 <translation id="7789962463072032349">השהיה</translation>
 <translation id="7802800022689234070">משולש הצגה/הסתרה</translation>
 <translation id="7852167693871241274">מחוון לבחירת גוון</translation>
-<translation id="7888071071722539607">כלול '<ph name="ATSIGN" />' בכתובת האימייל. ב-'<ph name="INVALIDADDRESS" />' חסר '<ph name="ATSIGN" />'.</translation>
+<translation id="7888071071722539607">אני רוצה לכלול '<ph name="ATSIGN" />' בכתובת האימייל. ב-'<ph name="INVALIDADDRESS" />' חסר '<ph name="ATSIGN" />'.</translation>
 <translation id="7891486169920085145">מפצל</translation>
 <translation id="795667975304826397">לא נבחר קובץ</translation>
 <translation id="7962328325860248200">הפריט <ph name="ACCNAME" /> לא נבחר</translation>
@@ -283,7 +283,7 @@
 <translation id="8711688047404765493">פלט</translation>
 <translation id="8750798805984357768">יש לבחור אחת מהאפשרויות הבאות.</translation>
 <translation id="8808573423886751634">פרק</translation>
-<translation id="8845239796550121995">מעביר תוכן לטלוויזיה</translation>
+<translation id="8845239796550121995">העברת תוכן לטלוויזיה מתבצעת</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8875657656876809964">שגיאה בהפעלת הסרטון</translation>
 <translation id="8889402386540077796">גוון</translation>

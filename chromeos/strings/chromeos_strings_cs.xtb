@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
 <translation id="1734367976349034509">Toto zařízení je spravováno organizací</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Tisk selhal – výstupní zásobník je plný</translation>
 <translation id="4027485274696301677">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="ENROLLMENT_DOMAIN" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
+<translation id="4131410914670010031">Černobíle</translation>
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Spustit</translation>
-<translation id="4991056862642197104">Chcete-li začít, umístěte dokument a klikněte na Skenovat</translation>
 <translation id="5094480857972195099">Tohoto uživatele spravuje doména <ph name="ENROLLMENT_DOMAIN" />, která také může vzdáleně spravovat nastavení a sledovat jeho aktivitu.</translation>
 <translation id="520299634122159966">Nejsou k dispozici žádné skenery</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
@@ -108,6 +109,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6048107060512778456">Tisk selhal – zasekl se papír</translation>
+<translation id="6050189528197190982">Stupně šedé</translation>
 <translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
@@ -149,7 +151,9 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>
 <translation id="8723108084122415655">Jiná než výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8726019395068607495">Zastaveno – jsou otevřená dvířka</translation>
+<translation id="8730621377337864115">Hotovo</translation>
 <translation id="8747900814994928677">Potvrdit změnu</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>

@@ -103,7 +103,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1888656773939766144">O dispositivo (<ph name="DISPLAY_NAME" />) non é compatible cunha resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para conservar este cambio, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Cambiou o atallo que abre o xestor de tarefas. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
-<translation id="1924640696879807758">Desde o teléfono</translation>
 <translation id="1928739107511554905">Se queres recibir a actualización, usa a pantalla táctil para reiniciar o dispositivo Chromebook co teclado conectado.</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222338659135520253">É obrigatorio iniciar sesión</translation>
-<translation id="22546648640907338">Modificouse o xesto do panel táctil para acceder ao modo Visión xeral. Cando queiras abrilo, pasa tres dedos cara arriba.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268813581635650749">Pechar as sesións</translation>
@@ -148,7 +146,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2352467521400612932">Configuración do lapis óptico</translation>
 <translation id="2354174487190027830">Activando <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2361223922412143600">Modificouse o xesto do panel táctil para saír do modo Visión xeral. Cando queiras pechalo, pasa tres dedos cara abaixo.</translation>
 <translation id="2365393535144473978">Ao activar os datos móbiles tamén se activará o Bluetooth.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2390318262976603432">Opcións de configuración local</translation>
@@ -177,7 +174,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2617342710774726426">A tarxeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Protexida</translation>
-<translation id="2640255526076764619">Modificouse o xesto do panel táctil para cambiar ao escritorio anterior: agora debes pasar catro dedos cara á esquerda.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Facer clic e arrastrar</translation>
 <translation id="2700493154570097719">Definir teclado</translation>
@@ -328,6 +324,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4121728057981832179">Unha máquina virtual está usando o micrófono</translation>
+<translation id="4126167871198063089">Saír da función Escoitar selección</translation>
 <translation id="4129129681837227511">Para ver notificacións na pantalla de bloqueo, desbloquea o dispositivo e cambia a opción de configuración correspondente</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> (dispositivo xestionado por <ph name="DOMAIN" />)</translation>
@@ -387,6 +384,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4570957409596482333">Botón Escoitar selección</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4623167406982293031">Verificar conta</translation>
@@ -397,7 +395,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
-<translation id="4710243778082831592">Configuración de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
@@ -435,11 +432,13 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Indicadores de notificacións</translation>
+<translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5019169674188023236">Parece que o teu dispositivo (<ph name="DEVICE_TYPE" />) ten desactivado o Bluetooth ou a wifi. Comproba a conexión para usar Phone Hub.</translation>
 <translation id="5030687792513154421">Rematou o tempo</translation>
 <translation id="5033299697334913360">Fai clic en calquera parte para facer unha captura a pantalla completa</translation>
 <translation id="5035236842988137213">O <ph name="DEVICE_NAME" /> está conectado a un novo teléfono</translation>
 <translation id="5035389544768382859">Confirmar a configuración da pantalla</translation>
+<translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
@@ -479,6 +478,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="554893713779400387">Activar ou desactivar ditado</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
+<translation id="557563299383177668">Seguinte parágrafo</translation>
 <translation id="558849140439112033">Arrastra para seleccionar a zona que queiras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Preme Ctrl + Alt + Z para desactivar os comentarios de voz.</translation>
@@ -528,7 +528,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
-<translation id="6029337736376922061">Modificouse o xesto do panel táctil para cambiar ao escritorio seguinte: agora debes pasar catro dedos cara á dereita.</translation>
 <translation id="6030495522958826102">O menú moveuse á esquina inferior esquerda da pantalla.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>
@@ -672,7 +671,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">O teu administrador bloqueou a opción de realizar capturas do contido da pantalla.</translation>
 <translation id="7548434653388805669">É hora de deitarse</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
@@ -731,6 +729,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
 <translation id="8030169304546394654">Desconectado</translation>
+<translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8054466585765276473">Calculando o tempo da batería.</translation>
@@ -869,6 +868,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="921989828232331238">O teu pai ou nai bloqueou o dispositivo para todo o día</translation>
 <translation id="9220525904950070496">Quitar conta</translation>
 <translation id="923686485342484400">Preme Control, maiúsculas e Q dúas veces para pechar sesión.</translation>
+<translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="98515147261107953">Horizontal</translation>

@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">Питај када се Chromium отвара</translation>
 <translation id="1396446129537741364">Chromium покушава да прикаже лозинке.</translation>
 <translation id="1414495520565016063">Пријављени сте на Chromium!</translation>
+<translation id="1414973082589232775">Да бисте користили апликацију Rosetta за пуштање заштићеног медијског садржаја, морате да рестартујете Chromium.</translation>
 <translation id="151962892725702025">Chromium ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="1524282610922162960">Делите Chromium картицу</translation>
 <translation id="1553461853655228091">Chromium тражи дозволу да приступи камери да би направио 3D мапу окружења</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">За Chromium је потребан Windows 7 или новија верзија.</translation>
 <translation id="5653831366781983928">Рестартујте Chromium</translation>
 <translation id="5698481217667032250">Приказуј Chromium на овом језику</translation>
+<translation id="5736967399513123100">Да бисте омогућили да Chromium пушта заштићени медијски садржај, морате да инсталирате апликацију Rosetta. Да ли желите да је одмах инсталирате?</translation>
 <translation id="5820394555380036790">Chromium ОС</translation>
 <translation id="5862307444128926510">Добро дошли у Chromium</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -177,6 +179,7 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано у Chromium)</translation>
 <translation id="6893813176749746474">Chromium је ажуриран, али га нисте користили најмање 30 дана.</translation>
+<translation id="6897548120660295439">Rosetta омогућава Chromium пушта заштићени медијски садржај на овој страници.</translation>
 <translation id="6964305034639999644">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="6978145336957848883">Слабе лозинке лако могу да се погоде. Дозволите да Chromium <ph name="BEGIN_LINK" />прави и памти јаке лозинке за вас<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium тражи дозволу да приступи микрофону за овај сајт</translation>

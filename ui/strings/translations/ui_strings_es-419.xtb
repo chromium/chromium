@@ -100,6 +100,7 @@
 <translation id="3600969208114796418">Archivo <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668">+ <ph name="MAXIMUM_VALUE" /></translation>
 <translation id="3618849550573277856">Buscar "<ph name="LOOKUP_STRING" />"</translation>
+<translation id="3622035490309591977">Historial del portapapeles</translation>
 <translation id="364720409959344976">Seleccionar carpeta para cargar</translation>
 <translation id="3660179305079774227">Flecha arriba</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -152,7 +153,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Activo hoy}=1{Activo hace 1 día}other{Activo hace # días}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 día y }other{# días y }}</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5843690142429128814">Imagen</translation>
+<translation id="5843690142429128814">Imagen.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{en 1 año}other{en # años}}</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Falta 1 segundo.}other{Faltan # segundos.}}</translation>

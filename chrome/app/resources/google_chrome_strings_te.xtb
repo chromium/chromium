@@ -186,6 +186,7 @@
 <translation id="6368958679917195344">అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపన్ సోర్స్ సాఫ్ట్‌వేర్‌<ph name="END_LINK_CROS_OSS" />పై Chrome OS ఎంతగానో ఆధారపడుతుంది.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">సురక్షితమైన మీడియాను ప్లే చేయడం కోసం Rosettaను ఉపయోగించడానికి, మీరు తప్పనిసరిగా Chromeను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="6676384891291319759">ఇంటర్నెట్‌ను ఆక్సెస్ చెయ్యండి</translation>
 <translation id="6679975945624592337">Google Chromeను నేపథ్యంలో అమలు అయ్యేందుకు అనుమతించండి</translation>
 <translation id="6750954913813541382">స్పెల్లింగ్ తప్పులను సరిదిద్దడానికి, మీరు బ్రౌజర్‌లో టైప్ చేసే పదాలను Googleకు Chrome పంపుతుంది</translation>
@@ -248,6 +249,7 @@
 <translation id="8521348052903287641">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome డెవలపర్ కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome యొక్క కొత్త వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>
+<translation id="861359755029082151">ఈ పేజీలో సురక్షితమైన మీడియాను ప్లే చేయడానికి, Rosetta Chromeను ఎనేబుల్ చేస్తుంది.</translation>
 <translation id="8614913330719544658">Google Chrome స్పందించడం లేదు. ఇప్పుడే పునఃప్రారంభించాలా?</translation>
 <translation id="861702415419836452">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించడానికి Chromeకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 నిమిషంలో Chrome తిరిగి ప్రారంభించబడుతుంది}other{# నిమిషాల్లో Chrome తిరిగి ప్రారంభించబడుతుంది}}</translation>
@@ -261,6 +263,7 @@
 <translation id="8834965163890861871">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Google Chrome ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="884296878221830158">ఇది మీరు Chromeను ప్రారంభించేటప్పుడు లేదా హోమ్ బటన్‌ను క్లిక్ చేసేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="8862326446509486874">సిస్టమ్-స్థాయిలో ఇన్‌స్టాల్‌ చేయ‌డానికి మీకు సరైన హక్కులు లేవు. నిర్వాహకుడి లాగా ఇన్‌స్టాలర్‌ను మ‌ళ్లీ రన్ చేయ‌డానికి ప్రయత్నించండి.</translation>
+<translation id="8907709077090383765">సురక్షితమైన మీడియాను ప్లే చేయడం కోసం Chromeను ఎనేబుల్ చేయడానికి, మీరు Rosettaను ఇన్‌స్టాల్ చేయాలి. మీరు దీన్ని ఇప్పుడు ఇన్‌స్టాల్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chrome అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>

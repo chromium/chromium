@@ -103,7 +103,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) tiniqlikda ishlamaydi. Tasvir <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) tiniqligiga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="1919743966458266018">Vazifalar menejerini ishga tushirish uchun tugmalar birikmasi o‘zgardi. Endi “<ph name="OLD_SHORTCUT" />” o‘rniga “<ph name="NEW_SHORTCUT" />” birikmasidan foydalaning.</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
-<translation id="1924640696879807758">Telefondan</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2208323208084708176">Birlashgan ish stoli rejimi</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2222338659135520253">Hisob bilan kirish zarur</translation>
-<translation id="22546648640907338">Sensorli paneldan Umumiy nazarni ochish ishorasi oʻzgardi. Umumiy nazarni ochish uchun 3 ta barmoq bilan pastga suring.</translation>
 <translation id="225680501294068881">Qurilma qidirilmoqda...</translation>
 <translation id="2268130516524549846">Bluetooth o‘chirildi</translation>
 <translation id="2268813581635650749">Hammasidan chiqish</translation>
@@ -148,7 +146,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2352467521400612932">Stilus sozlamalari</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> faollashtirilmoqda</translation>
 <translation id="2359808026110333948">Davom etish</translation>
-<translation id="2361223922412143600">Sensorli paneldan Umumiy nazarni yopish ishorasi oʻzgardi. Umumiy nazarni yopish uchun 3 ta barmoq bilan pastga suring.</translation>
 <translation id="2365393535144473978">Mobil internet yoqilsa, Bluetooth ham birga yonadi</translation>
 <translation id="2369165858548251131">Xitoy tilida “Salom”</translation>
 <translation id="2390318262976603432">Mahalliy sozlamalar</translation>
@@ -177,7 +174,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
 <translation id="2617342710774726426">SIM karta qulflangan</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
-<translation id="2640255526076764619">Sensorli paneldan avvalgi ish stoliga qaytish ishorasi oʻzgardi. Avvalgi ish stoliga qaytish uchun 4 ta barmoq bilan chapga suring.</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
 <translation id="2700493154570097719">Klaviaturani tanlash</translation>
@@ -396,7 +392,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
 <translation id="4702647871202761252">Maxfiylik ekrani yoniq emas</translation>
 <translation id="4705716602320768426">Fikr-mulohaza yuborish</translation>
-<translation id="4710243778082831592">IME sozlamalari</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4734965478015604180">Gorizontal</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
@@ -527,7 +522,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
 <translation id="6025324406281560198">Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
-<translation id="6029337736376922061">Sensorli paneldan keyingi ish stoliga qaytish ishorasi oʻzgardi. Keyingi ish stoliga qaytish uchun 4 ta barmoq bilan oʻngga suring.</translation>
 <translation id="6030495522958826102">Menyu ekranning quyi chap burchagiga surildi.</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6043212731627905357">Bu monitor <ph name="DEVICE_TYPE" /> qurilmasi bilan ishlamaydi (monitor qo‘llab-quvvatlanmaydi).</translation>
@@ -618,7 +612,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6910714959251846841">Ushbu yangilanish o‘rnatilishi uchun qurilmani zavod sozlamalariga qaytarish zarur. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot.</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
 <translation id="6945221475159498467">Tanlash</translation>
-<translation id="6953890208095195458">Ekrandagi kontent tufayli ekranni yozib olish administrator tomonidan toʻxtatildi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
@@ -672,7 +665,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Ekrandagi kontentdan lavha yozib olish imkoniyati administrator tomonidan taqiqlangan.</translation>
 <translation id="7548434653388805669">Uyqu vaqti keldi</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>

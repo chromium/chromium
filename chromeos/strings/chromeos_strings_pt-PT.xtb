@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
@@ -14,8 +15,10 @@
 <translation id="1482734542997480527">O domínio <ph name="ENROLLMENT_DOMAIN" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1662989795263954667">Parada – Sem tinta</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
 <translation id="1734367976349034509">Este dispositivo é gerido pela empresa</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
@@ -41,6 +44,7 @@
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
@@ -62,11 +66,13 @@
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Ficheiros digitalizados guardados!</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4429881212383817840">A permissão Kerberos expira em breve</translation>
 <translation id="445059817448385655">Palavra-passe antiga</translation>
@@ -87,7 +93,6 @@
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
-<translation id="4991056862642197104">Posicione o documento e clique em Analisar para começar.</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="520299634122159966">Nenhum leitor disponível.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
@@ -108,6 +113,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6048107060512778456">Falha – Encravamento de papel</translation>
+<translation id="6050189528197190982">Tons de cinzento</translation>
 <translation id="6058625436358447366">Para terminar, introduza a palavra-passe antiga e a nova</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
@@ -120,12 +126,14 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
+<translation id="65587193855025101">Plano</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
+<translation id="6839141349259399400">Não consegue ligar aos scanners?</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -135,9 +143,11 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7855434858642800953">Ficheiro digitalizado guardado!</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
+<translation id="8160445423316272678">Coloque o documento no scanner e selecione <ph name="SPAN_BEGIN" />Digitalizar<ph name="SPAN_END" /> para começar.</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
 <translation id="8294431847097064396">Origem</translation>
@@ -149,11 +159,14 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="871560550817059752">Falha – Sem tinta</translation>
 <translation id="8723108084122415655">Rede não predefinida acima do limite de latência.</translation>
 <translation id="8726019395068607495">Parada – Porta aberta</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8747900814994928677">Confirme a alteração</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8910721771319628100">Rede predefinida acima do limite de latência.</translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 </translationbundle>

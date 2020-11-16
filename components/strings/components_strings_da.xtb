@@ -1176,7 +1176,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="560412284261940334">Administration er ikke understøttet</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Dette website er muligvis falsk eller ondsindet. Chrome anbefaler, at du forlader websitet med det samme.</translation>
 <translation id="5610142619324316209">Tjekke din forbindelse</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Oversæt denne side med Google Oversæt</translation>
@@ -1248,6 +1247,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5905445707201418379">Blokeret i overensstemmelse med oprindelsespolitikken for <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniseret)</translation>
+<translation id="5913377024445952699">Screenshots er sat på pause</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Til</translation>
@@ -1920,6 +1920,7 @@ Yderligere oplysninger:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Der er ingen matchende adgangskoder. Se alle gemte adgangskoder.</translation>
 <translation id="8625384913736129811">Gem dette kort på denne enhed</translation>
+<translation id="8627040765059109009">Screenshots er genoptaget</translation>
 <translation id="8657078576661269990">Din administrator har blokeret deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME_1" /> og <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Ordreoversigt, <ph name="TOTAL_LABEL" />, flere oplysninger</translation>
 <translation id="867224526087042813">Underskrift</translation>

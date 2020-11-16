@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">DNS တုံ့ပြန်ချိန်</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1468664791493211953">ကမ်းလှမ်းချက်များ</translation>
@@ -14,8 +15,10 @@
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး သင်၏ လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
 <translation id="1662989795263954667">ရပ်သွားသည် - မင်ကုန်နေသည်</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1734367976349034509">ဤစက်ပစ္စည်းကို အဖွဲ့အစည်းက စီမံခန့်ခွဲထားသည်</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
@@ -41,6 +44,7 @@
 <translation id="3083667275341675831">ချိတ်ဆက်နိုင်မှုဆိုင်ရာ အမှားရှာဖွေမှုများ</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
+<translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
@@ -62,11 +66,13 @@
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
 <translation id="4027485274696301677">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="ENROLLMENT_DOMAIN" /> က စီမံသည်။ စီမံခန့်ခွဲသူများက ဤစက်ကို အဝေးမှ စီစဉ်နိုင်သည်။</translation>
 <translation id="4034824040120875894">ပုံနှိပ်စက်</translation>
+<translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">စကင်ဖတ်ထားသော ဖိုင်များကို သိမ်းပြီးပါပြီ။</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos လက်မှတ်သည် မကြာမီ သက်တမ်းကုန်ပါတော့မည်</translation>
 <translation id="445059817448385655">စကားဝှက်အဟောင်း</translation>
@@ -87,7 +93,6 @@
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
-<translation id="4991056862642197104">သင်၏စာရွက်စာတမ်းကို ထားရှိပြီး စတင်ရန်အတွက် 'စကင်ဖတ်ရန်' ကိုနှိပ်ပါ</translation>
 <translation id="5094480857972195099">ဤအသုံးပြုသူကို <ph name="ENROLLMENT_DOMAIN" /> က စီမံသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="520299634122159966">စကင်ဖတ်စနစ်များ မရနိုင်ပါ</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
@@ -107,6 +112,7 @@
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6048107060512778456">မအောင်မြင်ပါ - စာရွက်ညပ်နေသည်</translation>
+<translation id="6050189528197190982">ဖြူမဲစကေး</translation>
 <translation id="6058625436358447366">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက် အသစ်နှင့် အဟောင်းကို ထည့်ပါ</translation>
 <translation id="6106186594183574873">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက်ဟောင်းကို ထည့်ပါ</translation>
 <translation id="6108689792487843350">ဂိတ်ဝကို မချိတ်ဆက်နိုင်ပါ</translation>
@@ -119,12 +125,14 @@
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>
+<translation id="65587193855025101">ပက်လက်တင်ရန်ဗန်း</translation>
 <translation id="6564646048574748301">မအောင်မြင်ပါ - ပုံနှိပ်စက်ကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="6618744767048954150">လုပ်ဆောင်နေသည်</translation>
 <translation id="6620487321149975369">ပရင့်ထုတ်ရန်ဖိုင်များကို ကိုယ်တိုင်မဖယ်ရှားပါက မှတ်တမ်းတွင် ပြပါမည်</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
+<translation id="6839141349259399400">စကင်ဖတ်စက်များသို့ ချိတ်ဆက်၍မရဘူးလား။</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -134,9 +142,11 @@
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
+<translation id="7855434858642800953">စကင်ဖတ်ထားသော ဖိုင်ကို သိမ်းပြီးပါပြီ။</translation>
 <translation id="7936303884198020182">အမည်ဆာဗာတစ်ခုမျှ ရှာမတွေ့ပါ</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
+<translation id="8160445423316272678">စကင်ဖတ်စက်ပေါ်တွင် သင်၏စာရွက်စာတမ်းကို ထားရှိပြီး စတင်ရန်အတွက် <ph name="SPAN_BEGIN" />စကင်ဖတ်ရန်<ph name="SPAN_END" /> ကို ရွေးပါ</translation>
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8294431847097064396">အရင်းအမြစ်</translation>
@@ -148,11 +158,14 @@
 <translation id="871560550817059752">မအောင်မြင်ပါ - မင်ကုန်နေသည်</translation>
 <translation id="8723108084122415655">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူရင်းမဟုတ်သည့်ကွန်ရက်</translation>
 <translation id="8726019395068607495">ရပ်သွားသည် - တံခါးပွင့်နေသည်</translation>
+<translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8747900814994928677">ပြောင်းလဲမှုကို အတည်ပြုခြင်း</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
 <translation id="8910721771319628100">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူလကွန်ရက်</translation>
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
+<translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 </translationbundle>

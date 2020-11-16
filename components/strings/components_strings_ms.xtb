@@ -1177,7 +1177,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="560412284261940334">Pengurusan tidak disokong</translation>
 <translation id="5605670050355397069">Lejar</translation>
 <translation id="5607240918979444548">Seni Bina-C</translation>
-<translation id="5608165884683734521">Tapak ini mungkin palsu atau penipuan. Chrome mengesyorkan agar anda meninggalkan tapak sekarang.</translation>
 <translation id="5610142619324316209">Menyemak sambungan</translation>
 <translation id="5610807607761827392">Anda boleh mengurus kad dan alamat dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemah</translation>
@@ -1249,6 +1248,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5905445707201418379">Disekat menurut dasar asal <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (disegerakkan)</translation>
+<translation id="5913377024445952699">Tangkapan skrin dijeda</translation>
 <translation id="59174027418879706">Didayakan</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Hidup</translation>
@@ -1921,6 +1921,7 @@ Butiran tambahan:
 <translation id="8622948367223941507">Perundangan-Ekstra</translation>
 <translation id="8623885649813806493">Tiada kata laluan yang sepadan. Tunjukkan semua kata laluan yang disimpan.</translation>
 <translation id="8625384913736129811">Simpan Kad Ini pada Peranti Ini</translation>
+<translation id="8627040765059109009">Tangkapan skrin disambung semula</translation>
 <translation id="8657078576661269990">Pentadbir anda telah menyekat tindakan mengongsikan data daripada <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME_1" /> dan <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
 <translation id="867224526087042813">Tandatangan</translation>

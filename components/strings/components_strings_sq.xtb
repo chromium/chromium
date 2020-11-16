@@ -315,6 +315,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="214556005048008348">Anulo pagesën</translation>
 <translation id="2147827593068025794">Sinkronizimi në sfond</translation>
 <translation id="2148613324460538318">Shto kartë</translation>
+<translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
 <translation id="2154054054215849342">Sinkronizimi nuk ofrohet për domenin tënd</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2161656808144014275">Teksti</translation>
@@ -1164,12 +1165,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5571083550517324815">Nuk mund të merret nga kjo adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="5580958916614886209">Kontrollo muajin e skadimit dhe provo përsëri</translation>
 <translation id="5586446728396275693">Nuk ka adresa të ruajtura</translation>
+<translation id="5593349413089863479">Lidhja nuk është plotësisht e sigurt</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5598944008576757369">Zgjidh mënyrën e pagesës</translation>
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Ky sajt mund të jetë i rremë ose mashtrues. Chrome rekomandon që të largohesh tani.</translation>
 <translation id="5610142619324316209">Të kontrollosh lidhjen</translation>
 <translation id="5610807607761827392">Mund t'i menaxhosh kartat dhe adresat te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
@@ -1241,6 +1242,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5905445707201418379">Bllokuar sipas politikës së origjinës së <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizuar)</translation>
+<translation id="5913377024445952699">Regjistrimi i ekranit u vendos në pauzë</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Aktive</translation>
@@ -1911,6 +1913,7 @@ Detaje shtesë:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nuk ka asnjë fjalëkalim që përputhet. Shfaq të gjitha fjalëkalimet e ruajtura.</translation>
 <translation id="8625384913736129811">Ruaje këtë kartë në këtë pajisje</translation>
+<translation id="8627040765059109009">Regjistrimi i ekranit u riaktivizua</translation>
 <translation id="8657078576661269990">Administratori yt ka bllokuar ndarjen nga <ph name="ORIGIN_NAME" /> në <ph name="VM_NAME_1" /> dhe <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
 <translation id="867224526087042813">Nënshkrimi</translation>

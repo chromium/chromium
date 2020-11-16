@@ -21,7 +21,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
-<translation id="118532027333893379">Appuyez n'importe où pour effectuer une capture en plein écran</translation>
+<translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1195412055398077112">Surbalayage</translation>
 <translation id="119944043368869598">Tout effacer</translation>
@@ -103,7 +103,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Le raccourci permettant d'ouvrir le gestionnaire de tâches a été modifié. Utilisez "<ph name="NEW_SHORTCUT" />" au lieu de "<ph name="OLD_SHORTCUT" />".</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
-<translation id="1924640696879807758">Provenance : téléphone</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -126,11 +125,10 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
-<translation id="2158971754079422508"><ph name="DESC_TEXT" /> Réessayer</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
-<translation id="22546648640907338">Le geste à effectuer sur le pavé tactile pour accéder à l'aperçu a changé. Pour effectuer cette action, vous devez maintenant balayer l'écran vers le haut avec trois doigts.</translation>
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
 <translation id="2268813581635650749">Déconnecter les util.</translation>
@@ -139,7 +137,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
 <translation id="2295777434187870477">Le son du micro est activé et peut être coupé si vous déplacez le curseur vers la gauche.</translation>
 <translation id="2298170939937364391">Le mode Loupe plein écran est activé. Appuyez de nouveau sur Ctrl+Recherche+M pour le désactiver.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" /> : Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Reculer par lettre</translation>
@@ -148,7 +146,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
-<translation id="2361223922412143600">Le geste à effectuer sur le pavé tactile pour quitter l'aperçu a changé. Pour effectuer cette action, vous devez maintenant balayer l'écran vers le bas avec trois doigts.</translation>
 <translation id="2365393535144473978">L'activation des données mobiles active également le Bluetooth.</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
 <translation id="2390318262976603432">Options des paramètres régionaux</translation>
@@ -177,7 +174,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
-<translation id="2640255526076764619">Le geste à effectuer sur le pavé tactile pour passer au bureau précédent a changé : vous devez à présent le balayer vers la gauche avec quatre doigts.</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -327,10 +323,11 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4112140312785995938">Retour rapide</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4121728057981832179">Une machine virtuelle utilise votre micro</translation>
+<translation id="4126167871198063089">Quitter Sélectionner pour prononcer</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> géré par <ph name="DOMAIN" /></translation>
-<translation id="415719264485676252">Capture d'écran bloquée</translation>
+<translation id="415719264485676252">Enregistrement d'écran bloqué</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
@@ -386,6 +383,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4570957409596482333">Bouton "Sélectionner pour prononcer"</translation>
 <translation id="4577274620589681794">Temps écoulé · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4585337515783392668">Arrêter la diffusion vers un destinataire inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé.</translation>
 <translation id="4623167406982293031">Vérifiez le compte</translation>
@@ -396,7 +394,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4705716602320768426">Classer le commentaire</translation>
-<translation id="4710243778082831592">Paramètres IME</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
@@ -434,11 +431,13 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
+<translation id="5003993274120026347">Phrase suivante</translation>
 <translation id="5019169674188023236">Apparemment, le Bluetooth ou le Wi-Fi sont désactivés sur votre <ph name="DEVICE_TYPE" />. Veuillez vérifier votre connexion pour utiliser Phone Hub.</translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour effectuer une capture en plein écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est associé à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
+<translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
@@ -478,6 +477,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="554893713779400387">Activer ou désactiver la dictée</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
+<translation id="557563299383177668">Paragraphe suivant</translation>
 <translation id="558849140439112033">Faire glisser pour sélectionner une zone à capturer</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
@@ -527,7 +527,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
-<translation id="6029337736376922061">Le geste à effectuer sur le pavé tactile pour afficher le bureau suivant a changé : vous devez à présent le balayer vers la droite avec quatre doigts.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
@@ -605,7 +604,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
-<translation id="6816797338148849397">Informations disponibles concernant le texte sélectionné. Pour y accéder, utilisez la flèche vers le haut.</translation>
+<translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
@@ -671,7 +670,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7509246181739783082">Valider votre identité</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Vous ne pouvez pas effectuer d'enregistrement d'écran, car l'administrateur a bloqué cette fonctionnalité.</translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
@@ -730,6 +728,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8029247720646289474">Échec de la connexion au point d'accès</translation>
 <translation id="8029629653277878342">Veuillez saisir le code ou mot de passe pour renforcer la sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
+<translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
@@ -868,6 +867,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>
 <translation id="9220525904950070496">Supprimer le compte</translation>
 <translation id="923686485342484400">Appuyez deux fois sur Contrôle + Maj + Q pour vous déconnecter.</translation>
+<translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="98515147261107953">Paysage</translation>

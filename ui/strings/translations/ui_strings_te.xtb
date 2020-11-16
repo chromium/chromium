@@ -100,6 +100,7 @@
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> ఫైల్</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">“<ph name="LOOKUP_STRING" />”ని వెతకండి</translation>
+<translation id="3622035490309591977">క్లిప్‌బోర్డ్ హిస్టరీ</translation>
 <translation id="364720409959344976">అప్‌లోడ్ చేయడానికి ఫోల్డర్‌ని ఎంచుకోండి</translation>
 <translation id="3660179305079774227">ఎగువ బాణం</translation>
 <translation id="3670030362669914947">నంబర్</translation>
@@ -108,7 +109,7 @@
 <translation id="3842239759367498783">మీ మొబైల్ పరికరం <ph name="TITLE" /> నుండి చదవడం కొనసాగించండి</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3889424535448813030">కుడి బాణం</translation>
-<translation id="3897092660631435901">మెను</translation>
+<translation id="3897092660631435901">మెనూ</translation>
 <translation id="3909791450649380159">క&amp;త్తిరించు</translation>
 <translation id="3990502903496589789">కుడి సరిహద్దు</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 చదవని నోటిఫికేషన్ ఉంది}other{# చదవని నోటిఫికేషన్‌లు ఉన్నాయి}}</translation>

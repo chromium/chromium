@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
-<translation id="1625959690469240009">Da biste otvorili postavke web-lokacije, ažurirajte ili ponovo instalirajte <ph name="BROWSER_NAME" /></translation>
+<translation id="1625959690469240009">Da otvorite postavke web lokacije, ažurirajte ili ponovo instalirajte preglednik <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> zahtijeva sljedeću aplikaciju:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> zahtijeva web-preglednik</translation>
 <translation id="3858759029325727987">Odaberite preglednik koji podržava ovu aplikaciju:</translation>

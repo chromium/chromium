@@ -1176,7 +1176,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Ovaj sajt je možda lažan ili služi za prevaru. Chrome vam preporučuje da ga odmah napustite.</translation>
 <translation id="5610142619324316209">da proverite vezu</translation>
 <translation id="5610807607761827392">Karticama i adresama možete da upravljate u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Prevedite ovu stranicu pomoću Google prevodioca</translation>
@@ -1248,6 +1247,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5905445707201418379">Blokirano je u skladu sa smernicama za poreklo (<ph name="ORIGIN" />).</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizovano)</translation>
+<translation id="5913377024445952699">Snimanje ekrana je pauzirano</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Uključeno</translation>
@@ -1919,6 +1919,7 @@ Dodatni detalji:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nijedna lozinka se ne podudara. Prikaži sve sačuvane lozinke.</translation>
 <translation id="8625384913736129811">Sačuvaj ovu karticu na ovom uređaju</translation>
+<translation id="8627040765059109009">Snimanje ekrana je nastavljeno</translation>
 <translation id="8657078576661269990">Administrator je blokirao deljenje sa <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME_1" /> i <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Rezime porudžbine, <ph name="TOTAL_LABEL" />, još detalja</translation>
 <translation id="867224526087042813">Potpis</translation>

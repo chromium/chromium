@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">यो महिना</translation>
 <translation id="1637811476055996098">फाइलहरू छान्नुहोस्</translation>
 <translation id="1650423536718072820">उद्धरण</translation>
+<translation id="1681022320378710418">हालको समय</translation>
 <translation id="1727886345390570319">उपशीर्षकहरूको मेनु लुकाउनुहोस्</translation>
 <translation id="1729654308190250600">कृपया एउटा खाली नभएको इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1758486001363313524">अन्य ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">कृपया एउटा URL प्रविष्टि गर्नुहोस्।</translation>
 <translation id="3175736971608411871">टाइमर</translation>
 <translation id="3199563858620722075">कम्बो बाकस</translation>
+<translation id="3220661731597678625">हालको चरण</translation>
 <translation id="3329013043687509092">संतृप्तीकरण</translation>
 <translation id="3450233048674729344">मूल्य <ph name="MAXIMUM" /> भन्दा थोरै वा बराबर हुनै पर्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">भिडियो</translation>
 <translation id="479989351350248267">खोज्नुहोस्</translation>
 <translation id="4812940957355064477">कृपया एक नम्बर प्रविष्टि गर्नुहोस्।</translation>
+<translation id="4912200001568447310">हालको वस्तु</translation>
 <translation id="4912536737030637138">ग्रन्थसूचीको प्रविष्टि</translation>
 <translation id="4915360478455618802">समय चयनकर्ता देखाउनुहोस्</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">मिडिया प्ले गर्न सकिएन।</translation>
 <translation id="537648784377940524">न्यूनतम मिति (<ph name="MIN_DATE_OR_TIME" />) अधिकतम मिति (<ph name="MAX_DATE_OR_TIME" />) भन्दा अगाडिको मिति हुनु पर्छ।</translation>
 <translation id="5406322316791861025">आकृति</translation>
+<translation id="5425179576310518467">आजको मिति</translation>
 <translation id="5453733299334684579">ट्री वस्तु</translation>
 <translation id="5466621249238537318">कृपया एक वा बढी फाइलहरू चयन गर्नुहोस्।</translation>
 <translation id="5468998798572797635">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">मिटर</translation>
 <translation id="6166809985690652833">उपसंहार</translation>
 <translation id="6209276755895393898">निम्न व्यक्ति हुनुहुन्छ जस्तो छ: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">हालको पेज</translation>
 <translation id="6213469881011901533">शब्दावली</translation>
 <translation id="6281588256137006900">फिक्कापन</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> वर्ण वा अझ बढीमा लम्ब्याउनुहोस् (तपाईं हाल १ वर्ण प्रयोग गर्दै हुनुहुन्छ )।</translation>
 <translation id="7034405885550056553">सुझाव</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>
+<translation id="7102274145889307184">हालको स्थान</translation>
 <translation id="7118469954320184356">कुनै पनि विवरण उपलब्ध छैन।</translation>
 <translation id="7139483182332611405">भूमिका</translation>
 <translation id="7214187073215825913">सामग्रीसम्बन्धी जानकारी</translation>

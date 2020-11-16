@@ -1165,7 +1165,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="560412284261940334">Gestió no compatible</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Aquest lloc web podria ser fals o fraudulent. Chrome recomana que en surtis ara.</translation>
 <translation id="5610142619324316209">Comproveu la connexió</translation>
 <translation id="5610807607761827392">Pots gestionar les targetes i les adreces a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tradueix aquesta pàgina amb el Traductor de Google</translation>
@@ -1237,6 +1236,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5905445707201418379">S'ha bloquejat d'acord amb la política d'origen de: <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (informació sincronitzada)</translation>
+<translation id="5913377024445952699">Captura de pantalla en pausa</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activat</translation>
@@ -1908,6 +1908,7 @@ Detalls addicionals:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No hi ha cap contrasenya que coincideixi. Mostra totes les contrasenyes desades.</translation>
 <translation id="8625384913736129811">Desa aquesta targeta al dispositiu</translation>
+<translation id="8627040765059109009">Captura de pantalla represa</translation>
 <translation id="8657078576661269990">El teu administrador ha bloquejat la compartició de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME_1" /> i <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resum de la comanda, <ph name="TOTAL_LABEL" />, més detalls</translation>
 <translation id="867224526087042813">Signatura</translation>

@@ -16,6 +16,7 @@
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1662989795263954667">Toʻxtatildi – Siyoh tugadi</translation>
+<translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS vositasi mavjud</translation>
 <translation id="1734367976349034509">Bu korporativ qurilma</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
@@ -62,6 +63,7 @@
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
 <translation id="4027485274696301677">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4131410914670010031">Oq-qora</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
@@ -87,7 +89,6 @@
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
-<translation id="4991056862642197104">Hujjatni joylang va Skanerlash tugmasini bosing</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
@@ -108,6 +109,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6048107060512778456">Bajarilmadi - Qogʻoz tiqilib qoldi</translation>
+<translation id="6050189528197190982">Kulrang tuslari</translation>
 <translation id="6058625436358447366">Yakunlash uchun eski va yangi parollarni kiriting</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
@@ -149,7 +151,9 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
 <translation id="8726019395068607495">Toʻxtatildi – Eshikchasi ochiq</translation>
+<translation id="8730621377337864115">Tayyor</translation>
 <translation id="8747900814994928677">Almashtiruvni tasdiqlang</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>

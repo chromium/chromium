@@ -312,6 +312,7 @@
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2147827593068025794">后台同步</translation>
 <translation id="2148613324460538318">添加支付卡</translation>
+<translation id="2149968176347646218">连接不安全</translation>
 <translation id="2154054054215849342">您的网域不支持同步</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -1154,12 +1155,12 @@
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
 <translation id="5580958916614886209">请检查您的信用卡到期月份，然后重试</translation>
 <translation id="5586446728396275693">没有已保存的地址</translation>
+<translation id="5593349413089863479">连接不够安全</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5598944008576757369">选择付款方式</translation>
 <translation id="560412284261940334">不支持管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">此网站可能是虚假或欺诈性网站。Chrome 建议您立即离开。</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
 <translation id="5610807607761827392">您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理信用卡和地址信息。</translation>
 <translation id="561165882404867731">使用“Google 翻译”服务来翻译此页面</translation>

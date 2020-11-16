@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解像度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1919743966458266018">開啟工作管理員的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 取代 <ph name="OLD_SHORTCUT" /> 。</translation>
 <translation id="1923539912171292317">自動按一下</translation>
-<translation id="1924640696879807758">來自手機</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -130,7 +129,6 @@
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
-<translation id="22546648640907338">進入「概覽」的觸控板手勢已變更，用三隻手指向上滑動即可進入「概覽」。</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
@@ -148,7 +146,6 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2361223922412143600">結束「概覽」的觸控板手勢已變更，用三隻手指向下滑動即可結束「概覽」。</translation>
 <translation id="2365393535144473978">如果您啟用流動數據，藍牙亦會隨之開啟。</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
@@ -177,7 +174,6 @@
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2621713457727696555">已受保護</translation>
-<translation id="2640255526076764619">切換至上一個桌面的觸控板手勢已變更，請用四隻手指向左滑動以切換至上一個桌面。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按一下並拖曳</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
@@ -327,6 +323,7 @@
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="4121728057981832179">有虛擬機器正在使用麥克風</translation>
+<translation id="4126167871198063089">結束隨選朗讀</translation>
 <translation id="4129129681837227511">如要在上鎖畫面上查看通知，請將裝置解鎖並變更相關設定</translation>
 <translation id="4146833061457621061">播音樂</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> 由 <ph name="DOMAIN" /> 管理</translation>
@@ -386,6 +383,7 @@
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4570957409596482333">「選取以朗讀」按鈕</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -396,7 +394,6 @@
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4705716602320768426">提供意見</translation>
-<translation id="4710243778082831592">輸入法編輯器設定</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
@@ -434,11 +431,13 @@
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />小時 <ph name="MINUTES" />分 <ph name="SECONDS" />秒</translation>
 <translation id="4975771730019223894">應用程式徽章</translation>
+<translation id="5003993274120026347">下一句</translation>
 <translation id="5019169674188023236"><ph name="DEVICE_TYPE" /> 上的藍牙或 Wi-Fi 似乎已關閉。請檢查連線，以便使用 Phone Hub。</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
 <translation id="5033299697334913360">點擊任何一處即可擷取全螢幕畫面</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連接至新手機</translation>
 <translation id="5035389544768382859">確認螢幕設定</translation>
+<translation id="504465286040788597">上一段</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -478,6 +477,7 @@
 <translation id="554893713779400387">切換語音輸入</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
+<translation id="557563299383177668">下一段</translation>
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
@@ -527,7 +527,6 @@
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
-<translation id="6029337736376922061">切換至下一個桌面的觸控板手勢已變更，請用四隻手指向右滑動以切換至下一個桌面。</translation>
 <translation id="6030495522958826102">已經將選單移去螢幕左下角。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6043212731627905357">此顯示器與您的 <ph name="DEVICE_TYPE" /> 無法配對 (並不支援該顯示器)。</translation>
@@ -605,7 +604,7 @@
 <translation id="6777216307882431711">正在為已連接的 USB-C 裝置充電</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
-<translation id="6816797338148849397">揀項目嘅相關資料。用向上箭咀掣就可以存取。</translation>
+<translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
@@ -671,7 +670,6 @@
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7526573455193969409">網絡可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">管理員已停用擷取螢幕畫面內容的功能。</translation>
 <translation id="7548434653388805669">睡覺時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7561982940498449837">關閉選單</translation>
@@ -730,6 +728,7 @@
 <translation id="8029247720646289474">熱點連線失敗</translation>
 <translation id="8029629653277878342">為安全起見，請輸入 PIN 或密碼</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
+<translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">開啟無障礙功能設定選單</translation>
 <translation id="8048123526339889627">藍牙設定</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
@@ -823,7 +822,7 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
-<translation id="8883473964424809116">㩒一下就可以開「Google 助理」設定。</translation>
+<translation id="8883473964424809116">㩒一下就可以打開「Google 助理」設定。</translation>
 <translation id="8894122120026866664">找不到手機</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>
@@ -868,6 +867,7 @@
 <translation id="921989828232331238">您的家長今天已鎖定此裝置</translation>
 <translation id="9220525904950070496">移除帳戶</translation>
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
+<translation id="925832987464884575">隱藏預覽</translation>
 <translation id="938963181863597773">我日曆有咩活動？</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="98515147261107953">橫向</translation>
