@@ -786,19 +786,7 @@ bool SupportsOrientation(const ax::mojom::Role role) {
   }
 }
 
-bool IsSelectRequiredOrImplicit(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kTab:
-    case ax::mojom::Role::kTreeItem:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool IsSelectSupported(const ax::mojom::Role role) {
+bool SupportsSelected(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kCell:
     case ax::mojom::Role::kColumnHeader:

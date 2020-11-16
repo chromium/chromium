@@ -4,11 +4,11 @@ rootWebArea
 ++++++genericContainer name='Atomic undefined'
 ++++++textField name='Autocomplete undefined'
 ++++++genericContainer name='Busy undefined'
-++++++treeItem name='Checked undefined' selected=false selectedFromFocus=false
+++++++treeItem name='Checked undefined'
 ++++++genericContainer name='Current undefined'
 ++++++genericContainer name='Disabled undefined'
 ++++++genericContainer name='Dropeffect undefined' dropeffect=none
-++++++treeItem name='Expanded undefined' selected=false selectedFromFocus=false
+++++++treeItem name='Expanded undefined'
 ++++++genericContainer name='Grabbed undefined'
 ++++++button name='Haspopup undefined'
 ++++++genericContainer name='Invalid undefined'
@@ -22,7 +22,7 @@ rootWebArea
 ++++++genericContainer name='Relevant undefined'
 ++++++textField name='Required undefined'
 ++++++tree multiselectable vertical
-++++++++treeItem name='Selected undefined' selected=false selectedFromFocus=false
+++++++++treeItem name='Selected undefined'
 ++++++grid
 ++++++++columnHeader name='Sort undefined'
 ++++++genericContainer name='Hidden undefined, display block'

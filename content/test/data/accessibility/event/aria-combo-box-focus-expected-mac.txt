@@ -1,9 +1,3 @@
-AXFocusedUIElementChanged on AXStaticText AXValue="Apple"
-AXSelectedChildrenChanged on AXList
-AXSelectedTextChanged on AXStaticText AXValue="Apple"
-AXSelectedTextChanged on AXWebArea
-=== Start Continuation ===
-AXFocusedUIElementChanged on AXButton
-AXSelectedChildrenChanged on AXList
-AXSelectedTextChanged on AXButton
+AXFocusedUIElementChanged on AXStaticText AXValue="Apple not selected"
+AXSelectedTextChanged on AXStaticText AXValue="Apple not selected"
 AXSelectedTextChanged on AXWebArea
