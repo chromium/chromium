@@ -1220,11 +1220,9 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas() {
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {
-  if (canvas_image_provider_) {
-    DCHECK(skia_canvas_);
+  if (skia_canvas_)
     skia_canvas_->reset_image_provider();
-    canvas_image_provider_.reset();
-  }
+  canvas_image_provider_.reset();
 }
 
 void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
