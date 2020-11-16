@@ -235,6 +235,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   std::string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const;
 
+  std::vector<int> CalculateSentenceBoundary(
+      AutomationAXTreeWrapper* tree_wrapper,
+      ui::AXNode* node,
+      bool start_boundary);
+
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   std::map<ui::AXTree*, AutomationAXTreeWrapper*> axtree_to_tree_wrapper_map_;

@@ -527,6 +527,20 @@ var GetWordEndOffsets = natives.GetWordEndOffsets;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {!Array<number>}
+ */
+var GetSentenceStartOffsets = natives.GetSentenceStartOffsets;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {!Array<number>}
+ */
+var GetSentenceEndOffsets = natives.GetSentenceEndOffsets;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  */
 var SetAccessibilityFocus = natives.SetAccessibilityFocus;
 
@@ -859,6 +873,14 @@ AutomationNodeImpl.prototype = {
     return GetWordEndOffsets(this.treeID, this.id);
   },
 
+  get sentenceStarts() {
+    return GetSentenceStartOffsets(this.treeID, this.id);
+  },
+
+  get sentenceEnds() {
+    return GetSentenceEndOffsets(this.treeID, this.id);
+  },
+
   get markers() {
     return GetMarkers(this.treeID, this.id);
   },
@@ -1084,8 +1106,7 @@ AutomationNodeImpl.prototype = {
              attributes: this.attributes };
   },
 
-  dispatchEvent: function(
-      eventType, eventFrom, mouseX, mouseY, intents) {
+  dispatchEvent: function(eventType, eventFrom, mouseX, mouseY, intents) {
     var path = [];
     var parent = this.parent;
     while (parent) {
@@ -1911,6 +1932,8 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'sortDirection',
         'standardActions',
         'state',
+        'sentenceStarts',
+        'sentenceEnds',
         'tableCellAriaColumnIndex',
         'tableCellAriaRowIndex',
         'tableCellColumnHeaders',

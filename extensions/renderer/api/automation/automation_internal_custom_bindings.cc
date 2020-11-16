@@ -44,6 +44,7 @@
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -947,6 +948,24 @@ void AutomationInternalCustomBindings::AddRoutes() {
         std::vector<int> word_ends = ui::GetWordEndOffsets(
             node->GetString16Attribute(ax::mojom::StringAttribute::kName));
         result.Set(gin::ConvertToV8(isolate, word_ends));
+      });
+  RouteNodeIDFunction(
+      "GetSentenceStartOffsets",
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        const std::vector<int>& sentence_starts =
+            AutomationInternalCustomBindings::CalculateSentenceBoundary(
+                tree_wrapper, node, true /* start_boundary */);
+        result.Set(gin::ConvertToV8(isolate, sentence_starts));
+      });
+  RouteNodeIDFunction(
+      "GetSentenceEndOffsets",
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        const std::vector<int>& sentence_ends =
+            AutomationInternalCustomBindings::CalculateSentenceBoundary(
+                tree_wrapper, node, false /* start_boundary */);
+        result.Set(gin::ConvertToV8(isolate, sentence_ends));
       });
   RouteNodeIDFunction("GetMarkers", [](v8::Isolate* isolate,
                                        v8::ReturnValue<v8::Value> result,
@@ -2651,4 +2670,73 @@ AutomationInternalCustomBindings::GetLocalizedStringForImageAnnotationStatus(
   return l10n_util::GetStringUTF8(message_id);
 }
 
+std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
+    AutomationAXTreeWrapper* tree_wrapper,
+    ui::AXNode* node,
+    bool start_boundary) {
+  // Create an empty vector for storing final results and deal with the node
+  // without a name.
+  std::vector<int> sentence_boundary;
+  base::string16 node_name =
+      node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+  if (node_name.empty()) {
+    return sentence_boundary;
+  }
+
+  // We will calculate the boundary of a combined string, which consists
+  // of|pre_str|, |post_str|. When the node is inside a paragraph, the |pre_str|
+  // is the string from the beginning of the paragraph to the head of current
+  // node. The |post_str| is the string from the head of current node to the end
+  // of the paragraph.
+  base::string16 pre_str;
+  base::string16 post_str;
+  ui::AXNodePosition::AXPositionInstance head_pos =
+      ui::AXNodePosition::CreatePosition(*node,
+                                         0 /* child_index_or_text_offset */,
+                                         ax::mojom::TextAffinity::kDownstream)
+          ->CreatePositionAtStartOfAnchor();
+
+  // If the head of current node is not at the start of paragraph, we need to
+  // change the empty |pre_str| with the string from the beginning of the
+  // paragraph to the head of current node.
+  if (!head_pos->AtStartOfParagraph()) {
+    ui::AXNodePosition::AXPositionInstance start_para_pos =
+        head_pos->CreatePreviousParagraphStartPosition(
+            ui::AXBoundaryBehavior::CrossBoundary);
+    ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> pre_range(
+        start_para_pos->Clone(), head_pos->Clone());
+    pre_str = pre_range.GetText();
+  }
+
+  // Change the empty |post_str| with the string from the head of the current
+  // node to the end of the paragraph.
+  ui::AXNodePosition::AXPositionInstance end_para_pos =
+      head_pos->CreateNextParagraphEndPosition(
+          ui::AXBoundaryBehavior::CrossBoundary);
+  ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> post_range(
+      head_pos->Clone(), end_para_pos->Clone());
+  post_str = post_range.GetText();
+
+  // Calculate the boundary of the |combined_str|.
+  base::string16 combined_str = pre_str + post_str;
+  auto boundary_func = start_boundary ? &ui::GetSentenceStartOffsets
+                                      : &ui::GetSentenceEndOffsets;
+  std::vector<int> combined_sentence_boundary = boundary_func(combined_str);
+
+  // To get the final result, we need to get rid of indexes that do not belong
+  // to the current node. First, we subtract the length of |pre_str| from the
+  // |combined_sentence_boundary| vector. Then, we only save the non-negative
+  // elements that equal or smaller than |max_index| into |sentence_boundary|.
+  // Note that an end boundary index can be outside of the current node, thus
+  // the |max_index| is set to the length of |node_name|.
+  int pre_str_length = pre_str.length();
+  int max_index = start_boundary ? node_name.length() - 1 : node_name.length();
+  for (int& index : combined_sentence_boundary) {
+    index -= pre_str_length;
+    if (index >= 0 && index <= max_index) {
+      sentence_boundary.push_back(index);
+    }
+  }
+  return sentence_boundary;
+}
 }  // namespace extensions

@@ -1257,6 +1257,20 @@ chrome.automation.AutomationNode.prototype.wordStarts;
 chrome.automation.AutomationNode.prototype.wordEnds;
 
 /**
+ * The start index of each sentence within the node's name.
+ * @type {(!Array<number>|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-sentenceStarts
+ */
+chrome.automation.AutomationNode.prototype.sentenceStarts;
+
+/**
+ * The end index of each sentence within the node's name.
+ * @type {(!Array<number>|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-sentenceEnds
+ */
+chrome.automation.AutomationNode.prototype.sentenceEnds;
+
+/**
  * The start index of each word within the node's name. This is different from wordStarts because it is not restricted to inline text boxes and can be used for any type of element.
  * @type {(!Array<number>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-nonInlineTextWordStarts

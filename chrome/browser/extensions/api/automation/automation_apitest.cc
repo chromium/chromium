@@ -405,6 +405,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, WordBoundaries) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, SentenceBoundaries) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(
+      RunExtensionSubtest("automation/tests/tabs", "sentence_boundaries.html"))
+      << message_;
+}
+
 class AutomationApiTestWithLanguageDetection : public AutomationApiTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -211,4 +211,31 @@ std::vector<int> GetWordEndOffsets(const base::string16& text) {
   return word_ends;
 }
 
+std::vector<int> GetSentenceStartOffsets(const base::string16& text) {
+  std::vector<int> sentence_starts;
+  base::i18n::BreakIterator iter(text,
+                                 base::i18n::BreakIterator::BREAK_SENTENCE);
+  if (!iter.Init())
+    return sentence_starts;
+  // iter.Advance() returns false if we've run past end of the text.
+  while (iter.Advance()) {
+    sentence_starts.push_back(
+        base::checked_cast<int>(iter.prev()) /* start index */);
+  }
+  return sentence_starts;
+}
+
+std::vector<int> GetSentenceEndOffsets(const base::string16& text) {
+  std::vector<int> sentence_ends;
+  base::i18n::BreakIterator iter(text,
+                                 base::i18n::BreakIterator::BREAK_SENTENCE);
+  if (!iter.Init())
+    return sentence_ends;
+  // iter.Advance() returns false if we've run past end of the text.
+  while (iter.Advance()) {
+    sentence_ends.push_back(
+        base::checked_cast<int>(iter.pos()) /* end index */);
+  }
+  return sentence_ends;
+}
 }  // namespace ui

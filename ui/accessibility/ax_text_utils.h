@@ -41,6 +41,10 @@ AX_EXPORT std::vector<int> GetWordStartOffsets(const base::string16& text);
 // Returns indices of all word ends in |text|.
 AX_EXPORT std::vector<int> GetWordEndOffsets(const base::string16& text);
 
+// Returns indices of all sentence starts in |text|.
+AX_EXPORT std::vector<int> GetSentenceStartOffsets(const base::string16& text);
+// Returns indices of all sentence ends in |text|.
+AX_EXPORT std::vector<int> GetSentenceEndOffsets(const base::string16& text);
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_TEXT_UTILS_H_

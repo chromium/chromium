@@ -290,4 +290,25 @@ TEST(AXTextUtils, GetWordStartOffsetsMalformedInputTest) {
               testing::ElementsAre(2, 9, 16, 27, 35, 43));
 }
 
+TEST(AXTextUtils, GetSentenceStartOffsetsBasicTest) {
+  const base::string16 text = base::UTF8ToUTF16(
+      "This is the first sentence. This is the second sentence");
+  EXPECT_THAT(GetSentenceStartOffsets(text), testing::ElementsAre(0, 28));
+}
+
+TEST(AXTextUtils, GetSentenceEndOffsetsBasicTest) {
+  const base::string16 text = base::UTF8ToUTF16(
+      "This is the first sentence. This is the second sentence");
+  EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(28, 55));
+}
+
+TEST(AXTextUtils, GetSentenceStartOffsetsMalformedInputTest) {
+  const base::string16 text = base::UTF8ToUTF16("is the first ... second.");
+  EXPECT_THAT(GetSentenceStartOffsets(text), testing::ElementsAre(0));
+}
+
+TEST(AXTextUtils, GetSentenceEndOffsetsMalformedInputTest) {
+  const base::string16 text = base::UTF8ToUTF16("is the first ... second.");
+  EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(24));
+}
 }  // namespace ui
