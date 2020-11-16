@@ -20,17 +20,8 @@ chrome.runtime.onMessageExternal.addListener(function(
     if (!url) {
       return '';
     }
-    // Use the DOM to parse the URL. Since we don't add the anchor to
-    // the page, this is the only reference to it and it will be
-    // deleted once it's gone out of scope.
-    const a = document.createElement('a');
-    a.href = url;
-    let origin = a.protocol + '//' + a.hostname;
-    if (a.port != '') {
-      origin = origin + ':' + a.port;
-    }
-    origin = origin + '/';
-    return origin;
+    const origin = new URL(url).origin;
+    return `${origin}/`;
   }
 
   try {
