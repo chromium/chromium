@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Worker is terminated during top-level script evaluation
-FAIL Worker is terminated during top-level script evaluation (module) assert_unreached: onerror Reached unreachable code
-PASS Worker is terminated during importScripts() call
-PASS Worker is terminated during nested importScripts() call
-PASS Worker is terminated during dynamic import()
-PASS Worker is terminated during dynamic import() (module)
-Harness: the test ran to completion.
-

@@ -727,11 +727,20 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     // Do not perform a microtask checkpoint here. A checkpoint is performed
     // only after module error handling to ensure proper timing with and
     // without top-level await.
+
+    v8::MaybeLocal<v8::Value> maybe_result =
+        record->Evaluate(script_state->GetContext());
+
+    if (!try_catch.CanContinue())
+      return ScriptEvaluationResult::FromModuleAborted();
+
     v8::Local<v8::Value> v8_result;
-    if (!record->Evaluate(script_state->GetContext()).ToLocal(&v8_result)) {
+    if (!maybe_result.ToLocal(&v8_result)) {
+      DCHECK(try_catch.HasCaught());
       result =
           ScriptEvaluationResult::FromModuleException(try_catch.Exception());
     } else {
+      DCHECK(!try_catch.HasCaught());
       result = ScriptEvaluationResult::FromModuleSuccess(v8_result);
     }
 
