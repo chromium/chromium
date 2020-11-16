@@ -3141,6 +3141,24 @@
             ]
         }
     ],
+    "HTTP2": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DisablePush2"
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSurveysForDesktopSettings": [
         {
             "platforms": [
