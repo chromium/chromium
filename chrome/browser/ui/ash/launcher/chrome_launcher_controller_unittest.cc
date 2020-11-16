@@ -417,6 +417,11 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
         base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
         extension_misc::kYoutubeAppId, &error);
 
+    // Fake File Manager app.
+    extension_files_app_ = Extension::Create(
+        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
+        extension_misc::kFilesManagerAppId, &error);
+
     MaybeStartWebAppProvider();
   }
 
@@ -788,6 +793,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
             result += "Doc";
           } else if (app == extension_youtube_app_->id()) {
             result += "Youtube";
+          } else if (app == extension_files_app_->id()) {
+            result += "Files";
           } else if (app == extension_platform_app_->id()) {
             result += "Platform_App";
           } else if (app == arc_support_host_->id()) {
@@ -962,6 +969,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   scoped_refptr<Extension> extension_gmail_app_;
   scoped_refptr<Extension> extension_doc_app_;
   scoped_refptr<Extension> extension_youtube_app_;
+  scoped_refptr<Extension> extension_files_app_;
   scoped_refptr<Extension> extension_platform_app_;
   scoped_refptr<Extension> arc_support_host_;
 
@@ -1064,6 +1072,7 @@ class ChromeLauncherControllerExtendedShelfTest
     extension_service_->AddExtension(extension_gmail_app_.get());
     extension_service_->AddExtension(extension_doc_app_.get());
     extension_service_->AddExtension(extension_youtube_app_.get());
+    extension_service_->AddExtension(extension_files_app_.get());
     extension_service_->AddExtension(arc_support_host_.get());
 
     std::string error;
@@ -1081,7 +1090,6 @@ class ChromeLauncherControllerExtendedShelfTest
         {extension_misc::kCalendarAppId, "Calendar"},
         {extension_misc::kGoogleSheetsAppId, "Sheets"},
         {extension_misc::kGoogleSlidesAppId, "Slides"},
-        {extension_misc::kFilesManagerAppId, "Files"},
         {extension_misc::kCameraAppId, "Camera"},
         {extension_misc::kGooglePhotosAppId, "Photos"},
     };
@@ -1343,6 +1351,8 @@ TEST_F(ChromeLauncherControllerTest, DefaultApps) {
   EXPECT_EQ("Chrome, Doc, Youtube, App1", GetPinnedAppStatus());
   AddExtension(extension_gmail_app_.get());
   EXPECT_EQ("Chrome, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
+  AddExtension(extension_files_app_.get());
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
@@ -1383,28 +1393,29 @@ TEST_F(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
   EXPECT_EQ("Chrome, Lacros", GetPinnedAppStatus());
 }
 
-TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShefDefault) {
+TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShelfDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kEnableExtendedShelfLayout,
       {std::pair<std::string, std::string>("app_count", "0")});
 
   InitLauncherController();
-  EXPECT_EQ("Chrome, Gmail, Doc, Youtube, Play Store", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, Play Store",
+            GetPinnedAppStatus());
 }
 
-TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShef7Apps) {
+TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShelf7Apps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kEnableExtendedShelfLayout,
       {std::pair<std::string, std::string>("app_count", "7")});
 
   InitLauncherController();
-  EXPECT_EQ("Chrome, Gmail, Doc, Photos, Files, Youtube, Play Store",
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Photos, Youtube, Play Store",
             GetPinnedAppStatus());
 }
 
-TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShef10Apps) {
+TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShelf10Apps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kEnableExtendedShelfLayout,
@@ -1412,14 +1423,15 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, ExtendedShef10Apps) {
 
   InitLauncherController();
   EXPECT_EQ(
-      "Chrome, Gmail, Calendar, Doc, Sheets, Slides, Files, Camera, Photos, "
+      "Chrome, Files, Gmail, Calendar, Doc, Sheets, Slides, Camera, Photos, "
       "Play Store",
       GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerExtendedShelfTest, UpgradeFromDefault) {
   InitLauncherController();
-  EXPECT_EQ("Chrome, Gmail, Doc, Youtube, Play Store", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, Play Store",
+            GetPinnedAppStatus());
 
   // Upgrade happens only in case default layout is active.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1431,15 +1443,15 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, UpgradeFromDefault) {
   AddExtension(extension1_.get());
 
   EXPECT_EQ(
-      "Chrome, Gmail, Calendar, Doc, Sheets, Slides, Files, Camera, Photos, "
+      "Chrome, Files, Gmail, Calendar, Doc, Sheets, Slides, Camera, Photos, "
       "Play Store",
       GetPinnedAppStatus());
 }
 
-TEST_F(ChromeLauncherControllerExtendedShelfTest, NoDefaultAfterExperemental) {
+TEST_F(ChromeLauncherControllerExtendedShelfTest, NoDefaultAfterExperimental) {
   const std::string expectations =
-      "Chrome, Gmail, Calendar, Doc, Sheets, "
-      "Slides, Files, Camera, Photos, Play Store";
+      "Chrome, Files, Gmail, Calendar, Doc, Sheets, "
+      "Slides, Camera, Photos, Play Store";
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -1466,7 +1478,7 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, NoDefaultAfterExperemental) {
 TEST_F(ChromeLauncherControllerExtendedShelfTest, NoUpgradeFromNonDefault) {
   InitLauncherController();
   launcher_controller_->UnpinAppWithID(extension_misc::kYoutubeAppId);
-  EXPECT_EQ("Chrome, Gmail, Doc, Play Store", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Play Store", GetPinnedAppStatus());
 
   // Upgrade does not happen due to default pin layout change.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1477,7 +1489,7 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, NoUpgradeFromNonDefault) {
   // Trigger layout update, app_id does not matter.
   AddExtension(extension1_.get());
 
-  EXPECT_EQ("Chrome, Gmail, Doc, Play Store", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Files, Gmail, Doc, Play Store", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
