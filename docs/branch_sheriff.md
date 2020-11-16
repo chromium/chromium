@@ -69,16 +69,23 @@ tests.
 
 ### Flaky tests
 
-You should largely ignore flaky tests for the time being unless you have
-specific reason to believe that a flake was introduced by a cherry-pick to the
-branch in question. If a test is flaky on both trunk *and* a release branch,
-the trunk sheriffs should investigate it.
+Flaky tests that are disabled on trunk should also be disabled on any branches
+with frequent failures of that test. If a trunk CL lands with no change other
+than to disable one or more tests ([example](https://crrev.com/c/2507299)) and
+it has an associated bug and the release manager is cc'd on the bug, you can and
+should cherrypick it to the affected branch without requesting merge approval.
+
+On the other hand, if you believe that a flake was introduced by a cherry-pick
+to the branch in question and is not flaky on trunk, you will need to create a
+new CL to disable it only on the branch and go through the usual merge request
+process.
 
 ### Landing changes
 
 When you need to land a change to a branch, you'll need to go through the same
-merge approval process as other cherry-picks. You should feel free to ping the
-relevant release TPM as listed on [chromiumdash][chromiumdash-schedule].
+merge approval process as other cherry-picks (see exception for flaky tests
+above). You should feel free to ping the relevant release TPM as listed on
+[chromiumdash][chromiumdash-schedule].
 
 ## Tools
 
