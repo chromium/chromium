@@ -89,7 +89,6 @@ sdk_info_args += [ mac_sdk_name ]
 _mac_sdk_result = exec_script(script_name, sdk_info_args, "scope")
 xcode_version = _mac_sdk_result.xcode_version
 xcode_build = _mac_sdk_result.xcode_build
-machine_os_build = _mac_sdk_result.machine_os_build
 if (mac_sdk_path == "" && use_system_xcode && ios_use_goma_rbe) {
   mac_sdk_path = _mac_sdk_result.sdk_path
 }

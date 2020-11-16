@@ -127,7 +127,10 @@ if (ios_sdk_path == "") {
     assert(false, "unsupported environment: $target_environment")
   }
 
-  ios_sdk_info_args = [ "--get_sdk_info" ]
+  ios_sdk_info_args = [
+    "--get_sdk_info",
+    "--get_machine_info",
+  ]
   ios_sdk_info_args += [ ios_sdk_name ]
   if (ios_sdk_developer_dir != "") {
     ios_sdk_info_args += [

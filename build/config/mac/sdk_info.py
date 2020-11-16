@@ -128,8 +128,15 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument("--developer_dir", dest="developer_dir", required=False)
   parser.add_argument("--get_sdk_info",
-                    action="store_true", dest="get_sdk_info", default=False,
-                    help="Returns SDK info in addition to xcode/machine info.")
+                      action="store_true",
+                      dest="get_sdk_info",
+                      default=False,
+                      help="Returns SDK info in addition to xcode info.")
+  parser.add_argument("--get_machine_info",
+                      action="store_true",
+                      dest="get_machine_info",
+                      default=False,
+                      help="Returns machine info in addition to xcode info.")
   parser.add_argument(
       "--create_symlink_at",
       action="store",
@@ -148,7 +155,8 @@ if __name__ == '__main__':
     sys.exit(1)
 
   settings = {}
-  FillMachineOSBuild(settings)
+  if args.get_machine_info:
+    FillMachineOSBuild(settings)
   FillXcodeVersion(settings, args.developer_dir)
   if args.get_sdk_info:
     FillSDKPathAndVersion(settings, unknownargs[0], settings['xcode_version'])
