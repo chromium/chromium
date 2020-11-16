@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -88,10 +89,11 @@ class ChipViewMenuItemViewBinder implements CustomViewBinder {
         holder.title.setEnabled(mainMenuItem.isEnabled());
         final MenuItem finalMainMenuItem = mainMenuItem;
         holder.title.setOnClickListener(v -> appMenuClickHandler.onItemClick(finalMainMenuItem));
-        if (mainMenuItem.isChecked()) {
-            holder.title.setDrawableTintColor(AppCompatResources.getColorStateList(
-                    convertView.getContext(), R.color.blue_mode_tint));
-        }
+        @ColorRes
+        int theme = mainMenuItem.isChecked() ? R.color.blue_mode_tint
+                                             : R.color.default_icon_color_secondary_tint_list;
+        holder.title.setDrawableTintColor(
+                AppCompatResources.getColorStateList(convertView.getContext(), theme));
 
         if (chipViewMenuItem != null) {
             holder.chipView.setVisibility(View.VISIBLE);
