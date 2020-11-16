@@ -209,7 +209,6 @@ ash::ImeInfo ImeControllerClient::GetAshImeInfo(
   ash::ImeInfo info;
   info.id = ime.id();
   info.name = util->GetInputMethodLongName(ime);
-  info.medium_name = util->GetInputMethodMediumName(ime);
   info.short_name = util->GetInputMethodShortName(ime);
   info.third_party = chromeos::extension_ime_util::IsExtensionIME(ime.id());
   return info;

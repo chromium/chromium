@@ -27,9 +27,6 @@ struct ASH_PUBLIC_EXPORT ImeInfo {
   // Long name of the IME, which is used as the user-visible name.
   base::string16 name;
 
-  // Medium name of the IME, which is the same as the short name in most cases.
-  base::string16 medium_name;
-
   // UI indicator for the IME (e.g., "US"). If the IME has no indicator, uses
   // the first two characters in its preferred keyboard layout or language code
   // (e.g., "ko", "ja", "en-US").
