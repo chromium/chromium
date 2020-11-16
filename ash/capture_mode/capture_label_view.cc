@@ -187,15 +187,14 @@ void CaptureLabelView::UpdateIconAndText() {
   base::string16 text;
   switch (source) {
     case CaptureModeSource::kFullscreen:
-      icon = is_capturing_image
-                 ? gfx::ImageSkia()
-                 : gfx::CreateVectorIcon(kCaptureModeVideoIcon, icon_color);
       text = l10n_util::GetStringUTF16(
           is_capturing_image
               ? (in_tablet_mode
                      ? IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_IMAGE_CAPTURE_TABLET
                      : IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_IMAGE_CAPTURE_CLAMSHELL)
-              : IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD);
+              : (in_tablet_mode
+                     ? IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_VIDEO_RECORD_TABLET
+                     : IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_VIDEO_RECORD_CLAMSHELL));
       break;
     case CaptureModeSource::kWindow: {
       if (in_tablet_mode) {
