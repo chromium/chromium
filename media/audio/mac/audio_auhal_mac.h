@@ -28,6 +28,7 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
@@ -136,6 +137,9 @@ class AUHALStream : public AudioOutputStream {
 
   const AudioParameters params_;
 
+  // We may get some callbacks after AudioUnitStop() has been called.
+  base::Lock lock_;
+
   // Size of audio buffer requested at construction. The actual buffer size
   // is given by |actual_io_buffer_frame_size_| and it can differ from the
   // requested size.
@@ -144,10 +148,10 @@ class AUHALStream : public AudioOutputStream {
   // Stores the number of frames that we actually get callbacks for.
   // This may be different from what we ask for, so we use this for stats in
   // order to understand how often this happens and what are the typical values.
-  size_t number_of_frames_requested_;
+  size_t number_of_frames_requested_ GUARDED_BY(lock_);
 
   // Pointer to the object that will provide the audio samples.
-  AudioSourceCallback* source_;
+  AudioSourceCallback* source_ GUARDED_BY(lock_);
 
   // Holds the stream format details such as bitrate.
   AudioStreamBasicDescription output_format_;
@@ -173,7 +177,7 @@ class AUHALStream : public AudioOutputStream {
 
   // Dynamically allocated FIFO used when CoreAudio asks for unexpected frame
   // sizes.
-  std::unique_ptr<AudioPullFifo> audio_fifo_;
+  std::unique_ptr<AudioPullFifo> audio_fifo_ GUARDED_BY(lock_);
 
   // Current playout time.  Set by Render().
   base::TimeTicks current_playout_time_;
@@ -191,11 +195,11 @@ class AUHALStream : public AudioOutputStream {
   // These variables are only touched on the callback thread and then read
   // in the dtor (when no longer receiving callbacks).
   // NOTE: Float64 and UInt32 types are used for native API compatibility.
-  Float64 last_sample_time_;
-  UInt32 last_number_of_frames_;
-  UInt32 total_lost_frames_;
-  UInt32 largest_glitch_frames_;
-  int glitches_detected_;
+  Float64 last_sample_time_ GUARDED_BY(lock_);
+  UInt32 last_number_of_frames_ GUARDED_BY(lock_);
+  UInt32 total_lost_frames_ GUARDED_BY(lock_);
+  UInt32 largest_glitch_frames_ GUARDED_BY(lock_);
+  int glitches_detected_ GUARDED_BY(lock_);
 
   // Used to defer Start() to workaround http://crbug.com/160920.
   base::CancelableOnceClosure deferred_start_cb_;
