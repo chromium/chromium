@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -1438,19 +1439,36 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
+     * @param methods The payment methods supported by the payment request.
+     * @return True when at least one url payment method identifier is specified in payment
+     *         request.
+     */
+    private static boolean isUrlPaymentMethodIdentifiersSupported(Set<String> methods) {
+        for (String methodName : methods) {
+            if (methodName.startsWith(UrlConstants.HTTPS_URL_PREFIX)
+                    || methodName.startsWith(UrlConstants.HTTP_URL_PREFIX)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Calculate whether the browser payment sheet should be skipped directly into the payment app.
      * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     * @param urlPaymentMethodIdentifiersSupported True when at least one url payment method
-     *         identifier is specified in payment request.
      * @param skipUiForNonUrlPaymentMethodIdentifiers True when skip UI is available for non-url
      *         based payment method identifiers (e.g., basic-card).
      * @param options The payment options specified in the payment request.
+     * @param paymentMethods The payment methods supported by this request.
      */
     public void calculateWhetherShouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
-            boolean urlPaymentMethodIdentifiersSupported,
-            boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options) {
+            boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options,
+            Set<String> paymentMethods) {
         assert mPaymentMethodsSection != null;
         PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+
+        boolean urlPaymentMethodIdentifiersSupported =
+                isUrlPaymentMethodIdentifiersSupported(paymentMethods);
 
         // If there is only a single payment app which can provide all merchant requested
         // information, we can safely go directly to the payment app instead of showing Payment

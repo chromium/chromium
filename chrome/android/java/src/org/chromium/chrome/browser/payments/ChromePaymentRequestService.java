@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
@@ -90,11 +89,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     private PaymentHandlerHost mPaymentHandlerHost;
 
     /**
-     * True when at least one url payment method identifier is specified in payment request.
-     */
-    private boolean mURLPaymentMethodIdentifiersSupported;
-
-    /**
      * There are a few situations were the Payment Request can appear, from a code perspective, to
      * be shown more than once. This boolean is used to make sure it is only logged once.
      */
@@ -164,12 +158,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // specified networks are unsupported. mPaymentUiService.merchantSupportsAutofillCards()
         // better captures this group of interest than requestedMethodBasicCard.
         boolean requestedMethodOther = false;
-        mURLPaymentMethodIdentifiersSupported = false;
         for (String methodName : mSpec.getMethodData().keySet()) {
             switch (methodName) {
                 case MethodStrings.ANDROID_PAY:
                 case MethodStrings.GOOGLE_PAY:
-                    mURLPaymentMethodIdentifiersSupported = true;
                     requestedMethodGoogle = true;
                     break;
                 case MethodStrings.BASIC_CARD:
@@ -180,10 +172,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                     // "Other" includes https url, http url(when certificate check is bypassed) and
                     // the unlisted methods defined in {@link MethodStrings}.
                     requestedMethodOther = true;
-                    if (methodName.startsWith(UrlConstants.HTTPS_URL_PREFIX)
-                            || methodName.startsWith(UrlConstants.HTTP_URL_PREFIX)) {
-                        mURLPaymentMethodIdentifiersSupported = true;
-                    }
             }
         }
         mJourneyLogger.setRequestedPaymentMethodTypes(
@@ -286,8 +274,8 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
         mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(
-                mPaymentRequestService.isUserGestureShow(), mURLPaymentMethodIdentifiersSupported,
-                mDelegate.skipUiForBasicCard(), paymentOptions);
+                mPaymentRequestService.isUserGestureShow(), mDelegate.skipUiForBasicCard(),
+                mSpec.getPaymentOptions(), mSpec.getMethodData().keySet());
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (quitShowIfActivityNotFound(chromeActivity)
                 || !buildUI(chromeActivity, isShowWaitingForUpdatedDetails)) {
