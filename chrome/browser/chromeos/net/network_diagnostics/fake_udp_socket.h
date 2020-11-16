@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_
 
+#include "base/time/time.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -92,6 +94,23 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
     mojo_disconnect_on_receive_ = disconnect;
   }
 
+  void set_task_environment_for_testing(
+      content::BrowserTaskEnvironment* task_environment) {
+    task_environment_ = task_environment;
+  }
+
+  void set_udp_connection_delay(base::TimeDelta connection_delay) {
+    connection_delay_ = connection_delay;
+  }
+
+  void set_udp_send_delay(base::TimeDelta send_delay) {
+    send_delay_ = send_delay;
+  }
+
+  void set_udp_receive_delay(base::TimeDelta receive_delay) {
+    receive_delay_ = receive_delay;
+  }
+
  private:
   mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
   mojo::Remote<network::mojom::UDPSocketListener> remote_;
@@ -102,6 +121,10 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
   bool mojo_disconnect_on_connect_ = false;
   bool mojo_disconnect_on_send_ = false;
   bool mojo_disconnect_on_receive_ = false;
+  content::BrowserTaskEnvironment* task_environment_;
+  base::TimeDelta connection_delay_;
+  base::TimeDelta send_delay_;
+  base::TimeDelta receive_delay_;
 };
 
 }  // namespace network_diagnostics

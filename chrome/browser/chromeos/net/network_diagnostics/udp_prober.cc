@@ -25,11 +25,13 @@ UdpProber::UdpProber(NetworkContextGetter network_context_getter,
                      net::HostPortPair host_port_pair,
                      base::span<const uint8_t> data,
                      net::NetworkTrafficAnnotationTag tag,
+                     base::TimeDelta timeout_after_host_resolution,
                      UdpProbeCompleteCallback callback)
     : network_context_getter_(std::move(network_context_getter)),
       host_port_pair_(host_port_pair),
       data_(std::move(data)),
       tag_(tag),
+      timeout_after_host_resolution_(timeout_after_host_resolution),
       callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!data_.empty());
@@ -67,6 +69,7 @@ void UdpProber::OnHostResolutionComplete(
   auto pending_receiver = udp_socket_remote_.BindNewPipeAndPassReceiver();
   udp_socket_remote_.set_disconnect_handler(
       base::BindOnce(&UdpProber::OnDisconnect, weak_factory_.GetWeakPtr()));
+  DCHECK(udp_socket_remote_.is_bound());
 
   auto pending_remote =
       udp_socket_listener_receiver_.BindNewPipeAndPassRemote();
@@ -75,6 +78,9 @@ void UdpProber::OnHostResolutionComplete(
 
   network_context->CreateUDPSocket(std::move(pending_receiver),
                                    std::move(pending_remote));
+  timer_.Start(FROM_HERE, timeout_after_host_resolution_,
+               base::BindOnce(&UdpProber::OnDone, weak_factory_.GetWeakPtr(),
+                              net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout));
   udp_socket_remote_->Connect(
       resolution_result.resolved_addresses.value().front(), nullptr,
       base::BindOnce(&UdpProber::OnConnectComplete,
@@ -85,7 +91,6 @@ void UdpProber::OnConnectComplete(
     int result,
     const base::Optional<net::IPEndPoint>& local_addr_out) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (result != net::OK) {
     OnDone(result, ProbeExitEnum::kConnectFailure);
     return;

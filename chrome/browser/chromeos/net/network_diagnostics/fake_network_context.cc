@@ -132,5 +132,23 @@ void FakeNetworkContext::SetDisconnectDuringUdpReceiveAttempt(bool disconnect) {
   fake_udp_socket_->set_disconnect_during_udp_receive_attempt(disconnect);
 }
 
+void FakeNetworkContext::SetTaskEnvironmentForTesting(
+    content::BrowserTaskEnvironment* task_environment) {
+  fake_udp_socket_->set_task_environment_for_testing(task_environment);
+}
+
+void FakeNetworkContext::SetUdpConnectionDelay(
+    base::TimeDelta connection_delay) {
+  fake_udp_socket_->set_udp_connection_delay(connection_delay);
+}
+
+void FakeNetworkContext::SetUdpSendDelay(base::TimeDelta send_delay) {
+  fake_udp_socket_->set_udp_send_delay(send_delay);
+}
+
+void FakeNetworkContext::SetUdpReceiveDelay(base::TimeDelta receive_delay) {
+  fake_udp_socket_->set_udp_receive_delay(receive_delay);
+}
+
 }  // namespace network_diagnostics
 }  // namespace chromeos

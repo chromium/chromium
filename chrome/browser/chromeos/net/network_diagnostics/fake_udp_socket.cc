@@ -21,6 +21,9 @@ FakeUdpSocket::~FakeUdpSocket() = default;
 void FakeUdpSocket::Connect(const net::IPEndPoint& remote_addr,
                             network::mojom::UDPSocketOptionsPtr options,
                             ConnectCallback callback) {
+  DCHECK(task_environment_);
+
+  task_environment_->FastForwardBy(connection_delay_);
   if (mojo_disconnect_on_connect_) {
     receiver_.reset();
     return;
@@ -61,7 +64,9 @@ void FakeUdpSocket::LeaveGroup(const net::IPAddress& group_address,
 
 void FakeUdpSocket::ReceiveMore(uint32_t num_additional_datagrams) {
   DCHECK(remote_.is_bound());
+  DCHECK(task_environment_);
 
+  task_environment_->FastForwardBy(receive_delay_);
   if (mojo_disconnect_on_receive_) {
     remote_.reset();
     return;
@@ -88,6 +93,9 @@ void FakeUdpSocket::Send(
     base::span<const uint8_t> data,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     SendCallback callback) {
+  DCHECK(task_environment_);
+
+  task_environment_->FastForwardBy(send_delay_);
   if (mojo_disconnect_on_send_) {
     receiver_.reset();
     return;

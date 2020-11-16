@@ -11,6 +11,8 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/host_resolver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,6 +42,7 @@ class UdpProber : public network::mojom::UDPSocketListener {
     kNetworkErrorOnReceiveFailure,
     kMojoDisconnectFailure,
     kNoDataReceivedFailure,
+    kTimeout,
     kSuccess,
   };
 
@@ -52,16 +55,22 @@ class UdpProber : public network::mojom::UDPSocketListener {
       base::OnceCallback<void(int result, ProbeExitEnum probe_exit_enum)>;
 
   // Establishes a UDP connection and sends |data| to |host_port_pair|. The
-  // traffic sent by the prober is described by |tag|. Note that the constructor
-  // will not invoke |callback|, which is passed into UdpProber during
-  // construction. This ensures the UdpProber instance is constructed before
-  // |callback| is invoked. The UdpProber must be created on the UI thread and
-  // will invoke |callback| on the UI thread. |network_context_getter| will be
-  // invoked on the UI thread.
+  // traffic sent by the prober is described by |tag|. Since there is no
+  // guarantee the host specified by |host_port_pair| will respond to a UDP
+  // request, the prober will timeout with a failure after
+  // |timeout_after_host_resolution|. As such, the prober will run no longer
+  // than the time it takes to perform host resolution +
+  // |timeout_after_host_resolution|. Note that the constructor will not invoke
+  // |callback|, which is passed into UdpProber during construction. This
+  // ensures the UdpProber instance is constructed before |callback| is invoked.
+  // The UdpProber must be created on the UI thread and will invoke |callback|
+  // on the UI thread.  |network_context_getter| will be invoked on the UI
+  // thread.
   UdpProber(NetworkContextGetter network_context_getter,
             net::HostPortPair host_port_pair,
             base::span<const uint8_t> data,
             net::NetworkTrafficAnnotationTag tag,
+            base::TimeDelta timeout_after_host_resolution,
             UdpProbeCompleteCallback callback);
   UdpProber(const UdpProber&) = delete;
   UdpProber& operator=(const UdpProber&) = delete;
@@ -102,6 +111,10 @@ class UdpProber : public network::mojom::UDPSocketListener {
   base::span<const uint8_t> data_;
   // Network annotation tag describing the socket traffic.
   net::NetworkTrafficAnnotationTag tag_;
+  // Represents the time after host resolution.
+  base::TimeDelta timeout_after_host_resolution_;
+  // Times the prober.
+  base::OneShotTimer timer_;
   // Host resolver used for DNS lookup.
   std::unique_ptr<HostResolver> host_resolver_;
   // Stores the callback invoked once probe is complete or interrupted.

@@ -72,6 +72,19 @@ class FakeNetworkContext : public network::TestNetworkContext {
   // confirmation, but before receiving any data.
   void SetDisconnectDuringUdpReceiveAttempt(bool disconnect);
 
+  // Sets the task environment used in testing. Used to fast forward the clock.
+  void SetTaskEnvironmentForTesting(
+      content::BrowserTaskEnvironment* task_environment);
+
+  // Sets the UDP connection delay.
+  void SetUdpConnectionDelay(base::TimeDelta connection_delay);
+
+  // Sets the UDP send delay.
+  void SetUdpSendDelay(base::TimeDelta send_delay);
+
+  // Sets the UDP receive delay.
+  void SetUdpReceiveDelay(base::TimeDelta receive_delay);
+
   // Sets the fake DNS result. Used to test a single host resolution.
   void set_fake_dns_result(
       std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result) {
