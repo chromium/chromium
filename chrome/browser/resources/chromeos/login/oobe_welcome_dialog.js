@@ -234,8 +234,12 @@
      *  Starts active video.
      */
     play() {
-      if (this.getActiveVideo_())
+      let activeVideo = this.getActiveVideo_();
+      if (activeVideo) {
+        // The active video could be paused, even if it hasn't changed
+        activeVideo.play();
         return;
+      }
 
       let key = this.calcKey_(this.device, this.orientation, this.type);
       let video = this.videos.get(key);
@@ -243,6 +247,15 @@
       if (video) {
         video.removeAttribute('hidden');
         video.play();
+      }
+    }
+    /**
+     *  Pauses active video.
+     */
+    pause() {
+      let video = this.getActiveVideo_();
+      if (video) {
+        video.pause();
       }
     }
   }
@@ -289,6 +302,15 @@
       isInPortraitMode: {
         type: Boolean,
         observer: 'updateVideoMode_',
+      },
+
+      /**
+       * Observer for when this screen is hidden, or shown.
+       */
+      hidden: {
+        type: Boolean,
+        observer: 'updateHidden_',
+        reflectToAttribute: true,
       }
     },
 
@@ -388,6 +410,24 @@
     show() {
       this.focus();
       this.welcomeVideoController_.play();
+    },
+
+    /*
+     * Observer method for changes to the hidden property
+     */
+    updateHidden_(newValue, oldValue) {
+      /*
+       * hidden becomes True
+       */
+      if (newValue && newValue != oldValue) {
+        // Pause the welcome video to avoid using resources while
+        // this page is not visible
+        this.welcomeVideoController_.pause();
+      }
+      /* We are not calling show() when hidden becomes false
+       * as the pattern used in these classes is different, and show() is called
+       * by the parent anyway.
+       */
     },
 
     /**

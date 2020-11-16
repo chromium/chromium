@@ -112,10 +112,18 @@ Polymer({
     cr.ui.login.invokePolymerMethod(this.$.welcomeScreen, 'onBeforeShow');
 
     let activeScreen = this.getActiveScreen_();
+    activeScreen.hidden = false;
     if (activeScreen.show)
       activeScreen.show();
 
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
+  },
+
+  /**
+   * Event handler that is invoked just before the screen is hidden.
+   */
+  onBeforeHide() {
+    this.hideAllScreens_();
   },
 
   /**
