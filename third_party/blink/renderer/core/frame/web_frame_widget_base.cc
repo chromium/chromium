@@ -1911,6 +1911,13 @@ float WebFrameWidgetBase::GetEmulatorScale() {
   return 1.0f;
 }
 
+void WebFrameWidgetBase::IntrinsicSizingInfoChanged(
+    mojom::blink::IntrinsicSizingInfoPtr sizing_info) {
+  DCHECK(ForSubframe());
+  GetAssociatedFrameWidgetHost()->IntrinsicSizingInfoChanged(
+      std::move(sizing_info));
+}
+
 void WebFrameWidgetBase::AutoscrollStart(const gfx::PointF& position) {
   GetAssociatedFrameWidgetHost()->AutoscrollStart(std::move(position));
 }

@@ -109,8 +109,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // Opposite of |ForSubframe|. If this widget is for the local main frame.
   bool ForMainFrame() const { return !ForSubframe(); }
 
-  virtual void IntrinsicSizingInfoChanged(
-      mojom::blink::IntrinsicSizingInfoPtr) {}
+  // Called when the intrinsic size of the owning container is changing its
+  // size. This should only be called when `ForSubframe` is true.
+  void IntrinsicSizingInfoChanged(mojom::blink::IntrinsicSizingInfoPtr);
 
   void AutoscrollStart(const gfx::PointF& position);
   void AutoscrollFling(const gfx::Vector2dF& position);

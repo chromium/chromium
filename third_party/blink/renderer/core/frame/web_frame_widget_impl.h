@@ -108,8 +108,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   // WebFrameWidgetBase overrides:
   bool ForSubframe() const override { return true; }
   bool ForTopLevelFrame() const override { return false; }
-  void IntrinsicSizingInfoChanged(
-      mojom::blink::IntrinsicSizingInfoPtr) override;
   void DidCreateLocalRootView() override;
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   void SetAutoResizeMode(bool auto_resize,

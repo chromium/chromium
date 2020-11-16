@@ -344,12 +344,6 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   return true;
 }
 
-void WebFrameWidgetImpl::IntrinsicSizingInfoChanged(
-    mojom::blink::IntrinsicSizingInfoPtr sizing_info) {
-  GetAssociatedFrameWidgetHost()->IntrinsicSizingInfoChanged(
-      std::move(sizing_info));
-}
-
 void WebFrameWidgetImpl::MouseCaptureLost() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("input", "capturing mouse",
                                   TRACE_ID_LOCAL(this));
