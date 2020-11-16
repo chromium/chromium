@@ -220,7 +220,6 @@ template("info_plist") {
     }
 
     substitutions = [
-      "BUILD_MACHINE_OS_BUILD=$machine_os_build",
       "EXECUTABLE_NAME=$executable_name",
       "GCC_VERSION=com.apple.compilers.llvm.clang.1_0",
       "PRODUCT_NAME=$executable_name",
@@ -233,7 +232,10 @@ template("info_plist") {
         "CHROMIUM_MIN_SYSTEM_VERSION=$mac_min_system_version",
       ]
     } else if (is_ios) {
-      substitutions += [ "IOS_DEPLOYMENT_TARGET=$ios_deployment_target" ]
+      substitutions += [
+        "BUILD_MACHINE_OS_BUILD=$machine_os_build",
+        "IOS_DEPLOYMENT_TARGET=$ios_deployment_target",
+      ]
     }
     if (defined(invoker.extra_substitutions)) {
       substitutions += invoker.extra_substitutions
