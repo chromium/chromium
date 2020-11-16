@@ -536,10 +536,13 @@ bool EventTarget::AddEventListenerInternal(
     if (options->signal()) {
       options->signal()->AddAlgorithm(WTF::Bind(
           [](EventTarget* event_target, const AtomicString& event_type,
-             const EventListener* listener) {
-            event_target->removeEventListener(event_type, listener);
+             const EventListener* listener,
+             AddEventListenerOptionsResolved* options) {
+            event_target->removeEventListener(event_type, listener, options);
           },
-          WrapWeakPersistent(this), event_type, WrapWeakPersistent(listener)));
+          WrapWeakPersistent(this), event_type, WrapWeakPersistent(listener),
+          WrapPersistent(
+              MakeGarbageCollected<AddEventListenerOptionsResolved>(options))));
       if (const LocalDOMWindow* executing_window = ExecutingWindow()) {
         if (const Document* document = executing_window->document()) {
           document->CountUse(WebFeature::kAddEventListenerWithAbortSignal);

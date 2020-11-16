@@ -21,4 +21,16 @@ test(t => {
   controller.abort();
   target.dispatchEvent(new Event('testevent'));
 }, 'Tests support for EventController to cancel event listeners in addEventListener.');
+
+test(t => {
+  const target = new EventTarget();
+  const controller = new AbortController();
+
+  target.addEventListener('testevent', t.step_func(() => {
+    assert_unreached('testevent should have been canceled by AbortController');
+  }), {signal: controller.signal, capture: true});
+
+  controller.abort();
+  target.dispatchEvent(new Event('testevent'));
+}, 'Tests support for EventController to cancel capture event listeners in addEventListener.');
 </script>
