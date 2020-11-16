@@ -20,12 +20,10 @@ const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage32bit",
                                       FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if ALLOW_ENABLING_PCSCAN
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
 const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
                                     FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 }  // namespace features
 }  // namespace base
