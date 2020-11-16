@@ -106,7 +106,7 @@ class InMemoryURLIndex : public KeyedService,
                    history::HistoryService* history_service,
                    TemplateURLService* template_url_service,
                    const base::FilePath& history_dir,
-                   const SchemeSet& client_schemes_to_whitelist);
+                   const SchemeSet& client_schemes_to_allowlist);
   ~InMemoryURLIndex() override;
   InMemoryURLIndex(const InMemoryURLIndex&) = delete;
   InMemoryURLIndex& operator=(const InMemoryURLIndex&) = delete;
@@ -159,7 +159,8 @@ class InMemoryURLIndex : public KeyedService,
   class RebuildPrivateDataFromHistoryDBTask : public history::HistoryDBTask {
    public:
     explicit RebuildPrivateDataFromHistoryDBTask(
-        InMemoryURLIndex* index, const SchemeSet& scheme_whitelist);
+        InMemoryURLIndex* index,
+        const SchemeSet& scheme_allowlist);
     RebuildPrivateDataFromHistoryDBTask(
         const RebuildPrivateDataFromHistoryDBTask&) = delete;
     RebuildPrivateDataFromHistoryDBTask& operator=(
@@ -173,7 +174,7 @@ class InMemoryURLIndex : public KeyedService,
     ~RebuildPrivateDataFromHistoryDBTask() override;
 
     InMemoryURLIndex* index_;  // Call back to this index at completion.
-    SchemeSet scheme_whitelist_;  // Schemes to be indexed.
+    SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_;  // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.
   };
@@ -272,8 +273,8 @@ class InMemoryURLIndex : public KeyedService,
     return &private_data_tracker_;
   }
 
-  // Returns the set of whitelisted schemes. For unit testing only.
-  const SchemeSet& scheme_whitelist() { return scheme_whitelist_; }
+  // Returns the set of allowlisted schemes. For unit testing only.
+  const SchemeSet& scheme_allowlist() { return scheme_allowlist_; }
 
   // The BookmarkModel; may be null when testing.
   bookmarks::BookmarkModel* bookmark_model_;
@@ -290,8 +291,8 @@ class InMemoryURLIndex : public KeyedService,
   // be empty.
   base::FilePath history_dir_;
 
-  // Only URLs with a whitelisted scheme are indexed.
-  SchemeSet scheme_whitelist_;
+  // Only URLs with a allowlisted scheme are indexed.
+  SchemeSet scheme_allowlist_;
 
   // The index's durable private data.
   scoped_refptr<URLIndexPrivateData> private_data_;

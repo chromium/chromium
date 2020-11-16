@@ -273,7 +273,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
 bool URLIndexPrivateData::UpdateURL(
     history::HistoryService* history_service,
     const history::URLRow& row,
-    const std::set<std::string>& scheme_whitelist,
+    const std::set<std::string>& scheme_allowlist,
     base::CancelableTaskTracker* tracker) {
   // The row may or may not already be in our index. If it is not already
   // indexed and it qualifies then it gets indexed. If it is already
@@ -288,7 +288,7 @@ bool URLIndexPrivateData::UpdateURL(
     new_row.set_id(row_id);
     row_was_updated =
         RowQualifiesAsSignificant(new_row, base::Time()) &&
-        IndexRow(nullptr, history_service, new_row, scheme_whitelist, tracker);
+        IndexRow(nullptr, history_service, new_row, scheme_allowlist, tracker);
   } else if (RowQualifiesAsSignificant(row, base::Time())) {
     // This indexed row still qualifies and will be re-indexed.
     // The url won't have changed but the title, visit count, etc.
@@ -427,7 +427,7 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RestoreFromFile(
 // static
 scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
     history::HistoryDatabase* history_db,
-    const std::set<std::string>& scheme_whitelist) {
+    const std::set<std::string>& scheme_allowlist) {
   if (!history_db)
     return nullptr;
 
@@ -452,7 +452,7 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
   for (history::URLRow row; history_enum.GetNextURL(&row);) {
     DCHECK(RowQualifiesAsSignificant(row, base::Time()));
     // Do not use >= to account for case of -1 for unlimited urls.
-    if (rebuilt_data->IndexRow(history_db, nullptr, row, scheme_whitelist,
+    if (rebuilt_data->IndexRow(history_db, nullptr, row, scheme_allowlist,
                                nullptr) &&
         num_urls_indexed++ == max_urls_indexed) {
       break;
@@ -822,12 +822,12 @@ bool URLIndexPrivateData::IndexRow(
     history::HistoryDatabase* history_db,
     history::HistoryService* history_service,
     const history::URLRow& row,
-    const std::set<std::string>& scheme_whitelist,
+    const std::set<std::string>& scheme_allowlist,
     base::CancelableTaskTracker* tracker) {
   const GURL& gurl(row.url());
 
-  // Index only URLs with a whitelisted scheme.
-  if (!URLSchemeIsWhitelisted(gurl, scheme_whitelist))
+  // Index only URLs with a allowlisted scheme.
+  if (!URLSchemeIsAllowlisted(gurl, scheme_allowlist))
     return false;
 
   const history::URLID row_id = row.id();
@@ -1297,10 +1297,10 @@ bool URLIndexPrivateData::RestoreWordStartsMap(
 }
 
 // static
-bool URLIndexPrivateData::URLSchemeIsWhitelisted(
+bool URLIndexPrivateData::URLSchemeIsAllowlisted(
     const GURL& gurl,
-    const std::set<std::string>& whitelist) {
-  return whitelist.find(gurl.scheme()) != whitelist.end();
+    const std::set<std::string>& allowlist) {
+  return allowlist.find(gurl.scheme()) != allowlist.end();
 }
 
 bool URLIndexPrivateData::ShouldFilter(
