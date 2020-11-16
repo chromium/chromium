@@ -45,7 +45,6 @@
 #import "ios/web/web_state/page_viewport_state.h"
 #import "ios/web/web_state/ui/cookie_blocking_error_logger.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
-#import "ios/web/web_state/ui/crw_context_menu_delegate.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 #import "ios/web/web_state/ui/crw_web_request_controller.h"
@@ -93,7 +92,6 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 }  // namespace
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
-                                CRWContextMenuDelegate,
                                 CRWJSInjectorDelegate,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
@@ -1532,12 +1530,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           requireGestureRecognizerToFail:swipeRecognizer];
     }
 
-    web::BrowserState* browserState = self.webStateImpl->GetBrowserState();
     self.UIHandler.contextMenuController =
         [[CRWContextMenuController alloc] initWithWebView:self.webView
-                                             browserState:browserState
-                                                 delegate:self];
-    self.UIHandler.contextMenuController.webState = self.webStateImpl;
+                                                 webState:self.webStateImpl];
 
     // WKWebViews with invalid or empty frames have exhibited rendering bugs, so
     // resize the view to match the container view upon creation.
@@ -1663,24 +1658,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       self.webStateImpl->GetNavigationManager()->GetVisibleItem();
   if (navigationItem == visibleItem)
     self.webStateImpl->DidChangeVisibleSecurityState();
-}
-
-#pragma mark - CRWContextMenuDelegate methods
-
-- (void)webView:(WKWebView*)webView
-    handleContextMenu:(const web::ContextMenuParams&)params {
-  DCHECK(webView == self.webView);
-  if (_isBeingDestroyed) {
-    return;
-  }
-  self.webStateImpl->HandleContextMenu(params);
-}
-
-- (void)webView:(WKWebView*)webView
-    executeJavaScript:(NSString*)javaScript
-    completionHandler:(void (^)(id, NSError*))completionHandler {
-  [_jsInjector executeJavaScript:javaScript
-               completionHandler:completionHandler];
 }
 
 #pragma mark - CRWJSInjectorDelegate methods

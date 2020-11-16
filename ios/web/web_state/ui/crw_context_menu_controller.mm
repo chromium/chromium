@@ -13,7 +13,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #include "ios/web/public/web_client.h"
@@ -21,10 +24,9 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web/web_state/context_menu_constants.h"
 #import "ios/web/web_state/context_menu_params_utils.h"
-#import "ios/web/web_state/ui/crw_context_menu_delegate.h"
 #import "ios/web/web_state/ui/html_element_fetch_request.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#include "ui/base/device_form_factor.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,6 +53,9 @@ void CancelTouches(UIGestureRecognizer* gesture_recognizer) {
     gesture_recognizer.enabled = YES;
   }
 }
+
+// Javascript function name to obtain element details at a point.
+const char kFindElementAtPointFunctionName[] = "findElementAtPoint";
 
 // JavaScript message handler name installed in WKWebView for found element
 // response.
@@ -172,10 +177,10 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 // The |webView|.
 @property(nonatomic, readonly, weak) WKWebView* webView;
-// The scroll view of |webView|.
-@property(nonatomic, readonly, weak) id<CRWContextMenuDelegate> delegate;
 // Returns the x, y offset the content has been scrolled.
 @property(nonatomic, readonly) CGPoint scrollPosition;
+// WebState associated with this controller.
+@property(nonatomic, assign) web::WebStateImpl* webState;
 
 // Called when the |_contextMenuRecognizer| finishes recognizing a long press.
 - (void)longPressDetectedByGestureRecognizer:
@@ -203,10 +208,6 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 // Cancels the display of the context menu and clears associated element fetch
 // request state.
 - (void)cancelContextMenuDisplay;
-// Forwards the execution of |script| to |javaScriptDelegate| and if it is nil,
-// to |webView|.
-- (void)executeJavaScript:(NSString*)script
-        completionHandler:(void (^)(id, NSError*))completionHandler;
 @end
 
 @implementation CRWContextMenuController {
@@ -234,18 +235,19 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   NSMutableDictionary* _pendingElementFetchRequests;
 }
 
-@synthesize delegate = _delegate;
 @synthesize webView = _webView;
 
 - (instancetype)initWithWebView:(WKWebView*)webView
-                   browserState:(web::BrowserState*)browserState
-                       delegate:(id<CRWContextMenuDelegate>)delegate {
+                       webState:(web::WebStateImpl*)webState {
   DCHECK(webView);
   self = [super init];
   if (self) {
     _webView = webView;
-    _delegate = delegate;
     _pendingElementFetchRequests = [[NSMutableDictionary alloc] init];
+
+    _webState = webState;
+    _observer = std::make_unique<web::WebStateObserverBridge>(self);
+    webState->AddObserver(_observer.get());
 
     // If system context menu is enabled, the recognizer below will not be
     // triggered.
@@ -274,7 +276,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
     // Listen for fetched element response.
     web::WKWebViewConfigurationProvider& configurationProvider =
-        web::WKWebViewConfigurationProvider::FromBrowserState(browserState);
+        web::WKWebViewConfigurationProvider::FromBrowserState(
+            webState->GetBrowserState());
     CRWWKScriptMessageRouter* messageRouter =
         configurationProvider.GetScriptMessageRouter();
     __weak CRWContextMenuController* weakSelf = self;
@@ -288,21 +291,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 }
 
 - (void)dealloc {
-  if (_webState)
-    _webState->RemoveObserver(_observer.get());
-}
-
-- (void)setWebState:(web::WebState*)webState {
-  if (_webState)
-    _webState->RemoveObserver(_observer.get());
-
-  _webState = webState;
-  _observer.reset();
-
-  if (webState) {
-    _observer = std::make_unique<web::WebStateObserverBridge>(self);
-    webState->AddObserver(_observer.get());
-  }
+  if (self.webState)
+    self.webState->RemoveObserver(_observer.get());
 }
 
 - (void)allowSystemUIForCurrentGesture {
@@ -318,19 +308,6 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 - (CGPoint)scrollPosition {
   return self.webScrollView.contentOffset;
-}
-
-- (void)executeJavaScript:(NSString*)script
-        completionHandler:(void (^)(id, NSError*))completionHandler {
-  if ([_delegate respondsToSelector:@selector
-                 (webView:executeJavaScript:completionHandler:)]) {
-    [_delegate webView:self.webView
-        executeJavaScript:script
-        completionHandler:completionHandler];
-  } else {
-    [self.webView evaluateJavaScript:script
-                   completionHandler:completionHandler];
-  }
 }
 
 - (void)longPressDetectedByGestureRecognizer:
@@ -396,14 +373,16 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // intentionally suppress system context menu UI.
   [self cancelAllTouches];
 
-  if ([_delegate respondsToSelector:@selector(webView:handleContextMenu:)]) {
-    _contextMenuInfoForLastTouch.location =
-        [_contextMenuRecognizer locationInView:_webView];
-    [self showContextMenu];
-  }
+  _contextMenuInfoForLastTouch.location =
+      [_contextMenuRecognizer locationInView:_webView];
+  [self showContextMenu];
 }
 
 - (void)showContextMenu {
+  if (!self.webState) {
+    return;
+  }
+
   // Log if the element is in the main frame or a child frame.
   UMA_HISTOGRAM_ENUMERATION("ContextMenu.DOMElementFrame",
                             (_contextMenuInfoForLastTouch.is_main_frame
@@ -416,7 +395,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   params.view = _webView;
   params.location = _contextMenuInfoForLastTouch.location;
   params.is_main_frame = _contextMenuInfoForLastTouch.is_main_frame;
-  [_delegate webView:_webView handleContextMenu:params];
+
+  self.webState->HandleContextMenu(params);
 }
 
 - (void)cancelAllTouches {
@@ -536,32 +516,39 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 - (void)fetchDOMElementAtPoint:(CGPoint)point
              completionHandler:(void (^)(NSDictionary*))handler {
+  if (!self.webState) {
+    return;
+  }
+  web::WebFrame* frame = GetMainFrame(self.webState);
+  if (!frame) {
+    // A WebFrame may not exist for certain types of content, like PDFs.
+    return;
+  }
   DCHECK(handler);
 
-  CGPoint scrollOffset = self.scrollPosition;
-  CGSize webViewContentSize = self.webScrollView.contentSize;
-  CGFloat webViewContentWidth = webViewContentSize.width;
-  CGFloat webViewContentHeight = webViewContentSize.height;
-
-  NSString* requestID =
-      base::SysUTF8ToNSString(base::UnguessableToken::Create().ToString());
+  std::string requestID = base::UnguessableToken::Create().ToString();
   HTMLElementFetchRequest* fetchRequest =
       [[HTMLElementFetchRequest alloc] initWithFoundElementHandler:handler];
-  _pendingElementFetchRequests[requestID] = fetchRequest;
-  NSString* formatString = [NSString
-      stringWithFormat:
-          @"__gCrWeb.findElementAtPoint('%@', %%g, %%g, %%g, %%g);", requestID];
+  _pendingElementFetchRequests[base::SysUTF8ToNSString(requestID)] =
+      fetchRequest;
 
-  NSString* getElementScript =
-      [NSString stringWithFormat:formatString, point.x + scrollOffset.x,
-                                 point.y + scrollOffset.y, webViewContentWidth,
-                                 webViewContentHeight];
-  [self executeJavaScript:getElementScript completionHandler:nil];
+  CGSize webViewContentSize = self.webScrollView.contentSize;
+
+  std::vector<base::Value> args;
+  args.push_back(base::Value(requestID));
+  args.push_back(base::Value(point.x + self.scrollPosition.x));
+  args.push_back(base::Value(point.y + self.scrollPosition.y));
+  args.push_back(base::Value(webViewContentSize.width));
+  args.push_back(base::Value(webViewContentSize.height));
+  frame->CallJavaScriptFunction(std::string(kFindElementAtPointFunctionName),
+                                args);
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
+  if (self.webState)
+    self.webState->RemoveObserver(_observer.get());
   self.webState = nullptr;
 }
 

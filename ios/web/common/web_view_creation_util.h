@@ -8,7 +8,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
-@protocol CRWContextMenuDelegate;
 @class WKWebView;
 
 namespace web {
@@ -34,19 +33,6 @@ WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
 // 2) web::BrowsingDataPartition is synchronized.
 //
 WKWebView* BuildWKWebViewForQueries(BrowserState* browser_state);
-
-// Returns a new WKWebView for displaying regular web content.
-// The returned WKWebView is equivalent to the one created by |BuildWKWebView|
-// but a context menu recognizer is attached to it.
-// On a long press, context_menu_delegate webView:handleContextMenu:| is called.
-// The custom context menu involves gesture recognizers on every touch and
-// JavaScript. It can have impact on performances.
-// Calling |BuildWKWebViewWithCustomContextMenu| with a |context_menu_delegate|
-// nil is equivalent to |BuildWKWebView|.
-WKWebView* BuildWKWebViewWithCustomContextMenu(
-    CGRect frame,
-    BrowserState* browser_state,
-    id<CRWContextMenuDelegate> context_menu_delegate);
 
 }  // web
 

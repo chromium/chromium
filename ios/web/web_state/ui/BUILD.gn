@@ -96,16 +96,15 @@ source_set("crw_context_menu_controller") {
     "//base",
     "//ios/web/js_messaging",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//ios/web/web_state:context_menu",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
-    "//ui/base",
   ]
 
   sources = [
     "crw_context_menu_controller.h",
     "crw_context_menu_controller.mm",
-    "crw_context_menu_delegate.h",
     "html_element_fetch_request.h",
     "html_element_fetch_request.mm",
   ]

@@ -4,8 +4,6 @@
 
 #import "ios/web/web_state/web_view_internal_creation_util.h"
 
-#import <objc/runtime.h>
-
 #include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/public/web_client.h"
@@ -46,8 +44,7 @@ WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
 WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state,
-                          UserAgentType user_agent_type,
-                          id<CRWContextMenuDelegate> context_menu_delegate) {
+                          UserAgentType user_agent_type) {
   VerifyWKWebViewCreationPreConditions(browser_state, configuration);
 
   GetWebClient()->PreWebViewCreation();
@@ -65,31 +62,11 @@ WKWebView* BuildWKWebView(CGRect frame,
   // reasonable value.
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
-  if (context_menu_delegate) {
-    CRWContextMenuController* context_menu_controller =
-        [[CRWContextMenuController alloc]
-            initWithWebView:web_view
-               browserState:browser_state
-                   delegate:context_menu_delegate];
-    void* associated_object_key = (__bridge void*)context_menu_controller;
-    objc_setAssociatedObject(web_view, associated_object_key,
-                             context_menu_controller,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  }
-
   // Uses the default value for |allowsLinkPreview| i.e., YES in iOS 10 or
   // later, and NO for iOS 9 or before. But the link preview is still disabled
   // by default on iOS 10 or later. You need to return true from
   // web::WebStateDelegate::ShouldPreviewLink() to enable the preview.
   return web_view;
-}
-
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state,
-                          UserAgentType user_agent_type) {
-  return BuildWKWebView(frame, configuration, browser_state, user_agent_type,
-                        nil);
 }
 
 WKWebView* BuildWKWebView(CGRect frame,

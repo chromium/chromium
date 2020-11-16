@@ -9,11 +9,8 @@
 #import <WebKit/WebKit.h>
 
 namespace web {
-class BrowserState;
-class WebState;
+class WebStateImpl;
 }  // namespace web
-
-@protocol CRWContextMenuDelegate;
 
 // A controller that will recognise context menu gesture on |webView|. This
 // controller will rely on a long press gesture recognizer and JavaScript to
@@ -28,17 +25,10 @@ class WebState;
 // - This class will perform gesture recognition and JavaScript on every touch
 //   event on |webView| and can have performance impact.
 - (instancetype)initWithWebView:(WKWebView*)webView
-                   browserState:(web::BrowserState*)browserState
-                       delegate:(id<CRWContextMenuDelegate>)delegate
+                       webState:(web::WebStateImpl*)webState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// WebState associated with this controller.
-// When the |webState| is set, the WKWebView default context menu gesture
-// recognizer is overridden after each navigation. If it is never set, the
-// default gesture recognizer is only overridden in this object -init method.
-@property(nonatomic, assign) web::WebState* webState;
 
 // By default, this controller "hooks" long touches to suppress the system
 // default behavior (which shows the system context menu) and show its own
