@@ -1,9 +1,9 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  #card-wrapper {
-    border: 1px solid var(--diagnostics-border-color);
-    border-radius: 14px;
-    margin: 10px 0;
-    min-height: 150px;
+  ::slotted([slot=chip]) {
+    background-color: var(--google-grey-100);
+    border-radius: 16px;
+    color: var(--diagnostics-overview-text-color);
+    padding: 4px 8px;
   }
 
   .body-container {
@@ -19,6 +19,26 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 12px;
+  }
+
+  .card-header {
+    @apply --diagnostics-default-font;
+    display: flex;
+    justify-content: space-between;
+    min-height: 25px;
+  }
+
+  .card-wrapper {
+    border: 1px solid var(--diagnostics-border-color);
+    border-radius: 14px;
+    margin: 10px 0;
+    min-height: 150px;
+  }
+
   .routine-container {
     @apply --diagnostics-default-font;
   }
@@ -28,26 +48,24 @@
     padding-inline-end: 15px;
     padding-inline-start: 15px;
   }
-
-  .title-container {
-    @apply --diagnostics-default-font;
-  }
 </style>
-
-<div id="card-wrapper">
-  <div id="title" class="title-container spacing">
+<div class="card-container">
+  <div id="title" class="card-header">
     <slot name="title"></slot>
+    <slot name="chip"></slot>
   </div>
-  <div class="card-columns spacing">
-    <div>
-      <slot name="left-panel"></slot>
+  <div class="card-wrapper">
+    <div class="card-columns spacing">
+      <div>
+        <slot name="left-panel"></slot>
+      </div>
+      <div id="body" class="body-container">
+        <slot name="body"></slot>
+      </div>
     </div>
-    <div id="body" class="body-container">
-      <slot name="body"></slot>
-    </div>
-  </div>
 
-  <div id="routines" class="routine-container spacing">
-    <slot name="routines"></slot>
+    <div id="routines" class="routine-container spacing">
+      <slot name="routines"></slot>
+    </div>
   </div>
 </div>

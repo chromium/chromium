@@ -33,10 +33,12 @@ constexpr char kGeneratedPath[] =
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"adapterStatus", IDS_DIAGNOSTICS_POWER_LABEL},
+      {"batteryChipText", IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT},
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
       {"chargeFullDesign", IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL},
       {"chargeFullNow", IDS_DIAGNOSTICS_NOW_FULL_CHARGE_LABEL},
       {"chargeNow", IDS_DIAGNOSTICS_CHARGE_NOW_LABEL},
+      {"cpuChipText", IDS_DIAGNOSTICS_CPU_CHIP_TEXT},
       {"cpuTemp", IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL},
       {"cpuTitle", IDS_DIAGNOSTICS_CPU_TITLE},
       {"cpuUsage", IDS_DIAGNOSTICS_CPU_USAGE_LABEL},

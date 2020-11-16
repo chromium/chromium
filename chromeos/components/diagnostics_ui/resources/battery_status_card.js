@@ -9,6 +9,7 @@ import './percent_bar_chart.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'
@@ -150,4 +151,9 @@ Polymer({
     this.batteryHealth_ = batteryHealth;
   },
 
+  /** @protected */
+  getDesignedFullCharge_() {
+    return loadTimeData.getStringF(
+        'batteryChipText', this.batteryHealth_.chargeFullDesignMilliampHours);
+  },
 });

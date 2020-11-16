@@ -3,6 +3,9 @@
 
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('batteryTitle')]]</div>
+  <div id="batteryStatusChipInfo" slot="chip">
+    [[getDesignedFullCharge_(batteryHealth_.chargeFullDesignMilliampHours)]]
+  </div>
   <percent-bar-chart slot="left-panel" header="[[i18n('remainingCharge')]]"
     value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
     max="[[batteryHealth_.chargeFullNowMilliampHours]]">

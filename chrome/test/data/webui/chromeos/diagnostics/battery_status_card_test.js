@@ -89,6 +89,9 @@ export function batteryStatusCardTestSuite() {
               fakeBatteryChargeStatus[0].powerAdapterStatus,
               dataPoints[5].value);
           assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[6].value);
+          dx_utils.assertElementContainsText(
+              batteryStatusElement.$$('#batteryStatusChipInfo'),
+              fakeBatteryHealth[0].chargeFullDesignMilliampHours);
 
           const barChart =
               dx_utils.getPercentBarChartElement(batteryStatusElement);

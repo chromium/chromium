@@ -4,8 +4,8 @@
 
 import 'chrome://diagnostics/cpu_card.js';
 
-import {CpuUsage, RoutineName, SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeCpuUsage} from 'chrome://diagnostics/fake_data.js';
+import {CpuUsage, RoutineName, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -40,13 +40,15 @@ export function cpuCardTestSuite() {
 
   /**
    * @param {!Array<!CpuUsage>} cpuUsage
+   * @param {!SystemInfo} systemInfo
    * @return {!Promise}
    */
-  function initializeCpuCard(cpuUsage) {
+  function initializeCpuCard(cpuUsage, systemInfo) {
     assertFalse(!!cpuElement);
 
     // Initialize the fake data.
     provider.setFakeCpuUsage(cpuUsage);
+    provider.setFakeSystemInfo(systemInfo);
 
     // Add the CPU card to the DOM.
     cpuElement =
@@ -88,12 +90,16 @@ export function cpuCardTestSuite() {
   }
 
   test('CpuCardPopulated', () => {
-    return initializeCpuCard(fakeCpuUsage).then(() => {
+    return initializeCpuCard(fakeCpuUsage, fakeSystemInfo).then(() => {
       const dataPoints = dx_utils.getDataPointElements(cpuElement);
       const currentlyUsingValue =
           fakeCpuUsage[0].percentUsageUser + fakeCpuUsage[0].percentUsageSystem;
       assertEquals(currentlyUsingValue, dataPoints[0].value);
       assertEquals(fakeCpuUsage[0].averageCpuTempCelsius, dataPoints[1].value);
+      dx_utils.assertElementContainsText(
+          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
+      dx_utils.assertElementContainsText(
+          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuThreadsCount}`);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
       assertEquals(fakeCpuUsage[0].percentUsageUser, cpuChart.user);
