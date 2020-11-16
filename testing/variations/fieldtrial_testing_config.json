@@ -4781,63 +4781,13 @@
             ]
         }
     ],
-    "OmniboxOnDeviceHeadSuggestIncognito": [
-        {
-            "platforms": [
-                "android",
-                "windows",
-                "mac",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "OnDeviceHeadSuggest_Incognito_Enabled",
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxOnDeviceHeadSuggestIncognitoIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "OnDeviceHeadSuggest_Incognito_Enabled",
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxOnDeviceHeadSuggestNonIncognito": [
         {
             "platforms": [
-                "android",
                 "windows",
                 "mac",
                 "chromeos",
                 "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "OnDeviceHeadSuggest_NonIncognito_Enabled",
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxOnDeviceHeadSuggestNonIncognitoIOS": [
-        {
-            "platforms": [
-                "ios"
             ],
             "experiments": [
                 {
