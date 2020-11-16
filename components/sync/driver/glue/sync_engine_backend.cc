@@ -414,6 +414,9 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // for Nigori we need to do it here.
     // TODO(crbug.com/922900): try to find better way to implement this logic,
     // it's likely happen only due to BackendMigrator.
+    // TODO(crbug.com/1142771): Evaluate whether this logic is necessary at all.
+    // There's no "purging" logic for any other data type, so likely it's not
+    // necessary for NIGORI either.
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(ShutdownReason::DISABLE_SYNC, base::DoNothing());
     LoadAndConnectNigoriController();

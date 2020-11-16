@@ -101,9 +101,8 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
-// Test that model that failed to load between initialization and association
-// is reported and stopped properly.
-TEST_F(SyncModelLoadManagerTest, ModelLoadFailBeforeAssociationStart) {
+// Test that a model that failed to load is reported and stopped properly.
+TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Test error"));
@@ -335,7 +334,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
 // Test that Initialize stops controllers with KEEP_METADATA for preferred
 // types.
 TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
-  // Associate model with two data types.
+  // Initialize the manager with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -370,7 +369,7 @@ TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
 // Test that Initialize stops controllers with CLEAR_METADATA for
 // no-longer-preferred types.
 TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
-  // Associate model with two data types.
+  // Initialize the manager with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -404,7 +403,7 @@ TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
 }
 
 TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
-  // Associate model with two data types.
+  // Initialize the manager with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(
@@ -451,7 +450,7 @@ TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
 
 TEST_F(SyncModelLoadManagerTest,
        SwitchFromTransportOnlyToFullSyncRestartsTypes) {
-  // Associate model with two data types.
+  // Initialize the manager with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(

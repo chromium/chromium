@@ -26,8 +26,8 @@ struct DataTypeConfigurationStats {
   // Time spent on downloading data for first-sync data types.
   base::TimeDelta download_time;
 
-  // Waiting time for association of higher priority types to finish before
-  // asking association manager to associate.
+  // TODO(crbug.com/1102837): The concept of "association" doesn't exist
+  // anymore, and this is effectively always zero now. Get rid of it.
   base::TimeDelta association_wait_time_for_high_priority;
 
   // Types configured before this type.

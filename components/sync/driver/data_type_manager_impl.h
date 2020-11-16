@@ -109,7 +109,7 @@ class DataTypeManagerImpl : public DataTypeManager,
                                 DataTypeConfigStateMap* state_map);
 
   // Prepare the parameters for the configurer's configuration. Returns the set
-  // of types that are already ready for association.
+  // of types that are already ready for configuration.
   ModelTypeSet PrepareConfigureParams(
       ModelTypeConfigurer::ConfigureParams* params);
 
@@ -129,10 +129,10 @@ class DataTypeManagerImpl : public DataTypeManager,
   // was an actual change.
   bool UpdatePreconditionError(ModelType type);
 
-  // Post a task to reconfigure when no downloading or association are running.
+  // Starts a reconfiguration if it's required and no downloads are running.
   void ProcessReconfigure();
 
-  // Programmatically force reconfiguration of data type (if needed).
+  // Programmatically force reconfiguration of all data types (if needed).
   void ForceReconfiguration();
 
   void Restart();
@@ -155,13 +155,15 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Start download of next set of types in |download_types_queue_| (if
   // any exist, does nothing otherwise).
-  // Will kick off association of any new ready types.
+  // Will kick off configuration of any new ready types.
   void StartNextDownload(ModelTypeSet high_priority_types_before);
 
   // Start association of next batch of data types after association of
   // previous batch finishes. |group| controls which set of types within
-  // an AssociationTypesInfo to associate. Does nothing if model associator
-  // is busy performing association.
+  // an AssociationTypesInfo to associate.
+  // TODO(crbug.com/1102837): Simplify and rename this. "Association" doesn't
+  // exist anymore; all this does is record configuration stats and eventually
+  // update |state_|.
   void StartNextAssociation(AssociationGroup group);
 
   void StopImpl(ShutdownReason reason);
@@ -202,11 +204,11 @@ class DataTypeManagerImpl : public DataTypeManager,
   // The last time Restart() was called.
   base::Time last_restart_time_;
 
-  // Sync's datatype debug info listener, which we pass model association
+  // Sync's datatype debug info listener, which we pass model configuration
   // statistics to.
   const WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
 
-  // The manager that handles the model association of the individual types.
+  // The manager that loads the local models of the data types.
   ModelLoadManager model_load_manager_;
 
   // DataTypeManager must have only one observer -- the ProfileSyncService that
@@ -256,7 +258,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // datatype encryption.
   const DataTypeEncryptionHandler* encryption_handler_;
 
-  // Association and time stats of data type configuration.
+  // Timing stats of data type configuration.
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   // Configuration process is started when ModelLoadManager notifies

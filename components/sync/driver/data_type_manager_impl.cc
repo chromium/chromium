@@ -476,6 +476,8 @@ void DataTypeManagerImpl::DownloadCompleted(
     needs_reconfigure_ = true;
   }
 
+  // If a reconfigure was requested while this download was ongoing, process it
+  // now.
   if (needs_reconfigure_) {
     download_types_queue_ = base::queue<ModelTypeSet>();
     ProcessReconfigure();
@@ -486,8 +488,7 @@ void DataTypeManagerImpl::DownloadCompleted(
   download_types_queue_.pop();
 
   // Those types that were already downloaded (non first sync/error types)
-  // should already be associating. Just kick off association of the newly
-  // downloaded types if necessary.
+  // are already done. Just finalize the newly downloaded types if necessary.
   if (!association_types_queue_.empty()) {
     association_types_queue_.back().first_sync_types = first_sync_types;
     association_types_queue_.back().download_ready_time = base::Time::Now();
@@ -780,8 +781,7 @@ void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {
   // Invalidate weak pointer to drop download callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Stop all data types. This may trigger association callback but the
-  // callback will do nothing because state is set to STOPPING above.
+  // Stop all data types.
   model_load_manager_.Stop(reason);
 
   // Individual data type controllers might still be STOPPING, but we don't
