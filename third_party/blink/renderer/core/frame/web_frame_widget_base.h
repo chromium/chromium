@@ -606,8 +606,8 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Calculates the selection bounds in the root frame. Returns bounds unchanged
   // when there is no focused frame or no selection.
-  virtual void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
-                                        gfx::Rect& focus_in_root_frame) = 0;
+  void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
+                                gfx::Rect& focus_in_root_frame);
 
   // Returns if auto resize mode is enabled.
   bool AutoResizeMode();

@@ -118,7 +118,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
                          float device_scale_factor) override;
   void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) override;
-  void CalculateSelectionBounds(gfx::Rect& anchor, gfx::Rect& focus) override;
 
   // FrameWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;

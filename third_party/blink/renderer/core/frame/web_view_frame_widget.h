@@ -85,7 +85,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
                                   float maximum) override;
   void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) override;
-  void CalculateSelectionBounds(gfx::Rect& anchor, gfx::Rect& focus) override;
 
   // FrameWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;

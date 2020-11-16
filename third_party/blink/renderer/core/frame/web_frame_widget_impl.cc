@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
-#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -403,23 +402,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
       ime_accept_events_ = false;
     }
   }
-}
-
-void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
-                                                  gfx::Rect& focus_root_frame) {
-  const LocalFrame* local_frame = FocusedLocalFrameInWidget();
-  if (!local_frame)
-    return;
-
-  IntRect anchor;
-  IntRect focus;
-  if (!local_frame->Selection().ComputeAbsoluteBounds(anchor, focus))
-    return;
-
-  // FIXME: This doesn't apply page scale. This should probably be contents to
-  // viewport. crbug.com/459293.
-  anchor_root_frame = local_frame->View()->ConvertToRootFrame(anchor);
-  focus_root_frame = local_frame->View()->ConvertToRootFrame(focus);
 }
 
 void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {

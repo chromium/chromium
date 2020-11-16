@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -2839,6 +2840,27 @@ void WebFrameWidgetBase::ForEachRemoteFrameControlledByWidget(
     const base::RepeatingCallback<void(RemoteFrame*)>& callback) {
   ForEachRemoteFrameChildrenControlledByWidget(local_root_->GetFrame(),
                                                callback);
+}
+
+void WebFrameWidgetBase::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
+                                                  gfx::Rect& focus_root_frame) {
+  auto* local_frame = DynamicTo<LocalFrame>(FocusedCoreFrame());
+  if (!local_frame)
+    return;
+
+  IntRect anchor;
+  IntRect focus;
+  if (!local_frame->Selection().ComputeAbsoluteBounds(anchor, focus))
+    return;
+
+  // Apply the visual viewport for main frames this will apply the page scale.
+  // For subframes it will just be a 1:1 transformation and the browser
+  // will then apply later transformations to these rects.
+  VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
+  anchor_root_frame = visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(anchor));
+  focus_root_frame = visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(focus));
 }
 
 void WebFrameWidgetBase::BatterySavingsChanged(WebBatterySavingsFlags savings) {
