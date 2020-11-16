@@ -206,6 +206,9 @@ void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
 
 void FakeLocalFrameHost::Detach() {}
 
+void FakeLocalFrameHost::IssueKeepAliveHandle(
+    mojo::PendingReceiver<mojom::blink::KeepAliveHandle> receiver) {}
+
 void FakeLocalFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::LocalFrameHost>(

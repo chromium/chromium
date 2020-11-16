@@ -40,7 +40,8 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
         scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
             std::move(freezable_task_runner)),
         scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-            std::move(unfreezable_task_runner)));
+            std::move(unfreezable_task_runner)),
+        /*keep_alive_handle=*/mojo::NullRemote());
   }
 
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {

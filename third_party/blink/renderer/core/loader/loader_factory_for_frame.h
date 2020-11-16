@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -35,6 +36,11 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
+  void IssueKeepAliveHandleIfRequested(
+      const ResourceRequest& request,
+      mojom::blink::LocalFrameHost& local_frame_host,
+      mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver);
+
   const Member<DocumentLoader> document_loader_;
   const Member<LocalDOMWindow> window_;
   const Member<PrefetchedSignedExchangeManager>

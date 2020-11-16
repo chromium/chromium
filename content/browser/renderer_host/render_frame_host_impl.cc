@@ -5411,7 +5411,7 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
 }
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(
-    mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) {
+    mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (GetProcess()->IsKeepAliveRefCountDisabled())
     return;

@@ -235,7 +235,8 @@ PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
       request,
       frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
       frame_->GetFrameScheduler()
-          ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle());
+          ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
+      /*keep_alive_handle=*/mojo::NullRemote());
 }
 
 std::unique_ptr<WebURLLoader>
@@ -249,7 +250,8 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
           request,
           frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
           frame_->GetFrameScheduler()
-              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle());
+              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
+          /*keep_alive_handle=*/mojo::NullRemote());
 }
 
 void PrefetchedSignedExchangeManager::TriggerLoad() {

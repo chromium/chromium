@@ -1286,15 +1286,12 @@ class RenderFrameImpl::FrameURLLoaderFactory
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           freezable_task_runner_handle,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner_handle) override {
+          unfreezable_task_runner_handle,
+      blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle) override {
     // This should not be called if the frame is detached.
     DCHECK(frame_);
 
-    mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle;
-    if (request.GetKeepalive()) {
-      frame_->GetFrameHost()->IssueKeepAliveHandle(
-          keep_alive_handle.InitWithNewPipeAndPassReceiver());
-    }
     return std::make_unique<WebURLLoaderImpl>(
         RenderThreadImpl::current()->resource_dispatcher(),
         std::move(freezable_task_runner_handle),

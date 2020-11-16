@@ -383,10 +383,6 @@ struct OpenURLParams {
   NavigationDownloadPolicy download_policy;
 };
 
-// An opaque handle that keeps alive the associated render process even after
-// the frame is detached. Used by resource requests with "keepalive" specified.
-interface KeepAliveHandle {};
-
 // Implemented by the frame server (i.e. the browser process). For messages that
 // must be associated with the IPC channel.
 interface FrameHost {
@@ -454,9 +450,6 @@ interface FrameHost {
                    blink.mojom.FramePolicy frame_policy,
                    blink.mojom.FrameOwnerProperties frame_owner_properties,
                    blink.mojom.FrameOwnerElementType frame_owner_element_type);
-
-  // Creates and returns a KeepAliveHandle.
-  IssueKeepAliveHandle(pending_receiver<KeepAliveHandle> keep_alive_handle);
 
   // Sent by the renderer when a navigation commits in the frame.
 

@@ -8,14 +8,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/common/frame.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 
 namespace content {
 
 class RenderProcessHost;
 
-// A KeepAliveHandleFactory creates mojom::KeepAliveHandle. Each created
+// A KeepAliveHandleFactory creates blink::mojom::KeepAliveHandle. Each created
 // handle prolongs the associated renderer's lifetime by using
 // RenderProcessHost's KeepAliveRefCounts while alive.
 // When a certain time passes after the factory is destroyed, all created
@@ -26,7 +26,7 @@ class KeepAliveHandleFactory final {
   explicit KeepAliveHandleFactory(RenderProcessHost* process_host);
   ~KeepAliveHandleFactory();
 
-  void Create(mojo::PendingReceiver<mojom::KeepAliveHandle> receiver);
+  void Create(mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver);
 
   // Sets the timeout after which all created handles will be invalidated.
   void SetTimeout(base::TimeDelta timeout);

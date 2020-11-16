@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -19,6 +18,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 
 namespace content {
 
@@ -54,8 +54,9 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
         FROM_HERE, base::BindOnce(&Context::Detach, AsWeakPtr()), timeout);
   }
 
-  void AddReceiver(std::unique_ptr<mojom::KeepAliveHandle> impl,
-                   mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) {
+  void AddReceiver(
+      std::unique_ptr<blink::mojom::KeepAliveHandle> impl,
+      mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) {
     GetContentClient()->browser()->OnKeepaliveRequestStarted();
     receiver_set_.Add(std::move(impl), std::move(receiver));
   }
@@ -66,7 +67,7 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
   friend class base::RefCounted<Context>;
   ~Context() { Detach(); }
 
-  mojo::UniqueReceiverSet<mojom::KeepAliveHandle> receiver_set_;
+  mojo::UniqueReceiverSet<blink::mojom::KeepAliveHandle> receiver_set_;
   const int process_id_;
   bool detached_ = false;
 
@@ -76,7 +77,7 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
 };
 
 class KeepAliveHandleFactory::KeepAliveHandleImpl final
-    : public mojom::KeepAliveHandle {
+    : public blink::mojom::KeepAliveHandle {
  public:
   explicit KeepAliveHandleImpl(scoped_refptr<Context> context)
       : context_(std::move(context)) {}
@@ -97,7 +98,7 @@ KeepAliveHandleFactory::~KeepAliveHandleFactory() {
 }
 
 void KeepAliveHandleFactory::Create(
-    mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) {
+    mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) {
   scoped_refptr<Context> context;
   if (context_) {
     context = context_.get();

@@ -108,7 +108,9 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
         freezable_task_runner_handle,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle) {
+        unfreezable_task_runner_handle,
+    blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+        keep_alive_handle) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
     return nullptr;
@@ -138,16 +140,6 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
     observer_->ReportFeatureUsage(
         blink::mojom::WebFeature::
             kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet);
-  }
-
-  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle;
-  if (request.GetKeepalive()) {
-    // This cast is safe because NewDocumentObserver is always created with a
-    // RenderFrameImpl.
-    auto* render_frame_impl =
-        static_cast<RenderFrameImpl*>(observer_->render_frame());
-    render_frame_impl->GetFrameHost()->IssueKeepAliveHandle(
-        keep_alive_handle.InitWithNewPipeAndPassReceiver());
   }
 
   // Create our own SubresourceLoader to route the request to the controller

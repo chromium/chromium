@@ -133,6 +133,10 @@ struct TextAutosizerPageInfo {
   float device_scale_adjustment;
 };
 
+// An opaque handle that keeps alive the associated render process even after
+// the frame is detached. Used by resource requests with "keepalive" specified.
+interface KeepAliveHandle {};
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -442,10 +446,14 @@ interface LocalFrameHost {
   // that allows the results to be grouped together, even if there are multiple
   // requests in-flight.
   CapturePaintPreviewOfSubframe(
-    gfx.mojom.Rect clip_rect, mojo_base.mojom.UnguessableToken guid);
+      gfx.mojom.Rect clip_rect, mojo_base.mojom.UnguessableToken guid);
 
   // Notifies the browser that a child frame is detached from the DOM.
   Detach();
+
+   // Creates and returns a KeepAliveHandle.
+  IssueKeepAliveHandle(
+      pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

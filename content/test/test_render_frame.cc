@@ -168,9 +168,6 @@ class MockFrameHost : public mojom::FrameHost {
                             base::UnguessableToken());
   }
 
-  void IssueKeepAliveHandle(
-      mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) override {}
-
   void DidCommitSameDocumentNavigation(
       std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params)
       override {

@@ -136,8 +136,9 @@ class FailingLoaderFactory final : public WebURLLoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
       std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
-      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
-      override {
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle,
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle) override {
     return std::make_unique<FailingLoader>(
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle));

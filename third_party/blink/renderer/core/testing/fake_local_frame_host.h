@@ -133,6 +133,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;
   void Detach() override;
+  void IssueKeepAliveHandle(
+      mojo::PendingReceiver<mojom::blink::KeepAliveHandle> receiver) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

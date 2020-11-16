@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 
 namespace blink {
@@ -31,7 +33,9 @@ class WebURLLoaderFactory {
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           freezable_task_runner,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner) = 0;
+          unfreezable_task_runner,
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle) = 0;
 };
 
 // A test version of the above factory interface, which supports cloning the

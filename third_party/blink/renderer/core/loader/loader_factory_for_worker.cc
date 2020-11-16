@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -50,11 +51,16 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
         request.Url(), url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
 
+  // KeepAlive is not yet supported in web workers.
+  mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle =
+      mojo::NullRemote();
+
   if (url_loader_factory) {
     return web_context_->WrapURLLoaderFactory(std::move(url_loader_factory))
         ->CreateURLLoader(wrapped,
                           CreateTaskRunnerHandle(freezable_task_runner),
-                          CreateTaskRunnerHandle(unfreezable_task_runner));
+                          CreateTaskRunnerHandle(unfreezable_task_runner),
+                          std::move(keep_alive_handle));
   }
 
   // If |global_scope_| is a service worker, use |script_loader_factory_| for
@@ -75,7 +81,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
       if (web_context_->GetScriptLoaderFactory()) {
         return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
             wrapped, CreateTaskRunnerHandle(freezable_task_runner),
-            CreateTaskRunnerHandle(unfreezable_task_runner));
+            CreateTaskRunnerHandle(unfreezable_task_runner),
+            std::move(keep_alive_handle));
       }
     }
   } else {
@@ -84,7 +91,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
 
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(
       wrapped, CreateTaskRunnerHandle(freezable_task_runner),
-      CreateTaskRunnerHandle(unfreezable_task_runner));
+      CreateTaskRunnerHandle(unfreezable_task_runner),
+      std::move(keep_alive_handle));
 }
 
 std::unique_ptr<WebCodeCacheLoader>

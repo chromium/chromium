@@ -89,16 +89,24 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     return Platform::Current()
         ->WrapURLLoaderFactory(std::move(url_loader_factory))
         ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
-                          CreateTaskRunnerHandle(unfreezable_task_runner));
+                          CreateTaskRunnerHandle(unfreezable_task_runner),
+                          /*keep_alive_handle=*/mojo::NullRemote());
   }
 
   if (document_loader_->GetServiceWorkerNetworkProvider()) {
+    mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
+    mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver =
+        pending_remote.InitWithNewPipeAndPassReceiver();
     auto loader =
         document_loader_->GetServiceWorkerNetworkProvider()->CreateURLLoader(
             webreq, CreateTaskRunnerHandle(freezable_task_runner),
-            CreateTaskRunnerHandle(unfreezable_task_runner));
-    if (loader)
+            CreateTaskRunnerHandle(unfreezable_task_runner),
+            std::move(pending_remote));
+    if (loader) {
+      IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
+                                      std::move(pending_receiver));
       return loader;
+    }
   }
 
   if (prefetched_signed_exchange_manager_) {
@@ -107,9 +115,15 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     if (loader)
       return loader;
   }
+
+  mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
+  IssueKeepAliveHandleIfRequested(
+      request, frame->GetLocalFrameHostRemote(),
+      pending_remote.InitWithNewPipeAndPassReceiver());
   return frame->GetURLLoaderFactory()->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
-      CreateTaskRunnerHandle(unfreezable_task_runner));
+      CreateTaskRunnerHandle(unfreezable_task_runner),
+      std::move(pending_remote));
 }
 
 std::unique_ptr<WebCodeCacheLoader>
@@ -123,4 +137,14 @@ LoaderFactoryForFrame::CreateTaskRunnerHandle(
   return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
       std::move(task_runner));
 }
+
+void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
+    const ResourceRequest& request,
+    mojom::blink::LocalFrameHost& local_frame_host,
+    mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
+  DCHECK(pending_receiver);
+  if (request.GetKeepalive())
+    local_frame_host.IssueKeepAliveHandle(std::move(pending_receiver));
+}
+
 }  // namespace blink

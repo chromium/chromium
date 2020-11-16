@@ -21,7 +21,9 @@ InternetDisconnectedWebURLLoaderFactory::CreateURLLoader(
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
         freezable_task_runner_handle,
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle) {
+        unfreezable_task_runner_handle,
+    CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+        keep_alive_handle) {
   DCHECK(freezable_task_runner_handle);
   return std::make_unique<InternetDisconnectedWebURLLoader>(
       std::move(freezable_task_runner_handle));

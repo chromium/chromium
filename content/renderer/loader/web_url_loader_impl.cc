@@ -71,6 +71,7 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -348,13 +349,12 @@ std::unique_ptr<blink::WebURLLoader> WebURLLoaderFactoryImpl::CreateURLLoader(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         freezable_task_runner_handle,
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle) {
+        unfreezable_task_runner_handle,
+    blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+        keep_alive_handle) {
   DCHECK(freezable_task_runner_handle);
   DCHECK(unfreezable_task_runner_handle);
   DCHECK(resource_dispatcher_);
-  // This default implementation does not support KeepAlive.
-  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle =
-      mojo::NullRemote();
   return std::make_unique<WebURLLoaderImpl>(
       resource_dispatcher_.get(), std::move(freezable_task_runner_handle),
       std::move(unfreezable_task_runner_handle), loader_factory_,
@@ -373,7 +373,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
           std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
               unfreezable_task_runner_handle,
           scoped_refptr<network::SharedURLLoaderFactory> factory,
-          mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle);
+          mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle);
 
   ResourceDispatcher* resource_dispatcher() { return resource_dispatcher_; }
   int request_id() const { return request_id_; }
@@ -454,7 +454,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
       unfreezable_task_runner_handle_;
   scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
-  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle_;
+  mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle_;
   enum DeferState { NOT_DEFERRING, SHOULD_DEFER };
   DeferState defers_loading_;
   int request_id_;
@@ -504,7 +504,7 @@ WebURLLoaderImpl::Context::Context(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle)
+    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle)
     : loader_(loader),
       report_raw_headers_(false),
       client_(nullptr),
@@ -843,7 +843,7 @@ WebURLLoaderImpl::WebURLLoaderImpl(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle)
+    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle)
     : context_(new Context(this,
                            resource_dispatcher,
                            std::move(freezable_task_runner_handle),

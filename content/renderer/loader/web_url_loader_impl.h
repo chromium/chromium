@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
@@ -43,7 +44,9 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           freezable_task_runner_handle,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner_handle) override;
+          unfreezable_task_runner_handle,
+      blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle) override;
 
  private:
   base::WeakPtr<ResourceDispatcher> resource_dispatcher_;
@@ -62,7 +65,7 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle);
+      mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle);
   ~WebURLLoaderImpl() override;
 
   static void PopulateURLResponse(const blink::WebURL& url,

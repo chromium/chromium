@@ -100,7 +100,9 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>) override {
+      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>)
+      override {
     return std::make_unique<FakeWebURLLoader>();
   }
 };
