@@ -5,6 +5,7 @@
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
 
 #include <map>
+#include <set>
 #include <utility>
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -186,6 +187,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
       return;
     }
 
+    external_services_to_proxy_.insert(external_services_to_proxy.begin(),
+                                       external_services_to_proxy.end());
+
     for (const auto& service_name : external_services_to_proxy) {
       LOG(INFO) << "Register proxy for external " << service_name;
       mojo::PendingRemote<service_manager::mojom::Service> service_remote;
@@ -272,7 +276,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
       return;
     }
 
-    if (!connector_) {
+    auto service_proxy_it = external_services_to_proxy_.find(service_name);
+
+    if (!connector_ || service_proxy_it != external_services_to_proxy_.end()) {
       ServiceNotFound(service_name, interface_name, std::move(interface_pipe));
       return;
     }
@@ -349,6 +355,7 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
   std::unique_ptr<service_manager::Connector> connector_;
 
   mojo::ReceiverSet<mojom::ExternalConnector> receivers_;
+  std::set<std::string> external_services_to_proxy_;
   std::map<std::string, std::unique_ptr<ExternalServiceProxy>>
       registered_external_services_;
 
