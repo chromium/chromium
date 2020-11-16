@@ -274,6 +274,12 @@ void NativeViewHostMac::SetParentAccessible(
   }
 }
 
+gfx::NativeViewAccessible NativeViewHostMac::GetParentAccessible() {
+  return native_view_hostable_
+             ? native_view_hostable_->ViewsHostableGetParentAccessible()
+             : nullptr;
+}
+
 // static
 NativeViewHostWrapper* NativeViewHostWrapper::CreateWrapper(
     NativeViewHost* host) {

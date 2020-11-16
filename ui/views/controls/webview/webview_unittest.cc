@@ -391,4 +391,34 @@ TEST_F(WebViewUnitTest, DefaultConstructability) {
   EXPECT_EQ(browser_context.get(), web_contents->GetBrowserContext());
 }
 
+// Tests that when a web view is reparented to a different widget hierarchy its
+// holder's parent NativeViewAccessible matches that of its parent view's
+// NativeViewAccessible.
+TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
+  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
+  web_view->SetWebContents(web_contents.get());
+
+  WidgetAutoclosePtr widget_1(CreateTopLevelPlatformWidget());
+  View* contents_view_1 = widget_1->GetContentsView();
+  WebView* added_web_view = contents_view_1->AddChildView(std::move(web_view));
+
+  // After being added to the widget hierarchy the holder's NativeViewAccessible
+  // should match that of the web view's parent view.
+  EXPECT_EQ(added_web_view->parent()->GetNativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
+
+  WidgetAutoclosePtr widget_2(CreateTopLevelPlatformWidget());
+  View* contents_view_2 = widget_2->GetContentsView();
+
+  // Reparent the web view.
+  added_web_view = contents_view_2->AddChildView(
+      contents_view_1->RemoveChildViewT(added_web_view));
+
+  // After reparenting the holder's NativeViewAccessible should match that of
+  // the web view's new parent view.
+  EXPECT_EQ(added_web_view->parent()->GetNativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
+}
+
 }  // namespace views

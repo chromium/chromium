@@ -36,6 +36,9 @@ class TestViewsHostable : public ui::ViewsHostableView {
       gfx::NativeViewAccessible parent_accessibility_element) override {
     parent_accessibility_element_ = parent_accessibility_element;
   }
+  gfx::NativeViewAccessible ViewsHostableGetParentAccessible() override {
+    return parent_accessibility_element_;
+  }
   gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() override {
     return nil;
   }

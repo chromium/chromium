@@ -254,6 +254,14 @@ void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
+void WebView::AddedToWidget() {
+  // If added to a widget hierarchy and |holder_| already has a NativeView
+  // attached, update the accessible parent here to support reparenting the
+  // WebView.
+  if (web_contents() && holder_->native_view())
+    UpdateNativeViewHostAccessibleParent(holder_, parent());
+}
+
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
   if (web_contents() && !web_contents()->IsCrashed()) {
     content::RenderWidgetHostView* host_view =

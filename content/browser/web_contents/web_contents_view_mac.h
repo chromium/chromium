@@ -120,6 +120,7 @@ class WebContentsViewMac : public WebContentsView,
   void ViewsHostableMakeFirstResponder() override;
   void ViewsHostableSetParentAccessible(
       gfx::NativeViewAccessible parent_accessibility_element) override;
+  gfx::NativeViewAccessible ViewsHostableGetParentAccessible() override;
   gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() override;
 
   // A helper method for closing the tab in the

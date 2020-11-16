@@ -74,6 +74,9 @@ class ViewsHostableView {
   virtual void ViewsHostableSetParentAccessible(
       gfx::NativeViewAccessible parent_accessibility_element) = 0;
 
+  // Get the WebContentsView's parent accessibility element.
+  virtual gfx::NativeViewAccessible ViewsHostableGetParentAccessible() = 0;
+
   // Retrieve the WebContentsView's accessibility element.
   virtual gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() = 0;
 };

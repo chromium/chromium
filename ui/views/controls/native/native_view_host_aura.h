@@ -52,6 +52,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   gfx::NativeCursor GetCursor(int x, int y) override;
   void SetVisible(bool visible) override;
   void SetParentAccessible(gfx::NativeViewAccessible) override;
+  gfx::NativeViewAccessible GetParentAccessible() override;
 
  private:
   friend class NativeViewHostAuraTest;
