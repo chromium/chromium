@@ -40,48 +40,39 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   // A type of each member is based on the html spec, but InputContext can be
   // used to specify about a non html text field like Omnibox.
   struct InputContext {
-    InputContext() = default;
-    InputContext(TextInputType type_,
-                 TextInputMode mode_,
-                 int flags_,
-                 TextInputClient::FocusReason focus_reason_,
-                 bool should_do_learning_)
-        : type(type_),
-          mode(mode_),
-          flags(flags_),
-          focus_reason(focus_reason_),
-          should_do_learning(should_do_learning_) {}
-    InputContext(int id_,
-                 TextInputType type_,
-                 TextInputMode mode_,
-                 int flags_,
-                 TextInputClient::FocusReason focus_reason_,
-                 bool should_do_learning_)
-        : id(id_),
-          type(type_),
-          mode(mode_),
-          flags(flags_),
-          focus_reason(focus_reason_),
-          should_do_learning(should_do_learning_) {}
-    // An attribute of the context id which used for ChromeOS only.
+    InputContext(TextInputType type,
+                 TextInputMode mode,
+                 int flags,
+                 TextInputClient::FocusReason focus_reason,
+                 bool should_do_learning)
+        : type(type),
+          mode(mode),
+          flags(flags),
+          focus_reason(focus_reason),
+          should_do_learning(should_do_learning) {}
+    InputContext(int id,
+                 TextInputType type,
+                 TextInputMode mode,
+                 int flags,
+                 TextInputClient::FocusReason focus_reason,
+                 bool should_do_learning)
+        : id(id),
+          type(type),
+          mode(mode),
+          flags(flags),
+          focus_reason(focus_reason),
+          should_do_learning(should_do_learning) {}
+    // Unique ID representing this input context
     int id;
-    // An attribute of the field defined at
-    // http://www.w3.org/TR/html401/interact/forms.html#input-control-types.
     TextInputType type;
-    // An attribute of the field defined at
-    // http://www.whatwg.org/specs/web-apps/current-work/multipage/
-    //  association-of-controls-and-forms.html#input-modalities
-    //  :-the-inputmode-attribute.
     TextInputMode mode;
-    // An antribute to indicate the flags for web input fields. Please refer to
-    // WebTextInputType.
+    // Flags for web input fields. Please refer to WebTextInputType.
     int flags;
-    // An attribute to indicate how this input field was focused.
-    TextInputClient::FocusReason focus_reason =
-        TextInputClient::FOCUS_REASON_NONE;
-    // An attribute to indicate whether text entered in this field should be
-    // used to improve typing suggestions for the user.
-    bool should_do_learning = false;
+    // How this input field was focused.
+    TextInputClient::FocusReason focus_reason;
+    // Whether text entered in this field should be used to improve typing
+    // suggestions for the user.
+    bool should_do_learning;
   };
 
   virtual ~IMEEngineHandlerInterface() = default;
