@@ -1538,6 +1538,20 @@ bool CanViewSource(const Browser* browser) {
 }
 
 void ToggleCaretBrowsing(Browser* browser) {
+#if defined(OS_MAC)
+  // On Mac, ignore the keyboard shortcut unless web contents is focused,
+  // because the keyboard shortcut interferes with a Japenese IME when the
+  // omnibox is focused.  See https://crbug.com/1138475
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return;
+
+  content::RenderWidgetHostView* rwhv = web_contents->GetRenderWidgetHostView();
+  if (!rwhv || !rwhv->HasFocus())
+    return;
+#endif  // defined(OS_MAC)
+
   PrefService* prefService = browser->profile()->GetPrefs();
   bool enabled = prefService->GetBoolean(prefs::kCaretBrowsingEnabled);
 
