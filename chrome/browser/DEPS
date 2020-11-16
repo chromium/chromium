@@ -450,6 +450,10 @@ include_rules = [
   # Should be removed once the actual network service ships.
   "+content/public/network",
 
+  # ASK TEXT-TO-SPEECH content/browser/speech/OWNERS BEFORE OVERRIDING THIS IN A
+  # SUBDIRECTORY.
+  "-content/public/browser/tts_controller.h",
+
   # Other libraries.
   "+third_party/google_toolbox_for_mac/src",
   "+third_party/icu/source/common/unicode",
@@ -514,5 +518,8 @@ specific_include_rules = {
   ],
   "chrome_content_browser_client_receiver_bindings\.cc" : [
     "+chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h",
+  ],
+  "chrome_content_browser_client\.cc" : [
+    "+content/public/browser/tts_controller.h",
   ],
 }

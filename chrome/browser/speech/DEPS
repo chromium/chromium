@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/services/speech/buildflags.h",
+  "+content/public/browser/tts_controller.h",
   "+components/soda",
   "+services/network/network_context.h",
   "+services/network/public/cpp"
