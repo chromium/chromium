@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v1" version="29">
+  <interface name="zcr_remote_shell_v1" version="30">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -273,6 +273,24 @@
       </description>
       <arg name="use_default_device_scale_factor" type="int" summary="0 if false"/>
     </request>
+
+    <!-- Version 30 additions -->
+
+    <enum name="desktop_focus_state">
+      <description summary="desktop foucs state">
+	Desktop client window focus state.
+      </description>
+      <entry name="no_focus" value="1" summary="no window get focused"/>
+      <entry name="client_focused" value="2" summary="client window get focused"/>
+      <entry name="other_client_focused" value="3" summary="other client window get focused"/>
+    </enum>
+
+    <event name="desktop_focus_state_changed" since="30">
+      <description summary="desktop window focus state change">
+	Notifies client that the window focus state change.
+      </description>
+      <arg name="focus_state" type="uint"/>
+    </event>
 
   </interface>
 

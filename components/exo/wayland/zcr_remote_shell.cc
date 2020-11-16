@@ -1133,6 +1133,21 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       lost_active_surface_resource = nullptr;
     }
 
+    if (wl_resource_get_version(remote_shell_resource_) >=
+        ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_CHANGED_SINCE_VERSION) {
+      uint32_t focus_state;
+      if (gained_active_surface_resource) {
+        focus_state = ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_CLIENT_FOCUSED;
+      } else if (gained_active) {
+        focus_state =
+            ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_OTHER_CLIENT_FOCUSED;
+      } else {
+        focus_state = ZCR_REMOTE_SHELL_V1_DESKTOP_FOCUS_STATE_NO_FOCUS;
+      }
+      zcr_remote_shell_v1_send_desktop_focus_state_changed(
+          remote_shell_resource_, focus_state);
+    }
+
     zcr_remote_shell_v1_send_activated(remote_shell_resource_,
                                        gained_active_surface_resource,
                                        lost_active_surface_resource);
