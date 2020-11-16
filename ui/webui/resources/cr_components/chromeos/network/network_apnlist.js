@@ -183,15 +183,11 @@ Polymer({
    * @private
    */
   setApnSelectList_(activeApn) {
-    assert(!activeApn || activeApn.accessPointName);
-    // The generated APN list ensures nonempty accessPointName and name
-    // properties.
     const apnList = this.generateApnList_();
-    if (apnList === undefined) {
-      // No APNList property indicates that the network is not in a
-      // connectable state. Disable the UI.
-      this.apnSelectList_ = [];
-      this.set('selectedApn_', '');
+    if (apnList === undefined || apnList.length === 0) {
+      // Show other APN when no APN list property is available.
+      this.apnSelectList_ = [this.otherApn_];
+      this.set('selectedApn_', kOtherAccessPointName);
       return;
     }
     // Get the list entry for activeApn if it exists. It will have 'name' set.
