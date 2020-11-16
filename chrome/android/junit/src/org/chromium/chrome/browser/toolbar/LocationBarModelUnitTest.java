@@ -31,7 +31,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Unit tests for the LocationBarModel.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class LocationBarModelTest {
+public class LocationBarModelUnitTest {
     @Mock
     private Tab mIncognitoTabMock;
 
