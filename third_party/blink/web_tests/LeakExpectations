@@ -94,7 +94,7 @@ crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/source-nav
 crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/sources-editor-pane-a11y-test.js [ Failure Pass ]
 
 # Only times out on the leak bots.
-crbug.com/998399 [ Linux ] virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]
+crbug.com/998399 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/full-screen-frameset.html [ Failure ]
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
@@ -128,7 +128,7 @@ crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin/worker-module.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/same-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] virtual/omt-worker-fetch/external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
+crbug.com/1068175 [ Linux ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
 
 # Sheriff 2020-04-20
 crbug.com/1071849 [ Linux ] http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Pass Failure ]
@@ -146,7 +146,7 @@ crbug.com/1078769 [ Linux ] external/wpt/wasm/jsapi/idlharness.any.html [ Pass F
 
 # Sheriff 2020-06-24
 # Also crbug.com/867532
-crbug.com/1098782 [ Linux ] virtual/omt-worker-fetch/external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Pass Timeout Crash ]
+crbug.com/1098782 [ Linux ] virtual/plz-dedicated-worker/external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Pass Timeout Crash ]
 
 # Sheriff 2020-07-14
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
@@ -156,7 +156,7 @@ crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin/worker-classic.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] virtual/omt-worker-fetch/external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Pass Timeout ]
+crbug.com/1068175 [ Linux ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin/worker-classic.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/same-origin/worker-module.http.html [ Pass Timeout ]
 crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]

@@ -2068,8 +2068,8 @@ crbug.com/763830 http/tests/security/cors-rfc1918/external-to-internal-fetch.php
 crbug.com/763830 http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Skip ]
 virtual/cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-fetch.php [ Pass ]
 virtual/cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Pass ]
-virtual/omt-worker-fetch-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-fetch.php [ Pass ]
-virtual/omt-worker-fetch-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Pass ]
+virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-fetch.php [ Pass ]
+virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Pass ]
 
 # Memory measurement tests are run as virtual tests.
 external/wpt/measure-memory/* [ Skip ]

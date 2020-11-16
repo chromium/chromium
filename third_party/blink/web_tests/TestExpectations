@@ -2575,12 +2575,12 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-deleti
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ol [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-stop.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/response/response-clone.any.worker.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/omt-worker-fetch/external/wpt/fetch/api/response/response-clone.any.sharedworker.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11.0 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/response/response-clone.any.sharedworker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/omt-worker-fetch/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/omt-worker-fetch/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11.0 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/omt-worker-fetch/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11.0 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 external/wpt/editing/other/select-all-and-delete-in-html-element-having-contenteditable.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-image.html [ Timeout ]
@@ -2604,7 +2604,7 @@ crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/wor
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Pass Failure ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Timeout Failure ]
-crbug.com/626703 [ Win10 ] virtual/omt-worker-fetch/external/wpt/fetch/connection-pool/network-partition-key.html [ Pass Failure Timeout ]
+crbug.com/626703 [ Win10 ] virtual/plz-dedicated-worker/external/wpt/fetch/connection-pool/network-partition-key.html [ Pass Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout Pass Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Failure ]
@@ -2723,7 +2723,7 @@ crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-s
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/extension/pointerevent_touch-action-pan-right-css_touch.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html [ Timeout ]
 crbug.com/626703 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success.https.html [ Timeout ]
-crbug.com/626703 [ Win10 ] virtual/omt-worker-fetch/external/wpt/fetch/api/request/destination/fetch-destination-worker.https.html [ Crash ]
+crbug.com/626703 [ Win10 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/request/destination/fetch-destination-worker.https.html [ Crash ]
 crbug.com/626703 external/wpt/webauthn/idlharness-manual.https.window.js [ Skip ]
 crbug.com/983503 [ Mac ] external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-select-elem-002.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure ]
@@ -3163,7 +3163,7 @@ crbug.com/626703 external/wpt/requestidlecallback/callback-timeout.html [ Timeou
 crbug.com/626703 external/wpt/requestidlecallback/callback-xhr-sync.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/onchange-event-subframe.html [ Timeout ]
 crbug.com/626703 external/wpt/svg/linking/reftests/href-filter-element.html [ Failure ]
-crbug.com/626703 virtual/omt-worker-fetch/external/wpt/xhr/event-readystatechange-loaded.htm [ Failure Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/xhr/event-readystatechange-loaded.htm [ Failure Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-vlr-005.xht [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-vrl-004.xht [ Failure ]
@@ -5431,7 +5431,7 @@ crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stabili
 
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
-crbug.com/1033852 [ Win7 ] virtual/omt-worker-fetch/external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/1033852 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
 
 # Sheriff 2019-12-16
 crbug.com/1034374 http/tests/devtools/tracing/timeline-worker-events.js [ Pass Failure ]
@@ -5525,8 +5525,8 @@ crbug.com/106759 http/tests/devtools/command-line-api-inspect.js [ Pass Failure 
 crbug.com/106759 http/tests/devtools/sources/debugger-console/debugger-command-line-api.js [ Pass Failure ]
 
 crbug.com/989665 [ Mac ] external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
-crbug.com/989665 [ Linux ] virtual/omt-worker-fetch/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
-crbug.com/989665 [ Win ] virtual/omt-worker-fetch/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Pass Timeout ]
+crbug.com/989665 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
+crbug.com/989665 [ Win ] virtual/plz-dedicated-worker/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Pass Timeout ]
 
 # Sheriff 2020-01-23
 crbug.com/1043396 http/tests/devtools/network/network-eventsource.js [ Pass Timeout ]
@@ -6107,7 +6107,7 @@ virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.
 virtual/scroll-unification/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure ]
 
 # Sheriff 2020-09-21
-crbug.com/1130500 [ Mac10.13 Debug ] virtual/omt-worker-fetch/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
+crbug.com/1130500 [ Mac10.13 Debug ] virtual/plz-dedicated-worker/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
 
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Pass Failure ]

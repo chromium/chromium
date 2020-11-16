@@ -485,8 +485,8 @@ crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogo
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
 
-### virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/
-crbug.com/591099 virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Failure ]
+### virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/
+crbug.com/591099 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Failure ]
 
 crbug.com/591099 external/wpt/css/css-tables/absolute-tables-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-tables/absolute-tables-007.html [ Failure ]

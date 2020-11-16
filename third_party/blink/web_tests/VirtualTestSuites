@@ -413,7 +413,7 @@
     "args": ["--enable-features=WebBundlesFromNetwork"]
   },
   {
-    "prefix": "omt-worker-fetch",
+    "prefix": "plz-dedicated-worker",
     "bases": ["external/wpt/content-security-policy/inside-worker",
               "external/wpt/content-security-policy/worker-src",
               "external/wpt/fetch/",
@@ -430,7 +430,7 @@
     "args": ["--enable-features=PlzDedicatedWorker"]
   },
   {
-    "prefix": "omt-worker-fetch-cors-rfc1918",
+    "prefix": "plz-dedicated-worker-cors-rfc1918",
     "bases": ["http/tests/security/cors-rfc1918"],
     "args": ["--enable-features=PlzDedicatedWorker",
              "--enable-blink-features=CorsRFC1918"]
