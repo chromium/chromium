@@ -11562,11 +11562,11 @@
       'id': 181,
       'caption': '''Action to take when the user closes the lid''',
       'tags': [],
-      'desc': '''When this policy is set, it specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes when the user closes the device's lid.
+      'desc': '''Setting the policy specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> takes when the user closes the device's lid.
 
-          When this policy is unset, the default action is taken, which is suspend.
+      Leaving the policy unset means the Suspend action is taken.
 
-          If the action is suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can separately be configured to either lock or not lock the screen before suspending.''',
+      Note: If the action is Suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can separately be set up to lock or not lock the screen before suspending.''',
     },
     {
       'name': 'PowerManagementUsesAudioActivity',
@@ -11582,9 +11582,9 @@
       'id': 182,
       'caption': '''Specify whether audio activity affects power management''',
       'tags': [],
-      'desc': '''If this policy is set to True or is unset, the user is not considered to be idle while audio is playing. This prevents the idle timeout from being reached and the idle action from being taken. However, screen dimming, screen off and screen lock will be performed after the configured timeouts, irrespective of audio activity.
+      'desc': '''Setting the policy to Enabled or leaving it unset means the user is not considered idle while audio plays. This prevents the idle timeout from being reached and the idle action from being taken. However, screen dimming, screen off, and screen lock will still occur after their configured timeouts despite audio activity.
 
-          If this policy is set to False, audio activity does not prevent the user from being considered idle.''',
+      Setting the policy to Disabled means the system can consider users idle despite audio activity.''',
     },
     {
       'name': 'PowerManagementUsesVideoActivity',
@@ -11600,9 +11600,9 @@
       'id': 183,
       'caption': '''Specify whether video activity affects power management''',
       'tags': [],
-      'desc': '''If this policy is set to True or is unset, the user is not considered to be idle while video is playing. This prevents the idle delay, screen dim delay, screen off delay and screen lock delay from being reached and the corresponding actions from being taken.
+      'desc': '''Setting the policy to Enabled or leaving it unset means the user is not considered idle while video plays. This prevents the idle delay, screen dim delay, screen off delay, and screen lock delay from being reached and the corresponding actions from being taken.
 
-          If this policy is set to False, video activity does not prevent the user from being considered idle.''',
+      Setting the policy to Disabled means the system can consider users idle despite video activity.''',
       'arc_support': 'Video playing in Android apps is not taken into consideration, even if this policy is set to <ph name="TRUE">True</ph>.',
     },
     {
@@ -11636,15 +11636,11 @@
       'id': 220,
       'caption': '''Percentage by which to scale the screen dim delay in presentation mode''',
       'tags': [],
-      'desc': '''Specifies the percentage by which the screen dim delay is scaled when the device is in presentation mode.
+      'desc': '''If <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME">PowerSmartDimEnabled</ph> is Disabled, then setting <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME">PresentationScreenDimDelayScale</ph> specifies the percent that the screen dim delay scales when the device is presenting. When the screen dim delay scales, the screen off, screen lock, and idle delays adjust to maintain the same distances from the screen dim delay as originally set.
 
-          If this policy is set, it specifies the percentage by which the screen dim delay is scaled when the device is in presentation mode. When the screen dim delay is scaled, the screen off, screen lock and idle delays get adjusted to maintain the same distances from the screen dim delay as originally configured.
+      Leaving the policy unset puts a default scale factor in use.
 
-          If this policy is unset, a default scale factor is used.
-
-          This policy only takes effect if the <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME">PowerSmartDimEnabled</ph> is disabled. Otherwise, this policy is ignored because the screen dim delay is deteremined by a machine-learning model.
-
-          The scale factor must be 100% or more. Values that would make the screen dim delay in presentation mode shorter than the regular screen dim delay are not allowed.''',
+      Note: The scale factor must be 100% or more.''',
     },
     {
       'name': 'AllowWakeLocks',
@@ -11718,15 +11714,11 @@
       'id': 210,
       'caption': '''Percentage by which to scale the screen dim delay if the user becomes active after dimming''',
       'tags': [],
-      'desc': '''Specifies the percentage by which the screen dim delay is scaled when user activity is observed while the screen is dimmed or soon after the screen has been turned off.
+      'desc': '''If <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME">PowerSmartDimEnabled</ph> is Disabled, then setting <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME">UserActivityScreenDimDelayScale</ph> specifies the percent that the screen dim delay scales when there's user activity while the screen dims or soon after the screen turns off. When the dim delay scales, the screen off, screen lock and idle delays adjust to maintain the same distances from the screen dim delay as originally set.
 
-          If this policy is set, it specifies the percentage by which the screen dim delay is scaled when user activity is observed while the screen is dimmed or soon after the screen has been turned off. When the dim delay is scaled, the screen off, screen lock and idle delays get adjusted to maintain the same distances from the screen dim delay as originally configured.
+      Leaving the policy unset puts a default scale factor in use.
 
-          If this policy is unset, a default scale factor is used.
-
-          This policy only takes effect if the <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME">PowerSmartDimEnabled</ph> policy is disabled. Otherwise, this policy is ignored because the screen dim delay is deteremined by a machine-learning model.
-
-          The scale factor must be 100% or more.''',
+      Note: The scale factor must be 100% or more.''',
     },
     {
       'name': 'WaitForInitialUserActivity',
@@ -11742,11 +11734,9 @@
       'id': 247,
       'caption': '''Wait for initial user activity''',
       'tags': [],
-      'desc': '''Specifies whether power management delays and the session length limit should only start running after the first user activity has been observed in a session.
+      'desc': '''Setting the policy to Enabled means that power management delays and session length limits don't start until after the first user activity occurs in a session.
 
-          If this policy is set to True, power management delays and the session length limit do not start running until after the first user activity has been observed in a session.
-
-          If this policy is set to False or left unset, power management delays and the session length limit start running immediately on session start.''',
+      Setting the policy to Disabled or leaving it unset means power management delays and the time limit begin immediately at session start.''',
     },
     {
       'name': 'PowerManagementIdleSettings',
@@ -11820,30 +11810,37 @@
       'id': 258,
       'caption': '''Power management settings when the user becomes idle''',
       'tags': [],
-      'desc': '''This policy controls multiple settings for the power management strategy when the user becomes idle.
+      'desc': '''Setting the policy controls the power management strategy when the user idles.
 
-          There are four types of action:
-          * The screen will be dimmed if the user remains idle for the time specified by |ScreenDim|.
-          * The screen will be turned off if the user remains idle for the time specified by |ScreenOff|.
-          * A warning dialog will be shown if the user remains idle for the time specified by |IdleWarning|, telling the user that the idle action is about to be taken. The warning message is only shown if the idle action is to logout or shut down.
-          * The action specified by |IdleAction| will be taken if the user remains idle for the time specified by |Idle|.
+      There are 4 actions:
 
-          For each of above actions, the delay should be specified in milliseconds, and needs to be set to a value greater than zero to trigger the corresponding action. In case the delay is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will not take the corresponding action.
+      * The screen dims if the user is idle for the time specified by <ph name="SCREEN_DIM_FIELD_NAME">ScreenDim</ph>.
 
-          For each of the above delays, when the length of time is unset, a default value will be used.
+      * The screen turns off if the user is idle for the time specified by <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph>.
 
-          Note that |ScreenDim| values will be clamped to be less than or equal to |ScreenOff|, |ScreenOff| and |IdleWarning| will be clamped to be less than or equal to |Idle|.
+      * A warning dialog appears if the user remains idle for the time specified by <ph name="IDLE_WARNING_FIELD_NAME">IdleWarning</ph>. It warns the user that the idle action will be taken and only appears if the idle action is to sign out or shut down.
 
-          |IdleAction| can be one of four possible actions:
-          * |Suspend|
-          * |Logout|
-          * |Shutdown|
-          * |DoNothing|
+      * The action specified by <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> is taken if the user is idle for the time specified by Idle.
 
-          When the |IdleAction| is unset, the default action is taken, which is suspend.
+      For each of the above actions, the delay should be specified in milliseconds and must be set to a value greater than zero to trigger the corresponding action. If the delay is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> won't take the corresponding action.
 
-          There are also separate settings for AC power and battery.
-          '''
+      For each of the above delays, when the time is unset, a default value is used.
+
+      <ph name="SCREEN_DIM_FIELD_NAME">ScreenDim</ph> values will be clamped to be less than or equal to <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph>. <ph name="SCREEN_OFF_FIELD_NAME">ScreenOff</ph> and <ph name="IDLE_WARNING_FIELD_NAME">IdleWarning</ph> will be clamped to be less than or equal to Idle.
+
+      <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> can be one of 4 actions:
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND">Suspend</ph>
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT">Logout</ph>
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN">Shutdown</ph>
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING">DoNothing</ph>
+
+      If the <ph name="IDLE_ACTION_FIELD_NAME">IdleAction</ph> is not set, <ph name="IDLE_ACTION_ENUM_SUSPEND">Suspend</ph> is taken.
+
+      Note: There are separate settings for AC power and battery.'''
     },
     {
       'name': 'ScreenLockDelays',
@@ -11876,17 +11873,11 @@
       'id': 259,
       'caption': '''Screen lock delays''',
       'tags': [],
-      'desc': '''Specifies the length of time without user input after which the screen is locked when running on AC power or battery.
+      'desc': '''Setting the policy specifies the length of time in milliseconds without user input after which the screen locks when running on AC power or battery. Values are clamped to be less than the idle delay in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph>.
 
-          When the length of time is set to a value greater than zero, it represents the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> locks the screen.
+      When set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> doesn't lock the screen when the user becomes idle. If unset, a default time is used.
 
-          When the length of time is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> does not lock the screen when the user becomes idle.
-
-          When the length of time is unset, a default length of time is used.
-
-          The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
-
-          The policy value should be specified in milliseconds. Values are clamped to be less than the idle delay.''',
+      Recommendation: Lock the screen on idle by turning on screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> suspend after the idle delay. Only use this policy when screen locking should occur a significant amount of time sooner than suspend or when you don't want suspend on idle.''',
     },
     {
       'name': 'DeviceLoginScreenPowerManagement',
@@ -19105,10 +19096,9 @@
       'id': 465,
       'caption': '''Enable smart dim model to extend the time until the screen is dimmed''',
       'tags': [],
-      'desc': '''Specifies whether a smart dim model is allowed to extend the time until the screen is dimmed.
+      'desc': '''Setting the policy to Enabled or leaving it unset turns the smart dim model on and can extend the time until the screen dims. If it delays the time, the screen off, screen lock, and idle delays adjust to maintain the same distances from the screen dim delay as originally set.
 
-      When the screen is about to be dimmed, the smart dim model evaluates if dimming the screen should be deferred. If the smart dim model defers dimming the screen, it effectively extends the time until the screen is dimmed. In this case, the screen off, screen lock and idle delays get adjusted to maintain the same distances from the screen dim delay as originally configured.
-      If this policy is set to True or left not set, the smart dim model will be enabled and allowed to extend the time until the screen is dimmed. If this policy is set to False, the smart dim model will not influence screen dimming.''',
+      Setting the policy to Disabled means the smart dim model won't influence screen dimming.''',
     },
     {
       'name': 'CoalesceH2ConnectionsWithClientCertificatesForHosts',
@@ -19533,10 +19523,11 @@
       'id': 492,
       'caption': '''Screen brightness percent''',
       'tags': [],
-      'desc': '''Specifies screen brightness percent.
-          When this policy is set initial screen brightness is adjusted to the policy value, but the user can change it later on. Auto-brightness features are disabled.
-          When this policy is unset user screen controls and auto-brightness features are not affected.
-          The policy values should be specified in percents in range 0-100.''',
+      'desc': '''Setting the policy specifies screen brightness percent, turning autobrightness features off. Initial screen brightness adjusts to the policy value, but users can change it.
+
+      Leaving the policy unset doesn't affect user screen controls or autobrightness features.
+
+      Note: The policy values should be specified in percents from 0 to 100.''',
     },
     {
       'id': 494,
@@ -20363,17 +20354,11 @@
       'id': 538,
       'caption': '''Enable peak shift power management''',
       'tags': [],
-      'desc': '''Enable the power peak shift power management policy.
+      'desc': '''Setting the policy to Enabled and setting <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME">DevicePowerPeakShiftBatteryThreshold</ph> and <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME">DevicePowerPeakShiftDayConfig</ph> keeps power peak shift on, if supported on the device. Power peak shift power management policy is a power-saving policy that minimizes alternating current usage during peak times. For each weekday, you can set a start and end time to run in power peak shift mode. As long as the battery stays above the threshold specified, during these times, the system runs from the battery (even if the alternating current is attached). After the specified end time, the system runs from alternating current (if attached), but won't charge the battery. The system will again function normally using alternating current and recharging the battery after the specified start time.
 
-          Peak Shift is power saving policy that minimizes alternating current usage during the peak usage times during the day. For each weekday a start and end time to run in power Peak Shift mode can be set. During these times the system will run from the battery even if the alternating current is attached as long as the battery stays above the threshold specified. After the end time specified the system will run from alternating current if attached but will not charge the battery. The system will again function normally using alternating current and recharging the battery after the specified Charge Start time.
+      Setting the policy to Disabled keeps power peak shift off.
 
-          If this policy is set to true, and <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_NAME">DevicePowerPeakShiftBatteryThreshold</ph>, <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_NAME">DevicePowerPeakShiftDayConfig</ph> are set, then power peak shift will always be enabled if supported on the device.
-
-          If this policy is set to false, power peak shift will always be disabled.
-
-          If you set this policy, users cannot change or override it.
-
-          If this policy is left unset, power peak shift is disabled initially and cannot be enabled by the user.'''
+      If unset, power peak shift is off at first. Users can't change this setting.'''
     },
     {
       'name': 'DevicePowerPeakShiftBatteryThreshold',
@@ -20513,17 +20498,15 @@
       'id': 553,
       'caption': '''Enable USB power share''',
       'tags': [],
-      'desc': '''Enable the USB power share power management policy.
+      'desc': '''Setting the policy to Enabled turns on the USB power share power management policy.
 
-          Certain devices have a specific USB port marked with a lightning bolt or battery icon that can be used to charge devices like a mobile phone using the system battery. This policy affects the charging behavior of this port while the system is in the sleep and shut down modes. This policy does not affect the other USB ports and the charging behavior while the system is awake.
+      Certain devices have a specific USB port with a lightning bolt or battery icon for charging devices using the system battery. This policy affects the charging behavior of this port while the system is in sleep and shut down modes. It doesn't affect the other USB ports and the charging behavior while the system is awake, when the USB port always provides power.
 
-          When awake, the USB port will always provide power.
+      When sleeping, power is supplied to the USB port when the device is plugged in to the wall charger or if the battery level exceeds 50%. When shut down, power is supplied to the USB port when the device is plugged in to the wall charger.
 
-          When sleeping, if this policy is set to true, then power will be supplied to the USB port when the device is plugged into the wall charger or if the battery level is > 50%. Otherwise no power is supplied.
+      Setting the policy to Disabled means no power is supplied.
 
-          When shut down, if this policy is set to true, then power will be supplied to the USB port when the device is plugged into the wall charger. Otherwise no power is supplied.
-
-          If this policy is left unset, the policy is enabled and cannot be disabled by the user.'''
+      Leaving the policy unset means the policy is on, and users can't turn it off.'''
     },
     {
       'name': 'SignedHTTPExchangeEnabled',
