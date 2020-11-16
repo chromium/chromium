@@ -134,8 +134,12 @@
           </network-select-login>
         </div>
       </div>
-      <div id="error-message-md-footer-spacer" class="flex"></div>
-      <div id="buttons" class="layout horizontal center end-justified">
+    </div>
+    <div slot="back-navigation">
+      <oobe-back-button id="error-message-back-button"></oobe-back-button>
+    </div>
+    <div slot="bottom-buttons">
+      <div id="buttons" class="layout horizontal">
         <oobe-text-button id="error-message-md-reboot-button"
             text-key="rebootButton"
             class="show-with-ui-state-kiosk-mode">
@@ -162,10 +166,6 @@
             class="show-with-ui-state-local-state-error">
         </oobe-text-button>
       </div>
-      <div id="error-message-md-bottom-margin"></div>
-    </div>
-    <div slot="back-navigation">
-      <oobe-back-button id="error-message-back-button"></oobe-back-button>
     </div>
   </oobe-dialog>
 </div>
