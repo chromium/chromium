@@ -697,8 +697,11 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
       return;
     for (CanvasDrawListener* listener : listeners_) {
       if (listener->NeedsNewFrame()) {
+        // Here we need to use the SharedGpuContext as some of the images may
+        // have been originated with other contextProvider, but we internally
+        // need a context_provider that has a RasterInterface available.
         listener->SendNewFrame(source_image,
-                               source_image->ContextProviderWrapper());
+                               SharedGpuContext::ContextProviderWrapper());
       }
     }
   }

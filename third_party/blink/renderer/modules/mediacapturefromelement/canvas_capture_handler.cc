@@ -323,6 +323,7 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
 
   IncrementOngoingAsyncPixelReadouts();
   gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
+  DCHECK(context_provider->RasterInterface());
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
