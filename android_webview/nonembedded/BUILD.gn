@@ -161,18 +161,9 @@ android_resources("devui_resources") {
   ]
 }
 
-_devui_launcher_icon_android_manifest = "$root_gen_dir/android_webview/system_webview_apk/DeveloperUiLauncherManifest.xml"
-
-jinja_template("devui_launcher_icon_manifest") {
-  input = "java/DeveloperUiLauncherManifest.xml"
-  output = _devui_launcher_icon_android_manifest
-  variables = [ "show_devui_icon=$webview_devui_show_icon" ]
-}
-
 android_resources("devui_launcher_icon_resources") {
   sources = []
-  android_manifest = _devui_launcher_icon_android_manifest
-  android_manifest_dep = ":devui_launcher_icon_manifest"
+  android_manifest = "java/DeveloperUiLauncherManifest.xml"
 }
 
 android_resources("monochrome_devui_launcher_icon_resources") {
