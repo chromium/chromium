@@ -11,6 +11,10 @@
            file="images/arrow_right.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_BUSINESS" file="images/business.svg"
            type="BINDATA" />
+  <include name="IDR_WEBUI_IMAGES_CANCEL_RED_SVG" file="images/cancel_red.svg"
+           type="BINDATA" />
+  <include name="IDR_WEBUI_IMAGES_CHECK_CIRCLE_GREEN_SVG"
+           file="images/check_circle_green.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_DARK_ARROW_DOWN_SVG"
            file="images/dark/arrow_down.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_DARK_ICON_SEARCH_SVG"

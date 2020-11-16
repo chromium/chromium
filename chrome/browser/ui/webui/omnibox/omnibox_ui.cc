@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/omnibox_resources.h"
+#include "chrome/grit/omnibox_resources_map.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
@@ -39,28 +41,12 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   VersionUI::AddVersionDetailStrings(source);
   source->UseStringsJs();
 
-  static constexpr webui::ResourcePath kResources[] = {
-      {"omnibox.css", IDR_OMNIBOX_CSS},
-      {"omnibox_input.css", IDR_OMNIBOX_INPUT_CSS},
-      {"output_results_group.css", IDR_OUTPUT_RESULTS_GROUP_CSS},
-      {"omnibox_output_column_widths.css",
-       IDR_OMNIBOX_OUTPUT_COLUMN_WIDTHS_CSS},
-      {"omnibox_element.js", IDR_OMNIBOX_ELEMENT_JS},
-      {"omnibox_input.js", IDR_OMNIBOX_INPUT_JS},
-      {"omnibox_output.js", IDR_OMNIBOX_OUTPUT_JS},
-      {"omnibox.js", IDR_OMNIBOX_JS},
-      {"chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js",
-       IDR_OMNIBOX_MOJO_JS},
-  };
-  webui::AddResourcePathsBulk(source, kResources);
-
-  source->SetDefaultResource(IDR_OMNIBOX_HTML);
+  webui::AddResourcePathsBulk(
+      source, base::make_span(kOmniboxResources, kOmniboxResourcesSize));
+  source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
 
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
-    source->AddResourcePath("omnibox_popup.js", IDR_OMNIBOX_POPUP_JS);
-    source->AddResourcePath("omnibox_popup.html", IDR_OMNIBOX_POPUP_HTML);
-
     popup_handler_ = std::make_unique<OmniboxPopupHandler>();
   }
 #endif

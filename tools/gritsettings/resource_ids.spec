@@ -243,7 +243,8 @@
   "chrome/browser/resources/net_internals/net_internals_resources.grd": {
     "includes": [2120],
   },
-  "chrome/browser/resources/omnibox/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [2140],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/quota_internals/quota_internals_resources.grd": {

@@ -242,7 +242,8 @@ tbody.head th {
 }
 
 .cell-additional-info a {
-  background-image: url(../../../../third_party/blink/renderer/modules/media_controls/resources/ic_download.svg);
+  /* Inlined version of cr:file-download icon */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg>');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -267,11 +268,11 @@ tbody.head th {
 }
 
 .check-mark {
-  background-image: url(../../../../ui/webui/resources/images/check_circle_green.svg);
+  background-image: url(chrome://resources/images/check_circle_green.svg);
 }
 
 .x-mark {
-  background-image: url(../../../../ui/webui/resources/images/cancel_red.svg);
+  background-image: url(chrome://resources/images/cancel_red.svg);
 }
 
 /* json cells */
