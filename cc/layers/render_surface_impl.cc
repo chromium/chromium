@@ -45,7 +45,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
       ancestor_property_changed_(false),
       contributes_to_drawn_surface_(false),
       is_render_surface_list_member_(false),
-      can_use_cached_backdrop_filtered_result_(false),
+      intersects_damage_under_(false),
       nearest_occlusion_immune_ancestor_(nullptr) {
   damage_tracker_ = DamageTracker::Create();
 }
@@ -452,13 +452,12 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   gfx::RectF tex_coord_rect(gfx::Rect(content_rect().size()));
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
-  quad->SetAll(shared_quad_state, content_rect(), unoccluded_content_rect,
-               /*needs_blending=*/true, render_pass_id(), mask_resource_id,
-               mask_uv_rect, mask_texture_size, surface_contents_scale,
-               gfx::PointF(), tex_coord_rect,
-               !layer_tree_impl_->settings().enable_edge_anti_aliasing,
-               OwningEffectNode()->backdrop_filter_quality,
-               can_use_cached_backdrop_filtered_result_);
+  quad->SetAll(
+      shared_quad_state, content_rect(), unoccluded_content_rect,
+      /*needs_blending=*/true, render_pass_id(), mask_resource_id, mask_uv_rect,
+      mask_texture_size, surface_contents_scale, gfx::PointF(), tex_coord_rect,
+      !layer_tree_impl_->settings().enable_edge_anti_aliasing,
+      OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
 }
 
 }  // namespace cc

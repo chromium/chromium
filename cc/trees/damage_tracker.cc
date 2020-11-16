@@ -217,7 +217,7 @@ void DamageTracker::ComputeSurfaceDamage(
     while (it != surfaces_with_backdrop_blur_filter.end()) {
       RenderSurfaceImpl* surface = it->first;
       if (surface->render_target() == render_surface) {
-        surface->set_can_use_cached_backdrop_filtered_result(
+        surface->set_intersects_damage_under(
             !it->second.Intersects(leftover_damage_rect) && valid);
         it = surfaces_with_backdrop_blur_filter.erase(it);
       } else {
@@ -441,7 +441,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
 
     // The surface's old region is now exposed on the target surface, too.
     damage_for_this_update_.Union(old_surface_rect);
-    render_surface->set_can_use_cached_backdrop_filtered_result(false);
+    render_surface->set_intersects_damage_under(false);
   } else {
     // Check if current accumulated damage intersects the render surface.
     gfx::Rect damage_on_target;
@@ -450,7 +450,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
       surfaces_with_backdrop_blur_filter.emplace_back(
           std::make_pair(render_surface, surface_rect_in_target_space));
     } else {
-      render_surface->set_can_use_cached_backdrop_filtered_result(false);
+      render_surface->set_intersects_damage_under(false);
     }
     // Only the surface's damage_rect will damage the target surface.
     gfx::Rect damage_rect_in_local_space;
