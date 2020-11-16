@@ -156,12 +156,20 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
                                   ColorSpace::TransferID::SMPTEST2084,
                                   ColorSpace::MatrixID::BT2020_NCL,
                                   ColorSpace::RangeID::LIMITED)) {
-      return true;
+      if (__builtin_available(macos 11.0, *)) {
+        color_space_name = kCGColorSpaceITUR_2100_PQ;
+      } else {
+        return true;
+      }
     } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
                                          ColorSpace::TransferID::ARIB_STD_B67,
                                          ColorSpace::MatrixID::BT2020_NCL,
                                          ColorSpace::RangeID::LIMITED)) {
-      return true;
+      if (__builtin_available(macos 11.0, *)) {
+        color_space_name = kCGColorSpaceITUR_2100_HLG;
+      } else {
+        return true;
+      }
     }
   }
   if (color_space_name) {

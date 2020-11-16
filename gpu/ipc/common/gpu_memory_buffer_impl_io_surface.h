@@ -46,6 +46,7 @@ class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
   void Unmap() override;
   int stride(size_t plane) const override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
+  void SetHDRMetadata(const gfx::HDRMetadata& hdr_metadata) override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 

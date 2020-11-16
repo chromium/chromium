@@ -12,7 +12,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {

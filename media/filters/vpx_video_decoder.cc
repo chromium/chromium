@@ -338,6 +338,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   }
 
   (*video_frame)->set_timestamp(buffer->timestamp());
+  (*video_frame)->set_hdr_metadata(config_.hdr_metadata());
 
   // Prefer the color space from the config if available. It generally comes
   // from the color tag which is more expressive than the vp8 and vp9 bitstream.
@@ -395,7 +396,6 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     (*video_frame)
         ->set_color_space(gfx::ColorSpace(primaries, transfer, matrix, range));
   }
-  (*video_frame)->set_hdr_metadata(config_.hdr_metadata());
 
   return true;
 }

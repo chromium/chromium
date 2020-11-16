@@ -117,7 +117,11 @@ std::string VideoDecoderConfig::AsHumanReadableString() const {
       << hdr_metadata()->mastering_metadata.primary_b.x() << ","
       << hdr_metadata()->mastering_metadata.primary_b.y() << ") wp("
       << hdr_metadata()->mastering_metadata.white_point.x() << ","
-      << hdr_metadata()->mastering_metadata.white_point.y() << ")";
+      << hdr_metadata()->mastering_metadata.white_point.y()
+      << "), max_content_light_level="
+      << hdr_metadata()->max_content_light_level
+      << ", max_frame_average_light_level="
+      << hdr_metadata()->max_frame_average_light_level;
   }
 
   return s.str();

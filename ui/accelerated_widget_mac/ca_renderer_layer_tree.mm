@@ -13,12 +13,15 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/mac/io_surface_hdr_metadata.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_image_io_surface.h"
 
@@ -31,10 +34,8 @@ namespace {
 bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
     AVSampleBufferDisplayLayer* av_layer,
     CVPixelBufferRef cv_pixel_buffer) {
-  OSStatus os_status = noErr;
-
   base::ScopedCFTypeRef<CMVideoFormatDescriptionRef> video_info;
-  os_status = CMVideoFormatDescriptionCreateForImageBuffer(
+  OSStatus os_status = CMVideoFormatDescriptionCreateForImageBuffer(
       nullptr, cv_pixel_buffer, video_info.InitializeInto());
   if (os_status != noErr) {
     LOG(ERROR) << "CMVideoFormatDescriptionCreateForImageBuffer failed with "
@@ -104,7 +105,8 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
 // of and retain |io_surface| until it is no longer being displayed.
 bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     AVSampleBufferDisplayLayer* av_layer,
-    IOSurfaceRef io_surface) {
+    IOSurfaceRef io_surface,
+    const gfx::ColorSpace& io_surface_color_space) {
   CVReturn cv_return = kCVReturnSuccess;
 
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
@@ -113,6 +115,55 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
   if (cv_return != kCVReturnSuccess) {
     LOG(ERROR) << "CVPixelBufferCreateWithIOSurface failed with " << cv_return;
     return false;
+  }
+
+  if (__builtin_available(macos 11.0, *)) {
+    if (io_surface_color_space ==
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                            gfx::ColorSpace::TransferID::SMPTEST2084,
+                            gfx::ColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::LIMITED) ||
+        io_surface_color_space ==
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                            gfx::ColorSpace::TransferID::ARIB_STD_B67,
+                            gfx::ColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::LIMITED)) {
+      CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferColorPrimariesKey,
+                            kCVImageBufferColorPrimaries_ITU_R_2020,
+                            kCVAttachmentMode_ShouldPropagate);
+      CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+                            kCVImageBufferYCbCrMatrix_ITU_R_2020,
+                            kCVAttachmentMode_ShouldPropagate);
+      CVBufferSetAttachment(
+          cv_pixel_buffer, kCVImageBufferTransferFunctionKey,
+          io_surface_color_space.GetTransferID() ==
+                  gfx::ColorSpace::TransferID::ARIB_STD_B67
+              ? kCVImageBufferTransferFunction_ITU_R_2100_HLG
+              : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
+          kCVAttachmentMode_ShouldPropagate);
+
+      // Transfer stashed HDR metadata from the IOSurface to the CVPixelBuffer.
+      //
+      // Note: It'd be nice to find a way to set this on the IOSurface itself
+      // in some way that propagates to the CVPixelBuffer, but thus far we
+      // haven't been able to find a way.
+      gfx::HDRMetadata hdr_metadata;
+      if (IOSurfaceGetHDRMetadata(io_surface, hdr_metadata)) {
+        if (!(hdr_metadata.mastering_metadata == gfx::MasteringMetadata())) {
+          CVBufferSetAttachment(
+              cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
+              media::GenerateMasteringDisplayColorVolume(hdr_metadata),
+              kCVAttachmentMode_ShouldPropagate);
+        }
+        if (hdr_metadata.max_content_light_level ||
+            hdr_metadata.max_frame_average_light_level) {
+          CVBufferSetAttachment(
+              cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
+              media::GenerateContentLightLevelInfo(hdr_metadata),
+              kCVAttachmentMode_ShouldPropagate);
+        }
+      }
+    }
   }
 
   return AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(av_layer,
@@ -828,8 +879,8 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
                 << "AVSampleBufferDisplayLayerEnqueueCVPixelBuffer failed";
           }
         } else {
-          result =
-              AVSampleBufferDisplayLayerEnqueueIOSurface(av_layer, io_surface);
+          result = AVSampleBufferDisplayLayerEnqueueIOSurface(
+              av_layer, io_surface, io_surface_color_space);
           if (!result) {
             LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
           }

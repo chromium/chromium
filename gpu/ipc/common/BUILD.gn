@@ -84,13 +84,6 @@ source_set("ipc_common_sources") {
     "result_codes.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "gpu_memory_buffer_impl_io_surface.cc",
-      "gpu_memory_buffer_impl_io_surface.h",
-    ]
-    frameworks = [ "IOSurface.framework" ]
-  }
   if (is_win) {
     sources += [
       "gpu_memory_buffer_impl_dxgi.cc",
@@ -138,6 +131,15 @@ source_set("ipc_common_sources") {
     "//ui/gfx/ipc/geometry",
     "//ui/gl",
   ]
+
+  if (is_mac) {
+    sources += [
+      "gpu_memory_buffer_impl_io_surface.cc",
+      "gpu_memory_buffer_impl_io_surface.h",
+    ]
+    deps += [ "//ui/gfx:gfx_io_surface_hdr_metadata" ]
+    frameworks = [ "IOSurface.framework" ]
+  }
 
   if (!is_nacl) {
     deps += [ "//ui/gfx/ipc/skia" ]
