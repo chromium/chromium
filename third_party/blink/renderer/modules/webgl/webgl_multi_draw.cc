@@ -48,6 +48,8 @@ void WebGLMultiDraw::multiDrawArraysImpl(
     return;
   }
 
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->MultiDrawArraysWEBGL(
       mode, &firsts[firstsOffset], &counts[countsOffset], drawcount);
 }
@@ -71,6 +73,8 @@ void WebGLMultiDraw::multiDrawElementsImpl(
                      offsetsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawElementsWEBGL(
       mode, &counts[countsOffset], type, &offsets[offsetsOffset], drawcount);
@@ -100,6 +104,8 @@ void WebGLMultiDraw::multiDrawArraysInstancedImpl(
                      instanceCounts.size(), instanceCountsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawArraysInstancedWEBGL(
       mode, &firsts[firstsOffset], &counts[countsOffset],
@@ -131,6 +137,8 @@ void WebGLMultiDraw::multiDrawElementsInstancedImpl(
                      instanceCounts.size(), instanceCountsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawElementsInstancedWEBGL(
       mode, &counts[countsOffset], type, &offsets[offsetsOffset],

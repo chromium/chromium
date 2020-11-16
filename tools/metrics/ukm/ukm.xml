@@ -3409,7 +3409,22 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="Canvas.RenderingContext" enum="CanvasRenderingAPI">
     <summary>
-      Type of rendering context created for HTMLCanvasElement.
+      Type of rendering contexts created for HTMLCanvasElement.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Canvas.RenderingContextDrawnTo" enum="CanvasRenderingAPI">
+    <summary>
+      Type of rendering contexts created for HTMLCanvasElement that something
+      has actually been drawn to. For WebGL 1 and 2 context this means there is
+      at least one draw call issued. For other context types we leave the
+      implementation blank at this moment.
     </summary>
     <aggregation>
       <history>
@@ -3426,7 +3441,23 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="OffscreenCanvas.RenderingContext" enum="CanvasRenderingAPI">
     <summary>
-      Type of rendering context created for OffscreenCanvas.
+      Type of rendering contexts created for OffscreenCanvas.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="OffscreenCanvas.RenderingContextDrawnTo"
+      enum="CanvasRenderingAPI">
+    <summary>
+      Type of rendering contexts created for OffscreenCanvas that something has
+      actually been drawn to. For WebGL 1 and 2 context this means there is at
+      least one draw call issued. For other context types we leave the
+      implementation blank at this moment.
     </summary>
     <aggregation>
       <history>

@@ -65,6 +65,9 @@ void WebGLDrawInstancedBaseVertexBaseInstance::
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->DrawArraysInstancedBaseInstanceANGLE(
       mode, first, count, instance_count, baseinstance);
 }
@@ -80,6 +83,9 @@ void WebGLDrawInstancedBaseVertexBaseInstance::
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()
       ->ContextGL()
       ->DrawElementsInstancedBaseVertexBaseInstanceANGLE(

@@ -506,6 +506,20 @@ void StripComments::Process(UChar c) {
 }
 
 static bool g_should_fail_context_creation_for_testing = false;
+
+static CanvasRenderingContext::CanvasRenderingAPI GetCanvasRenderingAPIType(
+    Platform::ContextType context_type) {
+  switch (context_type) {
+    case Platform::kWebGL1ContextType:
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
+    case Platform::kWebGL2ContextType:
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl2;
+    default:
+      NOTREACHED();
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
+  }
+}
+
 }  // namespace
 
 class ScopedTexture2DRestorer {
@@ -2721,6 +2735,7 @@ void WebGLRenderingContextBase::drawArraysImpl(GLenum mode,
                                                    drawing_buffer_.get());
   OnBeforeDrawCall();
   ContextGL()->DrawArrays(mode, first, count);
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGLRenderingContextBase::drawElementsImpl(GLenum mode,
@@ -2742,6 +2757,7 @@ void WebGLRenderingContextBase::drawElementsImpl(GLenum mode,
   ContextGL()->DrawElements(
       mode, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
@@ -2761,6 +2777,7 @@ void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
                                                    drawing_buffer_.get());
   OnBeforeDrawCall();
   ContextGL()->DrawArraysInstancedANGLE(mode, first, count, primcount);
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
@@ -2783,6 +2800,7 @@ void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
   ContextGL()->DrawElementsInstancedANGLE(
       mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
       primcount);
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGLRenderingContextBase::enable(GLenum cap) {
@@ -3322,6 +3340,14 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
                surface_token),
            sample_token)
       .Record(ukm_params.ukm_recorder);
+}
+
+void WebGLRenderingContextBase::RecordUKMCanvasDrawnToAtFirstDrawCall() {
+  if (!has_been_drawn_to_) {
+    has_been_drawn_to_ = true;
+    RecordUKMCanvasDrawnToRenderingAPI(
+        GetCanvasRenderingAPIType(context_type_));
+  }
 }
 
 ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,

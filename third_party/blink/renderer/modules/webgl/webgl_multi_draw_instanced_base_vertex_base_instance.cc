@@ -84,6 +84,8 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
     return;
   }
 
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->MultiDrawArraysInstancedBaseInstanceWEBGL(
       mode, &firsts[firsts_offset], &counts[counts_offset],
       &instance_counts[instance_counts_offset],
@@ -132,6 +134,8 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
                      baseinstances_offset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()
       ->ContextGL()

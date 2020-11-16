@@ -3477,6 +3477,7 @@ void WebGL2RenderingContextBase::drawArraysInstanced(GLenum mode,
                                                    drawing_buffer_.get());
   OnBeforeDrawCall();
   ContextGL()->DrawArraysInstancedANGLE(mode, first, count, instance_count);
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGL2RenderingContextBase::drawElementsInstanced(GLenum mode,
@@ -3499,6 +3500,7 @@ void WebGL2RenderingContextBase::drawElementsInstanced(GLenum mode,
   ContextGL()->DrawElementsInstancedANGLE(
       mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
       instance_count);
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
@@ -3522,6 +3524,7 @@ void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
   ContextGL()->DrawRangeElements(
       mode, start, end, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+  RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
 void WebGL2RenderingContextBase::drawBuffers(const Vector<GLenum>& buffers) {

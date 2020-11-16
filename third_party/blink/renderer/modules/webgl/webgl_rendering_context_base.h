@@ -1776,6 +1776,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         DOMArrayBufferView* pixels,
                         int64_t offset);
 
+  // Record Canvas/OffscreenCanvas.RenderingContextDrawnTo at the first draw
+  // call.
+  void RecordUKMCanvasDrawnToAtFirstDrawCall();
+
  private:
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             scoped_refptr<base::SingleThreadTaskRunner>,
@@ -1840,6 +1844,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   friend class WebGLFastCallHelper;
   WebGLFastCallHelper fast_call_;
+  bool has_been_drawn_to_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebGLRenderingContextBase);
 };

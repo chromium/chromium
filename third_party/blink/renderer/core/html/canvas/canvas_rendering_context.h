@@ -90,6 +90,8 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   };
 
   void RecordUKMCanvasRenderingAPI(CanvasRenderingAPI canvasRenderingAPI);
+  void RecordUKMCanvasDrawnToRenderingAPI(
+      CanvasRenderingAPI canvasRenderingAPI);
 
   static ContextType ContextTypeFromId(const String& id);
   static ContextType ResolveContextTypeAliases(ContextType);

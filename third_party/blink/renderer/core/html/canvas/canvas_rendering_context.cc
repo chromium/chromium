@@ -141,6 +141,22 @@ void CanvasRenderingContext::RecordUKMCanvasRenderingAPI(
   }
 }
 
+void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI(
+    CanvasRenderingAPI canvasRenderingAPI) {
+  DCHECK(Host());
+  const auto& ukm_params = Host()->GetUkmParameters();
+  if (Host()->IsOffscreenCanvas()) {
+    ukm::builders::ClientRenderingAPI(ukm_params.source_id)
+        .SetOffscreenCanvas_RenderingContextDrawnTo(
+            static_cast<int>(canvasRenderingAPI))
+        .Record(ukm_params.ukm_recorder);
+  } else {
+    ukm::builders::ClientRenderingAPI(ukm_params.source_id)
+        .SetCanvas_RenderingContextDrawnTo(static_cast<int>(canvasRenderingAPI))
+        .Record(ukm_params.ukm_recorder);
+  }
+}
+
 CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(
     const String& id) {
   if (id == "2d")
