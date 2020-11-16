@@ -1372,19 +1372,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, TabTitleWithEmbeddedPdf) {
 #else
 #define MAYBE_PdfZoomWithoutBubble PdfZoomWithoutBubble
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, MAYBE_PdfZoomWithoutBubble) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
   WebContents* web_contents = GetActiveWebContents();
 
-  // The PDF viewer, when the update is disabled, always starts at default zoom,
-  // which for tests is 100% or zoom level 0.0. Here we look at the presets to
-  // find the next zoom level above 0. Ideally we should look at the zoom levels
-  // from the PDF viewer javascript, but we assume they'll always match the
-  // browser presets, which are easier to access. When the update is enabled,
-  // the presence of the sidenav causes the default zoom to be just under 90%.
-  // In this case, we add 2 additional zoom calls to match the final result.
+  // Here we look at the presets to find the next zoom level above 0. Ideally
+  // we should look at the zoom levels from the PDF viewer javascript, but we
+  // assume they'll always match the browser presets, which are easier to
+  // access. In the script below, we zoom to 100% (0), then wait for this to be
+  // picked up by the browser zoom, then zoom to the next zoom level. This
+  // ensures the test passes regardless of the initial default zoom level.
   std::vector<double> preset_zoom_levels = zoom::PageZoom::PresetZoomLevels(0);
   auto it = std::find(preset_zoom_levels.begin(), preset_zoom_levels.end(), 0);
   ASSERT_TRUE(it != preset_zoom_levels.end());
@@ -1404,19 +1403,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
   EXPECT_EQ(nullptr, ZoomBubbleView::GetZoomBubble());
 #endif
-  ASSERT_TRUE(
-      content::ExecuteScript(guest_contents, "viewer.viewport.zoomIn();"));
-
-  // Two extra calls - the first zoomIn() takes zoom to 90%, the second to 100%,
-  // and the third goes to the next zoom level above 100%, which is the desired
-  // result for this test.
-  ASSERT_TRUE(
-      content::ExecuteScript(guest_contents,
-                             "if (document.documentElement.hasAttribute("
-                             "        'pdf-viewer-update-enabled')) {"
-                             "  viewer.viewport.zoomIn();"
-                             "  viewer.viewport.zoomIn();"
-                             "}"));
+  ASSERT_TRUE(content::ExecuteScript(guest_contents,
+                                     "while (viewer.viewport.getZoom() < 1) {"
+                                     "  viewer.viewport.zoomIn();"
+                                     "}"
+                                     "setTimeout(() => {"
+                                     "  viewer.viewport.zoomIn();"
+                                     "}, 1);"));
 
   watcher.Wait();
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
@@ -2428,7 +2421,8 @@ void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
 }
 
 // Ensure that touchpad pinch events are handled by the PDF viewer.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       TouchpadPinchInvokesCustomZoom) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -2450,7 +2444,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
 
 #if !defined(OS_MAC)
 // Ensure that ctrl-wheel events are handled by the PDF viewer.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, CtrlWheelInvokesCustomZoom) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -2478,7 +2472,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
 #define MAYBE_TouchscreenPinchInvokesCustomZoom \
   TouchscreenPinchInvokesCustomZoom
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
                        MAYBE_TouchscreenPinchInvokesCustomZoom) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
