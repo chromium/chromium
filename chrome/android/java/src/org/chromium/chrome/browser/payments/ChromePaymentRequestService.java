@@ -148,32 +148,6 @@ public class ChromePaymentRequestService
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
         mPaymentUiService.initialize(mSpec.getPaymentDetails());
-
-        // Log the various types of payment methods that were requested by the merchant.
-        boolean requestedMethodGoogle = false;
-        // Not to record requestedMethodBasicCard because JourneyLogger ignore the case where the
-        // specified networks are unsupported. mPaymentUiService.merchantSupportsAutofillCards()
-        // better captures this group of interest than requestedMethodBasicCard.
-        boolean requestedMethodOther = false;
-        for (String methodName : mSpec.getMethodData().keySet()) {
-            switch (methodName) {
-                case MethodStrings.ANDROID_PAY:
-                case MethodStrings.GOOGLE_PAY:
-                    requestedMethodGoogle = true;
-                    break;
-                case MethodStrings.BASIC_CARD:
-                    // Not to record requestedMethodBasicCard because
-                    // mPaymentUiService.merchantSupportsAutofillCards() is used instead.
-                    break;
-                default:
-                    // "Other" includes https url, http url(when certificate check is bypassed) and
-                    // the unlisted methods defined in {@link MethodStrings}.
-                    requestedMethodOther = true;
-            }
-        }
-        mJourneyLogger.setRequestedPaymentMethodTypes(
-                /*requestedBasicCard=*/mPaymentUiService.merchantSupportsAutofillCards(),
-                requestedMethodGoogle, requestedMethodOther);
     }
 
     // Implements BrowserPaymentRequest:
