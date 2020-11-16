@@ -30,6 +30,9 @@ void AXVirtualObject::AddChildren() {
   if (!accessible_node_)
     return;
 
+  DCHECK(!have_children_);
+  have_children_ = true;
+
   for (const auto& child : accessible_node_->GetChildren()) {
     AXObject* ax_child = AXObjectCache().GetOrCreate(child);
     if (!ax_child)
