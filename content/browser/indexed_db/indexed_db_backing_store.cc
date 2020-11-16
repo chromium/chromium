@@ -3289,7 +3289,8 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseOne(
     return WriteNewBlobs(std::move(callback));
   } else {
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult,
+        storage::mojom::WriteBlobToFileResult::kSuccess);
   }
 }
 
@@ -3455,7 +3456,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
   }
   if (num_objects_to_write == 0) {
     return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
+        BlobWriteResult::kRunPhaseTwoAndReturnResult,
+        storage::mojom::WriteBlobToFileResult::kSuccess);
   }
 
   write_state_.emplace(num_objects_to_write, std::move(callback));
@@ -3464,7 +3466,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
       backing_store_->blob_storage_context_;
 
   auto write_result_callback = base::BindRepeating(
-      [](base::WeakPtr<Transaction> transaction, bool success) {
+      [](base::WeakPtr<Transaction> transaction,
+         storage::mojom::WriteBlobToFileResult result) {
         if (!transaction)
           return;
         // This can be null if Rollback() is called.
@@ -3472,27 +3475,21 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           return;
         auto& write_state = transaction->write_state_.value();
         DCHECK(!write_state.on_complete.is_null());
-        if (!success) {
+        if (result != storage::mojom::WriteBlobToFileResult::kSuccess) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
-          std::move(on_complete).Run(BlobWriteResult::kFailure);
+          std::move(on_complete).Run(BlobWriteResult::kFailure, result);
           return;
         }
         --(write_state.calls_left);
         if (write_state.calls_left == 0) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
-          std::move(on_complete).Run(BlobWriteResult::kRunPhaseTwoAsync);
+          std::move(on_complete)
+              .Run(BlobWriteResult::kRunPhaseTwoAsync, result);
         }
       },
       ptr_factory_.GetWeakPtr());
-
-  auto blob_write_result_callback = base::BindRepeating(
-      [](const base::RepeatingCallback<void(bool success)>& callback,
-         storage::mojom::WriteBlobToFileResult result) {
-        callback.Run(result == storage::mojom::WriteBlobToFileResult::kSuccess);
-      },
-      write_result_callback);
 
   for (auto& iter : external_object_change_map_) {
     for (auto& entry : iter.second->mutable_external_objects()) {
@@ -3526,7 +3523,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
               backing_store_->GetBlobFileName(database_id_,
                                               entry.blob_number()),
               IndexedDBBackingStore::ShouldSyncOnCommit(durability_),
-              last_modified, blob_write_result_callback);
+              last_modified, write_result_callback);
           break;
         }
         case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle: {
@@ -3545,18 +3542,21 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
               base::BindOnce(
                   [](base::WeakPtr<Transaction> transaction,
                      IndexedDBExternalObject* object,
-                     base::OnceCallback<void(bool success)> callback,
+                     base::OnceCallback<void(
+                         storage::mojom::WriteBlobToFileResult)> callback,
                      const std::vector<uint8_t>& serialized_token) {
                     // |object| is owned by |transaction|, so make sure
                     // |transaction| is still valid before doing anything else.
                     if (!transaction)
                       return;
                     if (serialized_token.empty()) {
-                      std::move(callback).Run(/*success=*/false);
+                      std::move(callback).Run(
+                          storage::mojom::WriteBlobToFileResult::kError);
                       return;
                     }
                     object->set_native_file_system_token(serialized_token);
-                    std::move(callback).Run(/*success=*/true);
+                    std::move(callback).Run(
+                        storage::mojom::WriteBlobToFileResult::kSuccess);
                   },
                   ptr_factory_.GetWeakPtr(), &entry, write_result_callback));
           break;

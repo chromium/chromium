@@ -193,7 +193,9 @@ void IndexedDBFakeBackingStore::FakeTransaction::Begin(
     std::vector<ScopeLock> locks) {}
 leveldb::Status IndexedDBFakeBackingStore::FakeTransaction::CommitPhaseOne(
     BlobWriteCallback callback) {
-  return std::move(callback).Run(BlobWriteResult::kRunPhaseTwoAndReturnResult);
+  return std::move(callback).Run(
+      BlobWriteResult::kRunPhaseTwoAndReturnResult,
+      storage::mojom::WriteBlobToFileResult::kSuccess);
 }
 leveldb::Status IndexedDBFakeBackingStore::FakeTransaction::CommitPhaseTwo() {
   return result_;

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -40,8 +41,11 @@ enum class BlobWriteResult {
 // BlobWriteResult signifies if the operation succeeded or not, and the returned
 // status is used to handle errors in the next part of the transcation commit
 // lifecycle. Note: The returned status can only be used when the result is
-// |kRunPhaseTwoAndReturnResult|.
-using BlobWriteCallback = base::OnceCallback<leveldb::Status(BlobWriteResult)>;
+// |kRunPhaseTwoAndReturnResult|.  The WriteBlobToFileResult is a more granular
+// error in the case something goes wrong.
+using BlobWriteCallback =
+    base::OnceCallback<leveldb::Status(BlobWriteResult,
+                                       storage::mojom::WriteBlobToFileResult)>;
 
 // This object represents a change in the database involving adding or removing
 // external objects. if external_objects() is empty, then objects are to be

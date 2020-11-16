@@ -211,7 +211,9 @@ class CONTENT_EXPORT IndexedDBTransaction {
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  leveldb::Status BlobWriteComplete(BlobWriteResult result);
+  leveldb::Status BlobWriteComplete(
+      BlobWriteResult result,
+      storage::mojom::WriteBlobToFileResult error);
   void CloseOpenCursorBindings();
   void CloseOpenCursors();
   leveldb::Status CommitPhaseTwo();

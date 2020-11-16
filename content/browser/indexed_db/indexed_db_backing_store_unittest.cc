@@ -770,13 +770,15 @@ BlobWriteCallback CreateBlobWriteCallback(
     base::OnceClosure on_done = base::OnceClosure()) {
   *succeeded = false;
   return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result) {
+      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
+         storage::mojom::WriteBlobToFileResult error) {
         switch (result) {
           case BlobWriteResult::kFailure:
             NOTREACHED();
             break;
           case BlobWriteResult::kRunPhaseTwoAsync:
           case BlobWriteResult::kRunPhaseTwoAndReturnResult:
+            DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
             *succeeded = true;
             break;
         }
