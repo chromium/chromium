@@ -343,10 +343,9 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
                               const base::FilePath& user_data_dir,
                               const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile")
-
   base::Time start = base::Time::Now();
 
-  bool set_last_used_profile = false;
+  bool last_used_profile_set = false;
 
 // If the browser is launched due to activation on Windows native
 // notification, the profile id encoded in the notification launch id should
@@ -356,22 +355,24 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
       NotificationLaunchId::GetNotificationLaunchProfileId(parsed_command_line);
   if (!last_used_profile_id.empty()) {
     profiles::SetLastUsedProfile(last_used_profile_id);
-    set_last_used_profile = true;
+    last_used_profile_set = true;
   }
 #endif  // defined(OS_WIN)
 
   bool profile_dir_specified =
       profiles::IsMultipleProfilesEnabled() &&
       parsed_command_line.HasSwitch(switches::kProfileDirectory);
-  if (!set_last_used_profile && profile_dir_specified) {
+  if (!last_used_profile_set && profile_dir_specified) {
     profiles::SetLastUsedProfile(
         parsed_command_line.GetSwitchValueASCII(switches::kProfileDirectory));
-    set_last_used_profile = true;
+    last_used_profile_set = true;
   }
 
-  if (set_last_used_profile) {
+  if (last_used_profile_set &&
+      !parsed_command_line.HasSwitch(switches::kAppId)) {
     // Clear kProfilesLastActive since the user only wants to launch a specific
-    // profile.
+    // profile. Don't clear it if the user launched a web app, in order to not
+    // break any subsequent multi-profile session restore.
     ListPrefUpdate update(g_browser_process->local_state(),
                           prefs::kProfilesLastActive);
     base::ListValue* profile_list = update.Get();
@@ -395,7 +396,7 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
 #else
   profile = GetStartupProfile(user_data_dir, parsed_command_line);
 
-  if (!profile && !set_last_used_profile)
+  if (!profile && !last_used_profile_set)
     profile = GetFallbackStartupProfile();
 
   if (!profile) {
@@ -1607,9 +1608,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if !defined(OS_CHROMEOS)
   // On ChromeOS multiple profiles doesn't apply, and will break if we load
   // them this early as the cryptohome hasn't yet been mounted (which happens
-  // only once we log in).
-  last_opened_profiles =
-      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  // only once we log in). And if we're launching a web app, we don't want to
+  // restore the last opened profiles.
+  if (!parsed_command_line().HasSwitch(switches::kAppId)) {
+    last_opened_profiles =
+        g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  }
 #endif  // defined(OS_CHROMEOS)
 
   // This step is costly and is already measured in
