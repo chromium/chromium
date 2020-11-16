@@ -59,6 +59,10 @@ const base::Feature kOptimizationTargetPredictionUsingMLService{
     "OptimizationGuidePredictionUsingMLService",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the downloading of models.
+const base::Feature kOptimizationGuideModelDownloading{
+    "OptimizationGuideModelDownloading", base::FEATURE_DISABLED_BY_DEFAULT};
+
 size_t MaxHintsFetcherTopHostBlacklistSize() {
   // The blacklist will be limited to the most engaged hosts and will hold twice
   // (2*N) as many hosts that the HintsFetcher request hints for. The extra N
@@ -305,6 +309,10 @@ base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {
 bool ShouldUseMLServiceForPrediction() {
   return base::FeatureList::IsEnabled(
       kOptimizationTargetPredictionUsingMLService);
+}
+
+bool IsModelDownloadingEnabled() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideModelDownloading);
 }
 
 }  // namespace features

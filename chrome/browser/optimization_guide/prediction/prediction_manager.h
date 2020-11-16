@@ -50,6 +50,7 @@ namespace optimization_guide {
 enum class OptimizationGuideDecision;
 class OptimizationGuideStore;
 class PredictionModel;
+class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class TopHostProvider;
 class RemoteDecisionTreePredictor;
@@ -150,6 +151,15 @@ class PredictionManager
 
   PredictionModelFetcher* prediction_model_fetcher() const {
     return prediction_model_fetcher_.get();
+  }
+
+  // Set the prediction model download manager for testing.
+  void SetPredictionModelDownloadManagerForTesting(
+      std::unique_ptr<PredictionModelDownloadManager>
+          prediction_model_download_manager);
+
+  PredictionModelDownloadManager* prediction_model_download_manager() const {
+    return prediction_model_download_manager_.get();
   }
 
   OptimizationGuideStore* model_and_features_store() const {
@@ -384,9 +394,14 @@ class PredictionManager
   // load of a session).
   base::Optional<float> previous_load_fcp_ms_;
 
-  // The fetcher than handles making requests to update the models and host
+  // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.
   std::unique_ptr<PredictionModelFetcher> prediction_model_fetcher_;
+
+  // The downloader that handles making requests to download the prediction
+  // models. Can be null if model downloading is disabled.
+  std::unique_ptr<PredictionModelDownloadManager>
+      prediction_model_download_manager_;
 
   // The top host provider that can be queried. Not owned.
   TopHostProvider* top_host_provider_ = nullptr;

@@ -37,6 +37,7 @@ class OptimizationGuideService;
 class TopHostProvider;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
+class PredictionModelDownloadClient;
 }  // namespace optimization_guide
 
 class GURL;
@@ -95,6 +96,7 @@ class OptimizationGuideKeyedService
   friend class OptimizationGuideKeyedServiceBrowserTest;
   friend class OptimizationGuideWebContentsObserver;
   friend class ProfileManager;
+  friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::android::OptimizationGuideBridge;
 

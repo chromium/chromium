@@ -22,6 +22,7 @@
 #include "chrome/browser/download/download_task_scheduler_impl.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_client.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -38,6 +39,7 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/optimization_guide/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -66,6 +68,12 @@ std::unique_ptr<download::Client> CreatePluginVmImageDownloadClient(
   return std::make_unique<plugin_vm::PluginVmImageDownloadClient>(profile);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::unique_ptr<download::Client>
+CreateOptimizationGuidePredictionModelDownloadClient(Profile* profile) {
+  return std::make_unique<optimization_guide::PredictionModelDownloadClient>(
+      profile);
+}
 
 // Called on profile created to retrieve the BlobStorageContextGetter.
 void DownloadOnProfileCreated(download::BlobContextGetterCallback callback,
@@ -147,6 +155,16 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
             base::BindOnce(&CreatePluginVmImageDownloadClient), key)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (optimization_guide::features::IsModelDownloadingEnabled() &&
+      !key->IsOffTheRecord()) {
+    clients->insert(std::make_pair(
+        download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+        std::make_unique<download::DeferredClientWrapper>(
+            base::BindOnce(
+                &CreateOptimizationGuidePredictionModelDownloadClient),
+            key)));
+  }
 
   // Build in memory download service for incognito profile.
   if (key->IsOffTheRecord() &&

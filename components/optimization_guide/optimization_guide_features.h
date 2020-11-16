@@ -25,6 +25,7 @@ extern const base::Feature kRemoteOptimizationGuideFetching;
 extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
 extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationTargetPredictionUsingMLService;
+extern const base::Feature kOptimizationGuideModelDownloading;
 
 // The maximum number of hosts that can be stored in the
 // |kHintsFetcherTopHostBlacklist| dictionary pref when initialized. The top
@@ -157,6 +158,9 @@ base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch();
 
 // Whether out-of-process model evaluation via the ML Service is enabled.
 bool ShouldUseMLServiceForPrediction();
+
+// Whether the ability to download models is enabled.
+bool IsModelDownloadingEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide

@@ -24,6 +24,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "chrome/browser/optimization_guide/prediction/remote_decision_tree_predictor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -230,7 +231,10 @@ PredictionManager::PredictionManager(
     Profile* profile)
     : host_model_features_cache_(
           std::max(features::MaxHostModelFeaturesCacheSize(), size_t(1))),
-      session_fcp_(),
+      prediction_model_download_manager_(
+          features::IsModelDownloadingEnabled()
+              ? std::make_unique<PredictionModelDownloadManager>(profile)
+              : nullptr),
       top_host_provider_(top_host_provider),
       model_and_features_store_(std::move(model_and_features_store)),
       url_loader_factory_(url_loader_factory),
@@ -693,6 +697,13 @@ void PredictionManager::SetPredictionModelFetcherForTesting(
   prediction_model_fetcher_ = std::move(prediction_model_fetcher);
 }
 
+void PredictionManager::SetPredictionModelDownloadManagerForTesting(
+    std::unique_ptr<PredictionModelDownloadManager>
+        prediction_model_download_manager) {
+  prediction_model_download_manager_ =
+      std::move(prediction_model_download_manager);
+}
+
 void PredictionManager::FetchModelsAndHostModelFeatures() {
   SEQUENCE_CHECKER(sequence_checker_);
   if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
@@ -700,10 +711,22 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
 
   ScheduleModelsAndHostModelFeaturesFetch();
 
+  // We cannot download any models from the server, so don't refresh them.
+  if (prediction_model_download_manager_ &&
+      !prediction_model_download_manager_->IsAvailableForDownloads()) {
+    // TODO(crbug/1146151): Add histogram for how often this happens.
+    return;
+  }
+
   // Models and host model features should not be fetched if there are no
   // optimization targets registered.
   if (registered_optimization_targets_.size() == 0)
     return;
+
+  // Cancel all pending downloads since the server will probably give us new
+  // ones to fetch.
+  if (prediction_model_download_manager_)
+    prediction_model_download_manager_->CancelAllPendingDownloads();
 
   std::vector<std::string> top_hosts;
   // If the top host provider is not available, the user has likely not seen the
@@ -827,10 +850,17 @@ void PredictionManager::UpdatePredictionModels(
   bool has_models_to_update = false;
   for (const auto& model : prediction_models) {
     if (model.has_model() && !model.model().download_url().empty()) {
-      // Skip over models that have a download URL since they will be updated
-      // out-of-band.
+      if (prediction_model_download_manager_) {
+        GURL download_url(model.model().download_url());
+        if (download_url.is_valid()) {
+          prediction_model_download_manager_->StartDownload(download_url);
+        } else {
+          // TODO(crbug/1146151): Add histogram for invalid download URL.
+        }
+      }
 
-      // TODO(crbug/1146151): Download model from URL.
+      // Skip over models that have a download URL since they will be updated
+      // once the download has completed successfully.
       continue;
     }
 

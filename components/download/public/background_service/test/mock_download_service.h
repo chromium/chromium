@@ -33,6 +33,7 @@ class MockDownloadService : public DownloadService {
   MOCK_METHOD1(CancelDownload, void(const std::string& guid));
   MOCK_METHOD2(ChangeDownloadCriteria,
                void(const std::string& guid, const SchedulingParams& params));
+  MOCK_METHOD0(GetLogger, Logger*());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockDownloadService);

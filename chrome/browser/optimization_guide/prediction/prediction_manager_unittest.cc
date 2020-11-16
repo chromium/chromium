@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "chrome/browser/optimization_guide/prediction/remote_decision_tree_predictor.h"
 #include "chrome/services/machine_learning/public/cpp/test_support/fake_service_connection.h"
@@ -73,7 +74,8 @@ std::unique_ptr<proto::PredictionModel> CreatePredictionModel(
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
   if (output_model_as_download_url)
-    prediction_model->mutable_model()->set_download_url("someurl");
+    prediction_model->mutable_model()->set_download_url(
+        "https://example.com/model");
   else
     prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
   return prediction_model;
@@ -164,6 +166,33 @@ class FakeTopHostProvider : public TopHostProvider {
  private:
   std::vector<std::string> top_hosts_;
   int num_top_hosts_called_ = 0;
+};
+
+class FakePredictionModelDownloadManager
+    : public PredictionModelDownloadManager {
+ public:
+  explicit FakePredictionModelDownloadManager(Profile* profile)
+      : PredictionModelDownloadManager(profile) {}
+  ~FakePredictionModelDownloadManager() override = default;
+
+  void StartDownload(const GURL& url) override {
+    last_requested_download_ = url;
+  }
+
+  GURL last_requested_download() const { return last_requested_download_; }
+
+  void CancelAllPendingDownloads() override { cancel_downloads_called_ = true; }
+  bool cancel_downloads_called() const { return cancel_downloads_called_; }
+
+  bool IsAvailableForDownloads() const override { return is_available_; }
+  void SetAvailableForDownloads(bool is_available) {
+    is_available_ = is_available;
+  }
+
+ private:
+  GURL last_requested_download_;
+  bool cancel_downloads_called_ = false;
+  bool is_available_ = true;
 };
 
 enum class PredictionModelFetcherEndState {
@@ -519,6 +548,12 @@ class PredictionManagerTest
         prediction_manager()->prediction_model_fetcher());
   }
 
+  FakePredictionModelDownloadManager* prediction_model_download_manager()
+      const {
+    return static_cast<FakePredictionModelDownloadManager*>(
+        prediction_manager()->prediction_model_download_manager());
+  }
+
   TestOptimizationGuideStore* models_and_features_store() const {
     return static_cast<TestOptimizationGuideStore*>(
         prediction_manager()->model_and_features_store());
@@ -527,6 +562,8 @@ class PredictionManagerTest
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
   TestingPrefServiceSimple* pref_service() const { return pref_service_.get(); }
+
+  TestingProfile* profile() { return &testing_profile_; }
 
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
@@ -1142,6 +1179,38 @@ TEST_P(PredictionManagerMLServiceTest,
   }
 }
 
+TEST_P(PredictionManagerMLServiceTest,
+       DownloadManagerUnavailableShouldNotFetch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (UsingMLService()) {
+    scoped_feature_list.InitWithFeatures(
+        {optimization_guide::features::
+             kOptimizationTargetPredictionUsingMLService},
+        {});
+
+    SetLoadModelResult(machine_learning::mojom::LoadModelResult::kOk);
+  }
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          GURL("https://foo.com"));
+
+  CreatePredictionManager({});
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
+  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
+      std::make_unique<FakePredictionModelDownloadManager>(profile()));
+  prediction_model_download_manager()->SetAvailableForDownloads(false);
+
+  prediction_manager()->RegisterOptimizationTargets(
+      {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
+
+  SetStoreInitialized();
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
+
 TEST_P(PredictionManagerMLServiceTest, UpdateModelWithDownloadUrl) {
   base::test::ScopedFeatureList scoped_feature_list;
   if (UsingMLService()) {
@@ -1162,12 +1231,15 @@ TEST_P(PredictionManagerMLServiceTest, UpdateModelWithDownloadUrl) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
+  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
+      std::make_unique<FakePredictionModelDownloadManager>(profile()));
 
   prediction_manager()->RegisterOptimizationTargets(
       {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
 
   SetStoreInitialized();
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  EXPECT_TRUE(prediction_model_download_manager()->cancel_downloads_called());
 
   models_and_features_store()->RunUpdateHostModelFeaturesCallback();
   histogram_tester.ExpectUniqueSample(
@@ -1175,7 +1247,8 @@ TEST_P(PredictionManagerMLServiceTest, UpdateModelWithDownloadUrl) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 0);
 
-  // TODO(crbug/1146151): Update test to incorporate downloading of model.
+  EXPECT_EQ(prediction_model_download_manager()->last_requested_download(),
+            GURL("https://example.com/model"));
 }
 
 TEST_P(PredictionManagerMLServiceTest,
