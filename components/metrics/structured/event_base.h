@@ -19,6 +19,16 @@ class EventBase {
   EventBase(const EventBase& other);
   virtual ~EventBase();
 
+  // Specifies the type of identifier attached to an event.
+  enum class IdentifierType {
+    // Events are attached to a per-event (or per-project) id.
+    kProjectId = 0,
+    // Events are attached to the UMA client_id.
+    kUmaId = 1,
+    // Events are attached to no id.
+    kUnidentified = 2,
+  };
+
   // Specifies which value type a Metric object holds.
   enum class MetricType {
     kString = 0,

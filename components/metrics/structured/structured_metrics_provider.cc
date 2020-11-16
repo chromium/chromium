@@ -9,8 +9,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/values.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/writeable_pref_store.h"
@@ -22,6 +20,9 @@ namespace {
 
 using ::metrics::ChromeUserMetricsExtension;
 using PrefReadError = ::PersistentPrefStore::PrefReadError;
+
+constexpr char kAssociatedEventsKey[] = "associated";
+constexpr char kIndependentEventsKey[] = "independent";
 
 }  // namespace
 
@@ -48,6 +49,51 @@ StructuredMetricsProvider::PrefStoreErrorDelegate::~PrefStoreErrorDelegate() =
 void StructuredMetricsProvider::PrefStoreErrorDelegate::OnError(
     PrefReadError error) {
   LogPrefReadError(error);
+}
+
+base::Value* StructuredMetricsProvider::GetEventsList(
+    EventBase::IdentifierType type) {
+  // Ensure the events key exists. The "events" key was a list of event objects,
+  // and is now a dict of lists. Migrate to the new layout if needed.
+  base::Value* events = nullptr;
+  if (!storage_->GetMutableValue("events", &events)) {
+    storage_->SetValue(
+        "events", std::make_unique<base::Value>(base::Value::Type::DICTIONARY),
+        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+    storage_->GetMutableValue("events", &events);
+  } else if (events->is_list()) {
+    auto new_events =
+        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    // All existing events have previously been associated with the UMA
+    // client_id, so move them to the associated events list.
+    new_events->SetKey(kAssociatedEventsKey, events->Clone());
+    storage_->SetValue("events", std::move(new_events),
+                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+    storage_->GetMutableValue("events", &events);
+  }
+
+  DCHECK(events->is_dict());
+
+  // Choose the key for |type|, ensure the list Value actually exists, and
+  // return it.
+  base::StringPiece list_key;
+  switch (type) {
+    case EventBase::IdentifierType::kUmaId:
+      list_key = base::StringPiece(kAssociatedEventsKey);
+      break;
+    case EventBase::IdentifierType::kProjectId:
+    case EventBase::IdentifierType::kUnidentified:
+      list_key = base::StringPiece(kIndependentEventsKey);
+      break;
+  }
+
+  base::Value* events_list = events->FindKey(list_key);
+  if (events_list) {
+    return events_list;
+  } else {
+    base::Value events_list(base::Value::Type::LIST);
+    return events->SetKey(list_key, std::move(events_list));
+  }
 }
 
 void StructuredMetricsProvider::OnRecord(const EventBase& event) {
@@ -98,12 +144,10 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   event_value.SetKey("metrics", std::move(metrics));
 
   // Add the event to |storage_|.
-  base::Value* events;
-  if (!storage_->GetMutableValue("events", &events)) {
-    LOG(DFATAL) << "Events key does not exist in pref store.";
-  }
-
-  events->Append(std::move(event_value));
+  // TODO(crbug.com/1016655): Choose the event list based on the identifier type
+  // of the event subclass.
+  GetEventsList(EventBase::IdentifierType::kUmaId)
+      ->Append(std::move(event_value));
 }
 
 void StructuredMetricsProvider::OnProfileAdded(
@@ -126,13 +170,6 @@ void StructuredMetricsProvider::OnInitializationCompleted(const bool success) {
   DCHECK(!storage_->ReadOnly());
   key_data_ = std::make_unique<internal::KeyData>(storage_.get());
   initialized_ = true;
-
-  // Ensure the "events" key exists.
-  if (!storage_->GetValue("events", nullptr)) {
-    storage_->SetValue("events",
-                       std::make_unique<base::Value>(base::Value::Type::LIST),
-                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  }
 }
 
 void StructuredMetricsProvider::OnRecordingEnabled() {
@@ -148,14 +185,22 @@ void StructuredMetricsProvider::OnRecordingDisabled() {
     Recorder::GetInstance()->RemoveObserver(this);
   recording_enabled_ = false;
 
-  // Clear the cache of unsent logs.
+  // Clear the cache of unsent logs. Either |storage_| or its "events" key can
+  // be nullptr if OnRecordingDisabled is called before initialization is
+  // complete. In that case, there are no cached events to clear. See the class
+  // comment in the header for more details on the initialization process.
+  //
+  // "events" was migrated from a list to a dict of lists. Handle both cases in
+  // case recording is disabled before initialization can complete the
+  // migration.
   base::Value* events = nullptr;
-  // Either |storage_| or its "events" key can be nullptr if OnRecordingDisabled
-  // is called before initialization is complete. In that case, there are no
-  // cached events to clear. See the class comment in the header for more
-  // details on the initialization process.
-  if (storage_ && storage_->GetMutableValue("events", &events))
-    events->ClearList();
+  if (storage_ && storage_->GetMutableValue("events", &events)) {
+    if (events->is_list()) {
+      events->ClearList();
+    } else if (events->is_dict()) {
+      events->DictClear();
+    }
+  }
 }
 
 void StructuredMetricsProvider::ProvideCurrentSessionData(
@@ -168,11 +213,7 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
   // useful as a canary for performance issues. base::Value::EstimateMemoryUsage
   // perhaps.
 
-  base::Value* events = nullptr;
-  if (!storage_->GetMutableValue("events", &events)) {
-    LOG(DFATAL) << "Events key does not exist in pref store.";
-  }
-
+  base::Value* events = GetEventsList(EventBase::IdentifierType::kUmaId);
   for (const auto& event : events->GetList()) {
     auto* event_proto = uma_proto->add_structured_event();
 

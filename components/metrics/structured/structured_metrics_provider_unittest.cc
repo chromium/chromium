@@ -5,8 +5,10 @@
 #include "components/metrics/structured/structured_metrics_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -422,6 +424,46 @@ TEST_F(StructuredMetricsProviderTest,
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
   OnProfileAdded(TempDirPath());
   EXPECT_EQ(GetProvidedEvents().structured_event_size(), 0);
+}
+
+// Ensure an old structured_metrics.json file correctly migrates to the new
+// format
+TEST_F(StructuredMetricsProviderTest, MigrateEventsKey) {
+  const auto json_path = TempDirPath().Append("structured_metrics.json");
+
+  // Write a json file with the old format.
+  const std::string old_json = R"({
+    "events":[
+      {"id":"some_id",
+       "metrics":[{
+          "name":"some_name",
+          "value":"some_value"}]}]
+  })";
+  CHECK(base::ImportantFileWriter::WriteFileAtomically(
+      TempDirPath().Append("structured_metrics.json"), old_json,
+      "StructuredMetricsProviderTest"));
+
+  // Initialize and trigger a migration by recording an event.
+  Init();
+  events::TestEventOne().SetTestMetricTwo(1).Record();
+  CommitPendingWrite();
+
+  // Check that the new format has the structure:
+  // {"events": {"associated": [{...}, {...}]}}
+  std::string new_json;
+  ASSERT_TRUE(base::ReadFileToString(json_path, &new_json));
+  const auto value = base::JSONReader::Read(new_json);
+  ASSERT_TRUE(value.has_value());
+
+  const auto* events = value.value().FindKey("events");
+  ASSERT_TRUE(events != nullptr);
+  ASSERT_TRUE(events->is_dict());
+  ASSERT_EQ(events->DictSize(), 1U);
+
+  const auto* associated = events->FindKey("associated");
+  ASSERT_TRUE(associated != nullptr);
+  ASSERT_TRUE(associated->is_list());
+  ASSERT_EQ(associated->GetList().size(), 2U);
 }
 
 }  // namespace structured
