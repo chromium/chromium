@@ -65,8 +65,12 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
   FloatRect mask_content_boundaries_;
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceMasker,
-                                      kMaskerResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceMasker> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kMaskerResourceType;
+  }
+};
 
 }  // namespace blink
 

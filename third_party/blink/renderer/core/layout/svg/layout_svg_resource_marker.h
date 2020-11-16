@@ -83,8 +83,12 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   bool is_in_layout_;
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceMarker,
-                                      kMarkerResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceMarker> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kMarkerResourceType;
+  }
+};
 
 }  // namespace blink
 

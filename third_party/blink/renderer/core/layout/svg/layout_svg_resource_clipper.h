@@ -79,8 +79,12 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   FloatRect local_clip_bounds_;
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceClipper,
-                                      kClipperResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceClipper> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kClipperResourceType;
+  }
+};
 
 inline LayoutSVGResourceClipper* GetSVGResourceAsType(
     const ClipPathOperation* clip_path_operation) {

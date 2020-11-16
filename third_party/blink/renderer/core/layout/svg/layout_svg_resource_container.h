@@ -116,11 +116,6 @@ struct DowncastTraits<LayoutSVGResourceContainer> {
   }
 };
 
-#define DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(thisType, typeName)   \
-  DEFINE_TYPE_CASTS(thisType, LayoutSVGResourceContainer, resource, \
-                    resource->ResourceType() == typeName,           \
-                    resource.ResourceType() == typeName)
-
 template <typename ContainerType>
 inline bool IsResourceOfType(const LayoutSVGResourceContainer* container) {
   return container->ResourceType() == ContainerType::kResourceType;

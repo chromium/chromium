@@ -576,12 +576,12 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
   DCHECK(resource);
 
   if (resource->ResourceType() == kMaskerResourceType) {
-    LayoutSVGResourceMasker* masker = ToLayoutSVGResourceMasker(resource);
+    auto* masker = To<LayoutSVGResourceMasker>(resource);
     WriteNameValuePair(ts, "maskUnits", masker->MaskUnits());
     WriteNameValuePair(ts, "maskContentUnits", masker->MaskContentUnits());
     ts << "\n";
   } else if (resource->ResourceType() == kFilterResourceType) {
-    LayoutSVGResourceFilter* filter = ToLayoutSVGResourceFilter(resource);
+    auto* filter = To<LayoutSVGResourceFilter>(resource);
     WriteNameValuePair(ts, "filterUnits", filter->FilterUnits());
     WriteNameValuePair(ts, "primitiveUnits", filter->PrimitiveUnits());
     ts << "\n";
@@ -596,10 +596,10 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
       last_effect->ExternalRepresentation(ts, indent + 1);
   } else if (resource->ResourceType() == kClipperResourceType) {
     WriteNameValuePair(ts, "clipPathUnits",
-                       ToLayoutSVGResourceClipper(resource)->ClipPathUnits());
+                       To<LayoutSVGResourceClipper>(resource)->ClipPathUnits());
     ts << "\n";
   } else if (resource->ResourceType() == kMarkerResourceType) {
-    LayoutSVGResourceMarker* marker = ToLayoutSVGResourceMarker(resource);
+    auto* marker = To<LayoutSVGResourceMarker>(resource);
     WriteNameValuePair(ts, "markerUnits", marker->MarkerUnits());
     ts << " [ref at " << marker->ReferencePoint() << "]";
     ts << " [angle=";
@@ -643,8 +643,7 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     ts << " [start=" << gradient->StartPoint(attributes)
        << "] [end=" << gradient->EndPoint(attributes) << "]\n";
   } else if (resource->ResourceType() == kRadialGradientResourceType) {
-    LayoutSVGResourceRadialGradient* gradient =
-        ToLayoutSVGResourceRadialGradient(resource);
+    auto* gradient = To<LayoutSVGResourceRadialGradient>(resource);
 
     // Dump final results that are used for layout. No use in asking
     // SVGGradientElement for its gradientUnits(), as it may link to other

@@ -74,8 +74,12 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
   }
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceRadialGradient,
-                                      kRadialGradientResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceRadialGradient> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kRadialGradientResourceType;
+  }
+};
 
 }  // namespace blink
 

@@ -64,8 +64,12 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
 // is a single url(...) reference.
 LayoutSVGResourceFilter* GetFilterResourceForSVG(const ComputedStyle&);
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceFilter,
-                                      kFilterResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceFilter> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kFilterResourceType;
+  }
+};
 
 }  // namespace blink
 
