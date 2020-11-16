@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_drive.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,27 +13,27 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleDocs() {
+ExternalInstallOptions GetConfigForGoogleDrive() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
-          "https://docs.google.com/document/installwebapp?usp=chrome_default"),
+          "https://drive.google.com/drive/installwebapp?usp=chrome_default"),
       /*user_display_mode=*/DisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
-  options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
+  options.uninstall_and_replace.push_back("apdfllckaahabafndbhieahigkjlhalf");
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->title = base::UTF8ToUTF16("Docs");
+    info->title = base::UTF8ToUTF16("Google Drive");
     info->start_url =
-        GURL("https://docs.google.com/document/?usp=installed_webapp");
-    info->scope = GURL("https://docs.google.com/document/");
-    info->display_mode = DisplayMode::kBrowser;
+        GURL("https://drive.google.com/?usp=installed_webapp&lfhs=2");
+    info->scope = GURL("https://drive.google.com/");
+    info->display_mode = DisplayMode::kStandalone;
     info->icon_bitmaps_any =
-        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG});
+        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DRIVE_ICON_192_PNG});
     return info;
   });
 

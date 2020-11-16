@@ -8,7 +8,15 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_drive.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_sheets.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_slides.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace web_app {
 namespace {
@@ -20,10 +28,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledAppData() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return {};
-#endif
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like
   // those seen in: chrome/test/data/web_app_default_apps/good_json
   // This requires:
@@ -34,8 +39,18 @@ std::vector<ExternalInstallOptions> GetPreinstalledAppData() {
   // - Ensure that these resources are correctly installed by our Chrome
   //   installers on every desktop platform.
   return {
+      // clang-format off
+      GetConfigForGmail(),
       GetConfigForGoogleDocs(),
+      GetConfigForGoogleDrive(),
+      GetConfigForGoogleSheets(),
+      GetConfigForGoogleSlides(),
+      GetConfigForYouTube(),
+      // clang-format on
   };
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  return {};
 }
 
 }  // namespace

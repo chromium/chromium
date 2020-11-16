@@ -24,7 +24,11 @@
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 namespace web_app {
 
@@ -490,9 +494,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
   base::AutoReset<bool> scope =
       SetExternalAppInstallFeatureAlwaysEnabledForTesting();
 
-  constexpr std::array<const char*, 1> kExpectedInstallUrls = {
-      "https://docs.google.com/document/installwebapp?usp=chrome_default",
-  };
 
   base::RunLoop run_loop;
   WebAppProvider::Get(browser()->profile())
@@ -500,12 +501,27 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
       .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
           [&](std::map<GURL, InstallResultCode> install_results,
               std::map<GURL, bool> uninstall_results) {
-            EXPECT_EQ(install_results.size(), kExpectedInstallUrls.size());
-            for (const char* install_url : kExpectedInstallUrls) {
-              EXPECT_TRUE(base::Contains(install_results, GURL(install_url)))
-                  << install_url;
-            }
-
+            EXPECT_THAT(
+                install_results,
+                UnorderedElementsAre(
+                    Pair(GURL("https://docs.google.com/document/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+                    Pair(GURL("https://docs.google.com/presentation/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+                    Pair(GURL("https://docs.google.com/spreadsheets/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+                    Pair(GURL("https://drive.google.com/drive/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+                    Pair(GURL("https://mail.google.com/mail/"
+                              "installwebapp?usp=chrome_default"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall),
+                    Pair(GURL("https://www.youtube.com/s/notifications/"
+                              "manifest/cr_install.html"),
+                         InstallResultCode::kSuccessOfflineOnlyInstall)));
             EXPECT_EQ(uninstall_results.size(), 0u);
             run_loop.Quit();
           }));

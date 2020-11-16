@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/buildflags.gni")
+
 source_set("preinstalled_web_apps") {
   sources = [
-    "google_docs.cc",
-    "google_docs.h",
     "preinstalled_web_app_utils.cc",
     "preinstalled_web_app_utils.h",
     "preinstalled_web_apps.cc",
@@ -13,9 +13,29 @@ source_set("preinstalled_web_apps") {
   ]
 
   deps = [
+    "//base",
     "//build:branding_buildflags",
-    "//chrome/browser/resources:preinstalled_web_apps_resources",
     "//chrome/browser/web_applications/components",
-    "//chrome/common",
+    "//skia",
+    "//ui/base",
   ]
+
+  if (is_chrome_branded) {
+    sources += [
+      "gmail.cc",
+      "gmail.h",
+      "google_docs.cc",
+      "google_docs.h",
+      "google_drive.cc",
+      "google_drive.h",
+      "google_sheets.cc",
+      "google_sheets.h",
+      "google_slides.cc",
+      "google_slides.h",
+      "youtube.cc",
+      "youtube.h",
+    ]
+
+    deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
+  }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,27 +13,27 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleDocs() {
+ExternalInstallOptions GetConfigForYouTube() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
-          "https://docs.google.com/document/installwebapp?usp=chrome_default"),
+          "https://www.youtube.com/s/notifications/manifest/cr_install.html"),
       /*user_display_mode=*/DisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
-  options.user_type_allowlist = {"unmanaged", "managed", "child"};
-  options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
-  options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
+  options.user_type_allowlist = {"unmanaged", "managed"};
+  options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsNonGSuite.name;
+  options.uninstall_and_replace.push_back("blpcfgokakmgnkcojhhkbfbldkacnbeo");
+  options.disable_if_tablet_form_factor = true;
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->title = base::UTF8ToUTF16("Docs");
-    info->start_url =
-        GURL("https://docs.google.com/document/?usp=installed_webapp");
-    info->scope = GURL("https://docs.google.com/document/");
-    info->display_mode = DisplayMode::kBrowser;
+    info->title = base::UTF8ToUTF16("YouTube");
+    info->start_url = GURL("https://www.youtube.com/?feature=ytca");
+    info->scope = GURL("https://www.youtube.com/");
+    info->display_mode = DisplayMode::kMinimalUi;
     info->icon_bitmaps_any =
-        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG});
+        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG});
     return info;
   });
 

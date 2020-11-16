@@ -7,15 +7,18 @@
 {
   "blpcfgokakmgnkcojhhkbfbldkacnbeo" : {
     "external_crx": "youtube.crx",
-    "external_version": "4.2.5"
+    "external_version": "4.2.5",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsNonGSuite"
   },
   "pjkljhegncpnkpknbcohdijeoejaedia" : {
     "external_crx": "gmail.crx",
-    "external_version": "7"
+    "external_version": "7",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsGSuite"
   },
   "apdfllckaahabafndbhieahigkjlhalf" : {
     "external_crx": "drive.crx",
-    "external_version": "6.2"
+    "external_version": "6.2",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsGSuite"
   },
   "aohghmighlieiainnegkcijnfilokake" : {
     "external_crx": "docs.crx",
@@ -24,11 +27,13 @@
   },
   // Google Sheets
   "aapocclcgogkmnckokdopfmhonfmgoek" : {
-    "external_update_url": "https://clients2.google.com/service/update2/crx"
+    "external_update_url": "https://clients2.google.com/service/update2/crx",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsGSuite"
   },
   // Google Slides
   "felcaaldnbdncclmgdcncolpebgiejap" : {
-    "external_update_url": "https://clients2.google.com/service/update2/crx"
+    "external_update_url": "https://clients2.google.com/service/update2/crx",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsGSuite"
   },
   // Drive extension
   "ghbmnnjooekpmoecnnnilnnbdlolhkhi" : {
