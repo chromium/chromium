@@ -193,6 +193,7 @@ class CrostiniManager : public KeyedService,
                                     vm_tools::concierge::DiskImageStatus status,
                                     int64_t disk_size_bytes) {}
     virtual void OnVmStarted(bool success) {}
+    virtual void OnLxdStarted(CrostiniResult result) {}
     virtual void OnContainerDownloading(int32_t download_percent) {}
     virtual void OnContainerCreated(CrostiniResult result) {}
     virtual void OnContainerSetup(bool success) {}

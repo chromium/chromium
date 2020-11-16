@@ -418,6 +418,9 @@ Polymer({
       case InstallerState.kStartTerminaVm:
         messageId = 'startTerminaVmMessage';
         break;
+      case InstallerState.kStartLxd:
+        messageId = 'startLxdMessage';
+        break;
       case InstallerState.kCreateContainer:
         // TODO(crbug.com/1015722): we are using the same message as for
         // |START_CONTAINER|, which is weird because user is going to see
@@ -463,6 +466,9 @@ Polymer({
         break;
       case InstallerError.kErrorStartingTermina:
         messageId = 'startTerminaVmError';
+        break;
+      case InstallerError.kErrorStartingLxd:
+        messageId = 'startLxdError';
         break;
       case InstallerError.kErrorStartingContainer:
         messageId = 'startContainerError';

@@ -65,7 +65,10 @@ class CrostiniInstaller : public KeyedService,
     kErrorCreateContainer = 25,
     kErrorUnknown = 26,
 
-    kMaxValue = kErrorUnknown,
+    kUserCancelledStartLxd = 27,
+    kErrorStartingLxd = 28,
+
+    kMaxValue = kErrorStartingLxd,
     // When adding a new value, check you've followed the steps in the comment
     // at the top of this enum.
   };
@@ -92,6 +95,7 @@ class CrostiniInstaller : public KeyedService,
                           vm_tools::concierge::DiskImageStatus status,
                           int64_t disk_size_available) override;
   void OnVmStarted(bool success) override;
+  void OnLxdStarted(CrostiniResult result) override;
   void OnContainerDownloading(int32_t download_percent) override;
   void OnContainerCreated(crostini::CrostiniResult result) override;
   void OnContainerSetup(bool success) override;

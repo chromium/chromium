@@ -4582,6 +4582,9 @@
   <message name="IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM" desc="Text shown in the crostini terminal when it is starting the termina VM">
     Starting the virtual machine
   </message>
+  <message name="IDS_CROSTINI_TERMINAL_STATUS_START_LXD" desc="Text shown in the crostini terminal when it is starting the LXD service (used to manage containers in the VM)">
+    Starting the container manager
+  </message>
   <message name="IDS_CROSTINI_TERMINAL_STATUS_CREATE_CONTAINER" desc="Text shown in the crostini terminal when it is checking whether the Linux container is installed">
     Checking the Linux container
   </message>
@@ -4639,6 +4642,9 @@
   <message name="IDS_CROSTINI_INSTALLER_START_TERMINA_VM_MESSAGE" desc="Text shown in the Crostini installer dialog when the VM itself is starting">
     This process may take a few minutes. Starting the virtual machine.
   </message>
+  <message name="IDS_CROSTINI_INSTALLER_START_LXD_MESSAGE" desc="Text shown in the Crostini installer dialog when the LXD service (used to manage containers in the VM) is starting">
+    This process may take a few minutes. Starting the container manager.
+  </message>
   <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is starting">
     This process may take a few minutes. Starting the Linux container.
   </message>
@@ -4680,6 +4686,9 @@
   </message>
   <message name="IDS_CROSTINI_INSTALLER_START_TERMINA_VM_ERROR" desc="Text shown in the Crostini installer dialog when the VM itself fails to start">
     Error starting the virtual machine. Please try again.
+  </message>
+  <message name="IDS_CROSTINI_INSTALLER_START_LXD_ERROR" desc="Text shown in the Crostini installer dialog when the LXD service (used to manage containers in the VM) fails to start">
+    Error starting the container manager. Please try again.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to start inside the VM">
     The Linux container didn't start. Please try again.

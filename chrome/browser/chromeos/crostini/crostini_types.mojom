@@ -9,6 +9,7 @@ enum InstallerState {
   kInstallImageLoader,  // Loading the Termina VM component.
   kCreateDiskImage,     // Creating the image for the Termina VM.
   kStartTerminaVm,      // Starting the Termina VM.
+  kStartLxd,            // Starting LXD.
   kCreateContainer,     // Creating the container inside the Termina VM.
   kSetupContainer,      // Setting up the container inside the Termina VM.
   kStartContainer,      // Starting the container inside the Termina VM.
@@ -22,6 +23,7 @@ enum InstallerError {
   kErrorLoadingTermina,
   kErrorCreatingDiskImage,
   kErrorStartingTermina,
+  kErrorStartingLxd,
   kErrorStartingContainer,
   kErrorOffline,
   kErrorFetchingSshKeys,

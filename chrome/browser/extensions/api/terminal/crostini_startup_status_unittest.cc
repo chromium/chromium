@@ -55,18 +55,18 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
 
   ASSERT_EQ(output_.size(), 5u);
   // Hide cursor, init progress.
-  EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[         ] ");
+  EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[          ] ");
 
-  // CR, purple, forward 11, yellow, stage.
-  EXPECT_EQ(output_[1], "\r\x1b[35m[\x1b[11C\x1b[K\x1b[33mInitializing ");
+  // CR, purple, forward 12, yellow, stage.
+  EXPECT_EQ(output_[1], "\r\x1b[35m[\x1b[12C\x1b[K\x1b[33mInitializing ");
 
-  // CR, purple, progress, forward 10, erase, yellow, stage.
+  // CR, purple, progress, forward 11, erase, yellow, stage.
   EXPECT_EQ(output_[2],
-            "\r\x1b[35m[=\x1b[10C\x1b[K\x1b[33mChecking the virtual machine ");
+            "\r\x1b[35m[=\x1b[11C\x1b[K\x1b[33mChecking the virtual machine ");
 
   // CR, purple, progress, forward 2, erase, green, done, symbol, CRLF.
   EXPECT_EQ(output_[3],
-            "\r\x1b[35m[=========\x1b[2C\x1b[K\x1b[1;32mReady\r\n ");
+            "\r\x1b[35m[==========\x1b[2C\x1b[K\x1b[1;32mReady\r\n ");
 
   // CR, delete line, default color, show cursor;
   EXPECT_EQ(output_[4], "\r\x1b[K\x1b[0m\x1b[?25h");

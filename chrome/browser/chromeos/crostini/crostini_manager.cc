@@ -416,6 +416,7 @@ class CrostiniManager::CrostiniRestarter
           base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
                          weak_ptr_factory_.GetWeakPtr()));
     }
+    StartStage(mojom::InstallerState::kStartLxd);
     crostini_manager_->StartLxd(
         container_id_.vm_name,
         base::BindOnce(&CrostiniRestarter::StartLxdFinished,
@@ -424,6 +425,9 @@ class CrostiniManager::CrostiniRestarter
 
   void StartLxdFinished(CrostiniResult result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    for (auto& observer : observer_list_) {
+      observer.OnLxdStarted(result);
+    }
     if (ReturnEarlyIfAborted()) {
       return;
     }

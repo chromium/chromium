@@ -35,7 +35,7 @@ const char kColor3Yellow[] = "\x1b[33m";
 const char kColor5Purple[] = "\x1b[35m";
 const char kEraseInLine[] = "\x1b[K";
 const char kSpinner[] = "|/-\\";
-const int kMaxStage = 9;
+const int kMaxStage = static_cast<int>(InstallerState::kMaxValue);
 
 std::string MoveForward(int i) {
   return base::StringPrintf("\x1b[%dC", i);
@@ -106,6 +106,8 @@ void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
           {InstallerState::kStartTerminaVm,
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM)},
+          {InstallerState::kStartLxd,
+           l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_STATUS_START_LXD)},
           {InstallerState::kCreateContainer,
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_CREATE_CONTAINER)},
