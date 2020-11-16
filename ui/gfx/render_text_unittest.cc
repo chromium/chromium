@@ -1895,11 +1895,20 @@ struct ElideTextTestOptions {
   const ElideBehavior elide_behavior;
 };
 
+const bool kForceNoWhitespaceElision = false;
+const bool kForceWhitespaceElision = true;
+
 struct ElideTextCase {
   const char* test_name;
   const wchar_t* text;
   const wchar_t* display_text;
-  int available_width_as_glyph_count = -1;
+  // The available width, specified as a number of fixed-width glyphs. If no
+  // value is specified, the width of the resulting |display_text| is used. This
+  // helps test available widths larger than the resulting test; e.g. "a  b"
+  // should yield "a\u2026" even if 3 glyph widths are available, when
+  // whitespace elision is enabled.
+  const base::Optional<size_t> available_width_as_glyph_count = base::nullopt;
+  const base::Optional<bool> whitespace_elision = base::nullopt;
 };
 
 using ElideTextCaseParam = std::tuple<ElideTextTestOptions, ElideTextCase>;
@@ -1932,14 +1941,19 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
   // Set the text and the eliding behavior.
   render_text->SetText(text);
   render_text->SetElideBehavior(options.elide_behavior);
-  render_text->SetWhitespaceElision(false);
+
+  // If specified, set the whitespace elision. Otherwise, keep the eliding
+  // behavior default value.
+  if (param.whitespace_elision.has_value())
+    render_text->SetWhitespaceElision(param.whitespace_elision.value());
 
   // Set the display width to trigger the eliding.
-  if (param.available_width_as_glyph_count >= 0) {
-    render_text->SetDisplayRect(Rect(
-        0, 0,
-        param.available_width_as_glyph_count * kGlyphWidth + kGlyphWidth / 2,
-        100));
+  if (param.available_width_as_glyph_count.has_value()) {
+    render_text->SetDisplayRect(
+        Rect(0, 0,
+             param.available_width_as_glyph_count.value() * kGlyphWidth +
+                 kGlyphWidth / 2,
+             100));
   } else {
     render_text->SetDisplayRect(
         Rect(0, 0, expected_width + kGlyphWidth / 2, 100));
@@ -1987,6 +2001,34 @@ const ElideTextCase kElideHeadTextCases[] = {
     // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
     {"emoji1", L"012\U0001D11Ex", L"\u2026\U0001D11Ex"},
     {"emoji2", L"012\U0001D11Ex", L"\u2026x"},
+
+    // Whitespace elision tests.
+    {"empty_no_elision", L"", L"", 0, kForceNoWhitespaceElision},
+    {"empty_elision", L"", L"", 0, kForceWhitespaceElision},
+    {"xyz_no_elision", L"  x  xyz", L"\u2026 xyz", 5,
+     kForceNoWhitespaceElision},
+    {"xyz_elision", L"  x  xyz", L"\u2026xyz", 5, kForceWhitespaceElision},
+    {"ltr_rtl_elision3", L"x  \u05d1  y    \u05d2", L"\u2026\u05d2", 3,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision6", L"x  \u05d1  y    \u05d2", L"\u2026\u05d2", 6,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision7", L"x  \u05d1  y    \u05d2", L"\u2026y    \u05d2", 7,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision10", L"x  \u05d1  y    \u05d2",
+     L"\u2026\u05d1  y    \u05d2", 10, kForceWhitespaceElision},
+    {"ltr_rtl_elision11", L"x  \u05d1  y    \u05d2",
+     L"\u2026\u05d1  y    \u05d2", 11, kForceWhitespaceElision},
+    // Emoji U+1F601 and emoji U+1F321 U+FE0E are graphemes that result in
+    // one glyph each. Eliding a glyph must remove the whole grapheme. It is
+    // invalid to break a grapheme in pieces.
+    {"graphemes_elision3", L"  \U0001F601  \U0001F321\uFE0E  ", L"\u2026", 3,
+     kForceWhitespaceElision},
+    {"graphemes_elision4", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"\u2026\U0001F321\uFE0E  ", 4, kForceWhitespaceElision},
+    {"graphemes_elision6", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"\u2026\U0001F321\uFE0E  ", 6, kForceWhitespaceElision},
+    {"graphemes_elision7", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"\u2026\U0001F601  \U0001F321\uFE0E  ", 7, kForceWhitespaceElision},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2001,7 +2043,7 @@ const ElideTextCase kElideTailTextCases[] = {
     {"letter_m_tail0", L"M", L""},
     {"letter_m_tail1", L"M", L"M"},
     {"letter_weak_3", L" . ", L" . "},
-    {"letter_weak_2", L" . ", L" \u2026"},
+    {"letter_weak_2", L" . ", L"\u2026"},
     {"no_eliding", L"012ab", L"012ab"},
     {"ltr_3", L"abc", L"abc"},
     {"ltr_2", L"abc", L"a\u2026"},
@@ -2042,6 +2084,30 @@ const ElideTextCase kElideTailTextCases[] = {
     {"grapheme4", L"012\u05e9\u05bc\u05c1\u05b8abc", L"012\u2026\u200E"},
     // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
     {"emoji", L"012\U0001D11Ex", L"012\u2026"},
+
+    // Whitespace elision tests.
+    {"empty_no_elision", L"", L"", 0, kForceNoWhitespaceElision},
+    {"empty_elision", L"", L"", 0, kForceWhitespaceElision},
+    {"letter_weak_2_no_elision", L" . ", L" \u2026", 2,
+     kForceNoWhitespaceElision},
+    {"xyz_no_elision", L"  x  xyz", L"  x \u2026", 5,
+     kForceNoWhitespaceElision},
+    {"xyz_elision", L"  x  xyz", L"  x\u2026", 5, kForceWhitespaceElision},
+    {"ltr_rtl_elision4", L"x  \u05d1  y    \u05d2", L"x\u2026", 4,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision5", L"x  \u05d1  y    \u05d2", L"x  \u05d1\u2026\x200F", 5,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision9", L"x  \u05d1  y    \u05d2", L"x  \u05d1  y\u2026", 9,
+     kForceWhitespaceElision},
+    // Emoji U+1F601 and emoji U+1F321 U+FE0E are graphemes that result in
+    // one glyph each. Eliding a glyph must remove the whole grapheme. It is
+    // invalid to break a grapheme in pieces.
+    {"graphemes_elision3", L"  \U0001F601  \U0001F321\uFE0E  ", L"\u2026", 3,
+     kForceWhitespaceElision},
+    {"graphemes_elision6", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"  \U0001F601\u2026", 6, kForceWhitespaceElision},
+    {"graphemes_elision7", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"  \U0001F601  \U0001F321\uFE0E\u2026", 7, kForceWhitespaceElision},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2089,6 +2155,33 @@ const ElideTextCase kElideTruncateTextCases[] = {
     // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
     {"emoji1", L"012\U0001D11Ex", L"012\U0001D11E"},
     {"emoji2", L"012\U0001D11Ex", L"012"},
+
+    // Whitespace elision tests.
+    {"empty_no_elision", L"", L"", 0, kForceNoWhitespaceElision},
+    {"empty_elision", L"", L"", 0, kForceWhitespaceElision},
+    {"xyz_no_elision", L"  x  xyz", L"  x  ", 5, kForceNoWhitespaceElision},
+    {"xyz_elision", L"  x  xyz", L"  x", 5, kForceWhitespaceElision},
+    {"ltr_rtl_elision3", L"x  \u05d1  y    \u05d2", L"x", 3,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision4", L"x  \u05d1  y    \u05d2", L"x  \u05d1", 4,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision5", L"x  \u05d1  y    \u05d2", L"x  \u05d1", 5,
+     kForceWhitespaceElision},
+    {"ltr_rtl_elision9", L"x  \u05d1  y    \u05d2", L"x  \u05d1  y", 9,
+     kForceWhitespaceElision},
+    // Emoji U+1F601 and emoji U+1F321 U+FE0E are graphemes that result in
+    // one glyph each. Eliding a glyph must remove the whole grapheme. It is
+    // invalid to break a grapheme in pieces.
+    {"graphemes_elision2", L"  \U0001F601  \U0001F321\uFE0E  ", L"", 2,
+     kForceWhitespaceElision},
+    {"graphemes_elision3", L"  \U0001F601  \U0001F321\uFE0E  ", L"  \U0001F601",
+     3, kForceWhitespaceElision},
+    {"graphemes_elision5", L"  \U0001F601  \U0001F321\uFE0E  ", L"  \U0001F601",
+     5, kForceWhitespaceElision},
+    {"graphemes_elision6", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"  \U0001F601  \U0001F321\uFE0E", 6, kForceWhitespaceElision},
+    {"graphemes_elision7", L"  \U0001F601  \U0001F321\uFE0E  ",
+     L"  \U0001F601  \U0001F321\uFE0E", 7, kForceWhitespaceElision},
 };
 
 INSTANTIATE_TEST_SUITE_P(
