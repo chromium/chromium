@@ -52249,6 +52249,32 @@
        {}
       ]
      ],
+     "line-pushed-by-float-000.html": [
+      "1df1c06cc144881a68760ed9031d65f9d9e48009",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-pushed-by-float-001.html": [
+      "49b185349ee1c15b18d75349f1345149683c5548",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "margin-after-overflowed-block.html": [
       "26a2eb22aa69b134847dcb8cc3305625bd47100b",
       [
@@ -232819,7 +232845,7 @@
      []
     ],
     "mediacapture-streams.idl": [
-     "5532cf64671295ca52eb9904450c683ba8b14dd5",
+     "7cf6b5807a73c579470187bb6a142121d47935bb",
      []
     ],
     "mediasession.idl": [
@@ -234994,6 +235020,10 @@
     ],
     "historical.https-expected.txt": [
      "5b80da6f0a0ba4c15088160288e78683fdeb5820",
+     []
+    ],
+    "idlharness.https.window-expected.txt": [
+     "35a2f4c8c4e26a49ef72cdefc7e9f826f4dbe7fc",
      []
     ]
    },
@@ -382283,7 +382313,7 @@
      ]
     ],
     "idlharness.https.window.js": [
-     "b10e8dbb046d656e4b06c3572fb4ee069c9e0897",
+     "41d4e1db8b639d2569b5c0f2f4142da71d62f84d",
      [
       "mediacapture-streams/idlharness.https.window.html",
       {
