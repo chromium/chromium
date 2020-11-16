@@ -129,18 +129,20 @@ void QuickAnswersMenuObserver::OnEligibilityChanged(bool eligible) {
   is_eligible_ = eligible;
 }
 
-std::string QuickAnswersMenuObserver::GetDeviceLanguage() {
-  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale());
-}
-
 void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     const std::string& selected_text,
     const base::string16& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
+  PrefService* prefs =
+      Profile::FromBrowserContext(proxy_->GetBrowserContext())->GetPrefs();
+
   Context context;
   context.surrounding_text = base::UTF16ToUTF8(surrounding_text);
-  context.device_properties.language = GetDeviceLanguage();
+  context.device_properties.language =
+      l10n_util::GetLanguage(g_browser_process->GetApplicationLocale());
+  context.device_properties.preferred_languages =
+      prefs->GetString(language::prefs::kPreferredLanguages);
   quick_answers_controller_->MaybeShowQuickAnswers(bounds_in_screen_,
                                                    selected_text, context);
 }
