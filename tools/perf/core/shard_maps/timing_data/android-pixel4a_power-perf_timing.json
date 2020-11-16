@@ -1,18 +1,18 @@
 [
     {
-        "duration": "53.0",
+        "duration": "46.0",
         "name": "power.mobile/browse:media:flickr_infinite_scroll:2019"
     },
     {
-        "duration": "89.0",
+        "duration": "78.0",
         "name": "power.mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
-        "duration": "71.0",
+        "duration": "62.0",
         "name": "power.mobile/browse:social:tumblr_infinite_scroll:2018"
     },
     {
-        "duration": "77.0",
+        "duration": "67.0",
         "name": "power.mobile/browse:tech:discourse_infinite_scroll:2018"
     }
 ]
