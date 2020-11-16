@@ -57,4 +57,10 @@ class FileBrowserBackgroundFull extends BackgroundBase {
    * @param {function()} callback
    */
   ready(callback) {}
+
+  /**
+   * Forces File Operation Util to return error for automated tests.
+   * @param {boolean} enable
+   */
+  forceFileOperationErrorForTest(enable) {}
 }

@@ -141,6 +141,14 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   }
 
   /**
+   * Forces File Operation Util to return error for automated tests.
+   * @param {boolean} enable
+   */
+  forceFileOperationErrorForTest(enable) {
+    fileOperationUtil.forceErrorForTest = enable;
+  }
+
+  /**
    * Opens the volume root (or opt directoryPath) in main UI.
    *
    * @param {!Event} event An event with the volumeId or

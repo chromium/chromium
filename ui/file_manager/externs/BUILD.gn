@@ -18,6 +18,14 @@ js_library("file_manager_private") {
   ]
 }
 
+js_library("background_window.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/background_window.m.js" ]
+
+  deps = [ "//ui/file_manager/externs/background:background_base.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("entry_location.m") {
   sources = [ "$root_gen_dir/ui/file_manager/externs/entry_location.m.js" ]
 
@@ -95,6 +103,7 @@ js_library("volume_info_list.m") {
 
 js_modulizer("modulize") {
   input_files = [
+    "background_window.js",
     "entry_location.js",
     "files_app_entry_interfaces.js",
     "metadata_worker_window.js",
