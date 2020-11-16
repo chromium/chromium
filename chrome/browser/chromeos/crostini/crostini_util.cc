@@ -106,11 +106,6 @@ void OnApplicationLaunched(const std::string& app_id,
                            const crostini::CrostiniResult failure_result,
                            bool success,
                            const std::string& failure_reason) {
-  // Remove the spinner. Controller doesn't exist in tests.
-  // TODO(timloh): Consider also displaying a notification for failure.
-  if (auto* chrome_controller = ChromeLauncherController::instance()) {
-    chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
-  }
   RecordAppLaunchResultHistogram(success ? crostini::CrostiniResult::SUCCESS
                                          : failure_result);
   std::move(callback).Run(success, failure_reason);
@@ -121,6 +116,11 @@ void OnLaunchFailed(
     crostini::CrostiniSuccessCallback callback,
     const std::string& failure_reason,
     crostini::CrostiniResult result = crostini::CrostiniResult::UNKNOWN_ERROR) {
+  // Remove the spinner and icon. Controller doesn't exist in tests.
+  // TODO(timloh): Consider also displaying a notification for failure.
+  if (auto* chrome_controller = ChromeLauncherController::instance()) {
+    chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
+  }
   OnApplicationLaunched(app_id, std::move(callback), result, false,
                         failure_reason);
 }
