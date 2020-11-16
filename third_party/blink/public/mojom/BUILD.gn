@@ -13,6 +13,12 @@ if (is_android) {
 # This target includes all mojom interfaces which can be used from
 # renderer/platform. In particular these mojom interfaces can't use types that
 # are typemapped to a type in renderer/core.
+#
+# Source targets outside of Blink that want to depend on mojom_platform should
+# instead depend on //content/public/common, which ultimately exposes it as a
+# public dependency. This is because the non-Blink variant of the
+# mojom_platform C++ bindings is linked into the //content component and
+# //content/public/common has private dependencies there.
 mojom("mojom_platform") {
   generate_java = true
   sources = [
