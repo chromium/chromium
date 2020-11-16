@@ -7,7 +7,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 
-<dom-module id="sim-detect-page">
+<dom-module id="setup-loading-page">
   <template>
     <style include="iron-flex cr-hidden-style">
       #error-icon-container {
@@ -30,11 +30,11 @@
       <div slot="page-body" class="layout horizontal center-center">
         <!-- TODO(crbug.com/1093185): Conditionally show spinner when setup is added in OOBE -->
         <div id="network-connection-message" hidden$="[[showError]]">
-          [[i18n('establishNetworkConnectionMessage')]]
+          [[loadingMessage]]
         </div>
         <div id="error-icon-container" hidden$="[[!showError]]"></div>
       </div>
     </base-page>
   </template>
-  <script src="sim_detect_page.js"></script>
+  <script src="setup_loading_page.js"></script>
 </dom-module>

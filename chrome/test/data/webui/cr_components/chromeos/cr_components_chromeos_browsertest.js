@@ -84,7 +84,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[
     './cellular_setup/fake_cellular_setup_delegate.js',
   ]],
-  ['SimDetectPage', 'cellular_setup/sim_detect_page_test.js', [
+  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js', [
     './cellular_setup/fake_cellular_setup_delegate.js',
   ]],
 ].forEach(test => registerTest('CellularSetup', 'cellular-setup', ...test));
