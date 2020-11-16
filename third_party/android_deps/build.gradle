@@ -23,7 +23,7 @@ repositories {
         url 'https://maven.google.com'
     }
     maven {
-        url 'https://androidx.dev/snapshots/builds/6894841/artifacts/repository'
+        url 'https://androidx.dev/snapshots/builds/6971028/artifacts/repository'
     }
 }
 
@@ -52,10 +52,10 @@ dependencies {
 
     // Support v4 libraries
     def androidXSupportLibVersion = '1.0.0'
-    compile "androidx.core:core:1.1.0"
+    compile "androidx.core:core:1.5.0-SNAPSHOT"
     compile "androidx.core:core-animation:1.0.0-SNAPSHOT"
     compile "androidx.activity:activity:1.1.0"
-    compile "androidx.annotation:annotation:1.1.0"
+    compile "androidx.annotation:annotation:1.2.0-SNAPSHOT"
     compile "androidx.appcompat:appcompat:1.2.0-beta01"
     compile "androidx.appcompat:appcompat-resources:1.2.0-beta01"
     compile "androidx.asynclayoutinflater:asynclayoutinflater:1.1.0-SNAPSHOT"
@@ -67,7 +67,7 @@ dependencies {
     compile "androidx.drawerlayout:drawerlayout:${androidXSupportLibVersion}"
     compile "androidx.fragment:fragment:1.2.5"
     compile "androidx.gridlayout:gridlayout:${androidXSupportLibVersion}"
-    compile "androidx.interpolator:interpolator:${androidXSupportLibVersion}"
+    compile "androidx.interpolator:interpolator:1.1.0-SNAPSHOT"
     compile "androidx.leanback:leanback:${androidXSupportLibVersion}"
     compile "androidx.leanback:leanback-preference:${androidXSupportLibVersion}"
     compile "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0-SNAPSHOT"
@@ -87,9 +87,8 @@ dependencies {
     compile "androidx.exifinterface:exifinterface:1.4.0-SNAPSHOT"
 
     // Those are for use by doubledown libraries.
-    compile "androidx.arch.core:core-common:2.1.0"
+    compile "androidx.arch.core:core-common:2.2.0-SNAPSHOT"
     compile "androidx.annotation:annotation-experimental:1.1.0-SNAPSHOT"
-    compile "androidx.annotation:annotation:${androidXSupportLibVersion}"
     compile "androidx.legacy:legacy-support-core-utils:1.0.0"
     compile "androidx.lifecycle:lifecycle-runtime:${androidXSupportLibVersion}"
     compile "androidx.transition:transition:1.4.0-SNAPSHOT"

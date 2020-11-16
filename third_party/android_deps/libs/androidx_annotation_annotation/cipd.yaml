@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.1.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.2.0-alpha01-cr0
 package: chromium/third_party/android_deps/libs/androidx_annotation_annotation
 description: "Android Support Library Annotations"
 data:
-- file: annotation-1.1.0.jar
+- file: annotation-1.2.0-alpha01.jar

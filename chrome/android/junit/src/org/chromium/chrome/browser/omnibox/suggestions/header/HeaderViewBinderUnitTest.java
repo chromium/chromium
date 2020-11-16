@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
@@ -123,6 +124,8 @@ public class HeaderViewBinderUnitTest {
     @Test
     public void actionIcon_accessibilityAnnouncementsReflectExpandedState() {
         final AccessibilityNodeInfo info = mock(AccessibilityNodeInfo.class);
+        Bundle infoExtras = new Bundle();
+        when(info.getExtras()).thenReturn(infoExtras);
 
         // Expand.
         mModel.set(HeaderViewProperties.IS_COLLAPSED, false);
@@ -131,6 +134,7 @@ public class HeaderViewBinderUnitTest {
         verify(info, never()).addAction(AccessibilityAction.ACTION_EXPAND);
 
         reset(info);
+        when(info.getExtras()).thenReturn(infoExtras);
 
         // Collapse.
         mModel.set(HeaderViewProperties.IS_COLLAPSED, true);

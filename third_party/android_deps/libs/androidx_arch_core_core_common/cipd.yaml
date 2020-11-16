@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2.1.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:2.2.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_arch_core_core_common
 description: "Android Arch-Common"
 data:
-- file: core-common-2.1.0.jar
+- file: core-common-2.2.0-SNAPSHOT.jar

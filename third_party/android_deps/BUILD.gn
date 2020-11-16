@@ -167,7 +167,7 @@ android_aar_prebuilt("androidx_activity_activity_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("androidx_annotation_annotation_java") {
-  jar_path = "libs/androidx_annotation_annotation/annotation-1.1.0.jar"
+  jar_path = "libs/androidx_annotation_annotation/annotation-1.2.0-alpha01.jar"
   output_name = "androidx_annotation_annotation"
   supports_android = true
 
@@ -215,7 +215,8 @@ android_aar_prebuilt("androidx_appcompat_appcompat_resources_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("androidx_arch_core_core_common_java") {
-  jar_path = "libs/androidx_arch_core_core_common/core-common-2.1.0.jar"
+  jar_path =
+      "libs/androidx_arch_core_core_common/core-common-2.2.0-SNAPSHOT.jar"
   output_name = "androidx_arch_core_core_common"
   supports_android = true
   deps = [ ":androidx_annotation_annotation_java" ]
@@ -280,7 +281,7 @@ android_aar_prebuilt("androidx_coordinatorlayout_coordinatorlayout_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_core_core_java") {
-  aar_path = "libs/androidx_core_core/core-1.3.1.aar"
+  aar_path = "libs/androidx_core_core/core-1.5.0-SNAPSHOT.aar"
   info_path = "libs/androidx_core_core/androidx_core_core.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -389,7 +390,8 @@ android_aar_prebuilt("androidx_gridlayout_gridlayout_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_interpolator_interpolator_java") {
-  aar_path = "libs/androidx_interpolator_interpolator/interpolator-1.0.0.aar"
+  aar_path =
+      "libs/androidx_interpolator_interpolator/interpolator-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_interpolator_interpolator/androidx_interpolator_interpolator.info"
   deps = [ ":androidx_annotation_annotation_java" ]
   resource_overlay = true

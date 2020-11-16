@@ -1,7 +1,7 @@
 Name: Android Support Library compat
 Short Name: core
-URL: https://developer.android.com/jetpack/androidx
-Version: 1.3.1
+URL: https://developer.android.com/jetpack/androidx/releases/core#1.5.0-SNAPSHOT
+Version: 1.5.0-SNAPSHOT
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes
