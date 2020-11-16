@@ -332,15 +332,9 @@ bool XServerClipboard::HandleSelectionTargetsEvent(
   auto selection = event.selection;
   if (event.property == targets_atom_) {
     if (data && format == 32) {
-      // The XGetWindowProperty man-page specifies that the returned
-      // property data will be an array of |long|s in the case where
-      // |format| == 32.  Although the items are 32-bit values (as stored and
-      // sent over the X protocol), Xlib presents the data to the client as an
-      // array of |long|s, with zero-padding on a 64-bit system where |long|
-      // is bigger than 32 bits.
-      const long* targets = static_cast<const long*>(data);
+      const uint32_t* targets = static_cast<const uint32_t*>(data);
       for (int i = 0; i < item_count; i++) {
-        if (targets[i] == static_cast<long>(utf8_string_atom_)) {
+        if (targets[i] == static_cast<uint32_t>(utf8_string_atom_)) {
           RequestSelectionString(selection, utf8_string_atom_);
           return false;
         }
@@ -377,8 +371,7 @@ void XServerClipboard::NotifyClipboardText(const std::string& text) {
 
 void XServerClipboard::RequestSelectionTargets(x11::Atom selection) {
   connection_->ConvertSelection({clipboard_window_, selection, targets_atom_,
-                                 selection_string_atom_,
-                                 x11::Time::CurrentTime});
+                                 targets_atom_, x11::Time::CurrentTime});
 }
 
 void XServerClipboard::RequestSelectionString(x11::Atom selection,
