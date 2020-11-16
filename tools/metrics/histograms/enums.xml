@@ -37679,7 +37679,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="88" label="MODULE_INSTALL_FAILURE_INFOBAR_ANDROID"/>
   <int value="89" label="INLINE_UPDATE_READY_INFOBAR_ANDROID"/>
   <int value="90" label="INLINE_UPDATE_FAILED_INFOBAR_ANDROID"/>
-  <int value="91" label="FLASH_DEPRECATION_INFOBAR_DELEGATE"/>
+  <int value="91" label="FLASH_DEPRECATION_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="92" label="SEND_TAB_TO_SELF_INFOBAR_DELEGATE"/>
   <int value="93" label="TAB_SHARING_INFOBAR_DELEGATE"/>
   <int value="94" label="SAFETY_TIP_INFOBAR_DELEGATE"/>

@@ -8107,9 +8107,6 @@ the Bookmarks menu.">
       <message name="IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT" desc="Infobar message to notify that we couldn't load a plugin">
         Could not load <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph>
       </message>
-      <message name="IDS_PLUGIN_FLASH_DEPRECATION_PROMPT" desc="Infobar message to notify users that Flash player will be deprecated soon.">
-        Flash Player will no longer be supported after December 2020.
-      </message>
 
       <!-- External Protocol Dialog -->
       <message name="IDS_EXTERNAL_PROTOCOL_TITLE" desc="External Protocol Dialog Title">
