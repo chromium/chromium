@@ -1410,8 +1410,8 @@ IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  // Wait for the PDF plugin is loaded.
-  pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
+  // Wait for the PDF plugin to load.
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   content::BrowserPluginGuestManager* guest_manager =
       web_contents->GetBrowserContext()->GetGuestManager();
   WebContents* guest_contents = guest_manager->GetFullPageGuest(web_contents);

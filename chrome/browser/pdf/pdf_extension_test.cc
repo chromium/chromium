@@ -214,14 +214,14 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // loading the test will hang. This is done from outside of the BrowserPlugin
   // guest to ensure sending messages to/from the plugin works correctly from
   // there, since the PDFScriptingAPI relies on doing this as well.
-  bool LoadPdf(const GURL& url) {
+  testing::AssertionResult LoadPdf(const GURL& url) {
     ui_test_utils::NavigateToURL(browser(), url);
     WebContents* web_contents = GetActiveWebContents();
     return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
   }
 
   // Same as LoadPDF(), but loads into a new tab.
-  bool LoadPdfInNewTab(const GURL& url) {
+  testing::AssertionResult LoadPdfInNewTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -263,7 +263,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
       SCOPED_TRACE(pdf_file);
       if (base::PersistentHash(filename) % kNumberLoadTestParts == k) {
         LOG(INFO) << "Loading: " << pdf_file;
-        bool success = LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
+        testing::AssertionResult success =
+            LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
         if (pdf_file == "pdf_private/cfuzz5.pdf")
           continue;
         EXPECT_EQ(PdfIsExpectedToLoad(pdf_file), success) << pdf_file;

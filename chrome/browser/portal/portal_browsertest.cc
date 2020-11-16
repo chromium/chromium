@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {
   ASSERT_EQ(1u, inner_web_contents.size());
   WebContents* portal_contents = inner_web_contents[0];
 
-  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(portal_contents));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(portal_contents));
 }
 
 // Test that we do not show main frame interstitials in portal contents. We

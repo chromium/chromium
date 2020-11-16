@@ -2103,9 +2103,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  bool load_success =
-      pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents);
-  EXPECT_TRUE(load_success);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents));
 
   auto* web_contents_for_click = second_web_contents;
   auto inner_web_contents = web_contents_for_click->GetInnerWebContents();

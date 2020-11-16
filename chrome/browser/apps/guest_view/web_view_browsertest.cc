@@ -3470,9 +3470,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_NestedGuestContainerBounds) {
   content::WebContents* mime_handler_view_contents = guest_web_contents_list[1];
 
   // Make sure we've completed loading |mime_handler_view_guest|.
-  bool load_success = pdf_extension_test_util::EnsurePDFHasLoaded(
-      web_view_contents);
-  EXPECT_TRUE(load_success);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_view_contents));
 
   gfx::Rect web_view_container_bounds = web_view_contents->GetContainerBounds();
   gfx::Rect mime_handler_view_container_bounds =
