@@ -13,10 +13,7 @@ source_set("multiwindow_util") {
     "multi_window_support.mm",
   ]
 
-  deps = [
-    "//base",
-    "//base/ios:ios_multi_window_buildflags",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("util") {

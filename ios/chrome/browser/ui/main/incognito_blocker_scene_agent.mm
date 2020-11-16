@@ -76,7 +76,7 @@
 - (void)showOverlay {
   NSArray<UIWindow*>* windows = nil;
 
-  if (IsMultiwindowSupported()) {
+  if (IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       windows = self.sceneState.scene.windows;
     }

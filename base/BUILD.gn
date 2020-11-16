@@ -1261,10 +1261,6 @@ component("base") {
     "//third_party/modp_b64",
   ]
 
-  if (is_ios) {
-    deps += [ "//base/ios:ios_multi_window_buildflags" ]
-  }
-
   # native_unwinder_android is intended for use solely via a dynamic feature
   # module, to avoid increasing Chrome's executable size.
   assert_no_deps = [ ":native_unwinder_android" ]

@@ -5,7 +5,6 @@
 #import "ios/chrome/app/main_application_delegate.h"
 
 #include "base/ios/ios_util.h"
-#include "base/ios/multi_window_buildflags.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#include "ios/chrome/app/multi_window_buildflags.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
