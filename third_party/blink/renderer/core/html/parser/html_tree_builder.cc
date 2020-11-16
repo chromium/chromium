@@ -898,33 +898,50 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
   tree_.InsertHTMLElement(token);
 }
 
+namespace {
+DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
+    AtomicHTMLToken* token,
+    const Document& document,
+    bool allow_shadow_root) {
+  if (!RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
+          document.GetExecutionContext())) {
+    return DeclarativeShadowRootType::kNone;
+  }
+  Attribute* type_attribute =
+      token->GetAttributeItem(html_names::kShadowrootAttr);
+  if (!type_attribute)
+    return DeclarativeShadowRootType::kNone;
+
+  if (!allow_shadow_root) {
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Found declarative shadowroot attribute on a template, but declarative "
+        "Shadow DOM has not been enabled by allowShadowRoot."));
+    return DeclarativeShadowRootType::kNone;
+  }
+
+  String shadow_mode = type_attribute->Value();
+  if (EqualIgnoringASCIICase(shadow_mode, "open"))
+    return DeclarativeShadowRootType::kOpen;
+  if (EqualIgnoringASCIICase(shadow_mode, "closed"))
+    return DeclarativeShadowRootType::kClosed;
+
+  document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kOther,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "Invalid declarative shadowroot attribute value \"" + shadow_mode +
+          "\". Valid values include \"open\" and \"closed\"."));
+  return DeclarativeShadowRootType::kNone;
+}
+}  // namespace
+
 void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
-
-  DeclarativeShadowRootType declarative_shadow_root_type(
-      DeclarativeShadowRootType::kNone);
-  if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-          tree_.CurrentNode()->GetExecutionContext()) &&
-      allow_shadow_root_) {
-    if (Attribute* type_attribute =
-            token->GetAttributeItem(html_names::kShadowrootAttr)) {
-      String shadow_mode = type_attribute->Value();
-      if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-        declarative_shadow_root_type = DeclarativeShadowRootType::kOpen;
-      } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-        declarative_shadow_root_type = DeclarativeShadowRootType::kClosed;
-      } else {
-        tree_.OwnerDocumentForCurrentNode().AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kOther,
-                mojom::blink::ConsoleMessageLevel::kWarning,
-                "Invalid declarative shadowroot attribute value \"" +
-                    shadow_mode +
-                    "\". Valid values include \"open\" and \"closed\"."));
-      }
-    }
-  }
-  tree_.InsertHTMLTemplateElement(token, declarative_shadow_root_type);
+  tree_.InsertHTMLTemplateElement(
+      token,
+      DeclarativeShadowRootTypeFromToken(
+          token, tree_.OwnerDocumentForCurrentNode(), allow_shadow_root_));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);
