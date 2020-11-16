@@ -84,12 +84,13 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesData) {
   base::WriteFile(GetPath().AppendASCII("DE"),
                   test::CreateStatesProtoAsString());
   WritePathToPref(GetPath());
-
+  CountryToStateNamesListMapping country_to_state_names_list_mapping = {
+      {AlternativeStateNameMap::CountryCode("DE"),
+       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
   base::RunLoop run_loop;
   alternative_state_name_map_updater.LoadStatesData(
-      {{AlternativeStateNameMap::CountryCode("DE"),
-        {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}},
-      pref_service_.get(), run_loop.QuitClosure());
+      country_to_state_names_list_mapping, pref_service_.get(),
+      run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_NE(
@@ -97,6 +98,29 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesData) {
           AlternativeStateNameMap::CountryCode("DE"),
           AlternativeStateNameMap::StateName(base::ASCIIToUTF16("Bavaria"))),
       base::nullopt);
+}
+
+// Tests that there is no insertion in the AlternativeStateNameMap when a
+// garbage country code is supplied to the LoadStatesData for which the states
+// data file does not exist.
+TEST_F(AlternativeStateNameMapUpdaterTest, NoTaskIsPosted) {
+  test::ClearAlternativeStateNameMapForTesting();
+
+  base::WriteFile(GetPath().AppendASCII("DE"),
+                  test::CreateStatesProtoAsString());
+  WritePathToPref(GetPath());
+
+  CountryToStateNamesListMapping country_to_state_names_list_mapping = {
+      {AlternativeStateNameMap::CountryCode("DEE"),
+       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
+  base::RunLoop run_loop;
+  alternative_state_name_map_updater.LoadStatesData(
+      country_to_state_names_list_mapping, pref_service_.get(),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(
+      AlternativeStateNameMap::GetInstance()->IsLocalisedStateNamesMapEmpty());
 }
 
 // Tests that the AlternativeStateNameMap is populated when
@@ -112,11 +136,14 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesDataUTF8) {
                  .alternative_names = {"Parana", "State of Parana"}}));
   WritePathToPref(GetPath());
 
+  CountryToStateNamesListMapping country_to_state_names_list_mapping = {
+      {AlternativeStateNameMap::CountryCode("ES"),
+       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}}};
+
   base::RunLoop run_loop;
   alternative_state_name_map_updater.LoadStatesData(
-      {{AlternativeStateNameMap::CountryCode("ES"),
-        {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}}},
-      pref_service_.get(), run_loop.QuitClosure());
+      country_to_state_names_list_mapping, pref_service_.get(),
+      run_loop.QuitClosure());
   run_loop.Run();
 
   base::Optional<StateEntry> entry1 =
@@ -140,6 +167,57 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesDataUTF8) {
               testing::UnorderedElementsAreArray({"PR"}));
   EXPECT_THAT(entry2->alternative_names(), testing::UnorderedElementsAreArray(
                                                {"Parana", "State of Parana"}));
+}
+
+// Tests that the AlternativeStateNameMap is populated when
+// |StateNameMapUpdater::LoadStatesData()| is called for states data of
+// multiple countries simultaneously.
+TEST_F(AlternativeStateNameMapUpdaterTest,
+       TestLoadStatesDataOfMultipleCountriesSimultaneously) {
+  test::ClearAlternativeStateNameMapForTesting();
+
+  base::WriteFile(GetPath().AppendASCII("DE"),
+                  test::CreateStatesProtoAsString());
+  base::WriteFile(
+      GetPath().AppendASCII("ES"),
+      test::CreateStatesProtoAsString(
+          "ES", {.canonical_name = "Paraná",
+                 .abbreviations = {"PR"},
+                 .alternative_names = {"Parana", "State of Parana"}}));
+  WritePathToPref(GetPath());
+
+  CountryToStateNamesListMapping country_to_state_names = {
+      {AlternativeStateNameMap::CountryCode("ES"),
+       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}},
+      {AlternativeStateNameMap::CountryCode("DE"),
+       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
+
+  base::RunLoop run_loop;
+  alternative_state_name_map_updater.LoadStatesData(
+      country_to_state_names, pref_service_.get(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  base::Optional<StateEntry> entry1 =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode("ES"),
+          AlternativeStateNameMap::StateName(base::UTF8ToUTF16("Paraná")));
+  EXPECT_NE(entry1, base::nullopt);
+  EXPECT_EQ(entry1->canonical_name(), "Paraná");
+  EXPECT_THAT(entry1->abbreviations(),
+              testing::UnorderedElementsAreArray({"PR"}));
+  EXPECT_THAT(entry1->alternative_names(), testing::UnorderedElementsAreArray(
+                                               {"Parana", "State of Parana"}));
+
+  base::Optional<StateEntry> entry2 =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode("DE"),
+          AlternativeStateNameMap::StateName(base::UTF8ToUTF16("Bavaria")));
+  EXPECT_NE(entry2, base::nullopt);
+  EXPECT_EQ(entry2->canonical_name(), "Bavaria");
+  EXPECT_THAT(entry2->abbreviations(),
+              testing::UnorderedElementsAreArray({"BY"}));
+  EXPECT_THAT(entry2->alternative_names(),
+              testing::UnorderedElementsAreArray({"Bayern"}));
 }
 
 // Tests the |StateNameMapUpdater::ContainsState()| functionality.

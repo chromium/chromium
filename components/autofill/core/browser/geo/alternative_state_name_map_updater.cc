@@ -74,27 +74,42 @@ bool AlternativeStateNameMapUpdater::ContainsState(
 }
 
 void AlternativeStateNameMapUpdater::LoadStatesData(
-    const CountryToStateNamesListMapping& country_to_state_names_map,
+    CountryToStateNamesListMapping country_to_state_names_map,
     PrefService* pref_service,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Get the states data installation path from |pref_service|.
-  const std::string data_download_path =
-      pref_service->GetString(prefs::kAutofillStatesDataDir);
+  DCHECK(pref_service);
 
-  // If the installed directory path is empty, it means that the component is
-  // not ready for use yet.
-  if (data_download_path.empty()) {
-    std::move(done_callback).Run();
-    return;
-  }
+  // Get the states data installation path from |pref_service| which is set by
+  // the component updater once it downloads the states data and should be safe
+  // to use.
+  const base::FilePath data_download_path =
+      pref_service->GetFilePath(prefs::kAutofillStatesDataDir);
 
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
 
+  // Remove all invalid country names.
+  base::EraseIf(country_to_state_names_map,
+                [&country_codes](
+                    const CountryToStateNamesListMapping::value_type& entry) {
+                  return !base::Contains(country_codes, entry.first.value());
+                });
+
+  // If the installed directory path is empty, it means that the component is
+  // not ready for use yet.
+  if (data_download_path.empty() || country_to_state_names_map.empty()) {
+    std::move(done_callback).Run();
+    return;
+  }
+
+  pending_init_done_callbacks_.push_back(std::move(done_callback));
+
   // The |country_to_state_names_map| maps country_code names to a vector of
   // state names that are associated with this corresponding country.
   for (const auto& entry : country_to_state_names_map) {
+    // country_code is used as the filename.
+    // Example -> File "DE" contains the geographical states data of Germany.
     const AlternativeStateNameMap::CountryCode& country_code = entry.first;
     const std::vector<AlternativeStateNameMap::StateName>& states =
         entry.second;
@@ -104,20 +119,12 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
     if (!base::Contains(country_codes, country_code.value()))
       continue;
 
-    // country_code is used as the filename.
-    // Example -> File "DE" contains the geographical states data of Germany.
-    // |data_download_path| is set by the component updater once it downloads
-    // the states data and should be safe to use.
-    const base::FilePath file_path =
-        base::FilePath::FromUTF8Unsafe(data_download_path)
-            .AppendASCII(country_code.value());
-
     ++number_pending_init_tasks_;
-    pending_init_done_callbacks_.push_back(std::move(done_callback));
 
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
-        base::BindOnce(&LoadDataFromFile, file_path),
+        base::BindOnce(&LoadDataFromFile,
+                       data_download_path.AppendASCII(country_code.value())),
         base::BindOnce(
             &AlternativeStateNameMapUpdater::ProcessLoadedStateFileContent,
             weak_ptr_factory_.GetWeakPtr(), states));

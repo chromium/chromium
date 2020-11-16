@@ -42,10 +42,9 @@ class AlternativeStateNameMapUpdater {
   // countries to load.
   // Each call to LoadStatesData triggers loading state data files, so requests
   // should be batched up.
-  void LoadStatesData(
-      const CountryToStateNamesListMapping& country_to_state_names_map,
-      PrefService* pref_service,
-      base::OnceClosure done_callback);
+  void LoadStatesData(CountryToStateNamesListMapping country_to_state_names_map,
+                      PrefService* pref_service,
+                      base::OnceClosure done_callback);
 
 #if defined(UNIT_TEST)
   // A wrapper around |ProcessLoadedStateFileContent| used for testing purposes.
