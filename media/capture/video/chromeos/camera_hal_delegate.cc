@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/system/system_monitor.h"
+#include "base/unguessable_token.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -38,8 +39,11 @@ constexpr base::TimeDelta kEventWaitTimeoutSecs =
 class LocalCameraClientObserver : public CameraClientObserver {
  public:
   explicit LocalCameraClientObserver(
-      scoped_refptr<CameraHalDelegate> camera_hal_delegate)
-      : camera_hal_delegate_(std::move(camera_hal_delegate)) {}
+      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken auth_token)
+      : CameraClientObserver(type, std::move(auth_token)),
+        camera_hal_delegate_(std::move(camera_hal_delegate)) {}
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -117,7 +121,8 @@ base::flat_set<int32_t> GetAvailableFramerates(
 
 CameraHalDelegate::CameraHalDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
-    : camera_module_has_been_set_(
+    : authenticated_(false),
+      camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       builtin_camera_info_updated_(
@@ -138,9 +143,27 @@ CameraHalDelegate::CameraHalDelegate(
 
 CameraHalDelegate::~CameraHalDelegate() = default;
 
-void CameraHalDelegate::RegisterCameraClient() {
-  CameraHalDispatcherImpl::GetInstance()->AddClientObserver(
-      std::make_unique<LocalCameraClientObserver>(this));
+bool CameraHalDelegate::RegisterCameraClient() {
+  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+  auto type = cros::mojom::CameraClientType::CHROME;
+  dispatcher->AddClientObserver(
+      std::make_unique<LocalCameraClientObserver>(
+          this, type, dispatcher->GetTokenForTrustedClient(type)),
+      base::BindOnce(&CameraHalDelegate::OnRegisteredCameraHalClient,
+                     base::Unretained(this)));
+  camera_hal_client_registered_.Wait();
+  return authenticated_;
+}
+
+void CameraHalDelegate::OnRegisteredCameraHalClient(int32_t result) {
+  if (result != 0) {
+    LOG(ERROR) << "Failed to register camera HAL client";
+    camera_hal_client_registered_.Signal();
+    return;
+  }
+  VLOG(1) << "Registered camera HAL client";
+  authenticated_ = true;
+  camera_hal_client_registered_.Signal();
 }
 
 void CameraHalDelegate::SetCameraModule(

@@ -50,7 +50,8 @@ std::string GenerateRandomToken() {
 // to here, and the write side will be closed in such a case.
 bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
   struct pollfd fds[2] = {
-      {raw_socket_fd, POLLIN, 0}, {raw_cancel_fd, POLLIN, 0},
+      {raw_socket_fd, POLLIN, 0},
+      {raw_cancel_fd, POLLIN, 0},
   };
 
   if (HANDLE_EINTR(poll(fds, base::size(fds), -1)) <= 0) {
@@ -70,8 +71,11 @@ bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
 class MojoCameraClientObserver : public CameraClientObserver {
  public:
   explicit MojoCameraClientObserver(
-      mojo::PendingRemote<cros::mojom::CameraHalClient> client)
-      : client_(std::move(client)) {}
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken auth_token)
+      : CameraClientObserver(type, std::move(auth_token)),
+        client_(std::move(client)) {}
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -132,14 +136,16 @@ bool CameraHalDispatcherImpl::Start(
 }
 
 void CameraHalDispatcherImpl::AddClientObserver(
-    std::unique_ptr<CameraClientObserver> observer) {
+    std::unique_ptr<CameraClientObserver> observer,
+    base::OnceCallback<void(int32_t)> result_callback) {
   // If |proxy_thread_| fails to start in Start() then CameraHalDelegate will
   // not be created, and this function will not be called.
   DCHECK(proxy_thread_.IsRunning());
   proxy_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImpl::AddClientObserverOnProxyThread,
-                     base::Unretained(this), std::move(observer)));
+                     base::Unretained(this), std::move(observer),
+                     std::move(result_callback)));
 }
 
 bool CameraHalDispatcherImpl::IsStarted() {
@@ -149,7 +155,8 @@ bool CameraHalDispatcherImpl::IsStarted() {
 
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()
     : proxy_thread_("CameraProxyThread"),
-      blocking_io_thread_("CameraBlockingIOThread") {
+      blocking_io_thread_("CameraBlockingIOThread"),
+      camera_hal_server_callbacks_(this) {
   // This event is for adding camera category to categories list.
   TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
@@ -171,6 +178,19 @@ CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
 void CameraHalDispatcherImpl::RegisterServer(
     mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  // TODO(b/170075468): Reject this call once Chrome OS uses
+  // RegisterServerWithToken.
+  auto temporary_token = base::UnguessableToken::Create();
+  RegisterServerWithToken(std::move(camera_hal_server), temporary_token,
+                          base::DoNothing());
+}
+
+void CameraHalDispatcherImpl::RegisterServerWithToken(
+    mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
+    const base::UnguessableToken& token,
+    RegisterServerWithTokenCallback callback) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  // TODO(b/170075468): Authenticate the token.
 
   if (camera_hal_server_) {
     LOG(ERROR) << "Camera HAL server is already registered";
@@ -181,6 +201,8 @@ void CameraHalDispatcherImpl::RegisterServer(
       base::BindOnce(&CameraHalDispatcherImpl::OnCameraHalServerConnectionError,
                      base::Unretained(this)));
   VLOG(1) << "Camera HAL server registered";
+  std::move(callback).Run(
+      0, camera_hal_server_callbacks_.BindNewPipeAndPassRemote());
 
   // Set up the Mojo channels for clients which registered before the server
   // registers.
@@ -191,13 +213,29 @@ void CameraHalDispatcherImpl::RegisterServer(
 
 void CameraHalDispatcherImpl::RegisterClient(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  // TODO(b/170075468): Reject this call once we've migrated all camera clients.
+  auto temporary_token = base::UnguessableToken::Create();
+  RegisterClientWithToken(std::move(client),
+                          cros::mojom::CameraClientType::UNKNOWN,
+                          temporary_token, base::DoNothing());
+}
+
+void CameraHalDispatcherImpl::RegisterClientWithToken(
+    mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+    cros::mojom::CameraClientType type,
+    const base::UnguessableToken& auth_token,
+    RegisterClientWithTokenCallback callback) {
   // RegisterClient can be called locally by ArcCameraBridge. Unretained
   // reference is safe here because CameraHalDispatcherImpl owns
   // |proxy_thread_|.
+  base::UnguessableToken client_auth_token = auth_token;
   proxy_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImpl::RegisterClientOnProxyThread,
-                     base::Unretained(this), std::move(client)));
+      base::BindOnce(
+          &CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread,
+          base::Unretained(this), std::move(client), type,
+          std::move(client_auth_token), std::move(callback)));
 }
 
 void CameraHalDispatcherImpl::GetJpegDecodeAccelerator(
@@ -210,6 +248,20 @@ void CameraHalDispatcherImpl::GetJpegEncodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
         jea_receiver) {
   jea_factory_.Run(std::move(jea_receiver));
+}
+
+void CameraHalDispatcherImpl::CameraDeviceActivityChange(
+    int32_t camera_id,
+    bool opened,
+    cros::mojom::CameraClientType type) {
+  // TODO(b/170075468): Implement.
+  VLOG(1) << type << (opened ? " opened " : " closed ") << "camera "
+          << camera_id;
+}
+
+base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
+    cros::mojom::CameraClientType type) {
+  return token_manager_.GetTokenForTrustedClient(type);
 }
 
 void CameraHalDispatcherImpl::OnTraceLogEnabled() {
@@ -347,33 +399,46 @@ void CameraHalDispatcherImpl::StartServiceLoop(base::ScopedFD socket_fd,
   }
 }
 
-void CameraHalDispatcherImpl::RegisterClientOnProxyThread(
-    mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
+void CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread(
+    mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+    cros::mojom::CameraClientType type,
+    base::UnguessableToken auth_token,
+    RegisterClientWithTokenCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  auto client_observer =
-      std::make_unique<MojoCameraClientObserver>(std::move(client));
+  auto client_observer = std::make_unique<MojoCameraClientObserver>(
+      std::move(client), type, std::move(auth_token));
   client_observer->client().set_disconnect_handler(base::BindOnce(
       &CameraHalDispatcherImpl::OnCameraHalClientConnectionError,
       base::Unretained(this), base::Unretained(client_observer.get())));
-  AddClientObserver(std::move(client_observer));
-  VLOG(1) << "Camera HAL client registered";
+  AddClientObserver(std::move(client_observer), std::move(callback));
 }
 
 void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
-    std::unique_ptr<CameraClientObserver> observer) {
+    std::unique_ptr<CameraClientObserver> observer,
+    base::OnceCallback<void(int32_t)> result_callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  if (!token_manager_.AuthenticateClient(observer->GetType(),
+                                         observer->GetAuthToken())) {
+    LOG(ERROR) << "Failed to authenticate camera client observer";
+    std::move(result_callback).Run(-EPERM);
+    return;
+  }
   if (camera_hal_server_) {
     EstablishMojoChannel(observer.get());
   }
   client_observers_.insert(std::move(observer));
+  std::move(result_callback).Run(0);
+  VLOG(1) << "Camera HAL client registered";
 }
 
 void CameraHalDispatcherImpl::EstablishMojoChannel(
     CameraClientObserver* client_observer) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   mojo::PendingRemote<cros::mojom::CameraModule> camera_module;
+  const auto& type = client_observer->GetType();
+  VLOG(1) << "Establishing server channel for " << type;
   camera_hal_server_->CreateChannel(
-      camera_module.InitWithNewPipeAndPassReceiver());
+      camera_module.InitWithNewPipeAndPassReceiver(), type);
   client_observer->OnChannelCreated(std::move(camera_module));
 }
 
@@ -390,6 +455,7 @@ void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   VLOG(1) << "Camera HAL server connection lost";
   camera_hal_server_.reset();
+  camera_hal_server_callbacks_.reset();
 }
 
 void CameraHalDispatcherImpl::OnCameraHalClientConnectionError(

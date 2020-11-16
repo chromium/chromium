@@ -12,10 +12,12 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread.h"
+#include "base/unguessable_token.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "media/capture/video/chromeos/token_manager.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -38,9 +40,19 @@ using MojoJpegEncodeAcceleratorFactoryCB = base::RepeatingCallback<void(
 
 class CAPTURE_EXPORT CameraClientObserver {
  public:
+  CameraClientObserver(cros::mojom::CameraClientType type,
+                       base::UnguessableToken auth_token)
+      : type_(type), auth_token_(auth_token) {}
   virtual ~CameraClientObserver();
   virtual void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) = 0;
+
+  cros::mojom::CameraClientType GetType() { return type_; }
+  const base::UnguessableToken GetAuthToken() { return auth_token_; }
+
+ private:
+  cros::mojom::CameraClientType type_;
+  base::UnguessableToken auth_token_;
 };
 
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
@@ -55,6 +67,7 @@ class CAPTURE_EXPORT CameraClientObserver {
 // comments in mojo/cros_camera_service.mojom.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
+      public cros::mojom::CameraHalServerCallbacks,
       public base::trace_event::TraceLog::EnabledStateObserver {
  public:
   static CameraHalDispatcherImpl* GetInstance();
@@ -62,21 +75,39 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   bool Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
              MojoJpegEncodeAcceleratorFactoryCB jea_factory);
 
-  void AddClientObserver(std::unique_ptr<CameraClientObserver> observer);
+  void AddClientObserver(std::unique_ptr<CameraClientObserver> observer,
+                         base::OnceCallback<void(int32_t)> result_callback);
 
   bool IsStarted();
 
   // CameraHalDispatcher implementations.
   void RegisterServer(
       mojo::PendingRemote<cros::mojom::CameraHalServer> server) final;
+  void RegisterServerWithToken(
+      mojo::PendingRemote<cros::mojom::CameraHalServer> server,
+      const base::UnguessableToken& token,
+      RegisterServerWithTokenCallback callback) final;
   void RegisterClient(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client) final;
+  void RegisterClientWithToken(
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      cros::mojom::CameraClientType type,
+      const base::UnguessableToken& auth_token,
+      RegisterClientWithTokenCallback callback) final;
   void GetJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) final;
   void GetJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) final;
+
+  // CameraHalServerCallbacks implementations.
+  void CameraDeviceActivityChange(int32_t camera_id,
+                                  bool opened,
+                                  cros::mojom::CameraClientType type) final;
+
+  base::UnguessableToken GetTokenForTrustedClient(
+      cros::mojom::CameraClientType type);
 
   // base::trace_event::TraceLog::EnabledStateObserver implementation.
   void OnTraceLogEnabled() final;
@@ -100,10 +131,14 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Runs on |blocking_io_thread_|.
   void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
 
-  void RegisterClientOnProxyThread(
-      mojo::PendingRemote<cros::mojom::CameraHalClient> client);
+  void RegisterClientWithTokenOnProxyThread(
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken token,
+      RegisterClientWithTokenCallback callback);
   void AddClientObserverOnProxyThread(
-      std::unique_ptr<CameraClientObserver> observer);
+      std::unique_ptr<CameraClientObserver> observer,
+      base::OnceCallback<void(int32_t)> result_callback);
 
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
@@ -131,12 +166,17 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   mojo::Remote<cros::mojom::CameraHalServer> camera_hal_server_;
 
+  mojo::Receiver<cros::mojom::CameraHalServerCallbacks>
+      camera_hal_server_callbacks_;
+
   std::set<std::unique_ptr<CameraClientObserver>, base::UniquePtrComparator>
       client_observers_;
 
   MojoMjpegDecodeAcceleratorFactoryCB jda_factory_;
 
   MojoJpegEncodeAcceleratorFactoryCB jea_factory_;
+
+  TokenManager token_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };

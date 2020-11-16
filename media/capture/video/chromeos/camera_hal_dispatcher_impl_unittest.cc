@@ -31,13 +31,15 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
 
   ~MockCameraHalServer() = default;
 
-  void CreateChannel(mojo::PendingReceiver<cros::mojom::CameraModule>
-                         camera_module_receiver) override {
-    DoCreateChannel(std::move(camera_module_receiver));
+  void CreateChannel(
+      mojo::PendingReceiver<cros::mojom::CameraModule> camera_module_receiver,
+      cros::mojom::CameraClientType camera_client_type) override {
+    DoCreateChannel(std::move(camera_module_receiver), camera_client_type);
   }
-  MOCK_METHOD1(DoCreateChannel,
+  MOCK_METHOD2(DoCreateChannel,
                void(mojo::PendingReceiver<cros::mojom::CameraModule>
-                        camera_module_receiver));
+                        camera_module_receiver,
+                    cros::mojom::CameraClientType camera_client_type));
 
   MOCK_METHOD1(SetTracingEnabled, void(bool enabled));
 
@@ -106,12 +108,16 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
   static void RegisterServer(
       CameraHalDispatcherImpl* dispatcher,
       mojo::PendingRemote<cros::mojom::CameraHalServer> server) {
+    // TODO(b/170075468): Migrate to RegisterServerWithToken once the migration
+    // is done.
     dispatcher->RegisterServer(std::move(server));
   }
 
   static void RegisterClient(
       CameraHalDispatcherImpl* dispatcher,
       mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
+    // TODO(b/170075468): Migrate to RegisterClientWithToken once the migration
+    // is done.
     dispatcher->RegisterClient(std::move(client));
   }
 
@@ -134,7 +140,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
   auto mock_server = std::make_unique<MockCameraHalServer>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  EXPECT_CALL(*mock_server, DoCreateChannel(_)).Times(1);
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -159,7 +165,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
 
   // Make sure we creates a new Mojo channel from the new server to the same
   // client.
-  EXPECT_CALL(*mock_server, DoCreateChannel(_)).Times(1);
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -183,7 +189,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
   auto mock_server = std::make_unique<MockCameraHalServer>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  EXPECT_CALL(*mock_server, DoCreateChannel(_)).Times(1);
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -208,7 +214,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
 
   // Make sure we re-create the Mojo channel from the same server to the new
   // client.
-  EXPECT_CALL(*mock_server, DoCreateChannel(_)).Times(1);
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(

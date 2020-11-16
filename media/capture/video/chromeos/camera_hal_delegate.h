@@ -47,7 +47,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
 
   // Registers the camera client observer to the CameraHalDispatcher instance.
-  void RegisterCameraClient();
+  // Returns true if successful, false if failed (e.g., authentication failure).
+  bool RegisterCameraClient();
 
   void SetCameraModule(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module);
@@ -93,6 +94,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
   friend class base::RefCountedThreadSafe<CameraHalDelegate>;
 
   ~CameraHalDelegate() final;
+
+  void OnRegisteredCameraHalClient(int32_t result);
 
   void GetSupportedFormats(int camera_id,
                            VideoCaptureFormats* supported_formats);
@@ -143,6 +146,9 @@ class CAPTURE_EXPORT CameraHalDelegate final
       cros::mojom::CameraDeviceStatus new_status) final;
   void TorchModeStatusChange(int32_t camera_id,
                              cros::mojom::TorchModeStatus new_status) final;
+
+  base::WaitableEvent camera_hal_client_registered_;
+  bool authenticated_;
 
   base::WaitableEvent camera_module_has_been_set_;
 
