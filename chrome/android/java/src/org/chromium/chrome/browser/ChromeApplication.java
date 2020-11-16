@@ -21,6 +21,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.MainDexApplicationImpl;
@@ -148,6 +149,17 @@ public class ChromeApplication extends SplitCompatApplication {
 
             if (isBrowserProcess) {
                 TraceEvent.end("ChromeApplication.attachBaseContext");
+            }
+        }
+
+        @Override
+        public void onCreate() {
+            super.onCreate();
+
+            if (SplitCompatApplication.isBrowserProcess()
+                    && CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
+                // Kick off library loading in a separate thread so it's ready when we need it.
+                new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
             }
         }
 

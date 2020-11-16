@@ -28,6 +28,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
+#include "chrome/common/chrome_features.h"
 #else
 #include "chrome/browser/chrome_browser_field_trials_desktop.h"
 #endif
@@ -111,6 +112,27 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kReachedCodeProfilerTrial, reached_code_profiler_group);
   }
+
+  const char* group_name;
+  bool java_feature_enabled =
+      chrome::android::IsJavaDrivenFeatureEnabled(features::kEarlyLibraryLoad);
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kEarlyLibraryLoad);
+  // Use the default group if cc and java feature values don't agree (can happen
+  // on first startup after feature is enabled by Finch), or the feature is not
+  // overridden by Finch.
+  if (feature_enabled != java_feature_enabled ||
+      !base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kEarlyLibraryLoad.name)) {
+    group_name = "Default";
+  } else if (java_feature_enabled) {
+    group_name = "Enabled";
+  } else {
+    group_name = "Disabled";
+  }
+  static constexpr char kEarlyLibraryLoadTrial[] = "EarlyLibraryLoadSynthetic";
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kEarlyLibraryLoadTrial, group_name);
 #endif  // defined(OS_ANDROID)
 }
 
