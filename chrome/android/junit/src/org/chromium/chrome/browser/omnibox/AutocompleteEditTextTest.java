@@ -1224,7 +1224,7 @@ public class AutocompleteEditTextTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
-    public void testBlacklistWithSpannableModel() {
+    public void testUnsupportedKeyboardWithSpannableModel() {
         mAutocomplete.setKeyboardPackageName("jp.co.sharp.android.iwnn");
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));

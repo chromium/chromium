@@ -360,16 +360,16 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     @Override
     public boolean shouldAutocomplete() {
         boolean retVal = mBatchEditNestCount == 0 && mLastEditWasTyping
-                && mCurrentState.isCursorAtEndOfUserText() && !isKeyboardBlacklisted()
+                && mCurrentState.isCursorAtEndOfUserText() && doesKeyboardSupportAutocomplete()
                 && isNonCompositionalText(getTextWithoutAutocomplete());
         if (DEBUG) Log.i(TAG, "shouldAutocomplete: " + retVal);
         return retVal;
     }
 
-    private boolean isKeyboardBlacklisted() {
+    private boolean doesKeyboardSupportAutocomplete() {
         String pkgName = mDelegate.getKeyboardPackageName();
-        return pkgName.contains(".iqqi") // crbug.com/767016
-                || pkgName.contains("omronsoft") || pkgName.contains(".iwnn"); // crbug.com/758443
+        return !pkgName.contains(".iqqi") // crbug.com/767016
+                && !pkgName.contains("omronsoft") && !pkgName.contains(".iwnn"); // crbug.com/758443
     }
 
     private boolean shouldFinishCompositionOnDeletion() {
@@ -379,7 +379,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         // states.
         String pkgName = mDelegate.getKeyboardPackageName();
         // One exception is the recent version of Samsung keyboard which works goofily only
-        // when we finish composing text here. Since it is more difficult to blacklist all Japanese
+        // when we finish composing text here. Since it is more difficult to block all Japanese
         // keyboards, instead we call finishComposingText() for all the keyboards except for Samsung
         // keyboard.
         return !pkgName.contains("com.sec.android.inputmethod")
