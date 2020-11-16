@@ -41,6 +41,7 @@ def SplitVersion(version):
   version = version.split('.')
   return itertools.islice(itertools.chain(version, itertools.repeat('0')), 0, 3)
 
+
 def FormatVersion(version):
   """Converts Xcode version to a format required for DTXcode in Info.plist
 
@@ -53,6 +54,7 @@ def FormatVersion(version):
   """
   major, minor, patch = SplitVersion(version)
   return ('%2s%s%s' % (major, minor, patch)).replace(' ', '0')
+
 
 def FillXcodeVersion(settings, developer_dir):
   """Fills the Xcode version and build number into |settings|."""
@@ -78,21 +80,6 @@ def FillMachineOSBuild(settings):
   machine_os_build = subprocess.check_output(['sw_vers', '-buildVersion'
                                               ]).decode('UTF-8').strip()
   settings['machine_os_build'] = machine_os_build
-
-  # The reported build number is made up from the kernel major version number,
-  # a minor version represented as a letter, a build number, and an optional
-  # packaging version.
-  #
-  # For example, the macOS 10.15.3 GM build is 19D76.
-  # - 19 is the Darwin kernel that ships with 10.15.
-  # - D is minor version 4. 10.15.0 builds had minor version 1.
-  # - 76 is the build number. 75 other builds were stamped before GM came out.
-  #
-  # The macOS 10.15.4 beta 5 build is 19E258a. The trailing "a" means the same
-  # build output was packaged twice.
-  build_match = re.match(r'^(\d+)([A-Z])(\d+)([a-z]?)$', machine_os_build)
-  assert build_match, "Unexpected macOS build format: %r" % machine_os_build
-  settings['machine_os_build_major'] = int(build_match.group(1), 10)
 
 
 def FillSDKPathAndVersion(settings, platform, xcode_version):
