@@ -59,7 +59,7 @@ static void BeforeCallEnteredCallback(v8::Isolate* isolate) {
   CHECK(!ScriptForbiddenScope::IsScriptForbidden());
 }
 
-static void MicrotasksCompletedCallback(v8::Isolate* isolate) {
+static void MicrotasksCompletedCallback(v8::Isolate* isolate, void* data) {
   V8PerIsolateData::From(isolate)->RunEndOfScopeTasks();
 }
 
