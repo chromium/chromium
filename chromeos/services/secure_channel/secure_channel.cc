@@ -161,7 +161,8 @@ void SecureChannel::OnMessageReceived(const Connection& connection,
   if (!secure_context_) {
     PA_LOG(WARNING) << "Received unexpected message before authentication "
                     << "was complete. Feature: " << wire_message.feature()
-                    << ", Payload: " << wire_message.payload();
+                    << ", Payload size: " << wire_message.payload().size()
+                    << " byte(s)";
     return;
   }
 
@@ -212,8 +213,8 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
   }
 
   PA_LOG(ERROR) << "Could not send message: {"
-                << "payload: \"" << pending_message_->payload << "\", "
-                << "feature: \"" << pending_message_->feature << "\""
+                << "payload size: " << pending_message_->payload.size()
+                << " byte(s), feature: \"" << pending_message_->feature << "\""
                 << "}";
   pending_message_.reset();
 
@@ -262,7 +263,8 @@ void SecureChannel::ProcessMessageQueue() {
   PA_LOG(INFO) << "Sending message to " << connection_->GetDeviceAddress()
                << ": {"
                << "feature: \"" << pending_message_->feature << "\", "
-               << "payload: \"" << pending_message_->payload << "\""
+               << "payload size: " << pending_message_->payload.size()
+               << " byte(s)"
                << "}";
 
   secure_context_->Encode(
