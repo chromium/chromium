@@ -23,6 +23,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
                  previous_inline_break_token);
   }
 
+  bool next_is_from_break_token = false;
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume
     // the children that fragmented earlier (represented by one break token
@@ -33,24 +34,31 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
       child_break_token = child_break_tokens[child_token_idx_++];
       break;
     }
-    // If there are no break tokens left to resume, the iterator machinery (see
-    // further below) will just continue at the next sibling. The last break
-    // token would be the last node that got fragmented. However, there may be
-    // parallel flows caused by visible overflow, established by descendants of
-    // our children, and these may go on, fragmentainer after fragmentainer,
-    // even if we're done with our direct children. When this happens, we need
-    // to prevent the machinery from continuing iterating, if we're already done
-    // with those siblings.
-    if (!child_break_token && break_token_->HasSeenAllChildren())
+
+    next_is_from_break_token = child_token_idx_ < child_break_tokens.size();
+
+    if (child_break_token) {
+      // If we have a child break token to resume at, that's the source of
+      // truth.
+      child_ = child_break_token->InputNode();
+    } else if (break_token_->HasSeenAllChildren()) {
+      // If there are no break tokens left to resume, the iterator machinery
+      // (see further below) will by default just continue at the next sibling.
+      // The last break token would be the last node that previously got
+      // fragmented. However, there may be parallel flows caused by visible
+      // overflow, established by descendants of our children, and these may go
+      // on, fragmentainer after fragmentainer, even if we're done with our
+      // direct children. When this happens, we need to prevent the machinery
+      // from continuing iterating, if we're already done with those siblings.
       child_ = nullptr;
+    }
   }
 
-  // If we have a child break token to resume at, that's the source of truth.
-  if (child_break_token)
-    child_ = child_break_token->InputNode();
-
   NGLayoutInputNode child = child_;
-  if (child_)
+
+  // Unless we're going to grab the next child off a break token, we'll use the
+  // next sibling of the current child. Prepare it now.
+  if (child_ && !next_is_from_break_token)
     child_ = child_.NextSibling();
 
   return Entry(child, child_break_token);
