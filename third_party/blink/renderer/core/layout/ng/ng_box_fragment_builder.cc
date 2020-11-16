@@ -168,11 +168,31 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
   if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
     if (!last_inline_break_token_) {
-      // In some cases we may want to break before the first line, as a last
-      // resort. We need a break token for that as well, so that the machinery
-      // will understand that we should resume at the beginning of the inline
-      // formatting context, rather than concluding that we're done with the
-      // whole thing.
+      // In some cases we may want to break before the first line in the
+      // fragment. This happens if there's a tall float before the line, or, as
+      // a last resort, when there are no better breakpoints to choose from, and
+      // we're out of space. When laying out, we store the inline break token
+      // from the last line added to the builder, but if we haven't added any
+      // lines at all, we are still going to need a break token, so that the we
+      // can tell where to resume in the inline formatting context in the next
+      // fragmentainer.
+
+      if (previous_break_token_) {
+        // If there's an incoming break token, see if it has a child inline
+        // break token, and use that one. We may be past floats or lines that
+        // were laid out in earlier fragments.
+        const auto& child_tokens = previous_break_token_->ChildBreakTokens();
+        if (child_tokens.size()) {
+          // If there is an inline break token, it will always be the last
+          // child.
+          last_inline_break_token_ =
+              DynamicTo<NGInlineBreakToken>(child_tokens.back());
+          if (last_inline_break_token_)
+            return;
+        }
+      }
+
+      // We're at the beginning of the inline formatting context.
       last_inline_break_token_ = NGInlineBreakToken::Create(
           *child_inline_node, /* style */ nullptr, /* item_index */ 0,
           /* text_offset */ 0, NGInlineBreakToken::kDefault);
