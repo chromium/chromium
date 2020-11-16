@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
+#include "chromeos/components/local_search_service/index.h"
 #include "chromeos/components/local_search_service/index_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
@@ -24,7 +25,7 @@ class InvertedIndex;
 
 // An implementation of Index.
 // A search via the inverted index backend with TF-IDF based document ranking.
-class InvertedIndexSearch : public IndexSync {
+class InvertedIndexSearch : public IndexSync, public Index {
  public:
   InvertedIndexSearch(IndexId index_id, PrefService* local_state);
   ~InvertedIndexSearch() override;
@@ -32,7 +33,7 @@ class InvertedIndexSearch : public IndexSync {
   InvertedIndexSearch(const InvertedIndexSearch&) = delete;
   InvertedIndexSearch& operator=(const InvertedIndexSearch&) = delete;
 
-  // Index overrides:
+  // IndexSync overrides:
   uint64_t GetSizeSync() override;
   // TODO(jiameng): we always build the index after documents are updated. May
   // revise this strategy if there is a different use case.
@@ -52,19 +53,47 @@ class InvertedIndexSearch : public IndexSync {
                           uint32_t max_results,
                           std::vector<Result>* results) override;
 
+  // Index overrides:
+  // GetSize is only accurate if the index has done updating.
+  void GetSize(GetSizeCallback callback) override;
+  void AddOrUpdate(const std::vector<Data>& data,
+                   AddOrUpdateCallback callback) override;
+  void Delete(const std::vector<std::string>& ids,
+              DeleteCallback callback) override;
+  void UpdateDocuments(const std::vector<Data>& data,
+                       UpdateDocumentsCallback callback) override;
+  void Find(const base::string16& query,
+            uint32_t max_results,
+            FindCallback callback) override;
+  void ClearIndex(ClearIndexCallback callback) override;
+
   // Returns document id and number of occurrences of |term|.
   // Document ids are sorted in alphabetical order.
   std::vector<std::pair<std::string, uint32_t>> FindTermForTesting(
       const base::string16& term) const;
 
  private:
+  void FinalizeAddOrUpdateSync(
+      const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
+
+  // FinalizeDeleteSync is called if Delete cannot be immediately done because
+  // there's another index updating operation before it, i.e.
+  // |num_queued_index_updates_| is not zero.
+  void FinalizeDeleteSync(const std::vector<std::string>& ids);
+
   void FinalizeAddOrUpdate(
+      AddOrUpdateCallback callback,
       const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
 
   // FinalizeDelete is called if Delete cannot be immediately done because
   // there's another index updating operation before it, i.e.
   // |num_queued_index_updates_| is not zero.
-  void FinalizeDelete(const std::vector<std::string>& ids);
+  void FinalizeDelete(DeleteCallback callback,
+                      const std::vector<std::string>& ids);
+
+  void FinalizeUpdateDocuments(
+      UpdateDocumentsCallback callback,
+      const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
 
   // In order to reduce unnecessary inverted index building, we only build the
   // index if there's no upcoming modification to the index's document list.
