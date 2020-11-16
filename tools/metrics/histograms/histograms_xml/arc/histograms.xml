@@ -990,12 +990,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Session.MojoDisconnection" enum="ArcMojoConnectionType"
-    expires_after="2020-12-05">
+    expires_after="2021-11-11">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>shaochuan@google.com</owner>
   <owner>khmel@google.com</owner>
-  <owner>mmatena@google.com</owner>
+  <owner>ttylenda@google.com</owner>
   <summary>
     This is updated when the mojo connections to processes in detailing in
     ArcMojoConnectionType are closed for reasons other than the ARC container
