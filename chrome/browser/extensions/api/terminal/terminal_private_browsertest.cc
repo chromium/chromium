@@ -45,14 +45,15 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
 
   // 'vmshell not allowed' when crostini is not allowed.
   crostini::FakeCrostiniFeatures crostini_features;
-  crostini_features.set_allowed(false);
+  crostini_features.set_could_be_allowed(true);
+  crostini_features.set_is_allowed_now(false);
   ExpectJsResult(script, "vmshell not allowed");
 
   // 'Error starting crostini for terminal: 22' when crostini is allowed.
   // This is the specific error we expect to see in a test environment
   // (LOAD_COMPONENT_FAILED), but the point of the test is to see that we get
   // past the vmshell allowed checks.
-  crostini_features.set_allowed(true);
+  crostini_features.set_is_allowed_now(true);
   ExpectJsResult(script, "Waiting for component update dialog response");
 
   // openTerminalProcess not defined.

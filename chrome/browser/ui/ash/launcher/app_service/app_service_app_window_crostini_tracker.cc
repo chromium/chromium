@@ -199,12 +199,6 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
 
 std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     aura::Window* window) const {
-  // Only handle the app associated with the primary user.
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(
-          app_service_controller_->owner()->profile())) {
-    return std::string();
-  }
-
   // Transient windows are set up after window init, so remove them here.
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||

@@ -170,7 +170,7 @@ class CrostiniManager::CrostiniRestarter
 
   void Restart() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!CrostiniFeatures::Get()->IsUIAllowed(profile_)) {
+    if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
       LOG(ERROR) << "Crostini UI not allowed for profile "
                  << profile_->GetProfileUserName();
       std::move(completed_callback_).Run(CrostiniResult::NOT_ALLOWED);
@@ -989,13 +989,10 @@ void CrostiniManager::CheckPaths() {
 }
 
 void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
-  if (!is_dev_kvm_present_) {
-    return;
-  }
   if (!CrostiniFeatures::Get()->IsEnabled(profile_)) {
     return;
   }
-  if (!CrostiniFeatures::Get()->IsAllowed(profile_)) {
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
     return;
   }
   if (ShouldPromptContainerUpgrade(DefaultContainerId())) {

@@ -20,16 +20,6 @@ namespace chromeos {
 
 // This class exports D-Bus methods for querying Chrome Features enablement.
 //
-// IsCrostiniEnabled:
-// % dbus-send --system --type=method_call --print-reply
-//     --dest=org.chromium.ChromeFeaturesService
-//     /org/chromium/ChromeFeaturesService
-//     org.chromium.ChromeFeaturesServiceInterface.IsCrostiniEnabled
-//     string:"|user id hash|"
-//
-// % (If |user id hash| is set correctly, returns true if Crostini is enabled
-//    for the user identified by the hash, and false otherwise)
-//
 // IsPluginVmEnabled:
 // % dbus-send --system --type=method_call --print-reply
 //     --dest=org.chromium.ChromeFeaturesService
@@ -54,8 +44,7 @@ class ChromeFeaturesServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:
-  // Called from ExportedObject when IsCrostiniEnabled() is exported as a D-Bus
-  // method or failed to be exported.
+  // Called from ExportedObject when a D-Bus method is exported.
   void OnExported(const std::string& interface_name,
                   const std::string& method_name,
                   bool success);
@@ -63,8 +52,6 @@ class ChromeFeaturesServiceProvider
   // Called on UI thread in response to a D-Bus request.
   void IsFeatureEnabled(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
-  void IsCrostiniEnabled(dbus::MethodCall* method_call,
-                         dbus::ExportedObject::ResponseSender response_sender);
   void IsCryptohomeDistributedModelEnabled(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);

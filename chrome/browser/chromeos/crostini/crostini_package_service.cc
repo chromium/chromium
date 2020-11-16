@@ -466,7 +466,7 @@ void CrostiniPackageService::UninstallApplication(
                                  registration.ContainerName());
 
   // Policies can change under us, and crostini may now be forbidden.
-  if (!CrostiniFeatures::Get()->IsUIAllowed(profile_)) {
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
     LOG(ERROR) << "Can't uninstall because policy no longer allows Crostini";
     UpdatePackageOperationStatus(container_id, PackageOperationStatus::FAILED,
                                  0);

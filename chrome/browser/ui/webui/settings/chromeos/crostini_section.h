@@ -39,7 +39,6 @@ class CrostiniSection : public OsSettingsSection {
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
-  bool IsCrostiniAllowed();
   bool IsExportImportAllowed();
   bool IsContainerUpgradeAllowed();
   bool IsPortForwardingAllowed();

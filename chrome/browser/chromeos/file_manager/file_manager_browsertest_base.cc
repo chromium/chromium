@@ -1778,7 +1778,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
     // CustomMountPointCallback.
     crostini_volume_ = std::make_unique<CrostiniTestVolume>();
     if (options.guest_mode != IN_INCOGNITO) {
-      crostini_features_.set_ui_allowed(true, true);
+      crostini_features_.set_is_allowed_now(true);
       crostini_features_.set_enabled(true);
       crostini_features_.set_root_access_allowed(true);
       crostini_features_.set_export_import_ui_allowed(true);

@@ -441,7 +441,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     profile_->GetPrefs()->SetFilePath(
         crostini::prefs::kCrostiniAnsiblePlaybookFilePath,
         GetTestConfig().crostini_ansible_playbook_filepath);
-    crostini_features()->set_allowed(true);
+    crostini_features()->set_is_allowed_now(true);
 
     const policy::SystemLogUploader* system_uploader =
         new policy::SystemLogUploader(/*syslog_delegate=*/nullptr,

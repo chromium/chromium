@@ -86,7 +86,7 @@ void CrostiniApps::ReInitializeForTesting(
 void CrostiniApps::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
   DCHECK(profile_);
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile_)) {
+  if (!crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile_)) {
     return;
   }
   registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);

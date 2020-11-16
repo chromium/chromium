@@ -80,7 +80,10 @@ void CloseCrostiniUpdateFilesystemView() {
 }  // namespace crostini
 
 void CrostiniUpdateFilesystemView::Show(Profile* profile) {
-  DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    return;
+  }
+
   if (!g_crostini_update_filesystem_view_dialog) {
     g_crostini_update_filesystem_view_dialog =
         new CrostiniUpdateFilesystemView();

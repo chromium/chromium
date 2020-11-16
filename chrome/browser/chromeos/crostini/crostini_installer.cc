@@ -192,7 +192,7 @@ void CrostiniInstaller::Shutdown() {
 void CrostiniInstaller::ShowDialog(CrostiniUISurface ui_surface) {
   // Defensive check to prevent showing the installer when crostini is not
   // allowed.
-  if (!CrostiniFeatures::Get()->IsUIAllowed(profile_)) {
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
     return;
   }
   base::UmaHistogramEnumeration(kCrostiniSetupSourceHistogram, ui_surface,

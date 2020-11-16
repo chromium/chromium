@@ -370,10 +370,14 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
-  html_source->AddBoolean("showCrostini", IsCrostiniAllowed());
+  // Should the crostini section in settings be displayed?
+  html_source->AddBoolean(
+      "showCrostini",
+      crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile()));
+  // Should we actually enable the button to install it?
   html_source->AddBoolean(
       "allowCrostini",
-      crostini::CrostiniFeatures::Get()->IsUIAllowed(profile()));
+      crostini::CrostiniFeatures::Get()->IsAllowedNow(profile()));
 
   html_source->AddString(
       "crostiniSubtext",
@@ -430,8 +434,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
-  if (crostini::CrostiniFeatures::Get()->IsUIAllowed(profile(),
-                                                     /*check_policy=*/false)) {
+  if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile())) {
     web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile()));
   }
 }
@@ -525,11 +528,6 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::kCrostiniPortForwardingSubpagePath);
 }
 
-bool CrostiniSection::IsCrostiniAllowed() {
-  return crostini::CrostiniFeatures::Get()->IsUIAllowed(profile(),
-                                                        /*check_policy=*/false);
-}
-
 bool CrostiniSection::IsExportImportAllowed() {
   return crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile());
 }
@@ -553,7 +551,7 @@ void CrostiniSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetCrostiniContainerUpgradeSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniDiskResizingSearchConcepts());
 
-  if (!IsCrostiniAllowed())
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile()))
     return;
 
   if (!pref_service_->GetBoolean(crostini::prefs::kCrostiniEnabled)) {

@@ -1971,7 +1971,7 @@ AutotestPrivateSetCrostiniEnabledFunction::Run() {
   DVLOG(1) << "AutotestPrivateSetCrostiniEnabledFunction " << params->enabled;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile))
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile))
     return RespondNow(Error(kCrostiniNotAvailableForCurrentUserError));
 
   // Set the preference to indicate Crostini is enabled/disabled.
@@ -1997,7 +1997,7 @@ AutotestPrivateRunCrostiniInstallerFunction::Run() {
   DVLOG(1) << "AutotestPrivateInstallCrostiniFunction";
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile))
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile))
     return RespondNow(Error(kCrostiniNotAvailableForCurrentUserError));
 
   // Run GUI installer which will install crostini vm / container and
@@ -2038,7 +2038,7 @@ AutotestPrivateRunCrostiniUninstallerFunction::Run() {
   DVLOG(1) << "AutotestPrivateRunCrostiniUninstallerFunction";
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile))
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile))
     return RespondNow(Error(kCrostiniNotAvailableForCurrentUserError));
 
   // Run GUI uninstaller which will remove crostini vm / container. We then
@@ -2074,7 +2074,8 @@ ExtensionFunction::ResponseAction AutotestPrivateExportCrostiniFunction::Run() {
   DVLOG(1) << "AutotestPrivateExportCrostiniFunction " << params->path;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile)) {
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile) ||
+      !crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile)) {
     return RespondNow(Error(kCrostiniNotAvailableForCurrentUserError));
   }
 
@@ -2115,7 +2116,8 @@ ExtensionFunction::ResponseAction AutotestPrivateImportCrostiniFunction::Run() {
   DVLOG(1) << "AutotestPrivateImportCrostiniFunction " << params->path;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!crostini::CrostiniFeatures::Get()->IsUIAllowed(profile))
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile) ||
+      !crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile))
     return RespondNow(Error(kCrostiniNotAvailableForCurrentUserError));
 
   base::FilePath path(params->path);

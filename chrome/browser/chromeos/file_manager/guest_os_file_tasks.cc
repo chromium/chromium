@@ -285,7 +285,6 @@ void ExecuteGuestOsTask(
   switch (vm_type) {
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_TERMINA:
-      DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
       crostini::LaunchCrostiniApp(
           profile, task.app_id, display::kInvalidDisplayId, args,
           base::BindOnce(

@@ -34,7 +34,10 @@ namespace chromeos {
 
 void CrostiniInstallerDialog::Show(Profile* profile,
                                    OnLoadedCallback on_loaded_callback) {
-  DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    return;
+  }
+
   auto* instance = SystemWebDialogDelegate::FindInstance(GetUrl().spec());
   if (instance) {
     instance->Focus();

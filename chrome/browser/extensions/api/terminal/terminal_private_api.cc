@@ -253,7 +253,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
   } else if (process_name == kVmShellName) {
     // Ensure crostini is allowed before starting terminal.
     Profile* profile = Profile::FromBrowserContext(browser_context());
-    if (!crostini::CrostiniFeatures::Get()->IsAllowed(profile))
+    if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile))
       return RespondNow(Error("vmshell not allowed"));
 
     // command=vmshell: ensure --owner_id, --vm_name, --target_container, --cwd

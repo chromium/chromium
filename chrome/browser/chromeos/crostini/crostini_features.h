@@ -19,17 +19,16 @@ class CrostiniFeatures {
  public:
   static CrostiniFeatures* Get();
 
-  // Returns true if crostini is allowed to run for |profile|.
-  // Otherwise, returns false, e.g. if crostini is not available on the device,
-  // or it is in the flow to set up managed account creation.
-  virtual bool IsAllowed(Profile* profile);
+  // Returns false if this |profile| will never be allowed to run crostini for
+  // the lifetime of this process, otherwise returns true. The return value of
+  // this method is guaranteed not to change for a given |profile| within the
+  // lifetime of the process.
+  virtual bool CouldBeAllowed(Profile* profile);
 
-  // When |check_policy| is true, returns true if fully interactive crostini UI
-  // may be shown. Implies crostini is allowed to run.
-  // When check_policy is false, returns true if crostini UI is not forbidden by
-  // hardware, flags, etc, even if it is forbidden by the enterprise policy. The
-  // UI uses this to indicate that crostini is available but disabled by policy.
-  virtual bool IsUIAllowed(Profile*, bool check_policy = true);
+  // Returns true if |profile| is allowed to run crostini at this moment. This
+  // method will never return true if CouldBeAllowed returns false for the same
+  // profile, but otherwise may change return value at any time.
+  virtual bool IsAllowedNow(Profile* profile);
 
   // Returns whether if Crostini has been enabled, i.e. the user has launched it
   // at least once and not deleted it.

@@ -388,7 +388,7 @@ void LaunchCrostiniApp(Profile* profile,
                        const std::vector<LaunchArg>& args,
                        CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
-  if (!CrostiniFeatures::Get()->IsUIAllowed(profile)) {
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile)) {
     return std::move(callback).Run(false, "Crostini UI not allowed");
   }
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);

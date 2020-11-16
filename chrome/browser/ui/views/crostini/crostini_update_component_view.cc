@@ -38,7 +38,10 @@ void crostini::ShowCrostiniUpdateComponentView(
 }
 
 void CrostiniUpdateComponentView::Show(Profile* profile) {
-  DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    return;
+  }
+
   if (!g_crostini_upgrade_view) {
     g_crostini_upgrade_view = new CrostiniUpdateComponentView;
     CreateDialogWidget(g_crostini_upgrade_view, nullptr, nullptr);

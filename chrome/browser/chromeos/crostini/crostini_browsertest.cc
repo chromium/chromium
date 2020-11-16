@@ -70,14 +70,15 @@ IN_PROC_BROWSER_TEST_F(CrostiniBrowserTest, LaunchApplication) {
 class CrostiniForbiddenBrowserTest : public CrostiniBrowserTest {
  public:
   CrostiniForbiddenBrowserTest() {
-    fake_crostini_features_.set_ui_allowed(true, false);
+    fake_crostini_features_.set_could_be_allowed(true);
+    fake_crostini_features_.set_is_allowed_now(false);
   }
 };
 
 // Test launching an application when enterprise policy changed during the
 // session to allow crostini.
 IN_PROC_BROWSER_TEST_F(CrostiniForbiddenBrowserTest, LaunchApplication) {
-  fake_crostini_features_.set_ui_allowed(true, true);
+  fake_crostini_features_.set_is_allowed_now(true);
   RegisterApp();
   LaunchApp();
 }

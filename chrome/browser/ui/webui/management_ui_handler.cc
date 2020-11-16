@@ -604,7 +604,7 @@ void ManagementUIHandler::AddDeviceReportingInfo(
                               DeviceReportingType::kPrint);
   }
 
-  if (crostini::CrostiniFeatures::Get()->IsAllowed(profile)) {
+  if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
     if (!profile->GetPrefs()
              ->GetFilePath(crostini::prefs::kCrostiniAnsiblePlaybookFilePath)
              .empty()) {

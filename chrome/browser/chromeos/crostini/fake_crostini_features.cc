@@ -16,9 +16,8 @@ FakeCrostiniFeatures::~FakeCrostiniFeatures() {
 }
 
 void FakeCrostiniFeatures::SetAll(bool flag) {
-  allowed_ = flag;
-  ui_allowed_ = flag;
-  policy_allowed_ = flag;
+  could_be_allowed_ = flag;
+  allowed_now_ = flag;
   enabled_ = flag;
   export_import_ui_allowed_ = flag;
   root_access_allowed_ = flag;
@@ -28,9 +27,8 @@ void FakeCrostiniFeatures::SetAll(bool flag) {
 }
 
 void FakeCrostiniFeatures::ClearAll() {
-  allowed_ = base::nullopt;
-  ui_allowed_ = base::nullopt;
-  policy_allowed_ = base::nullopt;
+  could_be_allowed_ = base::nullopt;
+  allowed_now_ = base::nullopt;
   enabled_ = base::nullopt;
   export_import_ui_allowed_ = base::nullopt;
   root_access_allowed_ = base::nullopt;
@@ -39,18 +37,18 @@ void FakeCrostiniFeatures::ClearAll() {
   port_forwarding_allowed_ = base::nullopt;
 }
 
-bool FakeCrostiniFeatures::IsAllowed(Profile* profile) {
-  if (allowed_.has_value())
-    return *allowed_;
-  return original_features_->IsAllowed(profile);
+bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile) {
+  if (could_be_allowed_.has_value())
+    return *could_be_allowed_;
+  return original_features_->CouldBeAllowed(profile);
 }
 
-bool FakeCrostiniFeatures::IsUIAllowed(Profile* profile, bool check_policy) {
-  if (check_policy && policy_allowed_.has_value() && !policy_allowed_)
+bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile) {
+  if (could_be_allowed_.has_value() && !could_be_allowed_)
     return false;
-  if (ui_allowed_.has_value())
-    return *ui_allowed_;
-  return original_features_->IsUIAllowed(profile, check_policy);
+  if (allowed_now_.has_value())
+    return *allowed_now_;
+  return original_features_->IsAllowedNow(profile);
 }
 
 bool FakeCrostiniFeatures::IsEnabled(Profile* profile) {

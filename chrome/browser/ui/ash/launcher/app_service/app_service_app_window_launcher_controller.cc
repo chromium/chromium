@@ -72,8 +72,7 @@ AppServiceAppWindowLauncherController::AppServiceAppWindowLauncherController(
   if (arc::IsArcAllowedForProfile(owner->profile()))
     arc_tracker_ = std::make_unique<AppServiceAppWindowArcTracker>(this);
 
-  if (crostini::CrostiniFeatures::Get()->IsUIAllowed(owner->profile(),
-                                                     /*check_policy=*/false)) {
+  if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(owner->profile())) {
     crostini_tracker_ =
         std::make_unique<AppServiceAppWindowCrostiniTracker>(this);
   }
