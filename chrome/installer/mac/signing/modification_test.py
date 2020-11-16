@@ -13,6 +13,7 @@ def plist_read(*args):
     bundle_id = test_config.TestConfig().base_bundle_id
     plists = {
         '/$W/App Product.app/Contents/Info.plist': {
+            'CFBundleDisplayName': 'Product',
             'CFBundleIdentifier': bundle_id,
             'CFBundleName': 'Product',
             'KSProductID': 'test.ksproduct',
@@ -95,6 +96,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -131,6 +133,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -166,6 +169,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -200,6 +204,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -238,6 +243,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -273,6 +279,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -308,6 +315,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -342,6 +350,7 @@ class TestModification(unittest.TestCase):
         self.assertEqual(1, plistlib.writePlist.call_count)
         plistlib.writePlist.assert_called_with(
             {
+                'CFBundleDisplayName': 'Product',
                 'CFBundleIdentifier': config.base_bundle_id,
                 'CFBundleName': 'Product',
                 'KSProductID': 'test.ksproduct',
@@ -425,6 +434,7 @@ class TestModification(unittest.TestCase):
             ),
             mock.call(
                 {
+                    'CFBundleDisplayName': 'Product Canary',
                     'CFBundleIdentifier': config.base_bundle_id,
                     'CFBundleExecutable': config.app_product,
                     'CFBundleName': 'Product Canary',

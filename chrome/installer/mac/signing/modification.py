@@ -12,6 +12,7 @@ import os.path
 
 from . import commands, parts
 
+_CF_BUNDLE_DISPLAY_NAME = 'CFBundleDisplayName'
 _CF_BUNDLE_EXE = 'CFBundleExecutable'
 _CF_BUNDLE_ID = 'CFBundleIdentifier'
 _CF_BUNDLE_NAME = 'CFBundleName'
@@ -47,8 +48,10 @@ def _modify_plists(paths, dist, config):
                                 config.base_config.base_bundle_id,
                                 config.base_bundle_id)
 
-            app_plist[_CF_BUNDLE_ID] = config.base_bundle_id
+            app_plist[_CF_BUNDLE_DISPLAY_NAME] = '{} {}'.format(
+                app_plist[_CF_BUNDLE_DISPLAY_NAME], dist.app_name_fragment)
             app_plist[_CF_BUNDLE_EXE] = config.app_product
+            app_plist[_CF_BUNDLE_ID] = config.base_bundle_id
             app_plist[_CF_BUNDLE_NAME] = '{} {}'.format(
                 app_plist[_CF_BUNDLE_NAME], dist.app_name_fragment)
             app_plist[_KS_PRODUCT_ID] += '.' + dist.channel
