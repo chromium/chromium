@@ -9,6 +9,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -351,6 +352,19 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         return origin.equals(info.getOrigin())
                 && (origin.equals(info.getEmbedderSafe())
                         || SITE_WILDCARD.equals(info.getEmbedderSafe()));
+    }
+
+    private Drawable getContentSettingsIcon(@ContentSettingsType int contentSettingsType,
+            @ContentSettingValues @Nullable Integer value, boolean enabled) {
+        Drawable icon = enabled
+                ? SettingsUtils.getTintedIcon(
+                        getActivity(), ContentSettingsResources.getIcon(contentSettingsType))
+                : ContentSettingsResources.getDisabledIcon(contentSettingsType, getResources());
+        if (getSiteSettingsClient().isPageInfoV2Enabled() && value != null
+                && value == ContentSettingValues.BLOCK) {
+            return ContentSettingsResources.getBlockedIcon(getResources(), icon);
+        }
+        return icon;
     }
 
     /**
@@ -858,8 +872,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             preference.setTitle(titleResourceId);
         }
         if (!preference.isEnabled()) {
-            preference.setIcon(
-                    ContentSettingsResources.getDisabledIcon(contentType, getResources()));
+            preference.setIcon(getContentSettingsIcon(contentType, value, false));
             return;
         }
         SiteSettingsCategory category = SiteSettingsCategory.createFromContentSettingsType(
@@ -869,8 +882,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             preference.setIcon(category.getDisabledInAndroidIcon(getActivity()));
             preference.setEnabled(false);
         } else {
-            preference.setIcon(SettingsUtils.getTintedIcon(
-                    getActivity(), ContentSettingsResources.getIcon(contentType)));
+            preference.setIcon(getContentSettingsIcon(contentType, value, true));
         }
     }
 
@@ -1045,6 +1057,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 preference.setSummary(
                         getString(ContentSettingsResources.getCategorySummary(permission)));
             }
+            preference.setIcon(getContentSettingsIcon(type, permission, true));
 
             if (mWebsiteSettingsObserver != null) {
                 mWebsiteSettingsObserver.onPermissionChanged();

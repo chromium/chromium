@@ -145,20 +145,22 @@ public class PageInfoViewTest {
             WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
                     ContentSettingsType.GEOLOCATION, url, "*", ContentSettingValues.ALLOW);
             WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.NOTIFICATIONS, url, "*", ContentSettingValues.ALLOW);
+                    ContentSettingsType.NOTIFICATIONS, url, "*", ContentSettingValues.BLOCK);
         });
     }
 
     private void expectHasPermissions(String url, boolean hasPermissions) {
         // The default value for these types is ask.
         @ContentSettingValues
-        int expected = hasPermissions ? ContentSettingValues.ALLOW : ContentSettingValues.ASK;
+        int expectAllow = hasPermissions ? ContentSettingValues.ALLOW : ContentSettingValues.ASK;
+        @ContentSettingValues
+        int expectBlock = hasPermissions ? ContentSettingValues.BLOCK : ContentSettingValues.ASK;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(expected,
+            assertEquals(expectBlock,
                     WebsitePreferenceBridgeJni.get().getSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS,
                             url, url));
-            assertEquals(expected,
+            assertEquals(expectAllow,
                     WebsitePreferenceBridgeJni.get().getSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION,
                             url, "*"));

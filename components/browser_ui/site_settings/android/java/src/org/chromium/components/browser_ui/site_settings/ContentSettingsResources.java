@@ -6,7 +6,14 @@ package org.chromium.components.browser_ui.site_settings;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
@@ -249,6 +256,45 @@ public class ContentSettingsResources {
                 resources, R.color.primary_text_disabled_material_light);
         icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
         return icon;
+    }
+
+    /**
+     * @return A {@link Drawable} that is the blocked version of the icon passed in. Achieved by
+     *         adding a diagonal strike through the icon.
+     */
+    public static Drawable getBlockedIcon(Resources resources, Drawable icon) {
+        if (icon == null) return null;
+        // Save color filter in order to re-apply later
+        ColorFilter filter = icon.getColorFilter();
+
+        // Create bitmap from drawable
+        Bitmap iconBitmap = Bitmap.createBitmap(
+                icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(iconBitmap);
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
+        icon.setBounds(0, 0, width, height);
+        icon.draw(canvas);
+
+        // Draw diagonal transparent line
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.TRANSPARENT);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+        paint.setStrokeWidth(12);
+        canvas.drawLine(0, 0, width, height, paint);
+
+        // Draw a strikethrough on top
+        paint.setColor(Color.BLACK);
+        paint.setXfermode(null);
+        paint.setStrokeWidth(4);
+        canvas.drawLine(
+                width * 0.1f, height * 0.1f, width - width * 0.1f, height - height * 0.1f, paint);
+
+        Drawable blocked = new BitmapDrawable(resources, iconBitmap);
+        // Re-apply color filter
+        blocked.setColorFilter(filter);
+        return blocked;
     }
 
     /**
