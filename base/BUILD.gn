@@ -153,6 +153,8 @@ component("base") {
     "big_endian.h",
     "bind.h",
     "bind_internal.h",
+    "bind_post_task.h",
+    "bind_post_task_internal.h",
     "bit_cast.h",
     "bits.h",
     "build_time.cc",
@@ -2709,6 +2711,7 @@ test("base_unittests") {
     "base64_unittest.cc",
     "base64url_unittest.cc",
     "big_endian_unittest.cc",
+    "bind_post_task_unittest.cc",
     "bind_unittest.cc",
     "bit_cast_unittest.cc",
     "bits_unittest.cc",
@@ -3473,6 +3476,7 @@ action("build_date") {
 if (enable_nocompile_tests) {
   nocompile_test("base_nocompile_tests") {
     sources = [
+      "bind_post_task_unittest.nc",
       "callback_list_unittest.nc",
       "callback_unittest.nc",
       "containers/buffer_iterator_unittest.nc",
