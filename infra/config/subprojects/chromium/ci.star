@@ -2938,14 +2938,6 @@ ci.fyi_ios_builder(
 )
 
 ci.fyi_ios_builder(
-    name = "ios-simulator-cr-recipe",
-    console_view_entry = ci.console_view_entry(
-        category = "iOS",
-        short_name = "chr",
-    ),
-)
-
-ci.fyi_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
     caches = [xcode_cache.x11e146],

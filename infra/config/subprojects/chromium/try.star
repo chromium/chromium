@@ -1326,10 +1326,6 @@ try_.chromium_mac_ios_builder(
 )
 
 try_.chromium_mac_ios_builder(
-    name = "ios-simulator-cr-recipe",
-)
-
-try_.chromium_mac_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
     caches = [xcode_cache.x11e146],
