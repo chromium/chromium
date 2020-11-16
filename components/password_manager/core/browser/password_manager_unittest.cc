@@ -340,11 +340,14 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
   PasswordManagerTest() : task_runner_(new TestMockTimeTaskRunner) {
     bool enable_passwords_account_storage = GetParam();
     if (enable_passwords_account_storage) {
-      feature_list_.InitAndEnableFeature(
-          features::kEnablePasswordsAccountStorage);
+      feature_list_.InitWithFeatures(
+          /*enable_features=*/{features::kPasswordReuseDetectionEnabled,
+                               features::kEnablePasswordsAccountStorage},
+          /*disable_features=*/{});
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kEnablePasswordsAccountStorage);
+      feature_list_.InitWithFeatures(
+          /*enable_features=*/{features::kPasswordReuseDetectionEnabled},
+          /*disable_features=*/{features::kEnablePasswordsAccountStorage});
     }
   }
   ~PasswordManagerTest() override = default;
@@ -1277,17 +1280,17 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
   // User should not be prompted and password should not be saved.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
   EXPECT_CALL(*store_, AddLogin(_)).Times(0);
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
+
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(
-      *store_,
-      SaveGaiaPasswordHash(
-          "googleuser", form_data.fields[1].value, /*is_primary_account=*/true,
-          metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
-#endif
+  EXPECT_CALL(*store_,
+              SaveGaiaPasswordHash(
+                  "googleuser", form_data.fields[1].value,
+                  /*is_primary_account=*/true,
+                  metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
+
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
 
@@ -1299,7 +1302,6 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 TEST_P(PasswordManagerTest, HashSavedOnGaiaFormWithSkipSavePassword) {
   for (bool did_stop_loading : {false, true}) {
     SCOPED_TRACE(testing::Message("did_stop_loading = ") << did_stop_loading);
@@ -1373,7 +1375,6 @@ TEST_P(PasswordManagerTest,
   OnPasswordFormSubmitted(form_data);
   manager()->DidNavigateMainFrame(false);
 }
-#endif
 
 // On a successful login with an updated password,
 // CredentialsFilter::ReportFormLoginSuccess and CredentialsFilter::ShouldSave
@@ -1436,7 +1437,6 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
@@ -1446,7 +1446,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
       SaveGaiaPasswordHash(
           "googleuser", form.password_value, /*is_primary_account=*/true,
           metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
-#endif
+
   manager()->OnPasswordFormSubmitted(&driver_, form.form_data);
 
   // Chrome should not remove the sync credential, because it was successfully
@@ -2313,7 +2313,6 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 // Check that no sync password hash is saved when no username is available,
 // because we it's not clear whether the submitted credentials are sync
 // credentials.
@@ -2366,7 +2365,6 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NotSyncCredentials) {
   observed.clear();
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
-#endif
 
 TEST_P(PasswordManagerTest, ManualFallbackForSaving) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
@@ -2509,7 +2507,6 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
@@ -2517,9 +2514,10 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
   EXPECT_CALL(
       *store_,
       SaveGaiaPasswordHash(
-          "googleuser", form_data.fields[1].value, /*is_primary_account=*/true,
+          "googleuser", form_data.fields[1].value,
+          /*is_primary_account=*/true,
           metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA));
-#endif
+
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
 
@@ -2528,7 +2526,6 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 // Non-Sync Gaia password hash should be saved upon submission of Gaia login
 // page.
 TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
@@ -2618,7 +2615,6 @@ TEST_P(PasswordManagerTest, SaveEnterprisePasswordHash) {
   observed.clear();
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
-#endif
 
 // If there are no forms to parse, certificate errors should not be reported.
 TEST_P(PasswordManagerTest, CertErrorReported_NoForms) {

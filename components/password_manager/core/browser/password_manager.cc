@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -63,9 +64,7 @@ using autofill::USERNAME;
 using base::NumberToString;
 using BlacklistedStatus =
     password_manager::OriginCredentialStore::BlacklistedStatus;
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 using password_manager::metrics_util::GaiaPasswordHashChange;
-#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 namespace password_manager {
 
@@ -974,7 +973,10 @@ void PasswordManager::OnLoginSuccessful() {
 
 void PasswordManager::MaybeSavePasswordHash(
     PasswordFormManager* submitted_manager) {
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
+  if (!base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
+    return;
+  }
+
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
   // When |username_value| is empty, it's not clear whether the submitted
   // credentials are really Gaia or enterprise credentials. Don't save
@@ -1033,7 +1035,6 @@ void PasswordManager::MaybeSavePasswordHash(
                  ? GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE
                  : GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
   store->SaveGaiaPasswordHash(username, password, is_sync_account_email, event);
-#endif
 }
 
 void PasswordManager::ProcessAutofillPredictions(
