@@ -9183,7 +9183,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",

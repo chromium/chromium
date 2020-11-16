@@ -32,7 +32,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -287,7 +287,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -542,7 +542,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -797,7 +797,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -1054,7 +1054,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1307,7 +1307,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1546,7 +1546,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -1799,7 +1799,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2042,7 +2042,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2262,7 +2262,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2509,7 +2509,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -2756,7 +2756,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3003,7 +3003,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3252,7 +3252,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3497,7 +3497,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3742,7 +3742,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
@@ -3987,7 +3987,7 @@
       },
       {
         "args": [
-          "--skip-validation",
+          "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--exclusive-device-type-preference=discrete,integrated"
