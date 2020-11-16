@@ -16,24 +16,6 @@
       });
     }
 
-    function play() {
-      video.play()
-          .then(_ => window.domAutomationController.send(true))
-          .catch(e => window.domAutomationController.send(false));
-    }
-
-    function enterPictureInPictureAndGetResult() {
-      video.requestPictureInPicture()
-          .then(_ => window.domAutomationController.send(true))
-          .catch(e => window.domAutomationController.send(false));
-    }
-
-    function enterFullscreenAndGetResult() {
-      video.requestFullscreen()
-          .then(_ => window.domAutomationController.send(true))
-          .catch(e => window.domAutomationController.send(false));
-    }
-
     function addPlayEventListener() {
       video.addEventListener('play', () => {
         document.title = 'play';
@@ -44,6 +26,35 @@
       video.addEventListener('pause', () => {
         document.title = 'pause';
       }, { once: true });
+    }
+
+    async function play() {
+      await video.play();
+      return true;
+    }
+
+    async function enterPictureInPicture() {
+      await _waitForMetadata();
+      await video.requestPictureInPicture();
+      return true;
+    }
+
+    function _waitForMetadata() {
+      return new Promise((resolve, _) => {
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('loadedmetadata', () => {
+          resolve();
+        }, { once: true });
+      });
+    }
+
+    async function enterFullscreen() {
+      await video.requestFullscreen();
+      return true;
     }
 
     function setMediaSessionPlayActionHandler() {
