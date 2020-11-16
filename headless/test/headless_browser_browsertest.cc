@@ -744,4 +744,17 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, AIAFetching) {
   EXPECT_EQ(url, last_entry->GetURL());
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, BadgingAPI) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  GURL url = embedded_test_server()->GetURL("/badging_api.html");
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
+
+  EXPECT_TRUE(WaitForLoad(web_contents));
+}
+
 }  // namespace headless
