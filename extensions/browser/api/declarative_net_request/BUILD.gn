@@ -77,6 +77,8 @@ source_set("core") {
     "parse_info.h",
     "ruleset_install_pref.cc",
     "ruleset_install_pref.h",
+    "ruleset_source.cc",
+    "ruleset_source.h",
     "utils.cc",
     "utils.h",
   ]

@@ -398,9 +398,9 @@ FileBackedRulesetSource& FileBackedRulesetSource::operator=(
     FileBackedRulesetSource&&) = default;
 
 FileBackedRulesetSource FileBackedRulesetSource::Clone() const {
-  return FileBackedRulesetSource(json_path_, indexed_path_, id_,
-                                 rule_count_limit_, extension_id_,
-                                 enabled_by_default_);
+  return FileBackedRulesetSource(json_path_, indexed_path_, id(),
+                                 rule_count_limit(), extension_id(),
+                                 enabled_by_default());
 }
 
 IndexAndPersistJSONRulesetResult
@@ -436,7 +436,7 @@ void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
 
 ParseInfo FileBackedRulesetSource::IndexAndPersistRules(
     std::vector<dnr_api::Rule> rules) const {
-  DCHECK_LE(rules.size(), rule_count_limit_);
+  DCHECK_LE(rules.size(), rule_count_limit());
   DCHECK(IsAPIAvailable());
 
   FlatRulesetIndexer indexer;
@@ -447,7 +447,7 @@ ParseInfo FileBackedRulesetSource::IndexAndPersistRules(
   std::vector<int> large_regex_rule_ids;
   {
     std::set<int> id_set;  // Ensure all ids are distinct.
-    const GURL base_url = Extension::GetBaseURLFromExtensionId(extension_id_);
+    const GURL base_url = Extension::GetBaseURLFromExtensionId(extension_id());
     for (auto& rule : rules) {
       int rule_id = rule.id;
       bool inserted = id_set.insert(rule_id).second;
@@ -509,13 +509,13 @@ ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
         Status::kJSONParseError, std::move(value_with_error.error_message));
   }
 
-  return ParseRulesFromJSON(id_, json_path(), *value_with_error.value,
-                            rule_count_limit_, is_dynamic_ruleset());
+  return ParseRulesFromJSON(id(), json_path(), *value_with_error.value,
+                            rule_count_limit(), is_dynamic_ruleset());
 }
 
 bool FileBackedRulesetSource::WriteRulesToJSON(
     const std::vector<dnr_api::Rule>& rules) const {
-  DCHECK_LE(rules.size(), rule_count_limit_);
+  DCHECK_LE(rules.size(), rule_count_limit());
 
   std::unique_ptr<base::Value> rules_value =
       json_schema_compiler::util::CreateValueFromArray(rules);
@@ -542,12 +542,12 @@ FileBackedRulesetSource::FileBackedRulesetSource(base::FilePath json_path,
                                                  size_t rule_count_limit,
                                                  ExtensionId extension_id,
                                                  bool enabled_by_default)
-    : json_path_(std::move(json_path)),
-      indexed_path_(std::move(indexed_path)),
-      id_(id),
-      rule_count_limit_(rule_count_limit),
-      extension_id_(std::move(extension_id)),
-      enabled_by_default_(enabled_by_default) {}
+    : RulesetSource(id,
+                    rule_count_limit,
+                    std::move(extension_id),
+                    enabled_by_default),
+      json_path_(std::move(json_path)),
+      indexed_path_(std::move(indexed_path)) {}
 
 }  // namespace declarative_net_request
 }  // namespace extensions

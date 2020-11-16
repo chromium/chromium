@@ -12,10 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/common/api/declarative_net_request.h"
-#include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
-#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -135,8 +134,8 @@ struct ReadJSONRulesResult {
   DISALLOW_COPY_AND_ASSIGN(ReadJSONRulesResult);
 };
 
-// Holds paths for an extension ruleset.
-class FileBackedRulesetSource {
+// A Ruleset source which is backed on disk.
+class FileBackedRulesetSource : public RulesetSource {
  public:
   // Creates FileBackedRulesetSources corresponding to the static rulesets in
   // the extension package.
@@ -162,7 +161,7 @@ class FileBackedRulesetSource {
       size_t rule_count_limit,
       ExtensionId extension_id);
 
-  ~FileBackedRulesetSource();
+  ~FileBackedRulesetSource() override;
   FileBackedRulesetSource(FileBackedRulesetSource&&);
   FileBackedRulesetSource& operator=(FileBackedRulesetSource&&);
 
@@ -174,20 +173,7 @@ class FileBackedRulesetSource {
   // Path to the indexed flatbuffer rules.
   const base::FilePath& indexed_path() const { return indexed_path_; }
 
-  // Each ruleset source within an extension has a distinct ID.
-  RulesetID id() const { return id_; }
-
-  bool is_dynamic_ruleset() const { return id_ == kDynamicRulesetID; }
-
-  // The maximum number of rules that will be indexed from this source.
-  size_t rule_count_limit() const { return rule_count_limit_; }
-
-  // The ID of the extension from which the ruleset originates from.
-  const ExtensionId& extension_id() const { return extension_id_; }
-
-  // Whether the ruleset is enabled by default (as specified in the extension
-  // manifest for a static ruleset). Always true for a dynamic ruleset.
-  bool enabled_by_default() const { return enabled_by_default_; }
+  bool is_dynamic_ruleset() const { return id() == kDynamicRulesetID; }
 
   // Indexes and persists the JSON ruleset. This is potentially unsafe since the
   // JSON rules file is parsed in-process. Note: This must be called on a
@@ -228,12 +214,6 @@ class FileBackedRulesetSource {
 
   base::FilePath json_path_;
   base::FilePath indexed_path_;
-  RulesetID id_;
-  size_t rule_count_limit_;
-  ExtensionId extension_id_;
-  bool enabled_by_default_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileBackedRulesetSource);
 };
 
 }  // namespace declarative_net_request
