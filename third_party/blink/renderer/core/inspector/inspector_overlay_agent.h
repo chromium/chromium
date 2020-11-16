@@ -72,7 +72,7 @@ class WebLocalFrameImpl;
 class WebPointerEvent;
 
 class InspectorOverlayAgent;
-class GridHighlightTool;
+class PersistentTool;
 
 using OverlayFrontend = protocol::Overlay::Metainfo::FrontendClass;
 
@@ -80,7 +80,7 @@ using OverlayFrontend = protocol::Overlay::Metainfo::FrontendClass;
 class OverlayNames {
  public:
   static const char* OVERLAY_HIGHLIGHT;
-  static const char* OVERLAY_HIGHLIGHT_GRID;
+  static const char* OVERLAY_PERSISTENT;
   static const char* OVERLAY_SOURCE_ORDER;
   static const char* OVERLAY_DISTANCES;
   static const char* OVERLAY_VIEWPORT_SIZE;
@@ -291,7 +291,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   Member<InspectorDOMAgent> dom_agent_;
   std::unique_ptr<FrameOverlay> frame_overlay_;
   Member<InspectTool> inspect_tool_;
-  Member<GridHighlightTool> persistent_tool_;
+  Member<PersistentTool> persistent_tool_;
   Member<Hinge> hinge_;
   // The agent needs to keep AXContext because it enables caching of
   // a11y attributes shown in the inspector overlay.

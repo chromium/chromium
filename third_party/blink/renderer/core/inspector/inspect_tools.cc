@@ -399,30 +399,30 @@ NodeHighlightTool::GetNodeInspectorHighlightAsJson(
 }
 
 // GridHighlightTool -----------------------------------------------------------
-String GridHighlightTool::GetOverlayName() {
-  return OverlayNames::OVERLAY_HIGHLIGHT_GRID;
+String PersistentTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_PERSISTENT;
 }
 
-void GridHighlightTool::AddGridConfig(
+void PersistentTool::AddGridConfig(
     Node* node,
     std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config) {
   grid_node_highlights_.emplace_back(
       std::make_pair(node, std::move(grid_highlight_config)));
 }
 
-bool GridHighlightTool::ForwardEventsToOverlay() {
+bool PersistentTool::ForwardEventsToOverlay() {
   return false;
 }
 
-bool GridHighlightTool::HideOnHideHighlight() {
+bool PersistentTool::HideOnHideHighlight() {
   return false;
 }
 
-bool GridHighlightTool::HideOnMouseMove() {
+bool PersistentTool::HideOnMouseMove() {
   return false;
 }
 
-void GridHighlightTool::Draw(float scale) {
+void PersistentTool::Draw(float scale) {
   for (auto& entry : grid_node_highlights_) {
     std::unique_ptr<protocol::Value> highlight =
         InspectorGridHighlight(entry.first.Get(), *(entry.second));
@@ -433,7 +433,7 @@ void GridHighlightTool::Draw(float scale) {
 }
 
 std::unique_ptr<protocol::DictionaryValue>
-GridHighlightTool::GetGridInspectorHighlightsAsJson() const {
+PersistentTool::GetGridInspectorHighlightsAsJson() const {
   std::unique_ptr<protocol::ListValue> highlights =
       protocol::ListValue::create();
   for (auto& entry : grid_node_highlights_) {

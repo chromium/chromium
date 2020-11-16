@@ -111,7 +111,7 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
 
 // OverlayNames ----------------------------------------------------------------
 const char* OverlayNames::OVERLAY_HIGHLIGHT = "highlight";
-const char* OverlayNames::OVERLAY_HIGHLIGHT_GRID = "highlightGrid";
+const char* OverlayNames::OVERLAY_PERSISTENT = "persistent";
 const char* OverlayNames::OVERLAY_SOURCE_ORDER = "sourceOrder";
 const char* OverlayNames::OVERLAY_DISTANCES = "distances";
 const char* OverlayNames::OVERLAY_VIEWPORT_SIZE = "viewportSize";
@@ -709,8 +709,8 @@ Response InspectorOverlayAgent::setShowGridOverlays(
   persistent_tool_ = nullptr;
 
   if (grid_node_highlight_configs->size()) {
-    GridHighlightTool* grid_tool =
-        MakeGarbageCollected<GridHighlightTool>(this, GetFrontend());
+    PersistentTool* grid_tool =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
     for (std::unique_ptr<protocol::Overlay::GridNodeHighlightConfig>& config :
          *grid_node_highlight_configs) {
       Node* node = nullptr;
@@ -820,7 +820,7 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
 Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
-  GridHighlightTool grid_highlight_tool(this, GetFrontend());
+  PersistentTool grid_highlight_tool(this, GetFrontend());
   for (const int node_id : *node_ids) {
     Node* node = nullptr;
     Response response = dom_agent_->AssertNode(node_id, node);

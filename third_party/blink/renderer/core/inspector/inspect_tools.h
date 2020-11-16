@@ -133,7 +133,7 @@ class SourceOrderTool : public InspectTool {
 
 // -----------------------------------------------------------------------------
 
-class GridHighlightTool : public InspectTool {
+class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
 
  public:
@@ -153,7 +153,7 @@ class GridHighlightTool : public InspectTool {
 
   Vector<std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>
       grid_node_highlights_;
-  DISALLOW_COPY_AND_ASSIGN(GridHighlightTool);
+  DISALLOW_COPY_AND_ASSIGN(PersistentTool);
 };
 
 // -----------------------------------------------------------------------------
