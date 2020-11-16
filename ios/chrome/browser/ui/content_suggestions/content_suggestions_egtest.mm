@@ -436,9 +436,10 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle)]
-      performAction:grey_longPress()];
+  id<GREYMatcher> matcher =
+      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
 }
 
 @end
