@@ -1485,7 +1485,8 @@ PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
 PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();
-  LayoutUnit outline_outset(StyleRef().OutlineOutsetExtent());
+  const ComputedStyle& style = StyleRef();
+  LayoutUnit outline_outset(style.OutlineOutsetExtent());
   if (outline_outset) {
     Vector<PhysicalRect> rects;
     if (GetDocument().InNoQuirksMode()) {
@@ -1494,14 +1495,14 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
       // rects for children and continuations.
       AddOutlineRectsForChildrenAndContinuations(
           rects, PhysicalOffset(),
-          OutlineRectsShouldIncludeBlockVisualOverflow());
+          style.OutlineRectsShouldIncludeBlockVisualOverflow());
     } else {
       // In non-standard mode, because the difference in
       // LayoutBlock::minLineHeightForReplacedObject(),
       // linesVisualOverflowBoundingBox() may not cover outline rects of lines
       // containing replaced objects.
       AddOutlineRects(rects, PhysicalOffset(),
-                      OutlineRectsShouldIncludeBlockVisualOverflow());
+                      style.OutlineRectsShouldIncludeBlockVisualOverflow());
     }
     if (!rects.IsEmpty()) {
       PhysicalRect outline_rect = UnionRect(rects);

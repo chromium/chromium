@@ -2799,17 +2799,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
   }
 
-  // For history and compatibility reasons, we draw outline:auto (for focus
-  // rings) and normal style outline differently.
-  // Focus rings enclose block visual overflows (of line boxes and descendants),
-  // while normal outlines don't.
-  NGOutlineType OutlineRectsShouldIncludeBlockVisualOverflow() const {
-    NOT_DESTROYED();
-    return StyleRef().OutlineStyleIsAuto()
-               ? NGOutlineType::kIncludeBlockVisualOverflow
-               : NGOutlineType::kDontIncludeBlockVisualOverflow;
-  }
-
   // Only public for LayoutNG.
   void SetContainsInlineWithOutlineAndContinuation(bool b) {
     NOT_DESTROYED();
