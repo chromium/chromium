@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
                  UninstallCallback callback) override;
   // Purging removes the DLC entirely from disk.
   void Purge(const std::string& dlc_id, PurgeCallback callback) override;
+  void GetDlcState(const std::string& dlc_if,
+                   GetDlcStateCallback callback) override;
   void GetExistingDlcs(GetExistingDlcsCallback callback) override;
   void DlcStateChangedForTest(dbus::Signal* signal) override;
   void AddObserver(Observer* observer) override;
@@ -43,6 +45,9 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   }
   void set_uninstall_error(const std::string& err) { uninstall_err_ = err; }
   void set_purge_error(const std::string& err) { purge_err_ = err; }
+  void set_get_dlc_state_error(const std::string& err) {
+    get_dlc_state_err_ = err;
+  }
   void set_get_existing_dlcs_error(const std::string& err) {
     get_existing_dlcs_err_ = err;
   }
@@ -55,10 +60,12 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   std::string install_err_ = dlcservice::kErrorNone;
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
+  std::string get_dlc_state_err_ = dlcservice::kErrorNone;
   std::string get_installed_err_ = dlcservice::kErrorNone;
   std::string get_existing_dlcs_err_ = dlcservice::kErrorNone;
   std::string install_root_path_;
   dlcservice::DlcsWithContent dlcs_with_content_;
+  dlcservice::DlcState dlc_state_;
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;

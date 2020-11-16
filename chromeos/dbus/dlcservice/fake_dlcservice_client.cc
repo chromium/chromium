@@ -52,6 +52,14 @@ void FakeDlcserviceClient::Purge(const std::string& dlc_id,
       FROM_HERE, base::BindOnce(std::move(callback), purge_err_));
 }
 
+void FakeDlcserviceClient::GetDlcState(const std::string& dlc_id,
+                                       GetDlcStateCallback callback) {
+  VLOG(1) << "Requesting to get DLC state of" << dlc_id;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_dlc_state_err_, dlc_state_));
+}
+
 void FakeDlcserviceClient::GetExistingDlcs(GetExistingDlcsCallback callback) {
   VLOG(1) << "Requesting to get existing DLC(s).";
   base::ThreadTaskRunnerHandle::Get()->PostTask(

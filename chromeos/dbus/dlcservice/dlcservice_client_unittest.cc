@@ -127,6 +127,55 @@ class MockObserver : public DlcserviceClient::Observer {
               ());
 };
 
+TEST_F(DlcserviceClientTest, GetDlcStateSuccessTest) {
+  responses_.push_back(dbus::Response::CreateEmpty());
+  dbus::Response* response = responses_.front().get();
+  dbus::MessageWriter writer(response);
+  dlcservice::DlcState dlc_state;
+  writer.AppendProtoAsArrayOfBytes(dlc_state);
+
+  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+      .WillOnce(
+          Invoke(this, &DlcserviceClientTest::CallMethodWithErrorResponse));
+
+  DlcserviceClient::GetDlcStateCallback callback =
+      base::BindOnce([](const std::string& err, const dlcservice::DlcState&) {
+        EXPECT_EQ(dlcservice::kErrorNone, err);
+      });
+  client_->GetDlcState("some-dlc-id", std::move(callback));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DlcserviceClientTest, GetDlcStateFailureTest) {
+  dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
+                               dlcservice::kGetDlcStateMethod);
+  method_call.SetSerial(123);
+  err_responses_.push_back(dbus::ErrorResponse::FromMethodCall(
+      &method_call, DBUS_ERROR_FAILED, "some-unknown-error"));
+
+  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(
+          Invoke(this, &DlcserviceClientTest::CallMethodWithErrorResponse));
+
+  client_->GetDlcState(
+      "some-dlc-id",
+      base::BindOnce([](const std::string& err, const dlcservice::DlcState&) {
+        EXPECT_EQ(dlcservice::kErrorInternal, err);
+      }));
+  base::RunLoop().RunUntilIdle();
+
+  err_responses_.push_back(dbus::ErrorResponse::FromMethodCall(
+      &method_call, dlcservice::kErrorInvalidDlc,
+      "Some error due to bad DLC."));
+
+  client_->GetDlcState(
+      "some-dlc-id",
+      base::BindOnce([](const std::string& err, const dlcservice::DlcState&) {
+        EXPECT_EQ(dlcservice::kErrorInvalidDlc, err);
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(DlcserviceClientTest, GetExistingDlcsSuccessTest) {
   responses_.push_back(dbus::Response::CreateEmpty());
   dbus::Response* response = responses_.front().get();
