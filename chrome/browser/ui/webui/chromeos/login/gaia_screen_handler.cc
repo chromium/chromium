@@ -75,7 +75,6 @@
 #include "chromeos/login/auth/saml_password_attributes.h"
 #include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/onc/certificate_scope.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/login/localized_values_builder.h"
@@ -302,32 +301,8 @@ GaiaScreenHandler::GaiaScreenHandler(
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {
-  if (network_portal_detector::IsInitialized())
-    network_portal_detector::GetInstance()->RemoveObserver(this);
   if (is_security_token_pin_enabled_)
     GetLoginScreenPinDialogManager()->RemovePinDialogHost(this);
-}
-
-void GaiaScreenHandler::MaybePreloadAuthExtension() {
-  // We shall not have network portal detector initialized, which unnecessarily
-  // polls captive portal checking URL if we don't need to load gaia. See
-  // go/bad-portal for more context.
-  if (!signin_screen_handler_->ShouldLoadGaia())
-    return;
-
-  VLOG(1) << "MaybePreloadAuthExtension";
-
-  if (network_portal_detector::IsInitialized())
-    network_portal_detector::GetInstance()->AddAndFireObserver(this);
-
-  // If cookies clearing was initiated or `dns_clear_task_running_` then auth
-  // extension showing has already been initiated and preloading is pointless.
-  if (!gaia_silent_load_ && !cookies_cleared_ && !dns_clear_task_running_ &&
-      network_state_informer_->state() == NetworkStateInformer::ONLINE) {
-    gaia_silent_load_ = true;
-    gaia_silent_load_network_ = network_state_informer_->network_path();
-    LoadAuthExtension(true /* force */, false /* offline */);
-  }
 }
 
 void GaiaScreenHandler::DisableRestrictiveProxyCheckForTest() {
@@ -983,7 +958,6 @@ void GaiaScreenHandler::HandleOnFatalError(
 }
 
 void GaiaScreenHandler::OnShowAddUser() {
-  signin_screen_handler_->is_account_picker_showing_first_time_ = false;
   lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
   LoadGaiaAsync(EmptyAccountId());
   LoginDisplayHost::default_host()->StartWizard(

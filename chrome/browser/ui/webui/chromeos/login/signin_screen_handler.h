@@ -169,7 +169,6 @@ class SigninScreenHandler
   void SetDelegate(SigninScreenHandlerDelegate* delegate);
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
-  void OnNetworkReady() override;
   void UpdateState(NetworkError::ErrorReason reason) override;
 
   // Required Local State preferences.
@@ -336,8 +335,6 @@ class SigninScreenHandler
   // screen.
   bool IsSigninScreenHiddenByError() const;
 
-  bool ShouldLoadGaia() const;
-
   net::Error FrameError() const;
 
   // input_method::ImeKeyboard::Observer implementation:
@@ -362,9 +359,6 @@ class SigninScreenHandler
 
   // Keeps whether screen should be shown for OOBE.
   bool oobe_ui_ = false;
-
-  // Is account picker being shown for the first time.
-  bool is_account_picker_showing_first_time_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;

@@ -54,10 +54,6 @@ class GaiaView {
   GaiaView() = default;
   virtual ~GaiaView() = default;
 
-  // Decides whether an auth extension should be pre-loaded. If it should,
-  // pre-loads it.
-  virtual void MaybePreloadAuthExtension() = 0;
-
   virtual void DisableRestrictiveProxyCheckForTest() = 0;
 
   // Loads Gaia into the webview. Depending on internal state, the Gaia will
@@ -123,7 +119,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   ~GaiaScreenHandler() override;
 
   // GaiaView:
-  void MaybePreloadAuthExtension() override;
   void DisableRestrictiveProxyCheckForTest() override;
   void LoadGaiaAsync(const AccountId& account_id) override;
   void LoadOfflineGaia(const AccountId& account_id) override;

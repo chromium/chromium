@@ -456,11 +456,6 @@ void SigninScreenHandler::SetDelegate(SigninScreenHandlerDelegate* delegate) {
     delegate_->SetWebUIHandler(this);
 }
 
-void SigninScreenHandler::OnNetworkReady() {
-  VLOG(1) << "OnNetworkReady() call.";
-  gaia_screen_handler_->MaybePreloadAuthExtension();
-}
-
 void SigninScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
   // ERROR_REASON_FRAME_ERROR is an explicit signal from GAIA frame so it shoud
   // force network error UI update.
@@ -953,14 +948,6 @@ void SigninScreenHandler::OnTabletModeToggled(bool enabled) {
   CallJS("login.AccountPickerScreen.setTabletModeState", enabled);
 }
 
-bool SigninScreenHandler::ShouldLoadGaia() const {
-  // Fetching of the extension is not started before account picker page is
-  // loaded because it can affect the loading speed.
-  // Do not load the extension for the screen locker, see crosbug.com/25018.
-  return !ScreenLocker::default_screen_locker() &&
-         is_account_picker_showing_first_time_;
-}
-
 void SigninScreenHandler::HandleAuthenticateUser(const AccountId& account_id,
                                                  const std::string& password,
                                                  bool authenticated_by_pin) {
@@ -1104,8 +1091,6 @@ void SigninScreenHandler::HandleAccountPickerReady() {
     delegate_->ShowWrongHWIDScreen();
     return;
   }
-
-  is_account_picker_showing_first_time_ = true;
 
   // The wallpaper may have been set before the instance is initialized, so make
   // sure the colors and blur state are updated.

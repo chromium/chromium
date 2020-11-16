@@ -40,10 +40,6 @@ void GaiaScreen::SetView(GaiaView* view) {
     view_->Bind(this);
 }
 
-void GaiaScreen::MaybePreloadAuthExtension() {
-  view_->MaybePreloadAuthExtension();
-}
-
 void GaiaScreen::LoadOnline(const AccountId& account) {
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->LoadGaiaAsync(account);

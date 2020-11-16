@@ -36,7 +36,6 @@ class GaiaScreen : public BaseScreen {
 
   void SetView(GaiaView* view);
 
-  void MaybePreloadAuthExtension();
   // Loads online Gaia into the webview.
   void LoadOnline(const AccountId& account);
   // Loads online Gaia (for child signup) into the webview.
