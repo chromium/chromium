@@ -783,6 +783,16 @@ static_library("test_support") {
     sources += [
       "ime/chromeos/input_method_allowlist.cc",
       "ime/chromeos/input_method_allowlist.h",
+      "ime/chromeos/mock_component_extension_ime_manager.cc",
+      "ime/chromeos/mock_component_extension_ime_manager.h",
+      "ime/chromeos/mock_component_extension_ime_manager_delegate.cc",
+      "ime/chromeos/mock_component_extension_ime_manager_delegate.h",
+      "ime/chromeos/mock_ime_candidate_window_handler.cc",
+      "ime/chromeos/mock_ime_candidate_window_handler.h",
+      "ime/chromeos/mock_ime_engine_handler.cc",
+      "ime/chromeos/mock_ime_engine_handler.h",
+      "ime/chromeos/mock_ime_input_context_handler.cc",
+      "ime/chromeos/mock_ime_input_context_handler.h",
       "ime/chromeos/mock_input_method_manager.cc",
       "ime/chromeos/mock_input_method_manager.h",
     ]
