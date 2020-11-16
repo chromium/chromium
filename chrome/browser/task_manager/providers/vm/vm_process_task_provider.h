@@ -51,10 +51,6 @@ class VmProcessTaskProvider : public TaskProvider,
   // Map of PIDs to the corresponding Task object for a running VM.
   base::flat_map<base::ProcessId, std::unique_ptr<VmProcessTask>> task_map_;
 
-  // Always keep this the last member of this class to make sure it's the
-  // first thing to be destructed.
-  base::WeakPtrFactory<VmProcessTaskProvider> weak_ptr_factory_{this};
-
   DISALLOW_COPY_AND_ASSIGN(VmProcessTaskProvider);
 };
 

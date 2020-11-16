@@ -134,6 +134,7 @@ void ArcProcessTaskProvider::StartUpdating() {
 
 void ArcProcessTaskProvider::StopUpdating() {
   is_updating_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
   nspid_to_task_.clear();
   nspid_to_sys_task_.clear();
 }
