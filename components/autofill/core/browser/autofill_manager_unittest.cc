@@ -8454,16 +8454,17 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
 }
 
 TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
+  const char* kTestLanguage = "zh";
   FormData form;
   test::CreateTestAddressFormData(&form);
 
   // Set up language state mock.
-  autofill_client_.GetLanguageState()->SetOriginalLanguage("test_lang");
+  autofill_client_.GetLanguageState()->SetOriginalLanguage(kTestLanguage);
 
   FormStructure* parsed_form = autofill_manager_->ParseFormForTest(form);
 
   ASSERT_TRUE(parsed_form);
-  ASSERT_EQ("test_lang", parsed_form->page_language());
+  ASSERT_EQ(LanguageCode(kTestLanguage), parsed_form->page_language());
 }
 
 // AutofillManagerTest with kAutofillDisabledMixedForms feature enabled.

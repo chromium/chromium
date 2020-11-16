@@ -14,8 +14,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
-#include "components/autofill/core/common/renderer_id.h"
-#include "components/autofill/core/common/signatures.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -309,8 +307,8 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   return parsed_form_structure;
 }
 
-std::string AutofillHandler::GetPageLanguage() const {
-  return std::string();
+LanguageCode AutofillHandler::GetPageLanguage() const {
+  return LanguageCode();
 }
 
 void AutofillHandler::Reset() {

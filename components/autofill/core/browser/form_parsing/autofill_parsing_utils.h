@@ -8,6 +8,8 @@
 #include <base/optional.h>
 #include <string>
 
+#include "components/autofill/core/common/language_code.h"
+
 namespace autofill {
 
 // A bit-field used for matching specific parts of a field in question.
@@ -51,7 +53,7 @@ struct MatchingPattern {
   MatchingPattern& operator=(MatchingPattern&&);
   ~MatchingPattern();
 
-  std::string language;
+  LanguageCode language;
   std::string positive_pattern;
   std::string negative_pattern;
   float positive_score = 1.1;

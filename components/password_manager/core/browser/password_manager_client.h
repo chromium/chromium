@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/util/type_safety/strong_alias.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
@@ -323,7 +324,7 @@ class PasswordManagerClient {
   virtual void AnnotateNavigationEntry(bool has_password_field);
 
   // Returns the current best guess as to the page's display language.
-  virtual std::string GetPageLanguage() const;
+  virtual autofill::LanguageCode GetPageLanguage() const;
 
   // Return the PasswordProtectionService associated with this instance.
   virtual safe_browsing::PasswordProtectionService*

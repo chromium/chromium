@@ -184,7 +184,7 @@ class ChromePasswordManagerClient
       const override;
   const autofill::LogManager* GetLogManager() const override;
   void AnnotateNavigationEntry(bool has_password_field) override;
-  std::string GetPageLanguage() const override;
+  autofill::LanguageCode GetPageLanguage() const override;
 
 #if defined(ON_FOCUS_PING_ENABLED) || defined(PASSWORD_REUSE_DETECTION_ENABLED)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()

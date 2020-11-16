@@ -53,7 +53,7 @@ const float FormField::kBaseSearchParserScore = 0.8f;
 // static
 FieldCandidatesMap FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     bool is_form_tag,
     LogManager* log_manager) {
   // Set up a working copy of the fields to be processed.
@@ -271,14 +271,12 @@ bool FormField::ParseFieldSpecifics(
     // AddressField::ParseNameAndLabelSeparately().
     if (match_field_bitmasks.restrict_attributes != ~0 ||
         match_field_bitmasks.augment_types != 0) {
-      std::vector<MatchingPattern> patterns_with_restricted_match_type =
-          patterns;
-      for (MatchingPattern& mp : patterns_with_restricted_match_type) {
+      std::vector<MatchingPattern> modified_patterns = patterns;
+      for (MatchingPattern& mp : modified_patterns) {
         mp.match_field_attributes &= match_field_bitmasks.restrict_attributes;
         mp.match_field_input_types |= match_field_bitmasks.augment_types;
       }
-      return ParseFieldSpecifics(scanner, patterns_with_restricted_match_type,
-                                 match, logging);
+      return ParseFieldSpecifics(scanner, modified_patterns, match, logging);
     }
     return ParseFieldSpecifics(scanner, patterns, match, logging);
   } else {
@@ -391,7 +389,7 @@ bool FormField::Match(const AutofillField* field,
 void FormField::ParseFormFieldsPass(ParseFunction parse,
                                     const std::vector<AutofillField*>& fields,
                                     FieldCandidatesMap* field_candidates,
-                                    const std::string& page_language,
+                                    const LanguageCode& page_language,
                                     LogManager* log_manager) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {

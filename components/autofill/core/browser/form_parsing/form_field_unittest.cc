@@ -124,7 +124,7 @@ TEST(FormFieldTest, ParseFormFields) {
   // An empty page_language means the language is unknown and patterns of all
   // languages are used.
   EXPECT_TRUE(
-      FormField::ParseFormFields(fields, /*page_language=*/"", true).empty());
+      FormField::ParseFormFields(fields, LanguageCode(""), true).empty());
 
   // reset |is_checkable| to false.
   field_data.check_status = FormFieldData::CheckStatus::kNotCheckable;
@@ -134,9 +134,8 @@ TEST(FormFieldTest, ParseFormFields) {
       std::make_unique<AutofillField>(field_data, field_data.label));
 
   // Parse a single address line 1 field.
-  ASSERT_EQ(
-      0u,
-      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
+  ASSERT_EQ(0u,
+            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
 
   // Parses address line 1 and 2.
   field_data.label = ASCIIToUTF16("Address line2");
@@ -145,9 +144,8 @@ TEST(FormFieldTest, ParseFormFields) {
 
   // An empty page_language means the language is unknown and patterns of
   // all languages are used.
-  ASSERT_EQ(
-      0u,
-      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
+  ASSERT_EQ(0u,
+            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
 }
 
 // Test that the minimum number of required fields for the heuristics considers
@@ -168,9 +166,8 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   // Don't parse forms with 2 fields.
   // An empty page_language means the language is unknown and patterns of all
   // languages are used.
-  EXPECT_EQ(
-      0u,
-      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
+  EXPECT_EQ(0u,
+            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
 
   field_data.label = ASCIIToUTF16("Search");
   fields.push_back(
@@ -184,8 +181,7 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     EXPECT_EQ(
-        3u,
-        FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
+        3u, FormField::ParseFormFields(fields, LanguageCode(""), true).size());
   }
 
   // With the fix, we don't parse the form because search fields are not
@@ -196,10 +192,9 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     const FieldCandidatesMap field_candidates_map =
-        FormField::ParseFormFields(fields, /*page_language=*/"", true);
+        FormField::ParseFormFields(fields, LanguageCode(""), true);
     EXPECT_EQ(
-        0u,
-        FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
+        0u, FormField::ParseFormFields(fields, LanguageCode(""), true).size());
   }
 }
 

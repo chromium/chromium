@@ -32,7 +32,7 @@ class SearchFieldTest : public testing::Test {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormField> field =
-        SearchField::Parse(scanner, /*page_language=*/"", nullptr);
+        SearchField::Parse(scanner, LanguageCode(""), nullptr);
     return std::unique_ptr<SearchField>(
         static_cast<SearchField*>(field.release()));
   }

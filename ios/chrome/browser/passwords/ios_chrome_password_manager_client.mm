@@ -236,10 +236,10 @@ url::Origin IOSChromePasswordManagerClient::GetLastCommittedOrigin() const {
   return url::Origin::Create(bridge_.lastCommittedURL);
 }
 
-std::string IOSChromePasswordManagerClient::GetPageLanguage() const {
+autofill::LanguageCode IOSChromePasswordManagerClient::GetPageLanguage() const {
   // TODO(crbug.com/912597): Add WebState to the IOSChromePasswordManagerClient
   // to be able to get the pages LanguageState from the TranslateManager.
-  return std::string();
+  return autofill::LanguageCode();
 }
 
 const password_manager::CredentialsFilter*

@@ -618,7 +618,7 @@ class AutofillManager : public AutofillHandler,
                                SuggestionsContext* context);
 
   // Retrieves the page language from |client_|
-  std::string GetPageLanguage() const override;
+  LanguageCode GetPageLanguage() const override;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Whether to show the option to use virtual card in the autofill popup.

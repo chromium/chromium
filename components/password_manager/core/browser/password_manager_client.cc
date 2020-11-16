@@ -130,8 +130,8 @@ const autofill::LogManager* PasswordManagerClient::GetLogManager() const {
 
 void PasswordManagerClient::AnnotateNavigationEntry(bool has_password_field) {}
 
-std::string PasswordManagerClient::GetPageLanguage() const {
-  return std::string();
+autofill::LanguageCode PasswordManagerClient::GetPageLanguage() const {
+  return autofill::LanguageCode();
 }
 
 PasswordRequirementsService*

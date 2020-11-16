@@ -1946,7 +1946,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
 
   AutofillDownloadManager download_manager(driver_.get(), this);
   FormStructure form_structure(form);
-  form_structure.set_page_language("fr-ca");
+  form_structure.set_page_language(LanguageCode("fr"));
 
   pref_service_->SetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, true);
@@ -1983,7 +1983,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     ASSERT_TRUE(request.ParseFromString(payloads_.front()));
     ASSERT_TRUE(request.has_upload());
     const AutofillUploadContents& upload = request.upload();
-    EXPECT_EQ(upload.language(), form_structure.page_language());
+    EXPECT_EQ(upload.language(), form_structure.page_language().value());
     ASSERT_TRUE(upload.has_randomized_form_metadata());
     EXPECT_TRUE(upload.randomized_form_metadata().has_id());
     EXPECT_TRUE(upload.randomized_form_metadata().has_name());

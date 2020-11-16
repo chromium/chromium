@@ -790,9 +790,7 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
     copied_credit_cards.push_back(*card);
 
   // Annotate the form with the source language of the page.
-  base::Optional<std::string> page_language = GetPageLanguage();
-  if (page_language)
-    form_structure->set_page_language(page_language.value());
+  form_structure->set_page_language(LanguageCode(GetPageLanguage()));
 
   // Attach the Randomized Encoder.
   form_structure->set_randomized_encoder(
@@ -2793,12 +2791,12 @@ FormEventLoggerBase* AutofillManager::GetEventFormLogger(
   return nullptr;
 }
 
-std::string AutofillManager::GetPageLanguage() const {
+LanguageCode AutofillManager::GetPageLanguage() const {
   DCHECK(client_);
   const translate::LanguageState* language_state = client_->GetLanguageState();
   if (language_state)
-    return language_state->original_language();
-  return std::string();
+    return LanguageCode(language_state->original_language());
+  return LanguageCode();
 }
 
 }  // namespace autofill

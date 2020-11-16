@@ -28,10 +28,10 @@ void EnrichPatternsWithEnVersion(
     PatternProvider::Map* type_and_lang_to_patterns) {
   DCHECK(type_and_lang_to_patterns);
   for (auto& p : *type_and_lang_to_patterns) {
-    std::map<std::string, std::vector<MatchingPattern>>& lang_to_patterns =
+    std::map<LanguageCode, std::vector<MatchingPattern>>& lang_to_patterns =
         p.second;
 
-    auto it = lang_to_patterns.find(kSourceCodeLanguage);
+    auto it = lang_to_patterns.find(LanguageCode(kSourceCodeLanguage));
     if (it == lang_to_patterns.end())
       continue;
     std::vector<MatchingPattern> en_patterns = it->second;
@@ -40,10 +40,10 @@ void EnrichPatternsWithEnVersion(
     }
 
     for (auto& q : lang_to_patterns) {
-      const std::string& page_language = q.first;
+      const LanguageCode& page_language = q.first;
       std::vector<MatchingPattern>& patterns = q.second;
 
-      if (page_language != kSourceCodeLanguage) {
+      if (page_language != LanguageCode(kSourceCodeLanguage)) {
         patterns.insert(patterns.end(), en_patterns.begin(), en_patterns.end());
       }
     }
@@ -53,7 +53,7 @@ void EnrichPatternsWithEnVersion(
 // Sorts patterns in descending order by their score.
 void SortPatternsByScore(PatternProvider::Map* type_and_lang_to_patterns) {
   for (auto& p : *type_and_lang_to_patterns) {
-    std::map<std::string, std::vector<MatchingPattern>>& lang_to_patterns =
+    std::map<LanguageCode, std::vector<MatchingPattern>>& lang_to_patterns =
         p.second;
     for (auto& q : lang_to_patterns) {
       std::vector<MatchingPattern>& patterns = q.second;
@@ -98,7 +98,7 @@ void PatternProvider::SetPatterns(PatternProvider::Map patterns,
 
 const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
     const std::string& pattern_name,
-    const std::string& page_language) const {
+    const LanguageCode& page_language) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1134496): Remove feature check once launched.
@@ -106,7 +106,7 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
           features::kAutofillUsePageLanguageToSelectFieldParsingPatterns)) {
     auto outer_it = patterns_.find(pattern_name);
     if (outer_it != patterns_.end()) {
-      const std::map<std::string, std::vector<MatchingPattern>>&
+      const std::map<LanguageCode, std::vector<MatchingPattern>>&
           lang_to_pattern = outer_it->second;
       auto inner_it = lang_to_pattern.find(page_language);
       if (inner_it != lang_to_pattern.end()) {
@@ -129,15 +129,13 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
 
 const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
     ServerFieldType type,
-    const std::string& page_language) const {
-  std::string pattern_name = AutofillType(type).ToString();
-  return GetMatchPatterns(pattern_name, page_language);
+    const LanguageCode& page_language) const {
+  return GetMatchPatterns(AutofillType(type).ToString(), page_language);
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
     ServerFieldType type) const {
-  std::string type_str = AutofillType(type).ToString();
-  return GetAllPatternsByType(type_str);
+  return GetAllPatternsByType(AutofillType(type).ToString());
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
@@ -145,16 +143,16 @@ const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
   auto it = patterns_.find(type);
   if (it == patterns_.end())
     return {};
-  const std::map<std::string, std::vector<MatchingPattern>>& type_patterns =
+  const std::map<LanguageCode, std::vector<MatchingPattern>>& type_patterns =
       it->second;
 
   std::vector<MatchingPattern> all_language_patterns;
   for (const auto& p : type_patterns) {
-    const std::string& page_language = p.first;
+    const LanguageCode& page_language = p.first;
     const std::vector<MatchingPattern>& language_patterns = p.second;
     for (const MatchingPattern& mp : language_patterns) {
-      if (page_language == kSourceCodeLanguage ||
-          mp.language != kSourceCodeLanguage) {
+      if (page_language == LanguageCode(kSourceCodeLanguage) ||
+          mp.language != LanguageCode(kSourceCodeLanguage)) {
         all_language_patterns.push_back(mp);
       }
     }

@@ -712,7 +712,7 @@ bool FormStructure::EncodeUploadRequest(
   upload->set_passwords_revealed(passwords_were_revealed_);
   upload->set_has_form_tag(is_form_tag_);
   if (!page_language_.empty() && randomized_encoder_ != nullptr) {
-    upload->set_language(page_language_);
+    upload->set_language(page_language_.value());
   }
 
   auto triggering_event = (submission_event_ != SubmissionIndicatorEvent::NONE)

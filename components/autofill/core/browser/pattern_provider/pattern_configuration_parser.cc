@@ -10,6 +10,8 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/language_code.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -28,7 +30,7 @@ const char kVersionKey[] = "version";
 
 bool ParseMatchingPattern(PatternProvider::Map& patterns,
                           const std::string& field_type,
-                          const std::string& language,
+                          const LanguageCode& language,
                           const base::Value& value) {
   if (!value.is_dict())
     return false;
@@ -68,7 +70,7 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   pattern_list->push_back(new_pattern);
 
   DVLOG(2) << "Correctly parsed MatchingPattern with with type " << field_type
-           << ", language " << language << ", pattern "
+           << ", language " << language.value() << ", pattern "
            << new_pattern.positive_pattern << ".";
 
   return true;
@@ -127,7 +129,7 @@ base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
     }
 
     for (const auto& value : field_type_dict->DictItems()) {
-      const std::string& language = value.first;
+      LanguageCode language(value.first);
       const base::Value* inner_list = &value.second;
 
       if (!inner_list->is_list()) {
@@ -141,7 +143,7 @@ base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
                                             matchingPatternObj);
         if (!success) {
           DVLOG(1) << "Found incorrect |MatchingPattern| object in list |"
-                   << field_type << "|, language |" << language << "|.";
+                   << field_type << "|, language |" << language.value() << "|.";
           return base::nullopt;
         }
       }

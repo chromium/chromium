@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
@@ -213,7 +214,7 @@ class AutofillHandler {
                            const FormStructure* cached_form);
 
   // Returns the page language, if available.
-  virtual std::string GetPageLanguage() const;
+  virtual LanguageCode GetPageLanguage() const;
 
   bool value_from_dynamic_change_form_ = false;
 

@@ -12,7 +12,7 @@ namespace autofill {
 
 // static
 std::unique_ptr<FormField> EmailField::Parse(AutofillScanner* scanner,
-                                             const std::string& page_language,
+                                             const LanguageCode& page_language,
                                              LogManager* log_manager) {
   AutofillField* field;
   auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(

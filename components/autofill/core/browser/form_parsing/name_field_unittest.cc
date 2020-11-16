@@ -35,7 +35,7 @@ class NameFieldTest : public testing::Test {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormField> field =
-        NameField::Parse(scanner, /*page_language=*/"", nullptr);
+        NameField::Parse(scanner, LanguageCode(""), nullptr);
     return std::unique_ptr<NameField>(static_cast<NameField*>(field.release()));
   }
 

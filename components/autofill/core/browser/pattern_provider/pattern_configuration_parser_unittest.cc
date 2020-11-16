@@ -9,6 +9,8 @@
 #include "base/json/json_reader.h"
 #include "base/test/gtest_util.h"
 #include "base/version.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/language_code.h"
 #include "components/grit/components_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,7 +27,7 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
     {
       "version": "1.0",
       "FULL_NAME": {
-        "en_us": [
+        "en": [
           {
             "pattern_identifier": "Name_en",
             "positive_pattern": "name|full name",
@@ -47,7 +49,7 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
         ]
       },
       "ADDRESS": {
-        "en_us": [
+        "en": [
           {
             "pattern_identifier": "Address",
             "positive_pattern": "address",
@@ -78,19 +80,19 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
   ASSERT_EQ(2U, patterns.size());
   ASSERT_TRUE(patterns.count("FULL_NAME"));
   ASSERT_EQ(2U, patterns["FULL_NAME"].size());
-  ASSERT_TRUE(patterns["FULL_NAME"].count("en_us"));
-  ASSERT_TRUE(patterns["FULL_NAME"].count("fr"));
+  ASSERT_TRUE(patterns["FULL_NAME"].count(LanguageCode("en")));
+  ASSERT_TRUE(patterns["FULL_NAME"].count(LanguageCode("fr")));
 
   ASSERT_TRUE(patterns.count("ADDRESS"));
   ASSERT_EQ(1U, patterns["ADDRESS"].size());
-  ASSERT_TRUE(patterns["ADDRESS"].count("en_us"));
+  ASSERT_TRUE(patterns["ADDRESS"].count(LanguageCode("en")));
 
   // Test one |MatchingPattern| to check that they are parsed correctly.
-  MatchingPattern* pattern = &patterns["FULL_NAME"]["fr"][0];
+  MatchingPattern* pattern = &patterns["FULL_NAME"][LanguageCode("fr")][0];
 
   ASSERT_EQ("nom|prenom", pattern->positive_pattern);
   ASSERT_EQ("compagne", pattern->negative_pattern);
-  ASSERT_EQ("fr", pattern->language);
+  ASSERT_EQ(LanguageCode("fr"), pattern->language);
   ASSERT_NEAR(2.0, pattern->positive_score, 1e-6);
   ASSERT_EQ(2, pattern->match_field_attributes);
   ASSERT_EQ(3 << 2, pattern->match_field_input_types);
@@ -103,7 +105,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
     {
       "version": "1.0",
       "FULL_NAME": {
-        "en_us": [
+        "en": [
           {
             "pattern_identifier": "Name_en",
             "positive_pattern": "name|full name",
@@ -141,7 +143,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
   std::string JSON_message = R"(
     {
       "FULL_NAME": {
-        "en_us": [
+        "en": [
           {
             "positive_pattern": "name|full name",
             "positive_score": 2.0,
@@ -168,7 +170,7 @@ TEST(PatternConfigurationParserTest, MalformedNotList) {
   std::string JSON_message = R"(
     {
       "FULL_NAME": {
-        "en_us": {
+        "en": {
           "positive_pattern": "name|full name",
           "positive_score": 2.0,
           "negative_pattern": "company",

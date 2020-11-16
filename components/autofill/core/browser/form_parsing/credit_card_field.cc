@@ -83,7 +83,7 @@ bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
 // static
 std::unique_ptr<FormField> CreditCardField::Parse(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -333,7 +333,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
 bool CreditCardField::LikelyCardYearSelectField(
     AutofillScanner* scanner,
     LogManager* log_manager,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   if (scanner->IsEnd())
     return false;
 
@@ -414,7 +414,7 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 // static
 bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
                                       LogManager* log_manager,
-                                      const std::string& page_language) {
+                                      const LanguageCode& page_language) {
   if (scanner->IsEnd())
     return false;
 
@@ -504,7 +504,7 @@ void CreditCardField::AddClassifications(
 
 bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
                                           LogManager* log_manager,
-                                          const std::string& page_language) {
+                                          const LanguageCode& page_language) {
   if (!expiration_date_ && base::LowerCaseEqualsASCII(
                                scanner->Cursor()->form_control_type, "month")) {
     expiration_date_ = scanner->Cursor();

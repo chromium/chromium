@@ -24,7 +24,7 @@ namespace {
 class FullNameField : public NameField {
  public:
   static std::unique_ptr<FullNameField> Parse(AutofillScanner* scanner,
-                                              const std::string& page_language,
+                                              const LanguageCode& page_language,
                                               LogManager* log_manager);
   explicit FullNameField(AutofillField* field);
 
@@ -43,11 +43,11 @@ class FirstTwoLastNamesField : public NameField {
  public:
   static std::unique_ptr<FirstTwoLastNamesField> ParseComponentNames(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
   static std::unique_ptr<FirstTwoLastNamesField> Parse(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
 
  protected:
@@ -71,15 +71,15 @@ class FirstLastNameField : public NameField {
  public:
   static std::unique_ptr<FirstLastNameField> ParseSpecificName(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
   static std::unique_ptr<FirstLastNameField> ParseComponentNames(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
   static std::unique_ptr<FirstLastNameField> Parse(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
 
  protected:
@@ -101,7 +101,7 @@ class FirstLastNameField : public NameField {
 
 // static
 std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
-                                            const std::string& page_language,
+                                            const LanguageCode& page_language,
                                             LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -126,7 +126,7 @@ void NameField::AddClassifications(FieldCandidatesMap* field_candidates) const {
 // static
 std::unique_ptr<FullNameField> FullNameField::Parse(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   // Exclude e.g. "username" or "nickname" fields.
   scanner->SaveCursor();
@@ -165,7 +165,7 @@ FirstTwoLastNamesField::FirstTwoLastNamesField() = default;
 // static
 std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   return ParseComponentNames(scanner, page_language, log_manager);
 }
@@ -173,7 +173,7 @@ std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
 // static
 std::unique_ptr<FirstTwoLastNamesField>
 FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
-                                            const std::string& page_language,
+                                            const LanguageCode& page_language,
                                             LogManager* log_manager) {
   std::unique_ptr<FirstTwoLastNamesField> v(new FirstTwoLastNamesField);
   scanner->SaveCursor();
@@ -267,7 +267,7 @@ void FirstTwoLastNamesField::AddClassifications(
 
 std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseSpecificName(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   // Some pages (e.g. Overstock_comBilling.html, SmithsonianCheckout.html)
   // have the label "Name" followed by two or three text fields.
@@ -300,7 +300,7 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseSpecificName(
 // static
 std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   std::unique_ptr<FirstLastNameField> v(new FirstLastNameField);
   scanner->SaveCursor();
@@ -399,7 +399,7 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
 // static
 std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
     AutofillScanner* scanner,
-    const std::string& page_language,
+    const LanguageCode& page_language,
     LogManager* log_manager) {
   std::unique_ptr<FirstLastNameField> field =
       ParseSpecificName(scanner, page_language, log_manager);

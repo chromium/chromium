@@ -45,9 +45,10 @@ const int AddressField::kCityMatchType =
 const int AddressField::kStateMatchType =
     MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
 
-std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
-                                               const std::string& page_language,
-                                               LogManager* log_manager) {
+std::unique_ptr<FormField> AddressField::Parse(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language,
+    LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
 
@@ -183,7 +184,7 @@ void AddressField::AddClassifications(
 }
 
 bool AddressField::ParseCompany(AutofillScanner* scanner,
-                                const std::string& page_language) {
+                                const LanguageCode& page_language) {
   if (company_)
     return false;
   // In JSON : COMPANY
@@ -194,8 +195,9 @@ bool AddressField::ParseCompany(AutofillScanner* scanner,
                     {log_manager_, "kCompanyRe"});
 }
 
-bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
-                                             const std::string& page_language) {
+bool AddressField::ParseAddressFieldSequence(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language) {
   // Search for a sequence of a street name field followed by a house number
   // field. Only if both are found in an abitrary order, the parsing is
   // considered successful.
@@ -244,7 +246,7 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseAddress(AutofillScanner* scanner,
-                                const std::string& page_language) {
+                                const LanguageCode& page_language) {
   if (street_name_ && house_number_) {
     return false;
   }
@@ -253,7 +255,7 @@ bool AddressField::ParseAddress(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseAddressLines(AutofillScanner* scanner,
-                                     const std::string& page_language) {
+                                     const LanguageCode& page_language) {
   // We only match the string "address" in page text, not in element names,
   // because sometimes every element in a group of address fields will have
   // a name containing the string "address"; for example, on the page
@@ -337,7 +339,7 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseCountry(AutofillScanner* scanner,
-                                const std::string& page_language) {
+                                const LanguageCode& page_language) {
   if (country_)
     return false;
 
@@ -365,7 +367,7 @@ bool AddressField::ParseCountry(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseZipCode(AutofillScanner* scanner,
-                                const std::string& page_language) {
+                                const LanguageCode& page_language) {
   if (zip_)
     return false;
 
@@ -390,7 +392,7 @@ bool AddressField::ParseZipCode(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseCity(AutofillScanner* scanner,
-                             const std::string& page_language) {
+                             const LanguageCode& page_language) {
   if (city_)
     return false;
 
@@ -402,7 +404,7 @@ bool AddressField::ParseCity(AutofillScanner* scanner,
 }
 
 bool AddressField::ParseState(AutofillScanner* scanner,
-                              const std::string& page_language) {
+                              const LanguageCode& page_language) {
   if (state_)
     return false;
 
@@ -451,7 +453,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
 
 bool AddressField::ParseCityStateCountryZipCode(
     AutofillScanner* scanner,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   // The |scanner| is not pointing at a field.
   if (scanner->IsEnd())
     return false;
@@ -531,7 +533,7 @@ bool AddressField::ParseCityStateCountryZipCode(
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
     AutofillScanner* scanner,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   if (zip_)
     return RESULT_MATCH_NONE;
 
@@ -572,7 +574,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
     AutofillScanner* scanner,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   if (city_)
     return RESULT_MATCH_NONE;
 
@@ -586,7 +588,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
     AutofillScanner* scanner,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   if (state_)
     return RESULT_MATCH_NONE;
 
@@ -600,7 +602,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
     AutofillScanner* scanner,
-    const std::string& page_language) {
+    const LanguageCode& page_language) {
   if (country_)
     return RESULT_MATCH_NONE;
 

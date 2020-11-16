@@ -783,14 +783,15 @@ void ChromePasswordManagerClient::AnnotateNavigationEntry(
   }
 }
 
-std::string ChromePasswordManagerClient::GetPageLanguage() const {
+autofill::LanguageCode ChromePasswordManagerClient::GetPageLanguage() const {
   // TODO(crbug.com/912597): iOS vs other platforms extracts language from
   // the top level frame vs whatever frame directly holds the form.
   auto* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents());
   if (translate_manager)
-    return translate_manager->GetLanguageState()->original_language();
-  return std::string();
+    return autofill::LanguageCode(
+        translate_manager->GetLanguageState()->original_language());
+  return autofill::LanguageCode();
 }
 
 #if defined(ON_FOCUS_PING_ENABLED) || defined(PASSWORD_REUSE_DETECTION_ENABLED)

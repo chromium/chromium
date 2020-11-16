@@ -11,10 +11,12 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/util/type_safety/strong_alias.h"
 #include "base/version.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -27,7 +29,7 @@ class PatternProvider {
   // page languages in lower case.
   // TODO(crbug/1142413): decide on uppercase or lowercase.
   using Map = std::map<std::string,
-                       std::map<std::string, std::vector<MatchingPattern>>>;
+                       std::map<LanguageCode, std::vector<MatchingPattern>>>;
 
   // Returns a reference to the global Pattern Provider.
   static PatternProvider& GetInstance();
@@ -41,12 +43,12 @@ class PatternProvider {
   // |page_language|.
   const std::vector<MatchingPattern> GetMatchPatterns(
       ServerFieldType type,
-      const std::string& page_language) const;
+      const LanguageCode& page_language) const;
 
   // Find the patterns for a given |pattern_name| and a given |page_language|.
   const std::vector<MatchingPattern> GetMatchPatterns(
       const std::string& pattern_name,
-      const std::string& page_language) const;
+      const LanguageCode& page_language) const;
 
   // Find all patterns, across all languages, for a given server field |type|.
   const std::vector<MatchingPattern> GetAllPatternsByType(

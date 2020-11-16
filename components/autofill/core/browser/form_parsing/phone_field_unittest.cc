@@ -46,7 +46,7 @@ class PhoneFieldTest : public testing::Test {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormField> field =
-        PhoneField::Parse(scanner, /*page_language=*/"", nullptr);
+        PhoneField::Parse(scanner, LanguageCode(""), nullptr);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
   }

@@ -213,7 +213,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 
 // static
 std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
-                                             const std::string& page_language,
+                                             const LanguageCode& page_language,
                                              LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -455,7 +455,7 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type,
-                                 const std::string& page_language) {
+                                 const LanguageCode& page_language) {
   int match_type = MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
   // Include the selection boxes too for the matching of the phone country code.
   if (is_country_code_field)

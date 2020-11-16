@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -42,7 +43,7 @@ class FormField {
   // returned FieldCandidatesMap.
   static FieldCandidatesMap ParseFormFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       bool is_form_tag,
       LogManager* log_manager = nullptr);
 
@@ -146,7 +147,7 @@ class FormField {
   // ParseFormFieldsPass() helper function.
   typedef std::unique_ptr<FormField> ParseFunction(
       AutofillScanner* scanner,
-      const std::string& page_language,
+      const LanguageCode& page_language,
       LogManager* log_manager);
 
   // Matches |pattern| to the contents of the field at the head of the
@@ -192,7 +193,7 @@ class FormField {
   static void ParseFormFieldsPass(ParseFunction parse,
                                   const std::vector<AutofillField*>& fields,
                                   FieldCandidatesMap* field_candidates,
-                                  const std::string& page_language,
+                                  const LanguageCode& page_language,
                                   LogManager* log_manager = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(FormField);
