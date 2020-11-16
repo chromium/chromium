@@ -55,6 +55,7 @@ extern const base::Feature kAutofillOffNoServerData;
 extern const base::Feature kAutofillPreventMixedFormsFilling;
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 extern const base::Feature kAutofillProfileClientValidation;
+extern const base::Feature kAutofillProfileImportFromUnfocusableFields;
 extern const base::Feature kAutofillProfileServerValidation;
 extern const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout;
 extern const base::Feature kAutofillRichMetadataQueries;
