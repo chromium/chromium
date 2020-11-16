@@ -209,23 +209,6 @@ public class ChromePaymentRequestService
         }
     }
 
-    /** @return Whether the UI was built. */
-    private boolean buildUI(ChromeActivity activity, boolean isShowWaitingForUpdatedDetails) {
-        String error = mPaymentUiService.buildPaymentRequestUI(activity,
-                /*isWebContentsActive=*/
-                PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
-                /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
-        if (error != null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(error);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public boolean isShowingUi() {
         return mPaymentUiService.isShowingUI();
@@ -248,8 +231,17 @@ public class ChromePaymentRequestService
                 mPaymentRequestService.isUserGestureShow(), mDelegate.skipUiForBasicCard(),
                 mSpec.getPaymentOptions(), mSpec.getMethodData().keySet());
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (quitShowIfActivityNotFound(chromeActivity)
-                || !buildUI(chromeActivity, isShowWaitingForUpdatedDetails)) {
+        if (quitShowIfActivityNotFound(chromeActivity)) return false;
+        String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
+                /*isWebContentsActive=*/
+                PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
+                /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
+        if (error != null) {
+            mJourneyLogger.setNotShown(NotShownReason.OTHER);
+            disconnectFromClientWithDebugMessage(error);
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
+            }
             return false;
         }
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
