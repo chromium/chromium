@@ -139,6 +139,16 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   chrome_cookie = CanonicalCookieFromSystemCookie(system_cookie, creation_time);
   EXPECT_FALSE(chrome_cookie->IsPersistent());
   EXPECT_TRUE(chrome_cookie->IsSecure());
+
+  // Test a non-Canonical cookie does not cause a crash.
+  system_cookie = [[NSHTTPCookie alloc] initWithProperties:@{
+    NSHTTPCookieDomain : @"foo",
+    // Malformed name will make the resulting cookie non-canonical.
+    NSHTTPCookieName : @"A=",
+    NSHTTPCookiePath : @"/",
+    NSHTTPCookieValue : @"b",
+  }];
+  EXPECT_FALSE(CanonicalCookieFromSystemCookie(system_cookie, creation_time));
 }
 
 // Tests that histogram is reported correctly based on the input.
