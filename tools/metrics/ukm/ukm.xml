@@ -4297,6 +4297,19 @@ be describing additional metrics about the same event.
     Whether and how keepalive requests are blocked. Recorded when a keepalive
     request finishes.
   </summary>
+  <metric name="NumRedirects">
+    <summary>
+      The number of redirects the request experienced. This is up to 21, as
+      specified at https://fetch.spec.whatwg.org/#http-redirect-fetch .
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="State" enum="ExtensionInProgressRequestState">
     <summary>
       The final state of the request.

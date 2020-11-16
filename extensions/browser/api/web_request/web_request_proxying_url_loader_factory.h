@@ -197,6 +197,8 @@ class WebRequestProxyingURLLoaderFactory
     // lifetime.
     base::Optional<net::AuthCredentials> auth_credentials_;
 
+    int num_redirects_ = 0;
+
     const bool for_cors_preflight_ = false;
 
     // If |has_any_extra_headers_listeners_| is set to true, the request will be
