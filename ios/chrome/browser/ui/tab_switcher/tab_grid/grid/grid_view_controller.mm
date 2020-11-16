@@ -658,10 +658,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         deselectItemAtIndexPath:CreateIndexPath([self
                                     indexOfItemWithID:previouslySelectedItemID])
                        animated:YES];
+    UICollectionViewScrollPosition scrollPosition =
+        (self.currentLayout == self.horizontalLayout)
+            ? UICollectionViewScrollPositionCenteredHorizontally
+            : UICollectionViewScrollPositionNone;
     [self.collectionView
         selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                      animated:YES
-               scrollPosition:UICollectionViewScrollPositionNone];
+               scrollPosition:scrollPosition];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
     [self updateFractionVisibleOfLastItem];
   };
