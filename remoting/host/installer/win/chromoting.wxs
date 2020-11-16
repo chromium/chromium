@@ -111,7 +111,7 @@
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion IncludeMinimum="no"
                       Minimum="$(var.Version)"
-                      OnlyDetect="yes"
+                      OnlyDetect="no"
                       Property="NEWERVERSIONDETECTED" />
       <UpgradeVersion IncludeMaximum="yes"
                       IncludeMinimum="yes"
@@ -125,10 +125,6 @@
                       Minimum="0.0.0.0"
                       Property="BROKENUSAGESTATSVERSION" />
     </Upgrade>
-
-    <Condition Message="A later version of [ProductName] is already installed. Setup will now exit.">
-      NOT NEWERVERSIONDETECTED
-    </Condition>
 
     <Media Id="1" Cabinet="chromoting.cab" EmbedCab="yes"/>
 
