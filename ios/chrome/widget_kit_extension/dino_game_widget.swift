@@ -26,25 +26,31 @@ struct DinoGameWidgetEntryView: View {
   var entry: Provider.Entry
   @Environment(\.redactionReasons) var redactionReasons
   var body: some View {
-    ZStack {
-      Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
-        .resizable()
-        .unredacted()
-      VStack(alignment: .leading, spacing: 0) {
-        Spacer()
-          .frame(minWidth: 0, maxWidth: .infinity)
-        HStack {
-          Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
-            .foregroundColor(Color("widget_text_color"))
-            .fontWeight(.semibold)
-            .font(.subheadline)
-            .lineLimit(1)
+    // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
+    // the widget as one tap target. Without the wrapping, voice over treats the content within
+    // the widget as multiple tap targets.
+    Link(destination: WidgetConstants.DinoGameWidget.url) {
+      ZStack {
+        Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
+          .resizable()
+          .unredacted()
+        VStack(alignment: .leading, spacing: 0) {
           Spacer()
+            .frame(minWidth: 0, maxWidth: .infinity)
+          HStack {
+            Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
+              .foregroundColor(Color("widget_text_color"))
+              .fontWeight(.semibold)
+              .font(.subheadline)
+              .lineLimit(1)
+            Spacer()
+          }
+          .padding([.leading, .bottom], 16)
         }
-        .padding([.leading, .bottom], 16)
       }
     }
     .widgetURL(WidgetConstants.DinoGameWidget.url)
-    .accessibility(label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL"))
+    .accessibility(
+      label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL"))
   }
 }

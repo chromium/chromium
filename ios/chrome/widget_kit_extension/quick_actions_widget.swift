@@ -26,11 +26,11 @@ struct QuickActionsWidgetEntryView: View {
   @Environment(\.redactionReasons) var redactionReasons
   private let searchAreaHeight: CGFloat = 92
   private let separatorHeight: CGFloat = 32
-  private let incognitoA11yLabel =
+  private let incognitoA11yLabel: LocalizedStringKey =
     "IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL"
-  private let voiceSearchA11yLabel =
+  private let voiceSearchA11yLabel: LocalizedStringKey =
     "IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL"
-  private let qrA11yLabel =
+  private let qrA11yLabel: LocalizedStringKey =
     "IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL"
   var body: some View {
     VStack(spacing: 0) {
@@ -75,10 +75,10 @@ struct QuickActionsWidgetEntryView: View {
         Rectangle()
           .foregroundColor(Color("widget_actions_row_background_color"))
           .frame(minWidth: 0, maxWidth: .infinity)
-        HStack() {
+        HStack {
           // Show interactive buttons if the widget is fully loaded, and show
           // the custom placeholder otherwise.
-          if (redactionReasons.isEmpty) {
+          if redactionReasons.isEmpty {
             Link(destination: WidgetConstants.QuickActionsWidget.incognitoUrl) {
               Image("widget_incognito_icon")
                 .frame(minWidth: 0, maxWidth: .infinity)
