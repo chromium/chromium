@@ -19,8 +19,25 @@ namespace content {
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
-                                                delegate);
+  if (!delegate)
+    return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
+                                                  nullptr);
+
+  WebContentsAccessibilityAndroid* wcax =
+      static_cast<WebContentsAccessibilityAndroid*>(
+          delegate->AccessibilityGetWebContentsAccessibility());
+  return new BrowserAccessibilityManagerAndroid(
+      initial_tree,
+      wcax && delegate->AccessibilityIsMainFrame() ? wcax->GetWeakPtr()
+                                                   : nullptr,
+      delegate);
+}
+
+// static
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    BrowserAccessibilityDelegate* delegate) {
+  return BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
 }
 
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(

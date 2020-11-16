@@ -139,9 +139,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
-  BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
-      BrowserAccessibilityDelegate* delegate,
-      bool for_root_frame) override;
   blink::mojom::PointerLockResult LockMouse(
       bool request_unadjusted_movement) override;
   blink::mojom::PointerLockResult ChangeMouseLock(
@@ -173,6 +170,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnSynchronizedDisplayPropertiesChanged() override;
   base::Optional<SkColor> GetBackgroundColor() override;
   void DidNavigate() override;
+  WebContentsAccessibility* GetWebContentsAccessibility() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   void GetScreenInfo(blink::ScreenInfo* screen_info) override;

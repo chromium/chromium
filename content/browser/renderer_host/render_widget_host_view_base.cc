@@ -427,14 +427,6 @@ WidgetType RenderWidgetHostViewBase::GetWidgetType() {
   return widget_type_;
 }
 
-BrowserAccessibilityManager*
-RenderWidgetHostViewBase::CreateBrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate,
-    bool for_root_frame) {
-  NOTREACHED();
-  return nullptr;
-}
-
 gfx::AcceleratedWidget
     RenderWidgetHostViewBase::AccessibilityGetAcceleratedWidget() {
   return gfx::kNullAcceleratedWidget;
@@ -748,6 +740,11 @@ void RenderWidgetHostViewBase::SynchronizeVisualProperties() {
 void RenderWidgetHostViewBase::DidNavigate() {
   if (host())
     host()->SynchronizeVisualProperties();
+}
+
+WebContentsAccessibility*
+RenderWidgetHostViewBase::GetWebContentsAccessibility() {
+  return nullptr;
 }
 
 // TODO(wjmaclean): Would it simplify this function if we re-implemented it
