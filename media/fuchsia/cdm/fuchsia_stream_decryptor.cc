@@ -105,6 +105,10 @@ FuchsiaStreamDecryptorBase::~FuchsiaStreamDecryptorBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+int FuchsiaStreamDecryptorBase::GetMaxDecryptRequests() const {
+  return input_writer_queue_.num_buffers() + 1;
+}
+
 void FuchsiaStreamDecryptorBase::DecryptInternal(
     scoped_refptr<DecoderBuffer> encrypted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

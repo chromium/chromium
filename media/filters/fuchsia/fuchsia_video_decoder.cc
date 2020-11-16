@@ -310,7 +310,6 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   uint64_t input_buffer_lifetime_ordinal_ = 1;
   std::unique_ptr<SysmemBufferPool::Creator> input_buffer_collection_creator_;
   std::unique_ptr<SysmemBufferPool> input_buffer_collection_;
-  size_t num_input_buffers_ = 0;
   base::flat_map<size_t, InputDecoderPacket> in_flight_input_packets_;
 
   // Output buffers for |decoder_|.
@@ -515,9 +514,15 @@ bool FuchsiaVideoDecoder::CanReadWithoutStalling() const {
 }
 
 int FuchsiaVideoDecoder::GetMaxDecodeRequests() const {
-  // Add one extra request to be able to send new InputBuffer immediately after
-  // OnFreeInputPacket().
-  return num_input_buffers_ + 1;
+  if (!decryptor_) {
+    // Add one extra request to be able to send a new InputBuffer immediately
+    // after OnFreeInputPacket().
+    return input_writer_queue_.num_buffers() + 1;
+  }
+
+  // For encrypted streams we need enough decode requests to fill the
+  // decryptor's queue and all decoder buffers. Add one extra same as above.
+  return decryptor_->GetMaxDecryptRequests() + kNumInputBuffers + 1;
 }
 
 bool FuchsiaVideoDecoder::InitializeDecryptor(CdmContext* cdm_context) {
@@ -651,8 +656,6 @@ void FuchsiaVideoDecoder::OnWriterCreated(
     OnError();
     return;
   }
-
-  num_input_buffers_ = writer->num_buffers();
 
   input_writer_queue_.Start(
       std::move(writer),
@@ -1052,7 +1055,6 @@ void FuchsiaVideoDecoder::ReleaseInputBuffers() {
   input_writer_queue_.ResetBuffers();
   input_buffer_collection_creator_.reset();
   input_buffer_collection_.reset();
-  num_input_buffers_ = 0;
 
   // |in_flight_input_packets_| must be destroyed after
   // |input_writer_queue_.ResetBuffers()|. Otherwise |input_writer_queue_| may
