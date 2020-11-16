@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -107,22 +108,27 @@ BodyStreamBuffer* BodyStreamBuffer::Create(
     ScriptState* script_state,
     BytesConsumer* consumer,
     AbortSignal* signal,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob) {
   auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(
-      PassKey(), script_state, consumer, signal, std::move(side_data_blob));
+      PassKey(), script_state, consumer, signal, cached_metadata_handler,
+      std::move(side_data_blob));
   buffer->Init();
   return buffer;
 }
 
-BodyStreamBuffer::BodyStreamBuffer(PassKey,
-                                   ScriptState* script_state,
-                                   BytesConsumer* consumer,
-                                   AbortSignal* signal,
-                                   scoped_refptr<BlobDataHandle> side_data_blob)
+BodyStreamBuffer::BodyStreamBuffer(
+    PassKey,
+    ScriptState* script_state,
+    BytesConsumer* consumer,
+    AbortSignal* signal,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
+    scoped_refptr<BlobDataHandle> side_data_blob)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       consumer_(consumer),
       signal_(signal),
+      cached_metadata_handler_(cached_metadata_handler),
       side_data_blob_(std::move(side_data_blob)),
       made_from_readable_stream_(false) {}
 
@@ -153,13 +159,16 @@ void BodyStreamBuffer::Init() {
   OnStateChange();
 }
 
-BodyStreamBuffer::BodyStreamBuffer(ScriptState* script_state,
-                                   ReadableStream* stream,
-                                   scoped_refptr<BlobDataHandle> side_data_blob)
+BodyStreamBuffer::BodyStreamBuffer(
+    ScriptState* script_state,
+    ReadableStream* stream,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
+    scoped_refptr<BlobDataHandle> side_data_blob)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       stream_(stream),
       signal_(nullptr),
+      cached_metadata_handler_(cached_metadata_handler),
       side_data_blob_(std::move(side_data_blob)),
       made_from_readable_stream_(true) {
   DCHECK(stream_);
@@ -243,6 +252,7 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
   DCHECK(!IsStreamDisturbed());
   *branch1 = nullptr;
   *branch2 = nullptr;
+  auto* cached_metadata_handler = cached_metadata_handler_.Get();
   scoped_refptr<BlobDataHandle> side_data_blob = TakeSideDataBlob();
 
   if (made_from_readable_stream_) {
@@ -263,10 +273,10 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
       return;
     }
 
-    *branch1 = MakeGarbageCollected<BodyStreamBuffer>(script_state_, stream1,
-                                                      side_data_blob);
-    *branch2 = MakeGarbageCollected<BodyStreamBuffer>(script_state_, stream2,
-                                                      side_data_blob);
+    *branch1 = MakeGarbageCollected<BodyStreamBuffer>(
+        script_state_, stream1, cached_metadata_handler, side_data_blob);
+    *branch2 = MakeGarbageCollected<BodyStreamBuffer>(
+        script_state_, stream2, cached_metadata_handler, side_data_blob);
     return;
   }
   BytesConsumer* dest1 = nullptr;
@@ -278,10 +288,10 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
   }
   BytesConsumerTee(ExecutionContext::From(script_state_), handle, &dest1,
                    &dest2);
-  *branch1 =
-      BodyStreamBuffer::Create(script_state_, dest1, signal_, side_data_blob);
-  *branch2 =
-      BodyStreamBuffer::Create(script_state_, dest2, signal_, side_data_blob);
+  *branch1 = BodyStreamBuffer::Create(script_state_, dest1, signal_,
+                                      cached_metadata_handler, side_data_blob);
+  *branch2 = BodyStreamBuffer::Create(script_state_, dest2, signal_,
+                                      cached_metadata_handler, side_data_blob);
 }
 
 ScriptPromise BodyStreamBuffer::pull(ScriptState* script_state) {
@@ -360,6 +370,8 @@ bool BodyStreamBuffer::IsStreamDisturbed() const {
 void BodyStreamBuffer::CloseAndLockAndDisturb() {
   DCHECK(!stream_broken_);
 
+  cached_metadata_handler_ = nullptr;
+
   if (IsStreamReadable()) {
     // Note that the stream cannot be "draining", because it doesn't have
     // the internal buffer.
@@ -386,6 +398,7 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(consumer_);
   visitor->Trace(loader_);
   visitor->Trace(signal_);
+  visitor->Trace(cached_metadata_handler_);
   UnderlyingSourceBase::Trace(visitor);
 }
 

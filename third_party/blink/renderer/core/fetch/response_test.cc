@@ -101,7 +101,8 @@ BodyStreamBuffer* CreateHelloWorldBuffer(ScriptState* script_state) {
   src->Add(Command(Command::kData, "Hello, "));
   src->Add(Command(Command::kData, "world"));
   src->Add(Command(Command::kDone));
-  return BodyStreamBuffer::Create(script_state, src, nullptr);
+  return BodyStreamBuffer::Create(script_state, src, nullptr,
+                                  /*cached_metadata_handler=*/nullptr);
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneDefault) {
@@ -167,7 +168,8 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneError) {
   V8TestingScope scope;
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(),
-      BytesConsumer::CreateErrored(BytesConsumer::Error()), nullptr);
+      BytesConsumer::CreateErrored(BytesConsumer::Error()), nullptr,
+      /*cached_metadata_handler=*/nullptr);
   FetchResponseData* fetch_response_data =
       FetchResponseData::CreateWithBuffer(buffer);
   Vector<KURL> url_list;

@@ -269,10 +269,10 @@ void WorkerClassicScriptLoader::DidReceiveData(const char* data, unsigned len) {
   source_text_.Append(decoder_->Decode(data, len));
 }
 
-void WorkerClassicScriptLoader::DidReceiveCachedMetadata(const char* data,
-                                                         int size) {
-  cached_metadata_ = std::make_unique<Vector<uint8_t>>(size);
-  memcpy(cached_metadata_->data(), data, size);
+void WorkerClassicScriptLoader::DidReceiveCachedMetadata(
+    mojo_base::BigBuffer data) {
+  cached_metadata_ = std::make_unique<Vector<uint8_t>>(data.size());
+  memcpy(cached_metadata_->data(), data.data(), data.size());
 }
 
 void WorkerClassicScriptLoader::DidFinishLoading(uint64_t identifier) {

@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -230,6 +232,7 @@ class FetchManager::Loader final
   // ThreadableLoaderClient implementation.
   bool WillFollowRedirect(const KURL&, const ResourceResponse&) override;
   void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
+  void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidStartLoadingResponseBody(BytesConsumer&) override;
   void DidFinishLoading(uint64_t) override;
   void DidFail(const ResourceError&) override;
@@ -373,6 +376,7 @@ class FetchManager::Loader final
   Member<AbortSignal> signal_;
   Vector<KURL> url_list_;
   Member<ExecutionContext> execution_context_;
+  Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
 };
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
@@ -408,6 +412,7 @@ void FetchManager::Loader::Trace(Visitor* visitor) const {
   visitor->Trace(integrity_verifier_);
   visitor->Trace(signal_);
   visitor->Trace(execution_context_);
+  visitor->Trace(cached_metadata_handler_);
   ThreadableLoaderClient::Trace(visitor);
 }
 
@@ -534,9 +539,21 @@ void FetchManager::Loader::DidReceiveResponse(
     }
   }
 
+  if (response.MimeType() == "application/wasm" &&
+      response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
+    // We create a ScriptCachedMetadataHandler for WASM modules.
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandler>(
+            WTF::TextEncoding(),
+            CachedMetadataSender::Create(
+                response, mojom::blink::CodeCacheType::kWebAssembly,
+                execution_context_->GetSecurityOrigin()));
+  }
+
   place_holder_body_ = MakeGarbageCollected<PlaceHolderBytesConsumer>();
-  FetchResponseData* response_data = FetchResponseData::CreateWithBuffer(
-      BodyStreamBuffer::Create(script_state, place_holder_body_, signal_));
+  FetchResponseData* response_data =
+      FetchResponseData::CreateWithBuffer(BodyStreamBuffer::Create(
+          script_state, place_holder_body_, signal_, cached_metadata_handler_));
 
   response_data->InitFromResourceResponse(
       url_list_, fetch_request_data_->Method(),
@@ -587,6 +604,12 @@ void FetchManager::Loader::DidReceiveResponse(
     integrity_verifier_ = MakeGarbageCollected<SRIVerifier>(
         underlying, verified, r, this, fetch_request_data_->Integrity(),
         response.CurrentRequestUrl(), r->GetResponse()->GetType());
+  }
+}
+
+void FetchManager::Loader::DidReceiveCachedMetadata(mojo_base::BigBuffer data) {
+  if (cached_metadata_handler_) {
+    cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
   }
 }
 

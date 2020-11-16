@@ -153,7 +153,8 @@ void FetchEvent::OnNavigationPreloadResponse(
           ? FetchResponseData::CreateWithBuffer(BodyStreamBuffer::Create(
                 script_state, bytes_consumer,
                 MakeGarbageCollected<AbortSignal>(
-                    ExecutionContext::From(script_state))))
+                    ExecutionContext::From(script_state)),
+                /*cached_metadata_handler=*/nullptr))
           : FetchResponseData::Create();
   Vector<KURL> url_list(1);
   url_list[0] = preload_response_->CurrentRequestUrl();

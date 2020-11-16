@@ -36,8 +36,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client_walker.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
-#include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -233,11 +231,6 @@ void RawResource::WillNotFollowRedirect() {
     c->RedirectBlocked();
 }
 
-SingleCachedMetadataHandler* RawResource::ScriptCacheHandler() {
-  DCHECK_EQ(ResourceType::kRaw, GetType());
-  return static_cast<SingleCachedMetadataHandler*>(Resource::CacheHandler());
-}
-
 scoped_refptr<BlobDataHandle> RawResource::DownloadedBlob() const {
   return downloaded_blob_;
 }
@@ -300,33 +293,15 @@ void RawResource::ResponseBodyReceived(
   client->ResponseBodyReceived(this, body_loader.DrainAsBytesConsumer());
 }
 
-CachedMetadataHandler* RawResource::CreateCachedMetadataHandler(
-    std::unique_ptr<CachedMetadataSender> send_callback) {
-  if (GetType() == ResourceType::kRaw) {
-    // This is a resource of indeterminate type, e.g. a fetched WebAssembly
-    // module; create a cache handler that can store a single metadata entry.
-    return MakeGarbageCollected<ScriptCachedMetadataHandler>(
-        Encoding(), std::move(send_callback));
-  }
-  return Resource::CreateCachedMetadataHandler(std::move(send_callback));
-}
-
 void RawResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   // Resource ignores the cached metadata.
   Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer());
 
-  // Notify clients before potentially transferring ownership of the buffer.
   ResourceClientWalker<RawResourceClient> w(Clients());
-  while (RawResourceClient* c = w.Next()) {
-    c->SetSerializedCachedMetadata(this, data.data(), data.size());
-  }
-
-  if (GetType() == ResourceType::kRaw) {
-    ScriptCachedMetadataHandler* cache_handler =
-        static_cast<ScriptCachedMetadataHandler*>(Resource::CacheHandler());
-    if (cache_handler) {
-      cache_handler->SetSerializedCachedMetadata(std::move(data));
-    }
+  // We rely on the fact that RawResource cannot have multiple clients.
+  CHECK_LE(Clients().size(), 1u);
+  if (RawResourceClient* c = w.Next()) {
+    c->CachedMetadataReceived(this, std::move(data));
   }
 }
 

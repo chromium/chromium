@@ -135,7 +135,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void DidReceiveResponse(uint64_t /*identifier*/,
                           const ResourceResponse&) override;
   void DidReceiveData(const char* data, unsigned data_length) override;
-  void DidReceiveCachedMetadata(const char*, int /*dataLength*/) override;
+  void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidFinishLoading(uint64_t identifier) override;
   void DidFail(const ResourceError&) override;
   void DidFailRedirectCheck() override;

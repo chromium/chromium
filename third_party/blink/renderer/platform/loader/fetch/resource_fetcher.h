@@ -173,6 +173,8 @@ class PLATFORM_EXPORT ResourceFetcher
                                             base::OnceCallback<void(int)>);
 
   using DocumentResourceMap = HeapHashMap<String, WeakMember<Resource>>;
+  // Note: This function is defined for devtools. Do not use this function in
+  // non-inspector/non-tent-only contexts.
   const DocumentResourceMap& AllResources() const {
     return cached_resources_map_;
   }

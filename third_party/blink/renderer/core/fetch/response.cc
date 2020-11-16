@@ -89,7 +89,8 @@ FetchResponseData* CreateFetchResponseDataFromFetchAPIResponse(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(
             ExecutionContext::From(script_state), fetch_api_response.blob),
-        nullptr /* AbortSignal */, fetch_api_response.side_data_blob));
+        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr,
+        fetch_api_response.side_data_blob));
   }
 
   // Filter the response according to |fetch_api_response|'s ResponseType.
@@ -152,7 +153,7 @@ Response* Response::Create(ScriptState* script_state,
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(execution_context,
                                                 blob->GetBlobDataHandle()),
-        nullptr /* AbortSignal */);
+        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     content_type = blob->type();
   } else if (body->IsArrayBuffer()) {
     // Avoid calling into V8 from the following constructor parameters, which
@@ -166,7 +167,7 @@ Response* Response::Create(ScriptState* script_state,
       body_buffer = BodyStreamBuffer::Create(
           script_state,
           MakeGarbageCollected<FormDataBytesConsumer>(array_buffer),
-          nullptr /* AbortSignal */);
+          nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     }
   } else if (body->IsArrayBufferView()) {
     // Avoid calling into V8 from the following constructor parameters, which
@@ -181,7 +182,7 @@ Response* Response::Create(ScriptState* script_state,
       body_buffer = BodyStreamBuffer::Create(
           script_state,
           MakeGarbageCollected<FormDataBytesConsumer>(array_buffer_view),
-          nullptr /* AbortSignal */);
+          nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     }
   } else if (V8FormData::HasInstance(body, isolate)) {
     scoped_refptr<EncodedFormData> form_data =
@@ -190,25 +191,26 @@ Response* Response::Create(ScriptState* script_state,
     // FormDataEncoder::generateUniqueBoundaryString.
     content_type = AtomicString("multipart/form-data; boundary=") +
                    form_data->Boundary().data();
-    body_buffer =
-        BodyStreamBuffer::Create(script_state,
-                                 MakeGarbageCollected<FormDataBytesConsumer>(
-                                     execution_context, std::move(form_data)),
-                                 nullptr /* AbortSignal */);
+    body_buffer = BodyStreamBuffer::Create(
+        script_state,
+        MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
+                                                    std::move(form_data)),
+        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (V8URLSearchParams::HasInstance(body, isolate)) {
     scoped_refptr<EncodedFormData> form_data =
         V8URLSearchParams::ToImpl(body.As<v8::Object>())->ToEncodedFormData();
-    body_buffer =
-        BodyStreamBuffer::Create(script_state,
-                                 MakeGarbageCollected<FormDataBytesConsumer>(
-                                     execution_context, std::move(form_data)),
-                                 nullptr /* AbortSignal */);
+    body_buffer = BodyStreamBuffer::Create(
+        script_state,
+        MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
+                                                    std::move(form_data)),
+        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     content_type = "application/x-www-form-urlencoded;charset=UTF-8";
   } else if (V8ReadableStream::HasInstance(body, isolate)) {
     UseCounter::Count(execution_context,
                       WebFeature::kFetchResponseConstructionWithStream);
     body_buffer = MakeGarbageCollected<BodyStreamBuffer>(
-        script_state, V8ReadableStream::ToImpl(body.As<v8::Object>()));
+        script_state, V8ReadableStream::ToImpl(body.As<v8::Object>()),
+        /*cached_metadata_handler=*/nullptr);
   } else {
     String string = NativeValueTraits<IDLUSVString>::NativeValue(
         isolate, body, exception_state);
@@ -216,7 +218,7 @@ Response* Response::Create(ScriptState* script_state,
       return nullptr;
     body_buffer = BodyStreamBuffer::Create(
         script_state, MakeGarbageCollected<FormDataBytesConsumer>(string),
-        nullptr /* AbortSignal */);
+        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     content_type = "text/plain;charset=UTF-8";
   }
   return Create(script_state, body_buffer, content_type, init, exception_state);

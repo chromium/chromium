@@ -1212,7 +1212,8 @@ void Cache::PutImpl(ScriptPromiseResolver* resolver,
     BytesConsumer* consumer =
         MakeGarbageCollected<BlobBytesConsumer>(context, blob_list[i]);
     BodyStreamBuffer* buffer =
-        BodyStreamBuffer::Create(script_state, consumer, /*signal=*/nullptr);
+        BodyStreamBuffer::Create(script_state, consumer, /*signal=*/nullptr,
+                                 /*cached_metadata_handler=*/nullptr);
     FetchDataLoader* loader = FetchDataLoader::CreateLoaderAsArrayBuffer();
     buffer->StartLoading(loader,
                          MakeGarbageCollected<CodeCacheHandleCallbackForPut>(

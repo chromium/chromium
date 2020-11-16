@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -59,7 +60,7 @@ class CORE_EXPORT ThreadableLoaderClient : public GarbageCollectedMixin {
                                   const ResourceResponse&) {}
   virtual void DidStartLoadingResponseBody(BytesConsumer&) {}
   virtual void DidReceiveData(const char*, unsigned /*dataLength*/) {}
-  virtual void DidReceiveCachedMetadata(const char*, int /*dataLength*/) {}
+  virtual void DidReceiveCachedMetadata(mojo_base::BigBuffer) {}
   virtual void DidFinishLoading(uint64_t /*identifier*/) {}
   virtual void DidFail(const ResourceError&) {}
   virtual void DidFailRedirectCheck() {}

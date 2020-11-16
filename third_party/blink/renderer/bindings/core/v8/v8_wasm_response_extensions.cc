@@ -23,8 +23,6 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -207,39 +205,6 @@ class ExceptionToAbortStreamingScope {
   DISALLOW_COPY_AND_ASSIGN(ExceptionToAbortStreamingScope);
 };
 
-RawResource* GetRawResource(ScriptState* script_state,
-                            const String& url_string,
-                            Response* response) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (!execution_context)
-    return nullptr;
-  ResourceFetcher* fetcher = execution_context->Fetcher();
-  if (!fetcher)
-    return nullptr;
-  KURL url(url_string);
-  if (!url.IsValid())
-    return nullptr;
-  Resource* resource = fetcher->CachedResource(url);
-  if (!resource)
-    return nullptr;
-
-  // Make sure the resource matches the |response|. To check that, we make sure
-  // the response times match, and the response sources match.
-  const ResourceResponse& resource_response = resource->GetResponse();
-  const FetchResponseData* fetch_response_data =
-      response->GetResponse()->InternalResponse();
-  if (resource_response.ResponseTime() != fetch_response_data->ResponseTime())
-    return nullptr;
-  bool from_service_worker = fetch_response_data->ResponseSource() ==
-                             network::mojom::FetchResponseSource::kUnspecified;
-  if (resource_response.WasFetchedViaServiceWorker() != from_service_worker)
-    return nullptr;
-
-  // Wasm modules should be fetched as raw resources.
-  DCHECK_EQ(ResourceType::kRaw, resource->GetType());
-  return ToRawResource(resource);
-}
-
 class WasmStreamingClient : public v8::WasmStreaming::Client {
  public:
   WasmStreamingClient(const String& response_url,
@@ -362,35 +327,32 @@ void StreamFromResponseCallback(
   String url = response->url();
   const std::string& url_utf8 = url.Utf8();
   streaming->SetUrl(url_utf8.c_str(), url_utf8.size());
-  RawResource* resource = GetRawResource(script_state, url, response);
-  if (resource) {
-    SingleCachedMetadataHandler* cache_handler = resource->ScriptCacheHandler();
-    if (cache_handler) {
-      auto client = std::make_shared<WasmStreamingClient>(
-          url, resource->GetResponse().ResponseTime());
-      streaming->SetClient(client);
-      scoped_refptr<CachedMetadata> cached_module =
-          cache_handler->GetCachedMetadata(kWasmModuleTag);
-      if (cached_module) {
-        TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                             "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
-                             "url", url.Utf8(), "consumedCacheSize",
-                             cached_module->size());
-        bool is_valid = streaming->SetCompiledModuleBytes(
-            reinterpret_cast<const uint8_t*>(cached_module->Data()),
-            cached_module->size());
-        if (is_valid) {
-          // Keep the buffer alive until V8 is ready to deserialize it.
-          // TODO(bbudge) V8 should notify us if deserialization fails, so we
-          // can release the data and reset the cache.
-          client->SetBuffer(cached_module);
-        } else {
-          TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                               "v8.wasm.moduleCacheInvalid",
-                               TRACE_EVENT_SCOPE_THREAD);
-          cache_handler->ClearCachedMetadata(
-              CachedMetadataHandler::kClearPersistentStorage);
-        }
+  if (auto* cache_handler =
+          response->BodyBuffer()->GetCachedMetadataHandler()) {
+    auto client = std::make_shared<WasmStreamingClient>(
+        url, response->GetResponse()->InternalResponse()->ResponseTime());
+    streaming->SetClient(client);
+    scoped_refptr<CachedMetadata> cached_module =
+        cache_handler->GetCachedMetadata(kWasmModuleTag);
+    if (cached_module) {
+      TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                           "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
+                           "url", url.Utf8(), "consumedCacheSize",
+                           cached_module->size());
+      bool is_valid = streaming->SetCompiledModuleBytes(
+          reinterpret_cast<const uint8_t*>(cached_module->Data()),
+          cached_module->size());
+      if (is_valid) {
+        // Keep the buffer alive until V8 is ready to deserialize it.
+        // TODO(bbudge) V8 should notify us if deserialization fails, so we
+        // can release the data and reset the cache.
+        client->SetBuffer(cached_module);
+      } else {
+        TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                             "v8.wasm.moduleCacheInvalid",
+                             TRACE_EVENT_SCOPE_THREAD);
+        cache_handler->ClearCachedMetadata(
+            CachedMetadataHandler::kClearPersistentStorage);
       }
     }
   }

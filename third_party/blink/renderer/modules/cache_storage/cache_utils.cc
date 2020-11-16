@@ -29,7 +29,8 @@ Response* CreateEagerResponse(ScriptState* script_state,
       MakeGarbageCollected<DataPipeBytesConsumer>(
           context->GetTaskRunner(TaskType::kNetworking),
           std::move(eager_response->pipe), &completion_notifier),
-      nullptr /* AbortSignal */, std::move(response->side_data_blob)));
+      nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr,
+      std::move(response->side_data_blob)));
 
   // Create a BlobReaderClient in the provided list.  This will track the
   // completion of the eagerly read blob and propagate it to the given

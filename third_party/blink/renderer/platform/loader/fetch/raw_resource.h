@@ -39,7 +39,6 @@ class BufferingBytesConsumer;
 class FetchParameters;
 class RawResourceClient;
 class ResourceFetcher;
-class SingleCachedMetadataHandler;
 
 class PLATFORM_EXPORT RawResource final : public Resource {
  public:
@@ -87,18 +86,9 @@ class PLATFORM_EXPORT RawResource final : public Resource {
 
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
 
-  // Used for code caching of fetched code resources. Returns a cache handler
-  // which can only store a single cache metadata entry. This is valid only if
-  // type is kRaw.
-  SingleCachedMetadataHandler* ScriptCacheHandler();
-
   scoped_refptr<BlobDataHandle> DownloadedBlob() const;
 
   void Trace(Visitor* visitor) const override;
-
- protected:
-  CachedMetadataHandler* CreateCachedMetadataHandler(
-      std::unique_ptr<CachedMetadataSender> send_callback) override;
 
  private:
   class RawResourceFactory : public NonTextResourceFactory {
@@ -184,7 +174,7 @@ class PLATFORM_EXPORT RawResourceClient : public ResourceClient {
                         uint64_t /* totalBytesToBeSent */) {}
   virtual void ResponseBodyReceived(Resource*, BytesConsumer&) {}
   virtual void ResponseReceived(Resource*, const ResourceResponse&) {}
-  virtual void SetSerializedCachedMetadata(Resource*, const uint8_t*, size_t) {}
+  virtual void CachedMetadataReceived(Resource*, mojo_base::BigBuffer) {}
   virtual bool RedirectReceived(Resource*,
                                 const ResourceRequest&,
                                 const ResourceResponse&) {

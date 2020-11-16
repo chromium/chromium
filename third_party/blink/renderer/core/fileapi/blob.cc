@@ -219,7 +219,7 @@ ReadableStream* Blob::stream(ScriptState* script_state) const {
       script_state,
       MakeGarbageCollected<BlobBytesConsumer>(
           ExecutionContext::From(script_state), blob_data_handle_),
-      nullptr);
+      /*signal=*/nullptr, /*cached_metadata_handler=*/nullptr);
 
   return body_buffer->Stream();
 }

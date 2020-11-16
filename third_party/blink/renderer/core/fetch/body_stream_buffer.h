@@ -27,6 +27,7 @@ class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
 class ScriptState;
+class ScriptCachedMetadataHandler;
 
 class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                                            public BytesConsumer::Client {
@@ -42,6 +43,7 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
       ScriptState*,
       BytesConsumer* consumer,
       AbortSignal* signal,
+      ScriptCachedMetadataHandler* cached_meatadata_handler,
       scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   // Create() should be used instead of calling this constructor directly.
@@ -49,10 +51,12 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                    ScriptState*,
                    BytesConsumer* consumer,
                    AbortSignal* signal,
+                   ScriptCachedMetadataHandler* cached_meatadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob);
 
   BodyStreamBuffer(ScriptState*,
                    ReadableStream* stream,
+                   ScriptCachedMetadataHandler* cached_meatadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   ReadableStream* Stream() { return stream_; }
@@ -93,6 +97,15 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
 
   bool IsAborted();
 
+  // Returns the ScriptCachedMetadataHandler associated with the contents of
+  // this stream. This can return nullptr. Streams' ownership model applies, so
+  // this function is expected to be called by the owner of this stream.
+  ScriptCachedMetadataHandler* GetCachedMetadataHandler() {
+    DCHECK(!IsStreamLocked());
+    DCHECK(!IsStreamDisturbed());
+    return cached_metadata_handler_;
+  }
+
   // Take the blob representing any side data associated with this body
   // stream.  This must be called before the body is drained or begins
   // loading.
@@ -131,6 +144,8 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   // We need this to ensure that we detect that abort has been signalled
   // correctly.
   Member<AbortSignal> signal_;
+  // CachedMetadata handler used for loading compiled WASM code.
+  Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
   // Additional side data associated with this body stream.  It should only be
   // retained until the body is drained or starts loading.  Client code, such
   // as service workers, can call TakeSideDataBlob() prior to consumption.

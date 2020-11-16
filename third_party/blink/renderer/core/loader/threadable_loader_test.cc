@@ -61,7 +61,7 @@ class MockThreadableLoaderClient final
   MOCK_METHOD2(DidSendData, void(uint64_t, uint64_t));
   MOCK_METHOD2(DidReceiveResponse, void(uint64_t, const ResourceResponse&));
   MOCK_METHOD2(DidReceiveData, void(const char*, unsigned));
-  MOCK_METHOD2(DidReceiveCachedMetadata, void(const char*, int));
+  MOCK_METHOD1(DidReceiveCachedMetadata, void(mojo_base::BigBuffer));
   MOCK_METHOD1(DidFinishLoading, void(uint64_t));
   MOCK_METHOD1(DidFail, void(const ResourceError&));
   MOCK_METHOD0(DidFailRedirectCheck, void());
