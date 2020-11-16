@@ -154,9 +154,9 @@ bool IsSafeBrowsingEnabled(const PrefService& prefs) {
 bool IsEnhancedProtectionEnabled(const PrefService& prefs) {
   // SafeBrowsingEnabled is checked too due to devices being out
   // of sync or not on a version that includes SafeBrowsingEnhanced pref.
-  return prefs.GetBoolean(prefs::kSafeBrowsingEnhanced) &&
-         IsSafeBrowsingEnabled(prefs) &&
-         base::FeatureList::IsEnabled(kEnhancedProtection);
+  return base::FeatureList::IsEnabled(kEnhancedProtection) &&
+         prefs.GetBoolean(prefs::kSafeBrowsingEnhanced) &&
+         IsSafeBrowsingEnabled(prefs);
 }
 
 bool ExtendedReportingPrefExists(const PrefService& prefs) {
