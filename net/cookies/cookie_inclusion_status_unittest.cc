@@ -211,4 +211,44 @@ TEST(CookieInclusionStatusTest, HasDowngradeWarning) {
     EXPECT_EQ(warning, reason);
   }
 }
+
+TEST(CookieInclusionStatusTest, ShouldRecordDowngradeMetrics) {
+  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting({})
+                  .ShouldRecordDowngradeMetrics());
+
+  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {
+                      CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
+                  })
+                  .ShouldRecordDowngradeMetrics());
+
+  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {
+                      CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+                  })
+                  .ShouldRecordDowngradeMetrics());
+
+  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {
+                      CookieInclusionStatus::
+                          EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+                  })
+                  .ShouldRecordDowngradeMetrics());
+
+  // Note: the following cases cannot occur under normal circumstances.
+  EXPECT_TRUE(CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {
+                      CookieInclusionStatus::
+                          EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+                      CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+                  })
+                  .ShouldRecordDowngradeMetrics());
+  EXPECT_FALSE(CookieInclusionStatus::MakeFromReasonsForTesting(
+                   {
+                       CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE,
+                       CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+                   })
+                   .ShouldRecordDowngradeMetrics());
+}
+
 }  // namespace net

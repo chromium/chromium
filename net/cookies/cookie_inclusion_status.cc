@@ -21,8 +21,7 @@ uint32_t GetWarningBitmask(CookieInclusionStatus::WarningReason reason) {
 
 }  // namespace
 
-CookieInclusionStatus::CookieInclusionStatus()
-    : exclusion_reasons_(0u), warning_reasons_(0u) {}
+CookieInclusionStatus::CookieInclusionStatus() = default;
 
 CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason)
     : exclusion_reasons_(GetExclusionBitmask(reason)) {}
@@ -67,11 +66,20 @@ void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
   exclusion_reasons_ &= ~(GetExclusionBitmask(reason));
 }
 
+uint32_t CookieInclusionStatus::ExclusionReasonsWithout(
+    const std::vector<ExclusionReason>& reasons) const {
+  uint32_t mask = 0u;
+  for (const ExclusionReason reason : reasons) {
+    mask |= GetExclusionBitmask(reason);
+  }
+  return exclusion_reasons_ & ~mask;
+}
+
 void CookieInclusionStatus::MaybeClearSameSiteWarning() {
-  uint32_t samesite_reasons_mask =
-      GetExclusionBitmask(EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX) |
-      GetExclusionBitmask(EXCLUDE_SAMESITE_NONE_INSECURE);
-  if (exclusion_reasons_ & ~samesite_reasons_mask) {
+  if (ExclusionReasonsWithout({
+          EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+          EXCLUDE_SAMESITE_NONE_INSECURE,
+      }) != 0u) {
     RemoveWarningReason(
         CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
     RemoveWarningReason(CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
@@ -79,11 +87,7 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
         CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
   }
 
-  uint32_t context_reasons_mask =
-      GetExclusionBitmask(EXCLUDE_SAMESITE_STRICT) |
-      GetExclusionBitmask(EXCLUDE_SAMESITE_LAX) |
-      GetExclusionBitmask(EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
-  if (exclusion_reasons_ & ~context_reasons_mask) {
+  if (!ShouldRecordDowngradeMetrics()) {
     RemoveWarningReason(
         CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
     RemoveWarningReason(
@@ -98,12 +102,11 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
 }
 
 bool CookieInclusionStatus::ShouldRecordDowngradeMetrics() const {
-  uint32_t context_reasons_mask =
-      GetExclusionBitmask(EXCLUDE_SAMESITE_STRICT) |
-      GetExclusionBitmask(EXCLUDE_SAMESITE_LAX) |
-      GetExclusionBitmask(EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
-
-  return (exclusion_reasons_ & ~context_reasons_mask) == 0u;
+  return ExclusionReasonsWithout({
+             EXCLUDE_SAMESITE_STRICT,
+             EXCLUDE_SAMESITE_LAX,
+             EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+         }) == 0u;
 }
 
 bool CookieInclusionStatus::ShouldWarn() const {

@@ -287,6 +287,10 @@ class NET_EXPORT CookieInclusionStatus {
       std::vector<WarningReason> warnings = std::vector<WarningReason>());
 
  private:
+  // Returns the `exclusion_reasons_` with the given `reasons` unset.
+  uint32_t ExclusionReasonsWithout(
+      const std::vector<ExclusionReason>& reasons) const;
+
   // A bit vector of the applicable exclusion reasons.
   uint32_t exclusion_reasons_ = 0u;
 
