@@ -48,6 +48,7 @@ import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentErrorReason;
+import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -80,7 +81,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     private final JourneyLogger mJourneyLogger;
 
     private final PaymentUiService mPaymentUiService;
-    private final PaymentOptions mPaymentOptions;
     private boolean mWasRetryCalled;
 
     private boolean mHasClosed;
@@ -132,9 +132,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         mDelegate = delegate;
         mWebContents = paymentRequestService.getWebContents();
         mJourneyLogger = paymentRequestService.getJourneyLogger();
-
-        mPaymentOptions = paymentRequestService.getPaymentOptions();
-        assert mPaymentOptions != null;
 
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
@@ -218,13 +215,14 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {
+    public void onQueryForQuotaCreated(
+            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {
         if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
             PaymentMethodData paymentMethodData = new PaymentMethodData();
             paymentMethodData.stringifiedData =
-                    PaymentOptionsUtils.stringifyRequestedInformation(mPaymentOptions);
+                    PaymentOptionsUtils.stringifyRequestedInformation(paymentOptions);
             queryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
     }
@@ -276,17 +274,20 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean showAppSelector(boolean isShowWaitingForUpdatedDetails) {
+    public boolean showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+            PaymentOptions paymentOptions) {
+        assert mPaymentRequestService
+                != null : "This method is only supposed to be called by mPaymentRequestService.";
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
-                    mPaymentUiService.getPaymentMethodsSection().getItems(), mSpec.getRawTotal());
+                    mPaymentUiService.getPaymentMethodsSection().getItems(), total);
         }
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
         mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(
                 mPaymentRequestService.isUserGestureShow(), mURLPaymentMethodIdentifiersSupported,
-                mDelegate.skipUiForBasicCard(), mPaymentOptions);
+                mDelegate.skipUiForBasicCard(), paymentOptions);
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (quitShowIfActivityNotFound(chromeActivity)
                 || !buildUI(chromeActivity, isShowWaitingForUpdatedDetails)) {
@@ -577,6 +578,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     @Override
     public boolean invokePaymentApp(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
+        if (mSpec == null || mSpec.isDestroyed()) return false;
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
                 ? mPaymentUiService.getContactSection().getSelectedItem()
                 : null;
@@ -589,7 +591,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         }
         PaymentResponseHelperInterface paymentResponseHelper = new ChromePaymentResponseHelper(
                 selectedShippingAddress, selectedShippingOption, selectedContact,
-                selectedPaymentApp, mPaymentOptions, mSkipToGPayHelper != null);
+                selectedPaymentApp, mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         return !selectedPaymentApp.isAutofillInstrument();
     }

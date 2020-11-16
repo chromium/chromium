@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -81,8 +82,10 @@ public interface BrowserPaymentRequest {
     /**
      * Called when queryForQuota is created.
      * @param queryForQuota The created queryForQuota, which could be modified in place.
+     * @param paymentOptions The payment options specified by the merchant.
      */
-    default void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {}
+    default void onQueryForQuotaCreated(
+            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {}
 
     /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
@@ -123,11 +126,13 @@ public interface BrowserPaymentRequest {
 
     /**
      * Shows the payment apps selector.
-     * @return Whether the showing is successful.
      * @param isShowWaitingForUpdatedDetails Whether {@link PaymentRequest#show} is waiting for the
-     *         updated details.
+     * @param total The total amount specified in the payment request.
+     * @param paymentOptions The payment options specified in the payment request.
+     * @return Whether the showing is successful.
      */
-    default boolean showAppSelector(boolean isShowWaitingForUpdatedDetails) {
+    default boolean showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+            PaymentOptions paymentOptions) {
         return false;
     }
 

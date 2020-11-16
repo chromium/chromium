@@ -500,7 +500,7 @@ public class PaymentRequestService
         methodData = Collections.unmodifiableMap(methodData);
 
         mQueryForQuota = new HashMap<>(methodData);
-        mBrowserPaymentRequest.onQueryForQuotaCreated(mQueryForQuota);
+        mBrowserPaymentRequest.onQueryForQuotaCreated(mQueryForQuota, mPaymentOptions);
 
         if (!PaymentValidator.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -614,6 +614,9 @@ public class PaymentRequestService
     @Override
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
         if (mBrowserPaymentRequest == null) return;
+        assert mSpec != null;
+        assert !mSpec.isDestroyed() : "mSpec is destroyed only after close()";
+
         mIsFinishedQueryingPaymentApps = true;
 
         if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
@@ -634,7 +637,8 @@ public class PaymentRequestService
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
         if (isCurrentPaymentRequestShowing()
-                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails)) {
+                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
+                        mSpec.getRawTotal(), mSpec.getPaymentOptions())) {
             return;
         }
 
@@ -868,6 +872,9 @@ public class PaymentRequestService
      */
     /* package */ void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
         if (mBrowserPaymentRequest == null) return;
+        assert mSpec != null;
+        assert !mSpec.isDestroyed() : "mSpec is destroyed only after close().";
+
         if (mBrowserPaymentRequest.isShowingUi()) {
             // Can be triggered only by a compromised renderer. In normal operation, calling show()
             // twice on the same instance of PaymentRequest in JavaScript is rejected at the
@@ -900,7 +907,8 @@ public class PaymentRequestService
             return;
         }
         if (isFinishedQueryingPaymentApps()
-                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails)) {
+                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
+                        mSpec.getRawTotal(), mSpec.getPaymentOptions())) {
             return;
         }
 
