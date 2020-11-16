@@ -285,6 +285,33 @@ scoped_refptr<VideoFrame> ConvertVideoFrame(const VideoFrame* src_frame,
   return dst_frame;
 }
 
+scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
+                                          const gfx::Size& dst_resolution) {
+  if (src_frame->format() != PIXEL_FORMAT_NV12) {
+    LOG(ERROR) << src_frame->format() << " is not supported";
+    return nullptr;
+  }
+  auto scaled_frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_NV12, dst_resolution, gfx::Rect(dst_resolution),
+      dst_resolution, src_frame->timestamp());
+  const int fail_scaling = libyuv::NV12Scale(
+      src_frame->visible_data(VideoFrame::kYPlane),
+      src_frame->stride(VideoFrame::kYPlane),
+      src_frame->visible_data(VideoFrame::kUVPlane),
+      src_frame->stride(VideoFrame::kUVPlane),
+      src_frame->visible_rect().width(), src_frame->visible_rect().height(),
+      scaled_frame->visible_data(VideoFrame::kYPlane),
+      scaled_frame->stride(VideoFrame::kYPlane),
+      scaled_frame->visible_data(VideoFrame::kUVPlane),
+      scaled_frame->stride(VideoFrame::kUVPlane), dst_resolution.width(),
+      dst_resolution.height(), libyuv::FilterMode::kFilterBilinear);
+  if (fail_scaling) {
+    LOG(ERROR) << "Failed scaling the source frame";
+    return nullptr;
+  }
+  return scaled_frame;
+}
+
 scoped_refptr<VideoFrame> CloneVideoFrame(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const src_frame,

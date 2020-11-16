@@ -70,6 +70,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     size_t num_temporal_layers,
     uint32_t bitrate)
     : output_profile(output_profile),
+      output_resolution(video->Resolution()),
       num_temporal_layers(num_temporal_layers),
       bitrate(bitrate),
       framerate(video->FrameRate()),
@@ -267,11 +268,22 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   ASSERT_GT(output_buffer_size, 0UL);
   DVLOGF(4);
 
+  gfx::Size coded_size = input_coded_size;
+  if (video_->Resolution() != encoder_client_config_.output_resolution) {
+    // Scaling case. Scaling is currently only supported when using Dmabufs.
+    EXPECT_EQ(encoder_client_config_.input_storage_type,
+              VideoEncodeAccelerator::Config::StorageType::kDmabuf);
+    coded_size = video_->Resolution();
+  }
+
   // TODO(crbug.com/1045825): Add support for videos with a visible rectangle
   // not starting at (0,0).
+  // Follow the behavior of the chrome capture stack; |natural_size| is the
+  // dimension to be encoded.
   aligned_data_helper_ = std::make_unique<AlignedDataHelper>(
-      video_->Data(), video_->NumFrames(), video_->PixelFormat(),
-      gfx::Rect(video_->Resolution()), input_coded_size,
+      video_->Data(), video_->NumFrames(), video_->PixelFormat(), coded_size,
+      /*visible_rect=*/gfx::Rect(video_->Resolution()),
+      /*natural_size=*/encoder_client_config_.output_resolution,
       encoder_client_config_.input_storage_type ==
               VideoEncodeAccelerator::Config::StorageType::kDmabuf
           ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
@@ -409,7 +421,7 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
   video_ = video;
 
   const VideoEncodeAccelerator::Config config(
-      video_->PixelFormat(), video_->Resolution(),
+      video_->PixelFormat(), encoder_client_config_.output_resolution,
       encoder_client_config_.output_profile, encoder_client_config_.bitrate,
       encoder_client_config_.framerate, base::nullopt /* gop_length */,
       base::nullopt /* h264_output_level*/, false /* is_constrained_h264 */,

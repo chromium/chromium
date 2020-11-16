@@ -126,7 +126,7 @@ class VideoEncoderTest : public ::testing::Test {
       Video* video,
       const VideoEncoderClientConfig& config) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
-    const gfx::Rect visible_rect(video->Resolution());
+    const gfx::Rect visible_rect(config.output_resolution);
     const VideoCodec codec =
         VideoCodecProfileToVideoCodec(config.output_profile);
     if (g_env->SaveOutputBitstream()) {
@@ -183,7 +183,7 @@ class VideoEncoderTest : public ::testing::Test {
 
     VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
         base::BindRepeating(&VideoEncoderTest::GetModelFrame,
-                            base::Unretained(this));
+                            base::Unretained(this), visible_rect);
 
     // Attach a video frame writer to store individual frames to disk if
     // requested.
@@ -212,15 +212,20 @@ class VideoEncoderTest : public ::testing::Test {
     return bitstream_processors;
   }
 
-  scoped_refptr<const VideoFrame> GetModelFrame(size_t frame_index) {
+  scoped_refptr<const VideoFrame> GetModelFrame(const gfx::Rect& visible_rect,
+                                                size_t frame_index) {
     LOG_ASSERT(raw_data_helper_);
-    return raw_data_helper_->GetFrame(frame_index %
-                                      g_env->Video()->NumFrames());
+    auto frame =
+        raw_data_helper_->GetFrame(frame_index % g_env->Video()->NumFrames());
+    if (!frame)
+      return nullptr;
+    if (visible_rect.size() == frame->visible_rect().size())
+      return frame;
+    return ScaleVideoFrame(frame.get(), visible_rect.size());
   }
 
   std::unique_ptr<RawDataHelper> raw_data_helper_;
 };
-
 }  // namespace
 
 // TODO(dstaessens): Add more test scenarios:
@@ -393,6 +398,42 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 
   auto encoder = CreateVideoEncoder(nv12_video.get(), config);
 
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_video->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
+// TODO(hiroh): Enable this test after the test dashboard becomes more green.
+// Downscaling is required in VideoEncodeAccelerator when zero-copy video
+// capture is enabled. One example is simulcast, camera produces 360p VideoFrame
+// and there are two VideoEncodeAccelerator for 360p and 180p. VideoEncoder for
+// 180p is fed 360p and thus has to perform the scaling from 360p to 180p.
+TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
+  constexpr gfx::Size kMinOutputResolution(240, 180);
+  const gfx::Size output_resolution =
+      gfx::Size(g_env->Video()->Resolution().width() / 2,
+                g_env->Video()->Resolution().height() / 2);
+  if (!gfx::Rect(output_resolution).Contains(gfx::Rect(kMinOutputResolution))) {
+    GTEST_SKIP() << "Skip test if video resolution is too small, "
+                 << "output_resolution=" << output_resolution.ToString()
+                 << ", minimum output resolution="
+                 << kMinOutputResolution.ToString();
+  }
+
+  auto nv12_video = g_env->Video()->ConvertToNV12();
+  ASSERT_TRUE(nv12_video);
+  // Set 1/4 of the original bitrate because the area of |output_resolution| is
+  // 1/4 of the original resolution.
+  VideoEncoderClientConfig config(nv12_video.get(), g_env->Profile(),
+                                  g_env->NumTemporalLayers(),
+                                  g_env->Bitrate() / 4);
+  config.output_resolution = output_resolution;
+  config.input_storage_type =
+      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+
+  auto encoder = CreateVideoEncoder(nv12_video.get(), config);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);

@@ -43,6 +43,8 @@ struct VideoEncoderClientConfig {
 
   // The output profile to be used.
   VideoCodecProfile output_profile = VideoCodecProfile::H264PROFILE_MAIN;
+  // The resolution output by VideoEncoderClient.
+  gfx::Size output_resolution;
   // The number of temporal layers of the output stream.
   size_t num_temporal_layers = 1u;
   // The maximum number of bitstream buffer encodes that can be requested

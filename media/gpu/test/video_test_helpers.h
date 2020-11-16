@@ -203,8 +203,9 @@ class AlignedDataHelper {
       const std::vector<uint8_t>& stream,
       uint32_t num_frames,
       VideoPixelFormat pixel_format,
-      const gfx::Rect& visible_area,
       const gfx::Size& coded_size,
+      const gfx::Rect& visible_area,
+      const gfx::Size& natural_size,
       VideoFrame::StorageType storage_type,
       gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory);
   ~AlignedDataHelper();
@@ -251,6 +252,7 @@ class AlignedDataHelper {
   // The layout of VideoFrames returned by GetNextFrame().
   base::Optional<VideoFrameLayout> layout_;
   const gfx::Rect visible_area_;
+  const gfx::Size natural_size_;
 
   // The frame data returned by GetNextFrame().
   std::vector<VideoFrameData> video_frame_data_;

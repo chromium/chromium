@@ -373,14 +373,16 @@ AlignedDataHelper::AlignedDataHelper(
     const std::vector<uint8_t>& stream,
     uint32_t num_frames,
     VideoPixelFormat pixel_format,
-    const gfx::Rect& visible_area,
     const gfx::Size& coded_size,
+    const gfx::Rect& visible_area,
+    const gfx::Size& natural_size,
     VideoFrame::StorageType storage_type,
     gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
     : num_frames_(num_frames),
       storage_type_(storage_type),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
-      visible_area_(visible_area) {
+      visible_area_(visible_area),
+      natural_size_(natural_size) {
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
     InitializeGpuMemoryBufferFrames(stream, pixel_format, coded_size);
@@ -437,7 +439,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 
     gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
     return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_area_, visible_area_.size(), std::move(gpu_memory_buffer),
+        visible_area_, natural_size_, std::move(gpu_memory_buffer),
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
         base::TimeTicks::Now().since_origin());
   } else {
@@ -458,9 +460,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     const size_t video_frame_size =
         layout_->planes().back().offset + layout_->planes().back().size;
     return MojoSharedBufferVideoFrame::Create(
-        layout_->format(), layout_->coded_size(), visible_area_,
-        visible_area_.size(), std::move(dup_handle), video_frame_size, offsets,
-        strides, base::TimeTicks::Now().since_origin());
+        layout_->format(), layout_->coded_size(), visible_area_, natural_size_,
+        std::move(dup_handle), video_frame_size, offsets, strides,
+        base::TimeTicks::Now().since_origin());
   }
 }
 
@@ -538,7 +540,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
   for (size_t i = 0; i < num_frames_; i++) {
     auto memory_frame =
         VideoFrame::CreateFrame(pixel_format, coded_size, visible_area_,
-                                visible_area_.size(), base::TimeDelta());
+                                natural_size_, base::TimeDelta());
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
     for (size_t i = 0; i < num_planes; i++) {
       libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[i].offset,
