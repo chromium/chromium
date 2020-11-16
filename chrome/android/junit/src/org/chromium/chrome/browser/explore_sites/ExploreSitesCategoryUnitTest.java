@@ -32,8 +32,8 @@ public class ExploreSitesCategoryUnitTest {
 
         ExploreSitesCategory category =
                 new ExploreSitesCategory(id, type, categoryTitle, ntpShownCount, interactionCount);
-        category.addSite(new ExploreSitesSite(siteId, title, url, true)); // blacklisted
-        category.addSite(new ExploreSitesSite(siteId, title, url, false)); // not blacklisted
+        category.addSite(new ExploreSitesSite(siteId, title, url, true)); // blocked
+        category.addSite(new ExploreSitesSite(siteId, title, url, false)); // not blocked
 
         assertEquals(id, category.getId());
         assertEquals(type, category.getType());
@@ -69,14 +69,14 @@ public class ExploreSitesCategoryUnitTest {
 
         ExploreSitesCategory category = new ExploreSitesCategory(
                 id, type, categoryTitle, /* ntpShownCount = */ 2, /* interactionCount = */ 3);
-        category.addSite(new ExploreSitesSite(siteId1, title1, url1, false)); // not blacklisted
-        category.addSite(new ExploreSitesSite(siteId2, title2, url2, true)); // blacklisted
-        category.addSite(new ExploreSitesSite(siteId3, title3, url3, false)); // not blacklisted
-        category.addSite(new ExploreSitesSite(siteId4, title4, url4, false)); // not blacklisted
+        category.addSite(new ExploreSitesSite(siteId1, title1, url1, false)); // not blocked
+        category.addSite(new ExploreSitesSite(siteId2, title2, url2, true)); // blocked
+        category.addSite(new ExploreSitesSite(siteId3, title3, url3, false)); // not blocked
+        category.addSite(new ExploreSitesSite(siteId4, title4, url4, false)); // not blocked
 
         // Now remove site3, which currently has tileIndex of 1.  We should be left with site 1 and
         // 4 still visible, and site 2 and 3 should be gone.  removeSite(1) means remove the second
-        // displayed tile (which is site 3, since site 2 is blacklisted). Site 4 should occupy
+        // displayed tile (which is site 3, since site 2 is blocked). Site 4 should occupy
         // tileIndex 1 after the removeSite operation completes.
         category.removeSite(1);
 
