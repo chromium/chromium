@@ -27,7 +27,7 @@ function testPixels(actualPixels, refPixels, testScenario)
         for (let i = 0; i < actualPixels.length; i++) {
             // Alpha channel
             if (i % 4 == 3)
-                assert_equals(actualPixels[i], refPixels[i]);
+                assert_approx_equals(actualPixels[i], refPixels[i], tolerance_color);
             // Red channel of the green pixel
             else if (i == 4)
                 assert_approx_equals(actualPixels[i], refPixels[i], tolerance_r_green);
@@ -41,7 +41,7 @@ function testPixels(actualPixels, refPixels, testScenario)
         for (let i = 0; i < actualPixels.length; i++) {
             // Alpha channel
             if (i % 4 == 3)
-                assert_equals(actualPixels[i], refPixels[i]);
+                assert_approx_equals(actualPixels[i], refPixels[i], tolerance_color);
             else if (i == 4)
                 assert_approx_equals(actualPixels[i], refPixels[i], tolerance_r_green);
             else

@@ -2013,7 +2013,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/path_test.cc",
     "graphics/placeholder_image_test.cc",
     "graphics/raster_dark_mode_filter_impl_test.cc",
-    "graphics/static_bitmap_image_test.cc",
     "graphics/video_frame_submitter_test.cc",
     "heap_observer_set_test.cc",
     "image-decoders/bmp/bmp_image_decoder_test.cc",

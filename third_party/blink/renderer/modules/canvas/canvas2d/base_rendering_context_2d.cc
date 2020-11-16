@@ -1656,11 +1656,12 @@ ImageData* BaseRenderingContext2D::getImageData(
     return nullptr;
   }
 
-  IntRect image_data_rect(sx, sy, sw, sh);
-  bool hasResourceProvider = CanCreateCanvas2dResourceProvider();
+  const IntRect image_data_rect(sx, sy, sw, sh);
   ImageDataColorSettings* color_settings =
       GetColorSettingsAsImageDataColorSettings();
-  if (!hasResourceProvider || isContextLost()) {
+  const ImageDataStorageFormat storage_format =
+      ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
+  if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
     ImageData* result =
         ImageData::Create(image_data_rect.Size(), color_settings);
     if (!result)
@@ -1668,7 +1669,6 @@ ImageData* BaseRenderingContext2D::getImageData(
     return result;
   }
 
-  const CanvasColorParams& color_params = GetCanvas2DColorParams();
   // Deferred offscreen canvases might have recorded commands, make sure
   // that those get drawn here
   FinalizeFrame();
@@ -1688,59 +1688,100 @@ ImageData* BaseRenderingContext2D::getImageData(
     }
   }
 
-  size_t size_in_bytes;
-  if (!StaticBitmapImage::GetSizeInBytes(image_data_rect, color_params)
-           .AssignIfValid(&size_in_bytes) ||
-      size_in_bytes > v8::TypedArray::kMaxLength) {
-    exception_state.ThrowRangeError("Out of memory at ImageData creation");
-    return nullptr;
+  // Compute the ImageData's SkImageInfo;
+  SkImageInfo image_info;
+  {
+    SkColorType color_type = kRGBA_8888_SkColorType;
+    switch (storage_format) {
+      case kUint8ClampedArrayStorageFormat:
+        color_type = kRGBA_8888_SkColorType;
+        break;
+      case kUint16ArrayStorageFormat:
+        color_type = kR16G16B16A16_unorm_SkColorType;
+        break;
+      case kFloat32ArrayStorageFormat:
+        color_type = kRGBA_F32_SkColorType;
+        break;
+      default:
+        NOTREACHED();
+    }
+    image_info = SkImageInfo::Make(sw, sh, color_type, kUnpremul_SkAlphaType,
+                                   GetCanvas2DColorParams().GetSkColorSpace());
   }
 
-  bool may_have_stray_area =
-      IsAccelerated()  // GPU readback may fail silently.
-      || StaticBitmapImage::MayHaveStrayArea(snapshot, image_data_rect);
-  ArrayBufferContents::InitializationPolicy initialization_policy =
-      may_have_stray_area ? ArrayBufferContents::kZeroInitialize
-                          : ArrayBufferContents::kDontInitialize;
-
-  ArrayBufferContents contents(
-      size_in_bytes, 1, ArrayBufferContents::kNotShared, initialization_policy);
-  if (contents.DataLength() != size_in_bytes) {
-    exception_state.ThrowRangeError("Out of memory at ImageData creation");
-    return nullptr;
+  // Compute the size of and allocate |contents|, the ArrayContentsBuffer.
+  ArrayBufferContents contents;
+  const size_t data_size_bytes = image_info.computeMinByteSize();
+  {
+    if (data_size_bytes > std::numeric_limits<unsigned int>::max()) {
+      exception_state.ThrowRangeError(
+          "Buffer size exceeds maximum heap object size.");
+      return nullptr;
+    }
+    if (SkImageInfo::ByteSizeOverflowed(data_size_bytes) ||
+        data_size_bytes > v8::TypedArray::kMaxLength) {
+      exception_state.ThrowRangeError("Out of memory at ImageData creation");
+      return nullptr;
+    }
+    ArrayBufferContents::InitializationPolicy initialization_policy =
+        ArrayBufferContents::kDontInitialize;
+    if (IsAccelerated()) {
+      // GPU readback may fail silently.
+      initialization_policy = ArrayBufferContents::kZeroInitialize;
+    } else if (snapshot) {
+      // Zero-initialize if some of the readback area is out of bounds.
+      if (image_data_rect.X() < 0 || image_data_rect.Y() < 0 ||
+          image_data_rect.MaxX() > snapshot->Size().Width() ||
+          image_data_rect.MaxY() > snapshot->Size().Height()) {
+        initialization_policy = ArrayBufferContents::kZeroInitialize;
+      }
+    }
+    contents =
+        ArrayBufferContents(data_size_bytes, 1, ArrayBufferContents::kNotShared,
+                            initialization_policy);
+    if (contents.DataLength() != data_size_bytes) {
+      exception_state.ThrowRangeError("Out of memory at ImageData creation");
+      return nullptr;
+    }
   }
 
-  if (!StaticBitmapImage::CopyToByteArray(
-          snapshot,
-          base::span<uint8_t>(reinterpret_cast<uint8_t*>(contents.Data()),
-                              contents.DataLength()),
-          image_data_rect, color_params)) {
-    exception_state.ThrowRangeError("Failed to copy image data");
-    return nullptr;
+  // Read pixels into |contents|.
+  bool read_pixels_successful =
+      snapshot->PaintImageForCurrentFrame().readPixels(
+          image_info, contents.Data(), image_info.minRowBytes(), sx, sy);
+  if (!read_pixels_successful) {
+    SkIRect bounds =
+        snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
+    DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
   }
 
-  // Convert pixels to proper storage format if needed
-  if (PixelFormat() != CanvasColorParams::GetNativeCanvasPixelFormat()) {
-    ImageDataStorageFormat storage_format =
-        ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
-    NotShared<DOMArrayBufferView> array_buffer_view =
-        ImageData::ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
-            contents, PixelFormat(), storage_format);
-    return ImageData::Create(image_data_rect.Size(), array_buffer_view,
-                             color_settings);
-  }
-  if (size_in_bytes > std::numeric_limits<unsigned int>::max()) {
-    exception_state.ThrowRangeError(
-        "Buffer size exceeds maximum heap object size.");
-    return nullptr;
-  }
+  // Wrap |contents| in an ImageData.
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(std::move(contents));
-
-  ImageData* imageData = ImageData::Create(
-      image_data_rect.Size(),
-      NotShared<DOMUint8ClampedArray>(DOMUint8ClampedArray::Create(
-          array_buffer, 0, static_cast<unsigned int>(size_in_bytes))),
-      color_settings);
+  NotShared<DOMArrayBufferView> data_array;
+  switch (storage_format) {
+    case kUint8ClampedArrayStorageFormat: {
+      size_t num_elements = data_size_bytes;
+      data_array = NotShared<DOMArrayBufferView>(
+          DOMUint8ClampedArray::Create(array_buffer, 0, num_elements));
+      break;
+    }
+    case kUint16ArrayStorageFormat: {
+      size_t num_elements = data_size_bytes / 2;
+      data_array = NotShared<DOMArrayBufferView>(
+          DOMUint16Array::Create(array_buffer, 0, num_elements));
+      break;
+    }
+    case kFloat32ArrayStorageFormat: {
+      size_t num_elements = data_size_bytes / 4;
+      data_array = NotShared<DOMArrayBufferView>(
+          DOMFloat32Array::Create(array_buffer, 0, num_elements));
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+  ImageData* image_data = ImageData::Create(
+      image_data_rect.Size(), std::move(data_array), color_settings);
 
   if (!IsPaint2D()) {
     int scaled_time = getScaledElapsedTime(
@@ -1753,8 +1794,7 @@ ImageData* BaseRenderingContext2D::getImageData(
           "Blink.Canvas.GetImageDataScaledDuration.CPU", scaled_time);
     }
   }
-
-  return imageData;
+  return image_data;
 }
 
 int BaseRenderingContext2D::getScaledElapsedTime(float width,

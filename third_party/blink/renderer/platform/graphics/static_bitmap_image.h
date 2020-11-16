@@ -96,18 +96,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return orientation_ == ImageOrientationEnum::kDefault;
   }
 
-  static base::CheckedNumeric<size_t> GetSizeInBytes(
-      const IntRect& rect,
-      const CanvasColorParams& color_params);
-
-  static bool MayHaveStrayArea(scoped_refptr<StaticBitmapImage> src_image,
-                               const IntRect& rect);
-
-  static bool CopyToByteArray(scoped_refptr<StaticBitmapImage> src_image,
-                              base::span<uint8_t> dst,
-                              const IntRect&,
-                              const CanvasColorParams&);
-
  protected:
   // Helper for sub-classes
   void DrawHelper(cc::PaintCanvas*,
