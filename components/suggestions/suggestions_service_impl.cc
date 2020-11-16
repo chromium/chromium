@@ -121,7 +121,7 @@ SuggestionsServiceImpl::SuggestionsServiceImpl(
       blocklist_upload_timer_(tick_clock_) {
   // |sync_service_| is null if switches::kDisableSync is set (tests use that).
   if (sync_service_)
-    sync_service_observer_.Add(sync_service_);
+    sync_service_observation_.Observe(sync_service_);
   // Immediately get the current sync state, so we'll flush the cache if
   // necessary.
   OnStateChanged(sync_service_);
@@ -522,7 +522,8 @@ void SuggestionsServiceImpl::Shutdown() {
   // Cancel pending request.
   pending_request_.reset(nullptr);
 
-  sync_service_observer_.RemoveAll();
+  if (sync_service_observation_.IsObserving())
+    sync_service_observation_.RemoveObservation();
 }
 
 void SuggestionsServiceImpl::ScheduleBlocklistUpload() {
