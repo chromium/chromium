@@ -330,4 +330,24 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, CallsBeforeInitializeAreIgnored) {
   }
 }
 
+// This test verifies that IsFlushSupported/Flush on FakeVEA.
+TEST_F(MojoVideoEncodeAcceleratorServiceTest, IsFlushSupportedAndFlush) {
+  CreateMojoVideoEncodeAccelerator();
+  BindAndInitialize();
+
+  ASSERT_TRUE(fake_vea());
+
+  // media::VideoEncodeAccelerator::IsFlushSupported and Flush are return
+  // false as default, so here expect false for both IsFlushSupported and
+  // Flush.
+  auto flush_support =
+      base::BindOnce([](bool status) { EXPECT_EQ(status, false); });
+  mojo_vea_service()->IsFlushSupported(std::move(flush_support));
+  base::RunLoop().RunUntilIdle();
+
+  auto flush_callback =
+      base::BindOnce([](bool status) { EXPECT_EQ(status, false); });
+  mojo_vea_service()->IsFlushSupported(std::move(flush_callback));
+}
+
 }  // namespace media

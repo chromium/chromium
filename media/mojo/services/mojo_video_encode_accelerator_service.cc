@@ -103,8 +103,11 @@ void MojoVideoEncodeAcceleratorService::Encode(
     EncodeCallback callback) {
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!encoder_)
+  if (!encoder_) {
+    DLOG(ERROR) << __func__ << " Failed to encode, the encoder is invalid";
+    std::move(callback).Run();
     return;
+  }
 
   if (frame->coded_size() != input_coded_size_ &&
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
@@ -168,6 +171,35 @@ void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(
            << " framerate=" << framerate;
 
   encoder_->RequestEncodingParametersChange(bitrate_allocation, framerate);
+}
+
+void MojoVideoEncodeAcceleratorService::IsFlushSupported(
+    IsFlushSupportedCallback callback) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_) {
+    DLOG(ERROR) << __func__
+                << " Failed to detect flush support, the encoder is invalid";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool flush_support = encoder_->IsFlushSupported();
+  std::move(callback).Run(flush_support);
+}
+
+void MojoVideoEncodeAcceleratorService::Flush(FlushCallback callback) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_) {
+    DLOG(ERROR) << __func__ << " Failed to flush, the encoder is invalid";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  encoder_->Flush(std::move(callback));
 }
 
 void MojoVideoEncodeAcceleratorService::RequireBitstreamBuffers(

@@ -126,6 +126,11 @@ interface VideoEncodeAccelerator {
   RequestEncodingParametersChange(
     VideoBitrateAllocation bitrate_allocation,
     uint32 framerate);
+
+  [Sync]
+  IsFlushSupported() => (bool result);
+
+  Flush() => (bool result);
 };
 
 struct Vp8Metadata {
