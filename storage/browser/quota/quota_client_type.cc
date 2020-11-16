@@ -17,6 +17,7 @@ const QuotaClientTypes& AllQuotaClientTypes() {
       QuotaClientType::kServiceWorkerCache,
       QuotaClientType::kServiceWorker,
       QuotaClientType::kBackgroundFetch,
+      QuotaClientType::kNativeIO,
   }};
   return *all;
 }

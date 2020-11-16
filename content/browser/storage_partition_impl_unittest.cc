@@ -853,9 +853,11 @@ TEST_F(StoragePartitionShaderClearTest, ClearShaderCache) {
 }
 
 TEST_F(StoragePartitionImplTest, QuotaClientTypesGeneration) {
-  EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
-                  StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS),
-              testing::ElementsAre(storage::QuotaClientType::kFileSystem));
+  EXPECT_THAT(
+      StoragePartitionImpl::GenerateQuotaClientTypes(
+          StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS),
+      testing::UnorderedElementsAre(storage::QuotaClientType::kFileSystem,
+                                    storage::QuotaClientType::kNativeIO));
   EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
                   StoragePartition::REMOVE_DATA_MASK_WEBSQL),
               testing::ElementsAre(storage::QuotaClientType::kDatabase));
@@ -867,11 +869,11 @@ TEST_F(StoragePartitionImplTest, QuotaClientTypesGeneration) {
               testing::ElementsAre(storage::QuotaClientType::kIndexedDatabase));
   EXPECT_THAT(
       StoragePartitionImpl::GenerateQuotaClientTypes(kAllQuotaRemoveMask),
-      testing::UnorderedElementsAre(
-          storage::QuotaClientType::kFileSystem,
-          storage::QuotaClientType::kDatabase,
-          storage::QuotaClientType::kAppcache,
-          storage::QuotaClientType::kIndexedDatabase));
+      testing::UnorderedElementsAre(storage::QuotaClientType::kFileSystem,
+                                    storage::QuotaClientType::kDatabase,
+                                    storage::QuotaClientType::kAppcache,
+                                    storage::QuotaClientType::kIndexedDatabase,
+                                    storage::QuotaClientType::kNativeIO));
 }
 
 void PopulateTestQuotaManagedPersistentData(storage::MockQuotaManager* manager,

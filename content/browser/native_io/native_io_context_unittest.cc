@@ -16,6 +16,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "url/gurl.h"
@@ -139,7 +142,15 @@ class NativeIOContextTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    context_ = std::make_unique<NativeIOContext>(data_dir_.GetPath());
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, data_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /*special storage policy=*/nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
+    context_ = std::make_unique<NativeIOContext>(
+        data_dir_.GetPath(),
+        /*special storage policy=*/nullptr, quota_manager_proxy());
 
     context_->BindReceiver(url::Origin::Create(GURL(kExampleOrigin)),
                            example_host_remote_.BindNewPipeAndPassReceiver());
@@ -152,7 +163,23 @@ class NativeIOContextTest : public testing::Test {
         std::move(google_host_remote_.get()));
   }
 
+  void TearDown() override {
+    // Let the client go away before dropping a ref of the quota manager proxy.
+    quota_manager_proxy()->SimulateQuotaManagerDestroyed();
+    quota_manager_ = nullptr;
+    quota_manager_proxy_ = nullptr;
+  }
+
  protected:
+  storage::MockQuotaManager* quota_manager() {
+    return static_cast<storage::MockQuotaManager*>(quota_manager_.get());
+  }
+
+  storage::MockQuotaManagerProxy* quota_manager_proxy() {
+    return static_cast<storage::MockQuotaManagerProxy*>(
+        quota_manager_proxy_.get());
+  }
+
   // This must be above NativeIOContext, to ensure that no file is accessed when
   // the temporary directory is deleted.
   base::ScopedTempDir data_dir_;
@@ -178,6 +205,10 @@ class NativeIOContextTest : public testing::Test {
       "has.dot",
       "has/slash",
   };
+
+ private:
+  scoped_refptr<storage::QuotaManager> quota_manager_;
+  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 };
 
 TEST_F(NativeIOContextTest, OpenFile_BadNames) {

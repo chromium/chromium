@@ -798,8 +798,13 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     uint32_t remove_mask) {
   storage::QuotaClientTypes quota_client_types;
 
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS)
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS) {
     quota_client_types.insert(storage::QuotaClientType::kFileSystem);
+
+    // TODO(crbug.com/1137788): Add a removal mask for NativeIO after adopting a
+    // more inclusive name.
+    quota_client_types.insert(storage::QuotaClientType::kNativeIO);
+  }
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL)
     quota_client_types.insert(storage::QuotaClientType::kDatabase);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_APPCACHE)
@@ -812,7 +817,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     quota_client_types.insert(storage::QuotaClientType::kServiceWorkerCache);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH)
     quota_client_types.insert(storage::QuotaClientType::kBackgroundFetch);
-
   return quota_client_types;
 }
 
@@ -1225,7 +1229,9 @@ void StoragePartitionImpl::Initialize(
   }
 
   dedicated_worker_service_ = std::make_unique<DedicatedWorkerServiceImpl>();
-  native_io_context_ = std::make_unique<NativeIOContext>(path);
+  native_io_context_ = std::make_unique<NativeIOContext>(
+      path, browser_context_->GetSpecialStoragePolicy(),
+      quota_manager_proxy.get());
 
   shared_worker_service_ = std::make_unique<SharedWorkerServiceImpl>(
       this, service_worker_context_, appcache_service_);

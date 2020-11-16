@@ -235,6 +235,9 @@ void UsageTracker::AccumulateClientHostUsage(base::OnceClosure callback,
     case QuotaClientType::kBackgroundFetch:
       info->usage_breakdown->backgroundFetch += usage;
       break;
+    case QuotaClientType::kNativeIO:
+      info->usage_breakdown->nativeIO += usage;
+      break;
   }
 
   std::move(callback).Run();

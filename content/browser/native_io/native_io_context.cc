@@ -9,8 +9,12 @@
 
 #include "base/files/file_path.h"
 #include "content/browser/native_io/native_io_host.h"
+#include "content/browser/native_io/native_io_quota_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "storage/browser/quota/quota_client_type.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "url/origin.h"
@@ -31,8 +35,19 @@ base::FilePath GetNativeIORootPath(const base::FilePath& profile_root) {
 
 }  // namespace
 
-NativeIOContext::NativeIOContext(const base::FilePath& profile_root)
-    : root_path_(GetNativeIORootPath(profile_root)) {}
+NativeIOContext::NativeIOContext(
+    const base::FilePath& profile_root,
+    storage::SpecialStoragePolicy* special_storage_policy,
+    storage::QuotaManagerProxy* quota_manager_proxy)
+    : root_path_(GetNativeIORootPath(profile_root)),
+      special_storage_policy_(special_storage_policy) {
+  if (quota_manager_proxy) {
+    quota_manager_proxy->RegisterClient(
+        base::MakeRefCounted<NativeIOQuotaClient>(),
+        storage::QuotaClientType::kNativeIO,
+        {blink::mojom::StorageType::kTemporary});
+  }
+}
 
 NativeIOContext::~NativeIOContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

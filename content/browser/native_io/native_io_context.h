@@ -12,6 +12,8 @@
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
 #include "url/origin.h"
 
@@ -32,7 +34,10 @@ class CONTENT_EXPORT NativeIOContext {
   // |profile_root| is empty for in-memory (Incognito) profiles. Otherwise,
   // |profile_root| must point to an existing directory. NativeIO will store its
   // data in a subdirectory of the profile root.
-  explicit NativeIOContext(const base::FilePath& profile_root);
+  explicit NativeIOContext(
+      const base::FilePath& profile_root,
+      storage::SpecialStoragePolicy* special_storage_policy,
+      storage::QuotaManagerProxy* quota_manager_proxy);
 
   ~NativeIOContext();
 
@@ -50,7 +55,6 @@ class CONTENT_EXPORT NativeIOContext {
   // |host| must be owned by this context. This method should only be called by
   // NativeIOHost.
   void OnHostReceiverDisconnect(NativeIOHost* host);
-
  private:
   // Computes the path to the directory storing an origin's NativeIO files.
   //
@@ -63,6 +67,8 @@ class CONTENT_EXPORT NativeIOContext {
   //
   // This path is empty for in-memory (Incognito) profiles.
   const base::FilePath root_path_;
+
+  scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

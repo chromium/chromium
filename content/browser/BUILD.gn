@@ -1136,6 +1136,8 @@ source_set("browser") {
     "native_io/native_io_file_host.h",
     "native_io/native_io_host.cc",
     "native_io/native_io_host.h",
+    "native_io/native_io_quota_client.cc",
+    "native_io/native_io_quota_client.h",
     "navigation_subresource_loader_params.cc",
     "navigation_subresource_loader_params.h",
     "net/browser_online_state_observer.cc",
