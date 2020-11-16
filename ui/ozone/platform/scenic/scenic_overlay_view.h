@@ -24,7 +24,8 @@ namespace ui {
 class ScenicOverlayView {
  public:
   ScenicOverlayView(
-      scenic::SessionPtrAndListenerRequest session_and_listener_request);
+      scenic::SessionPtrAndListenerRequest session_and_listener_request,
+      ScenicSurfaceFactory* scenic_surface_factory);
   ~ScenicOverlayView();
   ScenicOverlayView(const ScenicOverlayView&) = delete;
   ScenicOverlayView& operator=(const ScenicOverlayView&) = delete;
@@ -53,21 +54,20 @@ class ScenicOverlayView {
   bool CanAttachToAcceleratedWidget(gfx::AcceleratedWidget widget);
 
   // Return true if |view_holder_token_| is attached to the scene graph of
-  // |surface|.
-  bool AttachToScenicSurface(ScenicSurface* surface,
-                             gfx::AcceleratedWidget widget,
+  // surface corresponding to |widget|.
+  bool AttachToScenicSurface(gfx::AcceleratedWidget widget,
                              gfx::SysmemBufferCollectionId id);
 
  private:
   scenic::Session scenic_session_;
+  ScenicSurfaceFactory* const scenic_surface_factory_;
   fuchsia::ui::views::ViewHolderToken view_holder_token_;
   scenic::View view_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;
   std::unique_ptr<scenic::Material> image_material_;
 
   bool enable_blend_ = false;
-  ScenicSurface* surface_ = nullptr;
-  gfx::AcceleratedWidget widget_;
+  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   gfx::SysmemBufferCollectionId buffer_collection_id_;
 
   THREAD_CHECKER(thread_checker_);

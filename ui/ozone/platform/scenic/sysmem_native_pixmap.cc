@@ -106,8 +106,7 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   DCHECK(collection_->scenic_overlay_view());
   ScenicOverlayView* overlay_view = collection_->scenic_overlay_view();
   const auto& buffer_collection_id = handle_.buffer_collection_id.value();
-  if (!overlay_view->AttachToScenicSurface(surface, widget,
-                                           buffer_collection_id)) {
+  if (!overlay_view->AttachToScenicSurface(widget, buffer_collection_id)) {
     DLOG(ERROR) << "Failed to attach to surface.";
     return false;
   }
