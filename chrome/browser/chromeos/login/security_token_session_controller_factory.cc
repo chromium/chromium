@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/security_token_session_controller_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/login/security_token_session_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -46,7 +47,15 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
     return nullptr;
 
-  return new SecurityTokenSessionController(profile->GetPrefs());
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    // This can happen in tests that do not have local state.
+    return nullptr;
+  }
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(context));
+  return new SecurityTokenSessionController(local_state, profile->GetPrefs(),
+                                            user);
 }
 
 content::BrowserContext*

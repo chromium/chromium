@@ -9,6 +9,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace chromeos {
 namespace login {
@@ -24,7 +25,9 @@ class SecurityTokenSessionController : public KeyedService {
  public:
   enum class Behavior { kIgnore, kLogout, kLock };
 
-  explicit SecurityTokenSessionController(PrefService* pref_service);
+  SecurityTokenSessionController(PrefService* local_state,
+                                 PrefService* profile_prefs,
+                                 const user_manager::User* user);
   SecurityTokenSessionController(const SecurityTokenSessionController& other) =
       delete;
   SecurityTokenSessionController& operator=(
@@ -34,15 +37,25 @@ class SecurityTokenSessionController : public KeyedService {
   // KeyedService
   void Shutdown() override;
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // If this controller logged the user out just before, display a notification
+  // explaining why this happened. This is only done the first time this
+  // happens for a user on a device.
+  static void MaybeDisplayLoginScreenNotification();
 
  private:
   Behavior GetBehaviorFromPref() const;
-
   void UpdateBehaviorPref();
   void UpdateNotificationPref();
 
-  PrefService* const pref_service_;
+  void AddLockNotification() const;
+  void ScheduleLogoutNotification() const;
+
+  PrefService* const local_state_;
+  PrefService* const profile_prefs_;
+  const user_manager::User* const user_;
   PrefChangeRegistrar pref_change_registrar_;
   Behavior behavior_ = Behavior::kIgnore;
   base::TimeDelta notification_seconds_;

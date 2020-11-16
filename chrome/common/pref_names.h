@@ -1087,6 +1087,8 @@ extern const char kLacrosAllowed[];
 #if defined(OS_CHROMEOS)
 extern const char kSecurityTokenSessionBehavior[];
 extern const char kSecurityTokenSessionNotificationSeconds[];
+extern const char kSecurityTokenSessionNotificationDisplayed[];
+extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #endif
 
 }  // namespace prefs

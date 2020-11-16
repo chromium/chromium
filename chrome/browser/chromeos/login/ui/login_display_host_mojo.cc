@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/login/reauth_stats.h"
 #include "chrome/browser/chromeos/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
+#include "chrome/browser/chromeos/login/security_token_session_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
 #include "chrome/browser/chromeos/login/ui/login_display_mojo.h"
 #include "chrome/browser/chromeos/login/user_board_view_mojo.h"
@@ -284,6 +285,8 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
   UpdateAddUserButtonStatus();
 
   OnStartSignInScreenCommon();
+
+  login::SecurityTokenSessionController::MaybeDisplayLoginScreenNotification();
 }
 
 void LoginDisplayHostMojo::OnPreferencesChanged() {

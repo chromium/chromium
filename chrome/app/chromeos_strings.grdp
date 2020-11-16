@@ -5958,5 +5958,14 @@ other {Your <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> will be locked au
 Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
 <ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to keep your smart card inserted.
   </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOGOUT_MESSAGE_TITLE" desc="This is the title of a notification appearing the first time a user is logged out because they removed their smart card. This only applies to users that authenticate with a smart card and for who this behavior was enabled by a policy.">
+    You were logged out.
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE" desc="This is the title of a notification appearing the first time the session of a user is locked because they removed their smart card. This only applies to users that authenticate with a smart card and for who this behavior was enabled by a policy.">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> was locked.
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOGOUT_MESSAGE_BODY" desc="This is the text of a notification appearing the first time the a user was logged out because they removed their smart card. This only applies to users that authenticate with a smart card and for who this behavior was enabled by a policy.">
+    <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to keep your smart card inserted.
+  </message>
 
 </grit-part>

@@ -687,6 +687,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::language_prefs::RegisterPrefs(registry);
   chromeos::local_search_service::SearchMetricsReporterSync::
       RegisterLocalStatePrefs(registry);
+  chromeos::login::SecurityTokenSessionController::RegisterLocalStatePrefs(
+      registry);
   chromeos::MultiProfileUserController::RegisterPrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::NetworkThrottlingObserver::RegisterPrefs(registry);
@@ -956,7 +958,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::file_system_provider::RegisterProfilePrefs(registry);
   chromeos::full_restore::RegisterProfilePrefs(registry);
   chromeos::KerberosCredentialsManager::RegisterProfilePrefs(registry);
-  chromeos::login::SecurityTokenSessionController::RegisterPrefs(registry);
+  chromeos::login::SecurityTokenSessionController::RegisterProfilePrefs(
+      registry);
   chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
   chromeos::MultiProfileUserController::RegisterProfilePrefs(registry);
