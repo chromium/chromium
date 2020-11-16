@@ -17,14 +17,11 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/common/pref_names.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/mojom/ime_mojom_traits.h"
 #include "components/crx_file/id_util.h"
@@ -330,6 +327,7 @@ ArcInputMethodManagerService::ArcInputMethodManagerService(
       arc_ime_state_delegate_(
           std::make_unique<ArcInputMethodStateDelegateImpl>(profile_)),
       arc_ime_state_(arc_ime_state_delegate_.get()),
+      prefs_(profile_),
       is_virtual_keyboard_shown_(false),
       is_updating_imm_entry_(false),
       proxy_ime_extension_id_(
@@ -384,7 +382,7 @@ void ArcInputMethodManagerService::Shutdown() {
   // Remove any Arc IME entry from preferences before shutting down.
   // IME states (installed/enabled/disabled) are stored in Android's settings,
   // that will be restored after Arc container starts next time.
-  RemoveArcIMEFromPrefs();
+  prefs_.UpdateEnabledImes({});
   profile_->GetPrefs()->CommitPendingWrite();
 
   if (input_method_) {
@@ -429,19 +427,7 @@ void ArcInputMethodManagerService::OnImeDisabled(const std::string& ime_id) {
   arc_ime_state_.DisableInputMethod(ime_id);
 
   // Remove the IME from the prefs to disable it.
-  const std::string active_ime_ids =
-      profile_->GetPrefs()->GetString(prefs::kLanguageEnabledImes);
-  std::vector<std::string> active_ime_list = base::SplitString(
-      active_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  base::EraseIf(active_ime_list, [](const auto& id) {
-    return chromeos::extension_ime_util::IsArcIME(id);
-  });
-  for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())
-    active_ime_list.push_back(descriptor.id());
-
-  profile_->GetPrefs()->SetString(prefs::kLanguageEnabledImes,
-                                  base::JoinString(active_ime_list, ","));
+  prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
 
   // Note: Since this is not about uninstalling the IME, this method does not
   // modify InputMethodManager::State.
@@ -476,7 +462,7 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   if (installed_imes.empty()) {
     // If no ARC IME is installed or allowed, remove ARC IME entry from
     // preferences.
-    RemoveArcIMEFromPrefs();
+    prefs_.UpdateEnabledImes({});
     return;
   }
 
@@ -487,23 +473,7 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   // Enable IMEs that are already enabled in the container.
   // TODO(crbug.com/845079): We should keep the order of the IMEs as same as in
   // chrome://settings
-
-  const std::string active_ime_ids =
-      profile_->GetPrefs()->GetString(prefs::kLanguageEnabledImes);
-  std::vector<std::string> active_ime_list = base::SplitString(
-      active_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // Remove all ARC IMEs at first.
-  base::EraseIf(active_ime_list, [](const auto& id) {
-    return chromeos::extension_ime_util::IsArcIME(id);
-  });
-  // Re-add enabled and allowed IMEs.
-  for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())
-    active_ime_list.push_back(descriptor.id());
-
-  // Set the pref.
-  profile_->GetPrefs()->SetString(prefs::kLanguageEnabledImes,
-                                  base::JoinString(active_ime_list, ","));
+  prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
 
   for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())
     state->EnableInputMethod(descriptor.id());
@@ -558,15 +528,7 @@ void ArcInputMethodManagerService::ImeMenuListChanged() {
   // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
   // probably better to just observe the pref (and not disabling ones still
   // in the prefs.) See also the comment below in the second for-loop.
-  std::set<std::string> active_ime_ids_on_prefs;
-  {
-    const std::string active_ime_ids =
-        profile_->GetPrefs()->GetString(prefs::kLanguageEnabledImes);
-    std::vector<base::StringPiece> active_ime_list = base::SplitStringPiece(
-        active_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& id : active_ime_list)
-      active_ime_ids_on_prefs.insert(id.as_string());
-  }
+  const std::set<std::string> active_ime_ids_on_prefs = prefs_.GetEnabledImes();
 
   for (const auto& id : new_arc_active_ime_ids) {
     // Enable the IME which is not currently enabled.
@@ -713,32 +675,6 @@ void ArcInputMethodManagerService::UpdateTextInputState() {
     return;
   active_connection_->UpdateTextInputState(
       false /* is_input_state_update_requested */);
-}
-
-void ArcInputMethodManagerService::RemoveArcIMEFromPrefs() {
-  RemoveArcIMEFromPref(prefs::kLanguageEnabledImes);
-  RemoveArcIMEFromPref(prefs::kLanguagePreloadEngines);
-
-  PrefService* prefs = profile_->GetPrefs();
-  if (chromeos::extension_ime_util::IsArcIME(
-          prefs->GetString(prefs::kLanguageCurrentInputMethod))) {
-    prefs->SetString(prefs::kLanguageCurrentInputMethod, std::string());
-  }
-  if (chromeos::extension_ime_util::IsArcIME(
-          prefs->GetString(prefs::kLanguagePreviousInputMethod))) {
-    prefs->SetString(prefs::kLanguagePreviousInputMethod, std::string());
-  }
-}
-
-void ArcInputMethodManagerService::RemoveArcIMEFromPref(const char* pref_name) {
-  const std::string ime_ids = profile_->GetPrefs()->GetString(pref_name);
-  std::vector<base::StringPiece> ime_id_list = base::SplitStringPiece(
-      ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(ime_id_list, [](base::StringPiece id) {
-    return chromeos::extension_ime_util::IsArcIME(id.as_string());
-  });
-  profile_->GetPrefs()->SetString(pref_name,
-                                  base::JoinString(ime_id_list, ","));
 }
 
 void ArcInputMethodManagerService::OnTabletModeToggled(bool /* enabled */) {

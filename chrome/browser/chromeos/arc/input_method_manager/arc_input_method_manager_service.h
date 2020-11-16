@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_state.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/input_connection_impl.h"
+#include "chrome/browser/chromeos/arc/input_method_manager/input_method_prefs.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -115,12 +116,6 @@ class ArcInputMethodManagerService
   mojom::TextInputStatePtr GetTextInputState(
       bool is_input_state_update_requested);
 
-  // Removes ARC IME from IME related prefs that are current active IME pref,
-  // previous active IME pref, enabled IME list pref and preloading IME list
-  // pref.
-  void RemoveArcIMEFromPrefs();
-  void RemoveArcIMEFromPref(const char* pref_name);
-
   void OnTabletModeToggled(bool enabled);
 
   // Update the descriptors in IMM and the prefs according to
@@ -141,6 +136,7 @@ class ArcInputMethodManagerService
   std::set<std::string> active_arc_ime_ids_;
   std::unique_ptr<ArcInputMethodState::Delegate> arc_ime_state_delegate_;
   ArcInputMethodState arc_ime_state_;
+  InputMethodPrefs prefs_;
   bool is_virtual_keyboard_shown_;
   // This flag is set to true while updating ARC IMEs entries in IMM to avoid
   // exposing incomplete state.
