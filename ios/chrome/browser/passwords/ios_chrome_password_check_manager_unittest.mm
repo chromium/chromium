@@ -264,17 +264,6 @@ TEST_F(IOSChromePasswordCheckManagerTest,
   EXPECT_EQ(base::Time(), manager().GetLastPasswordCheckTime());
 }
 
-// Checks that a non-default kLastTimePasswordCheckCompleted pref value is
-// treated as a completed run.
-TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedIsSet) {
-  base::Time expected = base::Time::Now() - base::TimeDelta::FromMinutes(5);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected.ToDoubleT());
-
-  EXPECT_THAT(expected, manager().GetLastPasswordCheckTime());
-}
-
 // Checks that a transition into the idle state after starting a check results
 // in resetting the kLastTimePasswordCheckCompleted pref to the current time.
 TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedReset) {
