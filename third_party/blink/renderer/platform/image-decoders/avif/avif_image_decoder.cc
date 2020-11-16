@@ -280,6 +280,12 @@ void AVIFImageDecoder::OnSetData(SegmentReader* data) {
   avif_io_data_.reader = data_.get();
   avif_io_data_.all_data_received = all_data_received;
   avif_io_.sizeHint = all_data_received ? data_->size() : kMaxAvifFileSize;
+
+  // ImageFrameGenerator::GetYUVAInfo() and ImageFrameGenerator::DecodeToYUV()
+  // assume that allow_decode_to_yuv_ and other image metadata are available
+  // after calling ImageDecoder::Create() with data_complete=true.
+  if (all_data_received)
+    ParseMetadata();
 }
 
 cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {

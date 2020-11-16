@@ -514,8 +514,12 @@ void ReadYUV(const char* file_name,
   auto decoder = CreateAVIFDecoder();
   decoder->SetData(data.get(), true);
 
-  ASSERT_TRUE(decoder->IsSizeAvailable());
+  ASSERT_TRUE(decoder->IsDecodedSizeAvailable());
   ASSERT_TRUE(decoder->CanDecodeToYUV());
+  EXPECT_NE(decoder->GetYUVSubsampling(), cc::YUVSubsampling::kUnknown);
+  EXPECT_NE(decoder->GetYUVColorSpace(),
+            SkYUVColorSpace::kIdentity_SkYUVColorSpace);
+  EXPECT_EQ(decoder->GetYUVBitDepth(), bit_depth);
 
   IntSize size = decoder->DecodedSize();
   IntSize y_size = decoder->DecodedYUVSize(cc::YUVIndex::kY);
