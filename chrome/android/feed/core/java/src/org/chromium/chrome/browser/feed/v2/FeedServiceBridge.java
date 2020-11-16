@@ -12,6 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feed.library.common.locale.LocaleUtils;
+import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 /**
  * Bridge for FeedService-related calls.
@@ -52,7 +53,13 @@ public final class FeedServiceBridge {
 
     @CalledByNative
     public static void prefetchImage(String url) {
-        xSurfaceProcessScope().provideImagePrefetcher().prefetchImage(url);
+        ProcessScope processScope = xSurfaceProcessScope();
+        if (processScope != null) {
+            ImagePrefetcher imagePrefetcher = processScope.provideImagePrefetcher();
+            if (imagePrefetcher != null) {
+                imagePrefetcher.prefetchImage(url);
+            }
+        }
     }
 
     /** Called at startup to trigger creation of |FeedService|. */
