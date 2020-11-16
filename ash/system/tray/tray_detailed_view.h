@@ -21,6 +21,8 @@ struct VectorIcon;
 namespace views {
 class BoxLayout;
 class Button;
+class ImageView;
+class Label;
 class ProgressBar;
 class ScrollView;
 class Separator;
@@ -48,6 +50,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   void Layout() override;
   int GetHeightForWidth(int width) const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
@@ -162,6 +165,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // The back button that appears in the material design title row. Not owned.
   views::Button* back_button_ = nullptr;
+
+  views::Label* sub_header_label_ = nullptr;
+  views::ImageView* sub_header_image_view_ = nullptr;
+  const gfx::VectorIcon* sub_header_icon_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TrayDetailedView);
 };

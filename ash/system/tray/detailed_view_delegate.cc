@@ -60,14 +60,17 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
                        gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
 }
 
+gfx::ImageSkia CreateBackButtonIcon() {
+  return gfx::CreateVectorIcon(kUnifiedMenuArrowBackIcon,
+                               AshColorProvider::Get()->GetContentLayerColor(
+                                   ContentLayerType::kIconColorPrimary));
+}
+
 class BackButton : public CustomShapeButton {
  public:
   BackButton(views::Button::PressedCallback callback)
       : CustomShapeButton(std::move(callback)) {
-    gfx::ImageSkia image =
-        gfx::CreateVectorIcon(kUnifiedMenuArrowBackIcon,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary));
+    gfx::ImageSkia image = CreateBackButtonIcon();
     SetImage(views::Button::STATE_NORMAL, image);
     SetImageHorizontalAlignment(ALIGN_RIGHT);
     SetImageVerticalAlignment(ALIGN_MIDDLE);
@@ -82,6 +85,11 @@ class BackButton : public CustomShapeButton {
   // CustomShapeButton:
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kTrayItemSize * 3 / 2, kTrayItemSize);
+  }
+
+  void OnThemeChanged() override {
+    CustomShapeButton::OnThemeChanged();
+    SetImage(views::Button::STATE_NORMAL, CreateBackButtonIcon());
   }
 
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
@@ -128,12 +136,13 @@ TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
   ConfigureTitleTriView(tri_view, TriView::Container::CENTER);
   ConfigureTitleTriView(tri_view, TriView::Container::END);
 
-  auto* label = TrayPopupUtils::CreateDefaultLabel();
-  label->SetText(l10n_util::GetStringUTF16(string_id));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+  title_label_ = TrayPopupUtils::CreateDefaultLabel();
+  title_label_->SetText(l10n_util::GetStringUTF16(string_id));
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(label, TrayPopupUtils::FontStyle::kTitle);
-  tri_view->AddView(TriView::Container::CENTER, label);
+  TrayPopupUtils::SetLabelFontList(title_label_,
+                                   TrayPopupUtils::FontStyle::kTitle);
+  tri_view->AddView(TriView::Container::CENTER, title_label_);
   tri_view->SetContainerVisible(TriView::Container::END, false);
   tri_view->SetBorder(
       views::CreateEmptyBorder(kUnifiedDetailedViewTitlePadding));
@@ -142,12 +151,12 @@ TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
 }
 
 views::View* DetailedViewDelegate::CreateTitleSeparator() {
-  views::Separator* separator = new views::Separator();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+  title_separator_ = new views::Separator();
+  title_separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(
+  title_separator_->SetBorder(views::CreateEmptyBorder(
       kTitleRowProgressBarHeight - views::Separator::kThickness, 0, 0, 0));
-  return separator;
+  return title_separator_;
 }
 
 void DetailedViewDelegate::ShowStickyHeaderSeparator(views::View* view,
@@ -224,6 +233,17 @@ views::Button* DetailedViewDelegate::CreateHelpButton(
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;
+}
+
+void DetailedViewDelegate::UpdateColors() {
+  if (title_label_) {
+    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
+  if (title_separator_) {
+    title_separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        ContentLayerType::kSeparatorColor));
+  }
 }
 
 }  // namespace ash

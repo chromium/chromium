@@ -47,12 +47,16 @@ class TrayRadioButton : public views::RadioButton {
   }
 };
 
+SkColor GetLabelColor() {
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+}
+
 void SetupLabel(views::Label* label) {
   label->SetBorder(views::CreateEmptyBorder(kTraySubLabelPadding));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  label->SetEnabledColor(GetLabelColor());
 }
 
 }  // namespace
@@ -89,9 +93,10 @@ void DarkModeDetailedView::CreateItems() {
                               base::Unretained(AshColorProvider::Get()), true),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE)));
-  SetupLabel(scroll_content()->AddChildView(
+  themed_label_ = scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION))));
+          IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION)));
+  SetupLabel(themed_label_);
 
   neutral_mode_button_ =
       scroll_content()->AddChildView(std::make_unique<TrayRadioButton>(
@@ -99,9 +104,10 @@ void DarkModeDetailedView::CreateItems() {
                               base::Unretained(AshColorProvider::Get()), false),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE)));
-  SetupLabel(scroll_content()->AddChildView(
+  neutral_label_ = scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION))));
+          IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION)));
+  SetupLabel(neutral_label_);
 
   UpdateCheckedButton(ash_color_provider->IsThemed());
   scroll_content()->SizeToPreferredSize();
@@ -110,6 +116,12 @@ void DarkModeDetailedView::CreateItems() {
 
 const char* DarkModeDetailedView::GetClassName() const {
   return "DarkModeDetailedView";
+}
+
+void DarkModeDetailedView::OnThemeChanged() {
+  TrayDetailedView::OnThemeChanged();
+  themed_label_->SetEnabledColor(GetLabelColor());
+  neutral_label_->SetEnabledColor(GetLabelColor());
 }
 
 void DarkModeDetailedView::UpdateToggleButton(bool dark_mode_enabled) {

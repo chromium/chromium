@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 
 namespace views {
+class Label;
 class RadioButton;
 class ToggleButton;
 }  // namespace views
@@ -26,6 +27,7 @@ class DarkModeDetailedView : public TrayDetailedView {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   // Updates the status of |toggle_| on |dark_mode_enabled|.
   void UpdateToggleButton(bool dark_mode_enabled);
@@ -39,6 +41,8 @@ class DarkModeDetailedView : public TrayDetailedView {
   views::ToggleButton* toggle_ = nullptr;
   views::RadioButton* themed_mode_button_ = nullptr;
   views::RadioButton* neutral_mode_button_ = nullptr;
+  views::Label* themed_label_ = nullptr;
+  views::Label* neutral_label_ = nullptr;
 };
 
 }  // namespace ash
