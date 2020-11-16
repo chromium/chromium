@@ -31,14 +31,6 @@ void UnsentLogStoreMetricsImpl::RecordDroppedLogsNum(int dropped_logs_num) {
   base::UmaHistogramCounts1M("UMA.UnsentLogs.Dropped", dropped_logs_num);
 }
 
-void RecordIntendingToSentLogs(int num) {
-  base::UmaHistogramExactLinear("UMA.UnsentLogs.IntendingToSend", num, 22);
-}
-
-void RecordSentLog() {
-  base::UmaHistogramBoolean("UMA.UnsentLogs.Sent", true);
-}
-
 void UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics(
     int unsent_samples_count,
     int sent_samples_count,

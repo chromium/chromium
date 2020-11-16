@@ -40,20 +40,9 @@ class UnsentLogStoreMetrics {
   virtual void RecordCompressionRatio(size_t compressed_size,
                                       size_t original_size);
 
-  // Records the size of a dropped log in bytes.
   virtual void RecordDroppedLogSize(size_t size);
 
-  // Record the number of logs that were dropped (not staged).  These include
-  // logs that were dropped due to be being too large and also logs that were
-  // dropped because there were too many.
   virtual void RecordDroppedLogsNum(int dropped_logs_num);
-
-  // Records the number of logs that were not dropped and instead staged /
-  // intended to be sent.
-  virtual void RecordIntendingToSentLogs(int num);
-
-  // Record when a single staged log was sent.
-  virtual void RecordSentLog();
 
   virtual void RecordLastUnsentLogMetadataMetrics(int unsent_samples_count,
                                                   int sent_samples_count,
