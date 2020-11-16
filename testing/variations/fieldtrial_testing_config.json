@@ -777,6 +777,26 @@
             ]
         }
     ],
+    "AutofillEnableSupportForMoreStructureInNames": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableSupportForMoreStructureInNames",
+                    "enable_features": [
+                        "AutofillEnableSupportForMoreStructureInNames"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillFieldMetadata": [
         {
             "platforms": [
