@@ -144,8 +144,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
   void InitXkbInputMethodsForTesting(const InputMethodDescriptors& imes);
 
   // Map from input method ID to associated input method descriptor.
-  typedef std::map<
-    std::string, InputMethodDescriptor> InputMethodIdToDescriptorMap;
+  using InputMethodIdToDescriptorMap =
+      std::map<std::string, InputMethodDescriptor>;
 
   // Returns the fallback input method descriptor (the very basic US
   // keyboard). This function is mostly used for testing, but may be used
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
       const InputMethodDescriptor& input_method, bool short_name) const;
 
   // Map from language code to associated input method IDs, etc.
-  typedef std::multimap<std::string, std::string> LanguageCodeToIdsMap;
+  using LanguageCodeToIdsMap = std::multimap<std::string, std::string>;
 
   LanguageCodeToIdsMap language_code_to_ids_;
   InputMethodIdToDescriptorMap id_to_descriptor_;

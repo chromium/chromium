@@ -14,7 +14,7 @@ namespace chromeos {
 namespace input_method {
 
 class InputMethodDescriptor;
-typedef std::vector<InputMethodDescriptor> InputMethodDescriptors;
+using InputMethodDescriptors = std::vector<InputMethodDescriptor>;
 
 namespace allowlist {
 

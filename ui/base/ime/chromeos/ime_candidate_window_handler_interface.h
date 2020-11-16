@@ -16,7 +16,7 @@ class Rect;
 
 namespace ui {
 class CandidateWindow;
-}
+}  // namespace ui
 
 namespace chromeos {
 
@@ -24,7 +24,7 @@ namespace chromeos {
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
     IMECandidateWindowHandlerInterface {
  public:
-  virtual ~IMECandidateWindowHandlerInterface() {}
+  virtual ~IMECandidateWindowHandlerInterface() = default;
 
   // Called when the IME updates the lookup table.
   virtual void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
   virtual void FocusStateChanged(bool is_focused) {}
 
  protected:
-  IMECandidateWindowHandlerInterface() {}
+  IMECandidateWindowHandlerInterface() = default;
 };
 
 }  // namespace chromeos

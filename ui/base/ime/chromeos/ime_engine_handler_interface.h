@@ -34,13 +34,13 @@ struct AssistiveWindowButton;
 // A interface to handle the engine handler method call.
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
  public:
-  typedef base::OnceCallback<void(bool consumed)> KeyEventDoneCallback;
+  using KeyEventDoneCallback = base::OnceCallback<void(bool)>;
 
   // A information about a focused text input field.
   // A type of each member is based on the html spec, but InputContext can be
   // used to specify about a non html text field like Omnibox.
   struct InputContext {
-    InputContext() {}
+    InputContext() = default;
     InputContext(TextInputType type_,
                  TextInputMode mode_,
                  int flags_,
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
     bool should_do_learning = false;
   };
 
-  virtual ~IMEEngineHandlerInterface() {}
+  virtual ~IMEEngineHandlerInterface() = default;
 
   // Called when the Chrome input field get the focus.
   virtual void FocusIn(const InputContext& input_context) = 0;
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   virtual void SetCastingEnabled(bool casting_enabled) = 0;
 
  protected:
-  IMEEngineHandlerInterface() {}
+  IMEEngineHandlerInterface() = default;
 };
 
 }  // namespace ui

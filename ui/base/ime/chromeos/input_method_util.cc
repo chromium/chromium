@@ -760,7 +760,7 @@ void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
         input_method.language_codes();
     id_to_descriptor_[input_method.id()] = input_method;
 
-    typedef LanguageCodeToIdsMap::const_iterator It;
+    using It = LanguageCodeToIdsMap::const_iterator;
     for (const auto& language_code : language_codes) {
       std::pair<It, It> range =
           language_code_to_ids_.equal_range(language_code);

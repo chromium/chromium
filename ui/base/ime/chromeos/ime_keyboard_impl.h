@@ -11,7 +11,7 @@
 
 namespace ui {
 class InputController;
-}
+}  // namespace ui
 
 namespace chromeos {
 namespace input_method {

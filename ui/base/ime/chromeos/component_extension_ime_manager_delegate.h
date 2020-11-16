@@ -19,7 +19,7 @@ struct ComponentExtensionIME;
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
     ComponentExtensionIMEManagerDelegate {
  public:
-  virtual ~ComponentExtensionIMEManagerDelegate() {}
+  virtual ~ComponentExtensionIMEManagerDelegate() = default;
 
   // Lists installed component extension IMEs.
   virtual std::vector<ComponentExtensionIME> ListIME() = 0;

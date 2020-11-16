@@ -19,11 +19,10 @@ namespace input_method {
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) FakeInputMethodDelegate
     : public InputMethodDelegate {
  public:
-  typedef base::RepeatingCallback<base::string16(
-      const std::string& language_code)>
-      LanguageNameLocalizationCallback;
-  typedef base::RepeatingCallback<base::string16(int resource_id)>
-      GetLocalizedStringCallback;
+  using LanguageNameLocalizationCallback =
+      base::RepeatingCallback<base::string16(const std::string&)>;
+  using GetLocalizedStringCallback =
+      base::RepeatingCallback<base::string16(int)>;
 
   FakeInputMethodDelegate();
   ~FakeInputMethodDelegate() override;

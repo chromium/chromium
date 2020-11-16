@@ -19,7 +19,7 @@ MockIMEInputContextHandler::MockIMEInputContextHandler()
       update_preedit_text_call_count_(0),
       delete_surrounding_text_call_count_(0) {}
 
-MockIMEInputContextHandler::~MockIMEInputContextHandler() {}
+MockIMEInputContextHandler::~MockIMEInputContextHandler() = default;
 
 void MockIMEInputContextHandler::CommitText(const std::string& text) {
   ++commit_text_call_count_;

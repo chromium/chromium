@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   GURL input_view_url_;
 };
 
-typedef std::vector<InputMethodDescriptor> InputMethodDescriptors;
+using InputMethodDescriptors = std::vector<InputMethodDescriptor>;
 
 }  // namespace input_method
 }  // namespace chromeos

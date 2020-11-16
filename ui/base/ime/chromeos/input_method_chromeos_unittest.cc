@@ -43,7 +43,7 @@ namespace {
 const base::string16 kSampleText = base::UTF8ToUTF16(
     "\xE3\x81\x82\xE3\x81\x84\xE3\x81\x86\xE3\x81\x88\xE3\x81\x8A");
 
-typedef IMEEngineHandlerInterface::KeyEventDoneCallback KeyEventCallback;
+using KeyEventCallback = IMEEngineHandlerInterface::KeyEventDoneCallback;
 
 uint32_t GetOffsetInUTF16(const base::string16& utf16_string,
                           uint32_t utf8_offset) {

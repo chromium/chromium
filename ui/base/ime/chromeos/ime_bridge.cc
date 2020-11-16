@@ -25,7 +25,7 @@ class IMEBridgeImpl : public IMEBridge {
                                ui::TextInputClient::FOCUS_REASON_NONE,
                                false /* should_do_learning */) {}
 
-  ~IMEBridgeImpl() override {}
+  ~IMEBridgeImpl() override = default;
 
   // IMEBridge override.
   IMEInputContextHandlerInterface* GetInputContextHandler() const override {
@@ -118,9 +118,9 @@ class IMEBridgeImpl : public IMEBridge {
 
 ///////////////////////////////////////////////////////////////////////////////
 // IMEBridge
-IMEBridge::IMEBridge() {}
+IMEBridge::IMEBridge() = default;
 
-IMEBridge::~IMEBridge() {}
+IMEBridge::~IMEBridge() = default;
 
 // static.
 void IMEBridge::Initialize() {

@@ -9,7 +9,7 @@ namespace chromeos {
 namespace input_method {
 
 MockComponentExtensionIMEManagerDelegate::
-    MockComponentExtensionIMEManagerDelegate() {}
+    MockComponentExtensionIMEManagerDelegate() = default;
 
 MockComponentExtensionIMEManagerDelegate::
     ~MockComponentExtensionIMEManagerDelegate() = default;
