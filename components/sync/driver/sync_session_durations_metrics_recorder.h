@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -74,10 +74,11 @@ class SyncSessionDurationsMetricsRecorder
   SyncService* const sync_service_;
   signin::IdentityManager* const identity_manager_;
 
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_observer_{this};
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Tracks the elapsed active session time while the browser is open. The timer
   // is absent if there's no active session.
