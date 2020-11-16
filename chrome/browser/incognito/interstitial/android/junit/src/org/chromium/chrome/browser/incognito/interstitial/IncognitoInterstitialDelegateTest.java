@@ -10,8 +10,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -37,7 +34,7 @@ public class IncognitoInterstitialDelegateTest {
     private static final String sCurrentUrlPage = "dummy_url_string.com";
 
     @Mock
-    private HelpAndFeedbackLauncherImpl mHelpAndFeedbackLauncherImplMock;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncherMock;
 
     @Mock
     private Profile mProfileMock;
@@ -65,7 +62,7 @@ public class IncognitoInterstitialDelegateTest {
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mIncognitoInterstitialDelegate = new IncognitoInterstitialDelegate(mActivityMock,
-                mRegularTabModelMock, mIncognitoTabCreatorMock, mHelpAndFeedbackLauncherImplMock);
+                mRegularTabModelMock, mIncognitoTabCreatorMock, mHelpAndFeedbackLauncherMock);
     }
 
     @After
@@ -76,16 +73,14 @@ public class IncognitoInterstitialDelegateTest {
     private IncognitoInterstitialDelegate mIncognitoInterstitialDelegate;
 
     @Test
-    @MediumTest
     public void testOpenLearnMorePage() {
         mIncognitoInterstitialDelegate.openLearnMorePage();
-        verify(mHelpAndFeedbackLauncherImplMock)
+        verify(mHelpAndFeedbackLauncherMock)
                 .show(mActivityMock, sIncognitoLearnMoreText, mProfileMock.getPrimaryOTRProfile(),
                         null);
     }
 
     @Test
-    @MediumTest
     public void testOpenCurrentUrlInIncognitoTab() {
         mIncognitoInterstitialDelegate.openCurrentUrlInIncognitoTab();
         verify(mIncognitoTabCreatorMock).launchUrl(sCurrentUrlPage, TabLaunchType.FROM_CHROME_UI);

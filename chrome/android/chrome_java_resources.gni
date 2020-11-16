@@ -850,7 +850,6 @@ chrome_java_resources = [
   "java/res/layout/homepage_editor.xml",
   "java/res/layout/horizontal_divider.xml",
   "java/res/layout/incognito_description_layout.xml",
-  "java/res/layout/incognito_interstitial_bottom_sheet_view.xml",
   "java/res/layout/incognito_toggle_tabs.xml",
   "java/res/layout/infobar_control_url_ellipsizer.xml",
   "java/res/layout/infobar_footer.xml",

@@ -9,7 +9,6 @@ import android.app.Activity;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
