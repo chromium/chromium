@@ -73,7 +73,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the IME becomes the active IME.
     virtual void OnActivate(const std::string& engine_id) = 0;

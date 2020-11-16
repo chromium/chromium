@@ -210,7 +210,7 @@ PersonalInfoSuggester::PersonalInfoSuggester(
       ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
 }
 
-PersonalInfoSuggester::~PersonalInfoSuggester() {}
+PersonalInfoSuggester::~PersonalInfoSuggester() = default;
 
 void PersonalInfoSuggester::OnFocus(int context_id) {
   context_id_ = context_id;

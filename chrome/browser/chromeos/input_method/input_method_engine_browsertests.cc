@@ -136,7 +136,7 @@ class KeyEventDoneCallback {
  public:
   explicit KeyEventDoneCallback(bool expected_argument)
       : expected_argument_(expected_argument) {}
-  ~KeyEventDoneCallback() {}
+  ~KeyEventDoneCallback() = default;
 
   void Run(bool consumed) {
     if (consumed == expected_argument_)

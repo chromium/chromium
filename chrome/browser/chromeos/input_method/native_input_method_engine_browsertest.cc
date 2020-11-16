@@ -104,7 +104,7 @@ class TestPersonalDataManagerObserver
     autofill::PersonalDataManagerFactory::GetForProfile(profile_)->AddObserver(
         this);
   }
-  ~TestPersonalDataManagerObserver() override {}
+  ~TestPersonalDataManagerObserver() override = default;
 
   // Waits for the PersonalDataManager's list of profiles to be updated.
   void Wait() {

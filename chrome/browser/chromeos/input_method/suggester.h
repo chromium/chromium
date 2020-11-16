@@ -17,7 +17,7 @@ namespace chromeos {
 // suggestion according to the user action.
 class Suggester {
  public:
-  virtual ~Suggester() {}
+  virtual ~Suggester() = default;
 
   // Called when a text field gains focus, and suggester starts working.
   virtual void OnFocus(int context_id) = 0;

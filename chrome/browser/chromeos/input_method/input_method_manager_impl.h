@@ -351,8 +351,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   uint32_t features_enabled_state_;
 
   // The engine map from extension_id to an engine.
-  typedef std::map<std::string, ui::IMEEngineHandlerInterface*> EngineMap;
-  typedef std::map<Profile*, EngineMap, ProfileCompare> ProfileEngineMap;
+  using EngineMap = std::map<std::string, ui::IMEEngineHandlerInterface*>;
+  using ProfileEngineMap = std::map<Profile*, EngineMap, ProfileCompare>;
   ProfileEngineMap engine_map_;
 
   content::NotificationRegistrar notification_registrar_;

@@ -133,7 +133,7 @@ InputMethodEngineBase::KeyboardEvent::KeyboardEvent() = default;
 InputMethodEngineBase::KeyboardEvent::KeyboardEvent(
     const KeyboardEvent& other) = default;
 
-InputMethodEngineBase::KeyboardEvent::~KeyboardEvent() {}
+InputMethodEngineBase::KeyboardEvent::~KeyboardEvent() = default;
 
 InputMethodEngineBase::InputMethodEngineBase()
     : current_input_type_(ui::TEXT_INPUT_TYPE_NONE),
@@ -146,7 +146,7 @@ InputMethodEngineBase::InputMethodEngineBase()
       handling_key_event_(false),
       pref_change_registrar_(nullptr) {}
 
-InputMethodEngineBase::~InputMethodEngineBase() {}
+InputMethodEngineBase::~InputMethodEngineBase() = default;
 
 void InputMethodEngineBase::Initialize(
     std::unique_ptr<InputMethodEngineBase::Observer> observer,
@@ -390,7 +390,7 @@ ui::KeyEvent InputMethodEngineBase::ConvertKeyboardEventToUIKeyEvent(
     const KeyboardEvent& event) {
   const ui::EventType type =
       (event.type == "keyup") ? ui::ET_KEY_RELEASED : ui::ET_KEY_PRESSED;
-  ui::KeyboardCode key_code = static_cast<ui::KeyboardCode>(event.key_code);
+  auto key_code = static_cast<ui::KeyboardCode>(event.key_code);
 
   int flags = ui::EF_NONE;
   flags |= event.alt_key ? ui::EF_ALT_DOWN : ui::EF_NONE;
@@ -422,8 +422,7 @@ bool InputMethodEngineBase::SendKeyEvents(
     return false;
   }
 
-  for (size_t i = 0; i < events.size(); ++i) {
-    const KeyboardEvent& event = events[i];
+  for (const auto& event : events) {
     ui::KeyEvent ui_event = ConvertKeyboardEventToUIKeyEvent(event);
     if (!SendKeyEvent(&ui_event, event.code, error))
       return false;
@@ -456,11 +455,11 @@ bool InputMethodEngineBase::SetComposition(
   composition_text.selection.set_end(selection_end);
 
   // TODO: Add support for displaying selected text in the composition string.
-  for (auto segment = segments.begin(); segment != segments.end(); ++segment) {
+  for (auto segment : segments) {
     ui::ImeTextSpan ime_text_span;
 
     ime_text_span.underline_color = SK_ColorTRANSPARENT;
-    switch (segment->style) {
+    switch (segment.style) {
       case SEGMENT_STYLE_UNDERLINE:
         ime_text_span.thickness = ui::ImeTextSpan::Thickness::kThin;
         break;
@@ -474,8 +473,8 @@ bool InputMethodEngineBase::SetComposition(
         continue;
     }
 
-    ime_text_span.start_offset = segment->start;
-    ime_text_span.end_offset = segment->end;
+    ime_text_span.start_offset = segment.start;
+    ime_text_span.end_offset = segment.end;
     composition_text.ime_text_spans.push_back(ime_text_span);
   }
 
