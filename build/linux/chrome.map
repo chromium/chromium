@@ -82,6 +82,8 @@ global:
   localtime64_r;
   localtime_r;
 
+  v8dbg_*;
+
 local:
   *;
 };
