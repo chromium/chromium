@@ -548,6 +548,49 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, SwitchToProfile) {
   EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
 }
 
+// Prepares the setup for AddMultipleProfiles test, creates multiple browser
+// windows with multiple browser windows.
+IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
+
+  base::FilePath path_profile1 =
+      GetFirstNonSigninNonLockScreenAppProfile(&storage);
+  ASSERT_NE(0U, initial_profile_count);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  // Create an additional profile.
+  base::FilePath path_profile2 =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      path_profile2, base::Bind(&OnUnblockOnProfileCreation, &run_loop),
+      base::string16(), std::string());
+  // Run the message loop to allow profile creation to take place; the loop is
+  // terminated by OnUnblockOnProfileCreation when the profile is created.
+  run_loop.Run();
+  BrowserList* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
+  EXPECT_EQ(1U, browser_list->size());
+
+  // Open a browser window for the first profile.
+  profiles::SwitchToProfile(path_profile1, false, kOnProfileSwitchDoNothing);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1U, browser_list->size());
+  EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
+  // Open a browser window for the second profile.
+  profiles::SwitchToProfile(path_profile2, false, kOnProfileSwitchDoNothing);
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2U, browser_list->size());
+  EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, AddMultipleProfiles) {
+  // Verifies that the browser doesn't crash when it is restarted.
+}
+
 // Flakes on Windows: http://crbug.com/314905
 #if defined(OS_WIN)
 #define MAYBE_EphemeralProfile DISABLED_EphemeralProfile
