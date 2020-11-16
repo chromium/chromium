@@ -4,7 +4,9 @@
 
 // clang-format off
 // #import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.m.js';
-// #import {BrowserChannel,UpdateStatus,AboutPageBrowserProxyImpl,LifetimeBrowserProxyImpl,Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.m.js';
+// #import {BrowserChannel,UpdateStatus,Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,LifetimeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
@@ -495,10 +497,13 @@ cr.define('settings_about_page', function() {
   suite('DetailedBuildInfoTest', function() {
     let page = null;
     let browserProxy = null;
+    let deviceNameBrowserProxy = null;
 
     setup(function() {
       browserProxy = new TestAboutPageBrowserProxyChromeOS();
+      deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
       settings.AboutPageBrowserProxyImpl.instance_ = browserProxy;
+      DeviceNameBrowserProxyImpl.instance_ = deviceNameBrowserProxy;
       PolymerTest.clearBody();
     });
 
@@ -624,6 +629,20 @@ cr.define('settings_about_page', function() {
 
     test('CheckCopyBuildDetails', function() {
       checkCopyBuildDetailsButton();
+    });
+
+    test('DeviceName', async () => {
+      loadTimeData.overrideValues({
+        isHostnameSettingEnabled: true,
+      });
+
+      deviceNameBrowserProxy.setDeviceName('TestDeviceName');
+
+      page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+      await deviceNameBrowserProxy.whenCalled('getDeviceNameMetadata');
+
+      assertEquals(page.$$('#deviceName').innerText, 'TestDeviceName');
     });
   });
 

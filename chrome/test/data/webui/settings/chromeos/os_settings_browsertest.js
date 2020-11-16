@@ -73,12 +73,18 @@ var OSSettingsAboutPageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kEnableHostnameSetting']};
+  }
+
+  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
       BROWSER_SETTINGS_PATH + 'test_lifetime_browser_proxy.js',
       'test_about_page_browser_proxy_chromeos.js',
+      'test_device_name_browser_proxy.js',
       'os_about_page_tests.js',
     ]);
   }

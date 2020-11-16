@@ -14,6 +14,7 @@
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="channel_switcher_dialog.html">
+<link rel="import" href="device_name_browser_proxy.html">
 <link rel="import" href="edit_hostname_dialog.html">
 
 <dom-module id="settings-detailed-build-info">
@@ -70,8 +71,8 @@
       <div class="settings-box two-line">
         <div class="start">
           <div role="heading">$i18n{aboutDeviceName}</div>
-          <div aria-hidden="true" class="secondary">
-            ChromeOS-102938
+          <div id="deviceName" aria-hidden="true" class="secondary">
+            [[deviceNameText_]]
           </div>
         </div>
         <cr-icon-button class="icon-edit" on-click="onEditHostnameTap_">

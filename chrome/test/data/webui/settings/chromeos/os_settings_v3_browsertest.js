@@ -32,6 +32,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
+        'chromeos::features::kEnableHostnameSetting',
         'chromeos::features::kOsSettingsPolymer3',
         'chromeos::features::kUpdatedCellularActivationUi',
       ],

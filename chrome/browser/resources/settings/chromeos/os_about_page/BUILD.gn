@@ -3,19 +3,27 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
   deps = [
     ":channel_switcher_dialog",
     ":detailed_build_info",
+    ":device_name_browser_proxy",
     ":edit_hostname_dialog",
     ":os_about_page",
   ]
 }
 
+js_library("device_name_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
 js_library("os_about_page") {
   deps = [
+    ":device_name_browser_proxy",
     "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
@@ -67,6 +75,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":channel_switcher_dialog.m",
     ":detailed_build_info.m",
+    ":device_name_browser_proxy.m",
     ":edit_hostname_dialog.m",
     ":os_about_page.m",
     ":update_warning_dialog.m",
@@ -100,6 +109,13 @@ js_library("detailed_build_info.m") {
   extra_deps = [ ":detailed_build_info_module" ]
 }
 
+js_library("device_name_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/device_name_browser_proxy.m.js" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("edit_hostname_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/edit_hostname_dialog.m.js" ]
   deps = [
@@ -114,6 +130,7 @@ js_library("edit_hostname_dialog.m") {
 js_library("os_about_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/os_about_page.m.js" ]
   deps = [
+    ":device_name_browser_proxy.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
@@ -147,6 +164,7 @@ group("polymer3_elements") {
     ":channel_switcher_dialog_module",
     ":detailed_build_info_module",
     ":edit_hostname_dialog_module",
+    ":modulize",
     ":os_about_page_module",
     ":update_warning_dialog_module",
   ]
@@ -195,4 +213,8 @@ polymer_modulizer("update_warning_dialog") {
   migrated_imports = settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
+}
+
+js_modulizer("modulize") {
+  input_files = [ "device_name_browser_proxy.js" ]
 }

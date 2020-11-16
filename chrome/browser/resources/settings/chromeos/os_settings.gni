@@ -149,6 +149,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/cr_components/chromeos/network/network_listener_behavior.html|NetworkListenerBehavior",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printer_types.html|PrinterListEntry,PrinterType",
                              "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html|AboutPageBrowserProxyImpl,AboutPageUpdateInfo,AboutPageBrowserProxy,browserChannelToI18nId,VersionInfo,ChannelInfo,BrowserChannel,isTargetChannelMoreStable,UpdateStatus,UpdateStatusChangedEvent,RegulatoryInfo,TPMFirmwareUpdateStatusChangedEvent",
+                             "chrome/browser/resources/settings/chromeos/os_about_page/device_name_browser_proxy.html|DeviceNameBrowserProxy,DeviceNameBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.html|MainPageBehavior",
                              "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
                            ]

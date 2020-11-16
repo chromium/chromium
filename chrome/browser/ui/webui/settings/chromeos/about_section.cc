@@ -15,6 +15,7 @@
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/ui/webui/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/device_name_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -341,6 +342,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void AboutSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::AboutHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
 }
 
 int AboutSection::GetSectionNameMessageId() const {

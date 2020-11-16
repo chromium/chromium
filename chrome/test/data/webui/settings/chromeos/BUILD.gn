@@ -80,6 +80,7 @@ js_modulizer("modulize") {
     "people_page_kerberos_accounts_test.js",
     "personalization_page_test.js",
     "smart_inputs_page_test.js",
+    "test_device_name_browser_proxy.js",
     "test_os_languages_browser_proxy.js",
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",

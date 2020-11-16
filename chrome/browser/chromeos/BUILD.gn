@@ -3887,6 +3887,7 @@ source_set("unit_tests") {
     "../ui/webui/settings/chromeos/ambient_mode_handler_unittest.cc",
     "../ui/webui/settings/chromeos/calculator/size_calculator_test_api.h",
     "../ui/webui/settings/chromeos/device_keyboard_handler_unittest.cc",
+    "../ui/webui/settings/chromeos/device_name_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_storage_handler_unittest.cc",
     "../ui/webui/settings/chromeos/internet_handler_unittest.cc",
     "../ui/webui/settings/chromeos/multidevice_handler_unittest.cc",

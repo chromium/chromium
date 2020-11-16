@@ -2466,6 +2466,8 @@ static_library("ui") {
       "webui/settings/chromeos/device_display_handler.h",
       "webui/settings/chromeos/device_keyboard_handler.cc",
       "webui/settings/chromeos/device_keyboard_handler.h",
+      "webui/settings/chromeos/device_name_handler.cc",
+      "webui/settings/chromeos/device_name_handler.h",
       "webui/settings/chromeos/device_pointer_handler.cc",
       "webui/settings/chromeos/device_pointer_handler.h",
       "webui/settings/chromeos/device_power_handler.cc",
