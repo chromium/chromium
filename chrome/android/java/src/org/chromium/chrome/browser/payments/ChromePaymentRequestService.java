@@ -37,7 +37,6 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
-import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.Section;
 import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -65,9 +64,8 @@ import java.util.Set;
  * This is the Clank specific parts of {@link PaymentRequest}, with the parts shared with WebLayer
  * living in {@link PaymentRequestService}.
  */
-public class ChromePaymentRequestService implements BrowserPaymentRequest,
-                                                    PaymentUiService.Delegate, PaymentUIsObserver {
-
+public class ChromePaymentRequestService
+        implements BrowserPaymentRequest, PaymentUiService.Delegate {
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
     // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
     // crbug.com/1122148.
@@ -130,8 +128,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
                 /*params=*/mPaymentRequestService, mWebContents,
-                paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin,
-                /*observer=*/this);
+                paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin);
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onPaymentUiServiceCreated(
                     mPaymentUiService);
@@ -812,21 +809,21 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         mPaymentRequestService.onPayerDetailChange(detail);
     }
 
-    // Implement PaymentUIsObserver:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void onPaymentRequestUIFaviconNotAvailable() {
         if (mPaymentRequestService == null) return;
         mPaymentRequestService.warnNoFavicon();
     }
 
-    // Implement PaymentUIsObserver:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void onShippingOptionChange(String optionId) {
         if (mPaymentRequestService == null) return;
         mPaymentRequestService.onShippingOptionChange(optionId);
     }
 
-    // Implement PaymentUIsObserver.onLeavingCurrentTab:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void onLeavingCurrentTab(String reason) {
         if (mPaymentRequestService == null) return;
@@ -834,7 +831,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         disconnectFromClientWithDebugMessage(reason);
     }
 
-    // Implement PaymentUIsObserver:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void onUiServiceError(String error) {
         mJourneyLogger.setAborted(AbortReason.OTHER);
@@ -844,7 +841,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         }
     }
 
-    // Implement PaymentUIsObserver:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void onShippingAddressChange(PaymentAddress address) {
         if (mPaymentRequestService == null) return;
