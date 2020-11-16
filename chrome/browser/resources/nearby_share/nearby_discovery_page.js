@@ -99,6 +99,25 @@ Polymer({
       type: Array,
       value: [],
     },
+
+    /**
+     * Header text for error. The error section is not displayed if this is
+     * falsey.
+     * @private {?string}
+     */
+    errorTitle_: {
+      type: String,
+      value: null,
+    },
+
+    /**
+     * Description text for error, displayed under the error title.
+     * @private {?string}
+     */
+    errorDescription_: {
+      type: String,
+      value: null,
+    },
   },
 
   listeners: {
@@ -187,7 +206,9 @@ Polymer({
         .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
         .then(response => {
           if (!response.success) {
-            // TODO(crbug.com/1123934): Show error.
+            this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+            this.errorDescription_ =
+                this.i18n('nearbyShareErrorSomethingWrong');
             return;
           }
         });
@@ -259,7 +280,9 @@ Polymer({
           const {result, transferUpdateListener, confirmationManager} =
               response;
           if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
-            // TODO(crbug.com/crbug.com/1123934): Show error.
+            this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+            this.errorDescription_ =
+                this.i18n('nearbyShareErrorSomethingWrong');
             return;
           }
 
