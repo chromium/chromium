@@ -10,8 +10,24 @@
 namespace mojo {
 
 using payments::mojom::blink::BillingResponseCode;
+using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 using payments::mojom::blink::ItemDetailsPtr;
 using payments::mojom::blink::PurchaseDetailsPtr;
+
+WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
+    const CreateDigitalGoodsResponseCode& input) {
+  switch (input) {
+    case CreateDigitalGoodsResponseCode::kOk:
+      return "ok";
+    case CreateDigitalGoodsResponseCode::kError:
+      return "error";
+    case CreateDigitalGoodsResponseCode::kUnsupportedPaymentMethod:
+      return "unsupportedPaymentMethod";
+    case CreateDigitalGoodsResponseCode::kUnsupportedContext:
+      return "unsupportedContext";
+  }
+  NOTREACHED();
+}
 
 blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
     const ItemDetailsPtr& input) {

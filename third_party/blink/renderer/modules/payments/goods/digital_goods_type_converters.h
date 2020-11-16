@@ -15,6 +15,14 @@
 
 namespace mojo {
 
+template <>
+struct MODULES_EXPORT
+    TypeConverter<WTF::String,
+                  payments::mojom::blink::CreateDigitalGoodsResponseCode> {
+  static WTF::String Convert(
+      const payments::mojom::blink::CreateDigitalGoodsResponseCode& input);
+};
+
 // Converts a mojo ItemDetails into a WebIDL ItemDetails.
 // Returns a null IDL struct when a null mojo struct is given as input.
 template <>

@@ -8,13 +8,18 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_service.h"
+#include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
+#include "third_party/blink/renderer/modules/payments/goods/util.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 namespace {
 
+using blink::digital_goods_util::LogConsoleError;
 using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 
 void OnCreateDigitalGoodsResponse(
@@ -23,7 +28,8 @@ void OnCreateDigitalGoodsResponse(
     mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
   if (code != CreateDigitalGoodsResponseCode::kOk) {
     DCHECK(!pending_remote);
-    VLOG(1) << "CreateDigitalGoodsResponseCode " << code;
+    LogConsoleError(resolver->GetScriptState(),
+                    "GetDigitalGoodsService: " + mojo::ConvertTo<String>(code));
     resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
@@ -53,13 +59,14 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   auto promise = resolver->Promise();
 
   if (payment_method.IsEmpty()) {
-    VLOG(1) << "GetDigitalGoodsService error: Empty payment method.";
+    LogConsoleError(script_state,
+                    "GetDigitalGoodsService: Empty payment method.");
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
 
   if (!script_state->ContextIsValid()) {
-    VLOG(1) << "GetDigitalGoodsService error: Context invalid.";
+    LogConsoleError(script_state, "GetDigitalGoodsService: internal error.");
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
@@ -68,14 +75,15 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   DCHECK(execution_context);
 
   if (execution_context->IsContextDestroyed()) {
-    VLOG(1) << "GetDigitalGoodsService error: Context destroyed.";
+    LogConsoleError(script_state, "GetDigitalGoodsService: internal error.");
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
 
   if (!execution_context->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kPayment)) {
-    VLOG(1) << "GetDigitalGoodsService error: Payments not enabled.";
+    LogConsoleError(script_state,
+                    "GetDigitalGoodsService: Payments not enabled.");
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
