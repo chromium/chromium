@@ -343,8 +343,11 @@ void AmbientController::OnFirstSessionStarted() {
 
 void AmbientController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!IsAmbientModeEnabled() || GetPrimaryUserPrefService() != pref_service)
+  // TODO(b/170510846) make ambient controller handle pref off state better
+  if (!AmbientClient::Get()->IsAmbientModeAllowed() ||
+      GetPrimaryUserPrefService() != pref_service) {
     return;
+  }
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
