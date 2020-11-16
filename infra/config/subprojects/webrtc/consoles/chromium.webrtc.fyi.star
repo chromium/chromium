@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+load("//console-header.star", "HEADER")
+
 luci.console_view(
     name = "chromium.webrtc.fyi",
-    header = "//chromium-header.textpb",
+    header = HEADER,
     repo = "https://webrtc.googlesource.com/src",
     entries = [
         luci.console_view_entry(
