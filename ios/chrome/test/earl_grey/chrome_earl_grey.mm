@@ -1093,6 +1093,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   // Page title is added asynchronously, so wait for its appearance.
   [self waitForMatcher:grey_allOf(ActivityViewHeader(pageTitle),
                                   grey_sufficientlyVisible(), nil)];
+
+  // Dismiss the Activity View by tapping outside its bounds.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Unified consent utilities
