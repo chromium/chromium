@@ -117,6 +117,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // for showing tooltips without stuttering over gaps.
   void UpdateVisibleShelfItemBoundsUnion();
 
+  // Returns true if the given location is within the bounds of all visiable app
+  // icons. Used for tool tip visibility and scrolling event propogation.
+  bool LocationInsideVisibleShelfItemBounds(const gfx::Point& location) const;
+
   // ShelfTooltipDelegate:
   bool ShouldShowTooltipForView(const views::View* view) const override;
   bool ShouldHideTooltip(const gfx::Point& cursor_location) const override;

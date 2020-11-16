@@ -497,12 +497,16 @@ void ShelfView::AnnounceShelfItemNotificationBadge(views::View* button) {
                                                /*send_native_event=*/true);
 }
 
+bool ShelfView::LocationInsideVisibleShelfItemBounds(
+    const gfx::Point& location) const {
+  return visible_shelf_item_bounds_union_.Contains(location);
+}
+
 bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location) const {
   // There are thin gaps between launcher buttons but the tooltip shouldn't hide
   // in the gaps, but the tooltip should hide if the mouse moved totally outside
   // of the buttons area.
-
-  return !visible_shelf_item_bounds_union_.Contains(cursor_location);
+  return !LocationInsideVisibleShelfItemBounds(cursor_location);
 }
 
 const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
