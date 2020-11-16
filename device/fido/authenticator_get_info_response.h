@@ -47,6 +47,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
   };
   base::Optional<uint32_t> remaining_discoverable_credentials;
+  base::Optional<bool> force_pin_change;
+  base::Optional<uint32_t> min_pin_length;
   AuthenticatorSupportedOptions options;
 
  private:

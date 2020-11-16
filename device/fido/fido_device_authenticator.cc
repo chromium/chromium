@@ -1032,6 +1032,14 @@ void FidoDeviceAuthenticator::GetUvToken(
                      std::move(permissions), std::move(callback)));
 }
 
+uint32_t FidoDeviceAuthenticator::MinPINLength() {
+  return device()->device_info()->min_pin_length.value_or(kMinPinLength);
+}
+
+bool FidoDeviceAuthenticator::ForcePINChange() {
+  return device()->device_info()->force_pin_change.value_or(false);
+}
+
 void FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken(
     base::Optional<std::string> rp_id,
     std::vector<pin::Permissions> permissions,

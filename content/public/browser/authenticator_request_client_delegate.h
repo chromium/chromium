@@ -238,6 +238,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void FidoAuthenticatorRemoved(base::StringPiece device_id) override;
   bool SupportsPIN() const override;
   void CollectPIN(
+      uint32_t min_pin_length,
       base::Optional<int> attempts,
       base::OnceCallback<void(std::string)> provide_pin_cb) override;
   void StartBioEnrollment(base::OnceClosure next_callback) override;

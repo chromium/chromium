@@ -486,16 +486,19 @@ void MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
 }
 
 void MakeCredentialRequestHandler::CollectNewPIN(
+    uint32_t min_pin_length,
     ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(base::nullopt, std::move(provide_pin_cb));
+  observer()->CollectPIN(min_pin_length, /*attempts=*/base::nullopt,
+                         std::move(provide_pin_cb));
 }
 
 void MakeCredentialRequestHandler::CollectExistingPIN(
     int attempts,
+    uint32_t min_pin_length,
     ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(attempts, std::move(provide_pin_cb));
+  observer()->CollectPIN(min_pin_length, attempts, std::move(provide_pin_cb));
 }
 
 void MakeCredentialRequestHandler::PromptForInternalUVRetry(int attempts) {

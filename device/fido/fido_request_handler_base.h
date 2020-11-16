@@ -133,6 +133,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // to set a PIN, or contains the number of PIN attempts remaining before a
     // hard lock.
     virtual void CollectPIN(
+        uint32_t min_pin_length,
         base::Optional<int> attempts,
         base::OnceCallback<void(std::string)> provide_pin_cb) = 0;
 

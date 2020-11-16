@@ -279,18 +279,28 @@ CtapDeviceResponseCode ConfirmPresentedPIN(
 
 // SetPIN sets the current PIN based on the ciphertext in |encrypted_pin|, given
 // that |shared_key| is the result of the ECDH key agreement.
-CtapDeviceResponseCode SetPIN(PINUVAuthProtocol protocol,
-                              VirtualCtap2Device::State* state,
-                              const std::vector<uint8_t>& shared_key,
-                              const std::vector<uint8_t>& encrypted_pin,
-                              const std::vector<uint8_t>& pin_auth) {
+CtapDeviceResponseCode SetPIN(
+    PINUVAuthProtocol protocol,
+    VirtualCtap2Device::State* state,
+    const std::vector<uint8_t>& shared_key,
+    const std::vector<uint8_t>& encrypted_pin,
+    const std::vector<uint8_t>& pin_auth,
+    base::Optional<base::span<const uint8_t>> current_encrypted_pin_hash) {
   const pin::Protocol& pin_protocol = pin::ProtocolVersion(protocol);
-  if (!pin_protocol.Verify(shared_key, encrypted_pin, pin_auth)) {
+  std::vector<uint8_t> pin_auth_bytes;
+  pin_auth_bytes.insert(pin_auth_bytes.begin(), encrypted_pin.begin(),
+                        encrypted_pin.end());
+  if (current_encrypted_pin_hash) {
+    pin_auth_bytes.insert(pin_auth_bytes.end(),
+                          current_encrypted_pin_hash->begin(),
+                          current_encrypted_pin_hash->end());
+  }
+  if (!pin_protocol.Verify(shared_key, pin_auth_bytes, pin_auth)) {
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
 
   if (encrypted_pin.size() < 64) {
-    return CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation;
+    return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
 
   std::vector<uint8_t> plaintext_pin =
@@ -303,7 +313,7 @@ CtapDeviceResponseCode SetPIN(PINUVAuthProtocol protocol,
   }
 
   plaintext_pin.resize(plaintext_pin.size() - padding_len);
-  if (padding_len == 0 || plaintext_pin.size() < 4 ||
+  if (padding_len == 0 || plaintext_pin.size() < state->min_pin_length ||
       plaintext_pin.size() > 63) {
     return CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation;
   }
@@ -312,6 +322,7 @@ CtapDeviceResponseCode SetPIN(PINUVAuthProtocol protocol,
                            plaintext_pin.size());
   state->pin_retries = kMaxPinRetries;
   state->uv_retries = kMaxUvRetries;
+  state->force_pin_change = false;
 
   return CtapDeviceResponseCode::kSuccess;
 }
@@ -630,6 +641,13 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     device_info_->remaining_discoverable_credentials =
         remaining_resident_credentials();
   }
+
+  if (config.min_pin_length_support) {
+    DCHECK(config.pin_support);
+    DCHECK(config.pin_uv_auth_token_support);
+    device_info_->min_pin_length = mutable_state()->min_pin_length;
+    device_info_->force_pin_change = mutable_state()->force_pin_change;
+  }
 }
 
 VirtualCtap2Device::~VirtualCtap2Device() = default;
@@ -638,10 +656,23 @@ void VirtualCtap2Device::SetPin(std::string pin) {
   DCHECK_NE(
       device_info_->options.client_pin_availability,
       AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+  DCHECK_GE(pin.size(), mutable_state()->min_pin_length);
   mutable_state()->pin = std::move(pin);
   mutable_state()->pin_retries = device::kMaxPinRetries;
   device_info_->options.client_pin_availability =
       AuthenticatorSupportedOptions::ClientPinAvailability::kSupportedAndPinSet;
+}
+
+void VirtualCtap2Device::SetForcePinChange(bool force_pin_change) {
+  DCHECK(config_.min_pin_length_support);
+  mutable_state()->force_pin_change = force_pin_change;
+  device_info_->force_pin_change = force_pin_change;
+}
+
+void VirtualCtap2Device::SetMinPinLength(uint32_t min_pin_length) {
+  DCHECK(config_.min_pin_length_support);
+  mutable_state()->min_pin_length = min_pin_length;
+  device_info_->min_pin_length = min_pin_length;
 }
 
 // As all operations for VirtualCtap2Device are synchronous and we do not wait
@@ -1668,7 +1699,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       CtapDeviceResponseCode err =
           SetPIN(*pin_protocol, mutable_state(), shared_key, *encrypted_pin,
-                 *pin_auth);
+                 *pin_auth, /*current_encrypted_pin_hash=*/base::nullopt);
       if (err != CtapDeviceResponseCode::kSuccess) {
         return err;
       }
@@ -1713,7 +1744,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
 
       err = SetPIN(*pin_protocol, mutable_state(), shared_key,
-                   *encrypted_new_pin, *pin_auth);
+                   *encrypted_new_pin, *pin_auth, encrypted_pin_hash);
       if (err != CtapDeviceResponseCode::kSuccess) {
         return err;
       }
@@ -1782,6 +1813,13 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
 
       mutable_state()->pin_retries = kMaxPinRetries;
+
+      if (mutable_state()->force_pin_change) {
+        return subcommand ==
+                       static_cast<int>(device::pin::Subcommand::kGetPINToken)
+                   ? CtapDeviceResponseCode::kCtap2ErrPinInvalid
+                   : CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation;
+      }
 
       mutable_state()->pin_uv_token_permissions = permissions.permissions;
       mutable_state()->pin_uv_token_rpid = permissions.rp_id;

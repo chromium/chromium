@@ -71,8 +71,8 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   using TransportAvailabilityNotificationReceiver = test::TestCallbackReceiver<
       FidoRequestHandlerBase::TransportAvailabilityInfo>;
 
-  TestObserver() {}
-  ~TestObserver() override {}
+  TestObserver() = default;
+  ~TestObserver() override = default;
 
   FidoRequestHandlerBase::TransportAvailabilityInfo
   WaitForTransportAvailabilityInfo() {
@@ -113,6 +113,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   bool SupportsPIN() const override { return false; }
 
   void CollectPIN(
+      uint32_t min_pin_length,
       base::Optional<int> attempts,
       base::OnceCallback<void(std::string)> provide_pin_cb) override {
     NOTREACHED();

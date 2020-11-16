@@ -121,6 +121,16 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
     device_info_map.emplace(0x0a, std::move(algorithms_cbor));
   }
 
+  if (response.force_pin_change) {
+    device_info_map.emplace(0x0c, cbor::Value(*response.force_pin_change));
+  }
+
+  if (response.min_pin_length) {
+    device_info_map.emplace(
+        0x0d,
+        cbor::Value(base::strict_cast<int64_t>(*response.min_pin_length)));
+  }
+
   auto encoded_bytes =
       cbor::Writer::Write(cbor::Value(std::move(device_info_map)));
   DCHECK(encoded_bytes);

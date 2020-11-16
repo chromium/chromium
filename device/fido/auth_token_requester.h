@@ -78,22 +78,25 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
         FidoAuthenticator* authenticator) = 0;
 
     // CollectNewPIN is invoked to prompt the user to enter a new PIN for an
-    // authenticator.
+    // authenticator. |min_pin_length| is the minimum length for a valid PIN.
     //
     // The callee must provide the PIN by invoking |provide_pin_cb|. The
     // callback is weakly bound and safe to invoke even after the
     // AuthTokenRequester was freed.
-    virtual void CollectNewPIN(ProvidePINCallback provide_pin_cb) = 0;
+    virtual void CollectNewPIN(uint32_t min_pin_length,
+                               ProvidePINCallback provide_pin_cb) = 0;
 
     // CollectExistingPIN is invoked to prompt the user to provide the existing
     // PIN to an authenticator. |attempts| is the number of remaining attempts
-    // before the authenticator is locked.
+    // before the authenticator is locked. |min_pin_length| is the minimum
+    // length for a valid PIN.
     //
     // The callee must provide the PIN by invoking |provide_pin_cb|. The
     // callback is weakly bound and safe to invoke even after the
     // AuthTokenRequester was freed. If CollectExistingPIN() is called again
     // after callback invocation, the provided PIN was incorrect.
     virtual void CollectExistingPIN(int attempts,
+                                    uint32_t min_pin_length,
                                     ProvidePINCallback provide_pin_cb) = 0;
 
     // InternalUVLockedForAuthToken() notifies the delegate that the
@@ -165,6 +168,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
 
   bool authenticator_was_selected_ = false;
   bool is_internal_uv_retry_ = false;
+  base::Optional<std::string> current_pin_;
 
   base::WeakPtrFactory<AuthTokenRequester> weak_factory_{this};
 };

@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void GetUvToken(std::vector<pin::Permissions> permissions,
                   base::Optional<std::string> rp_id,
                   GetTokenCallback callback) override;
+  uint32_t MinPINLength() override;
+  bool ForcePINChange() override;
   void SetPIN(const std::string& pin, SetPINCallback callback) override;
   void ChangePIN(const std::string& old_pin,
                  const std::string& new_pin,

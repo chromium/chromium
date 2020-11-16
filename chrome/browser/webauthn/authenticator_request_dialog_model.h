@@ -20,6 +20,7 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -323,8 +324,6 @@ class AuthenticatorRequestDialogModel {
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 
-  void SetPINCallback(base::OnceCallback<void(std::string)> pin_callback);
-
   // OnHavePIN is called when the user enters a PIN in the UI.
   void OnHavePIN(const std::string& pin);
 
@@ -366,11 +365,13 @@ class AuthenticatorRequestDialogModel {
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
-  void CollectPIN(base::Optional<int> attempts,
+  void CollectPIN(uint32_t min_pin_length,
+                  base::Optional<int> attempts,
                   base::OnceCallback<void(std::string)> provide_pin_cb);
   bool has_attempted_pin_entry() const {
     return ephemeral_state_.has_attempted_pin_entry_;
   }
+  uint32_t min_pin_length() const { return min_pin_length_; }
   base::Optional<int> pin_attempts() const { return pin_attempts_; }
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
@@ -476,6 +477,7 @@ class AuthenticatorRequestDialogModel {
   base::OnceClosure bio_enrollment_callback_;
 
   base::OnceCallback<void(std::string)> pin_callback_;
+  uint32_t min_pin_length_ = device::kMinPinLength;
   base::Optional<int> pin_attempts_;
   base::Optional<int> uv_attempts_;
 

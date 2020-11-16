@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/notreached.h"
-#include "device/fido/fido_constants.h"
 
 namespace device {
 
@@ -46,6 +45,16 @@ void FidoAuthenticator::GetUvToken(
     base::Optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
   NOTREACHED();
+}
+
+uint32_t FidoAuthenticator::MinPINLength() {
+  NOTREACHED();
+  return kMinPinLength;
+}
+
+bool FidoAuthenticator::ForcePINChange() {
+  NOTREACHED();
+  return false;
 }
 
 void FidoAuthenticator::SetPIN(const std::string& pin,

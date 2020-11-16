@@ -10649,7 +10649,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         PIN contains invalid characters
       </message>
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT" desc="Error message. Displayed when the user attempts to set a PIN code for their security key (an external physical device for user authentication), and the PIN chosen by them is too short.">
-        PIN must be at least 4 characters
+        {NUM_CHARACTERS, plural,
+          =1 {PIN must be at least one character}
+          other {PIN must be at least # characters}}
       </message>
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED_RETRIES" desc="Error message. Displayed when the user enters the wrong PIN code for their security key (an external physical device for user authentication)">
         {NUM_ATTEMPTS, plural,

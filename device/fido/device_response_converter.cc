@@ -545,6 +545,24 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     }
   }
 
+  it = response_map.find(CBOR(0x0c));
+  if (it != response_map.end()) {
+    if (!it->second.is_bool()) {
+      return base::nullopt;
+    }
+
+    response.force_pin_change = it->second.GetBool();
+  }
+
+  it = response_map.find(CBOR(0x0d));
+  if (it != response_map.end()) {
+    if (!it->second.is_unsigned()) {
+      return base::nullopt;
+    }
+    response.min_pin_length =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+  }
+
   it = response_map.find(CBOR(0x14));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {

@@ -70,6 +70,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool cred_protect_support = false;
     bool hmac_secret_support = false;
     bool large_blob_support = false;
+    // Support for setting a min PIN length and forcing pin change.
+    bool min_pin_length_support = false;
     bool always_uv = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
@@ -194,6 +196,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
 
   // Configures and sets a PIN on the authenticator.
   void SetPin(std::string pin);
+
+  // Sets whether to force a PIN change before accepting pinUvAuthToken
+  // requests.
+  void SetForcePinChange(bool force_pin_change);
+
+  // Sets the minimum accepted PIN length.
+  void SetMinPinLength(uint32_t min_pin_length);
 
   // FidoDevice:
   void Cancel(CancelToken) override;

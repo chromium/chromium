@@ -150,8 +150,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   // AuthTokenRequester::Delegate:
   void AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override;
-  void CollectNewPIN(ProvidePINCallback provide_pin_cb) override;
+  void CollectNewPIN(uint32_t min_pin_length,
+                     ProvidePINCallback provide_pin_cb) override;
   void CollectExistingPIN(int attempts,
+                          uint32_t min_pin_length,
                           ProvidePINCallback provide_pin_cb) override;
   void PromptForInternalUVRetry(int attempts) override;
   void InternalUVLockedForAuthToken() override;

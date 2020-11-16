@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/i18n/number_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -722,16 +723,16 @@ static bool IsValidUTF16(const base::string16& str16) {
 }
 
 void AuthenticatorClientPinEntrySheetModel::OnAccept() {
-  // TODO(martinkr): use device::pin::kMinLength once landed.
-  constexpr size_t kMinPinLength = 4;
   if (mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup) {
     // Validate a new PIN.
     base::Optional<base::string16> error;
     if (!pin_code_.empty() && !IsValidUTF16(pin_code_)) {
       error = l10n_util::GetStringUTF16(
           IDS_WEBAUTHN_PIN_ENTRY_ERROR_INVALID_CHARACTERS);
-    } else if (pin_code_.size() < kMinPinLength) {
-      error = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT);
+    } else if (pin_code_.size() < dialog_model()->min_pin_length()) {
+      error = l10n_util::GetPluralStringFUTF16(
+          IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT,
+          dialog_model()->min_pin_length());
     } else if (pin_code_ != pin_confirmation_) {
       error = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_MISMATCH);
     }
@@ -744,9 +745,10 @@ void AuthenticatorClientPinEntrySheetModel::OnAccept() {
     // Submit PIN to authenticator for verification.
     DCHECK(mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry);
     // TODO: use device::pin::IsValid instead.
-    if (pin_code_.size() < kMinPinLength) {
-      error_ =
-          l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT);
+    if (pin_code_.size() < dialog_model()->min_pin_length()) {
+      error_ = l10n_util::GetPluralStringFUTF16(
+          IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT,
+          dialog_model()->min_pin_length());
       dialog_model()->OnSheetModelDidChange();
       return;
     }

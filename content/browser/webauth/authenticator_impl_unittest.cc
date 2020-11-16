@@ -64,6 +64,7 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key.h"
 #include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -3501,9 +3502,11 @@ class UVTestAuthenticatorClientDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
   explicit UVTestAuthenticatorClientDelegate(bool* collected_pin,
+                                             uint32_t* min_pin_length,
                                              bool* did_bio_enrollment,
                                              bool cancel_bio_enrollment)
       : collected_pin_(collected_pin),
+        min_pin_length_(min_pin_length),
         did_bio_enrollment_(did_bio_enrollment),
         cancel_bio_enrollment_(cancel_bio_enrollment) {
     *collected_pin_ = false;
@@ -3513,9 +3516,11 @@ class UVTestAuthenticatorClientDelegate
   bool SupportsPIN() const override { return true; }
 
   void CollectPIN(
+      uint32_t min_pin_length,
       base::Optional<int> attempts,
       base::OnceCallback<void(std::string)> provide_pin_cb) override {
     *collected_pin_ = true;
+    *min_pin_length_ = min_pin_length;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(provide_pin_cb), kTestPIN));
   }
@@ -3541,6 +3546,7 @@ class UVTestAuthenticatorClientDelegate
 
  private:
   bool* collected_pin_;
+  uint32_t* min_pin_length_;
   base::OnceClosure bio_callback_;
   bool* did_bio_enrollment_;
   bool cancel_bio_enrollment_;
@@ -3552,10 +3558,13 @@ class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<UVTestAuthenticatorClientDelegate>(
-        &collected_pin_, &did_bio_enrollment_, cancel_bio_enrollment_);
+        &collected_pin_, &min_pin_length_, &did_bio_enrollment_,
+        cancel_bio_enrollment_);
   }
 
   bool collected_pin() { return collected_pin_; }
+
+  uint32_t min_pin_length() { return min_pin_length_; }
 
   bool did_bio_enrollment() { return did_bio_enrollment_; }
 
@@ -3565,6 +3574,7 @@ class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
  private:
   bool collected_pin_;
+  uint32_t min_pin_length_ = 0;
   bool did_bio_enrollment_;
   bool cancel_bio_enrollment_ = false;
 };
@@ -3634,15 +3644,20 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
   DISALLOW_COPY_AND_ASSIGN(UVAuthenticatorImplTest);
 };
 
-// PINList is a list of expected |attempts| values and the PIN to answer with.
-using PINList = std::list<std::pair<base::Optional<int>, std::string>>;
+// PINExpectation represent expected |attempts| and |min_pin_length| value and
+// the PIN to answer with.
+struct PINExpectation {
+  base::Optional<int> attempts;
+  std::string pin;
+  uint32_t min_pin_length = device::kMinPinLength;
+};
 
 class PINTestAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
-  explicit PINTestAuthenticatorRequestDelegate(
+  PINTestAuthenticatorRequestDelegate(
       bool supports_pin,
-      const PINList& pins,
+      const std::list<PINExpectation>& pins,
       base::Optional<InterestingFailureReason>* failure_reason)
       : supports_pin_(supports_pin),
         expected_(pins),
@@ -3652,14 +3667,16 @@ class PINTestAuthenticatorRequestDelegate
   bool SupportsPIN() const override { return supports_pin_; }
 
   void CollectPIN(
+      uint32_t min_pin_length,
       base::Optional<int> attempts,
       base::OnceCallback<void(std::string)> provide_pin_cb) override {
     DCHECK(supports_pin_);
     DCHECK(!expected_.empty());
-    DCHECK(attempts == expected_.front().first)
+    DCHECK(attempts == expected_.front().attempts)
         << "got: " << attempts.value_or(-1)
-        << " expected: " << expected_.front().first.value_or(-1);
-    std::string pin = std::move(expected_.front().second);
+        << " expected: " << expected_.front().attempts.value_or(-1);
+    DCHECK_EQ(expected_.front().min_pin_length, min_pin_length);
+    std::string pin = std::move(expected_.front().pin);
     expected_.pop_front();
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -3676,7 +3693,7 @@ class PINTestAuthenticatorRequestDelegate
 
  private:
   const bool supports_pin_;
-  PINList expected_;
+  std::list<PINExpectation> expected_;
   base::Optional<InterestingFailureReason>* const failure_reason_;
   DISALLOW_COPY_AND_ASSIGN(PINTestAuthenticatorRequestDelegate);
 };
@@ -3691,7 +3708,7 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   }
 
   bool supports_pin = true;
-  PINList expected;
+  std::list<PINExpectation> expected;
   base::Optional<InterestingFailureReason> failure_reason;
 };
 
@@ -3942,6 +3959,68 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
           device::UserVerificationRequirement::kDiscouraged));
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(HasUV(result.response));
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredentialMinPINLengthNewPIN) {
+  // Test that an authenticator advertising a min PIN length other than the
+  // default makes it all the way to CollectPIN when setting a new PIN.
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.min_pin_length_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->min_pin_length = 6;
+  test_client_.expected = {{base::nullopt, "123456", 6}};
+
+  MakeCredentialResult result =
+      AuthenticatorMakeCredential(make_credential_options());
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredentialMinPINLengthExistingPIN) {
+  // Test that an authenticator advertising a min PIN length other than the
+  // default makes it all the way to CollectPIN when using an existing PIN and
+  // the forcePINChange flag is false.
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.min_pin_length_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->min_pin_length = 6;
+  virtual_device_factory_->mutable_state()->pin = "123456";
+  test_client_.expected = {{device::kMaxPinRetries, "123456", 6}};
+
+  MakeCredentialResult result =
+      AuthenticatorMakeCredential(make_credential_options());
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredentialForcePINChange) {
+  // Test that an authenticator with the forcePINChange flag set to true updates
+  // the PIN before attempting to make a credential. When querying for an
+  // existing PIN, the default min PIN length should be asked since there is no
+  // way to know the current PIN length.
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.min_pin_length_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->force_pin_change = true;
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+  virtual_device_factory_->mutable_state()->min_pin_length = 6;
+  test_client_.expected = {
+      {device::kMaxPinRetries, kTestPIN, device::kMinPinLength},
+      {base::nullopt, "567890", 6}};
+
+  MakeCredentialResult result =
+      AuthenticatorMakeCredential(make_credential_options());
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ("567890", virtual_device_factory_->mutable_state()->pin);
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {
@@ -4298,6 +4377,7 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialFallBackToPin) {
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
 }
 
 TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialCryptotoken) {
@@ -4341,6 +4421,7 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialInlineBioEnrollment) {
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_TRUE(test_client_.did_bio_enrollment());
   EXPECT_TRUE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
 }
@@ -4367,6 +4448,7 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialSkipInlineBioEnrollment) {
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_TRUE(test_client_.did_bio_enrollment());
   EXPECT_FALSE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
 }
@@ -4425,6 +4507,7 @@ TEST_F(InternalUVAuthenticatorImplTest, GetAssertionFallbackToPIN) {
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
 }
 
 TEST_F(InternalUVAuthenticatorImplTest, GetAssertionCryptotoken) {
@@ -4560,6 +4643,7 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionFallBackToPin) {
             AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(0, expected_retries);
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -4584,6 +4668,7 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionUvBlockedFallBackToPin) {
   EXPECT_EQ(AuthenticatorGetAssertion(get_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -4677,6 +4762,7 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialFallBackToPin) {
             AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(0, expected_retries);
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -4701,6 +4787,7 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUvBlockedFallBackToPin) {
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(test_client_.collected_pin());
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -4726,6 +4813,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   bool SupportsPIN() const override { return true; }
 
   void CollectPIN(
+      uint32_t min_pin_length,
       base::Optional<int> attempts,
       base::OnceCallback<void(std::string)> provide_pin_cb) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(

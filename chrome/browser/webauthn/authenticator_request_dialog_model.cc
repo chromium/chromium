@@ -433,15 +433,10 @@ void AuthenticatorRequestDialogModel::SetBluetoothAdapterPowerOnCallback(
   bluetooth_adapter_power_on_callback_ = bluetooth_adapter_power_on_callback;
 }
 
-void AuthenticatorRequestDialogModel::SetPINCallback(
-    base::OnceCallback<void(std::string)> pin_callback) {
-  pin_callback_ = std::move(pin_callback);
-}
-
 void AuthenticatorRequestDialogModel::OnHavePIN(const std::string& pin) {
   if (!pin_callback_) {
     // Protect against the view submitting a PIN more than once without
-    // receiving a matching response first. |SetPINCallback| is called again if
+    // receiving a matching response first. |CollectPIN| is called again if
     // the user needs to be prompted for a retry.
     return;
   }
@@ -541,15 +536,22 @@ void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
 }
 
 void AuthenticatorRequestDialogModel::CollectPIN(
+    uint32_t min_pin_length,
     base::Optional<int> attempts,
     base::OnceCallback<void(std::string)> provide_pin_cb) {
   pin_callback_ = std::move(provide_pin_cb);
+  min_pin_length_ = min_pin_length;
+  Step new_step;
   if (attempts) {
     pin_attempts_ = attempts;
-    SetCurrentStep(Step::kClientPinEntry);
+    new_step = Step::kClientPinEntry;
   } else {
-    SetCurrentStep(Step::kClientPinSetup);
+    new_step = Step::kClientPinSetup;
   }
+  if (new_step != current_step_) {
+    ephemeral_state_.has_attempted_pin_entry_ = false;
+  }
+  SetCurrentStep(new_step);
 }
 
 void AuthenticatorRequestDialogModel::StartInlineBioEnrollment(

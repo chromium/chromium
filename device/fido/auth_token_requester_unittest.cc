@@ -41,6 +41,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   base::Optional<AuthTokenRequester::Result>& result() { return result_; }
   base::Optional<pin::TokenResponse>& response() { return response_; }
   bool pin_was_set() { return pin_was_set_; }
+  uint32_t min_pin_length() { return min_pin_length_; }
   bool pin_was_collected() { return pin_was_collected_; }
   bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
   size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
@@ -50,15 +51,19 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   // AuthTokenRequester::Delegate:
   void AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override {}
-  void CollectNewPIN(ProvidePINCallback provide_pin_cb) override {
+  void CollectNewPIN(uint32_t min_pin_length,
+                     ProvidePINCallback provide_pin_cb) override {
     DCHECK(!pin_.empty());
     pin_was_set_ = true;
+    min_pin_length_ = min_pin_length;
     std::move(provide_pin_cb).Run(pin_);
   }
   void CollectExistingPIN(int attempts,
+                          uint32_t min_pin_length,
                           ProvidePINCallback provide_pin_cb) override {
     DCHECK(!pin_.empty());
     pin_was_collected_ = true;
+    min_pin_length_ = min_pin_length;
     std::move(provide_pin_cb).Run(pin_);
   }
   void PromptForInternalUVRetry(int attempts) override {
@@ -85,6 +90,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   bool pin_was_collected_ = false;
   bool pin_was_set_ = false;
   size_t internal_uv_num_retries_ = 0u;
+  uint32_t min_pin_length_ = 0;
   bool internal_uv_was_locked_ = false;
 
   base::RunLoop wait_for_result_loop_;
@@ -217,6 +223,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithoutUVTokenSupport) {
                   ElementsAreArray(state_->pin_token));
       EXPECT_EQ(delegate_->pin_was_set(),
                 t.client_pin == ClientPinAvailability::kSupportedButPinNotSet);
+      EXPECT_EQ(delegate_->min_pin_length(), kMinPinLength);
       EXPECT_EQ(delegate_->pin_was_collected(),
                 t.client_pin == ClientPinAvailability::kSupportedAndPinSet);
     } else {
@@ -302,6 +309,11 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithUVTokenSupport) {
                 t.client_pin == ClientPinAvailability::kSupportedButPinNotSet &&
                     t.user_verification !=
                         UserVerificationAvailability::kSupportedAndConfigured);
+      EXPECT_EQ(delegate_->min_pin_length(),
+                t.user_verification !=
+                        UserVerificationAvailability::kSupportedAndConfigured
+                    ? kMinPinLength
+                    : 0);
       EXPECT_EQ(delegate_->pin_was_collected(),
                 t.client_pin == ClientPinAvailability::kSupportedAndPinSet &&
                     t.user_verification !=

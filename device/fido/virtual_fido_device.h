@@ -177,6 +177,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     uint8_t pin_uv_token_permissions = 0;
     // The permissions RPID for |pin_token|.
     base::Optional<std::string> pin_uv_token_rpid;
+    // If true, fail all PinUvAuthToken requests until a new PIN is set.
+    bool force_pin_change = false;
+    // The minimum PIN length as unicode code points.
+    uint32_t min_pin_length = kMinPinLength;
 
     // Number of internal UV retries remaining.
     int uv_retries = kMaxUvRetries;
