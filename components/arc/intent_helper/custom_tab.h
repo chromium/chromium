@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/arc/arc_export.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -53,10 +53,10 @@ class ARC_EXPORT CustomTab : public aura::WindowObserver {
   std::unique_ptr<views::NativeViewHost> host_ =
       std::make_unique<views::NativeViewHost>();
   aura::Window* const arc_app_window_;
-  ScopedObserver<aura::Window, aura::WindowObserver> arc_app_window_observer_{
-      this};
-  ScopedObserver<aura::Window, aura::WindowObserver> other_windows_observer_{
-      this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      arc_app_window_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      other_windows_observation_{this};
   base::WeakPtrFactory<CustomTab> weak_ptr_factory_{this};
 };
 

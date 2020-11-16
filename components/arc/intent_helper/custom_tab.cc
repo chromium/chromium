@@ -20,7 +20,7 @@ namespace arc {
 
 CustomTab::CustomTab(aura::Window* arc_app_window)
     : arc_app_window_(arc_app_window) {
-  arc_app_window_observer_.Add(arc_app_window_);
+  arc_app_window_observation_.Observe(arc_app_window_);
   host_->set_owned_by_client();
   auto* const widget = views::Widget::GetWidgetForNativeWindow(arc_app_window_);
   DCHECK(widget);
@@ -35,7 +35,7 @@ void CustomTab::Attach(gfx::NativeView view) {
   host_->Attach(view);
   aura::Window* const container = host_->GetNativeViewContainer();
   container->SetEventTargeter(std::make_unique<aura::WindowTargeter>());
-  other_windows_observer_.Add(container);
+  other_windows_observation_.Observe(container);
   EnsureWindowOrders();
   UpdateHostBounds(arc_app_window_);
 }
@@ -48,7 +48,7 @@ void CustomTab::OnWindowBoundsChanged(aura::Window* window,
                                       const gfx::Rect& old_bounds,
                                       const gfx::Rect& new_bounds,
                                       ui::PropertyChangeReason reason) {
-  if (arc_app_window_observer_.IsObserving(window) &&
+  if (arc_app_window_observation_.IsObservingSource(window) &&
       old_bounds.size() != new_bounds.size()) {
     UpdateHostBounds(window);
   }
@@ -69,10 +69,10 @@ void CustomTab::OnWindowStackingChanged(aura::Window* window) {
 }
 
 void CustomTab::OnWindowDestroying(aura::Window* window) {
-  if (arc_app_window_observer_.IsObserving(window))
-    arc_app_window_observer_.Remove(window);
-  if (other_windows_observer_.IsObserving(window))
-    other_windows_observer_.Remove(window);
+  if (arc_app_window_observation_.IsObservingSource(window))
+    arc_app_window_observation_.RemoveObservation();
+  if (other_windows_observation_.IsObservingSource(window))
+    other_windows_observation_.RemoveObservation();
 }
 
 void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {
