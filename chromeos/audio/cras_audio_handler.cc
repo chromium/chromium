@@ -873,6 +873,15 @@ const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
   return &it->second;
 }
 
+AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
+    const AudioNode& node) {
+  AudioDevice device(node);
+  if (deprioritize_bt_wbs_mic_ && device.is_input &&
+      (device.type == AUDIO_TYPE_BLUETOOTH))
+    device.priority = 0;
+  return device;
+}
+
 const AudioDevice* CrasAudioHandler::GetDeviceFromStableDeviceId(
     uint64_t stable_device_id) const {
   for (const auto& item : audio_devices_) {
@@ -998,6 +1007,16 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumberOfOutputStreams();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(base::FeatureList::IsEnabled(
       chromeos::features::kBluetoothFixA2dpPacketSize));
+
+  // When the BluetoothWbsDogfood feature flag is enabled, don't bother
+  // calling GetDeprioritizeBtWbsMic().
+  // Otherwise override the Bluetooth WBS mic's priority according to the
+  // |deprioritize_bt_wbs_mic| value returned by CRAS.
+  if (!base::FeatureList::IsEnabled(chromeos::features::kBluetoothWbsDogfood)) {
+    CrasAudioClient::Get()->GetDeprioritizeBtWbsMic(
+        base::BindOnce(&CrasAudioHandler::HandleGetDeprioritizeBtWbsMic,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
@@ -1177,7 +1196,7 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
     if (is_input != node.is_input)
       continue;
     // Check if the new device is not in the old device list.
-    AudioDevice device(node);
+    AudioDevice device = ConvertAudioNodeWithModifiedPriority(node);
     DeviceStatus status = CheckDeviceStatus(device);
     if (status == NEW_DEVICE)
       new_discovered->push(device);
@@ -1479,7 +1498,7 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   size_t new_output_device_size = 0;
   size_t new_input_device_size = 0;
   for (size_t i = 0; i < nodes.size(); ++i) {
-    AudioDevice device(nodes[i]);
+    AudioDevice device = ConvertAudioNodeWithModifiedPriority(nodes[i]);
     audio_devices_[device.id] = device;
     if (!has_alternative_input_ && device.is_input &&
         device.IsExternalDevice()) {
@@ -1584,6 +1603,15 @@ void CrasAudioHandler::HandleGetNumActiveOutputStreams(
       observer.OnOutputStopped();
   }
   num_active_output_streams_ = *new_output_streams_count;
+}
+
+void CrasAudioHandler::HandleGetDeprioritizeBtWbsMic(
+    base::Optional<bool> deprioritize_bt_wbs_mic) {
+  if (!deprioritize_bt_wbs_mic.has_value()) {
+    LOG(ERROR) << "Failed to retrieve WBS mic deprioritized flag";
+    return;
+  }
+  deprioritize_bt_wbs_mic_ = *deprioritize_bt_wbs_mic;
 }
 
 void CrasAudioHandler::AddAdditionalActiveNode(uint64_t node_id, bool notify) {

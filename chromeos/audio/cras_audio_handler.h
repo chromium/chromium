@@ -382,6 +382,8 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   // Sets up the additional active audio node's state.
   void SetupAdditionalActiveAudioNodeState(uint64_t node_id);
 
+  AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
+
   const AudioDevice* GetDeviceFromStableDeviceId(
       uint64_t stable_device_id) const;
   const AudioDevice* GetKeyboardMic() const;
@@ -446,6 +448,9 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
 
   void HandleGetNumActiveOutputStreams(
       base::Optional<int> num_active_output_streams);
+
+  void HandleGetDeprioritizeBtWbsMic(
+      base::Optional<bool> deprioritize_bt_wbs_mic);
 
   // Adds an active node.
   // If there is no active node, |node_id| will be switched to become the
@@ -620,6 +625,11 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   int num_active_output_streams_ = 0;
 
   bool fetch_media_session_duration_ = false;
+
+  // On a few platforms that Bluetooth WBS is still working to be
+  // stabilized, CRAS may report to deprioritze the BT WBS mic's node
+  // priority.
+  bool deprioritize_bt_wbs_mic_ = false;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
