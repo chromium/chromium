@@ -33,6 +33,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -55,8 +56,6 @@ sk_sp<SkPromiseImageTexture> Fulfill(void* texture_context) {
   auto* image_context = static_cast<ImageContextImpl*>(texture_context);
   return sk_ref_sp(image_context->promise_image_texture());
 }
-
-void DoNothing(void* texture_context) {}
 
 gpu::ContextUrl& GetActiveUrl() {
   static base::NoDestructor<gpu::ContextUrl> active_url(
@@ -333,8 +332,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
           image_context->size().height(), GrMipMapped::kNo,
           image_context->origin(), color_type, image_context->alpha_type(),
           image_context->color_space(), Fulfill /* fulfillProc */,
-          DoNothing /* releaseProc */, DoNothing /* doneProc */,
-          image_context /* context */),
+          nullptr /* releaseProc */, image_context /* context */),
       backend_format);
 
   if (image_context->mailbox_holder().sync_token.HasData()) {
@@ -346,17 +344,19 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
 sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     const std::vector<ImageContext*>& contexts,
     sk_sp<SkColorSpace> image_color_space,
-    bool has_alpha) {
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
-  DCHECK((has_alpha && (contexts.size() == 3 || contexts.size() == 4)) ||
-         (!has_alpha && (contexts.size() == 2 || contexts.size() == 3)));
+  DCHECK(static_cast<size_t>(SkYUVAInfo::NumPlanes(plane_config)) ==
+         contexts.size());
 
-  SkYUVAIndex indices[4];
-  PrepareYUVATextureIndices(contexts, has_alpha, indices);
+  auto* y_context = static_cast<ImageContextImpl*>(contexts[0]);
+  // Note: YUV to RGB conversion is handled by a color filter in SkiaRenderer.
+  SkYUVAInfo yuva_info({y_context->size().width(), y_context->size().height()},
+                       plane_config, subsampling, kIdentity_SkYUVColorSpace);
 
   GrBackendFormat formats[4] = {};
-  SkISize yuva_sizes[4] = {};
   SkDeferredDisplayListRecorder::PromiseImageTextureContext
       texture_contexts[4] = {};
   for (size_t i = 0; i < contexts.size(); ++i) {
@@ -365,7 +365,6 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     formats[i] = GetGrBackendFormatForTexture(
         context->resource_format(), context->mailbox_holder().texture_target,
         /*ycbcr_info=*/base::nullopt);
-    yuva_sizes[i].set(context->size().width(), context->size().height());
 
     // NOTE: We don't have promises for individual planes, but still need format
     // for fallback
@@ -379,11 +378,11 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     texture_contexts[i] = context;
   }
 
-  // Note: YUV to RGB conversion is handled by a color filter in SkiaRenderer.
+  GrYUVABackendTextureInfo yuva_backend_info(
+      yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
   auto image = current_paint_->recorder()->makeYUVAPromiseTexture(
-      kIdentity_SkYUVColorSpace, formats, yuva_sizes, indices,
-      yuva_sizes[0].width(), yuva_sizes[0].height(), kTopLeft_GrSurfaceOrigin,
-      image_color_space, Fulfill, DoNothing, DoNothing, texture_contexts);
+      yuva_backend_info, std::move(image_color_space), Fulfill,
+      /*textureReleaseProc=*/nullptr, texture_contexts);
   DCHECK(image);
   return image;
 }
@@ -623,8 +622,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
             backend_format, image_context->size().width(),
             image_context->size().height(), image_context->mipmap(),
             image_context->origin(), color_type, image_context->alpha_type(),
-            image_context->color_space(), Fulfill, DoNothing, DoNothing,
-            image_context.get()),
+            image_context->color_space(), Fulfill,
+            /*releaseTextureProc=*/nullptr, image_context.get()),
         backend_format);
     if (!image_context->has_image()) {
       return nullptr;
@@ -1106,39 +1105,6 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
                  /*need_framebuffer=*/false);
   FlushGpuTasks(/*wait_for_finish=*/false);
   return sync_token;
-}
-
-void SkiaOutputSurfaceImpl::PrepareYUVATextureIndices(
-    const std::vector<ImageContext*>& contexts,
-    bool has_alpha,
-    SkYUVAIndex indices[4]) {
-  DCHECK((has_alpha && (contexts.size() == 3 || contexts.size() == 4)) ||
-         (!has_alpha && (contexts.size() == 2 || contexts.size() == 3)));
-
-  bool uv_interleaved = has_alpha ? contexts.size() == 3 : contexts.size() == 2;
-
-  indices[SkYUVAIndex::kY_Index].fIndex = 0;
-  indices[SkYUVAIndex::kY_Index].fChannel = SkColorChannel::kR;
-
-  if (uv_interleaved) {
-    indices[SkYUVAIndex::kU_Index].fIndex = 1;
-    indices[SkYUVAIndex::kU_Index].fChannel = SkColorChannel::kR;
-
-    indices[SkYUVAIndex::kV_Index].fIndex = 1;
-    indices[SkYUVAIndex::kV_Index].fChannel = SkColorChannel::kG;
-
-    indices[SkYUVAIndex::kA_Index].fIndex = has_alpha ? 2 : -1;
-    indices[SkYUVAIndex::kA_Index].fChannel = SkColorChannel::kR;
-  } else {
-    indices[SkYUVAIndex::kU_Index].fIndex = 1;
-    indices[SkYUVAIndex::kU_Index].fChannel = SkColorChannel::kR;
-
-    indices[SkYUVAIndex::kV_Index].fIndex = 2;
-    indices[SkYUVAIndex::kV_Index].fChannel = SkColorChannel::kR;
-
-    indices[SkYUVAIndex::kA_Index].fIndex = has_alpha ? 3 : -1;
-    indices[SkYUVAIndex::kA_Index].fChannel = SkColorChannel::kR;
-  }
 }
 
 void SkiaOutputSurfaceImpl::ContextLost() {

@@ -608,10 +608,20 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
            IsTextureResource(skia_renderer->resource_provider_,
                              quad->a_plane_resource_id()));
 
-    const bool is_i420 =
-        quad->u_plane_resource_id() != quad->v_plane_resource_id();
-    const bool has_alpha = quad->a_plane_resource_id() != kInvalidResourceId;
-    const size_t number_of_textures = (is_i420 ? 3 : 2) + (has_alpha ? 1 : 0);
+    // The image is always either NV12 or I420, possibly with a separate alpha
+    // plane.
+    SkYUVAInfo::PlaneConfig plane_config;
+    if (quad->a_plane_resource_id() == kInvalidResourceId) {
+      plane_config = quad->u_plane_resource_id() == quad->v_plane_resource_id()
+                         ? SkYUVAInfo::PlaneConfig::kY_UV
+                         : SkYUVAInfo::PlaneConfig::kY_U_V;
+    } else {
+      plane_config = quad->u_plane_resource_id() == quad->v_plane_resource_id()
+                         ? SkYUVAInfo::PlaneConfig::kY_UV_A
+                         : SkYUVAInfo::PlaneConfig::kY_U_V_A;
+    }
+    const SkYUVAInfo::Subsampling subsampling = SkYUVAInfo::Subsampling::k420;
+    const int number_of_textures = SkYUVAInfo::NumPlanes(plane_config);
     std::vector<ExternalUseClient::ImageContext*> contexts;
     contexts.reserve(number_of_textures);
     // Skia API ignores the color space information on the individual planes.
@@ -622,13 +632,14 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     auto* u_context = skia_renderer->lock_set_for_external_use_->LockResource(
         quad->u_plane_resource_id(), /*is_video_plane=*/true);
     contexts.push_back(std::move(u_context));
-    if (is_i420) {
+    if (plane_config == SkYUVAInfo::PlaneConfig::kY_U_V ||
+        plane_config == SkYUVAInfo::PlaneConfig::kY_U_V_A) {
       auto* v_context = skia_renderer->lock_set_for_external_use_->LockResource(
           quad->v_plane_resource_id(), /*is_video_plane=*/true);
       contexts.push_back(std::move(v_context));
     }
 
-    if (has_alpha) {
+    if (SkYUVAInfo::HasAlpha(plane_config)) {
       auto* a_context = skia_renderer->lock_set_for_external_use_->LockResource(
           quad->a_plane_resource_id(), /*is_video_plane=*/true);
       contexts.push_back(std::move(a_context));
@@ -636,7 +647,7 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
 
     // Note: YUV to RGB and color conversion is handled by a color filter.
     sk_image_ = skia_renderer->skia_output_surface_->MakePromiseSkImageFromYUV(
-        std::move(contexts), dst_color_space, has_alpha);
+        std::move(contexts), dst_color_space, plane_config, subsampling);
     LOG_IF(ERROR, !sk_image_) << "Failed to create the promise sk yuva image.";
   }
 

@@ -25,7 +25,6 @@
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkOverdrawCanvas.h"
 #include "third_party/skia/include/core/SkSurfaceCharacterization.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 
 namespace viz {
 
@@ -95,7 +94,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   sk_sp<SkImage> MakePromiseSkImageFromYUV(
       const std::vector<ImageContext*>& contexts,
       sk_sp<SkColorSpace> image_color_space,
-      bool has_alpha) override;
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling) override;
   void SwapBuffersSkipped() override;
   void ScheduleOutputSurfaceAsOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
@@ -184,9 +184,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       ResourceFormat resource_format,
       uint32_t gl_texture_target,
       const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
-  void PrepareYUVATextureIndices(const std::vector<ImageContext*>& contexts,
-                                 bool has_alpha,
-                                 SkYUVAIndex indices[4]);
   void ContextLost();
 
   void RecreateRootRecorder();
