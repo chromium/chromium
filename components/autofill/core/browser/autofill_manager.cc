@@ -1658,14 +1658,8 @@ AutofillManager::AutofillManager(
                                           credit_card_form_event_logger_.get());
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     version_info::Channel channel = client_->GetChannel();
-    bool is_raw_metadata_uploading_enabled =
-        channel == version_info::Channel::CANARY ||
-        channel == version_info::Channel::DEV;
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
-        driver, this, GetAPIKeyForUrl(channel),
-        AutofillDownloadManager::IsRawMetadataUploadingEnabled(
-            is_raw_metadata_uploading_enabled),
-        client_->GetLogManager());
+    download_manager_.reset(new AutofillDownloadManager(
+        driver, this, GetAPIKeyForUrl(channel), client_->GetLogManager()));
   }
   CountryNames::SetLocaleString(app_locale_);
   offer_manager_ = client_->GetAutofillOfferManager();

@@ -302,6 +302,18 @@ void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned autofill_type,
                      const std::vector<unsigned>& validity_states);
 
+// Fills the query form |field| with the information passed by parameter. If the
+// value of a const char* parameter is NULL, the corresponding attribute won't
+// be set at all, as opposed to being set to empty string.
+void FillQueryField(AutofillQueryContents::Form::Field* field,
+                    unsigned signature,
+                    const char* name,
+                    const char* control_type);
+void FillQueryField(AutofillPageQueryRequest_Form_Field* field,
+                    unsigned signature,
+                    const char* name,
+                    const char* control_type);
+
 // Creates the structure of signatures that would be encoded by
 // FormStructure::EncodeUploadRequest() and FormStructure::EncodeQueryRequest()
 // and consumed by FormStructure::ParseQueryResponse() and
