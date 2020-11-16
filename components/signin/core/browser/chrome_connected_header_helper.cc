@@ -156,16 +156,18 @@ bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
     const GURL& url) {
-  // Only set the header for Drive and Gaia always, and other Google properties
-  // if account consistency is enabled. Vasquette, which is integrated with most
-  // Google properties, needs the header to redirect certain user actions to
-  // Chrome native UI. Drive and Gaia need the header to tell if the current
-  // user is connected.
+  // Only send the header on platforms where Mirror account consistency is
+  // enabled.
+  if (account_consistency_ != AccountConsistencyMethod::kMirror)
+    return false;
 
   // Consider the account ID sensitive and limit it to secure domains.
   if (!url.SchemeIsCryptographic())
     return false;
 
+  // Vasquette, which is integrated with most Google properties, needs the
+  // header to redirect certain user actions to Chrome native UI. Drive and
+  // Gaia need the header to tell if the current user is connected.
   GURL origin(url.GetOrigin());
   bool is_google_url =
       google_util::IsGoogleDomainUrl(
@@ -173,10 +175,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
       google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
                                       google_util::DISALLOW_NON_STANDARD_PORTS);
-  bool is_mirror_enabled =
-      account_consistency_ == AccountConsistencyMethod::kMirror;
-  return (is_mirror_enabled && is_google_url) || IsDriveOrigin(origin) ||
-         gaia::IsGaiaSignonRealm(origin);
+  return is_google_url || gaia::IsGaiaSignonRealm(origin);
 }
 
 std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
