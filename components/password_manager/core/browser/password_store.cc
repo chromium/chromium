@@ -12,12 +12,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -34,19 +36,23 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/sync/model_impl/proxy_model_type_controller_delegate.h"
-#include "base/strings/string16.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace password_manager {
 
 namespace {
+
+bool IsPasswordReuseDetectionEnabled() {
+  return base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled);
+}
 
 // Utility function to simplify removing logins prior a given |cutoff| data.
 // Runs |callback| with the result.
@@ -156,9 +162,10 @@ bool PasswordStore::Init(PrefService* prefs,
   DCHECK(background_task_runner_);
   sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
   prefs_ = prefs;
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-  hash_password_manager_.set_prefs(prefs);
-#endif
+
+  if (IsPasswordReuseDetectionEnabled()) {
+    hash_password_manager_.set_prefs(prefs);
+  }
   if (background_task_runner_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
@@ -339,8 +346,7 @@ void PasswordStore::ReportMetrics(const std::string& sync_username,
                                              base::TimeDelta::FromSeconds(30));
   }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-  if (!sync_username.empty()) {
+  if (IsPasswordReuseDetectionEnabled() && !sync_username.empty()) {
     auto hash_password_state =
         hash_password_manager_.HasPasswordHash(sync_username,
                                                /*is_gaia_password=*/true)
@@ -349,7 +355,6 @@ void PasswordStore::ReportMetrics(const std::string& sync_username,
     metrics_util::LogIsSyncPasswordHashSaved(hash_password_state,
                                              is_under_advanced_protection);
   }
-#endif
 }
 
 void PasswordStore::AddSiteStats(const InteractionsStats& stats) {
@@ -515,10 +520,8 @@ void PasswordStore::ShutdownOnUIThread() {
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
   shutdown_called_ = true;
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   if (notifier_)
     notifier_->UnsubscribeFromSigninEvents();
-#endif
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
@@ -689,15 +692,15 @@ bool PasswordStore::InitOnBackgroundSequence() {
           syncer::PASSWORDS, base::DoNothing()),
       /*password_store_sync=*/this, sync_enabled_or_disabled_cb_));
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-  reuse_detector_ = new PasswordReuseDetector;
+  if (IsPasswordReuseDetectionEnabled()) {
+    reuse_detector_ = new PasswordReuseDetector;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     reuse_detector_->GetWeakPtr(), base::RetainedRef(this),
-                     GetAutofillableLoginsImpl()));
-#endif
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+                       reuse_detector_->GetWeakPtr(), base::RetainedRef(this),
+                       GetAutofillableLoginsImpl()));
+  }
   return true;
 }
 
@@ -744,10 +747,9 @@ void PasswordStore::NotifyLoginsChanged(
     if (sync_bridge_)
       sync_bridge_->ActOnPasswordStoreChanges(changes);
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
     if (reuse_detector_)
       reuse_detector_->OnLoginsChanged(changes);
-#endif
+
     ProcessLoginsChanged(
         changes,
         base::BindRepeating(
@@ -1373,10 +1375,8 @@ void PasswordStore::DestroyOnBackgroundSequence() {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   sync_bridge_.reset();
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   delete reuse_detector_;
   reuse_detector_ = nullptr;
-#endif
 }
 
 }  // namespace password_manager

@@ -137,6 +137,9 @@ class PasswordStoreTest : public testing::Test {
     // Mock OSCrypt. There is a call to OSCrypt on initializling
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
+
+    feature_list_.InitAndEnableFeature(
+        features::kPasswordReuseDetectionEnabled);
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -156,6 +159,7 @@ class PasswordStoreTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreTest);
 };
@@ -1179,7 +1183,6 @@ TEST_F(PasswordStoreTest, Unblacklisting) {
   store->ShutdownOnUIThread();
 }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 TEST_F(PasswordStoreTest, CheckPasswordReuse) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, "https://www.google.com",
@@ -1460,7 +1463,6 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE, 1);
   store->ShutdownOnUIThread();
 }
-#endif
 
 TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
   base::test::ScopedFeatureList feature_list;
