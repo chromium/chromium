@@ -71318,6 +71318,45 @@
         {}
        ]
       ],
+      "replaced-alignment-with-aspect-ratio-001.tentative.html": [
+       "d7ab97b9ec0091b7869b1fbb69e7317ced70cc20",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "replaced-alignment-with-aspect-ratio-002.tentative.html": [
+       "1a4e344dd045806ed512d9e3562d9f3b96d1fbd8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "replaced-alignment-with-aspect-ratio-003.tentative.html": [
+       "2c27480d5a7a903e0d8301b8215190331022185f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "self-baseline": {
        "grid-self-baseline-001.html": [
         "2473bb5d4fc8adc351af441bf39cffcacc076273",
@@ -251637,7 +251676,7 @@
        []
       ],
       "utils.py": [
-       "f9ed3eaebd67f3fe3bab1961ff93f4053dfc58e4",
+       "347acbd15cd0de5de8d8d73f3720fc8c13ac443a",
        []
       ],
       "wptserve.py": [
@@ -254465,7 +254504,7 @@
      []
     ],
     "RTCPeerConnection-getStats.https-expected.txt": [
-     "904ecfebc84f9944b3b72065d3dd890c0251f1a4",
+     "6750c9847d6ffecfa9352c8e9d798bc28b72aafb",
      []
     ],
     "RTCPeerConnection-helper.js": [
@@ -332237,7 +332276,7 @@
        ]
       },
       "request-bad-port.any.js": [
-       "8614192f84ea2c2d1fd995809c040c73f3eada81",
+       "b1a9e93d13cdf39e26eb777781ea690aba708bed",
        [
         "fetch/api/request/request-bad-port.any.html",
         {
@@ -382052,14 +382091,14 @@
      ]
     ],
     "GUM-deny.https.html": [
-     "be1caf54d61d5b00253b5ffac8f520431f4e0c8b",
+     "1f864e3cd14bfc7ca5b0a78f7fc2dde36b3485da",
      [
       null,
       {}
      ]
     ],
     "GUM-empty-option-param.https.html": [
-     "9f79a6dca6d04aa7e293129ade88573dd32eab7c",
+     "f9778b723a98c605dbed31032039910f98a9291b",
      [
       null,
       {}
@@ -382108,7 +382147,7 @@
      ]
     ],
     "GUM-unknownkey-option-param.https.html": [
-     "965145a2b1905dc3f21740913be460c4970ce5a8",
+     "4a8eaada16f8b646f2cf556794a1f910271f2825",
      [
       null,
       {}
@@ -403335,7 +403374,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "aae81d2f823944d5a718b6419e5267119f66fefc",
+     "530deb234a1f743a0ffd122671e8575a660dbe13",
      [
       null,
       {
@@ -428713,7 +428752,7 @@
      ]
     ],
     "RTCPeerConnection-getStats.https.html": [
-     "ede0ab1efc10799d12473437e53f2ec555aa625f",
+     "1fc4a2520adac4c5682bf70228dbbd434965eb85",
      [
       null,
       {}
@@ -430077,7 +430116,7 @@
      ]
     ],
     "Create-blocked-port.any.js": [
-     "0ac5b62017087ed53a86f7905de0932c8c934072",
+     "84728c0e5675900bb6a0457196d5aee3629a8699",
      [
       "websockets/Create-blocked-port.any.html",
       {
