@@ -958,7 +958,17 @@ void TraceEventDataSource::LogHistogram(base::HistogramBase* histogram) {
   if (!histogram) {
     return;
   }
+  // For the purpose of calculating metrics from histograms we only want the
+  // delta of the events.
   auto samples = histogram->SnapshotSamples();
+
+  // If there were HistogramSamples recorded during startup, then those should
+  // be subtracted from the overall set. This way we only report the samples
+  // that occured during the run.
+  auto it = startup_histogram_samples_.find(histogram->histogram_name());
+  if (it != startup_histogram_samples_.end()) {
+    samples->Subtract(*it->second.get());
+  }
   base::Pickle pickle;
   samples->Serialize(&pickle);
   std::string buckets;
@@ -972,9 +982,22 @@ void TraceEventDataSource::LogHistogram(base::HistogramBase* histogram) {
 
 void TraceEventDataSource::ResetHistograms(const TraceConfig& trace_config) {
   histograms_.clear();
+  startup_histogram_samples_.clear();
   for (const std::string& histogram_name : trace_config.histogram_names()) {
     histograms_.push_back(histogram_name);
-    LogHistogram(base::StatisticsRecorder::FindHistogram(histogram_name));
+    auto* histogram = base::StatisticsRecorder::FindHistogram(histogram_name);
+    if (!histogram) {
+      continue;
+    }
+
+    // For the purpose of calculating metrics from histograms we only want the
+    // delta of the events. However we do not want to emit the results when
+    // resetting. This will allow LogHistogram to emit one UMAHistogramSamples
+    // which encompasses only the histograms recorded during the trace. We
+    // cache the initial HistogramSamples so that they can be subtracted from
+    // the full snapshot at the end.
+    startup_histogram_samples_.emplace(histogram_name,
+                                       histogram->SnapshotSamples());
   }
 }
 

@@ -27,11 +27,15 @@
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 
 namespace base {
+
+class HistogramSamples;
+
 namespace trace_event {
 class ThreadInstructionCount;
 class TraceEvent;
 struct TraceEventHandle;
 }  // namespace trace_event
+
 }  // namespace base
 
 namespace perfetto {
@@ -280,6 +284,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   bool flushing_trace_log_ = false;
   base::OnceClosure flush_complete_task_;
   std::vector<std::string> histograms_;
+  // For each of the Histogram that we are tracking, cache the snapshot of their
+  // HistogramSamples from before tracing began. So that we can calculate the
+  // delta when we go to LogHistograms.
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+      startup_histogram_samples_;
   // Stores all histogram names for which OnMetricsSampleCallback was set as an
   // OnSampleCallback. This is done in order to avoid clearing callbacks for the
   // other histograms.
