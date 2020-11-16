@@ -276,12 +276,6 @@ TEST_F(BitmapImageTest, isAllDataReceived) {
 
   image->SetData(image_data, true);
   EXPECT_TRUE(image->IsAllDataReceived());
-
-  image->SetData(SharedBuffer::Create("data", sizeof("data")), false);
-  EXPECT_FALSE(image->IsAllDataReceived());
-
-  image->SetData(image_data, true);
-  EXPECT_TRUE(image->IsAllDataReceived());
 }
 
 TEST_F(BitmapImageTest, noColorProfile) {

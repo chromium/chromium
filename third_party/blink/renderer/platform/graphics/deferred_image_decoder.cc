@@ -266,6 +266,8 @@ void DeferredImageDecoder::SetData(scoped_refptr<SharedBuffer> data,
 void DeferredImageDecoder::SetDataInternal(scoped_refptr<SharedBuffer> data,
                                            bool all_data_received,
                                            bool push_data_to_decoder) {
+  // Once all the data has been received, the image should not change.
+  DCHECK(!all_data_received_);
   if (metadata_decoder_) {
     all_data_received_ = all_data_received;
     if (push_data_to_decoder)
