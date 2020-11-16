@@ -101,16 +101,6 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  // For AddAccountSigninIntentAddSecondaryAccount, the coordinator can be used
-  // to add a secondary account in the settings while being signed in, or
-  // from the user consent view while being not signed in.
-  // For AddAccountSigninIntentReauthPrimaryAccount, the coordinator can only
-  // be used when the user is signed in.
-  DCHECK(authenticationService->IsAuthenticated() ||
-         self.signinIntent == AddAccountSigninIntentAddSecondaryAccount);
   self.identityInteractionManager =
       ios::GetChromeBrowserProvider()
           ->GetChromeIdentityService()
