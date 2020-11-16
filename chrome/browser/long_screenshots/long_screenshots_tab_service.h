@@ -24,7 +24,8 @@ class WebContents;
 
 namespace long_screenshots {
 
-// A service for capturing Long Screenshots using PaintPreview.
+// A service for capturing Long Screenshots using PaintPreview. Writes the
+// retrieved bitmap to file.
 class LongScreenshotsTabService
     : public paint_preview::PaintPreviewBaseService {
  public:
@@ -53,7 +54,9 @@ class LongScreenshotsTabService
                   FinishedCallback callback);
 
  private:
-  // The FTN ID is to look-up the content::WebContents.
+  // Retrieves the content::WebContents from the |frame_tree_node_id|
+  // (confirming that the contents are alive using the |frame_routing_id|).
+  // Calls PaintPreviewBaseService to retrieve the bitmap and write it to file.
   void CaptureTabInternal(int tab_id,
                           const paint_preview::DirectoryKey& key,
                           int frame_tree_node_id,

@@ -13,5 +13,6 @@ source_set("services") {
   deps = [
     "//components/keyed_service/core",
     "//components/paint_preview/browser",
+    "//components/paint_preview/common/mojom",
   ]
 }
