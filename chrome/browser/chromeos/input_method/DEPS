@@ -38,7 +38,7 @@ specific_include_rules = {
   ],
 
   # For testing.
-  ".*(_browsertest|_unittest|_test_helper|)\.(h|cc)": [
+  ".*(_browsertest|_unittest|_test_helper)\.(h|cc)": [
     "+chrome/common",
     "+chrome/browser",
     "+chrome/test",
@@ -47,5 +47,12 @@ specific_include_rules = {
   ],
   "xkeyboard_unittest\.cc": [
     "!content/public/test/test_browser_thread.h",
+  ],
+
+  # TODO: This should not be an allowed dep; see
+  # http://crbug.com/1148093 and
+  # http://b/173144152.
+  "(assistive_window_controller|personal_info_suggester)\.h": [
+    "!content/public/browser/tts_controller.h",
   ],
 }
