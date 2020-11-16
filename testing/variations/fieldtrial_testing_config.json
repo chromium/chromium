@@ -4968,6 +4968,21 @@
             ]
         }
     ],
+    "PageInfoV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [
