@@ -834,6 +834,17 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
   return j_bookark_id;
 }
 
+void BookmarkBridge::SetReadStatus(JNIEnv* env,
+                                   const JavaParamRef<jobject>& obj,
+                                   const JavaParamRef<jstring>& j_url,
+                                   jboolean j_read) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
+
+  reading_list_manager_->SetReadStatus(
+      GURL(base::android::ConvertJavaStringToUTF16(env, j_url)), j_read);
+}
+
 void BookmarkBridge::Undo(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());

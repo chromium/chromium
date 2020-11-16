@@ -219,6 +219,11 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jstring>& j_title,
       const base::android::JavaParamRef<jstring>& j_url);
 
+  void SetReadStatus(JNIEnv* env,
+                     const base::android::JavaParamRef<jobject>& obj,
+                     const base::android::JavaParamRef<jstring>& j_url,
+                     jboolean j_read);
+
   void Undo(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   void StartGroupingUndos(JNIEnv* env,

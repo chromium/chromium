@@ -303,10 +303,6 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
         mSearchText = EMPTY_QUERY;
         mCurrentFolder = folder;
-
-        if (!(folder.equals(mCurrentFolder))) {
-            mCurrentFolder = folder;
-        }
         enableDrag();
 
         if (topLevelFoldersShowing()) {
@@ -323,6 +319,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         // Headers should not appear in Search mode
         // Don't need to notify because we need to redraw everything in the next step
         updateHeader(false);
+        removeSectionHeaders();
         notifyDataSetChanged();
     }
 
@@ -438,6 +435,15 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         } else if (wasShowingPromo && !willShowPromo) {
             mElements.remove(0);
             if (shouldNotify) notifyItemRemoved(0);
+        }
+    }
+
+    /** Removes all section headers from the current list. */
+    private void removeSectionHeaders() {
+        for (int i = mElements.size() - 1; i >= 0; i--) {
+            if (mElements.get(i).getViewType() == ViewType.SECTION_HEADER) {
+                mElements.remove(i);
+            }
         }
     }
 

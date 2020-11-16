@@ -281,8 +281,11 @@ public class BookmarkUtils {
         RecordHistogram.recordEnumeratedHistogram(
                 "Bookmarks.OpenBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
 
-        String url = model.getBookmarkById(bookmarkId).getUrl();
-        openUrl(context, url, openBookmarkComponentName);
+        BookmarkItem bookmarkItem = model.getBookmarkById(bookmarkId);
+        if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
+            model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
+        }
+        openUrl(context, bookmarkItem.getUrl(), openBookmarkComponentName);
 
         return true;
     }

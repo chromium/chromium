@@ -31,16 +31,28 @@ class ReadingListSectionHeader {
     public static void maybeSortAndInsertSectionHeaders(
             List<BookmarkListEntry> listItems, Context context) {
         if (listItems.isEmpty()) return;
-        sort(listItems);
+
+        // The topmost item(s) could be promo headers.
+        int readingListStartIndex = 0;
+        for (BookmarkListEntry listItem : listItems) {
+            boolean isReadingListItem = listItem.getBookmarkItem() != null
+                    && listItem.getBookmarkItem().getId().getType() == BookmarkType.READING_LIST;
+            if (isReadingListItem) break;
+            readingListStartIndex++;
+        }
+
+        assert readingListStartIndex < listItems.size();
+        sort(listItems, readingListStartIndex);
 
         // Add a section header at the top.
-        assert listItems.get(0).getBookmarkItem().getId().getType() == BookmarkType.READING_LIST;
-        boolean isRead = listItems.get(0).getBookmarkItem().isRead();
-        listItems.add(0, createReadingListSectionHeader(isRead, context));
+        assert listItems.get(readingListStartIndex).getBookmarkItem().getId().getType()
+                == BookmarkType.READING_LIST;
+        boolean isRead = listItems.get(readingListStartIndex).getBookmarkItem().isRead();
+        listItems.add(readingListStartIndex, createReadingListSectionHeader(isRead, context));
         if (isRead) return;
 
         // Search for the first read element, and insert the read section header.
-        for (int i = 2; i < listItems.size(); i++) {
+        for (int i = readingListStartIndex + 2; i < listItems.size(); i++) {
             BookmarkListEntry listItem = listItems.get(i);
             assert listItem.getBookmarkItem().getId().getType() == BookmarkType.READING_LIST;
             if (listItem.getBookmarkItem().isRead()) {
@@ -53,9 +65,9 @@ class ReadingListSectionHeader {
     /**
      * Sorts the given {@code listItems} to show unread items ahead of read items.
      */
-    private static void sort(List<BookmarkListEntry> listItems) {
+    private static void sort(List<BookmarkListEntry> listItems, int readingListStartIndex) {
         // TODO(crbug.com/1147259): Sort items by creation time possibly.
-        Collections.sort(listItems, (lhs, rhs) -> {
+        Collections.sort(listItems.subList(readingListStartIndex, listItems.size()), (lhs, rhs) -> {
             // Unread items are shown first.
             boolean lhsRead = lhs.getBookmarkItem().isRead();
             boolean rhsRead = rhs.getBookmarkItem().isRead();
@@ -67,6 +79,6 @@ class ReadingListSectionHeader {
     private static BookmarkListEntry createReadingListSectionHeader(boolean read, Context context) {
         return BookmarkListEntry.createSectionHeader(
                 read ? R.string.reading_list_read : R.string.reading_list_unread,
-                read ? R.string.reading_list_ready_for_offline : null, context);
+                read ? null : R.string.reading_list_ready_for_offline, context);
     }
 }

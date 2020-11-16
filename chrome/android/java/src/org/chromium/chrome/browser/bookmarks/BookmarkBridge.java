@@ -848,6 +848,16 @@ public class BookmarkBridge {
                 mNativeBookmarkBridge, BookmarkBridge.this, title, url);
     }
 
+    /**
+     * Helper method to mark an article as read.
+     * @param url The URL of the reading list item.
+     * @param read Whether the article should be marked as read.
+     */
+    public void setReadStatusForReadingList(String url, boolean read) {
+        BookmarkBridgeJni.get().setReadStatus(
+                mNativeBookmarkBridge, BookmarkBridge.this, url, read);
+    }
+
     @VisibleForTesting
     BookmarkId getPartnerFolderId() {
         ThreadUtils.assertOnUiThread();
@@ -1073,6 +1083,8 @@ public class BookmarkBridge {
                 int index, String title, String url);
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkBridge caller, String title, String url);
+        void setReadStatus(
+                long nativeBookmarkBridge, BookmarkBridge caller, String url, boolean read);
         void undo(long nativeBookmarkBridge, BookmarkBridge caller);
         void startGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
         void endGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
