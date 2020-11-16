@@ -76,6 +76,7 @@ js_library("gallery") {
     ":gallery_constants",
     ":gallery_item",
     ":thumbnail_mode",
+    "//ui/file_manager/base/js:app_util",
     "//ui/file_manager/base/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js/ui:files_confirm_dialog",

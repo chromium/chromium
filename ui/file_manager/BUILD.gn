@@ -94,12 +94,25 @@ preprocess_grit("preprocess_generated") {
   out_folder = preprocess_folder
 
   in_files = [
+    # Base:
     "base/js/app_util.m.js",
     "base/js/volume_manager_types.m.js",
     "base/js/mediasession_types.m.js",
+
+    # Externs:
+    "externs/entry_location.m.js",
+    "externs/files_app_entry_interfaces.m.js",
+    "externs/background/background_base.m.js",
+    "externs/volume_info.m.js",
+    "externs/volume_info_list.m.js",
+    "externs/volume_manager.m.js",
   ]
 
-  deps = [ "//ui/file_manager/base/js:modulize" ]
+  deps = [
+    "//ui/file_manager/base/js:modulize",
+    "//ui/file_manager/externs:modulize",
+    "//ui/file_manager/externs/background:modulize",
+  ]
 }
 
 grd_prefix = "file_manager_gen"

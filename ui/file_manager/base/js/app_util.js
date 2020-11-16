@@ -8,6 +8,11 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
+// clang-format off
+// #import {BackgroundBase} from '../../externs/background/background_base.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// clang-format on
+
 const appUtil = {};
 
 /**
@@ -175,6 +180,19 @@ appUtil.AppCache.cleanup_ = map => {
   for (let i = 0; i != itemsToDelete; i++) {
     delete map[keys[i]];
   }
+};
+
+/**
+ * Fetches the VolumeManager from the background page.
+ * @return {!Promise<!VolumeManager>}.
+ */
+appUtil.getVolumeManager = async () => {
+  const backgroundWindow =
+      new Promise(resolve => chrome.runtime.getBackgroundPage(resolve));
+
+  /** @type {!BackgroundBase} */
+  const backgroundPage = (await backgroundWindow).background;
+  return backgroundPage.getVolumeManager();
 };
 
 // eslint-disable-next-line semi,no-extra-semi

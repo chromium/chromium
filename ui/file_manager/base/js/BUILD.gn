@@ -28,6 +28,11 @@ js_type_check("closure_compile_jsmodules") {
     ":filtered_volume_manager.m",
     ":volume_manager_types.m",
   ]
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui/",
+                    "js_module_root=../../ui/",
+                  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -56,12 +61,23 @@ js_type_check("test_support_type_check_jsmodules") {
 }
 
 js_library("app_util") {
-  externs_list = [ "//ui/file_manager/externs/app_window_common.js" ]
+  deps = [
+    ":volume_manager_types",
+    "//ui/file_manager/externs:volume_manager",
+  ]
+  externs_list = [
+    "//ui/file_manager/externs/app_window_common.js",
+    "//ui/file_manager/externs/background/background_base.js",
+  ]
 }
 
 js_library("app_util.m") {
   sources = [ "$root_gen_dir/ui/file_manager/base/js/app_util.m.js" ]
-  deps = [ "//ui/file_manager/externs:file_manager_private" ]
+  deps = [
+    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:background_base.m",
+  ]
   externs_list = [ "//ui/file_manager/externs/app_window_common.js" ]
 
   extra_deps = [ ":modulize" ]

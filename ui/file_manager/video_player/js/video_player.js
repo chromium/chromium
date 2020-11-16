@@ -30,15 +30,8 @@ function initStrings(callback) {
  * @param {function()} callback Called when the volume manager is ready.
  */
 function initVolumeManager(callback) {
-  const volumeManagerGetter = new Promise(resolve => {
-                                chrome.runtime.getBackgroundPage(resolve);
-                              }).then(backgroundWindow => {
-    /** @type {!BackgroundBase} */
-    const backgroundPage = (backgroundWindow).background;
-    return backgroundPage.getVolumeManager();
-  });
   const volumeManager = new FilteredVolumeManager(
-      AllowedPaths.ANY_PATH, false, volumeManagerGetter);
+      AllowedPaths.ANY_PATH, false, appUtil.getVolumeManager());
   volumeManager.ensureInitialized(callback);
 }
 
