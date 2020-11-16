@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Tests for {@link BookmarkModel}, the data layer of bookmarks.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class BookmarkModelTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -57,6 +60,11 @@ public class BookmarkModelTest {
             mDesktopNode = mBookmarkModel.getDesktopFolderId();
             mOtherNode = mBookmarkModel.getOtherFolderId();
         });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.removeAllUserBookmarks());
     }
 
     @Test
