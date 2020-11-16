@@ -192,11 +192,18 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
       // </div>                                    </blockquote>
       //                                           <div><span><div>Line
       //                                           2</div></span></div>
+      //
       // <div>Line                                 <blockquote>
       //   <span> 1<br>Line 2</span>    ->           Line<span> 1</span>
       // </div>                                    </blockquote>
       //                                           <div><span>Line
       //                                           2</span></div>
+      // The below steps are essentially trying to figure out where the split
+      // needs to happen:
+      // 1. If the next paragraph is enclosed with nested block level elements.
+      // 2. If the next paragraph is enclosed with nested inline elements.
+      // 3. If the next paragraph doesn't have any inline or block level
+      // elements, but has elements like textarea/input/img etc.
       Node* split_point = HighestEnclosingNodeOfType(
           next_position, IsEnclosingBlock, kCannotCrossEditingBoundary,
           highest_inline_node);
@@ -205,6 +212,7 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
                       : HighestEnclosingNodeOfType(next_position, IsInline,
                                                    kCannotCrossEditingBoundary,
                                                    highest_inline_node);
+      split_point = split_point ? split_point : next_position.AnchorNode();
       // Split the element to separate the paragraphs.
       SplitElement(DynamicTo<Element>(highest_inline_node), split_point);
     }

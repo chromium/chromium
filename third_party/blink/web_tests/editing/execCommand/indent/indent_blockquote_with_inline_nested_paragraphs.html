@@ -84,4 +84,52 @@ selection_test(
     ],
     'Indent content enclosed inside inline separated by br and inline elements');
 
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><input value="text"></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<input value="text"></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and input element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><textarea></textarea></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<textarea></textarea></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and textarea element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><i><textarea></textarea></i></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<i><textarea></textarea></i></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and textarea element wrapped inside inline');
+
 </script>
