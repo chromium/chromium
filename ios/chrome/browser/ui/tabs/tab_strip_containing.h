@@ -11,6 +11,9 @@
 // Returns a snapshot of the Tab Strip view.
 - (UIView*)screenshotForAnimation;
 
+// Adjusts |transform| to take the current RTL mode into account.
+- (CGAffineTransform)adjustTransformForRTL:(CGAffineTransform)transform;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABS_TAB_STRIP_CONTAINING_H_

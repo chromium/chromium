@@ -2861,13 +2861,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // parent is hidden but the view itself is not, the snapshot will not be a
   // blank view.
   self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
+  self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
   self.tabStripSnapshot.transform =
       currentViewRevealState == ViewRevealState::Hidden
-          ? CGAffineTransformIdentity
-          : CGAffineTransformMakeTranslation(
-                0, self.tabStripView.frame.size.height);
+          ? [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity]
+          : [self.tabStripView
+                adjustTransformForRTL:CGAffineTransformMakeTranslation(
+                                          0,
+                                          self.tabStripView.frame.size.height)];
   self.tabStripView.hidden = YES;
   [self.contentArea addSubview:self.tabStripSnapshot];
+  AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
 
   // Remove the fake status bar to allow the thumb strip animations to appear.
   [_fakeStatusBarView removeFromSuperview];
@@ -2902,23 +2906,26 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     case ViewRevealState::Hidden:
       self.view.superview.transform = CGAffineTransformIdentity;
       self.view.transform = CGAffineTransformIdentity;
-      self.tabStripSnapshot.transform = CGAffineTransformIdentity;
+      self.tabStripSnapshot.transform =
+          [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
       break;
     case ViewRevealState::Peeked:
       self.view.superview.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.peekedHeight);
       self.view.transform = CGAffineTransformMakeTranslation(
           0, -self.tabStripView.frame.size.height - self.headerOffset);
-      self.tabStripSnapshot.transform = CGAffineTransformMakeTranslation(
-          0, self.tabStripView.frame.size.height);
+      self.tabStripSnapshot.transform = [self.tabStripView
+          adjustTransformForRTL:CGAffineTransformMakeTranslation(
+                                    0, self.tabStripView.frame.size.height)];
       break;
     case ViewRevealState::Revealed:
       self.view.superview.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.revealedHeight);
       self.view.transform = CGAffineTransformMakeTranslation(
           0, -self.tabStripView.frame.size.height - self.headerOffset);
-      self.tabStripSnapshot.transform = CGAffineTransformMakeTranslation(
-          0, self.tabStripView.frame.size.height);
+      self.tabStripSnapshot.transform = [self.tabStripView
+          adjustTransformForRTL:CGAffineTransformMakeTranslation(
+                                    0, self.tabStripView.frame.size.height)];
       break;
   }
 }

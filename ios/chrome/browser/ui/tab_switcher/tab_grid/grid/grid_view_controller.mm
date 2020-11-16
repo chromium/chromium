@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -817,9 +818,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (CGFloat)offsetPastEndOfScrollView {
   CGFloat offset;
   if (self.currentLayout == self.horizontalLayout) {
-    offset = self.collectionView.contentOffset.x +
-             self.collectionView.frame.size.width -
-             self.collectionView.contentSize.width;
+    if (UseRTLLayout()) {
+      offset = -self.collectionView.contentOffset.x;
+    } else {
+      offset = self.collectionView.contentOffset.x +
+               self.collectionView.frame.size.width -
+               self.collectionView.contentSize.width;
+    }
   } else {
     DCHECK_EQ(self.gridLayout, self.currentLayout);
     offset = self.collectionView.contentOffset.y +

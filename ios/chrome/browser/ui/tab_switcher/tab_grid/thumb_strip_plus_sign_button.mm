@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/thumb_strip_plus_sign_button.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -56,6 +57,9 @@
   gradient.startPoint = CGPointMake(0.0, 0.5);
   gradient.endPoint = CGPointMake(1.0, 0.5);
   gradient.locations = @[ @0, @0.5 ];
+  if (UseRTLLayout()) {
+    gradient.affineTransform = CGAffineTransformMakeScale(-1, 1);
+  }
   [self.layer insertSublayer:gradient atIndex:0];
 }
 

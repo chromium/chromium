@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -520,8 +521,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Hides the thumb strip's plus sign button by translating it away and making it
 // transparent.
 - (void)hidePlusSignButton {
-  self.plusSignButton.transform = CGAffineTransformMakeTranslation(
-      kThumbStripPlusSignButtonSlideOutDistance, 0);
+  CGFloat xDistance = UseRTLLayout()
+                          ? -kThumbStripPlusSignButtonSlideOutDistance
+                          : kThumbStripPlusSignButtonSlideOutDistance;
+  self.plusSignButton.transform =
+      CGAffineTransformMakeTranslation(xDistance, 0);
   self.plusSignButton.alpha = 0;
 }
 
