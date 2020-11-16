@@ -52,6 +52,9 @@ class IntentPickerTabHelper
                    IntentPickerIconLoaderCallback callback,
                    size_t index);
 
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   bool should_show_icon_ = false;
 
   base::WeakPtrFactory<IntentPickerTabHelper> weak_factory_{this};

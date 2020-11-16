@@ -540,6 +540,8 @@ source_set("chromeos") {
     "apps/apk_web_app_service_factory.h",
     "apps/intent_helper/chromeos_apps_navigation_throttle.cc",
     "apps/intent_helper/chromeos_apps_navigation_throttle.h",
+    "apps/intent_helper/chromeos_intent_picker_helpers.cc",
+    "apps/intent_helper/chromeos_intent_picker_helpers.h",
     "apps/intent_helper/common_apps_navigation_throttle.cc",
     "apps/intent_helper/common_apps_navigation_throttle.h",
     "apps/metrics/intent_handling_metrics.cc",

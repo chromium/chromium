@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
+#include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
@@ -17,6 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "content/public/browser/browser_context.h"
@@ -26,6 +30,24 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+namespace {
+
+bool ShouldShowPersistenceOptions(
+    std::vector<apps::IntentPickerAppInfo>& apps) {
+  // There is no support persistence for PWA so the selection should be hidden
+  // if only PWAs are present.
+  // TODO(crbug.com/826982): Provide the "Remember my choice" option when the
+  // app registry can support persistence for PWAs.
+  // This function is also used to hide the "Stay In Chrome" button when the
+  // "Remember my choice" option is hidden such that the bubble is easy to
+  // understand.
+  // TODO(avi): When Chrome gains a UI for managing the persistence of PWAs,
+  // reuse that UI for managing the persistent behavior of Universal Links.
+  return !ContainsOnlyPwasAndMacApps(apps);
+}
+
+}  // namespace
 
 namespace chromeos {
 
@@ -38,7 +60,7 @@ ChromeOsAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();
   const bool arc_enabled = arc::IsArcPlayStoreEnabledForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if (!arc_enabled && !apps::AppsNavigationThrottle::CanCreate(web_contents))
+  if (!arc_enabled && !apps::ShouldCheckAppsForUrl(web_contents))
     return nullptr;
 
   return std::make_unique<ChromeOsAppsNavigationThrottle>(handle, arc_enabled);
@@ -86,7 +108,7 @@ void ChromeOsAppsNavigationThrottle::OnIntentPickerClosed(
     case apps::PickerEntryType::kArc:
       if (arc::ArcIntentPickerAppFetcher::MaybeLaunchOrPersistArcApp(
               url, launch_name, should_launch_app, should_persist)) {
-        CloseOrGoBack(web_contents);
+        apps::CloseOrGoBack(web_contents);
       } else {
         close_reason = apps::IntentPickerCloseReason::ERROR_AFTER_PICKER;
       }
@@ -108,29 +130,38 @@ void ChromeOsAppsNavigationThrottle::OnIntentPickerClosed(
       // Fall through to super class method to increment counter.
       break;
     case apps::PickerEntryType::kWeb:
+      if (should_launch_app) {
+        web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
+      }
+      break;
     case apps::PickerEntryType::kDevice:
     case apps::PickerEntryType::kMacOs:
       break;
   }
 
-  apps::AppsNavigationThrottle::PickerAction action =
-      apps::AppsNavigationThrottle::GetPickerAction(entry_type, close_reason,
-                                                    should_persist);
-  apps::AppsNavigationThrottle::Platform platform =
-      apps::AppsNavigationThrottle::GetDestinationPlatform(launch_name, action);
+  apps::IntentHandlingMetrics::PickerAction action =
+      apps::IntentHandlingMetrics::GetPickerAction(entry_type, close_reason,
+                                                   should_persist);
+  apps::IntentHandlingMetrics::Platform platform =
+      apps::IntentHandlingMetrics::GetDestinationPlatform(launch_name, action);
   apps::IntentHandlingMetrics::RecordIntentPickerMetrics(
       apps::Source::kHttpOrHttps, should_persist, action, platform);
-
-  apps::AppsNavigationThrottle::OnIntentPickerClosed(
-      web_contents, ui_auto_display_service, url, launch_name, entry_type,
-      close_reason, should_persist);
 }
 
 ChromeOsAppsNavigationThrottle::ChromeOsAppsNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     bool arc_enabled)
     : apps::AppsNavigationThrottle(navigation_handle),
-      arc_enabled_(arc_enabled) {}
+      arc_enabled_(arc_enabled),
+      ui_auto_display_service_(
+          IntentPickerAutoDisplayService::Get(Profile::FromBrowserContext(
+              navigation_handle->GetWebContents()->GetBrowserContext()))) {
+  // |ui_auto_display_service_| can be null iff the call is coming from
+  // IntentPickerView. Since the pointer to our service is never modified
+  // (in case it is successfully created here) this check covers all the
+  // non-static methods in this class.
+  DCHECK(ui_auto_display_service_);
+}
 
 ChromeOsAppsNavigationThrottle::~ChromeOsAppsNavigationThrottle() = default;
 
@@ -143,7 +174,7 @@ void ChromeOsAppsNavigationThrottle::FindPwaForUrlAndShowIntentPickerForApps(
   std::vector<apps::IntentPickerAppInfo> apps_for_picker =
       FindPwaForUrl(web_contents, url, std::move(apps));
   bool show_persistence_options = ShouldShowPersistenceOptions(apps_for_picker);
-  apps::AppsNavigationThrottle::ShowIntentPickerBubbleForApps(
+  apps::ShowIntentPickerBubbleForApps(
       web_contents, std::move(apps_for_picker),
       /*show_stay_in_chrome=*/show_persistence_options,
       /*show_remember_selection=*/show_persistence_options,
@@ -204,6 +235,8 @@ bool ChromeOsAppsNavigationThrottle::ShouldDeferNavigation(
           ShouldLaunchPreferredApp(handle->GetURL()))) {
     return true;
   }
+
+  AddPwaAndShowIntentPicker({});
   return false;
 }
 
@@ -217,46 +250,9 @@ void ChromeOsAppsNavigationThrottle::OnDeferredNavigationProcessed(
     return;
   }
 
-  content::NavigationHandle* handle = navigation_handle();
-  content::WebContents* web_contents = handle->GetWebContents();
-  const GURL& url = handle->GetURL();
-
-  std::vector<apps::IntentPickerAppInfo> apps_for_picker =
-      FindPwaForUrl(web_contents, url, std::move(apps));
-
-  ShowIntentPickerForApps(
-      web_contents, ui_auto_display_service_, url, std::move(apps_for_picker),
-      GetOnPickerClosedCallback(web_contents, ui_auto_display_service_, url));
-
+  AddPwaAndShowIntentPicker(std::move(apps));
   // We are about to resume the navigation, which may destroy this object.
   Resume();
-}
-
-apps::AppsNavigationThrottle::PickerShowState
-ChromeOsAppsNavigationThrottle::GetPickerShowState(
-    const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
-    content::WebContents* web_contents,
-    const GURL& url) {
-  // On devices with tablet form factor we should not pop out the intent
-  // picker if Chrome has been chosen by the user as the platform for this URL.
-  if (chromeos::switches::IsTabletFormFactor()) {
-    if (ui_auto_display_service_->GetLastUsedPlatformForTablets(url) ==
-        IntentPickerAutoDisplayPref::Platform::kChrome) {
-      return PickerShowState::kOmnibox;
-    }
-  }
-  return ShouldAutoDisplayUi(apps_for_picker, web_contents, url) &&
-                 navigate_from_link()
-             ? PickerShowState::kPopOut
-             : PickerShowState::kOmnibox;
-}
-
-IntentPickerResponse ChromeOsAppsNavigationThrottle::GetOnPickerClosedCallback(
-    content::WebContents* web_contents,
-    IntentPickerAutoDisplayService* ui_auto_display_service,
-    const GURL& url) {
-  return base::BindOnce(&OnIntentPickerClosed, web_contents,
-                        ui_auto_display_service, url);
 }
 
 void ChromeOsAppsNavigationThrottle::CloseTab() {
@@ -270,6 +266,15 @@ bool ChromeOsAppsNavigationThrottle::ShouldAutoDisplayUi(
     const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
     content::WebContents* web_contents,
     const GURL& url) {
+  if (apps_for_picker.empty())
+    return false;
+
+  if (apps::InAppBrowser(web_contents))
+    return false;
+
+  if (!apps::ShouldOverrideUrlLoading(starting_url_, url))
+    return false;
+
   // If we only have PWAs in the app list, do not show the intent picker.
   // Instead just show the omnibox icon. This is to reduce annoyance to users
   // until "Remember my choice" is available for desktop PWAs.
@@ -278,8 +283,8 @@ bool ChromeOsAppsNavigationThrottle::ShouldAutoDisplayUi(
   if (ContainsOnlyPwasAndMacApps(apps_for_picker))
     return false;
 
-  return AppsNavigationThrottle::ShouldAutoDisplayUi(apps_for_picker,
-                                                     web_contents, url);
+  DCHECK(ui_auto_display_service_);
+  return ui_auto_display_service_->ShouldAutoDisplayUi(url);
 }
 
 bool ChromeOsAppsNavigationThrottle::ShouldLaunchPreferredApp(const GURL& url) {
@@ -293,6 +298,74 @@ bool ChromeOsAppsNavigationThrottle::ShouldLaunchPreferredApp(const GURL& url) {
     return false;
   }
   return navigate_from_link();
+}
+
+void ChromeOsAppsNavigationThrottle::AddPwaAndShowIntentPicker(
+    std::vector<apps::IntentPickerAppInfo> apps) {
+  content::NavigationHandle* handle = navigation_handle();
+  content::WebContents* web_contents = handle->GetWebContents();
+  const GURL& url = handle->GetURL();
+  std::vector<apps::IntentPickerAppInfo> apps_for_picker =
+      FindPwaForUrl(web_contents, url, std::move(apps));
+
+  ShowIntentPickerForApps(web_contents, ui_auto_display_service_, url,
+                          std::move(apps_for_picker),
+                          base::BindOnce(&OnIntentPickerClosed, web_contents,
+                                         ui_auto_display_service_, url));
+}
+
+apps::PickerShowState ChromeOsAppsNavigationThrottle::GetPickerShowState(
+    const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
+    content::WebContents* web_contents,
+    const GURL& url) {
+  // On devices with tablet form factor we should not pop out the intent
+  // picker if Chrome has been chosen by the user as the platform for this URL.
+  if (chromeos::switches::IsTabletFormFactor()) {
+    if (ui_auto_display_service_->GetLastUsedPlatformForTablets(url) ==
+        IntentPickerAutoDisplayPref::Platform::kChrome) {
+      return apps::PickerShowState::kOmnibox;
+    }
+  }
+
+  return ShouldAutoDisplayUi(apps_for_picker, web_contents, url) &&
+                 navigate_from_link()
+             ? apps::PickerShowState::kPopOut
+             : apps::PickerShowState::kOmnibox;
+}
+
+void ChromeOsAppsNavigationThrottle::ShowIntentPickerForApps(
+    content::WebContents* web_contents,
+    IntentPickerAutoDisplayService* ui_auto_display_service,
+    const GURL& url,
+    std::vector<apps::IntentPickerAppInfo> apps,
+    IntentPickerResponse callback) {
+  if (apps.empty()) {
+    IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
+    ui_displayed_ = false;
+    return;
+  }
+  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser)
+    return;
+  const apps::PickerShowState picker_show_state =
+      GetPickerShowState(apps, web_contents, url);
+  switch (picker_show_state) {
+    case apps::PickerShowState::kOmnibox:
+      ui_displayed_ = false;
+      break;
+    case apps::PickerShowState::kPopOut: {
+      bool show_persistence_options = ShouldShowPersistenceOptions(apps);
+      apps::ShowIntentPickerBubbleForApps(
+          web_contents, std::move(apps),
+          /*show_stay_in_chrome=*/show_persistence_options,
+          /*show_remember_selection=*/show_persistence_options,
+          std::move(callback));
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace chromeos

@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 
-#include "build/build_config.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,15 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_apps_navigation_throttle.h"
-#include "chrome/browser/chromeos/apps/intent_helper/common_apps_navigation_throttle.h"
-#endif  //  defined(OS_CHROMEOS)
-
-#if defined(OS_MAC)
-#include "chrome/browser/apps/intent_helper/mac_apps_navigation_throttle.h"
-#endif  //  defined(OS_MAC)
 
 namespace content {
 class WebContents;
@@ -56,21 +46,7 @@ void IntentPickerView::OnExecuting(
   DCHECK(ShouldShowIcon());
   content::WebContents* web_contents = GetWebContents();
   const GURL& url = chrome::GetURLToBookmark(web_contents);
-#if defined(OS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)) {
-    apps::CommonAppsNavigationThrottle::ShowIntentPickerBubble(
-        web_contents, /*ui_auto_display_service=*/nullptr, url);
-  } else {
-    chromeos::ChromeOsAppsNavigationThrottle::ShowIntentPickerBubble(
-        web_contents, /*ui_auto_display_service=*/nullptr, url);
-  }
-#elif defined(OS_MAC)
-  apps::MacAppsNavigationThrottle::ShowIntentPickerBubble(
-      web_contents, /*ui_auto_display_service=*/nullptr, url);
-#else
-  apps::AppsNavigationThrottle::ShowIntentPickerBubble(
-      web_contents, /*ui_auto_display_service=*/nullptr, url);
-#endif  //  defined(OS_CHROMEOS)
+  apps::ShowIntentPickerBubble(web_contents, url);
 }
 
 views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {

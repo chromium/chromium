@@ -11,7 +11,8 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -47,7 +48,7 @@ namespace {
 // TODO(djacobo): Replace this limit to correctly reflect the UI mocks, which
 // now instead of limiting the results to 3.5 will allow whatever fits in 256pt.
 // Using |kMaxAppResults| as a measure of how many apps we want to show.
-constexpr size_t kMaxAppResults = apps::AppsNavigationThrottle::kMaxAppResults;
+constexpr size_t kMaxAppResults = apps::kMaxAppResults;
 // Main components sizes
 constexpr int kTitlePadding = 16;
 constexpr int kRowHeight = 32;
@@ -229,7 +230,7 @@ void IntentPickerBubbleView::OnDialogAccepted() {
 }
 
 void IntentPickerBubbleView::OnDialogCancelled() {
-  const char* launch_name = apps::AppsNavigationThrottle::kUseBrowserForLink;
+  const char* launch_name = apps::kUseBrowserForLink;
   bool should_persist = remember_selection_checkbox_ &&
                         remember_selection_checkbox_->GetChecked();
   RunCallbackAndCloseBubble(launch_name, apps::PickerEntryType::kUnknown,
@@ -299,7 +300,7 @@ IntentPickerBubbleView::IntentPickerBubbleView(
 
   // Click to call bubbles need to be closed after navigation if the main frame
   // origin changed. Other intent picker bubbles will be handled in
-  // AppsNavigationThrottle, they will get closed on each navigation start and
+  // intent_picker_helpers, they will get closed on each navigation start and
   // should stay open until after navigation finishes.
   set_close_on_main_frame_origin_navigation(icon_type ==
                                             PageActionIconType::kClickToCall);

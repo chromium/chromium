@@ -389,7 +389,6 @@
 #include "chrome/install_static/install_util.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #elif defined(OS_MAC)
-#include "chrome/browser/apps/intent_helper/mac_apps_navigation_throttle.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/seatbelt_exec.h"
@@ -3967,8 +3966,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)
           ? apps::CommonAppsNavigationThrottle::MaybeCreate(handle)
           : chromeos::ChromeOsAppsNavigationThrottle::MaybeCreate(handle);
-#elif defined(OS_MAC)
-      apps::MacAppsNavigationThrottle::MaybeCreate(handle);
 #else
       apps::AppsNavigationThrottle::MaybeCreate(handle);
 #endif
