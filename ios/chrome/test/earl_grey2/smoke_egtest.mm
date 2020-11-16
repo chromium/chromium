@@ -246,16 +246,12 @@
 
 // Tests gracefully kill through AppLaunchManager.
 - (void)testAppLaunchManagerForceRelaunchByCleanShutdown {
-// TODO(crbug.com/1067821): ForceRelaunchByCleanShutdown only compiles and works
-// on simulator.
-#if TARGET_IPHONE_SIMULATOR
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByCleanShutdown];
   [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
       assertWithMatcher:grey_notVisible()];
-#endif
 }
 
 // Tests hard kill(crash) through AppLaunchManager.

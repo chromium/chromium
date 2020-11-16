@@ -93,16 +93,9 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 // In EG1, this method is a no-op.
 - (void)ensureAppLaunchedWithArgs:(NSArray<NSString*>*)arguments
                    relaunchPolicy:(RelaunchPolicy)relaunchPolicy {
-// TODO(crbug.com/1067821): ForceRelaunchByCleanShutdown doesn't compile on
-// real devices.
-#if TARGET_IPHONE_SIMULATOR
   BOOL forceRestart = (relaunchPolicy == ForceRelaunchByKilling) ||
                       (relaunchPolicy == ForceRelaunchByCleanShutdown);
   BOOL gracefullyKill = (relaunchPolicy == ForceRelaunchByCleanShutdown);
-#else
-  BOOL forceRestart = (relaunchPolicy == ForceRelaunchByKilling);
-  BOOL gracefullyKill = NO;
-#endif  // TARGET_IPHONE_SIMULATOR
   BOOL runResets = (relaunchPolicy == NoForceRelaunchAndResetState);
 
   // If app has crashed, |self.runningApplication| will be at
@@ -149,12 +142,12 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   if (appIsRunning) {
+    [CoverageUtils writeClangCoverageProfile];
+
     if (gracefullyKill) {
       GREYAssertTrue([EarlGrey backgroundApplication],
                      @"Failed to background application.");
     }
-
-    [CoverageUtils writeClangCoverageProfile];
 
     [self.runningApplication terminate];
   }

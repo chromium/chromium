@@ -234,16 +234,10 @@ bool WaitForOmniboxContaining(std::string text) {
 }
 
 - (void)triggerRestore {
-// TODO(crbug.com/1067821):|AppLaunchManager| relaunching with
-// |ForceRelaunchByCleanShutdown| policy won't work on real device.
-#if !TARGET_IPHONE_SIMULATOR
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
-#else
   [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByCleanShutdown];
-#endif
 }
 
 - (void)loadTestPages {
