@@ -85,6 +85,8 @@ source_set("common_lib") {
     "src/CommonLib/Config/GREYConfiguration+Private.h",
     "src/CommonLib/Config/GREYConfiguration.h",
     "src/CommonLib/Config/GREYConfiguration.m",
+    "src/CommonLib/DistantObject/GREYDistantObjectUtils.h",
+    "src/CommonLib/DistantObject/GREYDistantObjectUtils.m",
     "src/CommonLib/DistantObject/GREYHostApplicationDistantObject.h",
     "src/CommonLib/DistantObject/GREYHostBackgroundDistantObject.h",
     "src/CommonLib/DistantObject/GREYTestApplicationDistantObject+Private.h",
@@ -142,7 +144,10 @@ source_set("common_lib") {
 
   public_configs = [ ":config" ]
 
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "CoreLocation.framework",
+    "UIKit.framework",
+  ]
 
   configs -= [
     "//build/config/gcc:symbol_visibility_hidden",
