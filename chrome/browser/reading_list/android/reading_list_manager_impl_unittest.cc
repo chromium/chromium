@@ -13,6 +13,7 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,10 +24,11 @@ using ReadingListEntries = ReadingListModelImpl::ReadingListEntries;
 namespace {
 
 constexpr char kURL[] = "https://www.example.com";
+constexpr char kURL1[] = "https://www.anotherexample.com";
 constexpr char kTitle[] =
     "In earlier tellings, the dog had a better reputation than the cat, "
     "however the president vetoed it.";
-constexpr char kTitle1[] = "boring title.";
+constexpr char kTitle1[] = "boring title about dogs.";
 constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
@@ -163,6 +165,56 @@ TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
   auto node_same_url =
       std::make_unique<BookmarkNode>(0, base::GUID::GenerateRandomV4(), url);
   EXPECT_FALSE(manager()->IsReadingListBookmark(node_same_url.get()));
+}
+
+// Verifies GetMatchingNodes() API in reading list manager.
+TEST_F(ReadingListManagerImplTest, GetMatchingNodes) {
+  manager()->Add(GURL(kURL), kTitle);
+  manager()->Add(GURL(kURL1), kTitle1);
+  EXPECT_EQ(2u, manager()->size());
+
+  // Search with a multi-word query text.
+  std::vector<const BookmarkNode*> results;
+  bookmarks::QueryFields query;
+  query.word_phrase_query.reset(
+      new base::string16(base::ASCIIToUTF16("dog cat")));
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(1u, results.size());
+
+  // Search with a single word query text.
+  results.clear();
+  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("dog")));
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(2u, results.size());
+
+  // Search with empty string. Shouldn't match anything.
+  results.clear();
+  query.word_phrase_query.reset(new base::string16());
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(0u, results.size());
+}
+
+TEST_F(ReadingListManagerImplTest, GetMatchingNodesWithMaxCount) {
+  manager()->Add(GURL(kURL), kTitle);
+  manager()->Add(GURL(kURL1), kTitle1);
+  EXPECT_EQ(2u, manager()->size());
+
+  // Search with a query text.
+  std::vector<const BookmarkNode*> results;
+  bookmarks::QueryFields query;
+  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("dog")));
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(2u, results.size());
+
+  // Search with having pre-existing elements in |results|.
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(4u, results.size());
+
+  // Max count should never be exceeded.
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(5u, results.size());
+  manager()->GetMatchingNodes(query, 5, &results);
+  EXPECT_EQ(5u, results.size());
 }
 
 // If Add() the same URL twice, the first bookmark node pointer will be

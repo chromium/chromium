@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -156,6 +157,27 @@ const BookmarkNode* ReadingListManagerImpl::GetNodeByID(int64_t id) const {
   }
 
   return nullptr;
+}
+
+void ReadingListManagerImpl::GetMatchingNodes(
+    const bookmarks::QueryFields& query,
+    size_t max_count,
+    std::vector<const BookmarkNode*>* results) {
+  if (results->size() >= max_count)
+    return;
+
+  auto query_words = bookmarks::ParseBookmarkQuery(query);
+  if (query_words.empty())
+    return;
+
+  for (const auto& node : root_->children()) {
+    if (bookmarks::DoesBookmarkContainWords(node->GetTitle(), node->url(),
+                                            query_words)) {
+      results->push_back(node.get());
+      if (results->size() == max_count)
+        break;
+    }
+  }
 }
 
 bool ReadingListManagerImpl::IsReadingListBookmark(

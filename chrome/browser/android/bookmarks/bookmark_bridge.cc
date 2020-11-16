@@ -687,6 +687,7 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
 
   GetBookmarksMatchingProperties(bookmark_model_, query, max_results, &results);
 
+  reading_list_manager_->GetMatchingNodes(query, max_results, &results);
   if (partner_bookmarks_shim_->HasPartnerBookmarks() &&
       IsReachable(partner_bookmarks_shim_->GetPartnerBookmarksRoot())) {
     partner_bookmarks_shim_->GetPartnerBookmarksMatchingProperties(
@@ -694,15 +695,10 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
   }
   DCHECK((int)results.size() <= max_results);
   for (const bookmarks::BookmarkNode* match : results) {
-    // If this bookmark is a partner bookmark
-    if (partner_bookmarks_shim_->IsPartnerBookmark(match) &&
-        IsReachable(match)) {
-      Java_BookmarkBridge_addToBookmarkIdList(
-          env, j_list, match->id(), BookmarkType::BOOKMARK_TYPE_PARTNER);
-    } else {
-      Java_BookmarkBridge_addToBookmarkIdList(
-          env, j_list, match->id(), BookmarkType::BOOKMARK_TYPE_NORMAL);
-    }
+    if (!IsReachable(match))
+      continue;
+    Java_BookmarkBridge_addToBookmarkIdList(env, j_list, match->id(),
+                                            GetBookmarkType(match));
   }
 }
 
