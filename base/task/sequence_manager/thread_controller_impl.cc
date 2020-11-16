@@ -183,15 +183,12 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
     // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
     // so that the "ThreadController active" trace event lives on top of all
-    // "run task" events. It must also encompass DidRunTask() to cover
-    // microtasks.
+    // "run task" events.
     DCHECK_GT(main_sequence_only().run_level_tracker.num_run_levels(), 0U);
     main_sequence_only().run_level_tracker.OnTaskStarted();
     {
       // Trace-parsing tools (DevTools, Lighthouse, etc) consume this event
       // to determine long tasks.
-      // The event scope must span across DidRunTask call below to make sure
-      // it covers RunMicrotasks event.
       // See https://crbug.com/681863 and https://crbug.com/874982
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
@@ -204,6 +201,8 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
           return;
       }
 
+      // This processes microtasks, hence all scoped operations above must end
+      // after it.
       sequence_->DidRunTask();
     }
     main_sequence_only().run_level_tracker.OnTaskEnded();
