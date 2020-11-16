@@ -32,6 +32,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -944,6 +945,11 @@ void LocalDOMWindow::SchedulePostMessage(
     MessageEvent* event,
     scoped_refptr<const SecurityOrigin> target,
     LocalDOMWindow* source) {
+  // Record UKM metrics for postMessage event.
+  ukm::builders::PostMessage_Incoming_Frame(UkmSourceID())
+      .SetSourceFrameSourceId(source->UkmSourceID())
+      .Record(UkmRecorder());
+
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
   // surfaces often as a problem (see crbug.com/587012).

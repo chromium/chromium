@@ -34,6 +34,9 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -541,6 +544,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   base::Optional<base::UnguessableToken> translated_source_token;
+  ukm::SourceId source_page_ukm_source_id = ukm::kInvalidSourceId;
   if (source_frame_token) {
     RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
         GetProcess()->GetID(), source_frame_token.value());
@@ -580,8 +584,17 @@ void RenderFrameProxyHost::RouteMessageEvent(
         translated_source_token =
             source_proxy_in_target_site_instance->GetFrameToken();
       }
+
+      source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
     }
   }
+
+  // Record UKM metrics for the postMessage event.
+  ukm::builders::PostMessage_Incoming_Page ukm_builder(
+      target_rfh->GetPageUkmSourceId());
+  if (source_page_ukm_source_id != ukm::kInvalidSourceId)
+    ukm_builder.SetSourcePageSourceId(source_page_ukm_source_id);
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 
   target_rfh->PostMessageEvent(translated_source_token, source_origin,
                                target_origin, std::move(message));

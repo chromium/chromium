@@ -10720,6 +10720,35 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PostMessage.Incoming.Frame">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    The frame received an incoming postMessage event. This is recorded only for
+    postMessage events sent between frames in the same renderer process.
+  </summary>
+  <metric name="SourceFrameSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source frame, as an integer.
+    </summary>
+  </metric>
+</event>
+
+<event name="PostMessage.Incoming.Page">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    A frame on the page received an incoming postMessage event. This is recorded
+    only for postMessage events sent between frames in different renderer
+    processes.
+  </summary>
+  <metric name="SourcePageSourceId">
+    <summary>
+      The UKM source ID of the postMessage event's source page, as an integer.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrefetchProxy" singular="True">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
