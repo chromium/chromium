@@ -1059,7 +1059,7 @@
         ],
       },
       'android-pie-arm64-rel': {
-        'experiment_percentage': 50,
+        'experiment_percentage': 100,
       },
       'android-pie-x86-rel': {
         'args': [
