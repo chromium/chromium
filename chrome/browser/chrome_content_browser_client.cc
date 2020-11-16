@@ -1166,12 +1166,6 @@ bool IsErrorPageAutoReloadEnabled() {
   return true;
 }
 
-std::string GenerateGreaseyBrand(const std::vector<int>& order) {
-  const std::vector<std::string> escaped_chars = {"\\", "\"", ";"};
-  return base::StrCat({escaped_chars[order[0]], "Not", escaped_chars[order[1]],
-                       "A", escaped_chars[order[2]], "Brand"});
-}
-
 }  // namespace
 
 // Generate a pseudo-random permutation of the following brand/version pairs:
@@ -1183,8 +1177,7 @@ std::string GenerateGreaseyBrand(const std::vector<int>& order) {
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     base::Optional<std::string> brand,
-    std::string major_version,
-    base::Optional<std::string> greasey_brand) {
+    std::string major_version) {
   DCHECK_GE(seed, 0);
   const int npermutations = 6;  // 3!
   int permutation = seed % npermutations;
@@ -1193,28 +1186,35 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   // and in order should be under three.
   const std::vector<std::vector<int>> orders{{0, 1, 2}, {0, 2, 1}, {1, 0, 2},
                                              {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
-  const std::vector<int> order =
-      brand ? orders[permutation] : std::vector<int>{seed % 2, (seed + 1) % 2};
-  blink::UserAgentBrandList brand_version_list;
+  const std::vector<int> order = orders[permutation];
+  DCHECK_EQ(6u, orders.size());
+  DCHECK_EQ(3u, order.size());
 
-  for (int item : order) {
-    switch (item) {
-      case 0:
-        if (base::FeatureList::IsEnabled(features::kGreaseUACH))
-          brand_version_list.emplace_back(
-              greasey_brand.value_or(GenerateGreaseyBrand(orders[permutation])),
-              "99");
-        break;
-      case 1:
-        brand_version_list.emplace_back("Chromium", major_version);
-        break;
-      case 2:
-        if (brand)
-          brand_version_list.emplace_back(brand.value(), major_version);
-        break;
-    }
+  const std::vector<std::string> escaped_chars = {"\\", "\"", ";"};
+  std::string greasey_brand =
+      base::StrCat({escaped_chars[order[0]], "Not", escaped_chars[order[1]],
+                    "A", escaped_chars[order[2]], "Brand"});
+
+  blink::UserAgentBrandVersion greasey_bv = {greasey_brand, "99"};
+  blink::UserAgentBrandVersion chromium_bv = {"Chromium", major_version};
+
+  blink::UserAgentBrandList greased_brand_version_list(3);
+
+  if (brand) {
+    blink::UserAgentBrandVersion brand_bv = {brand.value(), major_version};
+
+    greased_brand_version_list[order[0]] = greasey_bv;
+    greased_brand_version_list[order[1]] = chromium_bv;
+    greased_brand_version_list[order[2]] = brand_bv;
+  } else {
+    greased_brand_version_list[seed % 2] = greasey_bv;
+    greased_brand_version_list[(seed + 1) % 2] = chromium_bv;
+
+    // If left, the last element would make a blank "" at the end of the header.
+    greased_brand_version_list.pop_back();
   }
-  return brand_version_list;
+
+  return greased_brand_version_list;
 }
 
 const blink::UserAgentBrandList& GetBrandVersionList() {
@@ -1227,14 +1227,8 @@ const blink::UserAgentBrandList& GetBrandVersionList() {
 #if !BUILDFLAG(CHROMIUM_BRANDING)
         brand = version_info::GetProductName();
 #endif
-        base::Optional<std::string> maybe_param_override =
-            base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
-                                                   "brand_override");
-        if (maybe_param_override->empty())
-          maybe_param_override = base::nullopt;
-
         return GenerateBrandVersionList(major_version_number, brand,
-                                        major_version, maybe_param_override);
+                                        major_version);
       }());
   return *greased_brand_version_list;
 }
