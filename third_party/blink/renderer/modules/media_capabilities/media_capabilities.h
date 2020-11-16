@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -25,18 +26,26 @@ class ExecutionContext;
 class MediaDecodingConfiguration;
 class MediaEncodingConfiguration;
 class MediaKeySystemAccess;
+class NavigatorBase;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable {
+class MODULES_EXPORT MediaCapabilities final
+    : public ScriptWrappable,
+      public Supplement<NavigatorBase> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kLearningBadWindowThresholdParamName[];
   static const char kLearningNnrThresholdParamName[];
 
-  explicit MediaCapabilities(ExecutionContext* context);
+  static const char kSupplementName[];
+
+  // Getter for navigator.mediaCapabilities
+  static MediaCapabilities* mediaCapabilities(NavigatorBase&);
+
+  explicit MediaCapabilities(NavigatorBase&);
 
   void Trace(blink::Visitor* visitor) const override;
 

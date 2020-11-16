@@ -8,7 +8,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_key_system_track_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_key_system_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/media_capabilities/fuzzer_media_configuration.pb.h"
@@ -142,8 +144,8 @@ DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaDecodingConfigProto& proto) {
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  auto* media_capabilities = MakeGarbageCollected<MediaCapabilities>(
-      ExecutionContext::From(script_state));
+  auto* media_capabilities = MediaCapabilities::mediaCapabilities(
+      *page_holder->GetFrame().DomWindow()->navigator());
   media_capabilities->decodingInfo(script_state, config,
                                    IGNORE_EXCEPTION_FOR_TESTING);
 

@@ -12,10 +12,6 @@ blink_modules_sources("media_capabilities") {
     "media_capabilities.h",
     "media_capabilities_identifiability_metrics.cc",
     "media_capabilities_identifiability_metrics.h",
-    "navigator_media_capabilities.cc",
-    "navigator_media_capabilities.h",
-    "worker_navigator_media_capabilities.cc",
-    "worker_navigator_media_capabilities.h",
   ]
   deps = [
     "//media",

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_media_capability.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -613,10 +614,25 @@ const char MediaCapabilities::kLearningBadWindowThresholdParamName[] =
 const char MediaCapabilities::kLearningNnrThresholdParamName[] =
     "nnr_threshold";
 
-MediaCapabilities::MediaCapabilities(ExecutionContext* context)
-    : decode_history_service_(context),
-      bad_window_predictor_(context),
-      nnr_predictor_(context) {}
+// static
+const char MediaCapabilities::kSupplementName[] = "MediaCapabilities";
+
+MediaCapabilities* MediaCapabilities::mediaCapabilities(
+    NavigatorBase& navigator) {
+  MediaCapabilities* supplement =
+      Supplement<NavigatorBase>::From<MediaCapabilities>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<MediaCapabilities>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      decode_history_service_(navigator.GetExecutionContext()),
+      bad_window_predictor_(navigator.GetExecutionContext()),
+      nnr_predictor_(navigator.GetExecutionContext()) {}
 
 void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(decode_history_service_);
@@ -624,6 +640,7 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(nnr_predictor_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 MediaCapabilities::PendingCallbackState::PendingCallbackState(
