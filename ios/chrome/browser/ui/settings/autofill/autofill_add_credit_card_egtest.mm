@@ -146,7 +146,12 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 }
 
 // Tests that the 'Cancel' button dismisses the screen.
+// TODO(crbug.com/1149306): test flaky on iPads.
 - (void)testCancelButtonDismissesScreen {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardView()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -220,7 +225,11 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests when a user tries to add a valid card number, the screen is dismissed
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen.
+// TODO(crbug.com/1149306): test flaky on iPads.
 - (void)testAddButtonOnValidNumber {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
   [AutofillAppInterface clearCreditCardStore];
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_typeText(@"4111111111111111")];
@@ -247,11 +256,9 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests when a user add a card with a nickname, the screen is dismissed
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen with the nickname.
-- (void)testAddButtonOnValidNickname {
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/1109663): Enable the test on iPhone once the bug is fixed.
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPhone.");
-  }
+// TODO(crbug.com/1109663): Enable the test on iPhone once the bug is fixed.
+// TODO(crbug.com/1149306): test flaky on iPads.
+- (void)DISABLED_testAddButtonOnValidNickname {
   [AutofillAppInterface clearCreditCardStore];
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_typeText(@"4111111111111111")];
