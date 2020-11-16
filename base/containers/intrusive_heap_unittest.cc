@@ -246,9 +246,8 @@ void DoSameSizeOperation(IntrusiveHeap<T>* heap) {
     }
 
     case kUpdate: {
-      T* t = const_cast<T*>(&heap->at(index));
-      t->set_value(new_value);
-      it = heap->Update(index);
+      it = heap->Modify(
+          index, [&new_value](T& element) { element.set_value(new_value); });
       break;
     }
 
@@ -411,6 +410,10 @@ void GeneralStressTest() {
   T* element = const_cast<T*>(&heap[7]);
   element->set_value(97);
   heap.Update(7u);
+  ExpectHeap(heap);
+
+  // Safely modify an element that is already inside the heap.
+  heap.Modify(7u, [](T& element) { element.set_value(128); });
   ExpectHeap(heap);
 
   // Do some more updates that are no-ops, just to explore all the flavours of
