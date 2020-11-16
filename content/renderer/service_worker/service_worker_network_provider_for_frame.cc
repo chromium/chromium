@@ -120,7 +120,7 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (!context() || !context()->GetSubresourceLoaderFactory())
     return nullptr;
 
-  // If the URL is not http(s) or otherwise whitelisted, do not intercept the
+  // If the URL is not http(s) or otherwise allowed, do not intercept the
   // request. Schemes like 'blob' and 'file' are not eligible to be intercepted
   // by service workers.
   // TODO(falken): Let ServiceWorkerSubresourceLoaderFactory handle the request
