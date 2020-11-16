@@ -18,3 +18,23 @@ js_type_check("closure_compile") {
   uses_js_modules = true
   deps = [ ":main_js" ]
 }
+
+action("gen_main_html") {
+  inputs = [ "//ui/file_manager/file_manager/main.html" ]
+
+  script = "//chromeos/components/file_manager/resources/gen_main_html.py"
+
+  args = [
+    "--source",
+    rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
+    "--target",
+    rebase_path("$target_gen_dir/main.html", root_build_dir),
+    "--root",
+    rebase_path("//"),  # root of the chrome source checkout.
+  ]
+
+  outputs = [
+    "$target_gen_dir/main.html",
+    "$target_gen_dir/main.html.stamp",
+  ]
+}

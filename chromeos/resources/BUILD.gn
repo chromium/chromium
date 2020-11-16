@@ -85,6 +85,9 @@ grit("connectivity_diagnostics_resources") {
 # Resources used by chrome://file-manager
 if (!is_official_build) {
   grit("file_manager_resources") {
+    # main.html is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+
     source = "../components/file_manager/resources/file_manager_resources.grd"
 
     outputs = [
@@ -97,6 +100,7 @@ if (!is_official_build) {
 
     deps = [
       "//chromeos/components/file_manager/mojom:mojom_js",
+      "//chromeos/components/file_manager/resources:gen_main_html",
       "//mojo/public/js:bindings_lite",
     ]
   }

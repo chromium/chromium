@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+#
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Generate SWA files app main.html from files app main.html"""
+
+import fileinput
+import optparse
+import os
+import shutil
+import sys
+
+_SWA = '<script type="module" src="chrome://file-manager/main.js"></script>'
+
+def GenerateSwaMainHtml(source, target, root):
+  """Copy source file to target, do SWA edits, then add BUILD time stamp."""
+
+  # Copy source (main.html) file to the target (main.html) file.
+  shutil.copyfile(source, target)
+
+  # Edit the target file.
+  for line in fileinput.input(target, inplace=True):
+    # Add _SWA <script> tag after the <head> tag.
+    if line.find('<head>') >= 0:
+      print line + '    ' + _SWA
+    # Add <meta> charset="utf-8" attribute.
+    elif line.find('<meta ') >= 0:
+      sys.stdout.write(line.replace('<meta ', '<meta charset="utf-8" '))
+    # Root rewrite files app <link> stylesheet href attribute.
+    elif line.find('<link rel="stylesheet"') >= 0:
+      if not 'href="chrome://' in line:
+        href = 'href="' + root + 'ui/file_manager/file_manager/'
+        sys.stdout.write(line.replace('href="', href))
+      else:
+        sys.stdout.write(line)
+    # Remove files app foreground/js <script> tags: SWA app must lazy-load
+    # them after the SWA app has initialized needed resources.
+    elif line.find('<script src="foreground/js/') == -1:
+      sys.stdout.write(line)
+
+  # Create a BUILD time stamp for the target file.
+  open(target + '.stamp', 'a').close()
+
+def main(args):
+  parser = optparse.OptionParser()
+
+  parser.add_option('--source', help='Files app main.html source file.')
+  parser.add_option('--target', help='Target SWA main.html for output.')
+  parser.add_option('--root', help='Source root: chrome/src path.')
+
+  options, _ = parser.parse_args(args)
+
+  if options.source and options.target and options.root:
+    target = os.path.join(os.getcwd(), options.target)
+    GenerateSwaMainHtml(options.source, target, options.root)
+    return
+
+  raise SyntaxError('Usage: all arguments are required.')
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv[1:]))
