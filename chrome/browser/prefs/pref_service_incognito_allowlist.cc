@@ -166,10 +166,10 @@ const char* const kPersistentPrefNames[] = {
 namespace prefs {
 
 std::vector<const char*> GetIncognitoPersistentPrefsAllowlist() {
-  std::vector<const char*> whitelist;
-  whitelist.insert(whitelist.end(), kPersistentPrefNames,
+  std::vector<const char*> allowlist;
+  allowlist.insert(allowlist.end(), kPersistentPrefNames,
                    kPersistentPrefNames + base::size(kPersistentPrefNames));
-  return whitelist;
+  return allowlist;
 }
 
 }  // namespace prefs
