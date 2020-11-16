@@ -1620,9 +1620,6 @@ extern const char kGamesHubDescription[];
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 
-extern const char kHomepageSettingsUIConversionName[];
-extern const char kHomepageSettingsUIConversionDescription[];
-
 extern const char kInstantStartName[];
 extern const char kInstantStartDescription[];
 

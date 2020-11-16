@@ -12,24 +12,9 @@
         android:summaryOn="@string/text_on"
         android:summaryOff="@string/text_off" />
 
-    <Preference
-        android:key="homepage_edit"
-        android:title="@string/options_homepage_edit_label"
-        android:visibility="gone"
-        android:fragment="org.chromium.chrome.browser.homepage.settings.HomepageEditor" />
-
     <org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePreference
         android:key="homepage_radio_group"
-        android:visibility="gone"
         android:selectable="false"
         app:allowDividerAbove="true"
-        app:allowDividerBelow="false" />
-
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="text_managed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:allowDividerAbove="false"
         app:allowDividerBelow="false" />
 </PreferenceScreen>

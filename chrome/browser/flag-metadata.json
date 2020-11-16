@@ -2872,11 +2872,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "homepage-settings-ui-conversion",
-    "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr", "zmo" ],
     // A debugging flag intended for end-users where there may not be any other

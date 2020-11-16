@@ -309,7 +309,6 @@ public abstract class ChromeFeatureList {
             "HomepagePromoSyntheticPromoSeenEnabled";
     public static final String HOMEPAGE_PROMO_SYNTHETIC_PROMO_SEEN_TRACKING =
             "HomepagePromoSyntheticPromoSeenTracking";
-    public static final String HOMEPAGE_SETTINGS_UI_CONVERSION = "HomepageSettingsUIConversion";
     public static final String HORIZONTAL_TAB_SWITCHER_ANDROID = "HorizontalTabSwitcherAndroid";
     public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";

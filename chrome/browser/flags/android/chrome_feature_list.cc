@@ -171,7 +171,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kHomepagePromoCard,
     &kHomepagePromoSyntheticPromoSeenEnabled,
     &kHomepagePromoSyntheticPromoSeenTracking,
-    &kHomepageSettingsUIConversion,
     &kHorizontalTabSwitcherAndroid,
     &kImmersiveUiMode,
     &kIncognitoScreenshot,
@@ -488,9 +487,6 @@ const base::Feature kHomepagePromoSyntheticPromoSeenEnabled{
 const base::Feature kHomepagePromoSyntheticPromoSeenTracking{
     "HomepagePromoSyntheticPromoSeenTracking",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kHomepageSettingsUIConversion{
-    "HomepageSettingsUIConversion", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kHorizontalTabSwitcherAndroid{
     "HorizontalTabSwitcherAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

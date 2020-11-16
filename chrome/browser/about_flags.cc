@@ -5948,10 +5948,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
-    {"homepage-settings-ui-conversion",
-     flag_descriptions::kHomepageSettingsUIConversionName,
-     flag_descriptions::kHomepageSettingsUIConversionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kHomepageSettingsUIConversion)},
     {"homepage-promo-card", flag_descriptions::kHomepagePromoCardName,
      flag_descriptions::kHomepagePromoCardDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kHomepagePromoCard,

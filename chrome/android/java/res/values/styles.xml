@@ -203,27 +203,10 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
     </style>
-    <style name="ButtonBarTopSpacer" parent="ButtonBarTopSpacerLight">
-        <item name="android:minHeight">5dp</item>
-    </style>
     <style name="ButtonBarTopDivider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/dividerHorizontal</item>
-    </style>
-    <style name="ButtonBar" parent="@android:style/Holo.Light.ButtonBar.AlertDialog">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:divider">?android:attr/dividerVertical</item>
-        <item name="android:dividerPadding">0dp</item>
-        <item name="android:showDividers">middle</item>
-    </style>
-    <style name="ButtonBarButton" parent="@style/TextButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:paddingStart">4dp</item>
-        <item name="android:paddingEnd">4dp</item>
     </style>
 
     <!-- First Run Experience -->

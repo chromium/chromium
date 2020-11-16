@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -85,12 +84,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        assert ChromeFeatureList.isInitialized();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION)) {
-            mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
-        } else {
-            setPrefHomepageEnabled(false);
-        }
+        mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
     }
 
     /**
@@ -174,9 +168,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * Get homepage URI without checking if the homepage is enabled.
      * @return Homepage URI based on policy and shared preference settings.
      */
-    public @NonNull String getHomepageUriIgnoringEnabledState() {
-        // TODO(wenyufu): Move this function back to #getHomepageUri after
-        //  ChromeFeatureList#HOMEPAGE_SETTINGS_UI_CONVERSION 100% release
+    private @NonNull String getHomepageUriIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
             return HomepagePolicyManager.getHomepageUrl();
         }

@@ -224,7 +224,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/homepage/HomepagePolicyIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/homepage/HomepageTestRule.java",
   "javatests/src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsFragmentTest.java",
-  "javatests/src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsFragmentWithEditorTest.java",
   "javatests/src/org/chromium/chrome/browser/identity_disc/IdentityDiscControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/incognito/IncognitoCookieLeakageTest.java",
   "javatests/src/org/chromium/chrome/browser/incognito/IncognitoDataTestUtils.java",

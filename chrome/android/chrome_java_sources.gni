@@ -686,7 +686,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/historyreport/UsageReport.java",
   "java/src/org/chromium/chrome/browser/homepage/HomepageManager.java",
   "java/src/org/chromium/chrome/browser/homepage/HomepagePolicyManager.java",
-  "java/src/org/chromium/chrome/browser/homepage/settings/HomepageEditor.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/HomepageMetricsEnums.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/HomepageSettings.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/RadioButtonGroupHomepagePreference.java",

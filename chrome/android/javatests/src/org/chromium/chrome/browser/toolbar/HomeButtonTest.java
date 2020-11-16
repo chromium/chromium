@@ -28,23 +28,17 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Test related to {@link HomeButton}.
- *
- * Currently the change only affects when {@link ChromeFeatureList#HOMEPAGE_SETTINGS_UI_CONVERSION}
- * is enabled.
  * TODO: Add more test when features related has update.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -98,30 +92,6 @@ public class HomeButtonTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION)
-    public void testContextMenu_BeforeConversion() {
-        onView(withId(mIdHomeButton)).perform(longClick());
-
-        ContextMenu menu = mHomeButton.getMenuForTests();
-        Assert.assertNotNull(ASSERT_MSG_MENU_IS_CREATED, menu);
-        Assert.assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
-
-        MenuItem item_remove = menu.findItem(HomeButton.ID_REMOVE);
-        Assert.assertNotNull("MenuItem 'Remove' is not added to menu", item_remove);
-        Assert.assertEquals(ASSERT_MSG_MENU_ITEM_TEXT, item_remove.getTitle().toString(),
-                getActivity().getResources().getString(R.string.remove));
-
-        // Test click on context menu item
-        Assert.assertTrue("Homepage should be enabled before clicking the menu item.",
-                HomepageManager.isHomepageEnabled());
-        onView(withText(R.string.remove)).perform(click());
-        Assert.assertFalse("Homepage should be disabled after clicking the menu item.",
-                HomepageManager.isHomepageEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION)
     public void testContextMenu_AfterConversion() {
         onView(withId(mIdHomeButton)).perform(longClick());
 
