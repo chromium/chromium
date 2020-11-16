@@ -60,6 +60,8 @@ struct DidOverscrollParams;
 
 namespace content {
 
+class BrowserAccessibilityDelegate;
+class BrowserAccessibilityManager;
 class CursorManager;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
@@ -68,7 +70,6 @@ class SyntheticGestureTarget;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
 class WebCursor;
-class WebContentsAccessibility;
 class DelegatedFrameHost;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
@@ -219,6 +220,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // be used to inject synthetic input events.
   virtual std::unique_ptr<SyntheticGestureTarget>
   CreateSyntheticGestureTarget() = 0;
+
+  // Create a BrowserAccessibilityManager for a frame in this view.
+  // If |for_root_frame| is true, creates a BrowserAccessibilityManager
+  // suitable for the root frame, which may be linked to its native
+  // window container.
+  virtual BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
+      BrowserAccessibilityDelegate* delegate,
+      bool for_root_frame);
 
   virtual gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget();
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible();
@@ -502,8 +511,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Called when the RenderWidgetHostImpl has be initialized.
   virtual void OnRenderWidgetInit() {}
-
-  virtual WebContentsAccessibility* GetWebContentsAccessibility();
 
   void set_is_evicted() { is_evicted_ = true; }
   void reset_is_evicted() { is_evicted_ = false; }

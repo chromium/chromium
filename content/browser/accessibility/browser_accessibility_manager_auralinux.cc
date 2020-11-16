@@ -21,13 +21,6 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
   return new BrowserAccessibilityManagerAuraLinux(initial_tree, delegate);
 }
 
-// static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManagerAuraLinux(
-      BrowserAccessibilityManagerAuraLinux::GetEmptyDocument(), delegate);
-}
-
 BrowserAccessibilityManagerAuraLinux*
 BrowserAccessibilityManager::ToBrowserAccessibilityManagerAuraLinux() {
   return static_cast<BrowserAccessibilityManagerAuraLinux*>(this);

@@ -903,6 +903,14 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
   return blink::mojom::InputEventResultState::kNotConsumed;
 }
 
+BrowserAccessibilityManager*
+RenderWidgetHostViewChildFrame::CreateBrowserAccessibilityManager(
+    BrowserAccessibilityDelegate* delegate,
+    bool for_root_frame) {
+  return BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManager::GetEmptyDocument(), delegate);
+}
+
 void RenderWidgetHostViewChildFrame::GetScreenInfo(
     blink::ScreenInfo* screen_info) {
   if (frame_connector_)

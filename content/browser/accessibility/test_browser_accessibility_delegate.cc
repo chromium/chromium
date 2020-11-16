@@ -62,11 +62,6 @@ void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
     base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                             int hit_node_id)> opt_callback) {}
 
-WebContentsAccessibility*
-TestBrowserAccessibilityDelegate::AccessibilityGetWebContentsAccessibility() {
-  return nullptr;
-}
-
 bool TestBrowserAccessibilityDelegate::got_fatal_error() const {
   return got_fatal_error_;
 }

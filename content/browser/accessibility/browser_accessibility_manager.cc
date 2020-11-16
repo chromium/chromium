@@ -139,13 +139,6 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     BrowserAccessibilityDelegate* delegate) {
   return new BrowserAccessibilityManager(initial_tree, delegate);
 }
-
-// static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManager(
-      BrowserAccessibilityManager::GetEmptyDocument(), delegate);
-}
 #endif
 
 // static

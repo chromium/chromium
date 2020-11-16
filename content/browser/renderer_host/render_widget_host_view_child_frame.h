@@ -150,6 +150,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
+  BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
+      BrowserAccessibilityDelegate* delegate,
+      bool for_root_frame) override;
   void GetScreenInfo(blink::ScreenInfo* screen_info) override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;

@@ -115,13 +115,6 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
   return new BrowserAccessibilityManagerMac(initial_tree, delegate);
 }
 
-// static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManagerMac(
-      BrowserAccessibilityManagerMac::GetEmptyDocument(), delegate);
-}
-
 BrowserAccessibilityManagerMac*
 BrowserAccessibilityManager::ToBrowserAccessibilityManagerMac() {
   return static_cast<BrowserAccessibilityManagerMac*>(this);
