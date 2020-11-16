@@ -71,6 +71,7 @@
 #include "weblayer/browser/persistence/browser_persister.h"
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 #include "weblayer/browser/profile_impl.h"
+#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
@@ -306,6 +307,9 @@ TabImpl::TabImpl(ProfileImpl* profile,
   GetFindTabHelper()->AddObserver(this);
 
   TranslateClientImpl::CreateForWebContents(web_contents_.get());
+
+  SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
+      web_contents_.get());
 
   sessions::SessionTabHelper::CreateForWebContents(
       web_contents_.get(),

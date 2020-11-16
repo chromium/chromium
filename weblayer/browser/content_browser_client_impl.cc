@@ -39,6 +39,7 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/strings/grit/components_locale_settings.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
@@ -704,6 +705,12 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
               nullptr);
   if (insecure_form_throttle) {
     throttles.push_back(std::move(insecure_form_throttle));
+  }
+
+  if (auto* throttle_manager =
+          subresource_filter::ContentSubresourceFilterThrottleManager::
+              FromWebContents(handle->GetWebContents())) {
+    throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
 #if defined(OS_ANDROID)
