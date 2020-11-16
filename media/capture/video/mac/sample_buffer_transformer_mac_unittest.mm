@@ -408,8 +408,8 @@ INSTANTIATE_TEST_SUITE_P(SampleBufferTransformerTest,
                          TestParametersOSTypeToString);
 
 TEST(SampleBufferTransformerAutoReconfigureTest,
-     AutoReconfigureIsEnabledByDefault) {
-  EXPECT_TRUE(SampleBufferTransformer::CreateIfAutoReconfigureEnabled());
+     AutoReconfigureIsDisabledByDefault) {
+  EXPECT_FALSE(SampleBufferTransformer::CreateIfAutoReconfigureEnabled());
 }
 
 TEST(SampleBufferTransformerAutoReconfigureTest,

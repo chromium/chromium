@@ -16,7 +16,7 @@
 namespace media {
 
 const base::Feature kInCaptureConvertToNv12{"InCaptureConvertToNv12",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kInCaptureConvertToNv12WithPixelTransfer{
     "InCaptureConvertToNv12WithPixelTransfer",
