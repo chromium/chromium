@@ -25,6 +25,10 @@
 #       fail it will try to load relative to the directory of the schema file
 #       being parsed.
 #
+#   mutable (optional)
+#       Boolean to compile flatbuffers with the "--gen-mutable" argument, which
+#       generates non-const accessors for mutating FlatBuffers in-place.
+#
 #   deps (optional)
 #       Additional dependencies.
 #
@@ -88,6 +92,10 @@ template("flatbuffer") {
           rebase_path(include_dir, root_build_dir),
         ]
       }
+    }
+
+    if (defined(invoker.mutable) && invoker.mutable) {
+      args += [ "--gen-mutable" ]
     }
 
     args += [ "{{source}}" ]
