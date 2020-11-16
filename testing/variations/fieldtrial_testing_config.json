@@ -2867,6 +2867,22 @@
             ]
         }
     ],
+    "FeedPrivacyNoticeCardAtSecondPosition": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InterestFeedV1ClickAndViewActionsConditionalUpload",
+                        "InterestFeedV2ClickAndViewActionsConditionalUpload"
+                    ]
+                }
+            ]
+        }
+    ],
     "FindInPageBestEffortPriority": [
         {
             "platforms": [

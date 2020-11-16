@@ -81,8 +81,10 @@ public class NewTabPageColorTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
                               ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
-    @Features.DisableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-                               ChromeFeatureList.INTEREST_FEED_V2})
+    @Features.DisableFeatures({
+            ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
+            ChromeFeatureList.INTEREST_FEED_V2,
+            ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD})
     @DataFilePath(TEST_FEED_DATA_BASE_PATH + "feed_world.gcl.bin")
     public void testTextBoxBackgroundColor() throws Exception {
         // clang-format on
