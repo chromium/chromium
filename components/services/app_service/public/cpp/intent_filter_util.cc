@@ -113,6 +113,9 @@ int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
 
 bool FiltersHaveOverlap(const apps::mojom::IntentFilterPtr& filter1,
                         const apps::mojom::IntentFilterPtr& filter2) {
+  if (filter1->conditions.size() != filter2->conditions.size()) {
+    return false;
+  }
   if (GetFilterMatchLevel(filter1) != GetFilterMatchLevel(filter2)) {
     return false;
   }
