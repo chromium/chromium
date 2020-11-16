@@ -1046,6 +1046,26 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(affected_ternary_operator_arg_matcher,
                           &affected_expr_rewriter);
 
+  // Affected string binary operator =========
+  // Given
+  //   struct S { const char* y; }
+  //   void foo(const S& s) {
+  //     std::string other;
+  //     bool v1 = s.y == other;
+  //     std::string v2 = s.y + other;
+  //   }
+  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+  //
+  // See also testcases in tests/affected-expr-original.cc
+  auto std_string_expr_matcher =
+      expr(hasType(cxxRecordDecl(hasName("::std::basic_string"))));
+  auto affected_string_binary_operator_arg_matcher = cxxOperatorCallExpr(
+      hasAnyOverloadedOperatorName("+", "==", "!=", "<", "<=", ">", ">="),
+      hasAnyArgument(std_string_expr_matcher),
+      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl()));
+  match_finder.addMatcher(affected_string_binary_operator_arg_matcher,
+                          &affected_expr_rewriter);
+
   // Calls to templated functions =========
   // Given
   //   struct S { int* y; };

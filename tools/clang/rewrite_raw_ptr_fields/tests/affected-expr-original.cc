@@ -172,6 +172,34 @@ void foo(int x) {
 
 }  // namespace ternary_operator_tests
 
+namespace string_comparison_operator_tests {
+
+void foo(int x) {
+  MyStruct my_struct;
+  std::string other_str = "other";
+
+  // To avoid the following error type:
+  //   error: invalid operands to binary expression ... basic_string ... and ...
+  //   CheckedPtr ...
+  // we need to append |.get()| to |my_struct.const_char_ptr| below.
+  //
+  // Expected rewrite: ... my_struct.const_char_ptr.get() ...
+  bool v1 = my_struct.const_char_ptr == other_str;
+  bool v2 = other_str == my_struct.const_char_ptr;
+  bool v3 = my_struct.const_char_ptr > other_str;
+  bool v4 = other_str > my_struct.const_char_ptr;
+  bool v5 = my_struct.const_char_ptr >= other_str;
+  bool v6 = other_str >= my_struct.const_char_ptr;
+  bool v7 = my_struct.const_char_ptr < other_str;
+  bool v8 = other_str < my_struct.const_char_ptr;
+  bool v9 = my_struct.const_char_ptr <= other_str;
+  bool v10 = other_str <= my_struct.const_char_ptr;
+  std::string v11 = my_struct.const_char_ptr + other_str;
+  std::string v12 = other_str + my_struct.const_char_ptr;
+}
+
+}  // namespace string_comparison_operator_tests
+
 namespace templated_functions {
 
 template <typename T>
