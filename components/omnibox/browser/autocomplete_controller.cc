@@ -755,6 +755,13 @@ void AutocompleteController::UpdateResult(
   if (notify_default_match)
     last_time_default_match_changed_ = base::TimeTicks::Now();
 
+  if (default_is_valid &&
+      (result_.default_match()->swapped_fill_into_edit ||
+       !result_.default_match()->prefix_autocompletion.empty())) {
+    provider_client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+        OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
+  }
+
   NotifyChanged(force_notify_default_match_changed || notify_default_match);
 }
 
