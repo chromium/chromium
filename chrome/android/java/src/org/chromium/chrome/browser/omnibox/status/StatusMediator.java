@@ -117,11 +117,8 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
 
     StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
-            Runnable forceModelViewReconciliationRunnable,
-            IncognitoStateProvider incognitoStateProvider,
-            LocationBarDataProvider locationBarDataProvider) {
+            Runnable forceModelViewReconciliationRunnable) {
         mModel = model;
-        mLocationBarDataProvider = locationBarDataProvider;
         mDelegate = new StatusMediatorDelegate();
         updateColorTheme();
 
@@ -139,16 +136,13 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
 
         mIsTablet = isTablet;
         mForceModelViewReconciliationRunnable = forceModelViewReconciliationRunnable;
-        if (incognitoStateProvider != null) {
-            incognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
-        }
     }
 
     /**
-     * Override the LocationBarDataProvider for this class for testing purposes.
+     * Set the ToolbarDataProvider for this class.
      */
-    void setLocationBarDataProviderForTesting(LocationBarDataProvider locationBarDataProvider) {
-        mLocationBarDataProvider = locationBarDataProvider;
+    void setLocationBarDataProvider(LocationBarDataProvider toolbarCommonPropertiesModel) {
+        mLocationBarDataProvider = toolbarCommonPropertiesModel;
     }
 
     /**
@@ -373,6 +367,13 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
             mDarkTheme = useDarkColors;
             updateColorTheme();
         }
+    }
+
+    /**
+     * @param incognitoBadgeVisible Whether or not the incognito badge is visible.
+     */
+    void setIncognitoBadgeVisibility(boolean incognitoBadgeVisible) {
+        mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
     }
 
     /**
@@ -661,12 +662,15 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         return urlTextWithAutocomplete;
     }
 
+    public void setIncognitoStateProvider(IncognitoStateProvider incognitoStateProvider) {
+        if (incognitoStateProvider == null) return;
+        incognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
+    }
+
     @Override
     public void onIncognitoStateChanged(boolean isIncognito) {
         boolean previousIsIncognito = mIsIncognito;
         mIsIncognito = isIncognito;
-        boolean incognitoBadgeVisible = isIncognito && !mIsTablet;
-        mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
         if (previousIsIncognito != isIncognito) reconcileVisualState();
     }
 

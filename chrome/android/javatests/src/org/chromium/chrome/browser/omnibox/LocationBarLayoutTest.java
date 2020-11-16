@@ -134,7 +134,7 @@ public class LocationBarLayoutTest {
         mTestLocationBarModel.setTab(tab, tab.isIncognito());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> getLocationBar().setLocationBarDataProviderForTesting(mTestLocationBarModel));
+                () -> getLocationBar().setLocationBarDataProvider(mTestLocationBarModel));
     }
 
     private void setUrlToPageUrl(LocationBarLayout locationBar) {
@@ -273,8 +273,6 @@ public class LocationBarLayoutTest {
         updateSearchEngineLogoWithGoogle(locationBar);
         mTestLocationBarModel.setCurrentUrl(GOOGLE_SRP_URL);
         mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
-        mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
-        mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
         setUrlToPageUrl(locationBar);
 
         onView(withId(R.id.location_bar_status)).check((view, e) -> {

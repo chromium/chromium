@@ -13,14 +13,17 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
+import android.view.ActionMode;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlDirectionListener;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
@@ -252,8 +255,22 @@ class UrlBarMediator
     /**
      * Set the listener to be notified for URL direction changes.
      */
-    public void setUrlDirectionListener(Callback<Integer> listener) {
+    public void setUrlDirectionListener(UrlDirectionListener listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);
+    }
+
+    /**
+     * Set the delegate that provides Window capabilities.
+     */
+    public void setWindowDelegate(WindowDelegate windowDelegate) {
+        mModel.set(UrlBarProperties.WINDOW_DELEGATE, windowDelegate);
+    }
+
+    /**
+     * Set the callback to handle contextual Action Modes.
+     */
+    public void setActionModeCallback(ActionMode.Callback callback) {
+        mModel.set(UrlBarProperties.ACTION_MODE_CALLBACK, callback);
     }
 
     @Override

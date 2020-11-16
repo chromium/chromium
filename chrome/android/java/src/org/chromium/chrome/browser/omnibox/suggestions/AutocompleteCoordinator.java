@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
@@ -21,7 +20,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -48,7 +46,7 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.ViewProvider;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -66,15 +64,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private AutocompleteMediator mMediator;
     private OmniboxSuggestionsDropdown mDropdown;
 
-    public AutocompleteCoordinator(@NonNull ViewGroup parent,
-            @NonNull AutocompleteDelegate delegate,
-            @NonNull OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
-            @NonNull UrlBarEditingTextStateProvider urlBarEditingTextProvider,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable ActivityTabProvider activityTabProvider,
-            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull LocationBarDataProvider locationBarDataProvider) {
+    public AutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
+            OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
+            UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
         mParent = parent;
         Context context = parent.getContext();
 
@@ -87,9 +79,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
         mQueryTileCoordinator = new OmniboxQueryTileCoordinator(context, this::onTileSelected);
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
-                new AutocompleteController(), listModel, new Handler(), lifecycleDispatcher,
-                modalDialogManagerSupplier, activityTabProvider, shareDelegateSupplier,
-                locationBarDataProvider);
+                new AutocompleteController(), listModel, new Handler());
         mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
 
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
@@ -224,12 +214,41 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     /**
+     * Provides data and state for the toolbar component.
+     * @param locationBarDataProvider The data provider.
+     */
+    public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
+        mMediator.setLocationBarDataProvider(locationBarDataProvider);
+    }
+
+    /**
      * Updates the profile used for generating autocomplete suggestions.
      * @param profile The profile to be used.
      */
     public void setAutocompleteProfile(Profile profile) {
         mMediator.setAutocompleteProfile(profile);
         mQueryTileCoordinator.setProfile(profile);
+    }
+
+    /**
+     * Set the WindowAndroid instance associated with the containing Activity.
+     */
+    public void setWindowAndroid(WindowAndroid windowAndroid) {
+        mMediator.setWindowAndroid(windowAndroid);
+    }
+
+    /**
+     * @param provider A means of accessing the activity's tab.
+     */
+    public void setActivityTabProvider(ActivityTabProvider provider) {
+        mMediator.setActivityTabProvider(provider);
+    }
+
+    /**
+     * @param shareDelegateSupplier A means of accessing the sharing feature.
+     */
+    public void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
+        mMediator.setShareDelegateSupplier(shareDelegateSupplier);
     }
 
     /**
@@ -364,16 +383,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      */
     public void prefetchZeroSuggestResults() {
         AutocompleteControllerJni.get().prefetchZeroSuggestResults();
-    }
-
-    /**
-     * Provides data and state for the toolbar component.
-     * @param locationBarDataProvider The data provider.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setLocationBarDataProviderForTesting(
-            LocationBarDataProvider locationBarDataProvider) {
-        mMediator.setLocationBarDataProviderForTesting(locationBarDataProvider);
     }
 
     /** @return Suggestions Dropdown view, showing the list of suggestions. */

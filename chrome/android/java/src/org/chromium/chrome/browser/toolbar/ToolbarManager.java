@@ -413,8 +413,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         if (toolbarLayout instanceof CustomTabToolbar) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
-            mLocationBar = customTabToolbar.createLocationBar(
-                    mLocationBarModel, mActionModeController.getActionModeCallback());
+            mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel);
+            customTabToolbar.setDefaultTextEditActionModeCallback(
+                    mActionModeController.getActionModeCallback());
         } else {
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                     (url, transition, postDataType, postData, incognito)
@@ -422,8 +423,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                             url, transition, postDataType, postData, incognito,
                             startSurfaceParentTabSupplier.get());
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
-                    mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
-                    mLocationBarModel, mActionModeController.getActionModeCallback(),
+                    mActivity.findViewById(R.id.location_bar), profileSupplier, mLocationBarModel,
+                    mActionModeController.getActionModeCallback(),
                     new WindowDelegate(mActivity.getWindow()), windowAndroid, mActivityTabProvider,
                     modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate);
