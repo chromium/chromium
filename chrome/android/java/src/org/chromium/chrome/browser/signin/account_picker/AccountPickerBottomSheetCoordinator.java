@@ -72,7 +72,10 @@ public class AccountPickerBottomSheetCoordinator {
                 /* showIncognitoRow= */ IncognitoUtils.isIncognitoModeEnabled());
         IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
                 new IncognitoInterstitialCoordinator(
-                        mView.getIncognitoInterstitialView(), incognitoInterstitialDelegate);
+                        mView.getIncognitoInterstitialView(), incognitoInterstitialDelegate, () -> {
+                            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                                    AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
+                        });
         mBottomSheetController = bottomSheetController;
         PropertyModelChangeProcessor.create(mAccountPickerBottomSheetMediator.getModel(), mView,
                 AccountPickerBottomSheetViewBinder::bind);

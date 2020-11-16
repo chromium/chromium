@@ -560,10 +560,14 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testContinueButtonOnIncognitoInterstitial() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
         buildAndShowExpandedBottomSheet();
         onView(withText(R.string.signin_incognito_button)).perform(click());
         onView(withId(R.id.incognito_interstitial_continue_button)).perform(click());
         verify(mIncognitoInterstitialDelegateMock).openCurrentUrlInIncognitoTab();
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     private void checkIncognitoInterstitialSheet() {

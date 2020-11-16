@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.support.test.rule.ActivityTestRule;
@@ -42,6 +43,9 @@ public class IncognitoInterstitialTest {
     @Mock
     private IncognitoInterstitialDelegate mIncognitoInterstitialDelegateMock;
 
+    @Mock
+    private Runnable mOnIncognitoTabOpenedMock;
+
     @Rule
     public final ActivityTestRule<DummyUiActivity> mActivityTestRule =
             new ActivityTestRule<>(DummyUiActivity.class);
@@ -62,8 +66,8 @@ public class IncognitoInterstitialTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             View contentView = mActivityTestRule.getActivity().findViewById(android.R.id.content);
             IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
-                    new IncognitoInterstitialCoordinator(
-                            contentView, mIncognitoInterstitialDelegateMock);
+                    new IncognitoInterstitialCoordinator(contentView,
+                            mIncognitoInterstitialDelegateMock, mOnIncognitoTabOpenedMock);
         });
     }
 
@@ -79,12 +83,14 @@ public class IncognitoInterstitialTest {
     public void testClickOnLearnMoreButton() {
         onView(withId(R.id.incognito_interstitial_learn_more)).perform(click());
         verify(mIncognitoInterstitialDelegateMock).openLearnMorePage();
+        verify(mOnIncognitoTabOpenedMock, never()).run();
     }
 
     @Test
     @MediumTest
     public void testClickOnContinueButton() {
         onView(withId(R.id.incognito_interstitial_continue_button)).perform(click());
+        verify(mOnIncognitoTabOpenedMock).run();
         verify(mIncognitoInterstitialDelegateMock).openCurrentUrlInIncognitoTab();
     }
 }

@@ -12,8 +12,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -68,8 +66,6 @@ public class IncognitoInterstitialDelegate {
     @MainThread
     public void openCurrentUrlInIncognitoTab() {
         ThreadUtils.assertOnUiThread();
-        AccountPickerDelegate.recordAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
         Tab currentRegularTab = TabModelUtils.getCurrentTab(mRegularTabModel);
         mIncognitoTabCreator.launchUrl(
                 currentRegularTab.getUrlString(), TabLaunchType.FROM_CHROME_UI);

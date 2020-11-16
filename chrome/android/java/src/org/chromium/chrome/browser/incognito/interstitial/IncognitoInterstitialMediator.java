@@ -16,11 +16,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 class IncognitoInterstitialMediator {
     private final PropertyModel mModel;
     private final IncognitoInterstitialDelegate mIncognitoInterstitialDelegate;
+    private final Runnable mOnIncognitoTabOpened;
 
-    IncognitoInterstitialMediator(IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
+    IncognitoInterstitialMediator(IncognitoInterstitialDelegate incognitoInterstitialDelegate,
+            Runnable onIncognitoTabOpened) {
         mModel = IncognitoInterstitialProperties.createModel(
                 this::onLearnMoreClicked, this::onContinueClicked);
         mIncognitoInterstitialDelegate = incognitoInterstitialDelegate;
+        mOnIncognitoTabOpened = onIncognitoTabOpened;
     }
 
     PropertyModel getModel() {
@@ -40,6 +43,7 @@ class IncognitoInterstitialMediator {
      */
     @MainThread
     private void onContinueClicked() {
+        mOnIncognitoTabOpened.run();
         mIncognitoInterstitialDelegate.openCurrentUrlInIncognitoTab();
     }
 }

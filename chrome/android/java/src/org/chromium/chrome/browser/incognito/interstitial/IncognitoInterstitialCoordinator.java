@@ -27,13 +27,15 @@ public class IncognitoInterstitialCoordinator {
      * @param view The incognito interstitial view.
      * @param incognitoInterstitialDelegate A delegate providing the functionality of the Incognito
      *         interstitial.
+     * @param onIncognitoTabOpened Runnable to be called when an incognito tab is opened.
      */
     @MainThread
-    public IncognitoInterstitialCoordinator(
-            View view, IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
+    public IncognitoInterstitialCoordinator(View view,
+            IncognitoInterstitialDelegate incognitoInterstitialDelegate,
+            Runnable onIncognitoTabOpened) {
         IncognitoInterstitialViewBinder.setUpView(view);
-        IncognitoInterstitialMediator mediator =
-                new IncognitoInterstitialMediator(incognitoInterstitialDelegate);
+        IncognitoInterstitialMediator mediator = new IncognitoInterstitialMediator(
+                incognitoInterstitialDelegate, onIncognitoTabOpened);
         PropertyModelChangeProcessor.create(
                 mediator.getModel(), view, IncognitoInterstitialViewBinder::bindView);
     }
