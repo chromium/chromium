@@ -86,6 +86,13 @@ def main():
         required=True,
         help='Path to the JSON file containing the dependency graph. '
         'See the README on how to generate this file.')
+    # TODO(crbug.com/1146478): --git-dir is currently unused, but will be used
+    # to calculate % LoCs in modularized files.
+    arg_parser.add_argument(
+        '--git-dir',
+        type=str,
+        help='Root directory of the git repo to look into. '
+        'If not specified, use the current directory.')
     arg_parser.add_argument(
         '-o',
         '--output',
