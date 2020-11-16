@@ -325,6 +325,7 @@ class CONTENT_EXPORT NavigationRequest
   bool GetIsOverridingUserAgent() override;
   void SetSilentlyIgnoreErrors() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
+  bool IsWaitingToCommit() override;
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
@@ -683,11 +684,6 @@ class CONTENT_EXPORT NavigationRequest
 
   // Returns the coop status information relevant to the current navigation.
   CrossOriginOpenerPolicyStatus& coop_status() { return coop_status_; }
-
-  // Whether the navigation was sent to be committed in a renderer by the
-  // RenderFrameHost. This can either be for the commit of a successful
-  // navigation or an error page.
-  bool IsWaitingToCommit();
 
   // Returns true if |url| and |base_url| represent a WebView
   // loadDataWithBaseUrl navigation.

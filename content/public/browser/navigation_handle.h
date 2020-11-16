@@ -426,6 +426,11 @@ class CONTENT_EXPORT NavigationHandle {
   // directly into the RenderDocumentHost.
   virtual network::mojom::WebSandboxFlags SandboxFlagsToCommit() = 0;
 
+  // Whether the navigation was sent to be committed in a renderer by the
+  // RenderFrameHost. This can either be for the commit of a successful
+  // navigation or an error page.
+  virtual bool IsWaitingToCommit() = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.

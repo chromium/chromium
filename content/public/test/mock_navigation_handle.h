@@ -143,6 +143,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(bool, GetIsOverridingUserAgent, ());
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
+  MOCK_METHOD(bool, IsWaitingToCommit, ());
 
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_url(const GURL& previous_url) {
