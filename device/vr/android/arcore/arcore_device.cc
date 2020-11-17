@@ -62,7 +62,7 @@ ArCoreDevice::ArCoreDevice(
     std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
     std::unique_ptr<MailboxToSurfaceBridgeFactory>
         mailbox_to_surface_bridge_factory,
-    std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils)
+    std::unique_ptr<ArCoreSessionUtils> arcore_session_utils)
     : VRDeviceBase(mojom::XRDeviceId::ARCORE_DEVICE_ID),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       arcore_factory_(std::move(arcore_factory)),

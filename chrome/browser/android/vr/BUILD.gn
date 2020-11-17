@@ -62,11 +62,7 @@ static_library("vr_android") {
   ]
 
   if (enable_arcore) {
-    sources += [
-      "arcore_device/arcore_device_provider.cc",
-      "arcore_device/arcore_device_provider.h",
-      "arcore_device/arcore_device_utils.cc",
-    ]
+    sources += [ "arcore_device/arcore_device_utils.cc" ]
   }
 
   deps = [

@@ -39,9 +39,9 @@ void ArCoreJavaUtils::RequestArSession(
     int render_process_id,
     int render_frame_id,
     bool use_overlay,
-    vr::SurfaceReadyCallback ready_callback,
-    vr::SurfaceTouchCallback touch_callback,
-    vr::SurfaceDestroyedCallback destroyed_callback) {
+    device::SurfaceReadyCallback ready_callback,
+    device::SurfaceTouchCallback touch_callback,
+    device::SurfaceDestroyedCallback destroyed_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
@@ -101,7 +101,7 @@ void ArCoreJavaUtils::OnDrawingSurfaceDestroyed(
 }
 
 bool ArCoreJavaUtils::EnsureLoaded() {
-  DCHECK(vr::IsArCoreSupported());
+  DCHECK(device::IsArCoreSupported());
 
   JNIEnv* env = AttachCurrentThread();
 
@@ -124,7 +124,7 @@ bool ArCoreJavaUtils::EnsureLoaded() {
     return false;
   }
 
-  return vr::LoadArCoreSdk(
+  return device::LoadArCoreSdk(
       base::android::ConvertJavaStringToUTF8(env, java_path));
 }
 

@@ -28,6 +28,8 @@ source_set("android") {
 
   if (enable_arcore) {
     sources += [
+      "arcore_device_provider.cc",
+      "arcore_device_provider.h",
       "arcore_install_helper.cc",
       "arcore_install_helper.h",
       "arcore_java_utils.cc",
@@ -41,6 +43,7 @@ source_set("android") {
     "//components/infobars/core",
     "//components/resources:android_resources",
     "//components/strings",
+    "//components/webxr:webxr",
     "//content/public/browser",
     "//ui/base",
   ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_device_provider.h"
+#include "components/webxr/android/arcore_device_provider.h"
 
 #include "components/webxr/android/arcore_java_utils.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
@@ -11,7 +11,7 @@
 #include "device/vr/android/arcore/arcore_impl.h"
 #include "device/vr/android/arcore/arcore_shim.h"
 
-namespace device {
+namespace webxr {
 
 ArCoreDeviceProvider::ArCoreDeviceProvider(
     webxr::ArCompositorDelegateProvider compositor_delegate_provider)
@@ -20,19 +20,20 @@ ArCoreDeviceProvider::ArCoreDeviceProvider(
 ArCoreDeviceProvider::~ArCoreDeviceProvider() = default;
 
 void ArCoreDeviceProvider::Initialize(
-    base::RepeatingCallback<void(mojom::XRDeviceId,
-                                 mojom::VRDisplayInfoPtr,
-                                 mojom::XRDeviceDataPtr,
-                                 mojo::PendingRemote<mojom::XRRuntime>)>
+    base::RepeatingCallback<void(device::mojom::XRDeviceId,
+                                 device::mojom::VRDisplayInfoPtr,
+                                 device::mojom::XRDeviceDataPtr,
+                                 mojo::PendingRemote<device::mojom::XRRuntime>)>
         add_device_callback,
-    base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
+    base::RepeatingCallback<void(device::mojom::XRDeviceId)>
+        remove_device_callback,
     base::OnceClosure initialization_complete) {
-  if (vr::IsArCoreSupported()) {
+  if (device::IsArCoreSupported()) {
     DVLOG(2) << __func__ << ": ARCore is supported, creating device";
 
-    arcore_device_ = std::make_unique<ArCoreDevice>(
-        std::make_unique<ArCoreImplFactory>(),
-        std::make_unique<ArImageTransportFactory>(),
+    arcore_device_ = std::make_unique<device::ArCoreDevice>(
+        std::make_unique<device::ArCoreImplFactory>(),
+        std::make_unique<device::ArImageTransportFactory>(),
         std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
         std::make_unique<webxr::ArCoreJavaUtils>(
             compositor_delegate_provider_));
@@ -49,4 +50,4 @@ bool ArCoreDeviceProvider::Initialized() {
   return initialized_;
 }
 
-}  // namespace device
+}  // namespace webxr

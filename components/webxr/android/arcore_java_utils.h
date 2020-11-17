@@ -16,7 +16,7 @@
 
 namespace webxr {
 
-class ArCoreJavaUtils : public vr::ArCoreSessionUtils {
+class ArCoreJavaUtils : public device::ArCoreSessionUtils {
  public:
   explicit ArCoreJavaUtils(
       webxr::ArCompositorDelegateProvider compositor_delegate_provider);
@@ -27,9 +27,9 @@ class ArCoreJavaUtils : public vr::ArCoreSessionUtils {
       int render_process_id,
       int render_frame_id,
       bool use_overlay,
-      vr::SurfaceReadyCallback ready_callback,
-      vr::SurfaceTouchCallback touch_callback,
-      vr::SurfaceDestroyedCallback destroyed_callback) override;
+      device::SurfaceReadyCallback ready_callback,
+      device::SurfaceTouchCallback touch_callback,
+      device::SurfaceDestroyedCallback destroyed_callback) override;
   void EndSession() override;
   bool EnsureLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override;
@@ -58,9 +58,9 @@ class ArCoreJavaUtils : public vr::ArCoreSessionUtils {
 
   webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
 
-  vr::SurfaceReadyCallback surface_ready_callback_;
-  vr::SurfaceTouchCallback surface_touch_callback_;
-  vr::SurfaceDestroyedCallback surface_destroyed_callback_;
+  device::SurfaceReadyCallback surface_ready_callback_;
+  device::SurfaceTouchCallback surface_touch_callback_;
+  device::SurfaceDestroyedCallback surface_destroyed_callback_;
 };
 
 }  // namespace webxr

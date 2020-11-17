@@ -27,7 +27,7 @@ namespace gpu {
 class GpuMemoryBufferImplAndroidHardwareBuffer;
 }  // namespace gpu
 
-namespace vr {
+namespace device {
 // WebVR/WebXR frames go through a three-stage pipeline: Animating, Processing,
 // and Rendering. There's also an Idle state used as the starting state before
 // Animating and ending state after Rendering.
@@ -232,6 +232,6 @@ class WebXrPresentationState {
   DISALLOW_COPY_AND_ASSIGN(WebXrPresentationState);
 };
 
-}  // namespace vr
+}  // namespace device
 
 #endif  // DEVICE_VR_ANDROID_WEB_XR_PRESENTATION_STATE_H_

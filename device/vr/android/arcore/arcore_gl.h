@@ -42,16 +42,13 @@ class GLContext;
 class GLSurface;
 }  // namespace gl
 
-namespace vr {
-class ArCoreSessionUtils;
-class WebXrPresentationState;
-}  // namespace vr
-
 namespace device {
 
 class ArCore;
+class ArCoreSessionUtils;
 class ArCoreFactory;
 class ArImageTransport;
+class WebXrPresentationState;
 
 using ArCoreGlCreateSessionCallback = base::OnceCallback<void(
     mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
@@ -73,7 +70,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   ~ArCoreGl() override;
 
   void Initialize(
-      vr::ArCoreSessionUtils* session_utils,
+      ArCoreSessionUtils* session_utils,
       ArCoreFactory* arcore_factory,
       gfx::AcceleratedWidget drawing_widget,
       const gfx::Size& frame_size,
@@ -229,7 +226,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // SubmitFrame N+1               N+1 animating->processing
   //   draw camera N+1
   //   waitForToken
-  std::unique_ptr<vr::WebXrPresentationState> webxr_;
+  std::unique_ptr<WebXrPresentationState> webxr_;
 
   // Default dummy values to ensure consistent behaviour.
 

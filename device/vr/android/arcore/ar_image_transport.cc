@@ -34,14 +34,14 @@ ArImageTransport::ArImageTransport(
 
 ArImageTransport::~ArImageTransport() = default;
 
-void ArImageTransport::DestroySharedBuffers(vr::WebXrPresentationState* webxr) {
+void ArImageTransport::DestroySharedBuffers(WebXrPresentationState* webxr) {
   DVLOG(2) << __func__;
   DCHECK(IsOnGlThread());
 
   if (!webxr || !UseSharedBuffer())
     return;
 
-  std::vector<std::unique_ptr<vr::WebXrSharedBuffer>> buffers =
+  std::vector<std::unique_ptr<WebXrSharedBuffer>> buffers =
       webxr->TakeSharedBuffers();
   for (auto& buffer : buffers) {
     if (!buffer->mailbox_holder.mailbox.IsZero()) {
@@ -55,7 +55,7 @@ void ArImageTransport::DestroySharedBuffers(vr::WebXrPresentationState* webxr) {
   }
 }
 
-void ArImageTransport::Initialize(vr::WebXrPresentationState* webxr,
+void ArImageTransport::Initialize(WebXrPresentationState* webxr,
                                   base::OnceClosure callback) {
   DCHECK(IsOnGlThread());
   DVLOG(2) << __func__;
@@ -135,9 +135,9 @@ GLuint ArImageTransport::GetCameraTextureId() {
   return camera_texture_id_arcore_;
 }
 
-bool ArImageTransport::ResizeSharedBuffer(vr::WebXrPresentationState* webxr,
+bool ArImageTransport::ResizeSharedBuffer(WebXrPresentationState* webxr,
                                           const gfx::Size& size,
-                                          vr::WebXrSharedBuffer* buffer) {
+                                          WebXrSharedBuffer* buffer) {
   DCHECK(IsOnGlThread());
 
   if (buffer->size == size)
@@ -195,16 +195,16 @@ bool ArImageTransport::ResizeSharedBuffer(vr::WebXrPresentationState* webxr,
   return true;
 }
 
-std::unique_ptr<vr::WebXrSharedBuffer> ArImageTransport::CreateBuffer() {
-  std::unique_ptr<vr::WebXrSharedBuffer> buffer =
-      std::make_unique<vr::WebXrSharedBuffer>();
+std::unique_ptr<WebXrSharedBuffer> ArImageTransport::CreateBuffer() {
+  std::unique_ptr<WebXrSharedBuffer> buffer =
+      std::make_unique<WebXrSharedBuffer>();
   // Local resources
   glGenTextures(1, &buffer->local_texture);
   return buffer;
 }
 
 gpu::MailboxHolder ArImageTransport::TransferFrame(
-    vr::WebXrPresentationState* webxr,
+    WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DCHECK(IsOnGlThread());
@@ -214,7 +214,7 @@ gpu::MailboxHolder ArImageTransport::TransferFrame(
     webxr->GetAnimatingFrame()->shared_buffer = CreateBuffer();
   }
 
-  vr::WebXrSharedBuffer* shared_buffer =
+  WebXrSharedBuffer* shared_buffer =
       webxr->GetAnimatingFrame()->shared_buffer.get();
   ResizeSharedBuffer(webxr, frame_size, shared_buffer);
   // Sanity check that the lazily created/resized buffer looks valid.
@@ -238,7 +238,7 @@ gpu::MailboxHolder ArImageTransport::TransferFrame(
 }
 
 gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
-    vr::WebXrPresentationState* webxr,
+    WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DCHECK(IsOnGlThread());
@@ -248,7 +248,7 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
     webxr->GetAnimatingFrame()->camera_image_shared_buffer = CreateBuffer();
   }
 
-  vr::WebXrSharedBuffer* camera_image_shared_buffer =
+  WebXrSharedBuffer* camera_image_shared_buffer =
       webxr->GetAnimatingFrame()->camera_image_shared_buffer.get();
   bool was_resized =
       ResizeSharedBuffer(webxr, frame_size, camera_image_shared_buffer);
@@ -331,14 +331,14 @@ void ArImageTransport::ServerWaitForGpuFence(
 }
 
 void ArImageTransport::CopyDrawnImageToFramebuffer(
-    vr::WebXrPresentationState* webxr,
+    WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
 
   GLuint source_texture;
   if (UseSharedBuffer()) {
-    vr::WebXrSharedBuffer* shared_buffer =
+    WebXrSharedBuffer* shared_buffer =
         webxr->GetRenderingFrame()->shared_buffer.get();
     source_texture = shared_buffer->local_texture;
   } else {

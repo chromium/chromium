@@ -85,7 +85,7 @@ namespace device {
 ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       ar_image_transport_(std::move(ar_image_transport)),
-      webxr_(std::make_unique<vr::WebXrPresentationState>()),
+      webxr_(std::make_unique<WebXrPresentationState>()),
       average_camera_frametime_(kSampleWindowSize),
       average_animate_time_(kSampleWindowSize),
       average_process_time_(kSampleWindowSize),
@@ -107,7 +107,7 @@ ArCoreGl::~ArCoreGl() {
 }
 
 void ArCoreGl::Initialize(
-    vr::ArCoreSessionUtils* session_utils,
+    ArCoreSessionUtils* session_utils,
     ArCoreFactory* arcore_factory,
     gfx::AcceleratedWidget drawing_widget,
     const gfx::Size& frame_size,
@@ -461,7 +461,7 @@ void ArCoreGl::GetFrameData(
   DVLOG(2) << __func__ << " frame=" << frame_data->frame_id;
   TRACE_EVENT1("gpu", __func__, "frame", frame_data->frame_id);
 
-  vr::WebXrFrame* xrframe = webxr_->GetAnimatingFrame();
+  WebXrFrame* xrframe = webxr_->GetAnimatingFrame();
   xrframe->time_pose = now;
   xrframe->bounds_left = viewport_bounds_;
 
@@ -518,7 +518,7 @@ bool ArCoreGl::IsSubmitFrameExpected(int16_t frame_index) {
   if (!submit_client_.get() || !webxr_->HaveAnimatingFrame())
     return false;
 
-  vr::WebXrFrame* animating_frame = webxr_->GetAnimatingFrame();
+  WebXrFrame* animating_frame = webxr_->GetAnimatingFrame();
   animating_frame->time_js_submit = base::TimeTicks::Now();
   average_animate_time_.AddSample(animating_frame->time_js_submit -
                                   animating_frame->time_pose);
@@ -678,7 +678,7 @@ void ArCoreGl::RunPendingGetFrameData() {
 
 void ArCoreGl::FinishRenderingFrame() {
   DCHECK(webxr_->HaveRenderingFrame());
-  vr::WebXrFrame* frame = webxr_->GetRenderingFrame();
+  WebXrFrame* frame = webxr_->GetRenderingFrame();
 
   TRACE_EVENT1("gpu", __func__, "frame", frame->index);
 
@@ -699,7 +699,7 @@ void ArCoreGl::FinishFrame(int16_t frame_index) {
   // update statistics.
   if (!webxr_->HaveRenderingFrame())
     return;
-  vr::WebXrFrame* frame = webxr_->GetRenderingFrame();
+  WebXrFrame* frame = webxr_->GetRenderingFrame();
 
   frame->render_completion_fence = gl::GLFence::CreateForGpuFence();
 }
@@ -707,7 +707,7 @@ void ArCoreGl::FinishFrame(int16_t frame_index) {
 void ArCoreGl::GetRenderedFrameStats() {
   DVLOG(2) << __func__;
   DCHECK(webxr_->HaveRenderingFrame());
-  vr::WebXrFrame* frame = webxr_->GetRenderingFrame();
+  WebXrFrame* frame = webxr_->GetRenderingFrame();
 
   DCHECK(frame->render_completion_fence);
   base::TimeTicks completion_time =

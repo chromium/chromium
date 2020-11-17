@@ -156,7 +156,7 @@ ArCoreApi* g_arcore_api = nullptr;
 
 }  // namespace
 
-namespace vr {
+namespace device {
 
 bool LoadArCoreSdk(const std::string& libraryPath) {
   if (g_arcore_api)
@@ -185,7 +185,7 @@ bool IsArCoreSupported() {
          base::android::SDK_VERSION_NOUGAT;
 }
 
-}  // namespace vr
+}  // namespace device
 
 void ArAnchor_detach(ArSession* session, ArAnchor* anchor) {
   return g_arcore_api->impl_ArAnchor_detach(session, anchor);

@@ -29,7 +29,7 @@ class StubArImageTransport : public ArImageTransport {
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
       : ArImageTransport(std::move(mailbox_bridge)) {}
 
-  void Initialize(vr::WebXrPresentationState*,
+  void Initialize(WebXrPresentationState*,
                   base::OnceClosure callback) override {
     std::move(callback).Run();
   }
@@ -41,7 +41,7 @@ class StubArImageTransport : public ArImageTransport {
   // by GetCameraTextureId() is at the time it is called and returns
   // a gpu::MailboxHolder with that texture copied to a shared buffer.
   gpu::MailboxHolder TransferFrame(
-      vr::WebXrPresentationState*,
+      WebXrPresentationState*,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform) override {
     return gpu::MailboxHolder();
@@ -84,17 +84,16 @@ class StubMailboxToSurfaceBridgeFactory : public MailboxToSurfaceBridgeFactory {
   }
 };
 
-class StubArCoreSessionUtils : public vr::ArCoreSessionUtils {
+class StubArCoreSessionUtils : public ArCoreSessionUtils {
  public:
   StubArCoreSessionUtils() = default;
 
-  void RequestArSession(
-      int render_process_id,
-      int render_frame_id,
-      bool use_overlay,
-      vr::SurfaceReadyCallback ready_callback,
-      vr::SurfaceTouchCallback touch_callback,
-      vr::SurfaceDestroyedCallback destroyed_callback) override {
+  void RequestArSession(int render_process_id,
+                        int render_frame_id,
+                        bool use_overlay,
+                        SurfaceReadyCallback ready_callback,
+                        SurfaceTouchCallback touch_callback,
+                        SurfaceDestroyedCallback destroyed_callback) override {
     // Return arbitrary screen geometry as stand-in for the expected
     // drawing surface. It's not actually a surface, hence the nullptr
     // instead of a WindowAndroid.

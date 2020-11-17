@@ -13,7 +13,7 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image_egl.h"
 
-namespace vr {
+namespace device {
 
 WebXrSharedBuffer::WebXrSharedBuffer() = default;
 WebXrSharedBuffer::~WebXrSharedBuffer() = default;
@@ -221,4 +221,4 @@ void WebXrPresentationState::TryDeferredProcessing() {
   std::move(animating_frame_->deferred_start_processing).Run();
 }
 
-}  // namespace vr
+}  // namespace device

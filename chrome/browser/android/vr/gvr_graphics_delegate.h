@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/base_graphics_delegate.h"
 #include "chrome/browser/vr/render_info.h"
-#include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/util/sliding_average.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
@@ -27,6 +26,10 @@
 
 namespace base {
 class WaitableEvent;
+}
+
+namespace device {
+class WebXrPresentationState;
 }
 
 namespace gfx {
@@ -81,7 +84,7 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
                       size_t sliding_time_size);
   ~GvrGraphicsDelegate() override;
 
-  void set_webxr_presentation_state(WebXrPresentationState* webxr) {
+  void set_webxr_presentation_state(device::WebXrPresentationState* webxr) {
     webxr_ = webxr;
   }
   void Init(base::WaitableEvent* gl_surface_created_event,
@@ -156,7 +159,7 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   void WebVrWaitForServerFence();
   void MaybeDumpFrameBufferToDisk();
 
-  WebXrPresentationState* webxr_;
+  device::WebXrPresentationState* webxr_;
 
   // samplerExternalOES texture data for WebVR content image.
   int webvr_texture_id_ = 0;

@@ -21,15 +21,12 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace vr {
-class ArCoreSessionUtils;
-}  // namespace vr
-
 namespace device {
 
 class ArImageTransportFactory;
 class ArCoreFactory;
 class ArCoreGlThread;
+class ArCoreSessionUtils;
 class MailboxToSurfaceBridge;
 class MailboxToSurfaceBridgeFactory;
 
@@ -40,7 +37,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
       std::unique_ptr<MailboxToSurfaceBridgeFactory>
           mailbox_to_surface_bridge_factory,
-      std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils);
+      std::unique_ptr<ArCoreSessionUtils> arcore_session_utils);
   ~ArCoreDevice() override;
 
   // VRDeviceBase implementation.
@@ -120,7 +117,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
   std::unique_ptr<ArCoreFactory> arcore_factory_;
   std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory_;
   std::unique_ptr<MailboxToSurfaceBridgeFactory> mailbox_bridge_factory_;
-  std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils_;
+  std::unique_ptr<ArCoreSessionUtils> arcore_session_utils_;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 

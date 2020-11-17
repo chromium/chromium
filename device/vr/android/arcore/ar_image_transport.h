@@ -26,14 +26,11 @@ struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
 
-namespace vr {
-class WebXrPresentationState;
-struct WebXrSharedBuffer;
-}  // namespace vr
-
 namespace device {
 
 class MailboxToSurfaceBridge;
+class WebXrPresentationState;
+struct WebXrSharedBuffer;
 
 using XrFrameCallback = base::RepeatingCallback<void(const gfx::Transform&)>;
 
@@ -46,14 +43,14 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
   virtual ~ArImageTransport();
 
-  virtual void DestroySharedBuffers(vr::WebXrPresentationState* webxr);
+  virtual void DestroySharedBuffers(WebXrPresentationState* webxr);
 
   // All methods must be called on a valid GL thread. Initialization
   // must happen after the local GL context is ready for use. That
   // starts the asynchronous setup for the GPU process command buffer
   // GL context via MailboxToSurfaceBridge, and the callback is called
   // once that's complete.
-  virtual void Initialize(vr::WebXrPresentationState* webxr,
+  virtual void Initialize(WebXrPresentationState* webxr,
                           base::OnceClosure callback);
 
   virtual GLuint GetCameraTextureId();
@@ -61,7 +58,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
   // This creates a shared buffer if one doesn't already exist, and populates it
   // with the current animating frame's buffer data. It returns a
   // gpu::Mailboxholder with this shared buffer data.
-  virtual gpu::MailboxHolder TransferFrame(vr::WebXrPresentationState* webxr,
+  virtual gpu::MailboxHolder TransferFrame(WebXrPresentationState* webxr,
                                            const gfx::Size& frame_size,
                                            const gfx::Transform& uv_transform);
 
@@ -69,7 +66,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
   // by GetCameraTextureId() is at the time it is called and returns
   // a gpu::MailboxHolder with that texture copied to a shared buffer.
   virtual gpu::MailboxHolder TransferCameraImageFrame(
-      vr::WebXrPresentationState* webxr,
+      WebXrPresentationState* webxr,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform);
 
@@ -78,7 +75,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>);
   virtual void CopyCameraImageToFramebuffer(const gfx::Size& frame_size,
                                             const gfx::Transform& uv_transform);
-  virtual void CopyDrawnImageToFramebuffer(vr::WebXrPresentationState* webxr,
+  virtual void CopyDrawnImageToFramebuffer(WebXrPresentationState* webxr,
                                            const gfx::Size& frame_size,
                                            const gfx::Transform& uv_transform);
   virtual void CopyTextureToFramebuffer(GLuint texture,
@@ -94,11 +91,11 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
  private:
-  std::unique_ptr<vr::WebXrSharedBuffer> CreateBuffer();
+  std::unique_ptr<WebXrSharedBuffer> CreateBuffer();
   // Returns true if the buffer was resized and its sync token updated.
-  bool ResizeSharedBuffer(vr::WebXrPresentationState* webxr,
+  bool ResizeSharedBuffer(WebXrPresentationState* webxr,
                           const gfx::Size& size,
-                          vr::WebXrSharedBuffer* buffer);
+                          WebXrSharedBuffer* buffer);
   void ResizeSurface(const gfx::Size& size);
   bool IsOnGlThread() const;
   void OnMailboxBridgeReady(base::OnceClosure callback);

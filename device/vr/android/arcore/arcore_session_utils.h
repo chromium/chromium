@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace vr {
+namespace device {
 
 // Immersive AR sessions use callbacks in the following sequence:
 //
@@ -49,6 +49,6 @@ class ArCoreSessionUtils {
   virtual void EndSession() = 0;
 };
 
-}  // namespace vr
+}  // namespace device
 
 #endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
