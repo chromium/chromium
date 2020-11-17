@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -195,7 +196,7 @@ std::unique_ptr<views::Widget> DesksBarView::CreateDesksWidget(
 }
 
 void DesksBarView::Init() {
-  UpdateNewMiniViews(/*animate=*/false);
+  UpdateNewMiniViews(/*initializing_bar_view=*/true);
   hover_observer_ = std::make_unique<DeskBarHoverObserver>(
       this, GetWidget()->GetNativeWindow());
 }
@@ -313,7 +314,7 @@ bool DesksBarView::UsesCompactLayout() const {
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
-  UpdateNewMiniViews(/*animate=*/true);
+  UpdateNewMiniViews(/*initializing_bar_view=*/false);
 }
 
 void DesksBarView::OnDeskRemoved(const Desk* desk) {
@@ -368,7 +369,7 @@ void DesksBarView::OnDeskSwitchAnimationLaunching() {}
 
 void DesksBarView::OnDeskSwitchAnimationFinished() {}
 
-void DesksBarView::UpdateNewMiniViews(bool animate) {
+void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view) {
   const auto& desks = DesksController::Get()->desks();
   if (desks.size() < 2) {
     // We do not show mini_views when we have a single desk.
@@ -401,10 +402,26 @@ void DesksBarView::UpdateNewMiniViews(bool animate) {
     }
   }
 
+  if (features::IsBentoEnabled() && !initializing_bar_view) {
+    // If Bento is enabled, focus on the newly created name view to encourage
+    // users to rename their desks.
+    auto* newly_added_name_view = mini_views_.back()->desk_name_view();
+    newly_added_name_view->RequestFocus();
+
+    // Set |newly_added_name_view|'s accessible name to the default desk name
+    // since its text is cleared.
+    newly_added_name_view->SetAccessibleName(
+        DesksController::GetDeskDefaultName(desks.size() - 1));
+
+    auto* highlight_controller = GetHighlightController();
+    if (highlight_controller->IsFocusHighlightVisible())
+      highlight_controller->MoveHighlightToView(newly_added_name_view);
+  }
+
   UpdateMinimumWidthToFitContents();
   overview_grid_->OnDesksChanged();
 
-  if (!animate)
+  if (initializing_bar_view)
     return;
 
   PerformNewDeskMiniViewAnimation(this, new_mini_views,

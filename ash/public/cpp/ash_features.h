@@ -21,6 +21,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kAllowAmbientEQ;
 // certain devices.
 ASH_PUBLIC_EXPORT extern const base::Feature kAutoNightLight;
 
+// Enables the Bento feature which encapsulate multiple sub-features which
+// improve virtual desks.
+ASH_PUBLIC_EXPORT extern const base::Feature kBento;
+
 // Enables the Capture Mode feature which is an enhanced screenshot and screen
 // capture user experience.
 ASH_PUBLIC_EXPORT extern const base::Feature kCaptureMode;
@@ -202,6 +206,8 @@ ASH_PUBLIC_EXPORT bool IsAltTabLimitedToActiveDesk();
 ASH_PUBLIC_EXPORT bool IsPerDeskShelfEnabled();
 
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
+
+ASH_PUBLIC_EXPORT bool IsBentoEnabled();
 
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 

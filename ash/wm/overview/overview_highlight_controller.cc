@@ -93,7 +93,18 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
     index = (((reverse ? -1 : 1) + current_index) + count) % count;
   }
 
-  UpdateHighlight(traversable_views[index], reverse);
+  UpdateHighlight(traversable_views[index]);
+}
+
+void OverviewHighlightController::MoveHighlightToView(
+    OverviewHighlightableView* target_view) {
+  const std::vector<OverviewHighlightableView*> traversable_views =
+      GetTraversableViews();
+  auto it = std::find(traversable_views.begin(), traversable_views.end(),
+                      target_view);
+  DCHECK(it != traversable_views.end());
+
+  UpdateHighlight(target_view, /*suppress_accessibility_event=*/true);
 }
 
 void OverviewHighlightController::OnViewDestroyingOrDisabling(
@@ -213,7 +224,7 @@ OverviewHighlightController::GetTraversableViews() const {
 
 void OverviewHighlightController::UpdateHighlight(
     OverviewHighlightableView* view_to_be_highlighted,
-    bool reverse) {
+    bool suppress_accessibility_event) {
   if (highlighted_view_ == view_to_be_highlighted)
     return;
 
@@ -221,8 +232,12 @@ void OverviewHighlightController::UpdateHighlight(
   highlighted_view_ = view_to_be_highlighted;
 
   // Perform accessibility related tasks.
-  highlighted_view_->GetView()->NotifyAccessibilityEvent(
-      ax::mojom::Event::kSelection, true);
+  if (!suppress_accessibility_event) {
+    // Don't emit if focusing since focusing will emit an accessibility event as
+    // well.
+    highlighted_view_->GetView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kSelection, true);
+  }
   // Note that both magnifiers are mutually exclusive. The overview "focus"
   // works differently from regular focusing so we need to update the magnifier
   // manually here.

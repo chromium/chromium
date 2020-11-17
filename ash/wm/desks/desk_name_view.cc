@@ -74,8 +74,12 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
 }
 
 void DeskNameView::SetTextAndElideIfNeeded(const base::string16& text) {
-  SetText(gfx::ElideText(text, GetFontList(), GetContentsBounds().width(),
-                         gfx::ELIDE_TAIL));
+  // Use the potential max size of this to calculate elision, not its current
+  // size to avoid eliding names that don't need to be.
+  SetText(
+      gfx::ElideText(text, GetFontList(),
+                     parent()->GetPreferredSize().width() - GetInsets().width(),
+                     gfx::ELIDE_TAIL));
   full_text_ = text;
 }
 
@@ -114,7 +118,9 @@ bool DeskNameView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 
 void DeskNameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTextField;
-  node_data->SetName(full_text_);
+  // When Bento is enabled and the user creates a new desk, |full_text_| will be
+  // empty but the accesssible name for |this| will be the default desk name.
+  node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
 }
 
 void DeskNameView::OnMouseEntered(const ui::MouseEvent& event) {

@@ -105,9 +105,9 @@ class ASH_EXPORT DesksBarView : public views::View,
 
  private:
   // This is called on initialization or when a new desk is created to create
-  // the needed new mini_views. If |animate| is true, the mini_views will be
-  // animated to their final positions.
-  void UpdateNewMiniViews(bool animate);
+  // the needed new mini_views. If |initializing_bar_view| is false, the
+  // mini_views will be animated to their final positions.
+  void UpdateNewMiniViews(bool initializing_bar_view);
 
   // Returns the mini_view associated with |desk| or nullptr if no mini_view
   // has been created for it yet.

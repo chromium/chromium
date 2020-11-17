@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_highlight_controller.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -708,6 +710,66 @@ TEST_F(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
   EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+}
+
+// A test class for testing Bento features.
+class BentoOverviewHighlightControllerTest
+    : public DesksOverviewHighlightControllerTest {
+ public:
+  BentoOverviewHighlightControllerTest() = default;
+  BentoOverviewHighlightControllerTest(
+      const BentoOverviewHighlightControllerTest&) = delete;
+  BentoOverviewHighlightControllerTest& operator=(
+      const BentoOverviewHighlightControllerTest&) = delete;
+  ~BentoOverviewHighlightControllerTest() override = default;
+
+  // DesksOverviewHighlightControllerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kBento);
+    DesksOverviewHighlightControllerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests the overview highlight controller behavior when a user uses the new
+// desk button and Bento is enabled.
+TEST_F(BentoOverviewHighlightControllerTest,
+       ActivateCloseHighlightOnNewDeskButton) {
+  ToggleOverview();
+  const auto* desk_bar_view =
+      GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  const auto* new_desk_button = desk_bar_view->new_desk_button();
+  const auto* desks_controller = DesksController::Get();
+
+  auto check_name_view_at_index = [this](const auto* desk_bar_view, int index) {
+    const auto* desk_name_view =
+        desk_bar_view->mini_views()[index]->desk_name_view();
+    EXPECT_TRUE(desk_name_view->HasFocus());
+    EXPECT_EQ(GetHighlightedView(), desk_name_view);
+    EXPECT_EQ(base::string16(), desk_name_view->GetText());
+  };
+
+  // Use the keyboard to navigate to the new desk button.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(new_desk_button, GetHighlightedView());
+
+  // Keep adding new desks until we reach the maximum allowed amount. Verify the
+  // amount of desks is indeed the maximum allowed and that the new desk button
+  // is disabled.
+  while (desks_controller->CanCreateDesks()) {
+    SendKey(ui::VKEY_RETURN);
+    check_name_view_at_index(desk_bar_view,
+                             desks_controller->desks().size() - 1);
+    SendKey(ui::VKEY_TAB);
+  }
+  EXPECT_FALSE(new_desk_button->GetEnabled());
+  EXPECT_EQ(desks_util::kMaxNumberOfDesks, desks_controller->desks().size());
 }
 
 }  // namespace ash

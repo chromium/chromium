@@ -3762,6 +3762,60 @@ TEST_F(DesksMockTimeTest, DeskTraversalNonTouchpadMetrics) {
   histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 1);
 }
 
+// A test class for testing Bento features.
+class DesksBentoTest : public DesksTest {
+ public:
+  DesksBentoTest() = default;
+  DesksBentoTest(const DesksBentoTest&) = delete;
+  DesksBentoTest& operator=(const DesksBentoTest&) = delete;
+  ~DesksBentoTest() override = default;
+
+  // DesksTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kBento);
+    DesksTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests desks name nudges, i.e. when a user creates a new desk, focus + clear
+// the new desk's renaming textfield.
+TEST_F(DesksBentoTest, NameNudges) {
+  auto* controller = DesksController::Get();
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Hover over the new desk button.
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  auto* new_desk_button = desks_bar_view->new_desk_button();
+  EXPECT_TRUE(new_desk_button->GetEnabled());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      new_desk_button->GetBoundsInScreen().CenterPoint());
+
+  // Click on the new desk button until the max number of desks is created. Each
+  // time a new desk is created the new desk's name view should have focus, be
+  // empty and have its accessible name set to the default desk name. Also, the
+  // previous desk should be left with a default name.
+  for (size_t i = 1; i < desks_util::kMaxNumberOfDesks; ++i) {
+    event_generator->ClickLeftButton();
+    auto* desk_name_view = desks_bar_view->mini_views()[i]->desk_name_view();
+    EXPECT_TRUE(desk_name_view->HasFocus());
+    EXPECT_EQ(base::string16(), controller->desks()[i]->name());
+    EXPECT_EQ(DesksController::GetDeskDefaultName(i),
+              desk_name_view->GetAccessibleName());
+    EXPECT_EQ(DesksController::GetDeskDefaultName(i - 1),
+              controller->desks()[i - 1]->name());
+  }
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

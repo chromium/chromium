@@ -69,6 +69,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // instance is created and owned by Shell.
   static DesksController* Get();
 
+  // Returns the default name for a desk at |desk_index|.
+  static base::string16 GetDeskDefaultName(size_t desk_index);
+
   const std::vector<std::unique_ptr<Desk>>& desks() const { return desks_; }
 
   const Desk* active_desk() const { return active_desk_; }

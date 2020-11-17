@@ -34,7 +34,7 @@ constexpr int kLabelPreviewSpacing = 8;
 
 constexpr int kCloseButtonMargin = 8;
 
-constexpr int kMinDeskNameViewWidth = 20;
+constexpr int kMinDeskNameViewWidth = 56;
 
 // Returns the width of the desk preview based on its |preview_height| and the
 // aspect ratio of the root window taken from |root_window_size|.
@@ -241,6 +241,7 @@ void DeskMiniView::OnDeskNameChanged(const base::string16& new_name) {
     return;
 
   desk_name_view_->SetTextAndElideIfNeeded(new_name);
+  desk_name_view_->SetAccessibleName(new_name);
   desk_preview_->SetAccessibleName(new_name);
 
   Layout();

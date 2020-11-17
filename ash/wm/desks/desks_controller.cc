@@ -102,18 +102,6 @@ void RemoveAllWindowsFromOverview() {
   }
 }
 
-base::string16 GetDeskDefaultName(size_t desk_index) {
-  DCHECK_LT(desk_index, desks_util::kMaxNumberOfDesks);
-  constexpr int kStringIds[] = {IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE,
-                                IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE};
-  static_assert(desks_util::kMaxNumberOfDesks == base::size(kStringIds),
-                "Wrong default desks' names.");
-
-  return l10n_util::GetStringUTF16(kStringIds[desk_index]);
-}
-
 // Updates the |ShelfItem::is_on_active_desk| of the items associated with
 // |windows_on_inactive_desk| and |windows_on_active_desk|. The items of the
 // given windows will be updated, while the rest will remain unchanged. Either
@@ -242,6 +230,19 @@ DesksController* DesksController::Get() {
   return Shell::Get()->desks_controller();
 }
 
+// static
+base::string16 DesksController::GetDeskDefaultName(size_t desk_index) {
+  DCHECK_LT(desk_index, desks_util::kMaxNumberOfDesks);
+  constexpr int kStringIds[] = {IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
+                                IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
+                                IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE,
+                                IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE};
+  static_assert(desks_util::kMaxNumberOfDesks == base::size(kStringIds),
+                "Wrong default desks' names.");
+
+  return l10n_util::GetStringUTF16(kStringIds[desk_index]);
+}
+
 const Desk* DesksController::GetTargetActiveDesk() const {
   if (animation_)
     return desks_[animation_->ending_desk_index()].get();
@@ -313,8 +314,16 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   desks_.push_back(std::make_unique<Desk>(available_container_ids_.front()));
   available_container_ids_.pop();
   Desk* new_desk = desks_.back().get();
-  new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
-                    /*set_by_user=*/false);
+
+  // If Bento is enabled and the user creates a desk with the button, the new
+  // desk should have an empty name to encourage them to rename their desks.
+  const bool empty_name = features::IsBentoEnabled() &&
+                          source == DesksCreationRemovalSource::kButton &&
+                          desks_.size() > 1;
+  if (!empty_name) {
+    new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
+                      /*set_by_user=*/false);
+  }
 
   Shell::Get()
       ->accessibility_controller()
