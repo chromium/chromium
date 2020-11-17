@@ -248,6 +248,10 @@ class TemplateURLRef {
     // Source of the search or suggest request.
     RequestSource request_source = SEARCHBOX;
 
+    // Whether the query is being fetched as a prefetch request before the user
+    // actually searches for the search terms.
+    bool is_prefetch = false;
+
     ContextualSearchParams contextual_search_params;
   };
 
@@ -395,6 +399,7 @@ class TemplateURLRef {
     GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION,
     GOOGLE_PAGE_CLASSIFICATION,
     GOOGLE_PREFETCH_QUERY,
+    GOOGLE_PREFETCH_SOURCE,
     GOOGLE_RLZ,
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,

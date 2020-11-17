@@ -28,6 +28,24 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/origin.h"
 
+namespace {
+
+// Recomputes the destination URL with the added prefetch information for
+// |match| (does not modify |destination_url|).
+GURL GetPrefetchURLFromMatch(const AutocompleteMatch& match,
+                             TemplateURLService* template_url_service) {
+  // Copy the search term args, so we can modify them for just the prefetch.
+  auto search_terms_args = *(match.search_terms_args);
+  search_terms_args.is_prefetch = true;
+  return GURL(template_url_service->GetDefaultSearchProvider()
+                  ->url_ref()
+                  .ReplaceSearchTerms(search_terms_args,
+                                      template_url_service->search_terms_data(),
+                                      nullptr));
+}
+
+}  // namespace
+
 SearchPrefetchService::PrefetchRequest::PrefetchRequest(
     const GURL& prefetch_url,
     base::OnceClosure report_error_callback)
@@ -291,13 +309,15 @@ void SearchPrefetchService::OnResultChanged(
   const auto& result = controller->result();
   const auto* default_match = result.default_match();
 
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  DCHECK(template_url_service);
+  auto* default_search = template_url_service->GetDefaultSearchProvider();
+  if (!default_search)
+    return;
+
   // Cancel Unneeded prefetch requests.
   if (SearchPrefetchShouldCancelUneededInflightRequests()) {
-    auto* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(profile_);
-    if (!template_url_service)
-      return;
-
     // Since we limit the number of prefetches in the map, this should be fast
     // despite the two loops.
     for (const auto& kv_pair : prefetches_) {
@@ -310,10 +330,9 @@ void SearchPrefetchService::OnResultChanged(
       bool should_cancel_request = true;
       for (const auto& match : result) {
         base::string16 match_search_terms;
-        template_url_service->GetDefaultSearchProvider()
-            ->ExtractSearchTermsFromURL(
-                match.destination_url,
-                template_url_service->search_terms_data(), &match_search_terms);
+        default_search->ExtractSearchTermsFromURL(
+            match.destination_url, template_url_service->search_terms_data(),
+            &match_search_terms);
 
         if (search_terms == match_search_terms) {
           should_cancel_request = false;
@@ -331,14 +350,15 @@ void SearchPrefetchService::OnResultChanged(
   // One arm of the experiment only prefetches the top match when it is default.
   if (SearchPrefetchOnlyFetchDefaultMatch()) {
     if (default_match && BaseSearchProvider::ShouldPrefetch(*default_match)) {
-      MaybePrefetchURL(default_match->destination_url);
+      MaybePrefetchURL(
+          GetPrefetchURLFromMatch(*default_match, template_url_service));
     }
     return;
   }
 
   for (const auto& match : result) {
     if (BaseSearchProvider::ShouldPrefetch(match)) {
-      MaybePrefetchURL(match.destination_url);
+      MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service));
     }
   }
 }

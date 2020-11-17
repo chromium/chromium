@@ -83,7 +83,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
     ASSERT_TRUE(model->loaded());
 
-    SetDSEWithURL(GetSearchServerQueryURL("{searchTerms}"));
+    SetDSEWithURL(
+        GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"));
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -713,6 +714,34 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       OmniboxURLHasPfParam) {
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::TimeDelta::FromSeconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kSuccessfullyCompleted);
+  ASSERT_TRUE(search_server_requests().size() > 0);
+  EXPECT_NE(std::string::npos,
+            search_server_requests()[0].GetURL().spec().find("pf=cs"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        OmniboxEditDoesNotTriggersPrefetch) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -946,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
           base::ASCIIToUTF16(search_terms));
   EXPECT_TRUE(prefetch_status.has_value());
 
-  SetDSEWithURL(GetSearchServerQueryURL("/q={searchTerms}&extra_stuff"));
+  SetDSEWithURL(GetSearchServerQueryURL("blah/q={searchTerms}&extra_stuff"));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
@@ -1165,4 +1194,45 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
 
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+}
+
+class GooglePFTest : public InProcessBrowserTest {
+ public:
+  GooglePFTest() = default;
+
+  void SetUpOnMainThread() override {
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(model);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+    ASSERT_TRUE(model->loaded());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchHasPFForPrefetch) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  auto* default_search = template_url_service->GetDefaultSearchProvider();
+
+  TemplateURLRef::SearchTermsArgs search_terms_args =
+      TemplateURLRef::SearchTermsArgs(base::string16());
+  search_terms_args.is_prefetch = true;
+
+  std::string generated_url = default_search->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service->search_terms_data(), nullptr);
+  EXPECT_TRUE(base::Contains(generated_url, "pf=cs"));
+}
+
+IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchNoPFForNonPrefetch) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  auto* default_search = template_url_service->GetDefaultSearchProvider();
+
+  TemplateURLRef::SearchTermsArgs search_terms_args =
+      TemplateURLRef::SearchTermsArgs(base::string16());
+  search_terms_args.is_prefetch = false;
+
+  std::string generated_url = default_search->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service->search_terms_data(), nullptr);
+  EXPECT_FALSE(base::Contains(generated_url, "pf=cs"));
 }

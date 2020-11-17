@@ -766,6 +766,37 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
   }
 }
 
+// Tests replacing prefetch source (&pf=).
+TEST_F(TemplateURLTest, ReplaceIsPrefetch) {
+  struct TestData {
+    const base::string16 search_term;
+    bool is_prefetch;
+    const std::string url;
+    const std::string expected_result;
+  } test_data[] = {
+      {ASCIIToUTF16("foo"), false,
+       "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
+       "http://www.google.com/?foo&"},
+      {ASCIIToUTF16("foo"), true,
+       "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
+       "http://www.google.com/?foo&pf=cs&"},
+  };
+  TemplateURLData data;
+  data.input_encodings.push_back("UTF-8");
+  for (size_t i = 0; i < base::size(test_data); ++i) {
+    data.SetURL(test_data[i].url);
+    TemplateURL url(data);
+    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
+    TemplateURLRef::SearchTermsArgs search_terms_args(test_data[i].search_term);
+    search_terms_args.is_prefetch = test_data[i].is_prefetch;
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ(test_data[i].expected_result, result.spec());
+  }
+}
+
 // Tests replacing currentPageUrl.
 TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
   struct TestData {

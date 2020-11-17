@@ -700,6 +700,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     // Do nothing, we just want the path wildcard removed from the URL.
   } else if (parameter == "google:prefetchQuery") {
     replacements->push_back(Replacement(GOOGLE_PREFETCH_QUERY, start));
+  } else if (parameter == "google:prefetchSource") {
+    replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
   } else if (parameter == "google:RLZ") {
     replacements->push_back(Replacement(GOOGLE_RLZ, start));
   } else if (parameter == "google:searchClient") {
@@ -1112,6 +1114,19 @@ std::string TemplateURLRef::HandleReplacements(
         if (!query.empty() && !type.empty()) {
           HandleReplacement(
               std::string(), "pfq=" + query + "&qha=" + type + "&", *i, &url);
+        }
+        break;
+      }
+
+      case GOOGLE_PREFETCH_SOURCE: {
+        if (search_terms_args.is_prefetch) {
+          // Currently, Chrome only support "cs" for prefetches, but if new
+          // prefetch sources (outside of suggestions) are added, a new prefetch
+          // source value is needed. These should denote the source of the
+          // prefetch to allow the search server to treat the requests based on
+          // source. "cs" represents Chrome Suggestions as the source. Adding a
+          // new source should be supported by the Search engine.
+          HandleReplacement(std::string(), "pf=cs&", *i, &url);
         }
         break;
       }
