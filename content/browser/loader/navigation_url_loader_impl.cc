@@ -53,6 +53,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_utils.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/ssl_status.h"
@@ -278,21 +279,6 @@ void UnknownSchemeCallback(
           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 }
 
-const char* FrameAcceptHeaderValue() {
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  static const char kFrameAcceptHeaderValueWithAvif[] =
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
-      "image/webp,image/apng,*/*;q=0.8";
-  static const char* accept_value =
-      base::FeatureList::IsEnabled(blink::features::kAVIF)
-          ? kFrameAcceptHeaderValueWithAvif
-          : network::kFrameAcceptHeaderValue;
-  return accept_value;
-#else
-  return network::kFrameAcceptHeaderValue;
-#endif
-}
-
 }  // namespace
 
 // TODO(kinuko): Fix the method ordering and move these methods after the ctor.
@@ -361,13 +347,9 @@ void NavigationURLLoaderImpl::Start(
             std::move(factory));
   }
 
-  std::string accept_header_value = FrameAcceptHeaderValue();
-  if (signed_exchange_utils::IsSignedExchangeHandlingEnabled(
-          browser_context_)) {
-    accept_header_value.append(kAcceptHeaderSignedExchangeSuffix);
-  }
-  resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                       accept_header_value);
+  resource_request_->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
 
   // Requests to WebUI scheme won't get redirected to/from other schemes
   // or be intercepted, so we just let it go here.
@@ -741,10 +723,12 @@ void NavigationURLLoaderImpl::FollowRedirectInternal(
 
   // Don't send Accept: application/signed-exchange for fallback redirects.
   if (redirect_info_.is_signed_exchange_fallback_redirect) {
+    std::string header_value =
+        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false, browser_context_);
     url_loader_modified_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
-                                           FrameAcceptHeaderValue());
+                                           header_value);
     resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                         FrameAcceptHeaderValue());
+                                         header_value);
   }
 
   Restart();

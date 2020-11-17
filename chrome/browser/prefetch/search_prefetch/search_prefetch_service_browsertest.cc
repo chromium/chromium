@@ -452,6 +452,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_EQ(1u, search_server_requests().size());
   EXPECT_NE(std::string::npos,
             search_server_requests()[0].GetURL().spec().find(search_terms));
+  auto headers = search_server_requests()[0].headers;
+  ASSERT_TRUE(base::Contains(headers, "Accept"));
+  EXPECT_TRUE(base::Contains(headers["Accept"], "text/html"));
   EXPECT_EQ(1u, search_server_request_count());
   EXPECT_EQ(1u, search_server_prefetch_request_count());
 

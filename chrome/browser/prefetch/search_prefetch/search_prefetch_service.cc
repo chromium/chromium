@@ -18,6 +18,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
@@ -100,6 +101,9 @@ void SearchPrefetchService::PrefetchRequest::StartPrefetchRequest(
       prefetch_url_, variations::InIncognito::kNo, resource_request.get());
   resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
                                       "prefetch");
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
   // TODO(ryansturm): Find other headers that may need to be set.
   // https://crbug.com/1138648
 
