@@ -16,6 +16,8 @@ class TokenManager {
   TokenManager();
   ~TokenManager();
 
+  bool GenerateServerToken();
+
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
 
@@ -23,6 +25,7 @@ class TokenManager {
                           const base::UnguessableToken& token);
 
  private:
+  base::UnguessableToken server_token_;
   base::flat_map<cros::mojom::CameraClientType, base::UnguessableToken>
       client_token_map_;
 };

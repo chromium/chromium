@@ -127,6 +127,13 @@ bool CameraHalDispatcherImpl::Start(
   jea_factory_ = std::move(jea_factory);
   base::WaitableEvent started(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+  // It's important we generate tokens before creating the socket, because once
+  // it is available, everyone connecting to socket would start fetching
+  // tokens.
+  if (!token_manager_.GenerateServerToken()) {
+    LOG(ERROR) << "Failed to generate authentication token for server";
+    return false;
+  }
   blocking_io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImpl::CreateSocket,

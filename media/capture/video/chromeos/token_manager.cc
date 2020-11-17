@@ -4,10 +4,71 @@
 
 #include "media/capture/video/chromeos/token_manager.h"
 
+#include <grp.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string>
+
+#include <base/files/file_path.h>
+#include <base/files/file_util.h>
+#include <base/strings/string_number_conversions.h>
+#include <base/strings/string_util.h>
+
+namespace {
+
+gid_t GetArcCameraGid() {
+  auto* group = getgrnam("arc-camera");
+  return group != nullptr ? group->gr_gid : 0;
+}
+
+bool EnsureTokenDirectoryExists(const base::FilePath& token_path) {
+  static const gid_t gid = GetArcCameraGid();
+  if (gid == 0) {
+    LOG(ERROR) << "Failed to query the GID of arc-camera";
+    return false;
+  }
+
+  base::FilePath dir_name = token_path.DirName();
+  if (!base::CreateDirectory(dir_name) ||
+      !base::SetPosixFilePermissions(dir_name, 0770)) {
+    LOG(ERROR) << "Failed to create token directory at "
+               << token_path.AsUTF8Unsafe();
+    return false;
+  }
+
+  if (chown(dir_name.AsUTF8Unsafe().c_str(), -1, gid) != 0) {
+    LOG(ERROR) << "Failed to chown token directory to arc-camera";
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 namespace media {
 
 TokenManager::TokenManager() = default;
 TokenManager::~TokenManager() = default;
+
+bool TokenManager::GenerateServerToken() {
+  static constexpr char kServerTokenPath[] = "/run/camera_tokens/server/token";
+  base::FilePath token_path(kServerTokenPath);
+
+  if (!EnsureTokenDirectoryExists(token_path)) {
+    LOG(ERROR) << "Failed to ensure server token directory exists";
+    return false;
+  }
+  base::File token_file(
+      token_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  if (!token_file.IsValid()) {
+    LOG(ERROR) << "Failed to create server token file";
+    return false;
+  }
+  server_token_ = base::UnguessableToken::Create();
+  std::string token_string = server_token_.ToString();
+  token_file.WriteAtCurrentPos(token_string.c_str(), token_string.length());
+  return true;
+}
 
 base::UnguessableToken TokenManager::GetTokenForTrustedClient(
     cros::mojom::CameraClientType type) {
