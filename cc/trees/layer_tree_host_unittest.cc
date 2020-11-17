@@ -8802,7 +8802,7 @@ MULTI_THREAD_TEST_F(LayerTreeHostTopControlsDeltaTriggersViewportUpdate);
 // Tests that custom sequence throughput tracking result is reported to
 // LayerTreeHostClient.
 constexpr MutatorHost::TrackedAnimationSequenceId kSequenceId = 1u;
-class LayerTreeHostCustomThrougputTrackerTest : public LayerTreeHostTest {
+class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
  public:
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
@@ -8835,7 +8835,7 @@ class LayerTreeHostCustomThrougputTrackerTest : public LayerTreeHostTest {
   }
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostCustomThrougputTrackerTest);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostCustomThroughputTrackerTest);
 
 // Confirm that DelegatedInkMetadata set on the LTH propagates to the
 // CompositorFrameMetadata and RenderFrameMetadata, and then both are correctly
