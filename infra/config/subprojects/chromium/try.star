@@ -689,6 +689,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
+    builderless = not settings.is_master,
     cores = 16,
     ssd = True,
     goma_jobs = goma.jobs.J300,
