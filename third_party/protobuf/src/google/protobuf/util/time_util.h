@@ -257,7 +257,7 @@ inline std::ostream& operator<<(std::ostream& out, const Duration& d) {
 
 // Overloaded operators for Timestamp
 //
-// Assignment operators.
+// Assignement operators.
 PROTOBUF_EXPORT Timestamp& operator+=(Timestamp& t,
                                       const Duration& d);  // NOLINT
 PROTOBUF_EXPORT Timestamp& operator-=(Timestamp& t,

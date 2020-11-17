@@ -36,8 +36,7 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/type.pb.h>
 #include <google/protobuf/util/internal/utility.h>
-#include <google/protobuf/stubs/status.h>
-#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/stringpiece.h>
 #include <google/protobuf/stubs/map_util.h>
 #include <google/protobuf/stubs/status.h>
 #include <google/protobuf/stubs/statusor.h>
@@ -82,7 +81,7 @@ class TypeInfoForTypeResolver : public TypeInfo {
   const google::protobuf::Type* GetTypeByTypeUrl(
       StringPiece type_url) const override {
     StatusOrType result = ResolveTypeUrl(type_url);
-    return result.ok() ? result.value() : NULL;
+    return result.ok() ? result.ValueOrDie() : NULL;
   }
 
   const google::protobuf::Enum* GetEnumByTypeUrl(
@@ -90,7 +89,7 @@ class TypeInfoForTypeResolver : public TypeInfo {
     std::map<StringPiece, StatusOrEnum>::iterator it =
         cached_enums_.find(type_url);
     if (it != cached_enums_.end()) {
-      return it->second.ok() ? it->second.value() : NULL;
+      return it->second.ok() ? it->second.ValueOrDie() : NULL;
     }
     // Stores the string value so it can be referenced using StringPiece in the
     // cached_enums_ map.
@@ -103,7 +102,7 @@ class TypeInfoForTypeResolver : public TypeInfo {
     StatusOrEnum result =
         status.ok() ? StatusOrEnum(enum_type.release()) : StatusOrEnum(status);
     cached_enums_[string_type_url] = result;
-    return result.ok() ? result.value() : NULL;
+    return result.ok() ? result.ValueOrDie() : NULL;
   }
 
   const google::protobuf::Field* FindField(
@@ -135,7 +134,7 @@ class TypeInfoForTypeResolver : public TypeInfo {
              cached_types->begin();
          it != cached_types->end(); ++it) {
       if (it->second.ok()) {
-        delete it->second.value();
+        delete it->second.ValueOrDie();
       }
     }
   }

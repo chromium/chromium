@@ -35,7 +35,7 @@
 //
 // This is just a compile test (here to make sure things never regress).
 //
-// Objective C++ can run into issues with how the NS_ENUM/CF_ENUM declaration
+// Objective C++ can run into issues with how the NS_ENUM/CF_ENUM declartion
 // works because of the C++ spec being used for that compilation unit. So
 // the fact that these imports all work without errors/warning means things
 // are still good.

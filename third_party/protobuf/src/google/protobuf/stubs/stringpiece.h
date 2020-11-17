@@ -148,6 +148,7 @@
 #include <limits>
 #include <string>
 
+#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/hash.h>
 
 #include <google/protobuf/port_def.inc>
@@ -164,7 +165,7 @@ namespace protobuf {
 //   is 32 bits in LP32, 64 bits in LP64, 64 bits in LLP64
 //   future changes intended: http://go/64BitStringPiece
 //
-typedef std::string::difference_type stringpiece_ssize_type;
+typedef string::difference_type stringpiece_ssize_type;
 
 // STRINGPIECE_CHECK_SIZE protects us from 32-bit overflows.
 // TODO(mec): delete this after stringpiece_ssize_type goes 64 bit.
@@ -301,21 +302,25 @@ class PROTOBUF_EXPORT StringPiece {
     return 0;
   }
 
-  std::string as_string() const { return ToString(); }
+  string as_string() const {
+    return ToString();
+  }
   // We also define ToString() here, since many other string-like
   // interfaces name the routine that converts to a C++ string
   // "ToString", and it's confusing to have the method that does that
   // for a StringPiece be called "as_string()".  We also leave the
   // "as_string()" method defined here for existing code.
-  std::string ToString() const {
-    if (ptr_ == nullptr) return "";
-    return std::string(data(), static_cast<size_type>(size()));
+  string ToString() const {
+    if (ptr_ == nullptr) return string();
+    return string(data(), static_cast<size_type>(size()));
   }
 
-  explicit operator std::string() const { return ToString(); }
+  operator string() const {
+    return ToString();
+  }
 
-  void CopyToString(std::string* target) const;
-  void AppendToString(std::string* target) const;
+  void CopyToString(string* target) const;
+  void AppendToString(string* target) const;
 
   bool starts_with(StringPiece x) const {
     return (length_ >= x.length_) &&
@@ -461,7 +466,7 @@ struct StringPiecePod {
     return std::string(data_, static_cast<size_t>(size_));
   }
 
-  explicit operator std::string() const { return ToString(); }
+  operator string() const { return ToString(); }
 
  private:
   const char* data_;

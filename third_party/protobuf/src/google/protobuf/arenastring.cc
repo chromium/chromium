@@ -34,6 +34,13 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
+::std::string* ArenaStringPtr::MutableNoArena(const ::std::string* default_value) {
+  if (ptr_ == default_value) {
+    CreateInstanceNoArena(default_value);
+  }
+  return ptr_;
+}
+
 void ArenaStringPtr::DestroyNoArena(const ::std::string* default_value) {
   if (ptr_ != default_value) {
     delete ptr_;

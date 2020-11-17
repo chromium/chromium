@@ -44,17 +44,18 @@
 
 #include <vector>
 
+#include <google/protobuf/io/coded_stream_inl.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/arenastring.h>
 #include <google/protobuf/extension_set.h>
 #include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/stubs/mutex.h>
-#include <google/protobuf/port_def.inc>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/wire_format_lite.h>
+
+#include <google/protobuf/port_def.inc>
 
 
 namespace google {
@@ -65,7 +66,7 @@ void DestroyMessage(const void* message) {
   static_cast<const MessageLite*>(message)->~MessageLite();
 }
 void DestroyString(const void* s) {
-  static_cast<const std::string*>(s)->~basic_string();
+  static_cast<const std::string*>(s)->~string();
 }
 
 ExplicitlyConstructed<std::string> fixed_address_empty_string;
@@ -303,11 +304,15 @@ void SerializeMessageNoTable(const MessageLite* msg,
 }
 
 void SerializeMessageNoTable(const MessageLite* msg, ArrayOutput* output) {
-  io::ArrayOutputStream array_stream(output->ptr, INT_MAX);
-  io::CodedOutputStream o(&array_stream);
-  o.SetSerializationDeterministic(output->is_deterministic);
-  msg->SerializeWithCachedSizes(&o);
-  output->ptr += o.ByteCount();
+  if (output->is_deterministic) {
+    io::ArrayOutputStream array_stream(output->ptr, INT_MAX);
+    io::CodedOutputStream o(&array_stream);
+    o.SetSerializationDeterministic(true);
+    msg->SerializeWithCachedSizes(&o);
+    output->ptr += o.ByteCount();
+  } else {
+    output->ptr = msg->InternalSerializeWithCachedSizesToArray(output->ptr);
+  }
 }
 
 // Helper to branch to fast path if possible
@@ -316,6 +321,16 @@ void SerializeMessageDispatch(const MessageLite& msg,
                               int32 cached_size,
                               io::CodedOutputStream* output) {
   const uint8* base = reinterpret_cast<const uint8*>(&msg);
+  if (!output->IsSerializationDeterministic()) {
+    // Try the fast path
+    uint8* ptr = output->GetDirectBufferForNBytesAndAdvance(cached_size);
+    if (ptr) {
+      // We use virtual dispatch to enable dedicated generated code for the
+      // fast path.
+      msg.InternalSerializeWithCachedSizesToArray(ptr);
+      return;
+    }
+  }
   SerializeInternal(base, field_table, num_fields, output);
 }
 
@@ -723,8 +738,8 @@ void UnknownFieldSerializerLite(const uint8* ptr, uint32 offset, uint32 tag,
                                 uint32 has_offset,
                                 io::CodedOutputStream* output) {
   output->WriteString(
-      reinterpret_cast<const InternalMetadata*>(ptr + offset)
-          ->unknown_fields<std::string>(&internal::GetEmptyString));
+      reinterpret_cast<const InternalMetadataWithArenaLite*>(ptr + offset)
+          ->unknown_fields());
 }
 
 MessageLite* DuplicateIfNonNullInternal(MessageLite* message) {
@@ -770,19 +785,10 @@ void InitSCC_DFS(SCCInfoBase* scc) {
       SCCInfoBase::kUninitialized)
     return;
   scc->visit_status.store(SCCInfoBase::kRunning, std::memory_order_relaxed);
-  // Each base is followed by an array of void*, containing first pointers to
-  // SCCInfoBase and then pointers-to-pointers to SCCInfoBase.
-  auto deps = reinterpret_cast<void**>(scc + 1);
-  auto strong_deps = reinterpret_cast<SCCInfoBase* const*>(deps);
-  for (int i = 0; i < scc->num_deps; ++i) {
-    if (strong_deps[i]) InitSCC_DFS(strong_deps[i]);
-  }
-  auto implicit_weak_deps =
-      reinterpret_cast<SCCInfoBase** const*>(deps + scc->num_deps);
-  for (int i = 0; i < scc->num_implicit_weak_deps; ++i) {
-    if (*implicit_weak_deps[i]) {
-      InitSCC_DFS(*implicit_weak_deps[i]);
-    }
+  // Each base is followed by an array of pointers to deps
+  auto deps = reinterpret_cast<SCCInfoBase* const*>(scc + 1);
+  for (int i = 0; i < scc->num_deps; i++) {
+    if (deps[i]) InitSCC_DFS(deps[i]);
   }
   scc->init_func();
   // Mark done (note we use memory order release here), other threads could

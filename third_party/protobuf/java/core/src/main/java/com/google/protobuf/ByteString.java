@@ -30,10 +30,6 @@
 
 package com.google.protobuf;
 
-import static com.google.protobuf.TextFormatEscaper.escapeBytes;
-import static java.lang.Integer.toHexString;
-import static java.lang.System.identityHashCode;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,20 +49,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 
 /**
- * Immutable sequence of bytes. Provides conversions to and from {@code byte[]}, {@link
- * java.lang.String}, {@link ByteBuffer}, {@link InputStream}, {@link OutputStream}. Also provides a
- * conversion to {@link CodedInputStream}.
+ * Immutable sequence of bytes. Substring is supported by sharing the reference to the immutable
+ * underlying bytes. Concatenation is likewise supported without copying (long strings) by building
+ * a tree of pieces in {@link RopeByteString}.
  *
  * <p>Like {@link String}, the contents of a {@link ByteString} can never be observed to change, not
  * even in the presence of a data race or incorrect API usage in the client code.
- *
- * <p>Substring is supported by sharing the reference to the immutable underlying bytes.
- * Concatenation is likewise supported without copying (long strings) by building a tree of pieces
- * in {@link RopeByteString}.
  *
  * @author crazybob@google.com Bob Lee
  * @author kenton@google.com Kenton Varda
@@ -1277,17 +1268,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
   @Override
   public final String toString() {
     return String.format(
-        Locale.ROOT,
-        "<ByteString@%s size=%d contents=\"%s\">",
-        toHexString(identityHashCode(this)),
-        size(),
-        truncateAndEscapeForDisplay());
-  }
-
-  private String truncateAndEscapeForDisplay() {
-    final int limit = 50;
-
-    return size() <= limit ? escapeBytes(this) : escapeBytes(substring(0, limit - 3)) + "...";
+        "<ByteString@%s size=%d>", Integer.toHexString(System.identityHashCode(this)), size());
   }
 
   /**

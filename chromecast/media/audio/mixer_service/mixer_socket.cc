@@ -161,7 +161,7 @@ void MixerSocket::SendPreparedAudioBuffer(
 
 void MixerSocket::SendProto(const google::protobuf::MessageLite& message) {
   int16_t type = static_cast<int16_t>(MessageType::kMetadata);
-  size_t message_size = message.ByteSizeLong();
+  int message_size = message.ByteSize();
   int32_t padding_bytes = (4 - (message_size % 4)) % 4;
 
   int total_size =

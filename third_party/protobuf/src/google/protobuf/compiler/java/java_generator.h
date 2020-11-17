@@ -58,9 +58,7 @@ class PROTOC_EXPORT JavaGenerator : public CodeGenerator {
 
   // implements CodeGenerator ----------------------------------------
   bool Generate(const FileDescriptor* file, const std::string& parameter,
-                GeneratorContext* context, std::string* error) const override;
-
-  uint64_t GetSupportedFeatures() const override;
+                GeneratorContext* context, std::string* error) const;
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(JavaGenerator);

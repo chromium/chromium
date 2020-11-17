@@ -82,7 +82,6 @@
 
 //%PDDM-EXPAND DICTIONARY_PRIV_INTERFACES_FOR_POD_KEY(UInt32)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBUInt32UInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -144,10 +143,8 @@
     __attribute__((ns_returns_retained));
 @end
 
-// clang-format on
 //%PDDM-EXPAND DICTIONARY_PRIV_INTERFACES_FOR_POD_KEY(Int32)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBInt32UInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -209,10 +206,8 @@
     __attribute__((ns_returns_retained));
 @end
 
-// clang-format on
 //%PDDM-EXPAND DICTIONARY_PRIV_INTERFACES_FOR_POD_KEY(UInt64)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBUInt64UInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -274,10 +269,8 @@
     __attribute__((ns_returns_retained));
 @end
 
-// clang-format on
 //%PDDM-EXPAND DICTIONARY_PRIV_INTERFACES_FOR_POD_KEY(Int64)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBInt64UInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -339,10 +332,8 @@
     __attribute__((ns_returns_retained));
 @end
 
-// clang-format on
 //%PDDM-EXPAND DICTIONARY_PRIV_INTERFACES_FOR_POD_KEY(Bool)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBBoolUInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -404,10 +395,8 @@
     __attribute__((ns_returns_retained));
 @end
 
-// clang-format on
 //%PDDM-EXPAND DICTIONARY_POD_PRIV_INTERFACES_FOR_KEY(String)
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 @interface GPBStringUInt32Dictionary () <GPBDictionaryInternalsProtocol> {
  @package
@@ -460,7 +449,6 @@
                               keyDataType:(GPBDataType)keyDataType;
 @end
 
-// clang-format on
 //%PDDM-EXPAND-END (6 expansions)
 
 #pragma mark - NSDictionary Subclass

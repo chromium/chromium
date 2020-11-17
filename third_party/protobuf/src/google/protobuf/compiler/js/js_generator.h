@@ -125,10 +125,10 @@ struct GeneratorOptions {
   std::string extension;
   // Create a separate output file for each input file?
   bool one_output_file_per_input_file;
-  // If true, we should append annotations as comments on the last line for
+  // If true, we should append annotations as commen on the last line for
   // generated .js file. Annotations used by tools like https://kythe.io
   // to provide cross-references between .js and .proto files. Annotations
-  // are encoded as base64 proto of GeneratedCodeInfo message (see
+  // are enced as base64 proto of GeneratedCodeInfo message (see
   // descriptor.proto).
   bool annotate_code;
 };
@@ -142,21 +142,18 @@ class PROTOC_EXPORT Generator : public CodeGenerator {
   Generator() {}
   virtual ~Generator() {}
 
-  bool Generate(const FileDescriptor* file, const std::string& parameter,
-                GeneratorContext* context, std::string* error) const override {
+  virtual bool Generate(const FileDescriptor* file,
+                        const std::string& parameter, GeneratorContext* context,
+                        std::string* error) const {
     *error = "Unimplemented Generate() method. Call GenerateAll() instead.";
     return false;
   }
 
-  bool HasGenerateAll() const override { return true; }
+  virtual bool HasGenerateAll() const { return true; }
 
-  bool GenerateAll(const std::vector<const FileDescriptor*>& files,
-                   const std::string& parameter, GeneratorContext* context,
-                   std::string* error) const override;
-
-  uint64 GetSupportedFeatures() const override {
-    return FEATURE_PROTO3_OPTIONAL;
-  }
+  virtual bool GenerateAll(const std::vector<const FileDescriptor*>& files,
+                           const std::string& parameter,
+                           GeneratorContext* context, std::string* error) const;
 
  private:
   void GenerateHeader(const GeneratorOptions& options,

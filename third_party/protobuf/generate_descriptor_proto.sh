@@ -62,7 +62,7 @@ do
     PROTOC=$BOOTSTRAP_PROTOC
     BOOTSTRAP_PROTOC=""
   else
-    make -j$(nproc) $@ protoc
+    make $@ protoc
     if test $? -ne 0; then
       echo "Failed to build protoc."
       exit 1

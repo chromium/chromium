@@ -1,0 +1,87 @@
+diff --git a/src/google/protobuf/compiler/php/php_generator.cc b/src/google/protobuf/compiler/php/php_generator.cc
+index 60e6fce99d09..bf0fa95be7be 100644
+--- a/src/google/protobuf/compiler/php/php_generator.cc
++++ b/src/google/protobuf/compiler/php/php_generator.cc
+@@ -165,19 +165,12 @@ std::string NamespacedName(const string& classname,
+ 
+ template <typename DescriptorType>
+ std::string FullClassName(const DescriptorType* desc, bool is_descriptor) {
+-  string classname = desc->name();
+-  const Descriptor* containing = desc->containing_type();
+-  while (containing != NULL) {
+-    classname = containing->name() + '_' + classname;
+-    containing = containing->containing_type();
+-  }
+-  classname = ClassNamePrefix(classname, desc) + classname;
++  string classname = GeneratedClassName(desc);
+   return NamespacedName(classname, desc, is_descriptor);
+ }
+ 
+ std::string FullClassName(const ServiceDescriptor* desc, bool is_descriptor) {
+-  string classname = desc->name();
+-  classname = ClassNamePrefix(classname, desc) + classname;
++  string classname = GeneratedClassName(desc);
+   return NamespacedName(classname, desc, is_descriptor);
+ }
+ 
+@@ -1369,6 +1362,31 @@ bool Generator::Generate(const FileDescriptor* file, const string& parameter,
+   return true;
+ }
+ 
++std::string GeneratedClassName(const Descriptor* desc) {
++  std::string classname = desc->name();
++  const Descriptor* containing = desc->containing_type();
++  while (containing != NULL) {
++    classname = containing->name() + '_' + classname;
++    containing = containing->containing_type();
++  }
++  return ClassNamePrefix(classname, desc) + classname;
++}
++
++std::string GeneratedClassName(const EnumDescriptor* desc) {
++  std::string classname = desc->name();
++  const Descriptor* containing = desc->containing_type();
++  while (containing != NULL) {
++    classname = containing->name() + '_' + classname;
++    containing = containing->containing_type();
++  }
++  return ClassNamePrefix(classname, desc) + classname;
++}
++
++std::string GeneratedClassName(const ServiceDescriptor* desc) {
++  std::string classname = desc->name();
++  return ClassNamePrefix(classname, desc) + classname;
++}
++
+ }  // namespace php
+ }  // namespace compiler
+ }  // namespace protobuf
+diff --git a/src/google/protobuf/compiler/php/php_generator.h b/src/google/protobuf/compiler/php/php_generator.h
+index ce2b000adb1a..67e70bc7b544 100644
+--- a/src/google/protobuf/compiler/php/php_generator.h
++++ b/src/google/protobuf/compiler/php/php_generator.h
+@@ -32,6 +32,7 @@
+ #define GOOGLE_PROTOBUF_COMPILER_PHP_GENERATOR_H__
+ 
+ #include <google/protobuf/compiler/code_generator.h>
++#include <google/protobuf/descriptor.h>
+ 
+ #include <string>
+ 
+@@ -47,8 +48,16 @@ class LIBPROTOC_EXPORT Generator
+       const string& parameter,
+       GeneratorContext* generator_context,
+       string* error) const;
++
+ };
+ 
++// To skip reserved keywords in php, some generated classname are prefixed.
++// Other code generators may need following API to figure out the actual
++// classname.
++std::string GeneratedClassName(const google::protobuf::Descriptor* desc);
++std::string GeneratedClassName(const google::protobuf::EnumDescriptor* desc);
++std::string GeneratedClassName(const google::protobuf::ServiceDescriptor* desc);
++
+ }  // namespace php
+ }  // namespace compiler
+ }  // namespace protobuf

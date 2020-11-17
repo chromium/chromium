@@ -50,7 +50,6 @@ from google.protobuf.internal import missing_enum_values_pb2
 from google.protobuf.internal import test_util
 from google.protobuf.internal import testing_refleaks
 from google.protobuf.internal import type_checkers
-from google.protobuf.internal import wire_format
 from google.protobuf import descriptor
 
 
@@ -92,7 +91,7 @@ class UnknownFieldsTest(unittest.TestCase):
 
     # Add an unknown extension.
     item = raw.item.add()
-    item.type_id = 98218603
+    item.type_id = 98418603
     message1 = message_set_extensions_pb2.TestMessageSetExtension1()
     message1.i = 12345
     item.message = message1.SerializeToString()
@@ -102,18 +101,6 @@ class UnknownFieldsTest(unittest.TestCase):
     # Parse message using the message set wire format.
     proto = message_set_extensions_pb2.TestMessageSet()
     proto.MergeFromString(serialized)
-
-    unknown_fields = proto.UnknownFields()
-    self.assertEqual(len(unknown_fields), 1)
-    # Unknown field should have wire format data which can be parsed back to
-    # original message.
-    self.assertEqual(unknown_fields[0].field_number, item.type_id)
-    self.assertEqual(unknown_fields[0].wire_type,
-                     wire_format.WIRETYPE_LENGTH_DELIMITED)
-    d = unknown_fields[0].data
-    message_new = message_set_extensions_pb2.TestMessageSetExtension1()
-    message_new.ParseFromString(d)
-    self.assertEqual(message1, message_new)
 
     # Verify that the unknown extension is serialized unchanged
     reserialized = proto.SerializeToString()
@@ -207,8 +194,6 @@ class UnknownFieldsAccessorsTest(unittest.TestCase):
           self.assertEqual(expected_value[1], unknown_field.data[0].wire_type)
           self.assertEqual(expected_value[2], unknown_field.data[0].data)
           continue
-        if expected_type == wire_format.WIRETYPE_LENGTH_DELIMITED:
-          self.assertIn(type(unknown_field.data), (str, bytes))
         if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
           self.assertIn(unknown_field.data, expected_value)
         else:
@@ -251,7 +236,7 @@ class UnknownFieldsAccessorsTest(unittest.TestCase):
     self.InternalCheckUnknownField('optional_fixed64',
                                    self.all_fields.optional_fixed64)
 
-    # Test length delimited.
+    # Test lengthd elimited.
     self.CheckUnknownField('optional_string',
                            unknown_fields,
                            self.all_fields.optional_string.encode('utf-8'))
@@ -359,7 +344,6 @@ class UnknownFieldsAccessorsTest(unittest.TestCase):
   def testUnknownExtensions(self):
     message = unittest_pb2.TestEmptyMessageWithExtensions()
     message.ParseFromString(self.all_fields_data)
-    self.assertEqual(len(message.UnknownFields()), 97)
     self.assertEqual(message.SerializeToString(), self.all_fields_data)
 
 
@@ -394,18 +378,12 @@ class UnknownEnumValuesTest(unittest.TestCase):
   def CheckUnknownField(self, name, expected_value):
     field_descriptor = self.descriptor.fields_by_name[name]
     unknown_fields = self.missing_message.UnknownFields()
-    count = 0
     for field in unknown_fields:
       if field.field_number == field_descriptor.number:
-        count += 1
         if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
           self.assertIn(field.data, expected_value)
         else:
           self.assertEqual(expected_value, field.data)
-    if field_descriptor.label == descriptor.FieldDescriptor.LABEL_REPEATED:
-      self.assertEqual(count, len(expected_value))
-    else:
-      self.assertEqual(count, 1)
 
   def testUnknownParseMismatchEnumValue(self):
     just_string = missing_enum_values_pb2.JustString()
@@ -435,8 +413,6 @@ class UnknownEnumValuesTest(unittest.TestCase):
     self.assertEqual([], self.missing_message.packed_nested_enum)
 
   def testCheckUnknownFieldValueForEnum(self):
-    unknown_fields = self.missing_message.UnknownFields()
-    self.assertEqual(len(unknown_fields), 5)
     self.CheckUnknownField('optional_nested_enum',
                            self.message.optional_nested_enum)
     self.CheckUnknownField('repeated_nested_enum',

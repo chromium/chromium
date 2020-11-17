@@ -42,35 +42,35 @@ void ObjectWriter::RenderDataPieceTo(const DataPiece& data,
                                      StringPiece name, ObjectWriter* ow) {
   switch (data.type()) {
     case DataPiece::TYPE_INT32: {
-      ow->RenderInt32(name, data.ToInt32().value());
+      ow->RenderInt32(name, data.ToInt32().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_INT64: {
-      ow->RenderInt64(name, data.ToInt64().value());
+      ow->RenderInt64(name, data.ToInt64().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_UINT32: {
-      ow->RenderUint32(name, data.ToUint32().value());
+      ow->RenderUint32(name, data.ToUint32().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_UINT64: {
-      ow->RenderUint64(name, data.ToUint64().value());
+      ow->RenderUint64(name, data.ToUint64().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_DOUBLE: {
-      ow->RenderDouble(name, data.ToDouble().value());
+      ow->RenderDouble(name, data.ToDouble().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_FLOAT: {
-      ow->RenderFloat(name, data.ToFloat().value());
+      ow->RenderFloat(name, data.ToFloat().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_BOOL: {
-      ow->RenderBool(name, data.ToBool().value());
+      ow->RenderBool(name, data.ToBool().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_STRING: {
-      ow->RenderString(name, data.ToString().value());
+      ow->RenderString(name, data.ToString().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_BYTES: {
@@ -85,7 +85,6 @@ void ObjectWriter::RenderDataPieceTo(const DataPiece& data,
       break;
   }
 }
-
 
 }  // namespace converter
 }  // namespace util

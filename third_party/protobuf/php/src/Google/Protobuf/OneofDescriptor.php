@@ -72,9 +72,4 @@ class OneofDescriptor
     {
         return count($this->internal_desc->getFields());
     }
-
-    public function isSynthetic()
-    {
-      return $this->internal_desc->isSynthetic();
-    }
 }

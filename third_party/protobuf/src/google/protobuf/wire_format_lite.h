@@ -49,7 +49,6 @@
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/port.h>
 #include <google/protobuf/repeated_field.h>
-#include <google/protobuf/stubs/casts.h>
 
 // Do UTF-8 validation on string type in Debug build only
 #ifndef NDEBUG
@@ -74,7 +73,7 @@ namespace internal {
 #include <google/protobuf/port_def.inc>
 
 // This class is for internal use by the protocol buffer library and by
-// protocol-compiler-generated message classes.  It must not be called
+// protocol-complier-generated message classes.  It must not be called
 // directly by clients.
 //
 // This class contains helpers for implementing the binary protocol buffer
@@ -156,9 +155,9 @@ class PROTOBUF_EXPORT WireFormatLite {
   }
 
   // Number of bits in a tag which identify the wire type.
-  static constexpr int kTagTypeBits = 3;
+  static const int kTagTypeBits = 3;
   // Mask for those bits.
-  static constexpr uint32 kTagTypeMask = (1 << kTagTypeBits) - 1;
+  static const uint32 kTagTypeMask = (1 << kTagTypeBits) - 1;
 
   // Helper functions for encoding and decoding tags.  (Inlined below and in
   // _inl.h)
@@ -210,9 +209,9 @@ class PROTOBUF_EXPORT WireFormatLite {
   //       required string message = 3;
   //     }
   //   }
-  static constexpr int kMessageSetItemNumber = 1;
-  static constexpr int kMessageSetTypeIdNumber = 2;
-  static constexpr int kMessageSetMessageNumber = 3;
+  static const int kMessageSetItemNumber = 1;
+  static const int kMessageSetTypeIdNumber = 2;
+  static const int kMessageSetMessageNumber = 3;
   static const int kMessageSetItemStartTag = GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(
       kMessageSetItemNumber, WireFormatLite::WIRETYPE_START_GROUP);
   static const int kMessageSetItemEndTag = GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(
@@ -622,13 +621,11 @@ class PROTOBUF_EXPORT WireFormatLite {
   // have a CodedOutputStream available, so they get an additional parameter
   // telling them whether to serialize deterministically.
   template <typename MessageType>
-  PROTOBUF_ALWAYS_INLINE static uint8* InternalWriteGroup(
-      int field_number, const MessageType& value, uint8* target,
-      io::EpsCopyOutputStream* stream);
+  PROTOBUF_ALWAYS_INLINE static uint8* InternalWriteGroupToArray(
+      int field_number, const MessageType& value, uint8* target);
   template <typename MessageType>
-  PROTOBUF_ALWAYS_INLINE static uint8* InternalWriteMessage(
-      int field_number, const MessageType& value, uint8* target,
-      io::EpsCopyOutputStream* stream);
+  PROTOBUF_ALWAYS_INLINE static uint8* InternalWriteMessageToArray(
+      int field_number, const MessageType& value, uint8* target);
 
   // Like above, but de-virtualize the call to SerializeWithCachedSizes().  The
   // pointer must point at an instance of MessageType, *not* a subclass (or
@@ -644,24 +641,11 @@ class PROTOBUF_EXPORT WireFormatLite {
   // that are non-deterministic always.
   PROTOBUF_ALWAYS_INLINE static uint8* WriteGroupToArray(
       int field_number, const MessageLite& value, uint8* target) {
-    io::EpsCopyOutputStream stream(
-        target,
-        value.GetCachedSize() +
-            static_cast<int>(2 * io::CodedOutputStream::VarintSize32(
-                                     static_cast<uint32>(field_number) << 3)),
-        io::CodedOutputStream::IsDefaultSerializationDeterministic());
-    return InternalWriteGroup(field_number, value, target, &stream);
+    return InternalWriteGroupToArray(field_number, value, target);
   }
   PROTOBUF_ALWAYS_INLINE static uint8* WriteMessageToArray(
       int field_number, const MessageLite& value, uint8* target) {
-    int size = value.GetCachedSize();
-    io::EpsCopyOutputStream stream(
-        target,
-        size + static_cast<int>(io::CodedOutputStream::VarintSize32(
-                                    static_cast<uint32>(field_number) << 3) +
-                                io::CodedOutputStream::VarintSize32(size)),
-        io::CodedOutputStream::IsDefaultSerializationDeterministic());
-    return InternalWriteMessage(field_number, value, target, &stream);
+    return InternalWriteMessageToArray(field_number, value, target);
   }
 
   // Compute the byte size of a field.  The XxSize() functions do NOT include
@@ -685,13 +669,13 @@ class PROTOBUF_EXPORT WireFormatLite {
   static size_t EnumSize(const RepeatedField<int>& value);
 
   // These types always have the same size.
-  static constexpr size_t kFixed32Size = 4;
-  static constexpr size_t kFixed64Size = 8;
-  static constexpr size_t kSFixed32Size = 4;
-  static constexpr size_t kSFixed64Size = 8;
-  static constexpr size_t kFloatSize = 4;
-  static constexpr size_t kDoubleSize = 8;
-  static constexpr size_t kBoolSize = 1;
+  static const size_t kFixed32Size = 4;
+  static const size_t kFixed64Size = 8;
+  static const size_t kSFixed32Size = 4;
+  static const size_t kSFixed64Size = 8;
+  static const size_t kFloatSize = 4;
+  static const size_t kDoubleSize = 8;
+  static const size_t kBoolSize = 1;
 
   static inline size_t StringSize(const std::string& value);
   static inline size_t BytesSize(const std::string& value);
@@ -807,19 +791,39 @@ inline size_t WireFormatLite::TagSize(int field_number,
 }
 
 inline uint32 WireFormatLite::EncodeFloat(float value) {
-  return bit_cast<uint32>(value);
+  union {
+    float f;
+    uint32 i;
+  };
+  f = value;
+  return i;
 }
 
 inline float WireFormatLite::DecodeFloat(uint32 value) {
-  return bit_cast<float>(value);
+  union {
+    float f;
+    uint32 i;
+  };
+  i = value;
+  return f;
 }
 
 inline uint64 WireFormatLite::EncodeDouble(double value) {
-  return bit_cast<uint64>(value);
+  union {
+    double f;
+    uint64 i;
+  };
+  f = value;
+  return i;
 }
 
 inline double WireFormatLite::DecodeDouble(uint64 value) {
-  return bit_cast<double>(value);
+  union {
+    double f;
+    uint64 i;
+  };
+  i = value;
+  return f;
 }
 
 // ZigZag Transform:  Encodes signed integers so that they can be
@@ -881,11 +885,9 @@ inline bool WireFormatLite::ReadString(io::CodedInputStream* input,
   return ReadBytes(input, p);
 }
 
-inline uint8* InternalSerializeUnknownMessageSetItemsToArray(
-    const std::string& unknown_fields, uint8* target,
-    io::EpsCopyOutputStream* stream) {
-  return stream->WriteRaw(unknown_fields.data(),
-                          static_cast<int>(unknown_fields.size()), target);
+inline void SerializeUnknownMessageSetItems(const std::string& unknown_fields,
+                                            io::CodedOutputStream* output) {
+  output->WriteString(unknown_fields);
 }
 
 inline size_t ComputeUnknownMessageSetItemsSize(
@@ -1679,22 +1681,19 @@ inline uint8* WireFormatLite::WriteBytesToArray(int field_number,
 
 
 template <typename MessageType>
-inline uint8* WireFormatLite::InternalWriteGroup(
-    int field_number, const MessageType& value, uint8* target,
-    io::EpsCopyOutputStream* stream) {
+inline uint8* WireFormatLite::InternalWriteGroupToArray(
+    int field_number, const MessageType& value, uint8* target) {
   target = WriteTagToArray(field_number, WIRETYPE_START_GROUP, target);
-  target = value._InternalSerialize(target, stream);
-  target = stream->EnsureSpace(target);
+  target = value.InternalSerializeWithCachedSizesToArray(target);
   return WriteTagToArray(field_number, WIRETYPE_END_GROUP, target);
 }
 template <typename MessageType>
-inline uint8* WireFormatLite::InternalWriteMessage(
-    int field_number, const MessageType& value, uint8* target,
-    io::EpsCopyOutputStream* stream) {
+inline uint8* WireFormatLite::InternalWriteMessageToArray(
+    int field_number, const MessageType& value, uint8* target) {
   target = WriteTagToArray(field_number, WIRETYPE_LENGTH_DELIMITED, target);
   target = io::CodedOutputStream::WriteVarint32ToArray(
       static_cast<uint32>(value.GetCachedSize()), target);
-  return value._InternalSerialize(target, stream);
+  return value.InternalSerializeWithCachedSizesToArray(target);
 }
 
 // See comment on ReadGroupNoVirtual to understand the need for this template
@@ -1705,7 +1704,7 @@ inline uint8* WireFormatLite::InternalWriteGroupNoVirtualToArray(
     uint8* target) {
   target = WriteTagToArray(field_number, WIRETYPE_START_GROUP, target);
   target = value.MessageType_WorkAroundCppLookupDefect::
-               SerializeWithCachedSizesToArray(target);
+               InternalSerializeWithCachedSizesToArray(target);
   return WriteTagToArray(field_number, WIRETYPE_END_GROUP, target);
 }
 template <typename MessageType_WorkAroundCppLookupDefect>
@@ -1717,9 +1716,8 @@ inline uint8* WireFormatLite::InternalWriteMessageNoVirtualToArray(
       static_cast<uint32>(
           value.MessageType_WorkAroundCppLookupDefect::GetCachedSize()),
       target);
-  return value
-      .MessageType_WorkAroundCppLookupDefect::SerializeWithCachedSizesToArray(
-          target);
+  return value.MessageType_WorkAroundCppLookupDefect::
+      InternalSerializeWithCachedSizesToArray(target);
 }
 
 // ===================================================================

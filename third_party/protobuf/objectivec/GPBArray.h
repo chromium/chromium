@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 //%PDDM-EXPAND DECLARE_ARRAYS()
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 #pragma mark - Int32
 
@@ -1536,7 +1535,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-// clang-format on
 //%PDDM-EXPAND-END DECLARE_ARRAYS()
 
 NS_ASSUME_NONNULL_END

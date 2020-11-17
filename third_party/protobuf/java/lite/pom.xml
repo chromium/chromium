@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.google.protobuf</groupId>
     <artifactId>protobuf-parent</artifactId>
-    <version>3.13.0</version>
+    <version>3.9.0</version>
   </parent>
 
   <artifactId>protobuf-javalite</artifactId>
@@ -37,11 +37,6 @@
       <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.truth</groupId>
-      <artifactId>truth</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -52,7 +47,6 @@
         <includes>
           <include>google/protobuf/any.proto</include>
           <include>google/protobuf/api.proto</include>
-          <include>google/protobuf/duration.proto</include>
           <include>google/protobuf/empty.proto</include>
           <include>google/protobuf/field_mask.proto</include>
           <include>google/protobuf/source_context.proto</include>
@@ -90,7 +84,7 @@
                 <resource>
                   <directory>${basedir}/../core/src/main/java/com/google/protobuf</directory>
                   <includes>
-                    <!-- Keep in sync with //java/core:BUILD  -->
+                    <!-- Keep in sync with //:BUILD  -->
                     <include>AbstractMessageLite.java</include>
                     <include>AbstractParser.java</include>
                     <include>AbstractProtobufList.java</include>
@@ -230,7 +224,6 @@
                     <exclude>TextFormatParseLocationTest.java</exclude>
                     <exclude>TextFormatTest.java</exclude>
                     <exclude>TestUtil.java</exclude>
-                    <exclude>TypeRegistryTest.java</exclude>
                     <exclude>UnknownEnumValueTest.java</exclude>
                     <exclude>UnknownFieldSetLiteTest.java</exclude>
                     <exclude>UnknownFieldSetTest.java</exclude>
@@ -330,7 +323,6 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.google.protobuf</Automatic-Module-Name> <!-- Java9+ Jigsaw module name -->
             <Bundle-DocURL>https://developers.google.com/protocol-buffers/</Bundle-DocURL>
             <Bundle-SymbolicName>com.google.protobuf</Bundle-SymbolicName>
             <Export-Package>com.google.protobuf;version=${project.version}</Export-Package>

@@ -36,23 +36,21 @@
 // tests handling of unknown fields throughout the system.
 
 #include <google/protobuf/unknown_field_set.h>
-
-#include <unordered_set>
-
-#include <google/protobuf/stubs/callback.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/test_util.h>
 #include <google/protobuf/unittest.pb.h>
-#include <google/protobuf/unittest_lite.pb.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/stubs/mutex.h>
 #include <google/protobuf/wire_format.h>
+
+#include <google/protobuf/stubs/callback.h>
+#include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
-#include <google/protobuf/stubs/time.h>
+
+
 #include <google/protobuf/stubs/stl_util.h>
 
 namespace google {
@@ -115,32 +113,30 @@ class UnknownFieldSetTest : public testing::Test {
 namespace {
 
 TEST_F(UnknownFieldSetTest, AllFieldsPresent) {
-  // Verifies the following:
-  // --all unknown tags belong to TestAllTypes.
-  // --all fields in TestAllTypes is present in UnknownFieldSet except unset
-  //   oneof fields.
-  //
-  // Should handle repeated fields that may appear multiple times in
-  // UnknownFieldSet.
+  // All fields of TestAllTypes should be present, in numeric order (because
+  // that's the order we parsed them in).  Fields that are not valid field
+  // numbers of TestAllTypes should NOT be present.
 
-  int non_oneof_count = 0;
-  for (int i = 0; i < descriptor_->field_count(); i++) {
-    if (!descriptor_->field(i)->containing_oneof()) {
-      non_oneof_count++;
+  int pos = 0;
+
+  for (int i = 0; i < 1000; i++) {
+    const FieldDescriptor* field = descriptor_->FindFieldByNumber(i);
+    if (field != NULL) {
+      ASSERT_LT(pos, unknown_fields_->field_count());
+      // Do not check oneof field if it is not set.
+      if (field->containing_oneof() == NULL) {
+        EXPECT_EQ(i, unknown_fields_->field(pos++).number());
+      } else if (i == unknown_fields_->field(pos).number()) {
+        pos++;
+      }
+      if (field->is_repeated()) {
+        // Should have a second instance.
+        ASSERT_LT(pos, unknown_fields_->field_count());
+        EXPECT_EQ(i, unknown_fields_->field(pos++).number());
+      }
     }
   }
-
-  std::unordered_set<uint32> unknown_tags;
-  for (int i = 0; i < unknown_fields_->field_count(); i++) {
-    unknown_tags.insert(unknown_fields_->field(i).number());
-  }
-
-  for (uint32 t : unknown_tags) {
-    EXPECT_NE(descriptor_->FindFieldByNumber(t), nullptr);
-  }
-
-  EXPECT_EQ(non_oneof_count + descriptor_->oneof_decl_count(),
-            unknown_tags.size());
+  EXPECT_EQ(unknown_fields_->field_count(), pos);
 }
 
 TEST_F(UnknownFieldSetTest, Varint) {
@@ -250,7 +246,7 @@ TEST_F(UnknownFieldSetTest, SerializeViaReflection) {
   {
     io::StringOutputStream raw_output(&data);
     io::CodedOutputStream output(&raw_output);
-    size_t size = WireFormat::ByteSize(empty_message_);
+    int size = WireFormat::ByteSize(empty_message_);
     WireFormat::SerializeWithCachedSizes(empty_message_, size, &output);
     ASSERT_FALSE(output.HadError());
   }
@@ -310,42 +306,6 @@ TEST_F(UnknownFieldSetTest, MergeFrom) {
       "2: 3\n"
       "3: 4\n",
       destination.DebugString());
-}
-
-TEST_F(UnknownFieldSetTest, MergeFromMessage) {
-  unittest::TestEmptyMessage source, destination;
-
-  destination.mutable_unknown_fields()->AddVarint(1, 1);
-  destination.mutable_unknown_fields()->AddVarint(3, 2);
-  source.mutable_unknown_fields()->AddVarint(2, 3);
-  source.mutable_unknown_fields()->AddVarint(3, 4);
-
-  destination.mutable_unknown_fields()->MergeFromMessage(source);
-
-  EXPECT_EQ(
-      // Note:  The ordering of fields here depends on the ordering of adds
-      //   and merging, above.
-      "1: 1\n"
-      "3: 2\n"
-      "2: 3\n"
-      "3: 4\n",
-      destination.DebugString());
-}
-
-TEST_F(UnknownFieldSetTest, MergeFromMessageLite) {
-  unittest::TestAllTypesLite source;
-  unittest::TestEmptyMessageLite destination;
-
-  source.set_optional_fixed32(42);
-  destination.ParseFromString(source.SerializeAsString());
-
-  UnknownFieldSet unknown_field_set;
-  EXPECT_TRUE(unknown_field_set.MergeFromMessage(destination));
-  EXPECT_EQ(unknown_field_set.field_count(), 1);
-
-  const UnknownField& unknown_field = unknown_field_set.field(0);
-  EXPECT_EQ(unknown_field.number(), 7);
-  EXPECT_EQ(unknown_field.fixed32(), 42);
 }
 
 
@@ -540,29 +500,29 @@ TEST_F(UnknownFieldSetTest, SpaceUsed) {
 
   // Make sure an unknown field set has zero space used until a field is
   // actually added.
-  size_t base_size = empty_message.SpaceUsedLong();
+  int base_size = empty_message.SpaceUsed();
   UnknownFieldSet* unknown_fields = empty_message.mutable_unknown_fields();
-  EXPECT_EQ(base_size, empty_message.SpaceUsedLong());
+  EXPECT_EQ(base_size, empty_message.SpaceUsed());
 
-  // Make sure each thing we add to the set increases the SpaceUsedLong().
+  // Make sure each thing we add to the set increases the SpaceUsed().
   unknown_fields->AddVarint(1, 0);
-  EXPECT_LT(base_size, empty_message.SpaceUsedLong());
-  base_size = empty_message.SpaceUsedLong();
+  EXPECT_LT(base_size, empty_message.SpaceUsed());
+  base_size = empty_message.SpaceUsed();
 
   std::string* str = unknown_fields->AddLengthDelimited(1);
-  EXPECT_LT(base_size, empty_message.SpaceUsedLong());
-  base_size = empty_message.SpaceUsedLong();
+  EXPECT_LT(base_size, empty_message.SpaceUsed());
+  base_size = empty_message.SpaceUsed();
 
   str->assign(sizeof(std::string) + 1, 'x');
-  EXPECT_LT(base_size, empty_message.SpaceUsedLong());
-  base_size = empty_message.SpaceUsedLong();
+  EXPECT_LT(base_size, empty_message.SpaceUsed());
+  base_size = empty_message.SpaceUsed();
 
   UnknownFieldSet* group = unknown_fields->AddGroup(1);
-  EXPECT_LT(base_size, empty_message.SpaceUsedLong());
-  base_size = empty_message.SpaceUsedLong();
+  EXPECT_LT(base_size, empty_message.SpaceUsed());
+  base_size = empty_message.SpaceUsed();
 
   group->AddVarint(1, 0);
-  EXPECT_LT(base_size, empty_message.SpaceUsedLong());
+  EXPECT_LT(base_size, empty_message.SpaceUsed());
 }
 
 

@@ -11,7 +11,7 @@ cd $(dirname $0)/../../..
 
 # Run tests under release docker image.
 DOCKER_IMAGE_NAME=protobuf/protoc_$(sha1sum protoc-artifacts/Dockerfile | cut -f1 -d " ")
-until docker pull $DOCKER_IMAGE_NAME; do sleep 10; done
+docker pull $DOCKER_IMAGE_NAME
 
 docker run -v $(pwd):/var/local/protobuf --rm $DOCKER_IMAGE_NAME \
   bash -l /var/local/protobuf/tests.sh cpp || FAILED="true"

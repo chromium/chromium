@@ -1063,7 +1063,7 @@ void ExtensionSet::InternalExtensionMergeFrom(
 }
 
 void ExtensionSet::Swap(ExtensionSet* x) {
-  if (GetArena() == x->GetArena()) {
+  if (GetArenaNoVirtual() == x->GetArenaNoVirtual()) {
     using std::swap;
     swap(flat_capacity_, x->flat_capacity_);
     swap(flat_size_, x->flat_size_);
@@ -1091,7 +1091,7 @@ void ExtensionSet::SwapExtension(ExtensionSet* other, int number) {
   }
 
   if (this_ext != NULL && other_ext != NULL) {
-    if (GetArena() == other->GetArena()) {
+    if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {
       using std::swap;
       swap(*this_ext, *other_ext);
     } else {
@@ -1112,7 +1112,7 @@ void ExtensionSet::SwapExtension(ExtensionSet* other, int number) {
   }
 
   if (this_ext == NULL) {
-    if (GetArena() == other->GetArena()) {
+    if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {
       *Insert(number).first = *other_ext;
     } else {
       InternalExtensionMergeFrom(number, *other_ext);
@@ -1122,7 +1122,7 @@ void ExtensionSet::SwapExtension(ExtensionSet* other, int number) {
   }
 
   if (other_ext == NULL) {
-    if (GetArena() == other->GetArena()) {
+    if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {
       *other->Insert(number).first = *this_ext;
     } else {
       other->InternalExtensionMergeFrom(number, *this_ext);
@@ -1196,29 +1196,31 @@ bool ExtensionSet::ParseField(uint32 tag, io::CodedInputStream* input,
   }
 }
 
-const char* ExtensionSet::ParseField(uint64 tag, const char* ptr,
-                                     const MessageLite* containing_type,
-                                     internal::InternalMetadata* metadata,
-                                     internal::ParseContext* ctx) {
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* ExtensionSet::ParseField(
+    uint64 tag, const char* ptr, const MessageLite* containing_type,
+    internal::InternalMetadataWithArenaLite* metadata,
+    internal::ParseContext* ctx) {
   GeneratedExtensionFinder finder(containing_type);
   int number = tag >> 3;
   bool was_packed_on_wire;
   ExtensionInfo extension;
   if (!FindExtensionInfoFromFieldNumber(tag & 7, number, &finder, &extension,
                                         &was_packed_on_wire)) {
-    return UnknownFieldParse(
-        tag, metadata->mutable_unknown_fields<std::string>(), ptr, ctx);
+    return UnknownFieldParse(tag, metadata->mutable_unknown_fields(), ptr, ctx);
   }
-  return ParseFieldWithExtensionInfo<std::string>(
-      number, was_packed_on_wire, extension, metadata, ptr, ctx);
+  return ParseFieldWithExtensionInfo(number, was_packed_on_wire, extension,
+                                     metadata, ptr, ctx);
 }
 
 const char* ExtensionSet::ParseMessageSetItem(
     const char* ptr, const MessageLite* containing_type,
-    internal::InternalMetadata* metadata, internal::ParseContext* ctx) {
-  return ParseMessageSetItemTmpl<MessageLite, std::string>(ptr, containing_type,
-                                                           metadata, ctx);
+    internal::InternalMetadataWithArenaLite* metadata,
+    internal::ParseContext* ctx) {
+  return ParseMessageSetItemTmpl(ptr, containing_type, metadata, ctx);
 }
+
+#endif
 
 bool ExtensionSet::ParseFieldWithExtensionInfo(int number,
                                                bool was_packed_on_wire,
@@ -1463,35 +1465,23 @@ bool ExtensionSet::ParseMessageSet(io::CodedInputStream* input,
   return ParseMessageSetLite(input, &finder, &skipper);
 }
 
-uint8* ExtensionSet::_InternalSerialize(int start_field_number,
-                                        int end_field_number, uint8* target,
-                                        io::EpsCopyOutputStream* stream) const {
+void ExtensionSet::SerializeWithCachedSizes(
+    int start_field_number, int end_field_number,
+    io::CodedOutputStream* output) const {
   if (PROTOBUF_PREDICT_FALSE(is_large())) {
     const auto& end = map_.large->end();
     for (auto it = map_.large->lower_bound(start_field_number);
          it != end && it->first < end_field_number; ++it) {
-      target = it->second.InternalSerializeFieldWithCachedSizesToArray(
-          it->first, target, stream);
+      it->second.SerializeFieldWithCachedSizes(it->first, output);
     }
-    return target;
+    return;
   }
   const KeyValue* end = flat_end();
   for (const KeyValue* it = std::lower_bound(
            flat_begin(), end, start_field_number, KeyValue::FirstComparator());
        it != end && it->first < end_field_number; ++it) {
-    target = it->second.InternalSerializeFieldWithCachedSizesToArray(
-        it->first, target, stream);
+    it->second.SerializeFieldWithCachedSizes(it->first, output);
   }
-  return target;
-}
-
-uint8* ExtensionSet::InternalSerializeMessageSetWithCachedSizesToArray(
-    uint8* target, io::EpsCopyOutputStream* stream) const {
-  ForEach([&target, stream](int number, const Extension& ext) {
-    target = ext.InternalSerializeMessageSetItemWithCachedSizesToArray(
-        number, target, stream);
-  });
-  return target;
 }
 
 size_t ExtensionSet::ByteSize() const {
@@ -1558,6 +1548,115 @@ void ExtensionSet::Extension::Clear() {
       }
 
       is_cleared = true;
+    }
+  }
+}
+
+void ExtensionSet::Extension::SerializeFieldWithCachedSizes(
+    int number, io::CodedOutputStream* output) const {
+  if (is_repeated) {
+    if (is_packed) {
+      if (cached_size == 0) return;
+
+      WireFormatLite::WriteTag(
+          number, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
+      output->WriteVarint32(cached_size);
+
+      switch (real_type(type)) {
+#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                 \
+  case WireFormatLite::TYPE_##UPPERCASE:                             \
+    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) { \
+      WireFormatLite::Write##CAMELCASE##NoTag(                       \
+          repeated_##LOWERCASE##_value->Get(i), output);             \
+    }                                                                \
+    break
+
+        HANDLE_TYPE(INT32, Int32, int32);
+        HANDLE_TYPE(INT64, Int64, int64);
+        HANDLE_TYPE(UINT32, UInt32, uint32);
+        HANDLE_TYPE(UINT64, UInt64, uint64);
+        HANDLE_TYPE(SINT32, SInt32, int32);
+        HANDLE_TYPE(SINT64, SInt64, int64);
+        HANDLE_TYPE(FIXED32, Fixed32, uint32);
+        HANDLE_TYPE(FIXED64, Fixed64, uint64);
+        HANDLE_TYPE(SFIXED32, SFixed32, int32);
+        HANDLE_TYPE(SFIXED64, SFixed64, int64);
+        HANDLE_TYPE(FLOAT, Float, float);
+        HANDLE_TYPE(DOUBLE, Double, double);
+        HANDLE_TYPE(BOOL, Bool, bool);
+        HANDLE_TYPE(ENUM, Enum, enum);
+#undef HANDLE_TYPE
+
+        case WireFormatLite::TYPE_STRING:
+        case WireFormatLite::TYPE_BYTES:
+        case WireFormatLite::TYPE_GROUP:
+        case WireFormatLite::TYPE_MESSAGE:
+          GOOGLE_LOG(FATAL) << "Non-primitive types can't be packed.";
+          break;
+      }
+    } else {
+      switch (real_type(type)) {
+#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                 \
+  case WireFormatLite::TYPE_##UPPERCASE:                             \
+    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) { \
+      WireFormatLite::Write##CAMELCASE(                              \
+          number, repeated_##LOWERCASE##_value->Get(i), output);     \
+    }                                                                \
+    break
+
+        HANDLE_TYPE(INT32, Int32, int32);
+        HANDLE_TYPE(INT64, Int64, int64);
+        HANDLE_TYPE(UINT32, UInt32, uint32);
+        HANDLE_TYPE(UINT64, UInt64, uint64);
+        HANDLE_TYPE(SINT32, SInt32, int32);
+        HANDLE_TYPE(SINT64, SInt64, int64);
+        HANDLE_TYPE(FIXED32, Fixed32, uint32);
+        HANDLE_TYPE(FIXED64, Fixed64, uint64);
+        HANDLE_TYPE(SFIXED32, SFixed32, int32);
+        HANDLE_TYPE(SFIXED64, SFixed64, int64);
+        HANDLE_TYPE(FLOAT, Float, float);
+        HANDLE_TYPE(DOUBLE, Double, double);
+        HANDLE_TYPE(BOOL, Bool, bool);
+        HANDLE_TYPE(STRING, String, string);
+        HANDLE_TYPE(BYTES, Bytes, string);
+        HANDLE_TYPE(ENUM, Enum, enum);
+        HANDLE_TYPE(GROUP, Group, message);
+        HANDLE_TYPE(MESSAGE, Message, message);
+#undef HANDLE_TYPE
+      }
+    }
+  } else if (!is_cleared) {
+    switch (real_type(type)) {
+#define HANDLE_TYPE(UPPERCASE, CAMELCASE, VALUE)             \
+  case WireFormatLite::TYPE_##UPPERCASE:                     \
+    WireFormatLite::Write##CAMELCASE(number, VALUE, output); \
+    break
+
+      HANDLE_TYPE(INT32, Int32, int32_value);
+      HANDLE_TYPE(INT64, Int64, int64_value);
+      HANDLE_TYPE(UINT32, UInt32, uint32_value);
+      HANDLE_TYPE(UINT64, UInt64, uint64_value);
+      HANDLE_TYPE(SINT32, SInt32, int32_value);
+      HANDLE_TYPE(SINT64, SInt64, int64_value);
+      HANDLE_TYPE(FIXED32, Fixed32, uint32_value);
+      HANDLE_TYPE(FIXED64, Fixed64, uint64_value);
+      HANDLE_TYPE(SFIXED32, SFixed32, int32_value);
+      HANDLE_TYPE(SFIXED64, SFixed64, int64_value);
+      HANDLE_TYPE(FLOAT, Float, float_value);
+      HANDLE_TYPE(DOUBLE, Double, double_value);
+      HANDLE_TYPE(BOOL, Bool, bool_value);
+      HANDLE_TYPE(STRING, String, *string_value);
+      HANDLE_TYPE(BYTES, Bytes, *string_value);
+      HANDLE_TYPE(ENUM, Enum, enum_value);
+      HANDLE_TYPE(GROUP, Group, *message_value);
+#undef HANDLE_TYPE
+      case WireFormatLite::TYPE_MESSAGE:
+        if (is_lazy) {
+          lazymessage_value->WriteMessage(number, output);
+        } else {
+          WireFormatLite::WriteMessage(number, *message_value, output);
+        }
+        break;
     }
   }
 }
@@ -1677,7 +1776,7 @@ size_t ExtensionSet::Extension::ByteSize(int number) const {
 #undef HANDLE_TYPE
       case WireFormatLite::TYPE_MESSAGE: {
         if (is_lazy) {
-          size_t size = lazymessage_value->ByteSizeLong();
+          size_t size = lazymessage_value->ByteSize();
           result += io::CodedOutputStream::VarintSize32(size) + size;
         } else {
           result += WireFormatLite::MessageSize(*message_value);
@@ -1870,32 +1969,28 @@ void ExtensionSet::GrowCapacity(size_t minimum_new_capacity) {
     return;
   }
 
-  auto new_flat_capacity = flat_capacity_;
+  const auto old_flat_capacity = flat_capacity_;
+
   do {
-    new_flat_capacity = new_flat_capacity == 0 ? 1 : new_flat_capacity * 4;
-  } while (new_flat_capacity < minimum_new_capacity);
+    flat_capacity_ = flat_capacity_ == 0 ? 1 : flat_capacity_ * 4;
+  } while (flat_capacity_ < minimum_new_capacity);
 
   const KeyValue* begin = flat_begin();
   const KeyValue* end = flat_end();
-  AllocatedData new_map;
-  if (new_flat_capacity > kMaximumFlatCapacity) {
-    new_map.large = Arena::Create<LargeMap>(arena_);
-    LargeMap::iterator hint = new_map.large->begin();
+  if (flat_capacity_ > kMaximumFlatCapacity) {
+    // Switch to LargeMap
+    map_.large = Arena::Create<LargeMap>(arena_);
+    LargeMap::iterator hint = map_.large->begin();
     for (const KeyValue* it = begin; it != end; ++it) {
-      hint = new_map.large->insert(hint, {it->first, it->second});
+      hint = map_.large->insert(hint, {it->first, it->second});
     }
-  } else {
-    new_map.flat = Arena::CreateArray<KeyValue>(arena_, new_flat_capacity);
-    std::copy(begin, end, new_map.flat);
-  }
-
-  if (arena_ == nullptr) {
-    DeleteFlatMap(begin, flat_capacity_);
-  }
-  flat_capacity_ = new_flat_capacity;
-  map_ = new_map;
-  if (is_large()) {
     flat_size_ = 0;
+  } else {
+    map_.flat = Arena::CreateArray<KeyValue>(arena_, flat_capacity_);
+    std::copy(begin, end, map_.flat);
+  }
+  if (arena_ == nullptr) {
+    DeleteFlatMap(begin, old_flat_capacity);
   }
 }
 
@@ -1930,184 +2025,33 @@ RepeatedStringTypeTraits::GetDefaultRepeatedField() {
   return instance;
 }
 
-uint8* ExtensionSet::Extension::InternalSerializeFieldWithCachedSizesToArray(
-    int number, uint8* target, io::EpsCopyOutputStream* stream) const {
-  if (is_repeated) {
-    if (is_packed) {
-      if (cached_size == 0) return target;
-
-      target = stream->EnsureSpace(target);
-      target = WireFormatLite::WriteTagToArray(
-          number, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, target);
-      target = WireFormatLite::WriteInt32NoTagToArray(cached_size, target);
-
-      switch (real_type(type)) {
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                 \
-  case WireFormatLite::TYPE_##UPPERCASE:                             \
-    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) { \
-      target = stream->EnsureSpace(target);                          \
-      target = WireFormatLite::Write##CAMELCASE##NoTagToArray(       \
-          repeated_##LOWERCASE##_value->Get(i), target);             \
-    }                                                                \
-    break
-
-        HANDLE_TYPE(INT32, Int32, int32);
-        HANDLE_TYPE(INT64, Int64, int64);
-        HANDLE_TYPE(UINT32, UInt32, uint32);
-        HANDLE_TYPE(UINT64, UInt64, uint64);
-        HANDLE_TYPE(SINT32, SInt32, int32);
-        HANDLE_TYPE(SINT64, SInt64, int64);
-        HANDLE_TYPE(FIXED32, Fixed32, uint32);
-        HANDLE_TYPE(FIXED64, Fixed64, uint64);
-        HANDLE_TYPE(SFIXED32, SFixed32, int32);
-        HANDLE_TYPE(SFIXED64, SFixed64, int64);
-        HANDLE_TYPE(FLOAT, Float, float);
-        HANDLE_TYPE(DOUBLE, Double, double);
-        HANDLE_TYPE(BOOL, Bool, bool);
-        HANDLE_TYPE(ENUM, Enum, enum);
-#undef HANDLE_TYPE
-
-        case WireFormatLite::TYPE_STRING:
-        case WireFormatLite::TYPE_BYTES:
-        case WireFormatLite::TYPE_GROUP:
-        case WireFormatLite::TYPE_MESSAGE:
-          GOOGLE_LOG(FATAL) << "Non-primitive types can't be packed.";
-          break;
-      }
-    } else {
-      switch (real_type(type)) {
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                 \
-  case WireFormatLite::TYPE_##UPPERCASE:                             \
-    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) { \
-      target = stream->EnsureSpace(target);                          \
-      target = WireFormatLite::Write##CAMELCASE##ToArray(            \
-          number, repeated_##LOWERCASE##_value->Get(i), target);     \
-    }                                                                \
-    break
-
-        HANDLE_TYPE(INT32, Int32, int32);
-        HANDLE_TYPE(INT64, Int64, int64);
-        HANDLE_TYPE(UINT32, UInt32, uint32);
-        HANDLE_TYPE(UINT64, UInt64, uint64);
-        HANDLE_TYPE(SINT32, SInt32, int32);
-        HANDLE_TYPE(SINT64, SInt64, int64);
-        HANDLE_TYPE(FIXED32, Fixed32, uint32);
-        HANDLE_TYPE(FIXED64, Fixed64, uint64);
-        HANDLE_TYPE(SFIXED32, SFixed32, int32);
-        HANDLE_TYPE(SFIXED64, SFixed64, int64);
-        HANDLE_TYPE(FLOAT, Float, float);
-        HANDLE_TYPE(DOUBLE, Double, double);
-        HANDLE_TYPE(BOOL, Bool, bool);
-        HANDLE_TYPE(ENUM, Enum, enum);
-#undef HANDLE_TYPE
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                 \
-  case WireFormatLite::TYPE_##UPPERCASE:                             \
-    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) { \
-      target = stream->EnsureSpace(target);                          \
-      target = stream->WriteString(                                  \
-          number, repeated_##LOWERCASE##_value->Get(i), target);     \
-    }                                                                \
-    break
-        HANDLE_TYPE(STRING, String, string);
-        HANDLE_TYPE(BYTES, Bytes, string);
-#undef HANDLE_TYPE
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, LOWERCASE)                     \
-  case WireFormatLite::TYPE_##UPPERCASE:                                 \
-    for (int i = 0; i < repeated_##LOWERCASE##_value->size(); i++) {     \
-      target = stream->EnsureSpace(target);                              \
-      target = WireFormatLite::InternalWrite##CAMELCASE(                 \
-          number, repeated_##LOWERCASE##_value->Get(i), target, stream); \
-    }                                                                    \
-    break
-
-        HANDLE_TYPE(GROUP, Group, message);
-        HANDLE_TYPE(MESSAGE, Message, message);
-#undef HANDLE_TYPE
-      }
-    }
-  } else if (!is_cleared) {
-    switch (real_type(type)) {
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, VALUE)                               \
-  case WireFormatLite::TYPE_##UPPERCASE:                                       \
-    target = stream->EnsureSpace(target);                                      \
-    target = WireFormatLite::Write##CAMELCASE##ToArray(number, VALUE, target); \
-    break
-
-      HANDLE_TYPE(INT32, Int32, int32_value);
-      HANDLE_TYPE(INT64, Int64, int64_value);
-      HANDLE_TYPE(UINT32, UInt32, uint32_value);
-      HANDLE_TYPE(UINT64, UInt64, uint64_value);
-      HANDLE_TYPE(SINT32, SInt32, int32_value);
-      HANDLE_TYPE(SINT64, SInt64, int64_value);
-      HANDLE_TYPE(FIXED32, Fixed32, uint32_value);
-      HANDLE_TYPE(FIXED64, Fixed64, uint64_value);
-      HANDLE_TYPE(SFIXED32, SFixed32, int32_value);
-      HANDLE_TYPE(SFIXED64, SFixed64, int64_value);
-      HANDLE_TYPE(FLOAT, Float, float_value);
-      HANDLE_TYPE(DOUBLE, Double, double_value);
-      HANDLE_TYPE(BOOL, Bool, bool_value);
-      HANDLE_TYPE(ENUM, Enum, enum_value);
-#undef HANDLE_TYPE
-#define HANDLE_TYPE(UPPERCASE, CAMELCASE, VALUE)         \
-  case WireFormatLite::TYPE_##UPPERCASE:                 \
-    target = stream->EnsureSpace(target);                \
-    target = stream->WriteString(number, VALUE, target); \
-    break
-      HANDLE_TYPE(STRING, String, *string_value);
-      HANDLE_TYPE(BYTES, Bytes, *string_value);
-#undef HANDLE_TYPE
-      case WireFormatLite::TYPE_GROUP:
-        target = stream->EnsureSpace(target);
-        target = WireFormatLite::InternalWriteGroup(number, *message_value,
-                                                    target, stream);
-        break;
-      case WireFormatLite::TYPE_MESSAGE:
-        if (is_lazy) {
-          target =
-              lazymessage_value->WriteMessageToArray(number, target, stream);
-        } else {
-          target = stream->EnsureSpace(target);
-          target = WireFormatLite::InternalWriteMessage(number, *message_value,
-                                                        target, stream);
-        }
-        break;
-    }
-  }
-  return target;
-}
-
-uint8*
-ExtensionSet::Extension::InternalSerializeMessageSetItemWithCachedSizesToArray(
-    int number, uint8* target, io::EpsCopyOutputStream* stream) const {
+void ExtensionSet::Extension::SerializeMessageSetItemWithCachedSizes(
+    int number, io::CodedOutputStream* output) const {
   if (type != WireFormatLite::TYPE_MESSAGE || is_repeated) {
     // Not a valid MessageSet extension, but serialize it the normal way.
-    GOOGLE_LOG(WARNING) << "Invalid message set extension.";
-    return InternalSerializeFieldWithCachedSizesToArray(number, target, stream);
+    SerializeFieldWithCachedSizes(number, output);
+    return;
   }
 
-  if (is_cleared) return target;
+  if (is_cleared) return;
 
-  target = stream->EnsureSpace(target);
   // Start group.
-  target = io::CodedOutputStream::WriteTagToArray(
-      WireFormatLite::kMessageSetItemStartTag, target);
+  output->WriteTag(WireFormatLite::kMessageSetItemStartTag);
+
   // Write type ID.
-  target = WireFormatLite::WriteUInt32ToArray(
-      WireFormatLite::kMessageSetTypeIdNumber, number, target);
+  WireFormatLite::WriteUInt32(WireFormatLite::kMessageSetTypeIdNumber, number,
+                              output);
   // Write message.
   if (is_lazy) {
-    target = lazymessage_value->WriteMessageToArray(
-        WireFormatLite::kMessageSetMessageNumber, target, stream);
+    lazymessage_value->WriteMessage(WireFormatLite::kMessageSetMessageNumber,
+                                    output);
   } else {
-    target = WireFormatLite::InternalWriteMessage(
-        WireFormatLite::kMessageSetMessageNumber, *message_value, target,
-        stream);
+    WireFormatLite::WriteMessageMaybeToArray(
+        WireFormatLite::kMessageSetMessageNumber, *message_value, output);
   }
+
   // End group.
-  target = stream->EnsureSpace(target);
-  target = io::CodedOutputStream::WriteTagToArray(
-      WireFormatLite::kMessageSetItemEndTag, target);
-  return target;
+  output->WriteTag(WireFormatLite::kMessageSetItemEndTag);
 }
 
 size_t ExtensionSet::Extension::MessageSetItemByteSize(int number) const {
@@ -2136,6 +2080,13 @@ size_t ExtensionSet::Extension::MessageSetItemByteSize(int number) const {
   our_size += message_size;
 
   return our_size;
+}
+
+void ExtensionSet::SerializeMessageSetWithCachedSizes(
+    io::CodedOutputStream* output) const {
+  ForEach([output](int number, const Extension& ext) {
+    ext.SerializeMessageSetItemWithCachedSizes(number, output);
+  });
 }
 
 size_t ExtensionSet::MessageSetByteSize() const {

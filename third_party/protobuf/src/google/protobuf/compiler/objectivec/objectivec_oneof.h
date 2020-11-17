@@ -60,12 +60,12 @@ class OneofGenerator {
   void GeneratePropertyImplementation(io::Printer* printer);
   void GenerateClearFunctionImplementation(io::Printer* printer);
 
-  std::string DescriptorName(void) const;
-  std::string HasIndexAsString(void) const;
+  string DescriptorName(void) const;
+  string HasIndexAsString(void) const;
 
  private:
   const OneofDescriptor* descriptor_;
-  std::map<std::string, std::string> variables_;
+  std::map<string, string> variables_;
 };
 
 }  // namespace objectivec

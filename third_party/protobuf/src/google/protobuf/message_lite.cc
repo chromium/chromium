@@ -51,9 +51,9 @@
 #include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/repeated_field.h>
+
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/stl_util.h>
-#include <google/protobuf/stubs/mutex.h>
 
 #include <google/protobuf/port_def.inc>
 
@@ -117,16 +117,6 @@ inline StringPiece as_string_view(const void* data, int size) {
   return StringPiece(static_cast<const char*>(data), size);
 }
 
-// Returns true of all required fields are present / have values.
-inline bool CheckFieldPresence(const internal::ParseContext& ctx,
-                               const MessageLite& msg,
-                               MessageLite::ParseFlags parse_flags) {
-  if (PROTOBUF_PREDICT_FALSE((parse_flags & MessageLite::kMergePartial) != 0)) {
-    return true;
-  }
-  return msg.IsInitializedWithErrors();
-}
-
 }  // namespace
 
 void MessageLite::LogInitializationErrorMessage() const {
@@ -135,63 +125,81 @@ void MessageLite::LogInitializationErrorMessage() const {
 
 namespace internal {
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+
 template <bool aliasing>
-bool MergeFromImpl(StringPiece input, MessageLite* msg,
-                   MessageLite::ParseFlags parse_flags) {
+bool MergePartialFromImpl(StringPiece input, MessageLite* msg) {
   const char* ptr;
   internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
                              aliasing, &ptr, input);
   ptr = msg->_InternalParse(ptr, &ctx);
   // ctx has an explicit limit set (length of string_view).
-  if (PROTOBUF_PREDICT_TRUE(ptr && ctx.EndedAtLimit())) {
-    return CheckFieldPresence(ctx, *msg, parse_flags);
-  }
-  return false;
+  return ptr && ctx.EndedAtLimit();
 }
 
 template <bool aliasing>
-bool MergeFromImpl(io::ZeroCopyInputStream* input, MessageLite* msg,
-                   MessageLite::ParseFlags parse_flags) {
+bool MergePartialFromImpl(io::ZeroCopyInputStream* input, MessageLite* msg) {
   const char* ptr;
   internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
                              aliasing, &ptr, input);
   ptr = msg->_InternalParse(ptr, &ctx);
   // ctx has no explicit limit (hence we end on end of stream)
-  if (PROTOBUF_PREDICT_TRUE(ptr && ctx.EndedAtEndOfStream())) {
-    return CheckFieldPresence(ctx, *msg, parse_flags);
-  }
-  return false;
+  return ptr && ctx.EndedAtEndOfStream();
 }
 
 template <bool aliasing>
-bool MergeFromImpl(BoundedZCIS input, MessageLite* msg,
-                   MessageLite::ParseFlags parse_flags) {
+bool MergePartialFromImpl(BoundedZCIS input, MessageLite* msg) {
   const char* ptr;
   internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
                              aliasing, &ptr, input.zcis, input.limit);
   ptr = msg->_InternalParse(ptr, &ctx);
   if (PROTOBUF_PREDICT_FALSE(!ptr)) return false;
   ctx.BackUp(ptr);
-  if (PROTOBUF_PREDICT_TRUE(ctx.EndedAtLimit())) {
-    return CheckFieldPresence(ctx, *msg, parse_flags);
-  }
-  return false;
+  return ctx.EndedAtLimit();
 }
 
-template bool MergeFromImpl<false>(StringPiece input, MessageLite* msg,
-                                   MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<true>(StringPiece input, MessageLite* msg,
-                                  MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<false>(io::ZeroCopyInputStream* input,
-                                   MessageLite* msg,
-                                   MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<true>(io::ZeroCopyInputStream* input,
-                                  MessageLite* msg,
-                                  MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<false>(BoundedZCIS input, MessageLite* msg,
-                                   MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<true>(BoundedZCIS input, MessageLite* msg,
-                                  MessageLite::ParseFlags parse_flags);
+#else  // !GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+
+inline bool InlineMergePartialEntireStream(io::CodedInputStream* cis,
+                                           MessageLite* message,
+                                           bool aliasing) {
+  return message->MergePartialFromCodedStream(cis) &&
+         cis->ConsumedEntireMessage();
+}
+
+template <bool aliasing>
+bool MergePartialFromImpl(StringPiece input, MessageLite* msg) {
+  io::CodedInputStream decoder(reinterpret_cast<const uint8*>(input.data()),
+                               input.size());
+  return InlineMergePartialEntireStream(&decoder, msg, aliasing);
+}
+
+template <bool aliasing>
+bool MergePartialFromImpl(BoundedZCIS input, MessageLite* msg) {
+  io::CodedInputStream decoder(input.zcis);
+  decoder.PushLimit(input.limit);
+  return InlineMergePartialEntireStream(&decoder, msg, aliasing) &&
+         decoder.BytesUntilLimit() == 0;
+}
+
+template <bool aliasing>
+bool MergePartialFromImpl(io::ZeroCopyInputStream* input, MessageLite* msg) {
+  io::CodedInputStream decoder(input);
+  return InlineMergePartialEntireStream(&decoder, msg, aliasing);
+}
+
+#endif  // !GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+
+template bool MergePartialFromImpl<false>(StringPiece input,
+                                          MessageLite* msg);
+template bool MergePartialFromImpl<true>(StringPiece input,
+                                         MessageLite* msg);
+template bool MergePartialFromImpl<false>(io::ZeroCopyInputStream* input,
+                                          MessageLite* msg);
+template bool MergePartialFromImpl<true>(io::ZeroCopyInputStream* input,
+                                         MessageLite* msg);
+template bool MergePartialFromImpl<false>(BoundedZCIS input, MessageLite* msg);
+template bool MergePartialFromImpl<true>(BoundedZCIS input, MessageLite* msg);
 
 }  // namespace internal
 
@@ -203,6 +211,7 @@ MessageLite* MessageLite::New(Arena* arena) const {
   return message;
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 class ZeroCopyCodedInputStream : public io::ZeroCopyInputStream {
  public:
   ZeroCopyCodedInputStream(io::CodedInputStream* cis) : cis_(cis) {}
@@ -213,7 +222,7 @@ class ZeroCopyCodedInputStream : public io::ZeroCopyInputStream {
   }
   void BackUp(int count) final { cis_->Advance(-count); }
   bool Skip(int count) final { return cis_->Skip(count); }
-  int64_t ByteCount() const final { return 0; }
+  int64 ByteCount() const final { return 0; }
 
   bool aliasing_enabled() { return cis_->aliasing_enabled_; }
 
@@ -221,8 +230,7 @@ class ZeroCopyCodedInputStream : public io::ZeroCopyInputStream {
   io::CodedInputStream* cis_;
 };
 
-bool MessageLite::MergeFromImpl(io::CodedInputStream* input,
-                                MessageLite::ParseFlags parse_flags) {
+bool MessageLite::MergePartialFromCodedStream(io::CodedInputStream* input) {
   ZeroCopyCodedInputStream zcis(input);
   const char* ptr;
   internal::ParseContext ctx(input->RecursionBudget(), zcis.aliasing_enabled(),
@@ -240,28 +248,25 @@ bool MessageLite::MergeFromImpl(io::CodedInputStream* input,
     GOOGLE_DCHECK(ctx.LastTag() != 1);  // We can't end on a pushed limit.
     if (ctx.IsExceedingLimit(ptr)) return false;
     input->SetLastTag(ctx.LastTag());
-  } else {
-    input->SetConsumed();
+    return true;
   }
-  return CheckFieldPresence(ctx, *this, parse_flags);
+  input->SetConsumed();
+  return true;
 }
-
-bool MessageLite::MergePartialFromCodedStream(io::CodedInputStream* input) {
-  return MergeFromImpl(input, kMergePartial);
-}
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 bool MessageLite::MergeFromCodedStream(io::CodedInputStream* input) {
-  return MergeFromImpl(input, kMerge);
+  return MergePartialFromCodedStream(input) && IsInitializedWithErrors();
 }
 
 bool MessageLite::ParseFromCodedStream(io::CodedInputStream* input) {
   Clear();
-  return MergeFromImpl(input, kParse);
+  return MergeFromCodedStream(input);
 }
 
 bool MessageLite::ParsePartialFromCodedStream(io::CodedInputStream* input) {
   Clear();
-  return MergeFromImpl(input, kParsePartial);
+  return MergePartialFromCodedStream(input);
 }
 
 bool MessageLite::ParseFromZeroCopyStream(io::ZeroCopyInputStream* input) {
@@ -336,36 +341,28 @@ bool MessageLite::MergeFromString(const std::string& data) {
 
 // ===================================================================
 
-inline uint8* SerializeToArrayImpl(const MessageLite& msg, uint8* target,
-                                   int size) {
-  constexpr bool debug = false;
-  if (debug) {
-    // Force serialization to a stream with a block size of 1, which forces
-    // all writes to the stream to cross buffers triggering all fallback paths
-    // in the unittests when serializing to string / array.
-    io::ArrayOutputStream stream(target, size, 1);
-    uint8* ptr;
-    io::EpsCopyOutputStream out(
-        &stream, io::CodedOutputStream::IsDefaultSerializationDeterministic(),
-        &ptr);
-    ptr = msg._InternalSerialize(ptr, &out);
-    out.Trim(ptr);
-    GOOGLE_DCHECK(!out.HadError() && stream.ByteCount() == size);
-    return target + size;
-  } else {
-    io::EpsCopyOutputStream out(
-        target, size,
-        io::CodedOutputStream::IsDefaultSerializationDeterministic());
-    auto res = msg._InternalSerialize(target, &out);
-    GOOGLE_DCHECK(target + size == res);
-    return res;
-  }
-}
-
 uint8* MessageLite::SerializeWithCachedSizesToArray(uint8* target) const {
-  // We only optimize this when using optimize_for = SPEED.  In other cases
-  // we just use the CodedOutputStream path.
-  return SerializeToArrayImpl(*this, target, GetCachedSize());
+  const internal::SerializationTable* table =
+      static_cast<const internal::SerializationTable*>(InternalGetTable());
+  auto deterministic =
+      io::CodedOutputStream::IsDefaultSerializationDeterministic();
+  if (table) {
+    return internal::TableSerializeToArray(*this, table, deterministic, target);
+  } else {
+    if (deterministic) {
+      // We only optimize this when using optimize_for = SPEED.  In other cases
+      // we just use the CodedOutputStream path.
+      int size = GetCachedSize();
+      io::ArrayOutputStream out(target, size);
+      io::CodedOutputStream coded_out(&out);
+      coded_out.SetSerializationDeterministic(true);
+      SerializeWithCachedSizes(&coded_out);
+      GOOGLE_CHECK(!coded_out.HadError());
+      return target + size;
+    } else {
+      return InternalSerializeWithCachedSizesToArray(target);
+    }
+  }
 }
 
 bool MessageLite::SerializeToCodedStream(io::CodedOutputStream* output) const {
@@ -382,6 +379,16 @@ bool MessageLite::SerializePartialToCodedStream(
     return false;
   }
 
+  if (!output->IsSerializationDeterministic()) {
+    uint8* buffer = output->GetDirectBufferForNBytesAndAdvance(size);
+    if (buffer != nullptr) {
+      uint8* end = InternalSerializeWithCachedSizesToArray(buffer);
+      if (end - buffer != size) {
+        ByteSizeConsistencyError(size, ByteSizeLong(), end - buffer, *this);
+      }
+      return true;
+    }
+  }
   int original_byte_count = output->ByteCount();
   SerializeWithCachedSizes(output);
   if (output->HadError()) {
@@ -399,27 +406,14 @@ bool MessageLite::SerializePartialToCodedStream(
 
 bool MessageLite::SerializeToZeroCopyStream(
     io::ZeroCopyOutputStream* output) const {
-  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
-  return SerializePartialToZeroCopyStream(output);
+  io::CodedOutputStream encoder(output);
+  return SerializeToCodedStream(&encoder);
 }
 
 bool MessageLite::SerializePartialToZeroCopyStream(
     io::ZeroCopyOutputStream* output) const {
-  const size_t size = ByteSizeLong();  // Force size to be cached.
-  if (size > INT_MAX) {
-    GOOGLE_LOG(ERROR) << GetTypeName()
-               << " exceeded maximum protobuf size of 2GB: " << size;
-    return false;
-  }
-
-  uint8* target;
-  io::EpsCopyOutputStream stream(
-      output, io::CodedOutputStream::IsDefaultSerializationDeterministic(),
-      &target);
-  target = _InternalSerialize(target, &stream);
-  stream.Trim(target);
-  if (stream.HadError()) return false;
-  return true;
+  io::CodedOutputStream encoder(output);
+  return SerializePartialToCodedStream(&encoder);
 }
 
 bool MessageLite::SerializeToFileDescriptor(int file_descriptor) const {
@@ -462,7 +456,10 @@ bool MessageLite::AppendPartialToString(std::string* output) const {
   STLStringResizeUninitialized(output, old_size + byte_size);
   uint8* start =
       reinterpret_cast<uint8*>(io::mutable_string_data(output) + old_size);
-  SerializeToArrayImpl(*this, start, byte_size);
+  uint8* end = SerializeWithCachedSizesToArray(start);
+  if (end - start != byte_size) {
+    ByteSizeConsistencyError(byte_size, ByteSizeLong(), end - start, *this);
+  }
   return true;
 }
 
@@ -490,7 +487,10 @@ bool MessageLite::SerializePartialToArray(void* data, int size) const {
   }
   if (size < byte_size) return false;
   uint8* start = reinterpret_cast<uint8*>(data);
-  SerializeToArrayImpl(*this, start, byte_size);
+  uint8* end = SerializeWithCachedSizesToArray(start);
+  if (end - start != byte_size) {
+    ByteSizeConsistencyError(byte_size, ByteSizeLong(), end - start, *this);
+  }
   return true;
 }
 
@@ -510,6 +510,38 @@ std::string MessageLite::SerializePartialAsString() const {
   return output;
 }
 
+void MessageLite::SerializeWithCachedSizes(
+    io::CodedOutputStream* output) const {
+  GOOGLE_DCHECK(InternalGetTable());
+  internal::TableSerialize(
+      *this,
+      static_cast<const internal::SerializationTable*>(InternalGetTable()),
+      output);
+}
+
+
+// The table driven code optimizes the case that the CodedOutputStream buffer
+// is large enough to serialize into it directly.
+// If the proto is optimized for speed, this method will be overridden by
+// generated code for maximum speed. If the proto is optimized for size or
+// is lite, then we need to specialize this to avoid infinite recursion.
+uint8* MessageLite::InternalSerializeWithCachedSizesToArray(
+    uint8* target) const {
+  const internal::SerializationTable* table =
+      static_cast<const internal::SerializationTable*>(InternalGetTable());
+  if (table == NULL) {
+    // We only optimize this when using optimize_for = SPEED.  In other cases
+    // we just use the CodedOutputStream path.
+    int size = GetCachedSize();
+    io::ArrayOutputStream out(target, size);
+    io::CodedOutputStream coded_out(&out);
+    SerializeWithCachedSizes(&coded_out);
+    GOOGLE_CHECK(!coded_out.HadError());
+    return target + size;
+  } else {
+    return internal::TableSerializeToArray(*this, table, false, target);
+  }
+}
 
 namespace internal {
 
@@ -530,54 +562,6 @@ void GenericTypeHandler<std::string>::Merge(const std::string& from,
 }
 
 }  // namespace internal
-
-
-// ===================================================================
-// Shutdown support.
-
-namespace internal {
-
-struct ShutdownData {
-  ~ShutdownData() {
-    std::reverse(functions.begin(), functions.end());
-    for (auto pair : functions) pair.first(pair.second);
-  }
-
-  static ShutdownData* get() {
-    static auto* data = new ShutdownData;
-    return data;
-  }
-
-  std::vector<std::pair<void (*)(const void*), const void*>> functions;
-  Mutex mutex;
-};
-
-static void RunZeroArgFunc(const void* arg) {
-  void (*func)() = reinterpret_cast<void (*)()>(const_cast<void*>(arg));
-  func();
-}
-
-void OnShutdown(void (*func)()) {
-  OnShutdownRun(RunZeroArgFunc, reinterpret_cast<void*>(func));
-}
-
-void OnShutdownRun(void (*f)(const void*), const void* arg) {
-  auto shutdown_data = ShutdownData::get();
-  MutexLock lock(&shutdown_data->mutex);
-  shutdown_data->functions.push_back(std::make_pair(f, arg));
-}
-
-}  // namespace internal
-
-void ShutdownProtobufLibrary() {
-  // This function should be called only once, but accepts multiple calls.
-  static bool is_shutdown = false;
-  if (!is_shutdown) {
-    delete internal::ShutdownData::get();
-    is_shutdown = true;
-  }
-}
-
 
 }  // namespace protobuf
 }  // namespace google

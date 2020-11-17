@@ -30,4 +30,10 @@
 
 # Copyright 2007 Google Inc. All Rights Reserved.
 
-__version__ = '3.13.0'
+__version__ = '3.9.0'
+
+if __name__ != '__main__':
+  try:
+    __import__('pkg_resources').declare_namespace(__name__)
+  except ImportError:
+    __path__ = __import__('pkgutil').extend_path(__path__, __name__)

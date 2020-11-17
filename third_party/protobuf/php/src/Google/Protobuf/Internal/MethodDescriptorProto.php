@@ -20,34 +20,40 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     /**
      * Generated from protobuf field <code>optional string name = 1;</code>
      */
-    protected $name = null;
+    private $name = '';
+    private $has_name = false;
     /**
      * Input and output type names.  These are resolved in the same way as
      * FieldDescriptorProto.type_name, but must refer to a message type.
      *
      * Generated from protobuf field <code>optional string input_type = 2;</code>
      */
-    protected $input_type = null;
+    private $input_type = '';
+    private $has_input_type = false;
     /**
      * Generated from protobuf field <code>optional string output_type = 3;</code>
      */
-    protected $output_type = null;
+    private $output_type = '';
+    private $has_output_type = false;
     /**
      * Generated from protobuf field <code>optional .google.protobuf.MethodOptions options = 4;</code>
      */
-    protected $options = null;
+    private $options = null;
+    private $has_options = false;
     /**
      * Identifies if client streams multiple client messages
      *
      * Generated from protobuf field <code>optional bool client_streaming = 5 [default = false];</code>
      */
-    protected $client_streaming = null;
+    private $client_streaming = false;
+    private $has_client_streaming = false;
     /**
      * Identifies if server streams multiple server messages
      *
      * Generated from protobuf field <code>optional bool server_streaming = 6 [default = false];</code>
      */
-    protected $server_streaming = null;
+    private $server_streaming = false;
+    private $has_server_streaming = false;
 
     /**
      * Constructor.
@@ -78,17 +84,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getName()
     {
-        return isset($this->name) ? $this->name : '';
-    }
-
-    public function hasName()
-    {
-        return isset($this->name);
-    }
-
-    public function clearName()
-    {
-        unset($this->name);
+        return $this->name;
     }
 
     /**
@@ -100,8 +96,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->name = $var;
+        $this->has_name = true;
 
         return $this;
+    }
+
+    public function hasName()
+    {
+        return $this->has_name;
     }
 
     /**
@@ -113,17 +115,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getInputType()
     {
-        return isset($this->input_type) ? $this->input_type : '';
-    }
-
-    public function hasInputType()
-    {
-        return isset($this->input_type);
-    }
-
-    public function clearInputType()
-    {
-        unset($this->input_type);
+        return $this->input_type;
     }
 
     /**
@@ -138,8 +130,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->input_type = $var;
+        $this->has_input_type = true;
 
         return $this;
+    }
+
+    public function hasInputType()
+    {
+        return $this->has_input_type;
     }
 
     /**
@@ -148,17 +146,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getOutputType()
     {
-        return isset($this->output_type) ? $this->output_type : '';
-    }
-
-    public function hasOutputType()
-    {
-        return isset($this->output_type);
-    }
-
-    public function clearOutputType()
-    {
-        unset($this->output_type);
+        return $this->output_type;
     }
 
     /**
@@ -170,8 +158,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->output_type = $var;
+        $this->has_output_type = true;
 
         return $this;
+    }
+
+    public function hasOutputType()
+    {
+        return $this->has_output_type;
     }
 
     /**
@@ -180,17 +174,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getOptions()
     {
-        return isset($this->options) ? $this->options : null;
-    }
-
-    public function hasOptions()
-    {
-        return isset($this->options);
-    }
-
-    public function clearOptions()
-    {
-        unset($this->options);
+        return $this->options;
     }
 
     /**
@@ -202,8 +186,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Internal\MethodOptions::class);
         $this->options = $var;
+        $this->has_options = true;
 
         return $this;
+    }
+
+    public function hasOptions()
+    {
+        return $this->has_options;
     }
 
     /**
@@ -214,17 +204,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getClientStreaming()
     {
-        return isset($this->client_streaming) ? $this->client_streaming : false;
-    }
-
-    public function hasClientStreaming()
-    {
-        return isset($this->client_streaming);
-    }
-
-    public function clearClientStreaming()
-    {
-        unset($this->client_streaming);
+        return $this->client_streaming;
     }
 
     /**
@@ -238,8 +218,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->client_streaming = $var;
+        $this->has_client_streaming = true;
 
         return $this;
+    }
+
+    public function hasClientStreaming()
+    {
+        return $this->has_client_streaming;
     }
 
     /**
@@ -250,17 +236,7 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
      */
     public function getServerStreaming()
     {
-        return isset($this->server_streaming) ? $this->server_streaming : false;
-    }
-
-    public function hasServerStreaming()
-    {
-        return isset($this->server_streaming);
-    }
-
-    public function clearServerStreaming()
-    {
-        unset($this->server_streaming);
+        return $this->server_streaming;
     }
 
     /**
@@ -274,8 +250,14 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->server_streaming = $var;
+        $this->has_server_streaming = true;
 
         return $this;
+    }
+
+    public function hasServerStreaming()
+    {
+        return $this->has_server_streaming;
     }
 
 }

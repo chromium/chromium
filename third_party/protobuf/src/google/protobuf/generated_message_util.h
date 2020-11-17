@@ -39,20 +39,17 @@
 #define GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
 
 #include <assert.h>
-
 #include <atomic>
 #include <climits>
 #include <string>
 #include <vector>
 
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/any.h>
 #include <google/protobuf/has_bits.h>
 #include <google/protobuf/implicit_weak_message.h>
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/stubs/once.h>  // Add direct dep on port for pb.cc
 #include <google/protobuf/port.h>
-#include <google/protobuf/repeated_field.h>
 #include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/casts.h>
@@ -67,7 +64,6 @@ namespace google {
 namespace protobuf {
 
 class Arena;
-class Message;
 
 namespace io {
 class CodedInputStream;
@@ -96,8 +92,8 @@ PROTOBUF_EXPORT const ::std::string& GetEmptyString();
 // helper here to keep the protobuf compiler from ever having to emit loops in
 // IsInitialized() methods.  We want the C++ compiler to inline this or not
 // as it sees fit.
-template <typename Msg>
-bool AllAreInitialized(const RepeatedPtrField<Msg>& t) {
+template <class Type>
+bool AllAreInitialized(const Type& t) {
   for (int i = t.size(); --i >= 0;) {
     if (!t.Get(i).IsInitialized()) return false;
   }
@@ -147,8 +143,6 @@ PROTOBUF_EXPORT MessageLite* GetOwnedMessageInternal(Arena* message_arena,
                                                      MessageLite* submessage,
                                                      Arena* submessage_arena);
 PROTOBUF_EXPORT void GenericSwap(MessageLite* m1, MessageLite* m2);
-// We specialize GenericSwap for non-lite messages to benefit from reflection.
-PROTOBUF_EXPORT void GenericSwap(Message* m1, Message* m2);
 
 template <typename T>
 T* DuplicateIfNonNull(T* message) {
@@ -190,7 +184,7 @@ struct PROTOBUF_EXPORT SCCInfoBase {
     kUninitialized = -1,  // initial state
   };
 #if defined(_MSC_VER) && !defined(__clang__)
-  // MSVC doesn't make std::atomic constant initialized. This union trick
+  // MSVC doesnt make std::atomic constant initialized. This union trick
   // makes it so.
   union {
     int visit_status_to_make_linker_init;
@@ -200,19 +194,10 @@ struct PROTOBUF_EXPORT SCCInfoBase {
   std::atomic<int> visit_status;
 #endif
   int num_deps;
-  int num_implicit_weak_deps;
   void (*init_func)();
   // This is followed by an array  of num_deps
   // const SCCInfoBase* deps[];
 };
-
-// Zero-length arrays are a language extension available in GCC and Clang but
-// not MSVC.
-#ifdef __GNUC__
-#define PROTOBUF_ARRAY_SIZE(n) (n)
-#else
-#define PROTOBUF_ARRAY_SIZE(n) ((n) ? (n) : 1)
-#endif
 
 template <int N>
 struct SCCInfo {
@@ -220,14 +205,9 @@ struct SCCInfo {
   // Semantically this is const SCCInfo<T>* which is is a templated type.
   // The obvious inheriting from SCCInfoBase mucks with struct initialization.
   // Attempts showed the compiler was generating dynamic initialization code.
-  // This deps array consists of base.num_deps pointers to SCCInfoBase followed
-  // by base.num_implicit_weak_deps pointers to SCCInfoBase*. We need the extra
-  // pointer indirection for implicit weak fields. We cannot use a union type
-  // here, since that would prevent the array from being linker-initialized.
-  void* deps[PROTOBUF_ARRAY_SIZE(N)];
+  // Zero length arrays produce warnings with MSVC.
+  SCCInfoBase* deps[N ? N : 1];
 };
-
-#undef PROTOBUF_ARRAY_SIZE
 
 PROTOBUF_EXPORT void InitSCCImpl(SCCInfoBase* scc);
 

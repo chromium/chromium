@@ -1,5 +1,3 @@
-load("@rules_cc//cc:defs.bzl", "cc_library")
-
 # This is a placeholder for python headers. Projects needing to use
 # fast cpp protos in protobuf's python interface should build with
 # --define=use_fast_cpp_protos=true, and in addition, provide
@@ -11,7 +9,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 # includes the following local_repository rule that points to this directory:
 #
 # new_local_repository(
-#   name = "python_headers",
+#   name = "python",
 #   path = __workspace_dir__ + "/util/python",
 # )
 cc_library(

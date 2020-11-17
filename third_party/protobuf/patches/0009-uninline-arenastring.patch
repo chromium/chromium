@@ -1,9 +1,6 @@
-diff --git a/src/google/protobuf/arenastring.cc b/src/google/protobuf/arenastring.cc
-new file mode 100644
-index 000000000..70ca00ffa
 --- /dev/null
 +++ b/src/google/protobuf/arenastring.cc
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,52 @@
 +// Protocol Buffers - Google's data interchange format
 +// Copyright 2008 Google Inc.  All rights reserved.
 +// https://developers.google.com/protocol-buffers/
@@ -40,6 +37,13 @@ index 000000000..70ca00ffa
 +namespace protobuf {
 +namespace internal {
 +
++::std::string* ArenaStringPtr::MutableNoArena(const ::std::string* default_value) {
++  if (ptr_ == default_value) {
++    CreateInstanceNoArena(default_value);
++  }
++  return ptr_;
++}
++
 +void ArenaStringPtr::DestroyNoArena(const ::std::string* default_value) {
 +  if (ptr_ != default_value) {
 +    delete ptr_;
@@ -49,14 +53,26 @@ index 000000000..70ca00ffa
 +}  // namespace internal
 +}  // namespace protobuf
 +}  // namespace google
-diff --git a/src/google/protobuf/arenastring.h b/src/google/protobuf/arenastring.h
-index b87be8e39..ce63ce9e6 100644
 --- a/src/google/protobuf/arenastring.h
 +++ b/src/google/protobuf/arenastring.h
-@@ -257,11 +257,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
+@@ -284,12 +284,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
+ 
+   inline const ::std::string& GetNoArena() const { return *ptr_; }
+ 
+-  inline ::std::string* MutableNoArena(const ::std::string* default_value) {
+-    if (ptr_ == default_value) {
+-      CreateInstanceNoArena(default_value);
+-    }
+-    return ptr_;
+-  }
++  ::std::string* MutableNoArena(const ::std::string* default_value);
+ 
+   inline ::std::string* ReleaseNoArena(const ::std::string* default_value) {
+     if (ptr_ == default_value) {
+@@ -320,11 +315,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
+     }
    }
  
-   // Destroy the string. Assumes `arena == nullptr`.
 -  inline void DestroyNoArena(const ::std::string* default_value) {
 -    if (ptr_ != default_value) {
 -      delete ptr_;
@@ -64,5 +80,5 @@ index b87be8e39..ce63ce9e6 100644
 -  }
 +  void DestroyNoArena(const ::std::string* default_value);
  
-   // Internal accessor used only at parse time to provide direct access to the
-   // raw pointer from the shared parse routine (in the non-arenas case). The
+   inline void ClearToEmptyNoArena(const ::std::string* default_value) {
+     if (ptr_ == default_value) {

@@ -1,5 +1,5 @@
---- a/src/google/protobuf/port_def.inc
-+++ b/src/google/protobuf/port_def.inc
+--- a/third_party/protobuf/src/google/protobuf/port_def.inc
++++ b/third_party/protobuf/src/google/protobuf/port_def.inc
 @@ -275,8 +275,8 @@
  #define PROTOBUF_LL_FORMAT "I64"  // As in printf("%I64d", ...)
  #else
@@ -11,8 +11,8 @@
  // Used to format real long long integers.
  #define PROTOBUF_LL_FORMAT \
    "ll"  // As in "%lld". Note that "q" is poor form also.
---- a/src/google/protobuf/stubs/port.h
-+++ b/src/google/protobuf/stubs/port.h
+--- a/third_party/protobuf/src/google/protobuf/stubs/port.h
++++ b/third_party/protobuf/src/google/protobuf/stubs/port.h
 @@ -87,18 +87,31 @@
  
  // Legacy: some users reference these (internal-only) macros even though we

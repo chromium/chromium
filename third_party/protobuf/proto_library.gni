@@ -499,8 +499,7 @@ template("proto_library") {
       configs += [ "//build/config/sanitizers:not_fuzzed" ]
     }
 
-    public_configs = [ "//third_party/protobuf:using_proto",
-        "//third_party/protobuf:allow_deprecated_proto_fields"  ]
+    public_configs = [ "//third_party/protobuf:using_proto" ]
     public_deps = []
 
     if (generate_cc || generate_with_plugin) {

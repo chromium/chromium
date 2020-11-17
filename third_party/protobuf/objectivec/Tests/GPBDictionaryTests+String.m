@@ -42,7 +42,6 @@
 
 //%PDDM-EXPAND TESTS_FOR_POD_VALUES(String, NSString, *, Objects, @"foo", @"bar", @"baz", @"mumble")
 // This block of code is generated, do not edit it directly.
-// clang-format off
 
 // To let the testing macros work, add some extra methods to simplify things.
 @interface GPBStringEnumDictionary (TestingTweak)
@@ -3381,6 +3380,5 @@ static BOOL TestingEnum_IsValidValue(int32_t value) {
 
 @end
 
-// clang-format on
 //%PDDM-EXPAND-END TESTS_FOR_POD_VALUES(String, NSString, *, Objects, @"foo", @"bar", @"baz", @"mumble")
 

@@ -49,14 +49,12 @@
 #include <google/protobuf/stubs/hash.h>
 #include <google/protobuf/stubs/status.h>
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
 namespace util {
 namespace converter {
-
 
 class ObjectLocationTracker;
 
@@ -104,12 +102,10 @@ class PROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
     return RenderDataPiece(name,
                            DataPiece(value, use_strict_base64_decoding()));
   }
-
   ProtoWriter* RenderBytes(StringPiece name, StringPiece value) override {
     return RenderDataPiece(
         name, DataPiece(value, false, use_strict_base64_decoding()));
   }
-
   ProtoWriter* RenderNull(StringPiece name) override {
     return RenderDataPiece(name, DataPiece::NullData());
   }
@@ -118,8 +114,7 @@ class PROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
   // Renders a DataPiece 'value' into a field whose wire type is determined
   // from the given field 'name'.
   virtual ProtoWriter* RenderDataPiece(StringPiece name,
-                                       const DataPiece& data);
-
+                                       const DataPiece& value);
 
   // Returns the location tracker to use for tracking locations for errors.
   const LocationTrackerInterface& location() {
@@ -301,10 +296,10 @@ class PROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
   ProtoWriter* StartListField(const google::protobuf::Field& field,
                               const google::protobuf::Type& type);
 
-  // Renders a primitive field given the field and the enclosing type.
+  // Renders a primitve field given the field and the enclosing type.
   ProtoWriter* RenderPrimitiveField(const google::protobuf::Field& field,
                                     const google::protobuf::Type& type,
-                                    const DataPiece& data);
+                                    const DataPiece& value);
 
  private:
   // Writes an ENUM field, including tag, to the stream.

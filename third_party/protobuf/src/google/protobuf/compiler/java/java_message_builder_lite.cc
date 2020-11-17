@@ -53,6 +53,7 @@
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
 
+
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -67,11 +68,6 @@ MessageBuilderLiteGenerator::MessageBuilderLiteGenerator(
   GOOGLE_CHECK(!HasDescriptorMethods(descriptor->file(), context->EnforceLite()))
       << "Generator factory error: A lite message generator is used to "
          "generate non-lite messages.";
-  for (int i = 0; i < descriptor_->field_count(); i++) {
-    if (IsRealOneof(descriptor_->field(i))) {
-      oneofs_.insert(descriptor_->field(i)->containing_oneof());
-    }
-  }
 }
 
 MessageBuilderLiteGenerator::~MessageBuilderLiteGenerator() {}
@@ -93,11 +89,13 @@ void MessageBuilderLiteGenerator::Generate(io::Printer* printer) {
 
   // oneof
   std::map<std::string, std::string> vars;
-  for (auto oneof : oneofs_) {
-    vars["oneof_name"] = context_->GetOneofGeneratorInfo(oneof)->name;
+  for (int i = 0; i < descriptor_->oneof_decl_count(); i++) {
+    vars["oneof_name"] =
+        context_->GetOneofGeneratorInfo(descriptor_->oneof_decl(i))->name;
     vars["oneof_capitalized_name"] =
-        context_->GetOneofGeneratorInfo(oneof)->capitalized_name;
-    vars["oneof_index"] = StrCat(oneof->index());
+        context_->GetOneofGeneratorInfo(descriptor_->oneof_decl(i))
+            ->capitalized_name;
+    vars["oneof_index"] = StrCat(descriptor_->oneof_decl(i)->index());
 
     // oneofCase() and clearOneof()
     printer->Print(vars,

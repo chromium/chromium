@@ -34,7 +34,6 @@
 
 #include <google/protobuf/field_mask.pb.h>
 #include <google/protobuf/timestamp.pb.h>
-#include <google/protobuf/type.pb.h>
 #include <google/protobuf/wrappers.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/descriptor.pb.h>
@@ -54,7 +53,6 @@
 #include <google/protobuf/util/internal/type_info_test_helper.h>
 #include <google/protobuf/util/internal/constants.h>
 #include <google/protobuf/util/message_differencer.h>
-#include <google/protobuf/util/type_resolver_util.h>
 #include <google/protobuf/stubs/bytestream.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <gtest/gtest.h>
@@ -64,7 +62,6 @@ namespace google {
 namespace protobuf {
 namespace util {
 namespace converter {
-
 
 using proto_util_converter::testing::AnyM;
 using proto_util_converter::testing::AnyOut;
@@ -92,6 +89,12 @@ std::string GetTypeUrl(const Descriptor* descriptor) {
   return std::string(kTypeServiceBaseUrl) + "/" + descriptor->full_name();
 }
 }  // namespace
+
+#if __cplusplus >= 201103L
+using std::get;
+#else
+using std::tr1::get;
+#endif
 
 class BaseProtoStreamObjectWriterTest
     : public ::testing::TestWithParam<testing::TypeInfoSource> {
@@ -165,8 +168,8 @@ class BaseProtoStreamObjectWriterTest
 
 MATCHER_P(HasObjectLocation, expected,
           "Verifies the expected object location") {
-  std::string actual = std::get<0>(arg).ToString();
-  if (actual == expected) return true;
+  std::string actual = get<0>(arg).ToString();
+  if (actual.compare(expected) == 0) return true;
   *result_listener << "actual location is: " << actual;
   return false;
 }
@@ -275,11 +278,10 @@ TEST_P(ProtoStreamObjectWriterTest, ConflictingJsonName) {
   CheckOutput(message2);
 }
 
-
 TEST_P(ProtoStreamObjectWriterTest, IntEnumValuesAreAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::KIDS);
+  book.set_type(proto_util_converter::testing::Book_Type_KIDS);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -315,7 +317,7 @@ TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithDifferentCaseIsRejected) {
 TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithSameCaseIsAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::ACTION_AND_ADVENTURE);
+  book.set_type(proto_util_converter::testing::Book_Type_ACTION_AND_ADVENTURE);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -335,7 +337,7 @@ TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithSameCaseIsAccepted) {
 TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithDifferentCaseIsAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::ACTION_AND_ADVENTURE);
+  book.set_type(proto_util_converter::testing::Book_Type_ACTION_AND_ADVENTURE);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -355,7 +357,7 @@ TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithDifferentCaseIsAccepted) {
 TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithoutUnderscoreAreAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::ACTION_AND_ADVENTURE);
+  book.set_type(proto_util_converter::testing::Book_Type_ACTION_AND_ADVENTURE);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -375,7 +377,7 @@ TEST_P(ProtoStreamObjectWriterTest, EnumValuesWithoutUnderscoreAreAccepted) {
 TEST_P(ProtoStreamObjectWriterTest, EnumValuesInCamelCaseAreAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::ACTION_AND_ADVENTURE);
+  book.set_type(proto_util_converter::testing::Book_Type_ACTION_AND_ADVENTURE);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -396,7 +398,7 @@ TEST_P(ProtoStreamObjectWriterTest,
        EnumValuesInCamelCaseRemoveDashAndUnderscoreAreAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::ACTION_AND_ADVENTURE);
+  book.set_type(proto_util_converter::testing::Book_Type_ACTION_AND_ADVENTURE);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -418,7 +420,7 @@ TEST_P(ProtoStreamObjectWriterTest,
        EnumValuesInCamelCaseWithNameNotUppercaseAreAccepted) {
   Book book;
   book.set_title("Some Book");
-  book.set_type(proto_util_converter::testing::Book::arts_and_photography);
+  book.set_type(proto_util_converter::testing::Book_Type_arts_and_photography);
   Author* robert = book.mutable_author();
   robert->set_name("robert");
 
@@ -1717,45 +1719,6 @@ TEST_P(ProtoStreamObjectWriterStructTest, OptionStructIntAsStringsTest) {
   CheckOutput(struct_type);
 }
 
-TEST_P(ProtoStreamObjectWriterStructTest, Struct32BitIntsAndFloatsTest) {
-  StructType struct_type;
-  google::protobuf::Struct* s = struct_type.mutable_object();
-  s->mutable_fields()->operator[]("k1").set_number_value(1.5);
-  s->mutable_fields()->operator[]("k2").set_number_value(100);
-  s->mutable_fields()->operator[]("k3").set_number_value(100);
-  ResetProtoWriter();
-
-  ow_->StartObject("")
-      ->StartObject("object")
-      ->RenderFloat("k1", 1.5)
-      ->RenderInt32("k2", 100)
-      ->RenderUint32("k3", 100)
-      ->EndObject()
-      ->EndObject();
-  CheckOutput(struct_type);
-}
-
-TEST_P(ProtoStreamObjectWriterStructTest,
-       Struct32BitIntsAndFloatsAsStringsTest) {
-  StructType struct_type;
-  google::protobuf::Struct* s = struct_type.mutable_object();
-  s->mutable_fields()->operator[]("k1").set_string_value("1.5");
-  s->mutable_fields()->operator[]("k2").set_string_value("100");
-  s->mutable_fields()->operator[]("k3").set_string_value("100");
-
-  options_.struct_integers_as_strings = true;
-  ResetProtoWriter();
-
-  ow_->StartObject("")
-      ->StartObject("object")
-      ->RenderFloat("k1", 1.5)
-      ->RenderInt32("k2", 100)
-      ->RenderUint32("k3", 100)
-      ->EndObject()
-      ->EndObject();
-  CheckOutput(struct_type);
-}
-
 TEST_P(ProtoStreamObjectWriterStructTest, ValuePreservesNull) {
   ValueWrapper value;
   value.mutable_value()->set_null_value(google::protobuf::NULL_VALUE);
@@ -2535,7 +2498,7 @@ TEST_P(ProtoStreamObjectWriterFieldMaskTest, SimpleFieldMaskTest) {
   CheckOutput(expected);
 }
 
-TEST_P(ProtoStreamObjectWriterFieldMaskTest, MultipleMasksInCompactForm) {
+TEST_P(ProtoStreamObjectWriterFieldMaskTest, MutipleMasksInCompactForm) {
   FieldMaskTest expected;
   expected.set_id("1");
   expected.mutable_single_mask()->add_paths("camel_case1");

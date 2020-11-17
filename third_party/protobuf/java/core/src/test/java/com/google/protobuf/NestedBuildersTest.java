@@ -30,7 +30,6 @@
 
 package com.google.protobuf;
 
-import protobuf_unittest.Engine;
 import protobuf_unittest.Vehicle;
 import protobuf_unittest.Wheel;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public class NestedBuildersTest extends TestCase {
     for (int i = 0; i < 4; i++) {
       vehicleBuilder.getWheelBuilder(i).setRadius(5).setWidth(i + 10);
     }
-    Engine.Builder engineBuilder = vehicleBuilder.getEngineBuilder().setLiters(20);
+    vehicleBuilder.getEngineBuilder().setLiters(20);
 
     vehicle = vehicleBuilder.build();
     for (int i = 0; i < 4; i++) {
@@ -75,9 +74,6 @@ public class NestedBuildersTest extends TestCase {
     }
     assertEquals(20, vehicle.getEngine().getLiters());
     assertTrue(vehicle.hasEngine());
-
-    engineBuilder.setLiters(50);
-    assertEquals(50, vehicleBuilder.getEngine().getLiters());
   }
 
   public void testMessagesAreCached() {

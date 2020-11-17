@@ -185,8 +185,8 @@ class Descriptor
             $containing,
             $file_proto,
             $message_name_without_package,
-            $classname,
             $legacy_classname,
+            $classname,
             $fullname);
         $desc->setFullName($fullname);
         $desc->setClass($classname);

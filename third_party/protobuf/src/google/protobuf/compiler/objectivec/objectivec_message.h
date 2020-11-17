@@ -50,8 +50,9 @@ class EnumGenerator;
 
 class MessageGenerator {
  public:
-  MessageGenerator(const std::string& root_classname,
-                   const Descriptor* descriptor, const Options& options);
+  MessageGenerator(const string& root_classname,
+                   const Descriptor* descriptor,
+                   const Options& options);
   ~MessageGenerator();
 
   MessageGenerator(const MessageGenerator&) = delete;
@@ -62,8 +63,7 @@ class MessageGenerator {
   void GenerateMessageHeader(io::Printer* printer);
   void GenerateSource(io::Printer* printer);
   void GenerateExtensionRegistrationSource(io::Printer* printer);
-  void DetermineObjectiveCClassDefinitions(std::set<std::string>* fwd_decls);
-  void DetermineForwardDeclarations(std::set<std::string>* fwd_decls);
+  void DetermineForwardDeclarations(std::set<string>* fwd_decls);
 
   // Checks if the message or a nested message includes a oneof definition.
   bool IncludesOneOfDefinition() const;
@@ -80,11 +80,11 @@ class MessageGenerator {
   void GenerateDescriptionOneFieldSource(io::Printer* printer,
                                          const FieldDescriptor* field);
 
-  const std::string root_classname_;
+  const string root_classname_;
   const Descriptor* descriptor_;
   FieldGeneratorMap field_generators_;
-  const std::string class_name_;
-  const std::string deprecated_attribute_;
+  const string class_name_;
+  const string deprecated_attribute_;
   std::vector<std::unique_ptr<ExtensionGenerator>> extension_generators_;
   std::vector<std::unique_ptr<EnumGenerator>> enum_generators_;
   std::vector<std::unique_ptr<MessageGenerator>> nested_message_generators_;

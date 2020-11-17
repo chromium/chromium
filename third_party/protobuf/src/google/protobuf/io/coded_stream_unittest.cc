@@ -34,12 +34,12 @@
 //
 // This file contains tests and benchmarks.
 
+#include <memory>
+#include <vector>
+
 #include <google/protobuf/io/coded_stream.h>
 
 #include <limits.h>
-
-#include <memory>
-#include <vector>
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
@@ -132,7 +132,7 @@ namespace {
 class CodedStreamTest : public testing::Test {
  protected:
   // Buffer used during most of the tests. This assumes tests run sequentially.
-  static constexpr int kBufferSize = 1024 * 64;
+  static const int kBufferSize = 1024 * 64;
   static uint8 buffer_[kBufferSize];
 };
 
@@ -228,17 +228,17 @@ TEST_F(CodedStreamTest, EmptyInputBeforeEos) {
     In() : count_(0) {}
 
    private:
-    bool Next(const void** data, int* size) override {
+    virtual bool Next(const void** data, int* size) {
       *data = NULL;
       *size = 0;
       return count_++ < 2;
     }
-    void BackUp(int count) override { GOOGLE_LOG(FATAL) << "Tests never call this."; }
-    bool Skip(int count) override {
+    virtual void BackUp(int count) { GOOGLE_LOG(FATAL) << "Tests never call this."; }
+    virtual bool Skip(int count) {
       GOOGLE_LOG(FATAL) << "Tests never call this.";
       return false;
     }
-    int64_t ByteCount() const override { return 0; }
+    virtual int64 ByteCount() const { return 0; }
     int count_;
   } in;
   CodedInputStream input(&in);
@@ -1009,6 +1009,41 @@ TEST_F(CodedStreamTest, GetDirectBufferPointerInlineInput) {
   EXPECT_EQ(0, size);
 }
 
+TEST_F(CodedStreamTest, GetDirectBufferPointerOutput) {
+  ArrayOutputStream output(buffer_, sizeof(buffer_), 8);
+  CodedOutputStream coded_output(&output);
+
+  void* ptr;
+  int size;
+
+  EXPECT_TRUE(coded_output.GetDirectBufferPointer(&ptr, &size));
+  EXPECT_EQ(buffer_, ptr);
+  EXPECT_EQ(8, size);
+
+  // Peeking again should return the same pointer.
+  EXPECT_TRUE(coded_output.GetDirectBufferPointer(&ptr, &size));
+  EXPECT_EQ(buffer_, ptr);
+  EXPECT_EQ(8, size);
+
+  // Skip forward in the same buffer then peek again.
+  EXPECT_TRUE(coded_output.Skip(3));
+  EXPECT_TRUE(coded_output.GetDirectBufferPointer(&ptr, &size));
+  EXPECT_EQ(buffer_ + 3, ptr);
+  EXPECT_EQ(5, size);
+
+  // Skip to end of buffer and peek -- should get next buffer.
+  EXPECT_TRUE(coded_output.Skip(5));
+  EXPECT_TRUE(coded_output.GetDirectBufferPointer(&ptr, &size));
+  EXPECT_EQ(buffer_ + 8, ptr);
+  EXPECT_EQ(8, size);
+
+  // Skip over multiple buffers.
+  EXPECT_TRUE(coded_output.Skip(22));
+  EXPECT_TRUE(coded_output.GetDirectBufferPointer(&ptr, &size));
+  EXPECT_EQ(buffer_ + 30, ptr);
+  EXPECT_EQ(2, size);
+}
+
 // -------------------------------------------------------------------
 // Limits
 
@@ -1280,7 +1315,7 @@ class ReallyBigInputStream : public ZeroCopyInputStream {
   ~ReallyBigInputStream() {}
 
   // implements ZeroCopyInputStream ----------------------------------
-  bool Next(const void** data, int* size) override {
+  bool Next(const void** data, int* size) {
     // We only expect BackUp() to be called at the end.
     EXPECT_EQ(0, backup_amount_);
 
@@ -1302,13 +1337,13 @@ class ReallyBigInputStream : public ZeroCopyInputStream {
     }
   }
 
-  void BackUp(int count) override { backup_amount_ = count; }
+  void BackUp(int count) { backup_amount_ = count; }
 
-  bool Skip(int count) override {
+  bool Skip(int count) {
     GOOGLE_LOG(FATAL) << "Not implemented.";
     return false;
   }
-  int64_t ByteCount() const override {
+  int64 ByteCount() const {
     GOOGLE_LOG(FATAL) << "Not implemented.";
     return 0;
   }

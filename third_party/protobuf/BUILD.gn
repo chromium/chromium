@@ -25,19 +25,7 @@ config("protobuf_warnings") {
   cflags = []
   if (is_clang) {
     # protobuf-3 contains a few functions that are unused.
-    cflags += [
-      "-Wno-unused-function" ,
-    ]
-  }
-}
-
-config("protoc_warnings") {
-  cflags = []
-  if (is_clang) {
-    # Some generates contain a few fields that are not used.
-    cflags += [
-      "-Wno-unused-private-field" ,
-    ]
+    cflags += [ "-Wno-unused-function" ]
   }
 }
 
@@ -54,12 +42,6 @@ config("using_proto") {
     "src",
     "$root_gen_dir/protoc_out",
   ]
-}
-
-config("allow_deprecated_proto_fields") {
-  if (is_clang) {
-    cflags = [  "-Wno-deprecated-declarations" ]
-  }
 }
 
 protobuf_lite_sources = [
@@ -83,6 +65,7 @@ protobuf_lite_sources = [
   "src/google/protobuf/inlined_string_field.h",
   "src/google/protobuf/io/coded_stream.cc",
   "src/google/protobuf/io/coded_stream.h",
+  "src/google/protobuf/io/coded_stream_inl.h",
   "src/google/protobuf/io/io_win32.cc",
   "src/google/protobuf/io/io_win32.h",
   "src/google/protobuf/io/strtod.cc",
@@ -94,14 +77,11 @@ protobuf_lite_sources = [
   "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
   "src/google/protobuf/io/zero_copy_stream_impl_lite.h",
   "src/google/protobuf/map.h",
-  "src/google/protobuf/map.cc",
   "src/google/protobuf/map_entry_lite.h",
   "src/google/protobuf/map_field_lite.h",
   "src/google/protobuf/map_type_handler.h",
   "src/google/protobuf/message_lite.cc",
   "src/google/protobuf/message_lite.h",
-  "src/google/protobuf/parse_context.cc",
-  "src/google/protobuf/parse_context.h",
   "src/google/protobuf/repeated_field.cc",
   "src/google/protobuf/repeated_field.h",
   "src/google/protobuf/stubs/bytestream.cc",
@@ -312,6 +292,8 @@ static_library("protobuf_full") {
               "src/google/protobuf/source_context.pb.h",
               "src/google/protobuf/struct.pb.cc",
               "src/google/protobuf/struct.pb.h",
+              "src/google/protobuf/stubs/mathlimits.cc",
+              "src/google/protobuf/stubs/mathlimits.h",
               "src/google/protobuf/stubs/mathutil.h",
               "src/google/protobuf/stubs/substitute.cc",
               "src/google/protobuf/stubs/substitute.h",
@@ -593,7 +575,6 @@ if (current_toolchain == host_toolchain) {
       # Must be after no_chromium_code for warning flags to be ordered
       # correctly.
       ":protobuf_warnings",
-      ":protoc_warnings",
     ]
     if (is_win) {
       # This is defined internally, don't warn on duplicate.

@@ -229,17 +229,7 @@ class FieldDescriptor
         }
 
         $oneof_index = $proto->hasOneofIndex() ? $proto->getOneofIndex() : -1;
-        // TODO: once proto2 is supported, this default should be false
-        // for proto2.
-        if ($proto->getLabel() === GPBLabel::REPEATED &&
-            $proto->getType() !== GPBType::MESSAGE &&
-            $proto->getType() !== GPBType::GROUP &&
-            $proto->getType() !== GPBType::STRING &&
-            $proto->getType() !== GPBType::BYTES) {
-          $packed = true;
-        } else {
-          $packed = false;
-        }
+        $packed = false;
         $options = $proto->getOptions();
         if ($options !== null) {
             $packed = $options->getPacked();

@@ -88,7 +88,6 @@ class MessageGenerator {
 
  protected:
   const Descriptor* descriptor_;
-  std::set<const OneofDescriptor*> oneofs_;
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MessageGenerator);

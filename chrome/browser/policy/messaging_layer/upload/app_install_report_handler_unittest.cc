@@ -76,20 +76,16 @@ class AppInstallReportHandlerTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-class TestRecord {
+class TestRecord : public Record {
  public:
   explicit TestRecord(base::StringPiece key = "TEST_KEY",
                       base::StringPiece value = "TEST_VALUE") {
     data_.SetKey(key, base::Value(value));
-  }
-
-  Record GetRecord() {
-    Record record;
     std::string json_data;
     base::JSONWriter::Write(data_, &json_data);
-    record.set_data(json_data);
-    record.set_destination(Destination::UPLOAD_EVENTS);
-    return record;
+
+    set_data(json_data);
+    set_destination(Destination::UPLOAD_EVENTS);
   }
 
   const base::Value* data() const { return &data_; }
@@ -110,7 +106,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
           })));
 
   AppInstallReportHandler handler(client_.get());
-  Status handle_status = handler.HandleRecord(test_record.GetRecord());
+  Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
@@ -119,7 +115,7 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
   EXPECT_CALL(*client_, UploadExtensionInstallReport_(_, _)).Times(0);
   AppInstallReportHandler handler(client_.get());
 
-  Record test_record;
+  TestRecord test_record;
   test_record.set_destination(Destination::MEET_DEVICE_TELEMETRY);
 
   Status handle_status = handler.HandleRecord(test_record);
@@ -131,7 +127,7 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidData) {
   EXPECT_CALL(*client_, UploadExtensionInstallReport_(_, _)).Times(0);
   AppInstallReportHandler handler(client_.get());
 
-  Record test_record;
+  TestRecord test_record;
   test_record.set_data("BAD_DATA");
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_FALSE(handle_status.ok());
@@ -151,7 +147,7 @@ TEST_F(AppInstallReportHandlerTest, ReportsUnsuccessfulCall) {
           })));
 
   AppInstallReportHandler handler(client_.get());
-  Status handle_status = handler.HandleRecord(test_record.GetRecord());
+  Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
@@ -188,7 +184,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsMultipleValidRecords) {
   AppInstallReportHandler handler(client_.get());
 
   for (int i = 0; i < kExpectedCallTimes; i++) {
-    Status handle_status = handler.HandleRecord(test_record.GetRecord());
+    Status handle_status = handler.HandleRecord(test_record);
     EXPECT_OK(handle_status);
   }
   waiter.Wait();

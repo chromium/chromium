@@ -45,22 +45,22 @@
 #include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/testing/file.h>
 #include <google/protobuf/testing/file.h>
-#include <google/protobuf/testing/file.h>
 #include <google/protobuf/compiler/mock_code_generator.h>
 #include <google/protobuf/compiler/subprocess.h>
 #include <google/protobuf/compiler/code_generator.h>
 #include <google/protobuf/compiler/command_line_interface.h>
 #include <google/protobuf/test_util2.h>
 #include <google/protobuf/unittest.pb.h>
-#include <google/protobuf/unittest_custom_options.pb.h>
+#include <google/protobuf/io/io_win32.h>
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/descriptor.h>
+#include <google/protobuf/stubs/substitute.h>
+
+#include <google/protobuf/testing/file.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
-#include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/io/io_win32.h>
 
 #include <google/protobuf/stubs/strutil.h>
 
@@ -143,10 +143,6 @@ class CommandLineInterfaceTest : public testing::Test {
   // substring.
   void ExpectErrorSubstring(const std::string& expected_substring);
 
-  // Checks that Run() returned zero and the stderr contains the given
-  // substring.
-  void ExpectWarningSubstring(const std::string& expected_substring);
-
   // Checks that the captured stdout is the same as the expected_text.
   void ExpectCapturedStdout(const std::string& expected_text);
 
@@ -204,17 +200,6 @@ class CommandLineInterfaceTest : public testing::Test {
 
   void ExpectFileContent(const std::string& filename,
                          const std::string& content);
-
-  // The default code generators support all features. Use this to create a
-  // code generator that omits the given feature(s).
-  void CreateGeneratorWithMissingFeatures(const std::string& name,
-                                          const std::string& description,
-                                          uint64 features) {
-    MockCodeGenerator* generator = new MockCodeGenerator(name);
-    generator->SuppressFeatures(features);
-    mock_generators_to_delete_.push_back(generator);
-    cli_.RegisterGenerator(name, generator, description);
-  }
 
  private:
   // The object we are testing.
@@ -419,12 +404,6 @@ void CommandLineInterfaceTest::ExpectErrorText(
 void CommandLineInterfaceTest::ExpectErrorSubstring(
     const std::string& expected_substring) {
   EXPECT_NE(0, return_code_);
-  EXPECT_PRED_FORMAT2(testing::IsSubstring, expected_substring, error_text_);
-}
-
-void CommandLineInterfaceTest::ExpectWarningSubstring(
-    const std::string& expected_substring) {
-  EXPECT_EQ(0, return_code_);
   EXPECT_PRED_FORMAT2(testing::IsSubstring, expected_substring, error_text_);
 }
 
@@ -671,73 +650,6 @@ TEST_F(CommandLineInterfaceTest, MultipleInputs_DescriptorSetIn) {
                                     "bar.proto", "Bar");
 }
 
-TEST_F(CommandLineInterfaceTest, MultipleInputs_UnusedImport_DescriptorSetIn) {
-  // Test unused import warning is not raised when descriptor_set_in is called
-  // and custom options are in unknown field instead of uninterpreted_options.
-  FileDescriptorSet file_descriptor_set;
-
-  const FileDescriptor* descriptor_file =
-      FileDescriptorProto::descriptor()->file();
-  descriptor_file->CopyTo(file_descriptor_set.add_file());
-
-  const FileDescriptor* custom_file =
-      protobuf_unittest::AggregateMessage::descriptor()->file();
-  FileDescriptorProto* file_descriptor_proto = file_descriptor_set.add_file();
-  custom_file->CopyTo(file_descriptor_proto);
-  file_descriptor_proto->set_name("custom_options.proto");
-  // Add a custom message option.
-  FieldDescriptorProto* extension_option =
-      file_descriptor_proto->add_extension();
-  extension_option->set_name("unknown_option");
-  extension_option->set_extendee(".google.protobuf.MessageOptions");
-  extension_option->set_number(1111);
-  extension_option->set_label(FieldDescriptorProto::LABEL_OPTIONAL);
-  extension_option->set_type(FieldDescriptorProto::TYPE_INT64);
-
-  file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("import_custom_unknown_options.proto");
-  file_descriptor_proto->add_dependency("custom_options.proto");
-  // Add custom message option to unknown field. This custom option is
-  // not known in generated pool, thus option will be in unknown fields.
-  file_descriptor_proto->add_message_type()->set_name("Bar");
-  file_descriptor_proto->mutable_message_type(0)
-      ->mutable_options()
-      ->mutable_unknown_fields()
-      ->AddVarint(1111, 2222);
-
-  WriteDescriptorSet("foo.bin", &file_descriptor_set);
-
-  Run("protocol_compiler --test_out=$tmpdir --plug_out=$tmpdir "
-      "--descriptor_set_in=$tmpdir/foo.bin "
-      "import_custom_unknown_options.proto");
-
-  // TODO(jieluo): Fix this test. This test case only happens when
-  // CommandLineInterface::Run() is used instead of invoke protoc combined
-  // with descriptor_set_in, and same custom options are defined in both
-  // generated pool and descriptor_set_in. There's no such uages for now but
-  // still need to be fixed.
-  /*
-  file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("import_custom_extension_options.proto");
-  file_descriptor_proto->add_dependency("custom_options.proto");
-  // Add custom message option to unknown field. This custom option is
-  // also defined in generated pool, thus option will be in extensions.
-  file_descriptor_proto->add_message_type()->set_name("Foo");
-  file_descriptor_proto->mutable_message_type(0)
-      ->mutable_options()
-      ->mutable_unknown_fields()
-      ->AddVarint(protobuf_unittest::message_opt1.number(), 2222);
-
-  WriteDescriptorSet("foo.bin", &file_descriptor_set);
-
-  Run("protocol_compiler --test_out=$tmpdir --plug_out=$tmpdir "
-      "--descriptor_set_in=$tmpdir/foo.bin import_custom_unknown_options.proto "
-      "import_custom_extension_options.proto");
-  */
-
-  ExpectNoErrors();
-}
-
 TEST_F(CommandLineInterfaceTest, MultipleInputsWithImport) {
   // Test parsing multiple input files with an import of a separate file.
 
@@ -924,120 +836,6 @@ TEST_F(CommandLineInterfaceTest,
   ExpectErrorSubstring("bar.proto: \"Baz\" is not defined.");
 }
 
-TEST_F(CommandLineInterfaceTest,
-       InputsOnlyFromDescriptorSetIn_UnusedImportIsNotReported) {
-  FileDescriptorSet file_descriptor_set;
-
-  FileDescriptorProto* file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("unused.proto");
-  file_descriptor_proto->add_message_type()->set_name("Unused");
-
-  file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("bar.proto");
-  file_descriptor_proto->add_dependency("unused.proto");
-  file_descriptor_proto->add_message_type()->set_name("Bar");
-
-  WriteDescriptorSet("unused_and_bar.bin", &file_descriptor_set);
-
-  Run("protocol_compiler --test_out=$tmpdir --plug_out=$tmpdir "
-      "--descriptor_set_in=$tmpdir/unused_and_bar.bin unused.proto bar.proto");
-  ExpectNoErrors();
-}
-
-TEST_F(CommandLineInterfaceTest,
-       InputsFromDescriptorSetInAndFileSystem_UnusedImportIsReported) {
-  FileDescriptorSet file_descriptor_set;
-
-  FileDescriptorProto* file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("unused.proto");
-  file_descriptor_proto->add_message_type()->set_name("Unused");
-
-  file_descriptor_proto = file_descriptor_set.add_file();
-  file_descriptor_proto->set_name("bar.proto");
-  file_descriptor_proto->add_dependency("unused.proto");
-  file_descriptor_proto->add_message_type()->set_name("Bar");
-
-  WriteDescriptorSet("unused_and_bar.bin", &file_descriptor_set);
-
-  CreateTempFile("foo.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"bar.proto\";\n"
-                 "message Foo {\n"
-                 "  optional Bar bar = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --test_out=$tmpdir --plug_out=$tmpdir "
-      "--descriptor_set_in=$tmpdir/unused_and_bar.bin "
-      "--proto_path=$tmpdir unused.proto bar.proto foo.proto");
-  // Reporting unused imports here is unfair, since it's unactionable. Notice
-  // the lack of a line number.
-  // TODO(b/144853061): If the file with unused import is from the descriptor
-  // set and not from the file system, suppress the warning.
-  ExpectWarningSubstring("bar.proto: warning: Import unused.proto is unused.");
-}
-
-TEST_F(CommandLineInterfaceTest,
-       OnlyReportsUnusedImportsForFilesBeingGenerated) {
-  CreateTempFile("unused.proto",
-                 "syntax = \"proto2\";\n"
-                 "message Unused {}\n");
-  CreateTempFile("bar.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"unused.proto\";\n"
-                 "message Bar {}\n");
-  CreateTempFile("foo.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"bar.proto\";\n"
-                 "message Foo {\n"
-                 "  optional Bar bar = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --test_out=$tmpdir "
-      "--proto_path=$tmpdir foo.proto");
-  ExpectNoErrors();
-}
-
-TEST_F(CommandLineInterfaceTest, ReportsTransitiveMisingImports_LeafFirst) {
-  CreateTempFile("unused.proto",
-                 "syntax = \"proto2\";\n"
-                 "message Unused {}\n");
-  CreateTempFile("bar.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"unused.proto\";\n"
-                 "message Bar {}\n");
-  CreateTempFile("foo.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"bar.proto\";\n"
-                 "message Foo {\n"
-                 "  optional Bar bar = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --test_out=$tmpdir "
-      "--proto_path=$tmpdir bar.proto foo.proto");
-  ExpectWarningSubstring(
-      "bar.proto:2:1: warning: Import unused.proto is unused.");
-}
-
-TEST_F(CommandLineInterfaceTest, ReportsTransitiveMisingImports_LeafLast) {
-  CreateTempFile("unused.proto",
-                 "syntax = \"proto2\";\n"
-                 "message Unused {}\n");
-  CreateTempFile("bar.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"unused.proto\";\n"
-                 "message Bar {}\n");
-  CreateTempFile("foo.proto",
-                 "syntax = \"proto2\";\n"
-                 "import \"bar.proto\";\n"
-                 "message Foo {\n"
-                 "  optional Bar bar = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --test_out=$tmpdir "
-      "--proto_path=$tmpdir foo.proto bar.proto");
-  ExpectWarningSubstring(
-      "bar.proto:2:1: warning: Import unused.proto is unused.");
-}
 TEST_F(CommandLineInterfaceTest, CreateDirectory) {
   // Test that when we output to a sub-directory, it is created.
 
@@ -1136,7 +934,7 @@ TEST_F(CommandLineInterfaceTest, UnrecognizedExtraParameters) {
 }
 
 TEST_F(CommandLineInterfaceTest, ExtraPluginParametersForOutParameters) {
-  // This doesn't rely on the plugin having been registered and instead that
+  // This doesn't rely on the plugin having been registred and instead that
   // the existence of --[name]_out is enough to make the --[name]_opt valid.
   // However, running out of process plugins found via the search path (i.e. -
   // not pre registered with --plugin) isn't support in this test suite, so we
@@ -1192,8 +990,8 @@ TEST_F(CommandLineInterfaceTest, InsertWithAnnotationFixup) {
   Run("protocol_compiler "
       "--test_out=TestParameter:$tmpdir "
       "--plug_out=TestPluginParameter:$tmpdir "
-      "--test_out=insert_endlines=test_generator,test_plugin:$tmpdir "
-      "--plug_out=insert_endlines=test_generator,test_plugin:$tmpdir "
+      "--test_out=insert=test_generator,test_plugin:$tmpdir "
+      "--plug_out=insert=test_generator,test_plugin:$tmpdir "
       "--proto_path=$tmpdir foo.proto");
 
   ExpectNoErrors();
@@ -1840,9 +1638,7 @@ TEST_F(CommandLineInterfaceTest, InputNotFoundError) {
   Run("protocol_compiler --test_out=$tmpdir "
       "--proto_path=$tmpdir foo.proto");
 
-  ExpectErrorText(
-      "Could not make proto path relative: foo.proto: No such file or "
-      "directory\n");
+  ExpectErrorText("foo.proto: No such file or directory\n");
 }
 
 TEST_F(CommandLineInterfaceTest, InputNotFoundError_DescriptorSetIn) {
@@ -1861,9 +1657,7 @@ TEST_F(CommandLineInterfaceTest, CwdRelativeInputNotFoundError) {
   Run("protocol_compiler --test_out=$tmpdir "
       "--proto_path=$tmpdir $tmpdir/foo.proto");
 
-  ExpectErrorText(
-      "Could not make proto path relative: $tmpdir/foo.proto: No such file or "
-      "directory\n");
+  ExpectErrorText("$tmpdir/foo.proto: No such file or directory\n");
 }
 
 TEST_F(CommandLineInterfaceTest, CwdRelativeInputNotMappedError) {
@@ -1900,9 +1694,7 @@ TEST_F(CommandLineInterfaceTest, CwdRelativeInputNotFoundAndNotMappedError) {
   Run("protocol_compiler --test_out=$tmpdir "
       "--proto_path=$tmpdir/bar $tmpdir/foo.proto");
 
-  ExpectErrorText(
-      "Could not make proto path relative: $tmpdir/foo.proto: No such file or "
-      "directory\n");
+  ExpectErrorText("$tmpdir/foo.proto: No such file or directory\n");
 }
 
 TEST_F(CommandLineInterfaceTest, CwdRelativeInputShadowedError) {
@@ -1935,8 +1727,7 @@ TEST_F(CommandLineInterfaceTest, ProtoPathNotFoundError) {
 
   ExpectErrorText(
       "$tmpdir/foo: warning: directory does not exist.\n"
-      "Could not make proto path relative: foo.proto: No such file or "
-      "directory\n");
+      "foo.proto: No such file or directory\n");
 }
 
 TEST_F(CommandLineInterfaceTest, ProtoPathAndDescriptorSetIn) {
@@ -2372,80 +2163,6 @@ TEST_F(CommandLineInterfaceTest, MissingValueAtEndError) {
   ExpectErrorText("Missing value for flag: --test_out\n");
 }
 
-TEST_F(CommandLineInterfaceTest, Proto3OptionalDisallowed) {
-  CreateTempFile("google/foo.proto",
-                 "syntax = \"proto3\";\n"
-                 "message Foo {\n"
-                 "  optional int32 i = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --proto_path=$tmpdir google/foo.proto "
-      "-odescriptor.pb");
-
-  ExpectErrorSubstring("--experimental_allow_proto3_optional was not set");
-}
-
-TEST_F(CommandLineInterfaceTest, Proto3OptionalDisallowedDescriptor) {
-  CreateTempFile("google/foo.proto",
-                 "syntax = \"proto3\";\n"
-                 "message Foo {\n"
-                 "  optional int32 i = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --experimental_allow_proto3_optional "
-      "--proto_path=$tmpdir google/foo.proto "
-      " -o$tmpdir/descriptor.pb");
-  ExpectNoErrors();
-
-  Run("protocol_compiler --descriptor_set_in=$tmpdir/descriptor.pb"
-      " google/foo.proto --test_out=$tmpdir");
-  ExpectErrorSubstring("--experimental_allow_proto3_optional was not set");
-}
-
-TEST_F(CommandLineInterfaceTest, Proto3OptionalDisallowedGenCode) {
-  CreateTempFile("google/foo.proto",
-                 "syntax = \"proto3\";\n"
-                 "message Foo {\n"
-                 "  optional int32 i = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --proto_path=$tmpdir google/foo.proto "
-      "--test_out=$tmpdir");
-
-  ExpectErrorSubstring("--experimental_allow_proto3_optional was not set");
-}
-
-TEST_F(CommandLineInterfaceTest, Proto3OptionalDisallowedNoCodegenSupport) {
-  CreateTempFile("google/foo.proto",
-                 "syntax = \"proto3\";\n"
-                 "message Foo {\n"
-                 "  optional int32 i = 1;\n"
-                 "}\n");
-
-  CreateGeneratorWithMissingFeatures("--no_proto3_optional_out",
-                                     "Doesn't support proto3 optional",
-                                     CodeGenerator::FEATURE_PROTO3_OPTIONAL);
-
-  Run("protocol_compiler --experimental_allow_proto3_optional "
-      "--proto_path=$tmpdir google/foo.proto --no_proto3_optional_out=$tmpdir");
-
-  ExpectErrorSubstring(
-      "code generator --no_proto3_optional_out hasn't been updated to support "
-      "optional fields in proto3");
-}
-
-TEST_F(CommandLineInterfaceTest, Proto3OptionalAllowWithFlag) {
-  CreateTempFile("google/foo.proto",
-                 "syntax = \"proto3\";\n"
-                 "message Foo {\n"
-                 "  optional int32 i = 1;\n"
-                 "}\n");
-
-  Run("protocol_compiler --experimental_allow_proto3_optional "
-      "--proto_path=$tmpdir google/foo.proto --test_out=$tmpdir");
-  ExpectNoErrors();
-}
-
 TEST_F(CommandLineInterfaceTest, PrintFreeFieldNumbers) {
   CreateTempFile("foo.proto",
                  "syntax = \"proto2\";\n"
@@ -2564,22 +2281,20 @@ class EncodeDecodeTest : public testing::TestWithParam<EncodeDecodeTestMode> {
   enum Type { TEXT, BINARY };
   enum ReturnCode { SUCCESS, ERROR };
 
-  bool Run(const std::string& command, bool specify_proto_files = true) {
+  bool Run(const std::string& command) {
     std::vector<std::string> args;
     args.push_back("protoc");
     SplitStringUsing(command, " ", &args);
-    if (specify_proto_files) {
-      switch (GetParam()) {
-        case PROTO_PATH:
-          args.push_back("--proto_path=" + TestUtil::TestSourceDir());
-          break;
-        case DESCRIPTOR_SET_IN:
-          args.push_back(StrCat("--descriptor_set_in=",
-                                      unittest_proto_descriptor_set_filename_));
-          break;
-        default:
-          ADD_FAILURE() << "unexpected EncodeDecodeTestMode: " << GetParam();
-      }
+    switch (GetParam()) {
+      case PROTO_PATH:
+        args.push_back("--proto_path=" + TestUtil::TestSourceDir());
+        break;
+      case DESCRIPTOR_SET_IN:
+        args.push_back(StrCat("--descriptor_set_in=",
+                                    unittest_proto_descriptor_set_filename_));
+        break;
+      default:
+        ADD_FAILURE() << "unexpected EncodeDecodeTestMode: " << GetParam();
     }
 
     std::unique_ptr<const char*[]> argv(new const char*[args.size()]);
@@ -2624,11 +2339,6 @@ class EncodeDecodeTest : public testing::TestWithParam<EncodeDecodeTestMode> {
     EXPECT_EQ(StripCR(expected_text), StripCR(captured_stderr_));
   }
 
-  void ExpectStderrContainsText(const std::string& expected_text) {
-    EXPECT_NE(StripCR(captured_stderr_).find(StripCR(expected_text)),
-              std::string::npos);
-  }
-
  private:
   void WriteUnittestProtoDescriptorSet() {
     unittest_proto_descriptor_set_filename_ =
@@ -2661,12 +2371,9 @@ TEST_P(EncodeDecodeTest, Encode) {
   RedirectStdinFromFile(TestUtil::GetTestDataPath(
       "net/proto2/internal/"
       "testdata/text_format_unittest_data_oneof_implemented.txt"));
-  std::string args;
-  if (GetParam() != DESCRIPTOR_SET_IN) {
-    args.append(
-        TestUtil::MaybeTranslatePath("net/proto2/internal/unittest.proto"));
-  }
-  EXPECT_TRUE(Run(args + " --encode=protobuf_unittest.TestAllTypes"));
+  EXPECT_TRUE(
+      Run(TestUtil::MaybeTranslatePath("net/proto2/internal/unittest.proto") +
+          " --encode=protobuf_unittest.TestAllTypes"));
   ExpectStdoutMatchesBinaryFile(TestUtil::GetTestDataPath(
       "net/proto2/internal/testdata/golden_message_oneof_implemented"));
   ExpectStderrMatchesText("");
@@ -2702,7 +2409,7 @@ TEST_P(EncodeDecodeTest, DecodeRaw) {
   message.SerializeToString(&data);
 
   RedirectStdinFromText(data);
-  EXPECT_TRUE(Run("--decode_raw", /*specify_proto_files=*/false));
+  EXPECT_TRUE(Run("--decode_raw"));
   ExpectStdoutMatchesText(
       "1: 123\n"
       "14: \"foo\"\n");
@@ -2722,7 +2429,7 @@ TEST_P(EncodeDecodeTest, ProtoParseError) {
       Run("net/proto2/internal/no_such_file.proto "
           "--encode=NoSuchType"));
   ExpectStdoutMatchesText("");
-  ExpectStderrContainsText(
+  ExpectStderrMatchesText(
       "net/proto2/internal/no_such_file.proto: No such file or directory\n");
 }
 

@@ -53,27 +53,28 @@
 //   3. testee sends 4-byte length M (little endian)
 //   4. testee sends M bytes representing a ConformanceResponse proto
 
+#include <algorithm>
 #include <errno.h>
+#include <fstream>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-#include <algorithm>
-#include <fstream>
 #include <vector>
 
 #include <google/protobuf/stubs/stringprintf.h>
+
 #include "conformance.pb.h"
 #include "conformance_test.h"
 
 using conformance::ConformanceResponse;
+using google::protobuf::StringAppendF;
 using google::protobuf::ConformanceTestSuite;
 using std::string;
 using std::vector;
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-#define GOOGLE_CHECK_SYSCALL(call) \
+#define CHECK_SYSCALL(call) \
   if (call < 0) { \
     perror(#call " " __FILE__ ":" TOSTRING(__LINE__)); \
     exit(1); \
@@ -194,8 +195,7 @@ int ForkPipeRunner::Run(
   }
   bool all_ok = true;
   for (ConformanceTestSuite* suite : suites) {
-    string program;
-    std::vector<string> program_args;
+    char *program;
     string failure_list_filename;
     conformance::FailureSet failure_list;
 
@@ -221,15 +221,15 @@ int ForkPipeRunner::Run(
           UsageError();
         }
       } else {
-        program += argv[arg];
-        while (arg < argc) {
-          program_args.push_back(argv[arg]);
-          arg++;
+        if (arg != argc - 1) {
+          fprintf(stderr, "Too many arguments.\n");
+          UsageError();
         }
+        program = argv[arg];
       }
     }
 
-    ForkPipeRunner runner(program, program_args);
+    ForkPipeRunner runner(program);
 
     std::string output;
     all_ok = all_ok &&
@@ -274,42 +274,37 @@ void ForkPipeRunner::SpawnTestProgram() {
 
   if (pid) {
     // Parent.
-    GOOGLE_CHECK_SYSCALL(close(toproc_pipe_fd[0]));
-    GOOGLE_CHECK_SYSCALL(close(fromproc_pipe_fd[1]));
+    CHECK_SYSCALL(close(toproc_pipe_fd[0]));
+    CHECK_SYSCALL(close(fromproc_pipe_fd[1]));
     write_fd_ = toproc_pipe_fd[1];
     read_fd_ = fromproc_pipe_fd[0];
     child_pid_ = pid;
   } else {
     // Child.
-    GOOGLE_CHECK_SYSCALL(close(STDIN_FILENO));
-    GOOGLE_CHECK_SYSCALL(close(STDOUT_FILENO));
-    GOOGLE_CHECK_SYSCALL(dup2(toproc_pipe_fd[0], STDIN_FILENO));
-    GOOGLE_CHECK_SYSCALL(dup2(fromproc_pipe_fd[1], STDOUT_FILENO));
+    CHECK_SYSCALL(close(STDIN_FILENO));
+    CHECK_SYSCALL(close(STDOUT_FILENO));
+    CHECK_SYSCALL(dup2(toproc_pipe_fd[0], STDIN_FILENO));
+    CHECK_SYSCALL(dup2(fromproc_pipe_fd[1], STDOUT_FILENO));
 
-    GOOGLE_CHECK_SYSCALL(close(toproc_pipe_fd[0]));
-    GOOGLE_CHECK_SYSCALL(close(fromproc_pipe_fd[1]));
-    GOOGLE_CHECK_SYSCALL(close(toproc_pipe_fd[1]));
-    GOOGLE_CHECK_SYSCALL(close(fromproc_pipe_fd[0]));
+    CHECK_SYSCALL(close(toproc_pipe_fd[0]));
+    CHECK_SYSCALL(close(fromproc_pipe_fd[1]));
+    CHECK_SYSCALL(close(toproc_pipe_fd[1]));
+    CHECK_SYSCALL(close(fromproc_pipe_fd[0]));
 
     std::unique_ptr<char[]> executable(new char[executable_.size() + 1]);
     memcpy(executable.get(), executable_.c_str(), executable_.size());
     executable[executable_.size()] = '\0';
 
-    std::vector<const char *> argv;
-    argv.push_back(executable.get());
-    for (int i = 0; i < executable_args_.size(); ++i) {
-      argv.push_back(executable_args_[i].c_str());
-    }
-    argv.push_back(nullptr);
-    // Never returns.
-    GOOGLE_CHECK_SYSCALL(execv(executable.get(), const_cast<char **>(argv.data())));
+    char *const argv[] = {executable.get(), NULL};
+    CHECK_SYSCALL(execv(executable.get(), argv));  // Never returns.
   }
 }
 
 void ForkPipeRunner::CheckedWrite(int fd, const void *buf, size_t len) {
   if (write(fd, buf, len) != len) {
     GOOGLE_LOG(FATAL) << current_test_name_
-               << ": error writing to test program: " << strerror(errno);
+                      << ": error writing to test program: "
+                      << strerror(errno);
   }
 }
 
@@ -319,11 +314,13 @@ bool ForkPipeRunner::TryRead(int fd, void *buf, size_t len) {
     ssize_t bytes_read = read(fd, (char*)buf + ofs, len);
 
     if (bytes_read == 0) {
-      GOOGLE_LOG(ERROR) << current_test_name_ << ": unexpected EOF from test program";
+      GOOGLE_LOG(ERROR) << current_test_name_
+                        << ": unexpected EOF from test program";
       return false;
     } else if (bytes_read < 0) {
       GOOGLE_LOG(ERROR) << current_test_name_
-                 << ": error reading from test program: " << strerror(errno);
+                        << ": error reading from test program: "
+                        << strerror(errno);
       return false;
     }
 
@@ -337,7 +334,8 @@ bool ForkPipeRunner::TryRead(int fd, void *buf, size_t len) {
 void ForkPipeRunner::CheckedRead(int fd, void *buf, size_t len) {
   if (!TryRead(fd, buf, len)) {
     GOOGLE_LOG(FATAL) << current_test_name_
-               << ": error reading from test program: " << strerror(errno);
+                      << ": error reading from test program: "
+                      << strerror(errno);
   }
 }
 

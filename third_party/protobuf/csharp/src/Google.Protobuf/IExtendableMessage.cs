@@ -35,8 +35,7 @@ using Google.Protobuf.Collections;
 namespace Google.Protobuf
 {
     /// <summary>
-    /// Generic interface for a Protocol Buffers message containing one or more extensions, where the type parameter is expected to be the same type as the implementation class.
-    /// This interface is experiemental and is subject to change.
+    /// Generic interface for a Protocol Buffers message containing one or more extensions, where the type parameter is expected to be the same type as the implementation class
     /// </summary>
     public interface IExtendableMessage<T> : IMessage<T> where T : IExtendableMessage<T>
     {
@@ -47,14 +46,14 @@ namespace Google.Protobuf
 
         /// <summary>
         /// Gets the value of the specified repeated extension or null if the extension isn't registered in this set.
-        /// For a version of this method that never returns null, use <see cref="IExtendableMessage{T}.GetOrInitializeExtension{TValue}(RepeatedExtension{T, TValue})"/>
+        /// For a version of this method that never returns null, use <see cref="IExtendableMessage{T}.GetOrRegisterExtension{TValue}(RepeatedExtension{T, TValue})"/>
         /// </summary>
         RepeatedField<TValue> GetExtension<TValue>(RepeatedExtension<T, TValue> extension);
 
         /// <summary>
-        /// Gets the value of the specified repeated extension, registering it if it hasn't already been registered.
+        /// Gets the value of the specified repeated extension, registering it if it isn't
         /// </summary>
-        RepeatedField<TValue> GetOrInitializeExtension<TValue>(RepeatedExtension<T, TValue> extension);
+        RepeatedField<TValue> GetOrRegisterExtension<TValue>(RepeatedExtension<T, TValue> extension);
 
         /// <summary>
         /// Sets the value of the specified extension

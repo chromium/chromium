@@ -40,9 +40,8 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/util/internal/location_tracker.h>
-#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/stringpiece.h>
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {

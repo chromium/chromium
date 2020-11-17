@@ -52,7 +52,7 @@ namespace objectivec {
 namespace {
 
 // This is also found in GPBBootstrap.h, and needs to be kept in sync.
-const int32 GOOGLE_PROTOBUF_OBJC_VERSION = 30004;
+const int32 GOOGLE_PROTOBUF_OBJC_VERSION = 30002;
 
 const char* kHeaderExtension = ".pbobjc.h";
 
@@ -209,15 +209,15 @@ FileGenerator::FileGenerator(const FileDescriptor *file, const Options& options)
 FileGenerator::~FileGenerator() {}
 
 void FileGenerator::GenerateHeader(io::Printer *printer) {
-  std::vector<std::string> headers;
+  std::set<string> headers;
   // Generated files bundled with the library get minimal imports, everything
   // else gets the wrapper so everything is usable.
   if (is_bundled_proto_) {
-    headers.push_back("GPBDescriptor.h");
-    headers.push_back("GPBMessage.h");
-    headers.push_back("GPBRootObject.h");
+    headers.insert("GPBRootObject.h");
+    headers.insert("GPBMessage.h");
+    headers.insert("GPBDescriptor.h");
   } else {
-    headers.push_back("GPBProtocolBuffers.h");
+    headers.insert("GPBProtocolBuffers.h");
   }
   PrintFileRuntimePreamble(printer, headers);
 
@@ -242,9 +242,8 @@ void FileGenerator::GenerateHeader(io::Printer *printer) {
     ImportWriter import_writer(
         options_.generate_for_named_framework,
         options_.named_framework_to_proto_path_mappings_path,
-        options_.runtime_import_prefix,
         is_bundled_proto_);
-    const std::string header_extension(kHeaderExtension);
+    const string header_extension(kHeaderExtension);
     for (int i = 0; i < file_->public_dependency_count(); i++) {
       import_writer.AddFile(file_->public_dependency(i), header_extension);
     }
@@ -264,11 +263,11 @@ void FileGenerator::GenerateHeader(io::Printer *printer) {
       "CF_EXTERN_C_BEGIN\n"
       "\n");
 
-  std::set<std::string> fwd_decls;
+  std::set<string> fwd_decls;
   for (const auto& generator : message_generators_) {
     generator->DetermineForwardDeclarations(&fwd_decls);
   }
-  for (std::set<std::string>::const_iterator i(fwd_decls.begin());
+  for (std::set<string>::const_iterator i(fwd_decls.begin());
        i != fwd_decls.end(); ++i) {
     printer->Print("$value$;\n", "value", *i);
   }
@@ -304,12 +303,12 @@ void FileGenerator::GenerateHeader(io::Printer *printer) {
       " * which is a @c GPBExtensionRegistry that includes all the extensions defined by\n"
       " * this file and all files that it depends on.\n"
       " **/\n"
-      "GPB_FINAL @interface $root_class_name$ : GPBRootObject\n"
+      "@interface $root_class_name$ : GPBRootObject\n"
       "@end\n"
       "\n",
       "root_class_name", root_class_name_);
 
-  if (!extension_generators_.empty()) {
+  if (extension_generators_.size() > 0) {
     // The dynamic methods block is only needed if there are extensions.
     printer->Print(
         "@interface $root_class_name$ (DynamicMethods)\n",
@@ -320,7 +319,7 @@ void FileGenerator::GenerateHeader(io::Printer *printer) {
     }
 
     printer->Print("@end\n\n");
-  }  // !extension_generators_.empty()
+  }  // extension_generators_.size() > 0
 
   for (const auto& generator : message_generators_) {
     generator->GenerateMessageHeader(printer);
@@ -338,8 +337,8 @@ void FileGenerator::GenerateHeader(io::Printer *printer) {
 
 void FileGenerator::GenerateSource(io::Printer *printer) {
   // #import the runtime support.
-  std::vector<std::string> headers;
-  headers.push_back("GPBProtocolBuffers_RuntimeSupport.h");
+  std::set<string> headers;
+  headers.insert("GPBProtocolBuffers_RuntimeSupport.h");
   PrintFileRuntimePreamble(printer, headers);
 
   // Enums use atomic in the generated code, so add the system import as needed.
@@ -356,16 +355,15 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
     ImportWriter import_writer(
         options_.generate_for_named_framework,
         options_.named_framework_to_proto_path_mappings_path,
-        options_.runtime_import_prefix,
         is_bundled_proto_);
-    const std::string header_extension(kHeaderExtension);
+    const string header_extension(kHeaderExtension);
 
     // #import the header for this proto file.
     import_writer.AddFile(file_, header_extension);
 
     // #import the headers for anything that a plain dependency of this proto
     // file (that means they were just an include, not a "public" include).
-    std::set<std::string> public_import_names;
+    std::set<string> public_import_names;
     for (int i = 0; i < file_->public_dependency_count(); i++) {
       public_import_names.insert(file_->public_dependency(i)->name());
     }
@@ -400,20 +398,10 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
     }
   }
 
-  std::set<std::string> fwd_decls;
-  for (const auto& generator : message_generators_) {
-    generator->DetermineObjectiveCClassDefinitions(&fwd_decls);
-  }
-  for (const auto& generator : extension_generators_) {
-    generator->DetermineObjectiveCClassDefinitions(&fwd_decls);
-  }
-
   // Note:
   //  deprecated-declarations suppression is only needed if some place in this
   //    proto file is something deprecated or if it references something from
   //    another file that is deprecated.
-  //  dollar-in-identifier-extension is needed because we use references to
-  //    objc class names that have $ in identifiers.
   printer->Print(
       "// @@protoc_insertion_point(imports)\n"
       "\n"
@@ -421,31 +409,14 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
       "#pragma clang diagnostic ignored \"-Wdeprecated-declarations\"\n");
   if (includes_oneof) {
     // The generated code for oneof's uses direct ivar access, suppress the
-    // warning in case developer turn that on in the context they compile the
+    // warning incase developer turn that on in the context they compile the
     // generated code.
     printer->Print(
         "#pragma clang diagnostic ignored \"-Wdirect-ivar-access\"\n");
   }
-  if (!fwd_decls.empty()) {
-    printer->Print(
-      "#pragma clang diagnostic ignored \"-Wdollar-in-identifier-extension\"\n");
-  }
+
   printer->Print(
-      "\n");
-  if (!fwd_decls.empty()) {
-    printer->Print(
-        "#pragma mark - Objective C Class declarations\n"
-        "// Forward declarations of Objective C classes that we can use as\n"
-        "// static values in struct initializers.\n"
-        "// We don't use [Foo class] because it is not a static value.\n");
-  }
-  for (const auto& i : fwd_decls) {
-    printer->Print("$value$\n", "value", i);
-  }
-  if (!fwd_decls.empty()) {
-    printer->Print("\n");
-  }
-  printer->Print(
+      "\n"
       "#pragma mark - $root_class_name$\n"
       "\n"
       "@implementation $root_class_name$\n\n",
@@ -483,8 +454,7 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
           "};\n"
           "for (size_t i = 0; i < sizeof(descriptions) / sizeof(descriptions[0]); ++i) {\n"
           "  GPBExtensionDescriptor *extension =\n"
-          "      [[GPBExtensionDescriptor alloc] initWithExtensionDescription:&descriptions[i]\n"
-          "                                                     usesClassRefs:YES];\n"
+          "      [[GPBExtensionDescriptor alloc] initWithExtensionDescription:&descriptions[i]];\n"
           "  [registry addExtension:extension];\n"
           "  [self globallyRegisterExtension:extension];\n"
           "  [extension release];\n"
@@ -501,7 +471,7 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
       for (std::vector<const FileDescriptor *>::iterator iter =
                deps_with_extensions.begin();
            iter != deps_with_extensions.end(); ++iter) {
-        const std::string root_class_name(FileClassName((*iter)));
+        const string root_class_name(FileClassName((*iter)));
         printer->Print(
             "[registry addExtensions:[$dependency$ extensionRegistry]];\n",
             "dependency", root_class_name);
@@ -530,8 +500,8 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
   printer->Print("\n@end\n\n");
 
   // File descriptor only needed if there are messages to use it.
-  if (!message_generators_.empty()) {
-    std::map<std::string, std::string> vars;
+  if (message_generators_.size() > 0) {
+    std::map<string, string> vars;
     vars["root_class_name"] = root_class_name_;
     vars["package"] = file_->package();
     vars["objc_prefix"] = FileClassPrefix(file_);
@@ -555,7 +525,7 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
         "  static GPBFileDescriptor *descriptor = NULL;\n"
         "  if (!descriptor) {\n"
         "    GPB_DEBUG_CHECK_RUNTIME_VERSIONS();\n");
-    if (!vars["objc_prefix"].empty()) {
+    if (vars["objc_prefix"].size() > 0) {
       printer->Print(
           vars,
           "    descriptor = [[GPBFileDescriptor alloc] initWithPackage:@\"$package$\"\n"
@@ -592,16 +562,48 @@ void FileGenerator::GenerateSource(io::Printer *printer) {
 // files. This currently only supports the runtime coming from a framework
 // as defined by the official CocoaPod.
 void FileGenerator::PrintFileRuntimePreamble(
-    io::Printer* printer,
-    const std::vector<std::string>& headers_to_import) const {
+    io::Printer* printer, const std::set<string>& headers_to_import) const {
   printer->Print(
       "// Generated by the protocol buffer compiler.  DO NOT EDIT!\n"
       "// source: $filename$\n"
       "\n",
       "filename", file_->name());
-  ImportWriter::PrintRuntimeImports(
-      printer, headers_to_import, options_.runtime_import_prefix, true);
-  printer->Print("\n");
+
+  const string framework_name(ProtobufLibraryFrameworkName);
+  const string cpp_symbol(ProtobufFrameworkImportSymbol(framework_name));
+
+  printer->Print(
+      "// This CPP symbol can be defined to use imports that match up to the framework\n"
+      "// imports needed when using CocoaPods.\n"
+      "#if !defined($cpp_symbol$)\n"
+      " #define $cpp_symbol$ 0\n"
+      "#endif\n"
+      "\n"
+      "#if $cpp_symbol$\n",
+      "cpp_symbol", cpp_symbol);
+
+
+  for (std::set<string>::const_iterator iter = headers_to_import.begin();
+       iter != headers_to_import.end(); ++iter) {
+    printer->Print(
+        " #import <$framework_name$/$header$>\n",
+        "header", *iter,
+        "framework_name", framework_name);
+  }
+
+  printer->Print(
+      "#else\n");
+
+  for (std::set<string>::const_iterator iter = headers_to_import.begin();
+       iter != headers_to_import.end(); ++iter) {
+    printer->Print(
+        " #import \"$header$\"\n",
+        "header", *iter);
+  }
+
+  printer->Print(
+      "#endif\n"
+      "\n");
 }
 
 }  // namespace objectivec

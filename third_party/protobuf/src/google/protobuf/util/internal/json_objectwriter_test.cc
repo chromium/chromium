@@ -152,7 +152,7 @@ TEST_F(JsonObjectWriterTest, RenderPrimitives) {
       ->RenderBytes("bytes", "abracadabra")
       ->RenderString("string", "string")
       ->RenderBytes("emptybytes", "")
-      ->RenderString("emptystring", std::string())
+      ->RenderString("emptystring", string())
       ->EndObject();
   EXPECT_EQ(
       "{\"bool\":true,"

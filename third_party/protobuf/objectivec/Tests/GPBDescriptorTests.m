@@ -355,7 +355,7 @@
   XCTAssertNil([oneofBar fieldWithNumber:TestOneof2_FieldNumber_FooString]);
 
   // Check pointers back to the enclosing oneofs.
-  // (pointer comparisons)
+  // (pointer comparisions)
   XCTAssertEqual(fooStringField.containingOneof, oneofFoo);
   XCTAssertEqual(barStringField.containingOneof, oneofBar);
   GPBFieldDescriptor *bazString =

@@ -38,23 +38,10 @@ using System.Linq;
 namespace Google.Protobuf
 {
     /// <summary>
-    /// Provides extensions to messages while parsing. This API is experimental and subject to change.
+    /// Provides extensions to messages while parsing
     /// </summary>
     public sealed class ExtensionRegistry : ICollection<Extension>, IDeepCloneable<ExtensionRegistry>
     {
-        internal sealed class ExtensionComparer : IEqualityComparer<Extension>
-        {
-            public bool Equals(Extension a, Extension b)
-            {
-                return new ObjectIntPair<Type>(a.TargetType, a.FieldNumber).Equals(new ObjectIntPair<Type>(b.TargetType, b.FieldNumber));
-            }
-            public int GetHashCode(Extension a)
-            {
-                return new ObjectIntPair<Type>(a.TargetType, a.FieldNumber).GetHashCode();
-            }
-
-            internal static ExtensionComparer Instance = new ExtensionComparer();
-        }
         private IDictionary<ObjectIntPair<Type>, Extension> extensions;
 
         /// <summary>
@@ -80,9 +67,9 @@ namespace Google.Protobuf
         /// </summary>
         bool ICollection<Extension>.IsReadOnly => false;
 
-        internal bool ContainsInputField(uint lastTag, Type target, out Extension extension)
+        internal bool ContainsInputField(CodedInputStream stream, Type target, out Extension extension)
         {
-            return extensions.TryGetValue(new ObjectIntPair<Type>(target, WireFormat.GetTagFieldNumber(lastTag)), out extension);
+            return extensions.TryGetValue(new ObjectIntPair<Type>(target, WireFormat.GetTagFieldNumber(stream.LastTag)), out extension);
         }
 
         /// <summary>
@@ -98,14 +85,22 @@ namespace Google.Protobuf
         /// <summary>
         /// Adds the specified extensions to the registry
         /// </summary>
-        public void AddRange(IEnumerable<Extension> extensions)
+        public void Add(params Extension[] newExtensions)
         {
-            ProtoPreconditions.CheckNotNull(extensions, nameof(extensions));
+            ProtoPreconditions.CheckNotNull(newExtensions, nameof(newExtensions));
 
-            foreach (var extension in extensions)
-            {
+            Add((IEnumerable<Extension>)newExtensions);
+        }
+
+        /// <summary>
+        /// Adds the specified extensions to the reigstry
+        /// </summary>
+        public void Add(IEnumerable<Extension> newExtensions)
+        {
+            ProtoPreconditions.CheckNotNull(newExtensions, nameof(newExtensions));
+
+            foreach (var extension in newExtensions)
                 Add(extension);
-            }
         }
 
         /// <summary>
@@ -135,13 +130,9 @@ namespace Google.Protobuf
         {
             ProtoPreconditions.CheckNotNull(array, nameof(array));
             if (arrayIndex < 0 || arrayIndex >= array.Length)
-            {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
-            }
             if (array.Length - arrayIndex < Count)
-            {
                 throw new ArgumentException("The provided array is shorter than the number of elements in the registry");
-            }
 
             for (int i = 0; i < array.Length; i++)
             {

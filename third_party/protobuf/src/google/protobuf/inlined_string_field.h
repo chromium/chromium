@@ -35,9 +35,8 @@
 #include <utility>
 
 #include <google/protobuf/port.h>
-#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/stringpiece.h>
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 #ifdef SWIG

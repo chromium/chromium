@@ -5,7 +5,7 @@
 # dependent projects use the :git notation to refer to the library.
 Pod::Spec.new do |s|
   s.name     = 'Protobuf'
-  s.version  = '3.13.0'
+  s.version  = '3.9.0'
   s.summary  = 'Protocol Buffers v.3 runtime library for Objective-C.'
   s.homepage = 'https://github.com/protocolbuffers/protobuf'
   s.license  = '3-Clause BSD License'
@@ -16,16 +16,16 @@ Pod::Spec.new do |s|
                :tag => "v#{s.version}" }
 
   s.source_files = 'objectivec/*.{h,m}',
-                   'objectivec/google/protobuf/Any.pbobjc.h',
-                   'objectivec/google/protobuf/Api.pbobjc.h',
-                   'objectivec/google/protobuf/Duration.pbobjc.h',
-                   'objectivec/google/protobuf/Empty.pbobjc.h',
-                   'objectivec/google/protobuf/FieldMask.pbobjc.h',
-                   'objectivec/google/protobuf/SourceContext.pbobjc.h',
-                   'objectivec/google/protobuf/Struct.pbobjc.h',
-                   'objectivec/google/protobuf/Timestamp.pbobjc.h',
-                   'objectivec/google/protobuf/Type.pbobjc.h',
-                   'objectivec/google/protobuf/Wrappers.pbobjc.h'
+                   'objectivec/google/protobuf/Any.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Api.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Duration.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Empty.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/FieldMask.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/SourceContext.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Struct.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Timestamp.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Type.pbobjc.{h,m}',
+                   'objectivec/google/protobuf/Wrappers.pbobjc.{h,m}'
   # The following would cause duplicate symbol definitions. GPBProtocolBuffers is expected to be
   # left out, as it's an umbrella implementation file.
   s.exclude_files = 'objectivec/GPBProtocolBuffers.m'

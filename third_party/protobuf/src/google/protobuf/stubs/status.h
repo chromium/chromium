@@ -121,6 +121,8 @@ class PROTOBUF_EXPORT Status {
 // Prints a human-readable representation of 'x' to 'os'.
 PROTOBUF_EXPORT std::ostream& operator<<(std::ostream& os, const Status& x);
 
+#define EXPECT_OK(value) EXPECT_TRUE((value).ok())
+
 }  // namespace util
 }  // namespace protobuf
 }  // namespace google

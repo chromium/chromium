@@ -209,8 +209,7 @@ def _SimpleDecoder(wire_type, decode_value):
         _DecodeVarint()
   """
 
-  def SpecificDecoder(field_number, is_repeated, is_packed, key, new_default,
-                      clear_if_default=False):
+  def SpecificDecoder(field_number, is_repeated, is_packed, key, new_default):
     if is_packed:
       local_DecodeVarint = _DecodeVarint
       def DecodePackedField(buffer, pos, end, message, field_dict):
@@ -250,13 +249,10 @@ def _SimpleDecoder(wire_type, decode_value):
       return DecodeRepeatedField
     else:
       def DecodeField(buffer, pos, end, message, field_dict):
-        (new_value, pos) = decode_value(buffer, pos)
+        (field_dict[key], pos) = decode_value(buffer, pos)
         if pos > end:
+          del field_dict[key]  # Discard corrupt value.
           raise _DecodeError('Truncated message.')
-        if clear_if_default and not new_value:
-          field_dict.pop(key, None)
-        else:
-          field_dict[key] = new_value
         return pos
       return DecodeField
 
@@ -387,9 +383,7 @@ def _DoubleDecoder():
   return _SimpleDecoder(wire_format.WIRETYPE_FIXED64, InnerDecode)
 
 
-def EnumDecoder(field_number, is_repeated, is_packed, key, new_default,
-                clear_if_default=False):
-  """Returns a decoder for enum field."""
+def EnumDecoder(field_number, is_repeated, is_packed, key, new_default):
   enum_type = key.enum_type
   if is_packed:
     local_DecodeVarint = _DecodeVarint
@@ -427,19 +421,12 @@ def EnumDecoder(field_number, is_repeated, is_packed, key, new_default,
 
           message._unknown_fields.append(
               (tag_bytes, buffer[value_start_pos:pos].tobytes()))
-          if message._unknown_field_set is None:
-            message._unknown_field_set = containers.UnknownFieldSet()
-          message._unknown_field_set._add(
-              field_number, wire_format.WIRETYPE_VARINT, element)
           # pylint: enable=protected-access
       if pos > endpoint:
         if element in enum_type.values_by_number:
           del value[-1]   # Discard corrupt value.
         else:
           del message._unknown_fields[-1]
-          # pylint: disable=protected-access
-          del message._unknown_field_set._values[-1]
-          # pylint: enable=protected-access
         raise _DecodeError('Packed element was truncated.')
       return pos
     return DecodePackedField
@@ -472,11 +459,7 @@ def EnumDecoder(field_number, is_repeated, is_packed, key, new_default,
             message._unknown_fields = []
           message._unknown_fields.append(
               (tag_bytes, buffer[pos:new_pos].tobytes()))
-          if message._unknown_field_set is None:
-            message._unknown_field_set = containers.UnknownFieldSet()
-          message._unknown_field_set._add(
-              field_number, wire_format.WIRETYPE_VARINT, element)
-        # pylint: enable=protected-access
+          # pylint: enable=protected-access
         # Predict that the next tag is another copy of the same repeated
         # field.
         pos = new_pos + tag_len
@@ -504,9 +487,6 @@ def EnumDecoder(field_number, is_repeated, is_packed, key, new_default,
       (enum_value, pos) = _DecodeSignedVarint32(buffer, pos)
       if pos > end:
         raise _DecodeError('Truncated message.')
-      if clear_if_default and not enum_value:
-        field_dict.pop(key, None)
-        return pos
       # pylint: disable=protected-access
       if enum_value in enum_type.values_by_number:
         field_dict[key] = enum_value
@@ -517,10 +497,6 @@ def EnumDecoder(field_number, is_repeated, is_packed, key, new_default,
                                      wire_format.WIRETYPE_VARINT)
         message._unknown_fields.append(
             (tag_bytes, buffer[value_start_pos:pos].tobytes()))
-        if message._unknown_field_set is None:
-          message._unknown_field_set = containers.UnknownFieldSet()
-        message._unknown_field_set._add(
-            field_number, wire_format.WIRETYPE_VARINT, enum_value)
         # pylint: enable=protected-access
       return pos
     return DecodeField
@@ -559,7 +535,7 @@ BoolDecoder = _ModifiedDecoder(
 
 
 def StringDecoder(field_number, is_repeated, is_packed, key, new_default,
-                  is_strict_utf8=False, clear_if_default=False):
+                  is_strict_utf8=False):
   """Returns a decoder for a string field."""
 
   local_DecodeVarint = _DecodeVarint
@@ -613,16 +589,12 @@ def StringDecoder(field_number, is_repeated, is_packed, key, new_default,
       new_pos = pos + size
       if new_pos > end:
         raise _DecodeError('Truncated string.')
-      if clear_if_default and not size:
-        field_dict.pop(key, None)
-      else:
-        field_dict[key] = _ConvertToUnicode(buffer[pos:new_pos])
+      field_dict[key] = _ConvertToUnicode(buffer[pos:new_pos])
       return new_pos
     return DecodeField
 
 
-def BytesDecoder(field_number, is_repeated, is_packed, key, new_default,
-                 clear_if_default=False):
+def BytesDecoder(field_number, is_repeated, is_packed, key, new_default):
   """Returns a decoder for a bytes field."""
 
   local_DecodeVarint = _DecodeVarint
@@ -654,10 +626,7 @@ def BytesDecoder(field_number, is_repeated, is_packed, key, new_default,
       new_pos = pos + size
       if new_pos > end:
         raise _DecodeError('Truncated string.')
-      if clear_if_default and not size:
-        field_dict.pop(key, None)
-      else:
-        field_dict[key] = buffer[pos:new_pos].tobytes()
+      field_dict[key] = buffer[pos:new_pos].tobytes()
       return new_pos
     return DecodeField
 
@@ -832,12 +801,8 @@ def MessageSetItemDecoder(descriptor):
     if extension is not None:
       value = field_dict.get(extension)
       if value is None:
-        message_type = extension.message_type
-        if not hasattr(message_type, '_concrete_class'):
-          # pylint: disable=protected-access
-          message._FACTORY.GetPrototype(message_type)
         value = field_dict.setdefault(
-            extension, message_type._concrete_class())
+            extension, extension.message_type._concrete_class())
       if value._InternalParse(buffer, message_start,message_end) != message_end:
         # The only reason _InternalParse would return early is if it encountered
         # an end-group tag.
@@ -847,12 +812,6 @@ def MessageSetItemDecoder(descriptor):
         message._unknown_fields = []
       message._unknown_fields.append(
           (MESSAGE_SET_ITEM_TAG, buffer[message_set_item_start:pos].tobytes()))
-      if message._unknown_field_set is None:
-        message._unknown_field_set = containers.UnknownFieldSet()
-      message._unknown_field_set._add(
-          type_id,
-          wire_format.WIRETYPE_LENGTH_DELIMITED,
-          buffer[message_start:message_end].tobytes())
       # pylint: enable=protected-access
 
     return pos
@@ -891,7 +850,7 @@ def MapDecoder(field_descriptor, new_default, is_message_map):
         raise _DecodeError('Unexpected end-group tag.')
 
       if is_message_map:
-        value[submsg.key].CopyFrom(submsg.value)
+        value[submsg.key].MergeFrom(submsg.value)
       else:
         value[submsg.key] = submsg.value
 
@@ -983,7 +942,7 @@ def _DecodeUnknownField(buffer, pos, wire_type):
     (data, pos) = _DecodeFixed32(buffer, pos)
   elif wire_type == wire_format.WIRETYPE_LENGTH_DELIMITED:
     (size, pos) = _DecodeVarint(buffer, pos)
-    data = buffer[pos:pos+size].tobytes()
+    data = buffer[pos:pos+size]
     pos += size
   elif wire_type == wire_format.WIRETYPE_START_GROUP:
     (data, pos) = _DecodeUnknownFieldSet(buffer, pos)

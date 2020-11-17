@@ -2,21 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyOriginatorKeyFile>../../keys/Google.Protobuf.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>False</IsPackable>
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Google.Protobuf.Test\ReadOnlySequenceFactory.cs" Link="ReadOnlySequenceFactory.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
     <ProjectReference Include="..\Google.Protobuf\Google.Protobuf.csproj" />
   </ItemGroup>
 

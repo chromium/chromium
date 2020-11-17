@@ -37,7 +37,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -64,7 +63,6 @@ namespace Google.Protobuf
         private static readonly Regex DurationRegex = new Regex(@"^(?<sign>-)?(?<int>[0-9]{1,12})(?<subseconds>\.[0-9]{1,9})?s$", FrameworkPortability.CompiledRegexWhereAvailable);
         private static readonly int[] SubsecondScalingFactors = { 0, 100000000, 100000000, 10000000, 1000000, 100000, 10000, 1000, 100, 10, 1 };
         private static readonly char[] FieldMaskPathSeparators = new[] { ',' };
-        private static readonly EnumDescriptor NullValueDescriptor = StructReflection.Descriptor.EnumTypes.Single(ed => ed.ClrType == typeof(NullValue));
 
         private static readonly JsonParser defaultInstance = new JsonParser(Settings.Default);
 
@@ -112,7 +110,7 @@ namespace Google.Protobuf
         /// <param name="settings">The settings.</param>
         public JsonParser(Settings settings)
         {
-            this.settings = ProtoPreconditions.CheckNotNull(settings, nameof(settings));
+            this.settings = settings;
         }
 
         /// <summary>
@@ -223,11 +221,10 @@ namespace Google.Protobuf
             if (token.Type == JsonToken.TokenType.Null)
             {
                 // Clear the field if we see a null token, unless it's for a singular field of type
-                // google.protobuf.Value or google.protobuf.NullValue.
+                // google.protobuf.Value.
                 // Note: different from Java API, which just ignores it.
                 // TODO: Bring it more in line? Discuss...
-                if (field.IsMap || field.IsRepeated ||
-                    !(IsGoogleProtobufValueField(field) || IsGoogleProtobufNullValueField(field)))
+                if (field.IsMap || field.IsRepeated || !IsGoogleProtobufValueField(field))
                 {
                     field.Accessor.Clear(message);
                     return;
@@ -317,12 +314,6 @@ namespace Google.Protobuf
                 field.MessageType.FullName == Value.Descriptor.FullName;
         }
 
-        private static bool IsGoogleProtobufNullValueField(FieldDescriptor field)
-        {
-            return field.FieldType == FieldType.Enum &&
-                field.EnumType.FullName == NullValueDescriptor.FullName;
-        }
-
         private object ParseSingleValue(FieldDescriptor field, JsonTokenizer tokenizer)
         {
             var token = tokenizer.Next();
@@ -333,10 +324,6 @@ namespace Google.Protobuf
                 if (IsGoogleProtobufValueField(field))
                 {
                     return Value.ForNull();
-                }
-                if (IsGoogleProtobufNullValueField(field))
-                {
-                    return NullValue.NullValue;
                 }
                 return null;
             }

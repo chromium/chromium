@@ -37,13 +37,13 @@
 #endif
 
 #if GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS
- #import <Protobuf/GPBAny.pbobjc.h>
- #import <Protobuf/GPBDuration.pbobjc.h>
- #import <Protobuf/GPBTimestamp.pbobjc.h>
+ #import <Protobuf/Any.pbobjc.h>
+ #import <Protobuf/Duration.pbobjc.h>
+ #import <Protobuf/Timestamp.pbobjc.h>
 #else
- #import "GPBAny.pbobjc.h"
- #import "GPBDuration.pbobjc.h"
- #import "GPBTimestamp.pbobjc.h"
+ #import "google/protobuf/Any.pbobjc.h"
+ #import "google/protobuf/Duration.pbobjc.h"
+ #import "google/protobuf/Timestamp.pbobjc.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN

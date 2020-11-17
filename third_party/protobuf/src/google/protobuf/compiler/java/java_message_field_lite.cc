@@ -44,6 +44,7 @@
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/strutil.h>
 
+
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -70,7 +71,7 @@ void SetMessageVariables(const FieldDescriptor* descriptor, int messageBitIndex,
       descriptor->options().deprecated() ? "@java.lang.Deprecated " : "";
   (*variables)["required"] = descriptor->is_required() ? "true" : "false";
 
-  if (HasHasbit(descriptor)) {
+  if (SupportFieldPresence(descriptor->file())) {
     // For singular messages and builders, one bit is used for the hasField bit.
     (*variables)["get_has_field_bit_message"] = GenerateGetBit(messageBitIndex);
 
@@ -89,14 +90,13 @@ void SetMessageVariables(const FieldDescriptor* descriptor, int messageBitIndex,
         (*variables)["name"] + "_ != null";
   }
 
+  // For repeated builders, the underlying list tracks mutability state.
+  (*variables)["is_mutable"] = (*variables)["name"] + "_.isModifiable()";
+
   (*variables)["get_has_field_bit_from_local"] =
       GenerateGetBitFromLocal(builderBitIndex);
   (*variables)["set_has_field_bit_to_local"] =
       GenerateSetBitToLocal(messageBitIndex);
-
-  // We use `x.getClass()` as a null check because it generates less bytecode
-  // than an `if (x == null) { throw ... }` statement.
-  (*variables)["null_check"] = "value.getClass();\n";
 }
 
 }  // namespace
@@ -116,18 +116,14 @@ ImmutableMessageFieldLiteGenerator::ImmutableMessageFieldLiteGenerator(
 ImmutableMessageFieldLiteGenerator::~ImmutableMessageFieldLiteGenerator() {}
 
 int ImmutableMessageFieldLiteGenerator::GetNumBitsForMessage() const {
-  // TODO(dweis): We don't need a has bit for messages as they have null
-  // sentinels and no user should be reflecting on this. We could save some
-  // bits by setting to 0 and updating the runtimes but this might come at a
-  // runtime performance cost since we can't memoize has-bit reads.
-  return HasHasbit(descriptor_) ? 1 : 0;
+  return SupportFieldPresence(descriptor_->file()) ? 1 : 0;
 }
 
 void ImmutableMessageFieldLiteGenerator::GenerateInterfaceMembers(
     io::Printer* printer) const {
-  WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_, "$deprecation$boolean has$capitalized_name$();\n");
-  WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_, "$deprecation$$type$ get$capitalized_name$();\n");
 }
 
@@ -137,7 +133,7 @@ void ImmutableMessageFieldLiteGenerator::GenerateMembers(
   printer->Print(variables_, "private $type$ $name$_;\n");
   PrintExtraFieldInfo(variables_, printer);
 
-  if (HasHasbit(descriptor_)) {
+  if (SupportFieldPresence(descriptor_->file())) {
     WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
@@ -177,10 +173,21 @@ void ImmutableMessageFieldLiteGenerator::GenerateMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
                  "private void set$capitalized_name$($type$ value) {\n"
-                 "  $null_check$"
+                 "  if (value == null) {\n"
+                 "    throw new NullPointerException();\n"
+                 "  }\n"
                  "  $name$_ = value;\n"
                  "  $set_has_field_bit_message$\n"
                  "  }\n");
+
+  // Field.Builder setField(Field.Builder builderForValue)
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+                 "private void set$capitalized_name$(\n"
+                 "    $type$.Builder builderForValue) {\n"
+                 "  $name$_ = builderForValue.build();\n"
+                 "  $set_has_field_bit_message$\n"
+                 "}\n");
 
   // Field.Builder mergeField(Field value)
   WriteFieldDocComment(printer, descriptor_);
@@ -188,7 +195,9 @@ void ImmutableMessageFieldLiteGenerator::GenerateMembers(
       variables_,
       "@java.lang.SuppressWarnings({\"ReferenceEquality\"})\n"
       "private void merge$capitalized_name$($type$ value) {\n"
-      "  $null_check$"
+      "  if (value == null) {\n"
+      "    throw new NullPointerException();\n"
+      "  }\n"
       "  if ($name$_ != null &&\n"
       "      $name$_ != $type$.getDefaultInstance()) {\n"
       "    $name$_ =\n"
@@ -248,7 +257,7 @@ void ImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
                  "$deprecation$public Builder ${$set$capitalized_name$$}$(\n"
                  "    $type$.Builder builderForValue) {\n"
                  "  copyOnWrite();\n"
-                 "  instance.set$capitalized_name$(builderForValue.build());\n"
+                 "  instance.set$capitalized_name$(builderForValue);\n"
                  "  return this;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
@@ -275,12 +284,13 @@ void ImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
   printer->Annotate("{", "}", descriptor_);
 }
 
+
 void ImmutableMessageFieldLiteGenerator::GenerateFieldInfo(
     io::Printer* printer, std::vector<uint16>* output) const {
   WriteIntToUtf16CharSequence(descriptor_->number(), output);
   WriteIntToUtf16CharSequence(GetExperimentalJavaFieldType(descriptor_),
                               output);
-  if (HasHasbit(descriptor_)) {
+  if (SupportFieldPresence(descriptor_->file())) {
     WriteIntToUtf16CharSequence(messageBitIndex_, output);
   }
   printer->Print(variables_, "\"$name$_\",\n");
@@ -333,8 +343,19 @@ void ImmutableMessageOneofFieldLiteGenerator::GenerateMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
                  "private void set$capitalized_name$($type$ value) {\n"
-                 "  $null_check$"
+                 "  if (value == null) {\n"
+                 "    throw new NullPointerException();\n"
+                 "  }\n"
                  "  $oneof_name$_ = value;\n"
+                 "  $set_oneof_case_message$;\n"
+                 "}\n");
+
+  // Field.Builder setField(Field.Builder builderForValue)
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+                 "private void set$capitalized_name$(\n"
+                 "    $type$.Builder builderForValue) {\n"
+                 "  $oneof_name$_ = builderForValue.build();\n"
                  "  $set_oneof_case_message$;\n"
                  "}\n");
 
@@ -343,7 +364,9 @@ void ImmutableMessageOneofFieldLiteGenerator::GenerateMembers(
   printer->Print(
       variables_,
       "private void merge$capitalized_name$($type$ value) {\n"
-      "  $null_check$"
+      "  if (value == null) {\n"
+      "    throw new NullPointerException();\n"
+      "  }\n"
       "  if ($has_oneof_case_message$ &&\n"
       "      $oneof_name$_ != $type$.getDefaultInstance()) {\n"
       "    $oneof_name$_ = $type$.newBuilder(($type$) $oneof_name$_)\n"
@@ -414,7 +437,7 @@ void ImmutableMessageOneofFieldLiteGenerator::GenerateBuilderMembers(
                  "$deprecation$public Builder ${$set$capitalized_name$$}$(\n"
                  "    $type$.Builder builderForValue) {\n"
                  "  copyOnWrite();\n"
-                 "  instance.set$capitalized_name$(builderForValue.build());\n"
+                 "  instance.set$capitalized_name$(builderForValue);\n"
                  "  return this;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
@@ -529,11 +552,9 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateMembers(
   printer->Print(
       variables_,
       "private void ensure$capitalized_name$IsMutable() {\n"
-      // Use a temporary to avoid a redundant iget-object.
-      "  com.google.protobuf.Internal.ProtobufList<$type$> tmp = $name$_;\n"
-      "  if (!tmp.isModifiable()) {\n"
+      "  if (!$is_mutable$) {\n"
       "    $name$_ =\n"
-      "        com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);\n"
+      "        com.google.protobuf.GeneratedMessageLite.mutableCopy($name$_);\n"
       "   }\n"
       "}\n"
       "\n");
@@ -543,16 +564,29 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateMembers(
   printer->Print(variables_,
                  "private void set$capitalized_name$(\n"
                  "    int index, $type$ value) {\n"
-                 "  $null_check$"
+                 "  if (value == null) {\n"
+                 "    throw new NullPointerException();\n"
+                 "  }\n"
                  "  ensure$capitalized_name$IsMutable();\n"
                  "  $name$_.set(index, value);\n"
+                 "}\n");
+
+  // Builder setRepeatedField(int index, Field.Builder builderForValue)
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+                 "private void set$capitalized_name$(\n"
+                 "    int index, $type$.Builder builderForValue) {\n"
+                 "  ensure$capitalized_name$IsMutable();\n"
+                 "  $name$_.set(index, builderForValue.build());\n"
                  "}\n");
 
   // Builder addRepeatedField(Field value)
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
                  "private void add$capitalized_name$($type$ value) {\n"
-                 "  $null_check$"
+                 "  if (value == null) {\n"
+                 "    throw new NullPointerException();\n"
+                 "  }\n"
                  "  ensure$capitalized_name$IsMutable();\n"
                  "  $name$_.add(value);\n"
                  "}\n");
@@ -562,9 +596,28 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateMembers(
   printer->Print(variables_,
                  "private void add$capitalized_name$(\n"
                  "    int index, $type$ value) {\n"
-                 "  $null_check$"
+                 "  if (value == null) {\n"
+                 "    throw new NullPointerException();\n"
+                 "  }\n"
                  "  ensure$capitalized_name$IsMutable();\n"
                  "  $name$_.add(index, value);\n"
+                 "}\n");
+  // Builder addRepeatedField(Field.Builder builderForValue)
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+                 "private void add$capitalized_name$(\n"
+                 "    $type$.Builder builderForValue) {\n"
+                 "  ensure$capitalized_name$IsMutable();\n"
+                 "  $name$_.add(builderForValue.build());\n"
+                 "}\n");
+
+  // Builder addRepeatedField(int index, Field.Builder builderForValue)
+  WriteFieldDocComment(printer, descriptor_);
+  printer->Print(variables_,
+                 "private void add$capitalized_name$(\n"
+                 "    int index, $type$.Builder builderForValue) {\n"
+                 "  ensure$capitalized_name$IsMutable();\n"
+                 "  $name$_.add(index, builderForValue.build());\n"
                  "}\n");
 
   // Builder addAllRepeatedField(Iterable<Field> values)
@@ -646,8 +699,7 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
                  "$deprecation$public Builder ${$set$capitalized_name$$}$(\n"
                  "    int index, $type$.Builder builderForValue) {\n"
                  "  copyOnWrite();\n"
-                 "  instance.set$capitalized_name$(index,\n"
-                 "      builderForValue.build());\n"
+                 "  instance.set$capitalized_name$(index, builderForValue);\n"
                  "  return this;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
@@ -679,7 +731,7 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
                  "$deprecation$public Builder ${$add$capitalized_name$$}$(\n"
                  "    $type$.Builder builderForValue) {\n"
                  "  copyOnWrite();\n"
-                 "  instance.add$capitalized_name$(builderForValue.build());\n"
+                 "  instance.add$capitalized_name$(builderForValue);\n"
                  "  return this;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
@@ -690,8 +742,7 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
                  "$deprecation$public Builder ${$add$capitalized_name$$}$(\n"
                  "    int index, $type$.Builder builderForValue) {\n"
                  "  copyOnWrite();\n"
-                 "  instance.add$capitalized_name$(index,\n"
-                 "      builderForValue.build());\n"
+                 "  instance.add$capitalized_name$(index, builderForValue);\n"
                  "  return this;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
@@ -729,6 +780,7 @@ void RepeatedImmutableMessageFieldLiteGenerator::GenerateBuilderMembers(
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
 }
+
 
 void RepeatedImmutableMessageFieldLiteGenerator::GenerateFieldInfo(
     io::Printer* printer, std::vector<uint16>* output) const {

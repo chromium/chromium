@@ -33,11 +33,10 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <google/protobuf/test_util_lite.h>
-
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <gtest/gtest.h>
-#include <google/protobuf/stubs/strutil.h>
+
 
 namespace google {
 namespace protobuf {
@@ -1351,7 +1350,7 @@ void TestUtilLite::ExpectExtensionsClear(
   std::string serialized;
   ASSERT_TRUE(message.SerializeToString(&serialized));
   EXPECT_EQ("", serialized);
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
 
   // has_blah() should initially be false for all optional fields.
   EXPECT_FALSE(message.HasExtension(unittest::optional_int32_extension_lite));

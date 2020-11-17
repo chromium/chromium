@@ -46,18 +46,14 @@ class MockErrorListener : public ErrorListener {
   MockErrorListener() {}
   virtual ~MockErrorListener() {}
 
-  MOCK_METHOD(void, InvalidName,
-              (const LocationTrackerInterface& loc,
-               StringPiece unknown_name, StringPiece message),
-              (override));
-  MOCK_METHOD(void, InvalidValue,
-              (const LocationTrackerInterface& loc, StringPiece type_name,
-               StringPiece value),
-              (override));
-  MOCK_METHOD(void, MissingField,
-              (const LocationTrackerInterface& loc,
-               StringPiece missing_name),
-              (override));
+  MOCK_METHOD3(InvalidName,
+               void(const LocationTrackerInterface& loc,
+                    StringPiece unknown_name, StringPiece message));
+  MOCK_METHOD3(InvalidValue,
+               void(const LocationTrackerInterface& loc,
+                    StringPiece type_name, StringPiece value));
+  MOCK_METHOD2(MissingField, void(const LocationTrackerInterface& loc,
+                                  StringPiece missing_name));
 };
 
 }  // namespace converter

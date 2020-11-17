@@ -102,20 +102,16 @@ class MeetDeviceTelemetryReportHandlerTest : public testing::Test {
   policy::MockCloudPolicyClient client_;
 };
 
-class TestRecord {
+class TestRecord : public Record {
  public:
   explicit TestRecord(base::StringPiece key = "TEST_KEY",
                       base::StringPiece value = "TEST_VALUE") {
     data_.SetKey(key, base::Value(value));
-  }
-
-  Record GetRecord() {
-    Record record;
     std::string json_data;
     base::JSONWriter::Write(data_, &json_data);
-    record.set_data(json_data);
-    record.set_destination(Destination::MEET_DEVICE_TELEMETRY);
-    return record;
+
+    set_data(json_data);
+    set_destination(Destination::MEET_DEVICE_TELEMETRY);
   }
 
   const base::Value* data() const { return &data_; }
@@ -137,7 +133,7 @@ TEST_F(MeetDeviceTelemetryReportHandlerTest, AcceptsValidRecord) {
           })));
 
   MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
-  Status handle_status = handler.HandleRecord(test_record.GetRecord());
+  Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
@@ -146,7 +142,7 @@ TEST_F(MeetDeviceTelemetryReportHandlerTest, DeniesInvalidDestination) {
   EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
   MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
-  Record test_record;
+  TestRecord test_record;
   test_record.set_destination(Destination::UPLOAD_EVENTS);
 
   Status handle_status = handler.HandleRecord(test_record);
@@ -158,7 +154,7 @@ TEST_F(MeetDeviceTelemetryReportHandlerTest, DeniesInvalidData) {
   EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
   MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
-  Record test_record;
+  TestRecord test_record;
   test_record.clear_data();
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_FALSE(handle_status.ok());
@@ -179,7 +175,7 @@ TEST_F(MeetDeviceTelemetryReportHandlerTest, ReportsUnsuccessfulCall) {
           })));
 
   MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
-  Status handle_status = handler.HandleRecord(test_record.GetRecord());
+  Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
@@ -217,7 +213,7 @@ TEST_F(MeetDeviceTelemetryReportHandlerTest, AcceptsMultipleValidRecords) {
   MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
   for (int i = 0; i < kExpectedCallTimes; i++) {
-    Status handle_status = handler.HandleRecord(test_record.GetRecord());
+    Status handle_status = handler.HandleRecord(test_record);
     EXPECT_OK(handle_status);
   }
   waiter.Wait();

@@ -58,7 +58,7 @@ class DescriptorDatabase(object):
     Raises:
       DescriptorDatabaseConflictingDefinitionError: if an attempt is made to
         add a proto with the same name but different definition than an
-        existing proto in the database.
+        exisiting proto in the database.
     """
     proto_name = file_desc_proto.name
     if proto_name not in self._file_desc_protos_by_file:

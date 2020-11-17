@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
 # https://developers.google.com/protocol-buffers/
@@ -37,6 +38,8 @@ See conformance.proto for more information.
 import struct
 import sys
 import os
+from google.protobuf import descriptor
+from google.protobuf import descriptor_pool
 from google.protobuf import json_format
 from google.protobuf import message
 from google.protobuf import test_messages_proto3_pb2

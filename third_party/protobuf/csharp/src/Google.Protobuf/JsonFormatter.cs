@@ -133,7 +133,7 @@ namespace Google.Protobuf
         /// <param name="settings">The settings.</param>
         public JsonFormatter(Settings settings)
         {
-            this.settings = ProtoPreconditions.CheckNotNull(settings, nameof(settings));
+            this.settings = settings;
         }
 
         /// <summary>
@@ -221,12 +221,19 @@ namespace Google.Protobuf
             foreach (var field in fields.InFieldNumberOrder())
             {
                 var accessor = field.Accessor;
-                var value = accessor.GetValue(message);
-                if (!ShouldFormatFieldValue(message, field, value))
+                if (field.ContainingOneof != null && field.ContainingOneof.Accessor.GetCaseFieldDescriptor(message) != field)
+                {
+                    continue;
+                }
+                // Omit default values unless we're asked to format them, or they're oneofs (where the default
+                // value is still formatted regardless, because that's how we preserve the oneof case).
+                object value = accessor.GetValue(message);
+                if (field.ContainingOneof == null && !settings.FormatDefaultValues && IsDefaultValue(accessor, value))
                 {
                     continue;
                 }
 
+                // Okay, all tests complete: let's write the field value...
                 if (!first)
                 {
                     writer.Write(PropertySeparator);
@@ -240,18 +247,6 @@ namespace Google.Protobuf
             }
             return !first;
         }
-
-        /// <summary>
-        /// Determines whether or not a field value should be serialized according to the field,
-        /// its value in the message, and the settings of this formatter.
-        /// </summary>
-        private bool ShouldFormatFieldValue(IMessage message, FieldDescriptor field, object value) =>
-            field.HasPresence
-            // Fields that support presence *just* use that
-            ? field.Accessor.HasValue(message)
-            // Otherwise, format if either we've been asked to format default values, or if it's
-            // not a default value anyway.
-            : settings.FormatDefaultValues || !IsDefaultValue(field, value);
 
         // Converted from java/core/src/main/java/com/google/protobuf/Descriptors.java
         internal static string ToJsonName(string name)
@@ -300,19 +295,19 @@ namespace Google.Protobuf
             writer.Write("null");
         }
 
-        private static bool IsDefaultValue(FieldDescriptor descriptor, object value)
+        private static bool IsDefaultValue(IFieldAccessor accessor, object value)
         {
-            if (descriptor.IsMap)
+            if (accessor.Descriptor.IsMap)
             {
                 IDictionary dictionary = (IDictionary) value;
                 return dictionary.Count == 0;
             }
-            if (descriptor.IsRepeated)
+            if (accessor.Descriptor.IsRepeated)
             {
                 IList list = (IList) value;
                 return list.Count == 0;
             }
-            switch (descriptor.FieldType)
+            switch (accessor.Descriptor.FieldType)
             {
                 case FieldType.Bool:
                     return (bool) value == false;
@@ -357,7 +352,7 @@ namespace Google.Protobuf
         /// <param name="value">The value to write. May be null.</param>
         public void WriteValue(TextWriter writer, object value)
         {
-            if (value == null || value is NullValue)
+            if (value == null)
             {
                 WriteNull(writer);
             }
@@ -798,10 +793,8 @@ namespace Google.Protobuf
             }
 
             /// <summary>
-            /// Whether fields which would otherwise not be included in the formatted data
-            /// should be formatted even when the value is not present, or has the default value.
-            /// This option only affects fields which don't support "presence" (e.g.
-            /// singular non-optional proto3 primitive fields).
+            /// Whether fields whose values are the default for the field type (e.g. 0 for integers)
+            /// should be formatted (true) or omitted (false).
             /// </summary>
             public bool FormatDefaultValues { get; }
 

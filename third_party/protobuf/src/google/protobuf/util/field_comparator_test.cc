@@ -32,13 +32,16 @@
 
 #include <google/protobuf/util/field_comparator.h>
 
-#include <limits>
-
 #include <google/protobuf/unittest.pb.h>
 #include <google/protobuf/descriptor.h>
-#include <gtest/gtest.h>
 #include <google/protobuf/stubs/mathutil.h>
-
+// This gtest header is put after mathutil.h intentionally. We have to do
+// this because mathutil.h includes mathlimits.h which requires cmath not
+// being included to compile on some versions of gcc:
+//   https://github.com/protocolbuffers/protobuf/blob/818c5eee08840355d70d2f3bdf1a2f17986a5e70/src/google/protobuf/stubs/mathlimits.h#L48
+// and the opensource version gtest.h header includes cmath transitively
+// somehow.
+#include <gtest/gtest.h>
 namespace google {
 namespace protobuf {
 namespace util {
@@ -245,10 +248,10 @@ TEST_F(DefaultFieldComparatorTest, FloatingPointComparisonTreatNaNsAsEqual) {
   const FieldDescriptor* field_double =
       descriptor_->FindFieldByName("optional_double");
 
-  message_1_.set_optional_float(std::numeric_limits<float>::quiet_NaN());
-  message_2_.set_optional_float(std::numeric_limits<float>::quiet_NaN());
-  message_1_.set_optional_double(std::numeric_limits<double>::quiet_NaN());
-  message_2_.set_optional_double(std::numeric_limits<double>::quiet_NaN());
+  message_1_.set_optional_float(MathLimits<float>::kNaN);
+  message_2_.set_optional_float(MathLimits<float>::kNaN);
+  message_1_.set_optional_double(MathLimits<double>::kNaN);
+  message_2_.set_optional_double(MathLimits<double>::kNaN);
 
   // DefaultFieldComparator's default float comparison mode is EXACT with
   // treating NaNs as different.

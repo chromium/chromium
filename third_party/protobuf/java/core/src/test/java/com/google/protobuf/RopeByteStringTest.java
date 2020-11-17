@@ -62,19 +62,18 @@ public class RopeByteStringTest extends LiteralByteStringTest {
     expectedHashCode = -1214197238;
   }
 
-  public void testMinLength() {
-    // minLength should match the Fibonacci sequence
+  public void testMinLengthByDepth() {
+    // minLengthByDepth should match the Fibonacci sequence
     int a = 1;
     int b = 1;
     int i;
     for (i = 0; a > 0; i++) {
-      assertEquals(a, RopeByteString.minLength(i));
+      assertEquals(a, RopeByteString.minLengthByDepth[i]);
       int c = a + b;
       a = b;
       b = c;
     }
-    assertEquals(Integer.MAX_VALUE, RopeByteString.minLength(i));
-    assertEquals(Integer.MAX_VALUE, RopeByteString.minLength(i + 1));
+    assertEquals(Integer.MAX_VALUE, RopeByteString.minLengthByDepth[i]);
     assertEquals(i + 1, RopeByteString.minLengthByDepth.length);
   }
 

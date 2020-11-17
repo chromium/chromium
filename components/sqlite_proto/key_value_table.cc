@@ -16,7 +16,7 @@ void BindDataToStatement(const std::string& key,
                          sql::Statement* statement) {
   statement->BindString(0, key);
 
-  size_t size = data.ByteSizeLong();
+  int size = data.ByteSize();
   std::vector<char> proto_buffer(size);
   data.SerializeToArray(proto_buffer.data(), size);
   statement->BindBlob(1, proto_buffer.data(), size);

@@ -115,17 +115,12 @@ public abstract class GeneratedMessageLite<
 
   @SuppressWarnings("unchecked") // Guaranteed by isInstance + runtime
   @Override
-  public boolean equals(
-          Object other) {
+  public boolean equals(Object other) {
     if (this == other) {
       return true;
     }
 
-    if (other == null) {
-      return false;
-    }
-
-    if (this.getClass() != other.getClass()) {
+    if (!getDefaultInstanceForType().getClass().isInstance(other)) {
       return false;
     }
 
@@ -223,7 +218,7 @@ public abstract class GeneratedMessageLite<
 
   /**
    * A method that implements different types of operations described in {@link MethodToInvoke}.
-   * These different kinds of operations are required to implement message-level operations for
+   * Theses different kinds of operations are required to implement message-level operations for
    * builders in the runtime. This method bundles those operations to reduce the generated methods
    * count.
    *
@@ -234,7 +229,7 @@ public abstract class GeneratedMessageLite<
    *       It doesn't use or modify any memoized value.
    *   <li>{@code GET_MEMOIZED_IS_INITIALIZED} returns the memoized {@code isInitialized} byte
    *       value.
-   *   <li>{@code SET_MEMOIZED_IS_INITIALIZED} sets the memoized {@code isInitialized} byte value to
+   *   <li>{@code SET_MEMOIZED_IS_INITIALIZED} sets the memoized {@code isInitilaized} byte value to
    *       1 if the first parameter is not null, or to 0 if the first parameter is null.
    *   <li>{@code NEW_BUILDER} returns a {@code BuilderType} instance.
    * </ul>
@@ -353,18 +348,14 @@ public abstract class GeneratedMessageLite<
      * Called before any method that would mutate the builder to ensure that it correctly copies any
      * state before the write happens to preserve immutability guarantees.
      */
-    protected final void copyOnWrite() {
+    protected void copyOnWrite() {
       if (isBuilt) {
-        copyOnWriteInternal();
+        MessageType newInstance =
+            (MessageType) instance.dynamicMethod(MethodToInvoke.NEW_MUTABLE_INSTANCE);
+        mergeFromInstance(newInstance, instance);
+        instance = newInstance;
         isBuilt = false;
       }
-    }
-
-    protected void copyOnWriteInternal() {
-      MessageType newInstance =
-          (MessageType) instance.dynamicMethod(MethodToInvoke.NEW_MUTABLE_INSTANCE);
-      mergeFromInstance(newInstance, instance);
-      instance = newInstance;
     }
 
     @Override
@@ -461,7 +452,7 @@ public abstract class GeneratedMessageLite<
         throws IOException {
       copyOnWrite();
       try {
-        // TODO(yilunchong): Try to make input with type CodedInputStream.ArrayDecoder use
+        // TODO(yilunchong): Try to make input with type CodedInpuStream.ArrayDecoder use
         // fast path.
         Protobuf.getInstance().schemaFor(instance).mergeFrom(
             instance, CodedInputStreamReader.forCodedInput(input), extensionRegistry);
@@ -928,8 +919,12 @@ public abstract class GeneratedMessageLite<
     }
 
     @Override
-    protected void copyOnWriteInternal() {
-      super.copyOnWriteInternal();
+    protected void copyOnWrite() {
+      if (!isBuilt) {
+        return;
+      }
+
+      super.copyOnWrite();
       instance.extensions = instance.extensions.clone();
     }
 
@@ -1027,7 +1022,7 @@ public abstract class GeneratedMessageLite<
     }
 
     /** Clear an extension. */
-    public final BuilderType clearExtension(final ExtensionLite<MessageType, ?> extension) {
+    public final <Type> BuilderType clearExtension(final ExtensionLite<MessageType, ?> extension) {
       GeneratedExtension<MessageType, ?> extensionLite = checkIsLite(extension);
 
       verifyExtensionContainingType(extensionLite);
@@ -1243,7 +1238,7 @@ public abstract class GeneratedMessageLite<
     Object fromFieldSetType(final Object value) {
       if (descriptor.isRepeated()) {
         if (descriptor.getLiteJavaType() == WireFormat.JavaType.ENUM) {
-          final List result = new ArrayList<>();
+          final List result = new ArrayList();
           for (final Object element : (List) value) {
             result.add(singularFromFieldSetType(element));
           }
@@ -1268,7 +1263,7 @@ public abstract class GeneratedMessageLite<
     Object toFieldSetType(final Object value) {
       if (descriptor.isRepeated()) {
         if (descriptor.getLiteJavaType() == WireFormat.JavaType.ENUM) {
-          final List result = new ArrayList<>();
+          final List result = new ArrayList();
           for (final Object element : (List) value) {
             result.add(singularToFieldSetType(element));
           }

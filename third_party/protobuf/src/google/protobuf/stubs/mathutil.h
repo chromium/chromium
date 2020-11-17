@@ -30,37 +30,16 @@
 #ifndef GOOGLE_PROTOBUF_STUBS_MATHUTIL_H_
 #define GOOGLE_PROTOBUF_STUBS_MATHUTIL_H_
 
-#include <cmath>
 #include <float.h>
-#include <limits>
+#include <math.h>
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/mathlimits.h>
 
 namespace google {
 namespace protobuf {
 namespace internal {
-
-// Like std::make_unsigned_t except floating point types map to themselves.
-template <typename T>
-using MakeUnsignedT =
-    typename std::conditional<std::is_integral<T>::value, std::make_unsigned<T>,
-                              std::common_type<T>>::type::type;
-
-// Like std::isnan() except a template function that is defined for all numeric
-// types.
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-bool IsNan(T val) {
-  return false;
-}
-
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value,
-                                              int>::type = 0>
-bool IsNan(T val) {
-  return std::isnan(val);
-}
-
 template<typename T>
 bool AlmostEquals(T a, T b) {
   return a == b;
@@ -74,20 +53,19 @@ template<>
 inline bool AlmostEquals(double a, double b) {
   return fabs(a - b) < 32 * DBL_EPSILON;
 }
-
 }  // namespace internal
 
 class MathUtil {
  public:
-  template <typename T>
+  template<typename T>
   static T Sign(T value) {
-    if (value == T(0) || internal::IsNan(value)) {
+    if (value == T(0) || MathLimits<T>::IsNaN(value)) {
       return value;
     }
     return value > T(0) ? 1 : -1;
   }
 
-  template <typename T>
+  template<typename T>
   static bool AlmostEquals(T a, T b) {
     return internal::AlmostEquals(a, b);
   }
@@ -98,9 +76,9 @@ class MathUtil {
   // which should be OK because, although they (can) have different
   // bit representation, they are observably the same when examined
   // with arithmetic and (in)equality operators.
-  template <typename T>
+  template<typename T>
   static T Max(const T x, const T y) {
-    return internal::IsNan(x) || x > y ? x : y;
+    return MathLimits<T>::IsNaN(x) || x > y ? x : y;
   }
 
   // Absolute value of x
@@ -115,10 +93,10 @@ class MathUtil {
 
   // Absolute value of the difference between two numbers.
   // Works correctly for signed types and special floating point values.
-  template <typename T>
-  static typename internal::MakeUnsignedT<T> AbsDiff(const T x, const T y) {
+  template<typename T>
+  static typename MathLimits<T>::UnsignedType AbsDiff(const T x, const T y) {
     // Carries out arithmetic as unsigned to avoid overflow.
-    typedef typename internal::MakeUnsignedT<T> R;
+    typedef typename MathLimits<T>::UnsignedType R;
     return x > y ? R(x) - R(y) : R(y) - R(x);
   }
 
@@ -145,10 +123,10 @@ bool MathUtil::WithinFractionOrMargin(const T x, const T y,
   // which will cause the compiler to generate code for either the "if" part
   // or the "then" part.  In this way we avoid a compiler warning
   // about a potential integer overflow in crosstool v12 (gcc 4.3.1).
-  if (std::numeric_limits<T>::is_integer) {
+  if (MathLimits<T>::kIsInteger) {
     return x == y;
   } else {
-    if (!std::isfinite(x) || !std::isfinite(y)) {
+    if (!MathLimits<T>::IsFinite(x) || !MathLimits<T>::IsFinite(y)) {
       return false;
     }
     T relative_margin = static_cast<T>(fraction * Max(Abs(x), Abs(y)));

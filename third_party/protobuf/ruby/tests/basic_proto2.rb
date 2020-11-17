@@ -18,6 +18,7 @@ module BasicTestProto2
       add_message "BadFieldNames" do
         optional :dup, :int32, 1
         optional :class, :int32, 2
+        optional :"a.b", :int32, 3
       end
     end
   end
@@ -73,11 +74,10 @@ module BasicTestProto2
       m = OneofMessage.new
       assert !m.has_my_oneof?
       m.a = "foo"
-      assert m.has_my_oneof?
-      assert_equal :a, m.my_oneof
       assert m.has_a?
       assert OneofMessage.descriptor.lookup('a').has?(m)
       assert_equal "foo", m.a
+      assert m.has_my_oneof?
       assert !m.has_b?
       assert !OneofMessage.descriptor.lookup('b').has?(m)
       assert !m.has_c?
@@ -196,17 +196,6 @@ module BasicTestProto2
       assert m.has_my_oneof?
       OneofMessage.descriptor.lookup('a').clear(m)
       assert !m.has_my_oneof?
-    end
-
-    def test_assign_nil
-      m = TestMessageDefaults.new
-      m.optional_msg = TestMessage2.new(:foo => 42)
-
-      assert_equal TestMessage2.new(:foo => 42), m.optional_msg
-      assert m.has_optional_msg?
-      m.optional_msg = nil
-      assert_equal nil, m.optional_msg
-      assert !m.has_optional_msg?
     end
 
     def test_initialization_map_errors

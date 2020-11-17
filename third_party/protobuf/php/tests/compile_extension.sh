@@ -1,20 +1,10 @@
 #!/bin/bash
 
-set -ex
+EXTENSION_PATH=$1
 
-cd $(dirname $0)
-
-pushd  ../ext/google/protobuf
-phpize --clean
-rm -f configure.in configure.ac
-php make-preload.php
-phpize
-if [ "$1" = "--release" ]; then
-  ./configure --with-php-config=$(which php-config)
-else
-  # To get debugging symbols in PHP itself, build PHP with:
-  #   $ ./configure --enable-debug CFLAGS='-g -O0'
-  ./configure --with-php-config=$(which php-config) CFLAGS="-g -O0 -Wall"
-fi
-make
+pushd $EXTENSION_PATH
+make clean || true
+set -e
+# Add following in configure for debug: --enable-debug CFLAGS='-g -O0'
+phpize && ./configure CFLAGS='-g -O0' && make
 popd

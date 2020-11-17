@@ -31,9 +31,9 @@ process.argv.forEach(function(filename, index) {
     totalBytes += onePayload.length;
   });
 
-  var scenarios = benchmarkSuite.newBenchmark(
+  var senarios = benchmarkSuite.newBenchmark(
     benchmarkDataset.messageName, filename, "protobufjs");
-  scenarios.suite
+  senarios.suite
   .add("protobuf.js static decoding", function() {
     benchmarkDataset.payload.forEach(function(onePayload) {
       var protoType = getNewPrototype(benchmarkDataset.messageName);
@@ -51,15 +51,15 @@ process.argv.forEach(function(filename, index) {
   results.push({
     filename: filename,
     benchmarks: {
-      protobufjs_decoding: scenarios.benches[0] * totalBytes,
-      protobufjs_encoding: scenarios.benches[1] * totalBytes
+      protobufjs_decoding: senarios.benches[0] * totalBytes,
+      protobufjs_encoding: senarios.benches[1] * totalBytes
     }
   })
 
   console.log("Throughput for decoding: "
-    + scenarios.benches[0] * totalBytes / 1024 / 1024 + "MB/s" );
+    + senarios.benches[0] * totalBytes / 1024 / 1024 + "MB/s" );
   console.log("Throughput for encoding: "
-    + scenarios.benches[1] * totalBytes / 1024 / 1024 + "MB/s" );
+    + senarios.benches[1] * totalBytes / 1024 / 1024 + "MB/s" );
   console.log("");
 });
 console.log("#####################################################");

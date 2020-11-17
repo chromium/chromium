@@ -34,7 +34,7 @@ package com.google.protobuf;
 public final class DiscardUnknownFieldsParser {
 
   /**
-   * Wraps a given {@link Parser} into a new {@link Parser} that discards unknown fields during
+   * Warps a given {@link Parser} into a new {@link Parser} that discards unknown fields during
    * parsing.
    *
    * <p>Usage example:

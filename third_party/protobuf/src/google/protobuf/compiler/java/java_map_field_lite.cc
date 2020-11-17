@@ -92,12 +92,14 @@ void SetMessageVariables(const FieldDescriptor* descriptor, int messageBitIndex,
   (*variables)["boxed_key_type"] = TypeName(key, name_resolver, true);
   (*variables)["key_wire_type"] = WireType(key);
   (*variables)["key_default_value"] = DefaultValue(key, true, name_resolver);
-  // We use `x.getClass()` as a null check because it generates less bytecode
-  // than an `if (x == null) { throw ... }` statement.
   (*variables)["key_null_check"] =
-      IsReferenceType(keyJavaType) ? "key.getClass();" : "";
+      IsReferenceType(keyJavaType)
+          ? "if (key == null) { throw new java.lang.NullPointerException(); }"
+          : "";
   (*variables)["value_null_check"] =
-      IsReferenceType(valueJavaType) ? "value.getClass();" : "";
+      IsReferenceType(valueJavaType)
+          ? "if (value == null) { throw new java.lang.NullPointerException(); }"
+          : "";
 
   if (GetJavaType(value) == JAVATYPE_ENUM) {
     // We store enums as Integers internally.
@@ -508,7 +510,7 @@ void ImmutableMapFieldLiteGenerator::GenerateFieldInfo(
   printer->Print(variables_,
                  "\"$name$_\",\n"
                  "$default_entry$,\n");
-  if (!SupportUnknownEnumValue(descriptor_) &&
+  if (SupportFieldPresence(descriptor_->file()) &&
       GetJavaType(ValueField(descriptor_)) == JAVATYPE_ENUM) {
     PrintEnumVerifierLogic(printer, ValueField(descriptor_), variables_,
                            /*var_name=*/"$value_enum_type$",

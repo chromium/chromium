@@ -96,7 +96,7 @@ final class RawMessageInfo implements MessageInfo {
    * If the field is in an oneof:
    *
    * <ul>
-   *   <li>[2]: oneof index
+   *   <li>[2]: oenof index
    * </ul>
    *
    * For other types, the field entry only has field number and field type.

@@ -33,8 +33,9 @@
 #ifndef GOOGLE_PROTOBUF_STUBS_HASH_H__
 #define GOOGLE_PROTOBUF_STUBS_HASH_H__
 
-#include <cstring>
-#include <string>
+#include <string.h>
+#include <google/protobuf/stubs/common.h>
+
 #include <unordered_map>
 #include <unordered_set>
 
@@ -77,14 +78,14 @@ struct hash<bool> {
 };
 
 template <>
-struct hash<std::string> {
-  inline size_t operator()(const std::string& key) const {
+struct hash<string> {
+  inline size_t operator()(const string& key) const {
     return hash<const char*>()(key.c_str());
   }
 
   static const size_t bucket_size = 4;
   static const size_t min_buckets = 8;
-  inline bool operator()(const std::string& a, const std::string& b) const {
+  inline bool operator()(const string& a, const string& b) const {
     return a < b;
   }
 };

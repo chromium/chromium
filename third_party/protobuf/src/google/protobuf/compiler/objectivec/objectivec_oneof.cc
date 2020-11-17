@@ -50,7 +50,7 @@ OneofGenerator::OneofGenerator(const OneofDescriptor* descriptor)
   const Descriptor* msg_descriptor = descriptor_->containing_type();
   variables_["owning_message_class"] = ClassName(msg_descriptor);
 
-  std::string comments;
+  string comments;
   SourceLocation location;
   if (descriptor_->GetSourceLocation(&location)) {
     comments = BuildCommentsString(location, true);
@@ -76,10 +76,10 @@ void OneofGenerator::GenerateCaseEnum(io::Printer* printer) {
   printer->Print(
       variables_,
       "$enum_name$_GPBUnsetOneOfCase = 0,\n");
-  std::string enum_name = variables_["enum_name"];
+  string enum_name = variables_["enum_name"];
   for (int j = 0; j < descriptor_->field_count(); j++) {
     const FieldDescriptor* field = descriptor_->field(j);
-    std::string field_name = FieldNameCapitalized(field);
+    string field_name = FieldNameCapitalized(field);
     printer->Print(
         "$enum_name$_$field_name$ = $field_number$,\n",
         "enum_name", enum_name,
@@ -120,17 +120,17 @@ void OneofGenerator::GenerateClearFunctionImplementation(io::Printer* printer) {
   printer->Print(
       variables_,
       "void $owning_message_class$_Clear$capitalized_name$OneOfCase($owning_message_class$ *message) {\n"
-      "  GPBDescriptor *descriptor = [$owning_message_class$ descriptor];\n"
+      "  GPBDescriptor *descriptor = [message descriptor];\n"
       "  GPBOneofDescriptor *oneof = [descriptor.oneofs objectAtIndex:$raw_index$];\n"
-      "  GPBClearOneof(message, oneof);\n"
+      "  GPBMaybeClearOneof(message, oneof, $index$, 0);\n"
       "}\n");
 }
 
-std::string OneofGenerator::DescriptorName(void) const {
+string OneofGenerator::DescriptorName(void) const {
   return variables_.find("name")->second;
 }
 
-std::string OneofGenerator::HasIndexAsString(void) const {
+string OneofGenerator::HasIndexAsString(void) const {
   return variables_.find("index")->second;
 }
 

@@ -37,8 +37,6 @@ on proto classes.  For usage, see:
 
 __author__ = 'rabsatt@google.com (Kevin Rabsatt)'
 
-import six
-
 
 class EnumTypeWrapper(object):
   """A utility for finding the names of enum values."""
@@ -48,38 +46,26 @@ class EnumTypeWrapper(object):
   def __init__(self, enum_type):
     """Inits EnumTypeWrapper with an EnumDescriptor."""
     self._enum_type = enum_type
-    self.DESCRIPTOR = enum_type  # pylint: disable=invalid-name
+    self.DESCRIPTOR = enum_type
 
-  def Name(self, number):  # pylint: disable=invalid-name
+  def Name(self, number):
     """Returns a string containing the name of an enum value."""
-    try:
+    if number in self._enum_type.values_by_number:
       return self._enum_type.values_by_number[number].name
-    except KeyError:
-      pass  # fall out to break exception chaining
+    raise ValueError('Enum %s has no name defined for value %d' % (
+        self._enum_type.name, number))
 
-    if not isinstance(number, six.integer_types):
-      raise TypeError(
-          'Enum value for {} must be an int, but got {} {!r}.'.format(
-              self._enum_type.name, type(number), number))
-    else:
-      # repr here to handle the odd case when you pass in a boolean.
-      raise ValueError('Enum {} has no name defined for value {!r}'.format(
-          self._enum_type.name, number))
-
-  def Value(self, name):  # pylint: disable=invalid-name
+  def Value(self, name):
     """Returns the value corresponding to the given enum name."""
-    try:
+    if name in self._enum_type.values_by_name:
       return self._enum_type.values_by_name[name].number
-    except KeyError:
-      pass  # fall out to break exception chaining
-    raise ValueError('Enum {} has no value defined for name {!r}'.format(
+    raise ValueError('Enum %s has no value defined for name %s' % (
         self._enum_type.name, name))
 
   def keys(self):
     """Return a list of the string names in the enum.
 
-    Returns:
-      A list of strs, in the order they were defined in the .proto file.
+    These are returned in the order they were defined in the .proto file.
     """
 
     return [value_descriptor.name
@@ -88,8 +74,7 @@ class EnumTypeWrapper(object):
   def values(self):
     """Return a list of the integer values in the enum.
 
-    Returns:
-      A list of ints, in the order they were defined in the .proto file.
+    These are returned in the order they were defined in the .proto file.
     """
 
     return [value_descriptor.number
@@ -98,20 +83,13 @@ class EnumTypeWrapper(object):
   def items(self):
     """Return a list of the (name, value) pairs of the enum.
 
-    Returns:
-      A list of (str, int) pairs, in the order they were defined
-      in the .proto file.
+    These are returned in the order they were defined in the .proto file.
     """
     return [(value_descriptor.name, value_descriptor.number)
             for value_descriptor in self._enum_type.values]
 
   def __getattr__(self, name):
     """Returns the value corresponding to the given enum name."""
-    try:
-      return super(
-          EnumTypeWrapper,
-          self).__getattribute__('_enum_type').values_by_name[name].number
-    except KeyError:
-      pass  # fall out to break exception chaining
-    raise AttributeError('Enum {} has no value defined for name {!r}'.format(
-        self._enum_type.name, name))
+    if name in self._enum_type.values_by_name:
+      return self._enum_type.values_by_name[name].number
+    raise AttributeError

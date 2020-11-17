@@ -33,31 +33,25 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <google/protobuf/wire_format.h>
-
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/test_util.h>
-#include <google/protobuf/test_util2.h>
 #include <google/protobuf/unittest.pb.h>
 #include <google/protobuf/unittest_mset.pb.h>
 #include <google/protobuf/unittest_mset_wire_format.pb.h>
 #include <google/protobuf/unittest_proto3_arena.pb.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/descriptor.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/testing/googletest.h>
+
 #include <google/protobuf/stubs/logging.h>
-#include <gmock/gmock.h>
+#include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/casts.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/stl_util.h>
 
-// clang-format off
 #include <google/protobuf/port_def.inc>
-// clang-format on
 
 namespace google {
 namespace protobuf {
@@ -213,16 +207,8 @@ TEST(WireFormatTest, OneofOnlySetLast) {
   source.set_foo_int(100);
   source.set_foo_string("101");
 
-  // Serialize and parse to oneof message. Generated serializer may not order
-  // fields in tag order. Use WireFormat::SerializeWithCachedSizes instead as
-  // it sorts fields beforehand.
-  {
-    io::StringOutputStream raw_output(&data);
-    io::CodedOutputStream output(&raw_output);
-    WireFormat::SerializeWithCachedSizes(source, source.ByteSizeLong(),
-                                         &output);
-    ASSERT_FALSE(output.HadError());
-  }
+  // Serialize and parse to oneof message.
+  source.SerializeToString(&data);
   io::ArrayInputStream raw_input(data.data(), data.size());
   io::CodedInputStream input(&raw_input);
   WireFormat::ParseAndMergePartial(&input, &oneof_dest);
@@ -236,9 +222,9 @@ TEST(WireFormatTest, ByteSize) {
   unittest::TestAllTypes message;
   TestUtil::SetAllFields(&message);
 
-  EXPECT_EQ(message.ByteSizeLong(), WireFormat::ByteSize(message));
+  EXPECT_EQ(message.ByteSize(), WireFormat::ByteSize(message));
   message.Clear();
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
   EXPECT_EQ(0, WireFormat::ByteSize(message));
 }
 
@@ -246,9 +232,9 @@ TEST(WireFormatTest, ByteSizeExtensions) {
   unittest::TestAllExtensions message;
   TestUtil::SetAllExtensions(&message);
 
-  EXPECT_EQ(message.ByteSizeLong(), WireFormat::ByteSize(message));
+  EXPECT_EQ(message.ByteSize(), WireFormat::ByteSize(message));
   message.Clear();
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
   EXPECT_EQ(0, WireFormat::ByteSize(message));
 }
 
@@ -256,9 +242,9 @@ TEST(WireFormatTest, ByteSizePacked) {
   unittest::TestPackedTypes message;
   TestUtil::SetPackedFields(&message);
 
-  EXPECT_EQ(message.ByteSizeLong(), WireFormat::ByteSize(message));
+  EXPECT_EQ(message.ByteSize(), WireFormat::ByteSize(message));
   message.Clear();
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
   EXPECT_EQ(0, WireFormat::ByteSize(message));
 }
 
@@ -266,9 +252,9 @@ TEST(WireFormatTest, ByteSizePackedExtensions) {
   unittest::TestPackedExtensions message;
   TestUtil::SetPackedExtensions(&message);
 
-  EXPECT_EQ(message.ByteSizeLong(), WireFormat::ByteSize(message));
+  EXPECT_EQ(message.ByteSize(), WireFormat::ByteSize(message));
   message.Clear();
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
   EXPECT_EQ(0, WireFormat::ByteSize(message));
 }
 
@@ -276,10 +262,10 @@ TEST(WireFormatTest, ByteSizeOneof) {
   unittest::TestOneof2 message;
   TestUtil::SetOneof1(&message);
 
-  EXPECT_EQ(message.ByteSizeLong(), WireFormat::ByteSize(message));
+  EXPECT_EQ(message.ByteSize(), WireFormat::ByteSize(message));
   message.Clear();
 
-  EXPECT_EQ(0, message.ByteSizeLong());
+  EXPECT_EQ(0, message.ByteSize());
   EXPECT_EQ(0, WireFormat::ByteSize(message));
 }
 
@@ -289,7 +275,7 @@ TEST(WireFormatTest, Serialize) {
   std::string dynamic_data;
 
   TestUtil::SetAllFields(&message);
-  size_t size = message.ByteSizeLong();
+  int size = message.ByteSize();
 
   // Serialize using the generated code.
   {
@@ -307,9 +293,10 @@ TEST(WireFormatTest, Serialize) {
     ASSERT_FALSE(output.HadError());
   }
 
-  // Should parse to the same message.
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, generated_data));
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, dynamic_data));
+  // Should be the same.
+  // Don't use EXPECT_EQ here because we're comparing raw binary data and
+  // we really don't want it dumped to stdout on failure.
+  EXPECT_TRUE(dynamic_data == generated_data);
 }
 
 TEST(WireFormatTest, SerializeExtensions) {
@@ -318,7 +305,7 @@ TEST(WireFormatTest, SerializeExtensions) {
   std::string dynamic_data;
 
   TestUtil::SetAllExtensions(&message);
-  size_t size = message.ByteSizeLong();
+  int size = message.ByteSize();
 
   // Serialize using the generated code.
   {
@@ -336,9 +323,10 @@ TEST(WireFormatTest, SerializeExtensions) {
     ASSERT_FALSE(output.HadError());
   }
 
-  // Should parse to the same message.
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, generated_data));
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, dynamic_data));
+  // Should be the same.
+  // Don't use EXPECT_EQ here because we're comparing raw binary data and
+  // we really don't want it dumped to stdout on failure.
+  EXPECT_TRUE(dynamic_data == generated_data);
 }
 
 TEST(WireFormatTest, SerializeFieldsAndExtensions) {
@@ -347,7 +335,7 @@ TEST(WireFormatTest, SerializeFieldsAndExtensions) {
   std::string dynamic_data;
 
   TestUtil::SetAllFieldsAndExtensions(&message);
-  size_t size = message.ByteSizeLong();
+  int size = message.ByteSize();
 
   // Serialize using the generated code.
   {
@@ -365,9 +353,14 @@ TEST(WireFormatTest, SerializeFieldsAndExtensions) {
     ASSERT_FALSE(output.HadError());
   }
 
-  // Should parse to the same message.
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, generated_data));
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, dynamic_data));
+  // Should be the same.
+  // Don't use EXPECT_EQ here because we're comparing raw binary data and
+  // we really don't want it dumped to stdout on failure.
+  EXPECT_TRUE(dynamic_data == generated_data);
+
+  // Should output in canonical order.
+  TestUtil::ExpectAllFieldsAndExtensionsInOrder(dynamic_data);
+  TestUtil::ExpectAllFieldsAndExtensionsInOrder(generated_data);
 }
 
 TEST(WireFormatTest, SerializeOneof) {
@@ -376,7 +369,7 @@ TEST(WireFormatTest, SerializeOneof) {
   std::string dynamic_data;
 
   TestUtil::SetOneof1(&message);
-  size_t size = message.ByteSizeLong();
+  int size = message.ByteSize();
 
   // Serialize using the generated code.
   {
@@ -394,9 +387,10 @@ TEST(WireFormatTest, SerializeOneof) {
     ASSERT_FALSE(output.HadError());
   }
 
-  // Should parse to the same message.
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, generated_data));
-  EXPECT_TRUE(TestUtil::EqualsToSerialized(message, dynamic_data));
+  // Should be the same.
+  // Don't use EXPECT_EQ here because we're comparing raw binary data and
+  // we really don't want it dumped to stdout on failure.
+  EXPECT_TRUE(dynamic_data == generated_data);
 }
 
 TEST(WireFormatTest, ParseMultipleExtensionRanges) {
@@ -486,7 +480,7 @@ TEST(WireFormatTest, SerializeMessageSetVariousWaysAreEqual) {
   message_set.mutable_unknown_fields()->AddLengthDelimited(kUnknownTypeId,
                                                            "bar");
 
-  size_t size = message_set.ByteSizeLong();
+  int size = message_set.ByteSize();
   EXPECT_EQ(size, message_set.GetCachedSize());
   ASSERT_EQ(size, WireFormat::ByteSize(message_set));
 
@@ -599,7 +593,7 @@ TEST(WireFormatTest, ParseMessageSetWithReverseTagOrder) {
     WireFormatLite::WriteTag(WireFormatLite::kMessageSetMessageNumber,
                              WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
                              &coded_output);
-    coded_output.WriteVarint32(message.ByteSizeLong());
+    coded_output.WriteVarint32(message.ByteSize());
     message.SerializeWithCachedSizes(&coded_output);
     // Write the type id.
     uint32 type_id = message.GetDescriptor()->extension(0)->number();
@@ -967,7 +961,8 @@ class Proto3PrimitiveRepeatedWireFormatTest : public ::testing::Test {
     message->add_repeated_float(1.0);
     message->add_repeated_double(1.0);
     message->add_repeated_bool(true);
-    message->add_repeated_nested_enum(proto3_arena_unittest::TestAllTypes::FOO);
+    message->add_repeated_nested_enum(
+        proto3_arena_unittest::TestAllTypes_NestedEnum_FOO);
   }
 
   template <class Proto>
@@ -985,7 +980,7 @@ class Proto3PrimitiveRepeatedWireFormatTest : public ::testing::Test {
     EXPECT_EQ(1.0, message.repeated_float(0));
     EXPECT_EQ(1.0, message.repeated_double(0));
     EXPECT_EQ(true, message.repeated_bool(0));
-    EXPECT_EQ(proto3_arena_unittest::TestAllTypes::FOO,
+    EXPECT_EQ(proto3_arena_unittest::TestAllTypes_NestedEnum_FOO,
               message.repeated_nested_enum(0));
   }
 
@@ -993,7 +988,7 @@ class Proto3PrimitiveRepeatedWireFormatTest : public ::testing::Test {
   void TestSerialization(Proto* message, const std::string& expected) {
     SetProto3PrimitiveRepeatedFields(message);
 
-    size_t size = message->ByteSizeLong();
+    int size = message->ByteSize();
 
     // Serialize using the generated code.
     std::string generated_data;
@@ -1003,7 +998,7 @@ class Proto3PrimitiveRepeatedWireFormatTest : public ::testing::Test {
       message->SerializeWithCachedSizes(&output);
       ASSERT_FALSE(output.HadError());
     }
-    EXPECT_TRUE(TestUtil::EqualsToSerialized(*message, generated_data));
+    EXPECT_TRUE(expected == generated_data);
 
     // Serialize using the dynamic code.
     std::string dynamic_data;

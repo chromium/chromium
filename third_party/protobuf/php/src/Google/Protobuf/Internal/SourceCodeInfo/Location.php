@@ -41,6 +41,7 @@ class Location extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>repeated int32 path = 1 [packed = true];</code>
      */
     private $path;
+    private $has_path = false;
     /**
      * Always has exactly three or four elements: start line, start column,
      * end line (optional, otherwise assumed same as start line), end column.
@@ -51,6 +52,7 @@ class Location extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>repeated int32 span = 2 [packed = true];</code>
      */
     private $span;
+    private $has_span = false;
     /**
      * If this SourceCodeInfo represents a complete declaration, these are any
      * comments appearing before and after the declaration which appear to be
@@ -91,15 +93,18 @@ class Location extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional string leading_comments = 3;</code>
      */
-    protected $leading_comments = null;
+    private $leading_comments = '';
+    private $has_leading_comments = false;
     /**
      * Generated from protobuf field <code>optional string trailing_comments = 4;</code>
      */
-    protected $trailing_comments = null;
+    private $trailing_comments = '';
+    private $has_trailing_comments = false;
     /**
      * Generated from protobuf field <code>repeated string leading_detached_comments = 6;</code>
      */
     private $leading_detached_comments;
+    private $has_leading_detached_comments = false;
 
     /**
      * Constructor.
@@ -243,8 +248,14 @@ class Location extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::INT32);
         $this->path = $arr;
+        $this->has_path = true;
 
         return $this;
+    }
+
+    public function hasPath()
+    {
+        return $this->has_path;
     }
 
     /**
@@ -277,8 +288,14 @@ class Location extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::INT32);
         $this->span = $arr;
+        $this->has_span = true;
 
         return $this;
+    }
+
+    public function hasSpan()
+    {
+        return $this->has_span;
     }
 
     /**
@@ -324,17 +341,7 @@ class Location extends \Google\Protobuf\Internal\Message
      */
     public function getLeadingComments()
     {
-        return isset($this->leading_comments) ? $this->leading_comments : '';
-    }
-
-    public function hasLeadingComments()
-    {
-        return isset($this->leading_comments);
-    }
-
-    public function clearLeadingComments()
-    {
-        unset($this->leading_comments);
+        return $this->leading_comments;
     }
 
     /**
@@ -383,8 +390,14 @@ class Location extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->leading_comments = $var;
+        $this->has_leading_comments = true;
 
         return $this;
+    }
+
+    public function hasLeadingComments()
+    {
+        return $this->has_leading_comments;
     }
 
     /**
@@ -393,17 +406,7 @@ class Location extends \Google\Protobuf\Internal\Message
      */
     public function getTrailingComments()
     {
-        return isset($this->trailing_comments) ? $this->trailing_comments : '';
-    }
-
-    public function hasTrailingComments()
-    {
-        return isset($this->trailing_comments);
-    }
-
-    public function clearTrailingComments()
-    {
-        unset($this->trailing_comments);
+        return $this->trailing_comments;
     }
 
     /**
@@ -415,8 +418,14 @@ class Location extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->trailing_comments = $var;
+        $this->has_trailing_comments = true;
 
         return $this;
+    }
+
+    public function hasTrailingComments()
+    {
+        return $this->has_trailing_comments;
     }
 
     /**
@@ -437,8 +446,14 @@ class Location extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->leading_detached_comments = $arr;
+        $this->has_leading_detached_comments = true;
 
         return $this;
+    }
+
+    public function hasLeadingDetachedComments()
+    {
+        return $this->has_leading_detached_comments;
     }
 
 }

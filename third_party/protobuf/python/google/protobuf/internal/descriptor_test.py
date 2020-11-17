@@ -35,7 +35,6 @@
 __author__ = 'robinson@google.com (Will Robinson)'
 
 import sys
-import warnings
 
 try:
   import unittest2 as unittest  #PY26
@@ -57,9 +56,6 @@ from google.protobuf import text_format
 TEST_EMPTY_MESSAGE_DESCRIPTOR_ASCII = """
 name: 'TestEmptyMessage'
 """
-
-
-warnings.simplefilter('error', DeprecationWarning)
 
 
 class DescriptorTest(unittest.TestCase):
@@ -653,14 +649,6 @@ class GeneratedDescriptorTest(unittest.TestCase):
     values_iter = iter(enum.values)
     del enum
     self.assertEqual('FOO', next(values_iter).name)
-
-  def testDescriptorNestedTypesContainer(self):
-    message_descriptor = unittest_pb2.TestAllTypes.DESCRIPTOR
-    nested_message_descriptor = unittest_pb2.TestAllTypes.NestedMessage.DESCRIPTOR
-    self.assertEqual(len(message_descriptor.nested_types), 3)
-    self.assertFalse(None in message_descriptor.nested_types)
-    self.assertTrue(
-        nested_message_descriptor in message_descriptor.nested_types)
 
   def testServiceDescriptor(self):
     service_descriptor = unittest_pb2.DESCRIPTOR.services_by_name['TestService']

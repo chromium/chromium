@@ -59,12 +59,11 @@ ArenaImpl::ThreadCache& ArenaImpl::thread_cache() {
 }
 #elif defined(PROTOBUF_USE_DLLS)
 ArenaImpl::ThreadCache& ArenaImpl::thread_cache() {
-  static PROTOBUF_THREAD_LOCAL ThreadCache thread_cache_ = {-1, NULL};
+  static GOOGLE_THREAD_LOCAL ThreadCache thread_cache_ = {-1, NULL};
   return thread_cache_;
 }
 #else
-PROTOBUF_THREAD_LOCAL ArenaImpl::ThreadCache ArenaImpl::thread_cache_ = {-1,
-                                                                         NULL};
+GOOGLE_THREAD_LOCAL ArenaImpl::ThreadCache ArenaImpl::thread_cache_ = {-1, NULL};
 #endif
 
 void ArenaImpl::Init() {
@@ -145,6 +144,16 @@ void ArenaImpl::SerialArena::AddCleanupFallback(void* elem,
   AddCleanup(elem, cleanup);
 }
 
+PROTOBUF_FUNC_ALIGN(32)
+void* ArenaImpl::AllocateAligned(size_t n) {
+  SerialArena* arena;
+  if (PROTOBUF_PREDICT_TRUE(GetSerialArenaFast(&arena))) {
+    return arena->AllocateAligned(n);
+  } else {
+    return AllocateAlignedFallback(n);
+  }
+}
+
 void* ArenaImpl::AllocateAlignedAndAddCleanup(size_t n,
                                               void (*cleanup)(void*)) {
   SerialArena* arena;
@@ -166,19 +175,49 @@ void ArenaImpl::AddCleanup(void* elem, void (*cleanup)(void*)) {
 
 PROTOBUF_NOINLINE
 void* ArenaImpl::AllocateAlignedFallback(size_t n) {
-  return GetSerialArenaFallback(&thread_cache())->AllocateAligned(n);
+  return GetSerialArena()->AllocateAligned(n);
 }
 
 PROTOBUF_NOINLINE
 void* ArenaImpl::AllocateAlignedAndAddCleanupFallback(size_t n,
                                                       void (*cleanup)(void*)) {
-  return GetSerialArenaFallback(
-      &thread_cache())->AllocateAlignedAndAddCleanup(n, cleanup);
+  return GetSerialArena()->AllocateAlignedAndAddCleanup(n, cleanup);
 }
 
 PROTOBUF_NOINLINE
 void ArenaImpl::AddCleanupFallback(void* elem, void (*cleanup)(void*)) {
-  GetSerialArenaFallback(&thread_cache())->AddCleanup(elem, cleanup);
+  GetSerialArena()->AddCleanup(elem, cleanup);
+}
+
+inline PROTOBUF_ALWAYS_INLINE bool ArenaImpl::GetSerialArenaFast(
+    ArenaImpl::SerialArena** arena) {
+  // If this thread already owns a block in this arena then try to use that.
+  // This fast path optimizes the case where multiple threads allocate from the
+  // same arena.
+  ThreadCache* tc = &thread_cache();
+  if (PROTOBUF_PREDICT_TRUE(tc->last_lifecycle_id_seen == lifecycle_id_)) {
+    *arena = tc->last_serial_arena;
+    return true;
+  }
+
+  // Check whether we own the last accessed SerialArena on this arena.  This
+  // fast path optimizes the case where a single thread uses multiple arenas.
+  SerialArena* serial = hint_.load(std::memory_order_acquire);
+  if (PROTOBUF_PREDICT_TRUE(serial != NULL && serial->owner() == tc)) {
+    *arena = serial;
+    return true;
+  }
+
+  return false;
+}
+
+ArenaImpl::SerialArena* ArenaImpl::GetSerialArena() {
+  SerialArena* arena;
+  if (PROTOBUF_PREDICT_TRUE(GetSerialArenaFast(&arena))) {
+    return arena;
+  } else {
+    return GetSerialArenaFallback(&thread_cache());
+  }
 }
 
 PROTOBUF_NOINLINE
@@ -351,11 +390,6 @@ ArenaImpl::SerialArena* ArenaImpl::GetSerialArenaFallback(void* me) {
 }
 
 }  // namespace internal
-
-PROTOBUF_FUNC_ALIGN(32)
-void* Arena::AllocateAlignedNoHook(size_t n) {
-  return impl_.AllocateAligned(n);
-}
 
 void Arena::CallDestructorHooks() {
   uint64 space_allocated = impl_.SpaceAllocated();

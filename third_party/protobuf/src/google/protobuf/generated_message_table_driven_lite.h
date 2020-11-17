@@ -31,11 +31,13 @@
 #ifndef GOOGLE_PROTOBUF_GENERATED_MESSAGE_TABLE_DRIVEN_LITE_H__
 #define GOOGLE_PROTOBUF_GENERATED_MESSAGE_TABLE_DRIVEN_LITE_H__
 
+#include <google/protobuf/generated_message_table_driven.h>
+
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/implicit_weak_message.h>
 #include <google/protobuf/inlined_string_field.h>
+#include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/wire_format_lite.h>
 #include <type_traits>
@@ -78,6 +80,15 @@ template <typename Type>
 inline const Type* Raw(const MessageLite* msg, int64 offset) {
   return reinterpret_cast<const Type*>(reinterpret_cast<const uint8*>(msg) +
                                        offset);
+}
+
+template <typename InternalMetadata>
+inline Arena* GetArena(MessageLite* msg, int64 arena_offset) {
+  if (PROTOBUF_PREDICT_FALSE(arena_offset == -1)) {
+    return NULL;
+  }
+
+  return Raw<InternalMetadata>(msg, arena_offset)->arena();
 }
 
 inline ExtensionSet* GetExtensionSet(MessageLite* msg, int64 extension_offset) {
@@ -279,13 +290,9 @@ static inline bool HandleString(io::CodedInputStream* input, MessageLite* msg,
           }
           utf8_string_data = field->Get();
         } break;
-        default:
-          PROTOBUF_ASSUME(false);
       }
       break;
     }
-    default:
-      PROTOBUF_ASSUME(false);
   }
 
   if (kValidateUtf8) {
@@ -297,7 +304,8 @@ static inline bool HandleString(io::CodedInputStream* input, MessageLite* msg,
   return true;
 }
 
-template <typename UnknownFieldHandler, Cardinality cardinality>
+template <typename UnknownFieldHandler, typename InternalMetadata,
+          Cardinality cardinality>
 inline bool HandleEnum(const ParseTable& table, io::CodedInputStream* input,
                        MessageLite* msg, uint32* presence,
                        uint32 presence_index, int64 offset, uint32 tag,
@@ -309,7 +317,7 @@ inline bool HandleEnum(const ParseTable& table, io::CodedInputStream* input,
     return false;
   }
 
-  AuxiliaryParseTableField::EnumValidator validator =
+  AuxillaryParseTableField::EnumValidator validator =
       table.aux[field_number].enums.validator;
   if (validator == nullptr || validator(value)) {
     switch (cardinality) {
@@ -320,13 +328,12 @@ inline bool HandleEnum(const ParseTable& table, io::CodedInputStream* input,
         AddField(msg, offset, value);
         break;
       case Cardinality_ONEOF:
-        ClearOneofField(table.fields[presence[presence_index]], msg->GetArena(),
+        ClearOneofField(table.fields[presence[presence_index]],
+                        GetArena<InternalMetadata>(msg, table.arena_offset),
                         msg);
         SetOneofField(msg, presence, presence_index, offset, field_number,
                       value);
         break;
-      default:
-        PROTOBUF_ASSUME(false);
     }
   } else {
     UnknownFieldHandler::Varint(msg, table, tag, value);
@@ -365,7 +372,8 @@ class MergePartialFromCodedStreamHelper {
   }
 };
 
-template <typename UnknownFieldHandler, uint32 kMaxTag>
+template <typename UnknownFieldHandler, typename InternalMetadata,
+          uint32 kMaxTag>
 bool MergePartialFromCodedStreamInlined(MessageLite* msg,
                                         const ParseTable& table,
                                         io::CodedInputStream* input) {
@@ -411,6 +419,9 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
     const unsigned char processing_type = data->processing_type;
 
     if (data->normal_wiretype == static_cast<unsigned char>(wire_type)) {
+      // TODO(ckennelly): Use a computed goto on GCC/LLVM or otherwise eliminate
+      // the bounds check on processing_type.
+
       switch (processing_type) {
 #define HANDLE_TYPE(TYPE, CPPTYPE)                                             \
   case (WireFormatLite::TYPE_##TYPE): {                                        \
@@ -440,8 +451,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
                 CPPTYPE, WireFormatLite::TYPE_##TYPE>(input, &value)))) {      \
       return false;                                                            \
     }                                                                          \
-    ClearOneofField(table.fields[oneof_case[presence_index]], msg->GetArena(), \
-                    msg);                                                      \
+    ClearOneofField(table.fields[oneof_case[presence_index]],                  \
+                    GetArena<InternalMetadata>(msg, table.arena_offset), msg); \
     SetOneofField(msg, oneof_case, presence_index, offset, field_number,       \
                   value);                                                      \
     break;                                                                     \
@@ -469,7 +480,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         case WireFormatLite::TYPE_STRING:
 #endif  // GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
 
           if (PROTOBUF_PREDICT_FALSE(
@@ -486,7 +498,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         case TYPE_STRING_INLINED:
 #endif  // !GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
 
           if (PROTOBUF_PREDICT_FALSE(
@@ -503,7 +516,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         case WireFormatLite::TYPE_STRING | kOneofMask:
 #endif  // !GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           uint32* oneof_case = Raw<uint32>(msg, table.oneof_case_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
 
@@ -527,7 +541,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         case TYPE_STRING_INLINED | kRepeatedMask:
 #endif  // !GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
 
           if (PROTOBUF_PREDICT_FALSE(
@@ -541,7 +556,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         }
 #ifdef GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         case (WireFormatLite::TYPE_STRING): {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
           const char* field_name = table.aux[field_number].strings.field_name;
 
@@ -556,7 +572,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         }
         case TYPE_STRING_INLINED | kRepeatedMask:
         case (WireFormatLite::TYPE_STRING) | kRepeatedMask: {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
           const char* field_name = table.aux[field_number].strings.field_name;
 
@@ -570,7 +587,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           break;
         }
         case (WireFormatLite::TYPE_STRING) | kOneofMask: {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           uint32* oneof_case = Raw<uint32>(msg, table.oneof_case_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
           const char* field_name = table.aux[field_number].strings.field_name;
@@ -591,7 +609,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
 #endif  // GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         case WireFormatLite::TYPE_ENUM: {
           if (PROTOBUF_PREDICT_FALSE(
-                  (!HandleEnum<UnknownFieldHandler, Cardinality_SINGULAR>(
+                  (!HandleEnum<UnknownFieldHandler, InternalMetadata,
+                               Cardinality_SINGULAR>(
                       table, input, msg, has_bits, presence_index, offset, tag,
                       field_number)))) {
             return false;
@@ -600,7 +619,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         }
         case WireFormatLite::TYPE_ENUM | kRepeatedMask: {
           if (PROTOBUF_PREDICT_FALSE(
-                  (!HandleEnum<UnknownFieldHandler, Cardinality_REPEATED>(
+                  (!HandleEnum<UnknownFieldHandler, InternalMetadata,
+                               Cardinality_REPEATED>(
                       table, input, msg, has_bits, presence_index, offset, tag,
                       field_number)))) {
             return false;
@@ -610,9 +630,10 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         case WireFormatLite::TYPE_ENUM | kOneofMask: {
           uint32* oneof_case = Raw<uint32>(msg, table.oneof_case_offset);
           if (PROTOBUF_PREDICT_FALSE(
-                  (!HandleEnum<UnknownFieldHandler, Cardinality_ONEOF>(
-                      table, input, msg, oneof_case, presence_index, offset,
-                      tag, field_number)))) {
+                  (!HandleEnum<UnknownFieldHandler, InternalMetadata,
+                               Cardinality_ONEOF>(table, input, msg, oneof_case,
+                                                  presence_index, offset, tag,
+                                                  field_number)))) {
             return false;
           }
           break;
@@ -623,7 +644,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           MessageLite* submsg = *submsg_holder;
 
           if (submsg == NULL) {
-            Arena* const arena = msg->GetArena();
+            Arena* const arena =
+                GetArena<InternalMetadata>(msg, table.arena_offset);
             const MessageLite* prototype =
                 table.aux[field_number].messages.default_message();
             submsg = prototype->New(arena);
@@ -659,7 +681,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           MessageLite* submsg = *submsg_holder;
 
           if (submsg == NULL) {
-            Arena* const arena = msg->GetArena();
+            Arena* const arena =
+                GetArena<InternalMetadata>(msg, table.arena_offset);
             const MessageLite* prototype =
                 table.aux[field_number].messages.default_message();
             if (prototype == NULL) {
@@ -697,7 +720,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           break;
         }
         case WireFormatLite::TYPE_MESSAGE | kOneofMask: {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           uint32* oneof_case = Raw<uint32>(msg, table.oneof_case_offset);
           MessageLite** submsg_holder = Raw<MessageLite*>(msg, offset);
           ResetOneofField<ProcessingType_MESSAGE>(
@@ -714,7 +738,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
         }
 #ifdef GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
         case TYPE_STRING_INLINED: {
-          Arena* const arena = msg->GetArena();
+          Arena* const arena =
+              GetArena<InternalMetadata>(msg, table.arena_offset);
           const void* default_ptr = table.aux[field_number].strings.default_ptr;
           const char* field_name = table.aux[field_number].strings.field_name;
 
@@ -741,7 +766,7 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           return true;
         }
         default:
-          PROTOBUF_ASSUME(false);
+          break;
       }
     } else if (data->packed_wiretype == static_cast<unsigned char>(wire_type)) {
       // Non-packable fields have their packed_wiretype masked with
@@ -753,6 +778,8 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
       GOOGLE_DCHECK_NE(TYPE_BYTES_INLINED | kRepeatedMask, processing_type);
       GOOGLE_DCHECK_NE(TYPE_STRING_INLINED | kRepeatedMask, processing_type);
 
+      // TODO(ckennelly): Use a computed goto on GCC/LLVM.
+      //
       // Mask out kRepeatedMask bit, allowing the jump table to be smaller.
       switch (static_cast<WireFormatLite::FieldType>(processing_type ^
                                                      kRepeatedMask)) {
@@ -786,7 +813,7 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
 #undef HANDLE_PACKED_TYPE
         case WireFormatLite::TYPE_ENUM: {
           // To avoid unnecessarily calling MutableUnknownFields (which mutates
-          // InternalMetadata) when all inputs in the repeated series
+          // InternalMetadataWithArena) when all inputs in the repeated series
           // are valid, we implement our own parser rather than call
           // WireFormat::ReadPackedEnumPreserveUnknowns.
           uint32 length;
@@ -794,7 +821,7 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
             return false;
           }
 
-          AuxiliaryParseTableField::EnumValidator validator =
+          AuxillaryParseTableField::EnumValidator validator =
               table.aux[field_number].enums.validator;
           RepeatedField<int>* values = Raw<RepeatedField<int>>(msg, offset);
 
@@ -825,7 +852,7 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
           GOOGLE_DCHECK(false);
           return false;
         default:
-          PROTOBUF_ASSUME(false);
+          break;
       }
     } else {
       if (wire_type == WireFormatLite::WIRETYPE_END_GROUP) {
@@ -849,21 +876,23 @@ bool MergePartialFromCodedStreamInlined(MessageLite* msg,
   }
 }
 
-template <typename UnknownFieldHandler>
+template <typename UnknownFieldHandler, typename InternalMetadata>
 bool MergePartialFromCodedStreamImpl(MessageLite* msg, const ParseTable& table,
                                      io::CodedInputStream* input) {
   // The main beneficial cutoff values are 1 and 2 byte tags.
   // Instantiate calls with the appropriate upper tag range
   if (table.max_field_number <= (0x7F >> 3)) {
-    return MergePartialFromCodedStreamInlined<UnknownFieldHandler, 0x7F>(
+    return MergePartialFromCodedStreamInlined<UnknownFieldHandler,
+                                              InternalMetadata, 0x7F>(
         msg, table, input);
   } else if (table.max_field_number <= (0x3FFF >> 3)) {
-    return MergePartialFromCodedStreamInlined<UnknownFieldHandler, 0x3FFF>(
+    return MergePartialFromCodedStreamInlined<UnknownFieldHandler,
+                                              InternalMetadata, 0x3FFF>(
         msg, table, input);
   } else {
     return MergePartialFromCodedStreamInlined<
-        UnknownFieldHandler, std::numeric_limits<uint32>::max()>(msg, table,
-                                                                 input);
+        UnknownFieldHandler, InternalMetadata,
+        std::numeric_limits<uint32>::max()>(msg, table, input);
   }
 }
 

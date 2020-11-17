@@ -74,7 +74,7 @@ void SetMessageVariables(const FieldDescriptor* descriptor, int messageBitIndex,
       ExposePublicParser(descriptor->message_type()->file()) ? "PARSER"
                                                              : "parser()";
 
-  if (HasHasbit(descriptor)) {
+  if (SupportFieldPresence(descriptor->file())) {
     // For singular messages and builders, one bit is used for the hasField bit.
     (*variables)["get_has_field_bit_message"] = GenerateGetBit(messageBitIndex);
     (*variables)["get_has_field_bit_builder"] = GenerateGetBit(builderBitIndex);
@@ -97,7 +97,7 @@ void SetMessageVariables(const FieldDescriptor* descriptor, int messageBitIndex,
         (*variables)["name"] + "_ != null";
   }
 
-  // For repeated builders, one bit is used for whether the array is immutable.
+  // For repated builders, one bit is used for whether the array is immutable.
   (*variables)["get_mutable_bit_builder"] = GenerateGetBit(builderBitIndex);
   (*variables)["set_mutable_bit_builder"] = GenerateSetBit(builderBitIndex);
   (*variables)["clear_mutable_bit_builder"] = GenerateClearBit(builderBitIndex);
@@ -131,7 +131,7 @@ ImmutableMessageFieldGenerator::ImmutableMessageFieldGenerator(
 ImmutableMessageFieldGenerator::~ImmutableMessageFieldGenerator() {}
 
 int ImmutableMessageFieldGenerator::GetNumBitsForMessage() const {
-  return HasHasbit(descriptor_) ? 1 : 0;
+  return SupportFieldPresence(descriptor_->file()) ? 1 : 0;
 }
 
 int ImmutableMessageFieldGenerator::GetNumBitsForBuilder() const {
@@ -144,9 +144,9 @@ void ImmutableMessageFieldGenerator::GenerateInterfaceMembers(
   // interface so that builders can choose dynamically to either return a
   // message or a nested builder, so that asking for the interface doesn't
   // cause a message to ever be built.
-  WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_, "$deprecation$boolean has$capitalized_name$();\n");
-  WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_, "$deprecation$$type$ get$capitalized_name$();\n");
 
   WriteFieldDocComment(printer, descriptor_);
@@ -160,19 +160,17 @@ void ImmutableMessageFieldGenerator::GenerateMembers(
   printer->Print(variables_, "private $type$ $name$_;\n");
   PrintExtraFieldInfo(variables_, printer);
 
-  if (HasHasbit(descriptor_)) {
-    WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+  if (SupportFieldPresence(descriptor_->file())) {
+    WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
-        "@java.lang.Override\n"
         "$deprecation$public boolean ${$has$capitalized_name$$}$() {\n"
         "  return $get_has_field_bit_message$;\n"
         "}\n");
     printer->Annotate("{", "}", descriptor_);
-    WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+    WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
-        "@java.lang.Override\n"
         "$deprecation$public $type$ ${$get$capitalized_name$$}$() {\n"
         "  return $name$_ == null ? $type$.getDefaultInstance() : $name$_;\n"
         "}\n");
@@ -181,25 +179,22 @@ void ImmutableMessageFieldGenerator::GenerateMembers(
     WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
-        "@java.lang.Override\n"
         "$deprecation$public $type$OrBuilder "
         "${$get$capitalized_name$OrBuilder$}$() {\n"
         "  return $name$_ == null ? $type$.getDefaultInstance() : $name$_;\n"
         "}\n");
     printer->Annotate("{", "}", descriptor_);
   } else {
-    WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+    WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
-        "@java.lang.Override\n"
         "$deprecation$public boolean ${$has$capitalized_name$$}$() {\n"
         "  return $name$_ != null;\n"
         "}\n");
     printer->Annotate("{", "}", descriptor_);
-    WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+    WriteFieldDocComment(printer, descriptor_);
     printer->Print(
         variables_,
-        "@java.lang.Override\n"
         "$deprecation$public $type$ ${$get$capitalized_name$$}$() {\n"
         "  return $name$_ == null ? $type$.getDefaultInstance() : $name$_;\n"
         "}\n");
@@ -207,7 +202,6 @@ void ImmutableMessageFieldGenerator::GenerateMembers(
 
     WriteFieldDocComment(printer, descriptor_);
     printer->Print(variables_,
-                   "@java.lang.Override\n"
                    "$deprecation$public $type$OrBuilder "
                    "${$get$capitalized_name$OrBuilder$}$() {\n"
                    "  return get$capitalized_name$();\n"
@@ -252,7 +246,7 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
   // non-nested builder case. It only creates a nested builder lazily on
   // demand and then forever delegates to it after creation.
 
-  bool has_hasbit = HasHasbit(descriptor_);
+  bool support_field_presence = SupportFieldPresence(descriptor_->file());
 
   printer->Print(variables_, "private $type$ $name$_;\n");
 
@@ -267,8 +261,8 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
   // field of type "Field" called "Field".
 
   // boolean hasField()
-  WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
-  if (has_hasbit) {
+  WriteFieldDocComment(printer, descriptor_);
+  if (support_field_presence) {
     printer->Print(
         variables_,
         "$deprecation$public boolean ${$has$capitalized_name$$}$() {\n"
@@ -285,7 +279,7 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
   }
 
   // Field getField()
-  WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+  WriteFieldDocComment(printer, descriptor_);
   PrintNestedBuilderFunction(
       printer, "$deprecation$public $type$ ${$get$capitalized_name$$}$()",
       "return $name$_ == null ? $type$.getDefaultInstance() : $name$_;\n",
@@ -329,7 +323,7 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
       printer,
       "$deprecation$public Builder ${$merge$capitalized_name$$}$($type$ value)",
 
-      has_hasbit
+      support_field_presence
           ? "if ($get_has_field_bit_builder$ &&\n"
             "    $name$_ != null &&\n"
             "    $name$_ != $type$.getDefaultInstance()) {\n"
@@ -360,9 +354,9 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
       "$name$_ = null;\n"
       "$on_changed$\n",
 
-      has_hasbit ? "$name$Builder_.clear();\n"
-                 : "$name$_ = null;\n"
-                   "$name$Builder_ = null;\n",
+      support_field_presence ? "$name$Builder_.clear();\n"
+                             : "$name$_ = null;\n"
+                               "$name$Builder_ = null;\n",
 
       "$clear_has_field_bit_builder$\n"
       "return this;\n");
@@ -408,7 +402,7 @@ void ImmutableMessageFieldGenerator::GenerateBuilderMembers(
 
 void ImmutableMessageFieldGenerator::GenerateFieldBuilderInitializationCode(
     io::Printer* printer) const {
-  if (HasHasbit(descriptor_)) {
+  if (SupportFieldPresence(descriptor_->file())) {
     printer->Print(variables_, "get$capitalized_name$FieldBuilder();\n");
   }
 }
@@ -418,7 +412,7 @@ void ImmutableMessageFieldGenerator::GenerateInitializationCode(
 
 void ImmutableMessageFieldGenerator::GenerateBuilderClearCode(
     io::Printer* printer) const {
-  if (HasHasbit(descriptor_)) {
+  if (SupportFieldPresence(descriptor_->file())) {
     PrintNestedBuilderCondition(printer, "$name$_ = null;\n",
 
                                 "$name$Builder_.clear();\n");
@@ -441,7 +435,7 @@ void ImmutableMessageFieldGenerator::GenerateMergingCode(
 
 void ImmutableMessageFieldGenerator::GenerateBuildingCode(
     io::Printer* printer) const {
-  if (HasHasbit(descriptor_)) {
+  if (SupportFieldPresence(descriptor_->file())) {
     printer->Print(variables_, "if ($get_has_field_bit_from_local$) {\n");
     printer->Indent();
     PrintNestedBuilderCondition(printer, "result.$name$_ = $name$_;\n",
@@ -541,16 +535,14 @@ ImmutableMessageOneofFieldGenerator::~ImmutableMessageOneofFieldGenerator() {}
 void ImmutableMessageOneofFieldGenerator::GenerateMembers(
     io::Printer* printer) const {
   PrintExtraFieldInfo(variables_, printer);
-  WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public boolean ${$has$capitalized_name$$}$() {\n"
                  "  return $has_oneof_case_message$;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
-  WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public $type$ ${$get$capitalized_name$$}$() {\n"
                  "  if ($has_oneof_case_message$) {\n"
                  "     return ($type$) $oneof_name$_;\n"
@@ -561,7 +553,6 @@ void ImmutableMessageOneofFieldGenerator::GenerateMembers(
 
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public $type$OrBuilder "
                  "${$get$capitalized_name$OrBuilder$}$() {\n"
                  "  if ($has_oneof_case_message$) {\n"
@@ -588,20 +579,17 @@ void ImmutableMessageOneofFieldGenerator::GenerateBuilderMembers(
   // field of type "Field" called "Field".
 
   // boolean hasField()
-  WriteFieldAccessorDocComment(printer, descriptor_, HAZZER);
+  WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public boolean ${$has$capitalized_name$$}$() {\n"
                  "  return $has_oneof_case_message$;\n"
                  "}\n");
   printer->Annotate("{", "}", descriptor_);
 
   // Field getField()
-  WriteFieldAccessorDocComment(printer, descriptor_, GETTER);
+  WriteFieldDocComment(printer, descriptor_);
   PrintNestedBuilderFunction(
-      printer,
-      "@java.lang.Override\n"
-      "$deprecation$public $type$ ${$get$capitalized_name$$}$()",
+      printer, "$deprecation$public $type$ ${$get$capitalized_name$$}$()",
 
       "if ($has_oneof_case_message$) {\n"
       "  return ($type$) $oneof_name$_;\n"
@@ -699,7 +687,6 @@ void ImmutableMessageOneofFieldGenerator::GenerateBuilderMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(
       variables_,
-      "@java.lang.Override\n"
       "$deprecation$public $type$OrBuilder "
       "${$get$capitalized_name$OrBuilder$}$() {\n"
       "  if (($has_oneof_case_message$) && ($name$Builder_ != null)) {\n"
@@ -859,7 +846,6 @@ void RepeatedImmutableMessageFieldGenerator::GenerateMembers(
   PrintExtraFieldInfo(variables_, printer);
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public java.util.List<$type$> "
                  "${$get$capitalized_name$List$}$() {\n"
                  "  return $name$_;\n"  // note:  unmodifiable list
@@ -868,7 +854,6 @@ void RepeatedImmutableMessageFieldGenerator::GenerateMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(
       variables_,
-      "@java.lang.Override\n"
       "$deprecation$public java.util.List<? extends $type$OrBuilder> \n"
       "    ${$get$capitalized_name$OrBuilderList$}$() {\n"
       "  return $name$_;\n"
@@ -877,7 +862,6 @@ void RepeatedImmutableMessageFieldGenerator::GenerateMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(
       variables_,
-      "@java.lang.Override\n"
       "$deprecation$public int ${$get$capitalized_name$Count$}$() {\n"
       "  return $name$_.size();\n"
       "}\n");
@@ -885,14 +869,12 @@ void RepeatedImmutableMessageFieldGenerator::GenerateMembers(
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(
       variables_,
-      "@java.lang.Override\n"
       "$deprecation$public $type$ ${$get$capitalized_name$$}$(int index) {\n"
       "  return $name$_.get(index);\n"
       "}\n");
   printer->Annotate("{", "}", descriptor_);
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-                 "@java.lang.Override\n"
                  "$deprecation$public $type$OrBuilder "
                  "${$get$capitalized_name$OrBuilder$}$(\n"
                  "    int index) {\n"
@@ -944,7 +926,7 @@ void RepeatedImmutableMessageFieldGenerator::GenerateBuilderMembers(
       // list is immutable. If it's immutable, the invariant is that it must
       // either an instance of Collections.emptyList() or it's an ArrayList
       // wrapped in a Collections.unmodifiableList() wrapper and nobody else has
-      // a reference to the underlying ArrayList. This invariant allows us to
+      // a refererence to the underlying ArrayList. This invariant allows us to
       // share instances of lists between protocol buffers avoiding expensive
       // memory allocations. Note, immutable is a strong guarantee here -- not
       // just that the list cannot be modified via the reference but that the

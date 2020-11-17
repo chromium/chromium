@@ -31,8 +31,6 @@
 #include <google/protobuf/util/internal/utility.h>
 
 #include <algorithm>
-#include <cmath>
-#include <limits>
 
 #include <google/protobuf/stubs/callback.h>
 #include <google/protobuf/stubs/common.h>
@@ -43,10 +41,9 @@
 #include <google/protobuf/util/internal/constants.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/map_util.h>
+#include <google/protobuf/stubs/mathlimits.h>
 
-// clang-format off
 #include <google/protobuf/port_def.inc>
-// clang-format on
 
 namespace google {
 namespace protobuf {
@@ -55,7 +52,7 @@ namespace converter {
 
 bool GetBoolOptionOrDefault(
     const RepeatedPtrField<google::protobuf::Option>& options,
-    StringPiece option_name, bool default_value) {
+    const std::string& option_name, bool default_value) {
   const google::protobuf::Option* opt = FindOptionOrNull(options, option_name);
   if (opt == nullptr) {
     return default_value;
@@ -65,7 +62,7 @@ bool GetBoolOptionOrDefault(
 
 int64 GetInt64OptionOrDefault(
     const RepeatedPtrField<google::protobuf::Option>& options,
-    StringPiece option_name, int64 default_value) {
+    const std::string& option_name, int64 default_value) {
   const google::protobuf::Option* opt = FindOptionOrNull(options, option_name);
   if (opt == nullptr) {
     return default_value;
@@ -75,7 +72,7 @@ int64 GetInt64OptionOrDefault(
 
 double GetDoubleOptionOrDefault(
     const RepeatedPtrField<google::protobuf::Option>& options,
-    StringPiece option_name, double default_value) {
+    const std::string& option_name, double default_value) {
   const google::protobuf::Option* opt = FindOptionOrNull(options, option_name);
   if (opt == nullptr) {
     return default_value;
@@ -85,10 +82,10 @@ double GetDoubleOptionOrDefault(
 
 std::string GetStringOptionOrDefault(
     const RepeatedPtrField<google::protobuf::Option>& options,
-    StringPiece option_name, StringPiece default_value) {
+    const std::string& option_name, const std::string& default_value) {
   const google::protobuf::Option* opt = FindOptionOrNull(options, option_name);
   if (opt == nullptr) {
-    return std::string(default_value);
+    return default_value;
   }
   return GetStringFromAny(opt->value());
 }
@@ -142,7 +139,7 @@ const std::string GetFullTypeWithUrl(StringPiece simple_type) {
 
 const google::protobuf::Option* FindOptionOrNull(
     const RepeatedPtrField<google::protobuf::Option>& options,
-    StringPiece option_name) {
+    const std::string& option_name) {
   for (int i = 0; i < options.size(); ++i) {
     const google::protobuf::Option& opt = options.Get(i);
     if (opt.name() == option_name) {
@@ -243,14 +240,14 @@ const google::protobuf::EnumValue* FindEnumValueByNameWithoutUnderscoreOrNull(
   return nullptr;
 }
 
-std::string EnumValueNameToLowerCamelCase(StringPiece input) {
+std::string EnumValueNameToLowerCamelCase(const StringPiece input) {
   std::string input_string(input);
   std::transform(input_string.begin(), input_string.end(), input_string.begin(),
                  ::tolower);
   return ToCamelCase(input_string);
 }
 
-std::string ToCamelCase(StringPiece input) {
+std::string ToCamelCase(const StringPiece input) {
   bool capitalize_next = false;
   bool was_cap = true;
   bool is_cap = false;
@@ -270,8 +267,7 @@ std::string ToCamelCase(StringPiece input) {
       // 1) following a lowercase:   "...aB..."
       // 2) followed by a lowercase: "...ABc..."
       if (!result.empty() && is_cap &&
-          (!was_cap ||
-           (i + 1 < input.size() && ascii_islower(input[i + 1])))) {
+          (!was_cap || (i + 1 < input.size() && ascii_islower(input[i + 1])))) {
         first_word = false;
         result.push_back(input[i]);
       } else {
@@ -311,9 +307,9 @@ std::string ToSnakeCase(StringPiece input) {
       //    (e.g. "GoogleLAB" => "google_lab")
       // 4) Followed by a lowercase: "...ABc..." => "...a_bc..."
       //    (e.g. "GBike" => "g_bike")
-      if (was_not_underscore &&                     //            case 1 out
-          (was_not_cap ||                           // case 2 in, case 3 out
-           (i + 1 < input.size() &&                 //            case 3 out
+      if (was_not_underscore &&               //            case 1 out
+          (was_not_cap ||                     // case 2 in, case 3 out
+           (i + 1 < input.size() &&           //            case 3 out
             ascii_islower(input[i + 1])))) {  // case 4 in
         // We add an underscore for case 2 and case 4.
         result.push_back('_');
@@ -356,14 +352,15 @@ bool IsWellKnownType(const std::string& type_name) {
   return ContainsKey(*well_known_types_, type_name);
 }
 
-bool IsValidBoolString(StringPiece bool_string) {
+bool IsValidBoolString(const std::string& bool_string) {
   return bool_string == "true" || bool_string == "false" ||
          bool_string == "1" || bool_string == "0";
 }
 
 bool IsMap(const google::protobuf::Field& field,
            const google::protobuf::Type& type) {
-  return field.cardinality() == google::protobuf::Field::CARDINALITY_REPEATED &&
+  return field.cardinality() ==
+             google::protobuf::Field_Cardinality_CARDINALITY_REPEATED &&
          (GetBoolOptionOrDefault(type.options(), "map_entry", false) ||
           GetBoolOptionOrDefault(type.options(),
                                  "google.protobuf.MessageOptions.map_entry",
@@ -379,15 +376,15 @@ bool IsMessageSetWireFormat(const google::protobuf::Type& type) {
 }
 
 std::string DoubleAsString(double value) {
-  if (value == std::numeric_limits<double>::infinity()) return "Infinity";
-  if (value == -std::numeric_limits<double>::infinity()) return "-Infinity";
-  if (std::isnan(value)) return "NaN";
+  if (MathLimits<double>::IsPosInf(value)) return "Infinity";
+  if (MathLimits<double>::IsNegInf(value)) return "-Infinity";
+  if (MathLimits<double>::IsNaN(value)) return "NaN";
 
   return SimpleDtoa(value);
 }
 
 std::string FloatAsString(float value) {
-  if (std::isfinite(value)) return SimpleFtoa(value);
+  if (MathLimits<float>::IsFinite(value)) return SimpleFtoa(value);
   return DoubleAsString(value);
 }
 
@@ -397,7 +394,9 @@ bool SafeStrToFloat(StringPiece str, float* value) {
     return false;
   }
 
-  if (std::isinf(double_value) || std::isnan(double_value)) return false;
+  if (MathLimits<double>::IsInf(double_value) ||
+      MathLimits<double>::IsNaN(double_value))
+    return false;
 
   // Fail if the value is not representable in float.
   if (double_value > std::numeric_limits<float>::max() ||

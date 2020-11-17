@@ -6,9 +6,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/protobuf-lite.pc.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc @ONLY)
 
 set(_protobuf_libraries libprotobuf-lite libprotobuf)
-if (protobuf_BUILD_LIBPROTOC)
+if (protobuf_BUILD_PROTOC_BINARIES)
     list(APPEND _protobuf_libraries libprotoc)
-endif (protobuf_BUILD_LIBPROTOC)
+endif (protobuf_BUILD_PROTOC_BINARIES)
 
 foreach(_library ${_protobuf_libraries})
   set_property(TARGET ${_library}

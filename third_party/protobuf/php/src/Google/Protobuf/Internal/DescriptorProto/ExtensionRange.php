@@ -20,17 +20,20 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional int32 start = 1;</code>
      */
-    protected $start = null;
+    private $start = 0;
+    private $has_start = false;
     /**
      * Exclusive.
      *
      * Generated from protobuf field <code>optional int32 end = 2;</code>
      */
-    protected $end = null;
+    private $end = 0;
+    private $has_end = false;
     /**
      * Generated from protobuf field <code>optional .google.protobuf.ExtensionRangeOptions options = 3;</code>
      */
-    protected $options = null;
+    private $options = null;
+    private $has_options = false;
 
     /**
      * Constructor.
@@ -58,17 +61,7 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
      */
     public function getStart()
     {
-        return isset($this->start) ? $this->start : 0;
-    }
-
-    public function hasStart()
-    {
-        return isset($this->start);
-    }
-
-    public function clearStart()
-    {
-        unset($this->start);
+        return $this->start;
     }
 
     /**
@@ -82,8 +75,14 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt32($var);
         $this->start = $var;
+        $this->has_start = true;
 
         return $this;
+    }
+
+    public function hasStart()
+    {
+        return $this->has_start;
     }
 
     /**
@@ -94,17 +93,7 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
      */
     public function getEnd()
     {
-        return isset($this->end) ? $this->end : 0;
-    }
-
-    public function hasEnd()
-    {
-        return isset($this->end);
-    }
-
-    public function clearEnd()
-    {
-        unset($this->end);
+        return $this->end;
     }
 
     /**
@@ -118,8 +107,14 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt32($var);
         $this->end = $var;
+        $this->has_end = true;
 
         return $this;
+    }
+
+    public function hasEnd()
+    {
+        return $this->has_end;
     }
 
     /**
@@ -128,17 +123,7 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
      */
     public function getOptions()
     {
-        return isset($this->options) ? $this->options : null;
-    }
-
-    public function hasOptions()
-    {
-        return isset($this->options);
-    }
-
-    public function clearOptions()
-    {
-        unset($this->options);
+        return $this->options;
     }
 
     /**
@@ -150,8 +135,14 @@ class ExtensionRange extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Internal\ExtensionRangeOptions::class);
         $this->options = $var;
+        $this->has_options = true;
 
         return $this;
+    }
+
+    public function hasOptions()
+    {
+        return $this->has_options;
     }
 
 }

@@ -82,8 +82,16 @@ class MessageGenerator {
 
   // Source file stuff.
 
+  // Generate extra fields
+  void GenerateExtraDefaultFields(io::Printer* printer);
+
   // Generates code that creates default instances for fields.
   void GenerateFieldDefaultInstances(io::Printer* printer);
+
+  // Generates code that initializes the message's default instance.  This
+  // is separate from allocating because all default instances must be
+  // allocated before any can be initialized.
+  void GenerateDefaultInstanceInitializer(io::Printer* printer);
 
   // Generate all non-inline methods for this class.
   void GenerateClassMethods(io::Printer* printer);
@@ -105,7 +113,7 @@ class MessageGenerator {
   bool GenerateParseTable(io::Printer* printer, size_t offset,
                           size_t aux_offset);
 
-  // Generate the field offsets array.  Returns the a pair of the total number
+  // Generate the field offsets array.  Returns the a pair of the total numer
   // of entries generated and the index of the first has_bit entry.
   std::pair<size_t, size_t> GenerateOffsets(io::Printer* printer);
   void GenerateSchema(io::Printer* printer, int offset, int has_offset);
@@ -133,11 +141,10 @@ class MessageGenerator {
   void GenerateMergeFromCodedStream(io::Printer* printer);
   void GenerateSerializeWithCachedSizes(io::Printer* printer);
   void GenerateSerializeWithCachedSizesToArray(io::Printer* printer);
-  void GenerateSerializeWithCachedSizesBody(io::Printer* printer);
-  void GenerateSerializeWithCachedSizesBodyShuffled(io::Printer* printer);
+  void GenerateSerializeWithCachedSizesBody(io::Printer* printer,
+                                            bool to_array);
   void GenerateByteSize(io::Printer* printer);
   void GenerateMergeFrom(io::Printer* printer);
-  void GenerateClassSpecificMergeFrom(io::Printer* printer);
   void GenerateCopyFrom(io::Printer* printer);
   void GenerateSwap(io::Printer* printer);
   void GenerateIsInitialized(io::Printer* printer);
@@ -148,14 +155,16 @@ class MessageGenerator {
   //   cached_has_bits = _has_bits_[cached_has_bit_index]
   // for cached_has_bit_index >= 0
   void GenerateSerializeOneField(io::Printer* printer,
-                                 const FieldDescriptor* field,
+                                 const FieldDescriptor* field, bool unbounded,
                                  int cached_has_bits_index);
   // Generate a switch statement to serialize 2+ fields from the same oneof.
   // Or, if fields.size() == 1, just call GenerateSerializeOneField().
   void GenerateSerializeOneofFields(
-      io::Printer* printer, const std::vector<const FieldDescriptor*>& fields);
+      io::Printer* printer, const std::vector<const FieldDescriptor*>& fields,
+      bool to_array);
   void GenerateSerializeOneExtensionRange(
-      io::Printer* printer, const Descriptor::ExtensionRange* range);
+      io::Printer* printer, const Descriptor::ExtensionRange* range,
+      bool unbounded);
 
   // Generates has_foo() functions and variables for singular field has-bits.
   void GenerateSingularFieldHasBits(const FieldDescriptor* field,
@@ -174,10 +183,6 @@ class MessageGenerator {
                                bool copy_constructor) const;
 
   size_t HasBitsSize() const;
-  int HasBitIndex(const FieldDescriptor* a) const;
-  int HasByteIndex(const FieldDescriptor* a) const;
-  int HasWordIndex(const FieldDescriptor* a) const;
-  bool SameHasByte(const FieldDescriptor* a, const FieldDescriptor* b) const;
   std::vector<uint32> RequiredFieldsBitMask() const;
 
   const Descriptor* descriptor_;

@@ -35,11 +35,11 @@
 // This file needs to be included as .inc as it depends on certain macros being
 // defined prior to its inclusion.
 
+#include <google/protobuf/message.h>
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include <google/protobuf/message.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -48,7 +48,9 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/test_util2.h>
+#include <google/protobuf/io/io_win32.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -58,8 +60,6 @@
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/io/io_win32.h>
 
 
 namespace google {
@@ -269,7 +269,7 @@ class RepeatedInputStream : public io::ZeroCopyInputStream {
   RepeatedInputStream(const std::string& data, size_t count)
       : data_(data), count_(count), position_(0), total_byte_count_(0) {}
 
-  bool Next(const void** data, int* size) override {
+  virtual bool Next(const void** data, int* size) {
     if (position_ == data_.size()) {
       if (--count_ == 0) {
         return false;
@@ -283,12 +283,12 @@ class RepeatedInputStream : public io::ZeroCopyInputStream {
     return true;
   }
 
-  void BackUp(int count) override {
+  virtual void BackUp(int count) {
     position_ -= static_cast<size_t>(count);
     total_byte_count_ -= count;
   }
 
-  bool Skip(int count) override {
+  virtual bool Skip(int count) {
     while (count > 0) {
       const void* data;
       int size;
@@ -305,11 +305,11 @@ class RepeatedInputStream : public io::ZeroCopyInputStream {
     return false;
   }
 
-  int64_t ByteCount() const override { return total_byte_count_; }
+  virtual int64 ByteCount() const { return total_byte_count_; }
 
  private:
   std::string data_;
-  size_t count_;     // The number of strings that haven't been consumed.
+  size_t count_;     // The number of strings that haven't been consuemd.
   size_t position_;  // Position in the std::string for the next read.
   int64 total_byte_count_;
 };
@@ -331,7 +331,7 @@ TEST(MESSAGE_TEST_NAME, TestParseMessagesCloseTo2G) {
   UNITTEST::TestAllTypes result;
   EXPECT_TRUE(result.ParseFromZeroCopyStream(&input));
 
-  // When there are multiple occurrences of a singular field, the last one
+  // When there are multiple occurences of a singulr field, the last one
   // should win.
   EXPECT_EQ(value, result.optional_string());
 }

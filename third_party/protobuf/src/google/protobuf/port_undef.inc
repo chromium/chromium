@@ -41,7 +41,6 @@
 #undef PROTOBUF_NOINLINE
 #undef PROTOBUF_SECTION_VARIABLE
 #undef PROTOBUF_DEPRECATED
-#undef PROTOBUF_DEPRECATED_ENUM
 #undef PROTOBUF_DEPRECATED_MSG
 #undef PROTOBUF_FUNC_ALIGN
 #undef PROTOBUF_RETURNS_NONNULL
@@ -65,46 +64,32 @@
 #undef PROTOBUF_NAMESPACE_OPEN
 #undef PROTOBUF_NAMESPACE_CLOSE
 #undef PROTOBUF_UNUSED
-#undef PROTOBUF_ASSUME
 #undef PROTOBUF_EXPORT_TEMPLATE_DECLARE
 #undef PROTOBUF_EXPORT_TEMPLATE_DEFINE
-#undef PROTOBUF_ALIGNAS
-#undef PROTOBUF_FINAL
-#undef PROTOBUF_THREAD_LOCAL
-#undef PROTOBUF_MESSAGE_OWNED_ARENA_EXPERIMENT
+#undef PROTOBUF_EXPORT_TEMPLATE_INVOKE
+#undef PROTOBUF_EXPORT_TEMPLATE_INVOKE_2
+#undef PROTOBUF_EXPORT_TEMPLATE_DECLARE_DEFAULT
+#undef PROTOBUF_EXPORT_TEMPLATE_DEFINE_DEFAULT
+#undef PROTOBUF_EXPORT_TEMPLATE_DECLARE_MSVC_HACK
+#undef PROTOBUF_EXPORT_TEMPLATE_DEFINE_MSVC_HACK
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_2
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_3
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_MATCH_foj3FJo5StF0OvIzl7oMxA
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_MATCH_foj3FJo5StF0OvIzl7oMxA__attribute__
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_MATCH_foj3FJo5StF0OvIzl7oMxA__declspec
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_MATCH_DECLSPEC_dllexport
+#undef PROTOBUF_EXPORT_TEMPLATE_STYLE_MATCH_DECLSPEC_dllimport
+
+
 
 // Restore macro that may have been #undef'd in port_def.inc.
 #ifdef _MSC_VER
-#pragma pop_macro("CREATE_NEW")
-#pragma pop_macro("DOUBLE_CLICK")
-#pragma pop_macro("ERROR")
-#pragma pop_macro("ERROR_BUSY")
-#pragma pop_macro("ERROR_NOT_FOUND")
 #pragma pop_macro("GetMessage")
 #pragma pop_macro("IGNORE")
 #pragma pop_macro("IN")
-#pragma pop_macro("INPUT_KEYBOARD")
-#pragma pop_macro("OUT")
-#pragma pop_macro("OPTIONAL")
-#pragma pop_macro("min")
-#pragma pop_macro("max")
-#pragma pop_macro("NO_ERROR")
-#pragma pop_macro("REASON_UNKNOWN")
-#pragma pop_macro("SERVICE_DISABLED")
-#pragma pop_macro("SEVERITY_ERROR")
-#pragma pop_macro("STRICT")
 #endif
-
-#if defined(__clang__) || defined(__GNUC__) || defined(_MSC_VER)
-#pragma pop_macro("YES")
-#pragma pop_macro("NO")
-#pragma pop_macro("DEBUG")
-#pragma pop_macro("TRUE")
-#pragma pop_macro("FALSE")
-#endif // defined(__clang__) || defined(__GNUC__) || defined(_MSC_VER)
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
 #endif
