@@ -918,6 +918,7 @@ test("skia_unittests") {
     "ext/platform_canvas_unittest.cc",
     "ext/recursive_gaussian_convolution_unittest.cc",
     "ext/skia_memory_dump_provider_unittest.cc",
+    "ext/skia_utils_base_unittest.cc",
   ]
   if (is_ios) {
     sources += [ "ext/skia_utils_ios_unittest.mm" ]

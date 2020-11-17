@@ -92,7 +92,8 @@ bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
     return true;
   }
   const SkImageInfo& info = in.info();
-  if (info.colorType() == kN32_SkColorType &&
+  const bool stride_matches_width = in.rowBytes() == info.minRowBytes();
+  if (stride_matches_width && info.colorType() == kN32_SkColorType &&
       (info.alphaType() == kPremul_SkAlphaType ||
        info.alphaType() == kOpaque_SkAlphaType)) {
     // Shallow copy if the data is already in the right format.
