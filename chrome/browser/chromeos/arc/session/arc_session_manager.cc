@@ -740,19 +740,15 @@ void ArcSessionManager::OnProvisioningFinished(
     RequestArcDataRemoval();
   }
 
-  int error_code;
+  base::Optional<int> error_code;
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
     error_code =
         static_cast<std::underlying_type_t<ProvisioningResult>>(result);
   } else if (signin_error) {
     error_code = GetSignInErrorCode(std::move(signin_error));
-  } else {
-    error_code = 0;
   }
-  // TODO(mhasank): Introduce a struct that encapsulates error with an optional
-  // argument
-  ShowArcSupportHostError(support_error, error_code,
-                          true /* = show send feedback button */);
+  ShowArcSupportHostError({support_error, error_code} /* error_info */,
+                          true /* should_show_send_feedback */);
 }
 
 bool ArcSessionManager::IsAllowed() const {
@@ -1319,13 +1315,16 @@ void ArcSessionManager::OnAndroidManagementChecked(
       break;
     case policy::AndroidManagementClient::Result::MANAGED:
       ShowArcSupportHostError(
-          ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR,
-          0 /* error_code */, false);
+          ArcSupportHost::ErrorInfo(
+              ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR),
+          false /* should_show_send_feedback */);
       UpdateOptInCancelUMA(OptInCancelReason::ANDROID_MANAGEMENT_REQUIRED);
       break;
     case policy::AndroidManagementClient::Result::ERROR:
-      ShowArcSupportHostError(ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR,
-                              0 /* error_code */, true);
+      ShowArcSupportHostError(
+          ArcSupportHost::ErrorInfo(
+              ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
+          true /* should_show_send_feedback */);
       UpdateOptInCancelUMA(OptInCancelReason::NETWORK_ERROR);
       break;
   }
@@ -1592,13 +1591,12 @@ void ArcSessionManager::SetAttemptUserExitCallbackForTesting(
 }
 
 void ArcSessionManager::ShowArcSupportHostError(
-    ArcSupportHost::Error error,
-    int error_code,
+    ArcSupportHost::ErrorInfo error_info,
     bool should_show_send_feedback) {
   if (support_host_)
-    support_host_->ShowError(error, error_code, should_show_send_feedback);
+    support_host_->ShowError(error_info, should_show_send_feedback);
   for (auto& observer : observer_list_)
-    observer.OnArcErrorShowRequested(error, error_code);
+    observer.OnArcErrorShowRequested(error_info);
 }
 
 void ArcSessionManager::EmitLoginPromptVisibleCalled() {

@@ -223,9 +223,10 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::OnAuthFailed(
   LOG(ERROR) << "SAML auth failed: " << error_msg;
 
   // Don't call callback here, allow user to retry.
-  support_host_->ShowError(ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR,
-                           0 /* error_code */,
-                           true /* should_show_send_feedback */);
+  support_host_->ShowError(
+      ArcSupportHost::ErrorInfo(
+          ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
+      true /* should_show_send_feedback */);
   UpdateOptInCancelUMA(OptInCancelReason::NETWORK_ERROR);
 }
 

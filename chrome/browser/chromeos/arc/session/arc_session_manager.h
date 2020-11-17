@@ -385,8 +385,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Requests the support host (if it exists) to show the error, and notifies
   // the observers.
-  void ShowArcSupportHostError(ArcSupportHost::Error error,
-                               int error_code,
+  void ShowArcSupportHostError(ArcSupportHost::ErrorInfo error_info,
                                bool should_show_send_feedback);
 
   // chromeos::SessionManagerClient::Observer:

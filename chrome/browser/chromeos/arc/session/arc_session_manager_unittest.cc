@@ -135,18 +135,16 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
   ~ShowErrorObserver() override { session_manager_->RemoveObserver(this); }
 
-  const base::Optional<ArcSupportHost::Error> error() const { return error_; }
-  const base::Optional<int> error_code() const { return error_code_; }
+  const base::Optional<ArcSupportHost::ErrorInfo> error_info() const {
+    return error_info_;
+  }
 
-  void OnArcErrorShowRequested(ArcSupportHost::Error error,
-                               int error_code) override {
-    error_ = error;
-    error_code_ = error_code;
+  void OnArcErrorShowRequested(ArcSupportHost::ErrorInfo error_info) override {
+    error_info_ = error_info;
   }
 
  private:
-  base::Optional<ArcSupportHost::Error> error_;
-  base::Optional<int> error_code_;
+  base::Optional<ArcSupportHost::ErrorInfo> error_info_;
   ArcSessionManager* const session_manager_;
 };
 
@@ -1107,10 +1105,10 @@ struct ProvisioningErrorDisplayTestParam {
   ArcStopReason stop_reason;
 
   // the error sent to arc support host
-  ArcSupportHost::Error host_error;
+  ArcSupportHost::Error error;
 
   // the error code sent to arc support host
-  int host_error_code;
+  base::Optional<int> arg;
 };
 
 constexpr ProvisioningErrorDisplayTestParam
@@ -1118,7 +1116,8 @@ constexpr ProvisioningErrorDisplayTestParam
         {ArcStopReason::GENERIC_BOOT_FAILURE,
          ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR, 16 /*ARC_STOPPED*/},
         {ArcStopReason::LOW_DISK_SPACE,
-         ArcSupportHost::Error::LOW_DISK_SPACE_ERROR, 0},
+         ArcSupportHost::Error::LOW_DISK_SPACE_ERROR,
+         {}},
         {ArcStopReason::CRASH, ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR,
          16 /*ARC_STOPPED*/}};
 
@@ -1150,9 +1149,9 @@ TEST_P(ProvisioningErrorDisplayTest, ArcStopped) {
   arc_session_manager()->OnProvisioningFinished(ProvisioningResult::ARC_STOPPED,
                                                 GetParam().stop_reason);
 
-  ASSERT_TRUE(observer.error());
-  EXPECT_EQ(GetParam().host_error, observer.error().value());
-  EXPECT_EQ(GetParam().host_error_code, observer.error_code().value());
+  ASSERT_TRUE(observer.error_info());
+  EXPECT_EQ(GetParam().error, observer.error_info().value().error);
+  EXPECT_EQ(GetParam().arg, observer.error_info().value().arg);
 }
 
 TEST_F(ArcSessionManagerArcAlwaysStartTest, BaseWorkflow) {

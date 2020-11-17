@@ -44,8 +44,7 @@ class ArcProvisionNotificationService : public KeyedService,
   void OnArcOptInManagementCheckStarted() override;
   void OnArcInitialStart() override;
   void OnArcSessionStopped(ArcStopReason stop_reason) override;
-  void OnArcErrorShowRequested(ArcSupportHost::Error error,
-                               int error_code) override;
+  void OnArcErrorShowRequested(ArcSupportHost::ErrorInfo error_info) override;
 
   content::BrowserContext* const context_;
 

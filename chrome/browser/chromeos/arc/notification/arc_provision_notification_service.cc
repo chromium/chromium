@@ -149,8 +149,7 @@ void ArcProvisionNotificationService::OnArcSessionStopped(
 }
 
 void ArcProvisionNotificationService::OnArcErrorShowRequested(
-    ArcSupportHost::Error error,
-    int error_code) {
+    ArcSupportHost::ErrorInfo error_info) {
   // If an error happens during the opt-in flow, then the provision fails, and
   // the notification should be therefore removed if it is shown. Do this here
   // unconditionally as there should be no notification displayed otherwise
