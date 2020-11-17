@@ -815,7 +815,7 @@ void ServiceWorkerRegistry::DoomUncommittedResources(
   GetRemoteStorageControl()->DoomUncommittedResources(
       resource_ids,
       base::BindOnce(&ServiceWorkerRegistry::DidDoomUncommittedResourceIds,
-                     weak_factory_.GetWeakPtr(), resource_ids));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
@@ -1167,7 +1167,6 @@ void ServiceWorkerRegistry::DidWriteUncommittedResourceIds(
 }
 
 void ServiceWorkerRegistry::DidDoomUncommittedResourceIds(
-    const std::vector<int64_t>& resource_ids,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();

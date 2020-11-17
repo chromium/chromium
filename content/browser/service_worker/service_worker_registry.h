@@ -323,7 +323,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidWriteUncommittedResourceIds(
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidDoomUncommittedResourceIds(
-      const std::vector<int64_t>& resource_ids,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidGetUserData(GetUserDataCallback callback,
                       storage::mojom::ServiceWorkerDatabaseStatus status,
