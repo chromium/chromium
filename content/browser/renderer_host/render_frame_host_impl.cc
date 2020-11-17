@@ -8718,18 +8718,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
                                   ukm_recorder);
   }
-
-  // If we still have a PeakGpuMemoryTracker, then the loading it was observing
-  // never completed. Cancel it's callback so that we don't report partial
-  // loads to UMA.
-  if (loading_mem_tracker_)
-    loading_mem_tracker_->Cancel();
-  // Main Frames will create the tracker, which will be triggered after we
-  // receive DidStopLoading.
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation isn't right. This should be moved to DidCommitNewDocument().
-  loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
-
   frame_tree_node()->navigator().DidNavigate(this, *params,
                                              std::move(navigation_request),
                                              is_same_document_navigation);
@@ -8864,6 +8852,17 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // Reset the salt so that media device IDs are reset for the new document
   // if necessary.
   media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+
+  // If we still have a PeakGpuMemoryTracker, then the loading it was observing
+  // never completed. Cancel it's callback so that we don't report partial
+  // loads to UMA.
+  if (loading_mem_tracker_)
+    loading_mem_tracker_->Cancel();
+  // Main Frames will create the tracker, which will be triggered after we
+  // receive DidStopLoading.
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation isn't right. This should be moved to DidCommitNewDocument().
+  loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
