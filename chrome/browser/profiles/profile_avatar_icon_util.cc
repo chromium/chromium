@@ -439,21 +439,22 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
     // Get a higher res than 16px so it looks good after cropping to a circle.
     gfx::Image icon =
         entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
-    return profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
-                                        gfx::kFaviconSize, gfx::kFaviconSize,
-                                        profiles::SHAPE_CIRCLE);
+    return profiles::GetSizedAvatarIcon(
+        icon, /*is_rectangle=*/true, kMenuAvatarIconSize, kMenuAvatarIconSize,
+        profiles::SHAPE_CIRCLE);
   }
 
-  constexpr int kMenuAvatarIconSize = 38;
+  constexpr int kOldMenuAvatarIconSize = 38;
   gfx::Image icon =
-      entry->GetAvatarIcon(kMenuAvatarIconSize, /*download_high_res=*/false);
+      entry->GetAvatarIcon(kOldMenuAvatarIconSize, /*download_high_res=*/false);
 
   // The image might be too large and need to be resized, e.g. if this is a
   // signed-in user using the GAIA profile photo.
-  if (icon.Width() > kMenuAvatarIconSize ||
-      icon.Height() > kMenuAvatarIconSize) {
-    icon = profiles::GetSizedAvatarIcon(
-        icon, /*is_rectangle=*/true, kMenuAvatarIconSize, kMenuAvatarIconSize);
+  if (icon.Width() > kOldMenuAvatarIconSize ||
+      icon.Height() > kOldMenuAvatarIconSize) {
+    icon = profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
+                                        kOldMenuAvatarIconSize,
+                                        kOldMenuAvatarIconSize);
   }
   return icon;
 }

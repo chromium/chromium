@@ -685,7 +685,7 @@ void ProfileMenuView::BuildSelectableProfiles() {
 
     AddSelectableProfile(
         ui::ImageModel::FromImage(
-            profile_entry->GetAvatarIcon(kSelectableProfileImageSize)),
+            profile_entry->GetAvatarIcon(profiles::kMenuAvatarIconSize)),
         profile_entry->GetName(),
         /*is_guest=*/false,
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
