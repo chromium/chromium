@@ -22,12 +22,19 @@ namespace {
 
 typedef HeapVector<Member<Document>, 32> DocumentsVector;
 
+enum OnlyThrottledOrNot { OnlyNonThrottled, AllDocuments };
+
 // We walk through all the frames in DOM tree order and get all the documents
-DocumentsVector GetAllDocuments(Frame* main_frame) {
+DocumentsVector GetAllDocuments(Frame* main_frame,
+                                OnlyThrottledOrNot which_documents) {
   DocumentsVector documents;
   for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {
-    if (auto* local_frame = DynamicTo<LocalFrame>(frame))
-      documents.push_back(local_frame->GetDocument());
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      Document* document = local_frame->GetDocument();
+      if (which_documents == AllDocuments || !document->View() ||
+          !document->View()->CanThrottleRendering())
+        documents.push_back(document);
+    }
   }
   return documents;
 }
@@ -52,16 +59,18 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().SetAllowedToDynamicallyUpdateTime(false);
   Clock().UpdateTime(monotonic_animation_start_time);
 
-  DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+  DocumentsVector documents =
+      GetAllDocuments(page_->MainFrame(), OnlyNonThrottled);
 
   for (auto& document : documents) {
     ScopedFrameBlamer frame_blamer(document->GetFrame());
     TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
-    if (!document->View() || document->View()->CanThrottleRendering()) {
+    if (!document->View()) {
       document->GetDocumentAnimations()
           .UpdateAnimationTimingForAnimationFrame();
       continue;
     }
+    DCHECK(!document->View()->CanThrottleRendering());
     document->View()->ServiceScriptedAnimations(monotonic_animation_start_time);
   }
 
@@ -151,7 +160,7 @@ void PageAnimator::UpdateLifecycleToLayoutClean(LocalFrame& root_frame,
 HeapVector<Member<Animation>> PageAnimator::GetAnimations(
     const TreeScope& tree_scope) {
   HeapVector<Member<Animation>> animations;
-  DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame(), AllDocuments);
   for (auto& document : documents) {
     document->GetDocumentAnimations().GetAnimationsTargetingTreeScope(
         animations, tree_scope);
