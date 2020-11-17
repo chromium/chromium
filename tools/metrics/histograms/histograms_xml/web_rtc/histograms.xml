@@ -825,7 +825,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.ProbeClusterSizeInBytes" units="bytes"
-    expires_after="2021-03-07">
+    expires_after="2021-05-16">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -835,7 +835,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.ProbesPerCluster" units="units"
-    expires_after="2021-03-07">
+    expires_after="2021-05-16">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -1357,7 +1357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticRequested"
-    enum="PeerConnectionSdpSemanticRequested" expires_after="2021-03-15">
+    enum="PeerConnectionSdpSemanticRequested" expires_after="2021-05-16">
   <owner>hta@chromium.org</owner>
   <summary>
     What SDP semantic (Unified Plan, Plan B or &quot;use default&quot;) has been
@@ -1607,7 +1607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.UnreliableDataChannelMessageSize" units="bytes"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>perkj@chromium.org</owner>
   <summary>
     Sizes of messages sent over unreliable data channels. The size of an

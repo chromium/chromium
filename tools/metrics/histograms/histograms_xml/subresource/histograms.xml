@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
-    enum="BooleanAvailable" expires_after="2021-03-15">
+    enum="BooleanAvailable" expires_after="2021-05-16">
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

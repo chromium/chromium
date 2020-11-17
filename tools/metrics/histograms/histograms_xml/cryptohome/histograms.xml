@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.ChecksumStatus" enum="CryptohomeChecksumStatus"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>

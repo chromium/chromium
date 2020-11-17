@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.Software.DrawFrameUs"
-    units="microseconds" expires_after="2021-03-15">
+    units="microseconds" expires_after="2021-05-16">
   <owner>weiliangc@chromium.org</owner>
   <summary>
     Time spent drawing of composited layers by SoftwareRenderer, in
@@ -271,7 +271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -307,7 +307,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -320,7 +320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Compositing.Display.OverlayProcessorOzone.IsCandidateSharedImage"
-    enum="Boolean" expires_after="2021-03-15">
+    enum="Boolean" expires_after="2021-05-16">
   <owner>samans@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -332,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.OverlayProcessorOzone.SharedImageExists"
-    enum="Boolean" expires_after="2021-03-15">
+    enum="Boolean" expires_after="2021-05-16">
   <owner>samans@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>

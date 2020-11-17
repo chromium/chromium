@@ -298,7 +298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-15">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-05-16">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-15">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-05-16">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>

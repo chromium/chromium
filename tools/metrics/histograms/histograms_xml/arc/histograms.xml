@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AppUninstallReason" enum="UninstallCounterReasonEnum"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>robsc@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -365,7 +365,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.CpuRestrictionDisabled" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>wvk@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -504,7 +504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2021-03-11">
+    expires_after="2021-05-16">
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -922,7 +922,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.CommitDeviation" units="microseconds"
-    expires_after="2021-03-11">
+    expires_after="2021-05-16">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -931,7 +931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS" units="fps"
-    expires_after="2021-03-11">
+    expires_after="2021-05-16">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -960,7 +960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.RenderQuality" units="%"
-    expires_after="2021-03-11">
+    expires_after="2021-05-16">
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -979,7 +979,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Secondary.Signin.Result" enum="ArcProvisioningResult"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>sinhak@google.com</owner>
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>

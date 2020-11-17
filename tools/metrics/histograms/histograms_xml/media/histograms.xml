@@ -4646,7 +4646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.WakeReason"
-    enum="MediaRouteProviderWakeReason" expires_after="2021-02-01">
+    enum="MediaRouteProviderWakeReason" expires_after="2021-05-16">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

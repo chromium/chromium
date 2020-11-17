@@ -277,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -289,7 +289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Status"
-    enum="DriveZeroStateProviderStatus" expires_after="2021-03-15">
+    enum="DriveZeroStateProviderStatus" expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -301,7 +301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -314,7 +314,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
-    enum="ItemSuggestCacheStatus" expires_after="2021-03-15">
+    enum="ItemSuggestCacheStatus" expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -335,7 +335,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -380,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>thanhdng@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -410,7 +410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedFiles.ChipLaunched" enum="Boolean"
-    expires_after="2021-03-12">
+    expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -808,7 +808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListLauncherIssuedSearchQueryLength"
-    units="characters" expires_after="2021-03-15">
+    units="characters" expires_after="2021-05-16">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -848,7 +848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListPeekingToFullscreenSource"
-    enum="AppListPeekingToFullscreenSource" expires_after="2021-03-14">
+    enum="AppListPeekingToFullscreenSource" expires_after="2021-05-16">
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <summary>
@@ -1070,7 +1070,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of times the different sources for showing the app list are used.
@@ -1095,7 +1095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSuggestedChipLaunched" units="indices"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>newcomer@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -1629,7 +1629,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.PaginationTransition.DragScroll.PresentationTime" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -1691,7 +1691,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.ScrollableShelf.AnimationSmoothness" units="%"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
 <!-- Name completed by histogram suffixes
      name="HomeLauncherVisibility" -->
 

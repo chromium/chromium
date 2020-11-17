@@ -466,7 +466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -477,7 +477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -487,7 +487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -498,7 +498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -508,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -761,7 +761,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
-    expires_after="2021-02-28">
+    expires_after="2021-05-16">
   <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>

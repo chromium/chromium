@@ -260,7 +260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.BringToForegroundReason"
-    enum="BooleanBringToForegroundReason" expires_after="2021-03-15">
+    enum="BooleanBringToForegroundReason" expires_after="2021-05-16">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the cause, each time Chrome is brought to the foreground. Currently
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>sebmarchand@chromium.org</owner>
   <owner>mblsha@yandex-team.ru</owner>
   <summary>

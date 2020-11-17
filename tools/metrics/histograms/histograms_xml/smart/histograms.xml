@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2021-02-02">
+    enum="MultiDevice_FeatureState" expires_after="2021-05-16">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
