@@ -75,7 +75,8 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[PrivacyTableViewController alloc] initWithBrowser:browser_.get()];
+    return [[PrivacyTableViewController alloc] initWithBrowser:browser_.get()
+                                        reauthenticationModule:nil];
   }
 
   web::WebTaskEnvironment task_environment_;

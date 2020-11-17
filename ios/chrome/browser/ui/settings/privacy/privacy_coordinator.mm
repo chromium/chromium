@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,8 +52,13 @@
   self.handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                     ApplicationCommands);
 
+  ReauthenticationModule* module = nil;
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+    module = [[ReauthenticationModule alloc] init];
+  }
   self.viewController =
-      [[PrivacyTableViewController alloc] initWithBrowser:self.browser];
+      [[PrivacyTableViewController alloc] initWithBrowser:self.browser
+                                   reauthenticationModule:module];
 
   DCHECK(self.baseNavigationController);
   self.viewController.handler = self;

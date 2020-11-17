@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -23,14 +24,39 @@
 #error "This file requires ARC support."
 #endif
 
+#pragma mark - StubReauthenticationModule
+
+@interface StubReauthenticationModule : NSObject <ReauthenticationProtocol>
+
+@property(nonatomic, assign) BOOL canAttemptReauth;
+@property(nonatomic, assign) ReauthenticationResult returnedResult;
+
+@end
+
+@implementation StubReauthenticationModule
+
+- (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
+                    canReusePreviousAuth:(BOOL)canReusePreviousAuth
+                                 handler:
+                                     (void (^)(ReauthenticationResult success))
+                                         handler {
+  handler(self.returnedResult);
+}
+
+@end
+
 namespace {
+
+#pragma mark - IncognitoReauthSceneAgentTest
 
 class IncognitoReauthSceneAgentTest : public PlatformTest {
  public:
   IncognitoReauthSceneAgentTest()
       : scene_state_([[SceneState alloc] initWithAppState:nil]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
-        agent_([[IncognitoReauthSceneAgent alloc] init]) {
+        stub_reauth_module_([[StubReauthenticationModule alloc] init]),
+        agent_([[IncognitoReauthSceneAgent alloc]
+            initWithReauthModule:stub_reauth_module_]) {
     [scene_state_ addAgent:agent_];
   }
 
@@ -73,10 +99,17 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
                              enable_pref);
   }
 
+  void SetUp() override {
+    // Set up default stub reauth module behavior.
+    stub_reauth_module_.canAttemptReauth = YES;
+    stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
+  }
+
   // The scene state that the agent works with.
   SceneState* scene_state_;
   // Partial mock for stubbing scene_state_'s methods
   id scene_state_mock_;
+  StubReauthenticationModule* stub_reauth_module_;
   // The tested agent
   IncognitoReauthSceneAgent* agent_;
   StubBrowserInterfaceProvider* stub_browser_interface_provider_;
@@ -143,6 +176,31 @@ TEST_F(IncognitoReauthSceneAgentTest, SuccessfulAuth) {
   // Auth required after backgrounding.
   scene_state_.activationLevel = SceneActivationLevelBackground;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
+// Tests that authentication is still required if authentication fails.
+TEST_F(IncognitoReauthSceneAgentTest, FailedSkippedAuth) {
+  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+
+  stub_reauth_module_.returnedResult = ReauthenticationResult::kFailure;
+
+  [agent_ authenticateWithCompletion:^(BOOL result) {
+    EXPECT_FALSE(result);
+  }];
+  // Auth still required
+  EXPECT_TRUE(agent_.authenticationRequired);
+
+  stub_reauth_module_.returnedResult = ReauthenticationResult::kSkipped;
+  [agent_ authenticateWithCompletion:^(BOOL result) {
+    EXPECT_FALSE(result);
+  }];
+  // Auth still required
   EXPECT_TRUE(agent_.authenticationRequired);
 }
 

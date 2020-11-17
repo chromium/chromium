@@ -15,6 +15,7 @@ class Browser;
 extern NSString* const kPrivacyTableViewId;
 
 @protocol PrivacyNavigationCommands;
+@protocol ReauthenticationProtocol;
 
 // Delegate for presentation events related to
 // PrivacyTableViewController.
@@ -35,6 +36,7 @@ extern NSString* const kPrivacyTableViewId;
 
 // |browserState| cannot be nil
 - (instancetype)initWithBrowser:(Browser*)browser
+         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

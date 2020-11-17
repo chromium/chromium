@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 
+#include "base/check.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,6 +42,16 @@
 
 #pragma mark - public
 
+- (instancetype)initWithReauthModule:
+    (id<ReauthenticationProtocol>)reauthModule {
+  self = [super init];
+  if (self) {
+    DCHECK(reauthModule);
+    _reauthModule = reauthModule;
+  }
+  return self;
+}
+
 - (BOOL)isAuthenticationRequired {
   return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
          [self authEnabledInSettings] &&
@@ -48,11 +60,31 @@
 }
 
 - (void)authenticateWithCompletion:(void (^)(BOOL))completion {
-  // TODO: provide actual implementation.
-  self.authenticatedSinceLastForeground = YES;
-  if (completion) {
-    completion(YES);
+  DCHECK(self.reauthModule);
+
+  if (!self.isAuthenticationRequired) {
+    if (completion) {
+      completion(YES);
+    }
+    return;
   }
+
+  __weak IncognitoReauthSceneAgent* weakSelf = self;
+  // TODO(crbug.com/1138892): add localized text
+  [self.reauthModule
+      attemptReauthWithLocalizedReason:
+          @"[Test String] Authenticate for incognito access"
+                  canReusePreviousAuth:false
+                               handler:^(ReauthenticationResult result) {
+                                 BOOL success =
+                                     (result ==
+                                      ReauthenticationResult::kSuccess);
+                                 weakSelf.authenticatedSinceLastForeground =
+                                     success;
+                                 if (completion) {
+                                   completion(success);
+                                 }
+                               }];
 }
 
 #pragma mark - SceneStateObserver

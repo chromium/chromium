@@ -9,10 +9,18 @@
 
 class PrefRegistrySimple;
 class PrefService;
+@protocol ReauthenticationProtocol;
 
 // A scene agent that tracks the incognito authentication status for the current
 // scene.
 @interface IncognitoReauthSceneAgent : NSObject <SceneAgent>
+
+// Designated initializer.
+// The |reauthModule| is used for authentication.
+- (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Registers the prefs required for this agent.
 + (void)registerLocalState:(PrefRegistrySimple*)registry;
@@ -20,6 +28,10 @@ class PrefService;
 // Returns YES when the authentication is currently required.
 @property(nonatomic, assign, readonly, getter=isAuthenticationRequired)
     BOOL authenticationRequired;
+
+// Authentication module used when the user toggles the biometric auth on.
+@property(nonatomic, strong, readonly) id<ReauthenticationProtocol>
+    reauthModule;
 
 // Local state pref service used by this object. Will default to the one from
 // ApplicationContext, but is settable for overriding.

@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
@@ -260,7 +261,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // Add agents.
     [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
     [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
-    [_sceneState addAgent:[[IncognitoReauthSceneAgent alloc] init]];
+    if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+      [_sceneState
+          addAgent:[[IncognitoReauthSceneAgent alloc]
+                       initWithReauthModule:[[ReauthenticationModule alloc]
+                                                init]]];
+    }
   }
   return self;
 }
