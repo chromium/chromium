@@ -49,6 +49,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
@@ -404,6 +405,7 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    @DisabledTest(message = "Flaky -- https://crbug.com/1150085")
     public void ensureTitleBarIsVisibile() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         intent.putExtra(
