@@ -151,15 +151,7 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.use_passthrough_cmd_decoder =
       gpu::gles2::UsePassthroughCommandDecoder(command_line);
   gpu_preferences.ignore_gpu_blocklist =
-      command_line->HasSwitch(switches::kIgnoreGpuBlacklist) ||
       command_line->HasSwitch(switches::kIgnoreGpuBlocklist);
-
-  if (command_line->HasSwitch(switches::kIgnoreGpuBlacklist)) {
-    LOG(ERROR) << "--" << switches::kIgnoreGpuBlacklist
-               << " is deprecated and will be removed in 2020Q4, use --"
-               << switches::kIgnoreGpuBlocklist << " instead.";
-  }
-
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   gpu_preferences.enable_dawn_backend_validation =

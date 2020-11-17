@@ -408,7 +408,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       gles2::UsePassthroughCommandDecoder(command_line) &&
       gles2::PassthroughCommandDecoderSupported();
 
-  // We need to collect GL strings (VENDOR, RENDERER) for blacklisting purposes.
+  // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
     if (!gl_use_swiftshader_) {
       if (!CollectGraphicsInfo(&gpu_info_))

@@ -2431,8 +2431,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   } else if (process_type == switches::kGpuProcess) {
     // If --ignore-gpu-blocklist is passed in, don't send in crash reports
     // because GPU is expected to be unreliable.
-    if ((browser_command_line.HasSwitch(switches::kIgnoreGpuBlocklist) ||
-         browser_command_line.HasSwitch(switches::kIgnoreGpuBlacklist)) &&
+    if (browser_command_line.HasSwitch(switches::kIgnoreGpuBlocklist) &&
         !command_line->HasSwitch(switches::kDisableBreakpad))
       command_line->AppendSwitch(switches::kDisableBreakpad);
   }
