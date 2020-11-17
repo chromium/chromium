@@ -3417,7 +3417,7 @@
   {
     "name": "omnibox-assistant-voice-search",
     "owners": [ "wylieb", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "omnibox-bookmark-paths",
