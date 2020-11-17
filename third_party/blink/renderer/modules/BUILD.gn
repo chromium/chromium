@@ -561,6 +561,21 @@ if (use_libfuzzer) {
     ]
   }
 
+  fuzzer_test("sanitizer_api_fuzzer") {
+    sources = [ "sanitizer_api/sanitizer_api_fuzzer.cc" ]
+    deps = [
+      ":modules",
+      "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_impl_generated",
+      "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules/sanitizer_api:sanitizer_config_proto",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+    dict = "sanitizer_api/sanitizer_api.dict"
+  }
+
   fuzzer_test("webcodecs_video_decoder_fuzzer") {
     sources = [
       "webcodecs/fuzzer_utils.cc",

@@ -3,10 +3,17 @@
 # found in the LICENSE file.
 
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("sanitizer_api") {
   sources = [
     "sanitizer.cc",
     "sanitizer.h",
   ]
+}
+if (use_libfuzzer) {
+  fuzzable_proto_library("sanitizer_config_proto") {
+    sources = [ "sanitizer_config.proto" ]
+  }
 }
