@@ -20,6 +20,15 @@ COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountPtr ToMojoAccount(
     const account_manager::Account& account);
 
+// Returns `base::nullopt` if `mojom_account_key` cannot be parsed.
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+base::Optional<account_manager::AccountKey> FromMojoAccountKey(
+    const crosapi::mojom::AccountKeyPtr& mojom_account_key);
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+crosapi::mojom::AccountKeyPtr ToMojoAccountKey(
+    const account_manager::AccountKey& account_key);
+
 // Returns `base::nullopt` if `account_type` cannot be parsed.
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 base::Optional<account_manager::AccountType> FromMojoAccountType(
