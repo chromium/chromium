@@ -9,6 +9,7 @@
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -327,6 +328,21 @@ TEST_F(ClipboardHistoryTest, BasicFileSystemData) {
       input_data;
 
   WriteAndEnsureCustomDataHistory(input_data, expected_data);
+}
+
+// Tests that the ClipboardHistoryDisplayFormat for HTML with no <img or <table
+// tags is text.
+TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
+  ui::ClipboardData data;
+  data.set_markup_data("plain html with no img or table tags");
+
+  EXPECT_EQ(ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText,
+            ClipboardHistoryUtil::CalculateDisplayFormat(data));
+
+  data.set_markup_data("<img> </img>");
+
+  EXPECT_EQ(ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml,
+            ClipboardHistoryUtil::CalculateDisplayFormat(data));
 }
 
 }  // namespace ash

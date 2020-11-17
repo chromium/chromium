@@ -146,7 +146,7 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kText:
       return base::UTF8ToUTF16(data.text());
     case ui::ClipboardInternalFormat::kHtml:
-      return base::UTF8ToUTF16(data.markup_data());
+      return GetLocalizedString(IDS_CLIPBOARD_MENU_HTML);
     case ui::ClipboardInternalFormat::kSvg:
       return base::UTF8ToUTF16(data.svg_data());
     case ui::ClipboardInternalFormat::kRtf:
@@ -228,8 +228,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item) {
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (ClipboardHistoryUtil::CalculateMainFormat(item.data()) !=
-      ui::ClipboardInternalFormat::kHtml) {
+  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
+      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
     return;
   }
 
@@ -267,8 +267,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
-  if (ClipboardHistoryUtil::CalculateMainFormat(item.data()) !=
-      ui::ClipboardInternalFormat::kHtml) {
+  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
+      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
     return;
   }
 

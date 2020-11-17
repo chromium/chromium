@@ -124,7 +124,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   // Populate a builder with all the data formats that we expect to handle.
   ClipboardHistoryItemBuilder builder;
   builder.SetText("Text")
-      .SetMarkup("<img Markup")
+      .SetMarkup("HTML with no image or table tags")
       .SetRtf("Rtf")
       .SetBookmarkTitle("Bookmark Title")
       .SetBitmap(gfx::test::CreateBitmap(10, 10))
@@ -139,7 +139,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
 
   // In the absence of bitmap data, HTML data takes precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            base::UTF8ToUTF16("<img Markup"));
+            base::UTF8ToUTF16("HTML Content"));
 
   builder.ClearMarkup();
 
@@ -221,7 +221,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
                                       clipboard_history()->GetItems().front()));
 }
 
-// Tests that Render is not called ineligble html is added to ClipboarHistory
+// Tests that Render is not called when ineligble html is added to
+// ClipboarHistory
 TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)

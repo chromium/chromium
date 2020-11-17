@@ -33,13 +33,6 @@ base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data) {
   for (const auto& format : kPrioritizedFormats) {
     if (ContainsFormat(data, format)) {
-      if (chromeos::features::IsClipboardHistorySimpleRenderEnabled()) {
-        if (format == ui::ClipboardInternalFormat::kHtml &&
-            (data.markup_data().find("<img") == std::string::npos) &&
-            (data.markup_data().find("<table") == std::string::npos)) {
-          continue;
-        }
-      }
       return format;
     }
   }
@@ -52,6 +45,10 @@ ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kBitmap:
       return ClipboardHistoryDisplayFormat::kBitmap;
     case ui::ClipboardInternalFormat::kHtml:
+      if ((data.markup_data().find("<img") == std::string::npos) &&
+          (data.markup_data().find("<table") == std::string::npos)) {
+        return ClipboardHistoryDisplayFormat::kText;
+      }
       return ClipboardHistoryDisplayFormat::kHtml;
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:

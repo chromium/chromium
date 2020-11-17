@@ -366,6 +366,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
         (empty)
       </message>
+        <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
+        HTML Content
+      </message>
       <message name="IDS_CLIPBOARD_MENU_IMAGE" desc="Used when an image is stored in the clipboard history">
         Image
       </message>
