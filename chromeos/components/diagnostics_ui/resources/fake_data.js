@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryInfo, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
-/* @type {!Array<!BatteryChargeStatus>} */
+/** @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [
   {
-    chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
     powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
     powerTime: stringToMojoString16('3h 15m'),
   },
   {
-    chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
     powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
     powerTime: stringToMojoString16('3h 01m'),
   },
   {
-    chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
     powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
@@ -30,7 +27,7 @@ export const fakeBatteryChargeStatus = [
   }
 ];
 
-/* @type {!Array<!BatteryHealth>} */
+/** @type {!Array<!BatteryHealth>} */
 export const fakeBatteryHealth = [
   {
     batteryWearPercentage: 7,
@@ -46,19 +43,19 @@ export const fakeBatteryHealth = [
   }
 ];
 
-/* @type {!BatteryInfo} */
+/** @type {!BatteryInfo} */
 export const fakeBatteryInfo = {
   chargeFullDesignMilliampHours: 6000,
   manufacturer: 'BatterCorp USA',
 };
 
-/* @type {!BatteryInfo} */
+/** @type {!BatteryInfo} */
 export const fakeBatteryInfo2 = {
   chargeFullDesignMilliampHours: 9000,
   manufacturer: 'PowerPod 9000',
 };
 
-/* @type {!Array<!CpuUsage>} */
+/** @type {!Array<!CpuUsage>} */
 export const fakeCpuUsage = [
   {
     averageCpuTempCelsius: 107,
@@ -102,7 +99,7 @@ export const fakeCpuUsage = [
   },
 ];
 
-/* @type {!Array<!MemoryUsage>} */
+/** @type {!Array<!MemoryUsage>} */
 export const fakeMemoryUsage = [
   {
     availableMemoryKib: 57000,
@@ -126,7 +123,7 @@ export const fakeMemoryUsage = [
   }
 ];
 
-/* @type {!SystemInfo} */
+/** @type {!SystemInfo} */
 export const fakeSystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
@@ -137,7 +134,7 @@ export const fakeSystemInfo = {
   versionInfo: {milestoneVersion: 'M99'},
 };
 
-/* @type {!SystemInfo} */
+/** @type {!SystemInfo} */
 export const fakeSystemInfoWithoutBattery = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
@@ -148,7 +145,7 @@ export const fakeSystemInfoWithoutBattery = {
   versionInfo: {milestoneVersion: 'M99'},
 };
 
-/* @type {!Map<RoutineName, StandardRoutineResult} */
+/** @type {!Map<!RoutineName, !StandardRoutineResult>} */
 export const fakeRoutineResults = new Map([
   [RoutineName.kCpuStress, StandardRoutineResult.kTestPassed],
   [RoutineName.kCpuCache, StandardRoutineResult.kTestPassed],

@@ -77,7 +77,7 @@ export function batteryStatusCardTestSuite() {
               fakeBatteryHealth[0].chargeFullDesignMilliampHours,
               dataPoints[1].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].chargeFullNowMilliampHours,
+              fakeBatteryHealth[0].chargeFullNowMilliampHours,
               dataPoints[2].value);
           assertEquals(
               fakeBatteryChargeStatus[0].chargeNowMilliampHours,
@@ -91,13 +91,12 @@ export function batteryStatusCardTestSuite() {
           assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[6].value);
           dx_utils.assertElementContainsText(
               batteryStatusElement.$$('#batteryStatusChipInfo'),
-              fakeBatteryHealth[0].chargeFullDesignMilliampHours);
+              `${fakeBatteryHealth[0].chargeFullDesignMilliampHours}`);
 
           const barChart =
               dx_utils.getPercentBarChartElement(batteryStatusElement);
           assertEquals(
-              fakeBatteryChargeStatus[0].chargeFullNowMilliampHours,
-              barChart.max);
+              fakeBatteryHealth[0].chargeFullNowMilliampHours, barChart.max);
           assertEquals(
               fakeBatteryChargeStatus[0].chargeNowMilliampHours,
               barChart.value);
