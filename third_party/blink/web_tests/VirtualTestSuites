@@ -708,11 +708,6 @@
     "args": ["--disable-features=LinkDisabledNewSpecBehavior"]
   },
   {
-    "prefix": "out-of-blink-cspee",
-    "bases": [ "external/wpt/content-security-policy/embedded-enforcement" ],
-    "args": [ "--disable-features=OutOfBlinkCSPEE" ]
-  },
-  {
     "prefix": "policy-container",
     "bases": [ "external/wpt/referrer-policy",
                "fast/dom/DOMImplementation" ],

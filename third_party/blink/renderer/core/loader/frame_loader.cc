@@ -761,10 +761,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         origin_window->GetContentSecurityPolicy());
   }
 
-  // Record the latest requiredCSP value that will be used when loading the
-  // document at navigation commit time.
-  RecordLatestRequiredCSP();
-
   // TODO(arthursonzogni): 'frame-src' check is disabled on the
   // renderer side, but is enforced on the browser side.
   // See http://crbug.com/692595 for understanding why it
@@ -1020,8 +1016,6 @@ void FrameLoader::CommitNavigation(
   //   with regards to the last commit.
   // In this rare case, we intentionally proceed as cross-document.
 
-  RecordLatestRequiredCSP();
-
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
@@ -1041,6 +1035,8 @@ void FrameLoader::CommitNavigation(
       navigation_params->url, navigation_params->response.ToResourceResponse(),
       navigation_params->origin_policy, last_origin_window_csp_.Release(),
       commit_reason);
+
+  DCHECK(content_security_policy);
 
   for (auto& csp : navigation_params->forced_content_security_policies) {
     content_security_policy->AddPolicyFromHeaderValue(
@@ -1623,14 +1619,6 @@ void FrameLoader::ModifyRequestForCSP(
     const FetchClientSettingsObject* fetch_client_settings_object,
     LocalDOMWindow* window_for_logging,
     mojom::RequestContextFrameType frame_type) const {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE) &&
-      !RequiredCSP().IsEmpty()) {
-    DCHECK(
-        ContentSecurityPolicy::IsValidCSPAttr(RequiredCSP().GetString(), ""));
-    resource_request.SetHttpHeaderField(http_names::kSecRequiredCSP,
-                                        RequiredCSP());
-  }
-
   // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
   // requests, as described in
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#feature-detect
@@ -1719,11 +1707,6 @@ void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
       frame_->IsMainFrame() ? mojom::ConsoleMessageLevel::kWarning
                             : mojom::ConsoleMessageLevel::kVerbose,
       console_message));
-}
-
-void FrameLoader::RecordLatestRequiredCSP() {
-  required_csp_ =
-      frame_->Owner() ? frame_->Owner()->RequiredCsp() : g_null_atom;
 }
 
 std::unique_ptr<TracedValue> FrameLoader::ToTracedValue() const {
@@ -1827,35 +1810,6 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
         initiator_csp ? initiator_csp : owner_csp;
     if (inherited_csp)
       csp->CopyPluginTypesFrom(inherited_csp);
-  }
-
-  // When the embedder used the 'required-csp', its embeddee must either:
-  // 1) Use the 'allow-csp' header for opting in inheriting them.
-  // 2) Ensure its own CSP subsume them, or it will be blocked.
-  //
-  // See:
-  // - https://w3c.github.io/webappsec-cspee/#required-csp-header
-  // - https://w3c.github.io/webappsec-cspee/#allow-csp-from-header
-  if (RequiredCSP().IsEmpty() ||
-      base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE)) {
-    return csp;
-  }
-
-  const SecurityOrigin* parent_security_origin =
-      frame_->Tree().Parent()->GetSecurityContext()->GetSecurityOrigin();
-  if (parent_security_origin &&
-      ContentSecurityPolicy::ShouldEnforceEmbeddersPolicy(
-          response, parent_security_origin)) {
-    csp->AddPolicyFromHeaderValue(
-        RequiredCSP(), network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  } else {
-    auto* required_csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    required_csp->AddPolicyFromHeaderValue(
-        RequiredCSP(), network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-    if (!required_csp->Subsumes(*csp))
-      return nullptr;  // Document blocked.
   }
 
   return csp;

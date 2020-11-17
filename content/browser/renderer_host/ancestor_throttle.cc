@@ -24,7 +24,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
@@ -147,9 +146,6 @@ std::unique_ptr<NavigationThrottle> AncestorThrottle::MaybeCreateThrottleFor(
 AncestorThrottle::~AncestorThrottle() {}
 
 NavigationThrottle::ThrottleCheckResult AncestorThrottle::WillStartRequest() {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE))
-    return NavigationThrottle::PROCEED;
-
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   if (request->IsInMainFrame())
     return NavigationThrottle::PROCEED;
@@ -437,9 +433,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
 // - https://w3c.github.io/webappsec-cspee/#allow-csp-from-header
 AncestorThrottle::CheckResult
 AncestorThrottle::EvaluateCSPEmbeddedEnforcement() {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE))
-    return CheckResult::PROCEED;
-
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   if (request->IsInMainFrame()) {
     // We enforce CSPEE only for frames, not for portals.

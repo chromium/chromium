@@ -273,7 +273,6 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
  protected:
   void ModifyRequestForCSP(ResourceRequest& resource_request,
                            mojom::RequestContextFrameType frame_type) {
-    document->GetFrame()->Loader().RecordLatestRequiredCSP();
     document->GetFrame()->Loader().ModifyRequestForCSP(
         resource_request,
         &document->Fetcher()->GetProperties().GetFetchClientSettingsObject(),
@@ -351,21 +350,6 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
                         mojom::RequestContextFrameType::kNone);
 
     EXPECT_EQ(expected_value, resource_request.IsAutomaticUpgrade());
-  }
-
-  void ExpectSetRequiredCSPRequestHeader(
-      const char* input,
-      mojom::RequestContextFrameType frame_type,
-      const AtomicString& expected_required_csp) {
-    const KURL input_url(input);
-    ResourceRequest resource_request(input_url);
-    resource_request.SetRequestContext(
-        mojom::blink::RequestContextType::SCRIPT);
-
-    ModifyRequestForCSP(resource_request, frame_type);
-
-    EXPECT_EQ(expected_required_csp,
-              resource_request.HttpHeaderField(http_names::kSecRequiredCSP));
   }
 
   void SetFrameOwnerBasedOnFrameType(mojom::RequestContextFrameType frame_type,
@@ -549,44 +533,6 @@ TEST_F(FrameFetchContextModifyRequestTest, SendUpgradeInsecureRequestHeader) {
         mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests);
     ExpectUpgradeInsecureRequestHeader(test.to_request, test.frame_type,
                                        test.should_prefer);
-  }
-}
-
-TEST_F(FrameFetchContextModifyRequestTest, SendRequiredCSPHeader) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(network::features::kOutOfBlinkCSPEE);
-
-  struct TestCase {
-    const char* to_request;
-    mojom::RequestContextFrameType frame_type;
-  } tests[] = {
-      {"https://example.test/page.html",
-       mojom::RequestContextFrameType::kAuxiliary},
-      {"https://example.test/page.html",
-       mojom::RequestContextFrameType::kNested},
-      {"https://example.test/page.html", mojom::RequestContextFrameType::kNone},
-      {"https://example.test/page.html",
-       mojom::RequestContextFrameType::kTopLevel}};
-
-  auto* iframe = MakeGarbageCollected<HTMLIFrameElement>(*document);
-  const AtomicString& required_csp = AtomicString("default-src 'none'");
-  const AtomicString& another_required_csp = AtomicString("default-src 'self'");
-
-  for (const auto& test : tests) {
-    SetFrameOwnerBasedOnFrameType(test.frame_type, iframe, required_csp);
-    ExpectSetRequiredCSPRequestHeader(
-        test.to_request, test.frame_type,
-        test.frame_type == mojom::RequestContextFrameType::kNested
-            ? required_csp
-            : g_null_atom);
-
-    SetFrameOwnerBasedOnFrameType(test.frame_type, iframe,
-                                  another_required_csp);
-    ExpectSetRequiredCSPRequestHeader(
-        test.to_request, test.frame_type,
-        test.frame_type == mojom::RequestContextFrameType::kNested
-            ? another_required_csp
-            : g_null_atom);
   }
 }
 

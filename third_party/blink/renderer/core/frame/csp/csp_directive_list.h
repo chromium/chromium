@@ -134,10 +134,6 @@ class CORE_EXPORT CSPDirectiveList final
   bool AllowHash(const CSPHashValue& hash_value,
                  const ContentSecurityPolicy::InlineType inline_type) const;
 
-  // The algorithm is described here:
-  // https://w3c.github.io/webappsec-csp/embedded/#subsume-policy
-  bool Subsumes(const CSPDirectiveListVector&);
-
   // Export a subset of the Policy. The primary goal of this method is to make
   // the embedders aware of the directives that affect navigation, as the
   // embedder is responsible for navigational enforcement.
@@ -178,7 +174,6 @@ class CORE_EXPORT CSPDirectiveList final
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, IsMatchingNoncePresent);
-  FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, GetSourceVector);
   FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, OperativeDirectiveGivenType);
 
   bool ParseDirective(const UChar* begin,
@@ -293,12 +288,6 @@ class CORE_EXPORT CSPDirectiveList final
       const ContentSecurityPolicy::DirectiveType type,
       ContentSecurityPolicy::DirectiveType original_type =
           ContentSecurityPolicy::DirectiveType::kUndefined) const;
-
-  // This function aggregates from a vector of policies all operative
-  // SourceListDirectives of a given type into a vector.
-  static SourceListDirectiveVector GetSourceVector(
-      const ContentSecurityPolicy::DirectiveType,
-      const CSPDirectiveListVector& policies);
 
   Member<ContentSecurityPolicy> policy_;
 

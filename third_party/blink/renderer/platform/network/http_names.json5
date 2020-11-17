@@ -62,7 +62,6 @@
     "Require-Document-Policy",
     "Save-Data",
     "Sec-CH-Lang",
-    "Sec-Required-CSP",
     "Server-Timing",
     "SourceMap",
     "Timing-Allow-Origin",

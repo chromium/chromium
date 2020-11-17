@@ -1266,7 +1266,6 @@ source_set("unit_tests") {
     "frame/csp/content_security_policy_test.cc",
     "frame/csp/csp_directive_list_test.cc",
     "frame/csp/csp_source_test.cc",
-    "frame/csp/media_list_directive_test.cc",
     "frame/csp/require_trusted_types_for_directive_test.cc",
     "frame/csp/source_list_directive_test.cc",
     "frame/csp/string_list_directive_test.cc",

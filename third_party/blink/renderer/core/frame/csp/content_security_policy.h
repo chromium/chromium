@@ -464,25 +464,10 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   static bool IsNonceableElement(const Element*);
 
-  // This method checks whether the request should be allowed for an
-  // experimental EmbeddingCSP feature
-  // Please, see https://w3c.github.io/webappsec-csp/embedded/#origin-allowed.
-  static bool ShouldEnforceEmbeddersPolicy(const ResourceResponse&,
-                                           const SecurityOrigin*);
-
   static const char* GetDirectiveName(const DirectiveType&);
   static DirectiveType GetDirectiveType(const String& name);
 
-  // This method checks if if this policy subsumes a given policy.
-  // Note the correct result is guaranteed if this policy contains only one
-  // CSPDirectiveList. More information here:
-  // https://w3c.github.io/webappsec-csp/embedded/#subsume-policy
-  bool Subsumes(const ContentSecurityPolicy&) const;
-
   bool HasHeaderDeliveredPolicy() const { return header_delivered_; }
-
-  static bool IsValidCSPAttr(const String& attr,
-                             const String& context_required_csp);
 
   // Returns the 'wasm-eval' source is supported.
   bool SupportsWasmEval() const { return supports_wasm_eval_; }

@@ -8210,12 +8210,6 @@ DOMFeaturePolicy* Document::featurePolicy() {
   return policy_.Get();
 }
 
-const AtomicString& Document::RequiredCSP() {
-  if (!Loader())
-    return g_null_atom;
-  return GetFrame()->Loader().RequiredCSP();
-}
-
 StylePropertyMapReadOnly* Document::ComputedStyleMap(Element* element) {
   ElementComputedStyleMap::AddResult add_result =
       element_computed_style_map_.insert(element, nullptr);

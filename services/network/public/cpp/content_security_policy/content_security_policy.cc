@@ -18,7 +18,6 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "url/gurl.h"
@@ -1015,9 +1014,6 @@ void AddContentSecurityPolicyFromHeaders(
 
 mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(
     const net::HttpResponseHeaders& headers) {
-  if (!base::FeatureList::IsEnabled(features::kOutOfBlinkCSPEE))
-    return nullptr;
-
   std::string allow_csp_from;
   if (!headers.GetNormalizedHeader("Allow-CSP-From", &allow_csp_from))
     return nullptr;

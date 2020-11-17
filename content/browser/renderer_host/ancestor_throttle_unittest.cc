@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -17,7 +16,6 @@
 #include "content/test/test_navigation_url_loader.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,9 +144,6 @@ TEST_F(AncestorThrottleTest, ErrorsParsingXFrameOptions) {
 }
 
 TEST_F(AncestorThrottleTest, AllowsBlanketEnforcementOfRequiredCSP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(network::features::kOutOfBlinkCSPEE);
-
   struct TestCase {
     const char* name;
     const char* request_origin;
@@ -268,9 +263,6 @@ using AncestorThrottleNavigationTest = RenderViewHostTestHarness;
 
 TEST_F(AncestorThrottleNavigationTest,
        WillStartRequestAddsSecRequiredCSPHeader) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(network::features::kOutOfBlinkCSPEE);
-
   // Create a frame tree with different 'csp' attributes according to the
   // following graph:
   //
@@ -365,9 +357,6 @@ TEST_F(AncestorThrottleNavigationTest,
 }
 
 TEST_F(AncestorThrottleNavigationTest, EvaluateCSPEmbeddedEnforcement) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(network::features::kOutOfBlinkCSPEE);
-
   // We need one initial navigation to set up everything.
   NavigateAndCommit(GURL("https://www.example.org"));
 

@@ -62,14 +62,7 @@ class CORE_EXPORT SourceListDirective final : public CSPDirective {
   String DirectiveName() const { return directive_name_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest, GetIntersectCSPSources);
-  FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest,
-                           GetIntersectCSPSourcesSchemes);
-  FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest, GetIntersectNonces);
-  FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest, GetIntersectHashes);
-  FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest, GetSources);
   FRIEND_TEST_ALL_PREFIXES(SourceListDirectiveTest, ParseHost);
-  FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, GetSourceVector);
   FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, OperativeDirectiveGivenType);
 
   bool ParseSource(const UChar* begin,
@@ -109,20 +102,7 @@ class CORE_EXPORT SourceListDirective final : public CSPDirective {
   void AddSourceHash(const ContentSecurityPolicyHashAlgorithm&,
                      const DigestValue& hash);
 
-  static void AddSourceToMap(HeapHashMap<String, Member<CSPSource>>&,
-                             CSPSource*);
-
   bool HasSourceMatchInList(const KURL&, ResourceRequest::RedirectStatus) const;
-  HashSet<String> GetIntersectNonces(const HashSet<String>& other) const;
-  HashSet<CSPHashValue> GetIntersectHashes(
-      const HashSet<CSPHashValue>& other) const;
-  HeapVector<Member<CSPSource>> GetIntersectCSPSources(
-      const HeapVector<Member<CSPSource>>& other) const;
-  HeapHashMap<String, Member<CSPSource>> GetIntersectSchemesOnly(
-      const HeapVector<Member<CSPSource>>& other) const;
-  bool SubsumesNoncesAndHashes(const HashSet<String>& nonces,
-                               const HashSet<CSPHashValue> hashes) const;
-  HeapVector<Member<CSPSource>> GetSources(Member<CSPSource>) const;
 
   Member<ContentSecurityPolicy> policy_;
   HeapVector<Member<CSPSource>> list_;

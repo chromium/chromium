@@ -173,9 +173,6 @@ class CORE_EXPORT FrameLoader final {
   Frame* Opener();
   void SetOpener(LocalFrame*);
 
-  const AtomicString& RequiredCSP() const { return required_csp_; }
-  void RecordLatestRequiredCSP();
-
   void Detach();
 
   void FinishedParsing();
@@ -326,8 +323,6 @@ class CORE_EXPORT FrameLoader final {
   // frame. TODO(arthursonzogni): This looks fragile. The FrameLoader might be
   // confused by several navigations submitted in a row.
   Member<ContentSecurityPolicy> last_origin_window_csp_;
-
-  AtomicString required_csp_;
 
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.

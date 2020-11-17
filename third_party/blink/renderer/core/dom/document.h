@@ -1493,8 +1493,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool CurrentFrameHadRAF() const;
   bool NextFrameHasPendingRAF() const;
 
-  const AtomicString& RequiredCSP();
-
   StylePropertyMapReadOnly* ComputedStyleMap(Element*);
   void AddComputedStyleMapItem(Element*, StylePropertyMapReadOnly*);
   StylePropertyMapReadOnly* RemoveComputedStyleMapItem(Element*);

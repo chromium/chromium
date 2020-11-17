@@ -438,9 +438,6 @@ void FrameFetchContext::ModifyRequestForCSP(ResourceRequest& resource_request) {
   if (GetResourceFetcherProperties().IsDetached())
     return;
 
-  // Record the latest requiredCSP value that will be used when sending this
-  // request.
-  GetFrame()->Loader().RecordLatestRequiredCSP();
   GetFrame()->Loader().ModifyRequestForCSP(
       resource_request,
       &GetResourceFetcherProperties().GetFetchClientSettingsObject(),

@@ -233,35 +233,18 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateContainerPolicy();
     }
   } else if (name == html_names::kCspAttr) {
-    if (base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE)) {
-      if (value.Contains('\n') || value.Contains('\r') || value.Contains(',')) {
-        required_csp_ = g_null_atom;
-        GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kError,
-            "'csp' attribute is invalid: " + value));
-        return;
-      }
-      if (required_csp_ != value) {
-        required_csp_ = value;
-        CSPAttributeChanged();
-        UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
-      }
-    } else {
-      if (!ContentSecurityPolicy::IsValidCSPAttr(
-              value.GetString(), GetDocument().RequiredCSP().GetString())) {
-        required_csp_ = g_null_atom;
-        GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kError,
-            "'csp' attribute is not a valid policy: " + value));
-        return;
-      }
-      if (required_csp_ != value) {
-        required_csp_ = value;
-        FrameOwnerPropertiesChanged();
-        UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
-      }
+    if (value.Contains('\n') || value.Contains('\r') || value.Contains(',')) {
+      required_csp_ = g_null_atom;
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "'csp' attribute is invalid: " + value));
+      return;
+    }
+    if (required_csp_ != value) {
+      required_csp_ = value;
+      CSPAttributeChanged();
+      UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
@@ -449,24 +432,8 @@ Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(
       HTMLFrameElementBase::InsertedInto(insertion_point);
 
   auto* html_doc = DynamicTo<HTMLDocument>(GetDocument());
-  if (html_doc && insertion_point.IsInDocumentTree()) {
+  if (html_doc && insertion_point.IsInDocumentTree())
     html_doc->AddNamedItem(name_);
-    if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE) &&
-        !ContentSecurityPolicy::IsValidCSPAttr(
-            required_csp_, GetDocument().RequiredCSP().GetString())) {
-      if (!required_csp_.IsEmpty()) {
-        GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kError,
-            "'csp' attribute is not a valid policy: " + required_csp_));
-      }
-      if (required_csp_ != GetDocument().RequiredCSP()) {
-        required_csp_ = GetDocument().RequiredCSP();
-        FrameOwnerPropertiesChanged();
-        UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
-      }
-    }
-  }
   LogAddElementIfIsolatedWorldAndInDocument("iframe", html_names::kSrcAttr);
   return result;
 }

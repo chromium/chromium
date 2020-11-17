@@ -88,38 +88,4 @@ void MediaListDirective::Parse(const UChar* begin, const UChar* end) {
   }
 }
 
-bool MediaListDirective::Subsumes(
-    const HeapVector<Member<MediaListDirective>>& other) const {
-  if (!other.size())
-    return false;
-
-  // Find the effective set of plugins allowed by `other`.
-  HashSet<String> normalized_b = other[0]->plugin_types_;
-  for (wtf_size_t i = 1; i < other.size(); i++)
-    normalized_b = other[i]->GetIntersect(normalized_b);
-
-  // Empty list of plugins is equivalent to no plugins being allowed.
-  if (!plugin_types_.size())
-    return !normalized_b.size();
-
-  // Check that each element of `normalizedB` is allowed by `m_pluginTypes`.
-  for (auto it = normalized_b.begin(); it != normalized_b.end(); ++it) {
-    if (!Allows(*it))
-      return false;
-  }
-
-  return true;
-}
-
-HashSet<String> MediaListDirective::GetIntersect(
-    const HashSet<String>& other) const {
-  HashSet<String> normalized;
-  for (const auto& type : plugin_types_) {
-    if (other.Contains(type))
-      normalized.insert(type);
-  }
-
-  return normalized;
-}
-
 }  // namespace blink

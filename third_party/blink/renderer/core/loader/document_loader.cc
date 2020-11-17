@@ -202,7 +202,6 @@ DocumentLoader::DocumentLoader(
           content_security_policy
               ? content_security_policy
               : MakeGarbageCollected<ContentSecurityPolicy>()),
-      was_blocked_by_csp_(!content_security_policy),
       // Loading the document was blocked by the CSP check. Pretend that this
       // was an empty document instead and don't reuse the original URL. More
       // details in: https://crbug.com/622385.
@@ -214,13 +213,9 @@ DocumentLoader::DocumentLoader(
       // Note: this doesn't use |url_| for the origin calculation, because
       // redirects are not yet accounted for (this happens later in
       // StartLoadingInternal).
-      origin_to_commit_(
-          was_blocked_by_csp_
-              ? blink::SecurityOrigin::Create(response_.CurrentRequestUrl())
-                    ->DeriveNewOpaqueOrigin()
-              : params_->origin_to_commit.IsNull()
-                    ? nullptr
-                    : params_->origin_to_commit.Get()->IsolatedCopy()),
+      origin_to_commit_(params_->origin_to_commit.IsNull()
+                            ? nullptr
+                            : params_->origin_to_commit.Get()->IsolatedCopy()),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
       service_worker_network_provider_(
@@ -300,7 +295,7 @@ DocumentLoader::DocumentLoader(
   if (is_client_redirect_)
     redirect_chain_.push_back(frame_->GetDocument()->Url());
 
-  if (was_blocked_by_csp_ || was_blocked_by_document_policy_)
+  if (was_blocked_by_document_policy_)
     ReplaceWithEmptyDocument();
 
   if (commit_reason_ != CommitReason::kInitialization)
@@ -2018,16 +2013,6 @@ void DocumentLoader::RecordUseCountersForCommit() {
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {
-  // Log if the document was blocked by CSP checks now that the new Document has
-  // been created and console messages will be properly displayed.
-  if (was_blocked_by_csp_) {
-    ConsoleError("Refused to display '" +
-                 response_.CurrentRequestUrl().ElidedString() +
-                 "' because it has not opted into the following policy "
-                 "required by its embedder: '" +
-                 GetFrameLoader().RequiredCSP() + "'.");
-  }
-
   if (was_blocked_by_document_policy_) {
     // TODO(chenleihu): Add which document policy violated in error string,
     // instead of just displaying serialized required document policy.

@@ -29,7 +29,6 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -350,33 +349,6 @@ void ContentSecurityPolicy::DidReceiveHeader(
   // <meta> element might be injected after page load.
   if (delegate_)
     ApplyPolicySideEffectsToDelegate();
-}
-
-bool ContentSecurityPolicy::ShouldEnforceEmbeddersPolicy(
-    const ResourceResponse& response,
-    const SecurityOrigin* parent_origin) {
-  if (response.CurrentRequestUrl().IsEmpty() ||
-      response.CurrentRequestUrl().ProtocolIsAbout() ||
-      response.CurrentRequestUrl().ProtocolIsData() ||
-      response.CurrentRequestUrl().ProtocolIs("blob") ||
-      response.CurrentRequestUrl().ProtocolIs("filesystem")) {
-    return true;
-  }
-
-  if (parent_origin->CanAccess(
-          SecurityOrigin::Create(response.CurrentRequestUrl()).get()))
-    return true;
-
-  String header = response.HttpHeaderField(http_names::kAllowCSPFrom);
-  header = header.StripWhiteSpace();
-  if (header == "*")
-    return true;
-  if (scoped_refptr<const SecurityOrigin> child_origin =
-          SecurityOrigin::CreateFromString(header)) {
-    return parent_origin->CanAccess(child_origin.get());
-  }
-
-  return false;
 }
 
 void ContentSecurityPolicy::AddPolicyFromHeaderValue(
@@ -1691,23 +1663,6 @@ ContentSecurityPolicy::DirectiveType ContentSecurityPolicy::GetDirectiveType(
   return DirectiveType::kUndefined;
 }
 
-bool ContentSecurityPolicy::Subsumes(const ContentSecurityPolicy& other) const {
-  DCHECK(!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE));
-  if (!policies_.size() || !other.policies_.size())
-    return !policies_.size();
-  // Required-CSP must specify only one policy.
-  if (policies_.size() != 1)
-    return false;
-
-  CSPDirectiveListVector other_vector;
-  for (const auto& policy : other.policies_) {
-    if (!policy->IsReportOnly())
-      other_vector.push_back(policy);
-  }
-
-  return policies_[0]->Subsumes(other_vector);
-}
-
 bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
     const KURL& url,
     SchemeRegistry::PolicyAreas area) const {
@@ -1727,45 +1682,6 @@ bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
   }
 
   return should_bypass_csp;
-}
-
-// static
-bool ContentSecurityPolicy::IsValidCSPAttr(const String& attr,
-                                           const String& context_required_csp) {
-  DCHECK(!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE));
-
-  // we don't allow any newline characters in the CSP attributes
-  if (attr.Contains('\n') || attr.Contains('\r'))
-    return false;
-
-  auto* attr_policy = MakeGarbageCollected<ContentSecurityPolicy>();
-  attr_policy->AddPolicyFromHeaderValue(attr,
-                                        ContentSecurityPolicyType::kEnforce,
-                                        ContentSecurityPolicySource::kHTTP);
-  if (!attr_policy->console_messages_.IsEmpty() ||
-      attr_policy->policies_.size() != 1) {
-    return false;
-  }
-
-  // Don't allow any report endpoints in "csp" attributes.
-  for (auto& directiveList : attr_policy->policies_) {
-    if (directiveList->ReportEndpoints().size() != 0)
-      return false;
-  }
-
-  if (context_required_csp.IsEmpty() || context_required_csp.IsNull()) {
-    return true;
-  }
-
-  auto* context_policy = MakeGarbageCollected<ContentSecurityPolicy>();
-  context_policy->AddPolicyFromHeaderValue(context_required_csp,
-                                           ContentSecurityPolicyType::kEnforce,
-                                           ContentSecurityPolicySource::kHTTP);
-
-  DCHECK(context_policy->console_messages_.IsEmpty() &&
-         context_policy->policies_.size() == 1);
-
-  return context_policy->Subsumes(*attr_policy);
 }
 
 WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>

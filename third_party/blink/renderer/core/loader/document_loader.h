@@ -484,7 +484,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool data_received_;
 
   const Member<ContentSecurityPolicy> content_security_policy_;
-  const bool was_blocked_by_csp_;
   mojo::Remote<mojom::blink::ContentSecurityNotifier>
       content_security_notifier_;
 

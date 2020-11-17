@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -385,9 +384,6 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
 }
 
 void HTMLFrameOwnerElement::CSPAttributeChanged() {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE))
-    return;
-
   // Don't notify about updates if ContentFrame() is null, for example when
   // the subframe hasn't been created yet; or if we are in the middle of
   // swapping one frame for another, in which case the final state
