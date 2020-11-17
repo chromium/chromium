@@ -266,10 +266,12 @@ int main(int argc, char* const argv[]) {
       NSDictionary<NSString*, NSString*>* infoplist_strings = @{
         @"CFBundleGetInfoString" : get_info,
         @"NSHumanReadableCopyright" : copyright,
+
+        @"NSBluetoothAlwaysUsageDescription" : permission_reason,
+        @"NSBluetoothPeripheralUsageDescription" : permission_reason,
+        @"NSCameraUsageDescription" : permission_reason,
         @"NSLocationUsageDescription" : permission_reason,
         @"NSMicrophoneUsageDescription" : permission_reason,
-        @"NSCameraUsageDescription" : permission_reason,
-        @"NSBluetoothPeripheralUsageDescription" : permission_reason,
       };
       base::scoped_nsobject<NSMutableString> strings_file_contents_string(
           [[NSMutableString alloc] init]);
