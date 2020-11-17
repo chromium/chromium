@@ -21,11 +21,11 @@
 
   <!-- Subtitles of the Chrome OS version of the management page -->
  <if expr="chromeos">
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by unknown organization">
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by an unknown manager">
       Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> is managed
     </message>
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, shows when device managed by known organization">
-      Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, shows when device managed by a known manager. MANAGER can be a domain or an email address.">
+      Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Message indicating that the device is not managed">
       Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is not managed
@@ -37,8 +37,8 @@
       <message name="IDS_MANAGEMENT_SUBTITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
       Your browser is managed
     </message>
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
-      Your browser is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment. MANAGER can be a domain or an email address.">
+      Your browser is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Title of chrome://management page for a browser that is not managed">
       Your browser is not managed
@@ -60,14 +60,14 @@
     <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
       This device and account are not managed by a company or other organization.
     </message>
-    <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain. And account is managed by an administrator, from another specific domain.">
-      Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> and your account is managed by <ph name="ACCOUNT_DOMAIN">$2<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by one administrator and the account is managed by another administrator. DEVICE_MANAGER and ACCOUNT_MANAGER can each be a domain or an email address.">
+      Your device is managed by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph> and your account is managed by <ph name="ACCOUNT_MANAGER">$2<ex>example.com</ex></ph>.
     </message>
-    <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account are enterprise enrolled to be managed by an administrator, from a specific domain">
-      Your device and account are managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account are enterprise enrolled to be managed by an administrator. MANAGER can be a domain or an email address.">
+      Your device and account are managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>.
     </message>
-    <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator">
-      Your account is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator. MANAGER can be a domain or an email address.">
+      Your account is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>.
     </message>
   </if>
 

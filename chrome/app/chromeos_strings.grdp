@@ -3418,8 +3418,8 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ILLUSTRATION_TITLE" desc="Accessible title of the enterprise enrollment screen illustration depicting successful enrollment.">
     Successful enrollment illustration
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN" desc="Success message to be shown once enterprise enrollment completes.">
-    This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be managed by <ph name="DOMAIN">$2<ex>acmecorp.com</ex></ph>.
+  <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN" desc="Success message to be shown once enterprise enrollment completes. MANAGER can be a domain or an email address.">
+    This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be managed by <ph name="MANAGER">$2<ex>acmecorp.com</ex></ph>.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ASSET_ID_LABEL" desc="Label for asset id text box on the device naming screen in the enterprise enrollment dialog.">
     Asset Identifier

@@ -159,21 +159,21 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Managed guest session warnings -->
-      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING" desc="Text shown in the public account user pod in case of risky configuration, informing the user that this session is managed and admin can monitor all activity.">
-        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this device and has access to all user activity, including webpages visited, passwords, and email.
+      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING" desc="Text shown in the public account user pod in case of risky configuration, informing the user that this session is managed and admin can monitor all activity. MANAGER can be a domain or an email address.">
+        <ph name="MANAGER">$1<ex>example.com</ex></ph> manages this device and has access to all user activity, including webpages visited, passwords, and email.
       </message>
-      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING" desc="Text shown in the public account user pod in case of non-risky configuration, informing the user that this session is managed and admin can monitor all activity.">
-        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this device and may be able to monitor your activity.
+      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING" desc="Text shown in the public account user pod in case of non-risky configuration, informing the user that this session is managed and admin can monitor all activity. MANAGER can be a domain or an email address.">
+        <ph name="MANAGER">$1<ex>example.com</ex></ph> manages this device and may be able to monitor your activity.
       </message>
 
       <!-- Managed user session warning -->
-      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING" desc="Text shown in the user pod in case the user is managed.">
-        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this user and may remotely manage settings and monitor user activity.
+      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING" desc="Text shown in the user pod in case the user is managed. MANAGER can be a domain or an email address.">
+        <ph name="MANAGER">$1<ex>example.com</ex></ph> manages this user and may remotely manage settings and monitor user activity.
       </message>
 
       <!-- Pop-up enterprise management. -->
-      <message name="IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP" desc="Text shown in the management pop-up when user clicks on status tray enterprise management.">
-        This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>. Administrators may remotely configure the device.
+      <message name="IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP" desc="Text shown in the management pop-up when user clicks on status tray enterprise management. MANAGER can be a domain or an email address.">
+        This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph>. Administrators may remotely configure the device.
       </message>
 
       <!-- Pop-up secondary login screen. -->

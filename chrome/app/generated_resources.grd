@@ -1275,8 +1275,8 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_MANAGED" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users" formatter_data="android_java">
         Managed by your organization
       </message>
-      <message name="IDS_MANAGED_BY" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users">
-        Managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>
+      <message name="IDS_MANAGED_BY" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users. MANAGER can be a domain or an email address.">
+        Managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
       </message>
       <if expr="not use_titlecase">
         <message name="IDS_IMPORT_SETTINGS_MENU_LABEL" desc="In sentence case: The app menu label to import bookmarks and settings.">
@@ -7579,8 +7579,8 @@ the Bookmarks menu.">
         <message name="IDS_MANAGED_WITH_HYPERLINK" desc="Message to end users in Enterprise/EDU, with a link for more info (non-ChromeOS)">
           Your <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>browser is managed<ph name="END_LINK">&lt;/a&gt;</ph> by your organization
         </message>
-        <message name="IDS_MANAGED_BY_WITH_HYPERLINK" desc="Message to end users in Enterprise/EDU, with a link for more info (non-ChromeOS)">
-          Your <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>browser is managed<ph name="END_LINK">&lt;/a&gt;</ph> by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>
+        <message name="IDS_MANAGED_BY_WITH_HYPERLINK" desc="Message to end users in Enterprise/EDU, with a link for more info (non-ChromeOS). MANAGER can be a domain or an email address.">
+          Your <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>browser is managed<ph name="END_LINK">&lt;/a&gt;</ph> by <ph name="MANAGER">$2<ex>example.com</ex></ph>
         </message>
       </if>
 
