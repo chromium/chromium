@@ -1795,7 +1795,7 @@
       'id': 11,
       'caption': '''Disable saving browser history''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled means browsing history is not saved, tab syncing is off and, and users can't change this setting.
+      'desc': '''Setting the policy to Enabled means browsing history is not saved, tab syncing is off and users can't change this setting.
 
       Setting the policy to Disabled or leaving it unset saves browsing history.''',
     },
