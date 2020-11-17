@@ -9,16 +9,25 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
 static NSString* const kReuseIdentifier = @"TabView";
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
 }
+
+// The size of the new tab button.
+const CGFloat kNewTabButtonWidth = 44;
+// Default image insets for the new tab button.
+const CGFloat kNewTabButtonLeadingImageInset = -10.0;
+const CGFloat kNewTabButtonBottomImageInset = -2.0;
+
 }  // namespace
 
 @interface TabStripViewController ()
@@ -48,6 +57,25 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.collectionView.alwaysBounceHorizontal = YES;
   [self.collectionView registerClass:[TabStripCell class]
           forCellWithReuseIdentifier:kReuseIdentifier];
+
+  _buttonNewTab = [[UIButton alloc] init];
+  _buttonNewTab.translatesAutoresizingMaskIntoConstraints = NO;
+  _buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
+  UIImage* buttonNewTabImage = [[UIImage imageNamed:@"tabstrip_new_tab"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
+  [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
+  UIEdgeInsets imageInsets = UIEdgeInsetsMake(0, kNewTabButtonLeadingImageInset,
+                                              kNewTabButtonBottomImageInset, 0);
+  _buttonNewTab.imageEdgeInsets = imageInsets;
+  [self.view addSubview:_buttonNewTab];
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonNewTab.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_buttonNewTab.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_buttonNewTab.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
+    [_buttonNewTab.widthAnchor constraintEqualToConstant:kNewTabButtonWidth],
+  ]];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:

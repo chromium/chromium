@@ -20,6 +20,8 @@
 
 @property(nonatomic, weak) id<TabFaviconDataSource> faviconDataSource;
 
+@property(nonatomic, readonly, retain) UIButton* buttonNewTab;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
