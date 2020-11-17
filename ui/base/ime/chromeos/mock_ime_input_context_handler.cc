@@ -72,6 +72,8 @@ bool MockIMEInputContextHandler::SetAutocorrectRange(
   return false;
 }
 
+void MockIMEInputContextHandler::ClearAutocorrectRange() {}
+
 bool MockIMEInputContextHandler::SetSelectionRange(uint32_t start,
                                                    uint32_t end) {
   ++set_selection_range_call_count_;

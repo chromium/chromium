@@ -66,10 +66,7 @@ bool AutocorrectManager::OnKeyEvent(
 }
 
 void AutocorrectManager::ClearUnderline() {
-  engine_->SetAutocorrectRange(/*autocorrect text=*/base::string16(),
-                               /*start=*/0,
-                               /*end=*/std::numeric_limits<uint32_t>::max());
-  // TODO(b/171924347): expose engine->clearAutocorrectRange() and use it here.
+  engine_->ClearAutocorrectRange();
 }
 
 void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,

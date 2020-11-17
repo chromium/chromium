@@ -186,6 +186,7 @@ class InputMethodEngine : public InputMethodEngineBase,
                            uint32_t end) override;
 
   gfx::Range GetAutocorrectRange() override;
+  void ClearAutocorrectRange() override;
 
  private:
   // InputMethodEngineBase:

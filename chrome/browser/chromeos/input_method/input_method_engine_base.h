@@ -231,6 +231,8 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
                            int end,
                            std::string* error);
 
+  virtual void ClearAutocorrectRange() = 0;
+
   // Set the current selection range.
   bool SetSelectionRange(int context_id,
                          int start,

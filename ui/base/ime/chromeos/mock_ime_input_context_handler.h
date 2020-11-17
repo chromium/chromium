@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   bool SetAutocorrectRange(const base::string16& autocorrect_text,
                            uint32_t start,
                            uint32_t end) override;
+  void ClearAutocorrectRange() override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
   void DeleteSurroundingText(int32_t offset, uint32_t length) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;

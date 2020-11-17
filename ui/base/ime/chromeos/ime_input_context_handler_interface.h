@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
   virtual bool SetAutocorrectRange(const base::string16& autocorrect_text,
                                    uint32_t start,
                                    uint32_t end) = 0;
+  virtual void ClearAutocorrectRange() = 0;
 
   // Called when the engine changes the selection range.
   // Returns true if the operation was successful.

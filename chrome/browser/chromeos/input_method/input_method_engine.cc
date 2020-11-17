@@ -490,6 +490,14 @@ bool InputMethodEngine::SetAutocorrectRange(
   return input_context->SetAutocorrectRange(autocorrect_text, start, end);
 }
 
+void InputMethodEngine::ClearAutocorrectRange() {
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return;
+  return input_context->ClearAutocorrectRange();
+}
+
 bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();

@@ -318,7 +318,7 @@ void InputMethodChromeOS::OnWillChangeFocusedClient(
   gfx::Range text_range;
   if (focused_before && focused_before->GetTextRange(&text_range)) {
     // This is currently only implemented in RenderWidgetHostViewAura.
-    focused_before->SetAutocorrectRange(base::EmptyString16(), text_range);
+    focused_before->ClearAutocorrectRange();
   }
 
   if (GetEngine())
@@ -415,6 +415,13 @@ bool InputMethodChromeOS::SetAutocorrectRange(
     return false;
   return GetTextInputClient()->SetAutocorrectRange(autocorrect_text,
                                                    gfx::Range(start, end));
+}
+
+void InputMethodChromeOS::ClearAutocorrectRange() {
+  if (IsTextInputTypeNone())
+    return;
+  // This is currently only implemented in RenderWidgetHostViewAura.
+  return GetTextInputClient()->ClearAutocorrectRange();
 }
 
 bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {

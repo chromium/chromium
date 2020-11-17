@@ -67,6 +67,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   bool SetAutocorrectRange(const base::string16& autocorrect_text,
                            uint32_t start,
                            uint32_t end) override;
+  void ClearAutocorrectRange() override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,

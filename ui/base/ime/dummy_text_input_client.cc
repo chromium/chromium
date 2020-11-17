@@ -175,7 +175,9 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return true;
 }
 
-void DummyTextInputClient::ClearAutocorrectRange() {}
+void DummyTextInputClient::ClearAutocorrectRange() {
+  autocorrect_range_ = gfx::Range();
+}
 
 #endif
 
