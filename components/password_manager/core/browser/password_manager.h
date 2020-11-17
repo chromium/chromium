@@ -209,6 +209,9 @@ class PasswordManager : public PasswordManagerInterface {
   // Resets pending credentials.
   void ResetPendingCredentials();
 
+  // Returns true if a form manager is processing a password update.
+  bool IsFormManagerPendingPasswordUpdate() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PasswordManagerTest,

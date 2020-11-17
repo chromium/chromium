@@ -6264,6 +6264,8 @@ if (!is_android) {
       sources += [
         "../browser/first_run/scoped_relaunch_chrome_browser_override.cc",
         "../browser/first_run/scoped_relaunch_chrome_browser_override.h",
+        "../browser/password_manager/password_manager_signin_intercept_test_helper.cc",
+        "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
     }
   }

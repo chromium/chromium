@@ -22,7 +22,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -37,9 +36,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -85,19 +82,11 @@
 #include "ui/gfx/geometry/point.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
-#include "components/account_id/account_id.h"
-#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_switches.h"
-#include "google_apis/gaia/gaia_urls.h"
 #endif  // ENABLE_DICE_SUPPORT
 
 using autofill::ParsingResult;
@@ -4272,50 +4261,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
 class PasswordManagerBrowserTestWithSigninInterception
     : public PasswordManagerBrowserTest {
  public:
-  PasswordManagerBrowserTestWithSigninInterception() {
-    feature_list_.InitWithFeatures(
-        {kDiceWebSigninInterceptionFeature, ::features::kProfilesUIRevamp},
-        /*disabled_features=*/{});
-  }
+  PasswordManagerBrowserTestWithSigninInterception()
+      : helper_(&https_test_server()) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PasswordManagerBrowserTest::SetUpCommandLine(command_line);
-    const GURL& base_url = https_test_server().base_url();
-    // For the password form to be treated as the Gaia signin page.
-    command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    helper_.SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
-    // Disable profile creation, so that only profile switch interception can
-    // trigger.
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kBrowserAddPersonEnabled, false);
+    helper_.SetUpOnMainThread();
     PasswordManagerBrowserTest::SetUpOnMainThread();
-  }
-
-  // Pre-populates the password store with Gaia credentials.
-  void StoreGaiaCredentials() {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
-    password_manager::PasswordForm signin_form;
-    signin_form.signon_realm = GaiaUrls::GetInstance()->gaia_url().spec();
-    signin_form.username_value = base::ASCIIToUTF16(kGaiaUsername);
-    signin_form.password_value = base::ASCIIToUTF16("pw");
-    password_store->AddLogin(signin_form);
-  }
-
-  void NavigateToGaiaSigninPage() {
-    std::string path = "/password/password_form.html";
-    GURL https_url(https_test_server().GetURL(path));
-    ASSERT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
-    ASSERT_TRUE(gaia::IsGaiaSignonRealm(https_url.GetOrigin()));
-
-    NavigationObserver navigation_observer(WebContents());
-    ui_test_utils::NavigateToURL(browser(), https_url);
-    navigation_observer.Wait();
   }
 
   void FillAndSubmitGaiaPassword() {
@@ -4324,82 +4280,40 @@ class PasswordManagerBrowserTestWithSigninInterception
         "document.getElementById('username_field').value = '%s';"
         "document.getElementById('password_field').value = 'new_pw';"
         "document.getElementById('input_submit_button').click()",
-        kGaiaUsername);
+        helper_.gaia_username().c_str());
     ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
     observer.Wait();
-  }
-
-  // Create another profile with the same Gaia account, so that the profile
-  // switch promo can be shown.
-  void SetupProfilesForInterception() {
-    // Add a profile in the cache (simulate the profile on disk).
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    ProfileAttributesStorage* profile_storage =
-        &profile_manager->GetProfileAttributesStorage();
-    const base::FilePath profile_path =
-        profile_manager->GenerateNextProfileDirectoryPath();
-    profile_storage->AddProfile(
-        profile_path, base::UTF8ToUTF16("TestProfileName"), kGaiaId,
-        base::UTF8ToUTF16(kGaiaEmail),
-        /*is_consented_primary_account=*/false, /*icon_index=*/0,
-        /*supervised_user_id*/ std::string(), EmptyAccountId());
-
-    // Check that the signin qualifies for interception.
-    base::Optional<SigninInterceptionHeuristicOutcome> outcome =
-        signin_interceptor()->GetHeuristicOutcome(
-            /*is_new_account=*/true, /*is_sync_signin=*/false, kGaiaUsername);
-    ASSERT_TRUE(outcome.has_value());
-    EXPECT_TRUE(SigninInterceptionHeuristicOutcomeIsSuccess(*outcome));
   }
 
   // Gaia passwords can only be saved if they are a secondary account. Add
   // another dummy account in Chrome that acts as the primary.
   void SetupAccountsForSavingGaiaPassword() {
-    CoreAccountId dummy_account =
-        AddGaiaAccountToChrome("dummy_email@example.com", "dummy_gaia_id");
+    CoreAccountId dummy_account = helper_.AddGaiaAccountToProfile(
+        browser()->profile(), "dummy_email@example.com", "dummy_gaia_id");
     IdentityManagerFactory::GetForProfile(browser()->profile())
         ->GetPrimaryAccountMutator()
         ->SetUnconsentedPrimaryAccount(dummy_account);
   }
 
-  CoreAccountId AddGaiaAccountToChrome(const std::string& email,
-                                       const std::string& gaia_id) {
-    auto* accounts_mutator =
-        IdentityManagerFactory::GetForProfile(browser()->profile())
-            ->GetAccountsMutator();
-    return accounts_mutator->AddOrUpdateAccount(
-        gaia_id, email, "refresh_token",
-        /*is_under_advanced_protection=*/false,
-        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  }
-
-  DiceWebSigninInterceptor* signin_interceptor() {
-    return DiceWebSigninInterceptorFactory::GetForProfile(browser()->profile());
-  }
-
-  static const char kGaiaUsername[];
-  static const char kGaiaEmail[];
-  static const char kGaiaId[];
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+ protected:
+  PasswordManagerSigninInterceptTestHelper helper_;
 };
 
-const char PasswordManagerBrowserTestWithSigninInterception::kGaiaUsername[] =
-    "username";
-const char PasswordManagerBrowserTestWithSigninInterception::kGaiaEmail[] =
-    "username@gmail.com";
-const char PasswordManagerBrowserTestWithSigninInterception::kGaiaId[] =
-    "test_gaia_id";
 
 // Checks that password update suppresses signin interception.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        InterceptionBubbleSuppressedByPasswordUpdate) {
-  SetupProfilesForInterception();
+  Profile* profile = browser()->profile();
+  helper_.SetupProfilesForInterception(profile);
   // Prepopulate Gaia credentials to trigger an update bubble.
-  StoreGaiaCredentials();
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  helper_.StoreGaiaCredentials(password_store);
 
-  NavigateToGaiaSigninPage();
+  helper_.NavigateToGaiaSigninPage(WebContents());
 
   // The stored password "pw" was overridden with "new_pw", so update prompt is
   // expected. Use the retry form, to avoid autofill.
@@ -4416,14 +4330,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
 
   // Complete the Gaia signin.
-  CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
+  CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
+      profile, helper_.gaia_email(), helper_.gaia_id());
 
   // Check that interception does not happen.
   base::HistogramTester histogram_tester;
-  signin_interceptor()->MaybeInterceptWebSignin(WebContents(), account_id,
-                                                /*is_new_account=*/true,
-                                                /*is_sync_signin=*/false);
-  EXPECT_FALSE(signin_interceptor()->is_interception_in_progress());
+  DiceWebSigninInterceptor* signin_interceptor =
+      helper_.GetSigninInterceptor(profile);
+  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
+                                              /*is_new_account=*/true,
+                                              /*is_sync_signin=*/false);
+  EXPECT_FALSE(signin_interceptor->is_interception_in_progress());
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortPasswordUpdate, 1);
@@ -4433,7 +4350,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        SaveGaiaPassword) {
   SetupAccountsForSavingGaiaPassword();
-  NavigateToGaiaSigninPage();
+  helper_.NavigateToGaiaSigninPage(WebContents());
 
   // Add the new password: triggers the save bubble.
   std::unique_ptr<BubbleObserver> prompt_observer =
@@ -4442,14 +4359,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   EXPECT_TRUE(prompt_observer->IsSavePromptShownAutomatically());
 
   // Complete the Gaia signin.
-  CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
+  Profile* profile = browser()->profile();
+  CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
+      profile, helper_.gaia_email(), helper_.gaia_id());
 
   // Check that interception does not happen.
   base::HistogramTester histogram_tester;
-  signin_interceptor()->MaybeInterceptWebSignin(WebContents(), account_id,
-                                                /*is_new_account=*/true,
-                                                /*is_sync_signin=*/false);
-  EXPECT_FALSE(signin_interceptor()->is_interception_in_progress());
+  DiceWebSigninInterceptor* signin_interceptor =
+      helper_.GetSigninInterceptor(profile);
+  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
+                                              /*is_new_account=*/true,
+                                              /*is_sync_signin=*/false);
+  EXPECT_FALSE(signin_interceptor->is_interception_in_progress());
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed, 1);
@@ -4459,9 +4380,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 // processed before the signin completes.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        SavePasswordSuppressedBeforeSignin) {
-  SetupProfilesForInterception();
+  Profile* profile = browser()->profile();
+  helper_.SetupProfilesForInterception(profile);
   SetupAccountsForSavingGaiaPassword();
-  NavigateToGaiaSigninPage();
+  helper_.NavigateToGaiaSigninPage(WebContents());
 
   // Add the new password, password bubble not triggered.
   std::unique_ptr<BubbleObserver> prompt_observer =
@@ -4470,33 +4392,40 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
 
   // Complete the Gaia signin.
-  CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
+  CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
+      profile, helper_.gaia_email(), helper_.gaia_id());
 
   // Check that interception happens.
   base::HistogramTester histogram_tester;
-  signin_interceptor()->MaybeInterceptWebSignin(WebContents(), account_id,
-                                                /*is_new_account=*/true,
-                                                /*is_sync_signin=*/false);
-  EXPECT_TRUE(signin_interceptor()->is_interception_in_progress());
+  DiceWebSigninInterceptor* signin_interceptor =
+      helper_.GetSigninInterceptor(profile);
+  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
+                                              /*is_new_account=*/true,
+                                              /*is_sync_signin=*/false);
+  EXPECT_TRUE(signin_interceptor->is_interception_in_progress());
 }
 
 // Checks that signin interception suppresses password save, if the form is
 // processed after the signin completes.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        SavePasswordSuppressedAfterSignin) {
-  SetupProfilesForInterception();
+  Profile* profile = browser()->profile();
+  helper_.SetupProfilesForInterception(profile);
   SetupAccountsForSavingGaiaPassword();
-  NavigateToGaiaSigninPage();
+  helper_.NavigateToGaiaSigninPage(WebContents());
 
   // Complete the Gaia signin.
-  CoreAccountId account_id = AddGaiaAccountToChrome(kGaiaEmail, kGaiaId);
+  CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
+      profile, helper_.gaia_email(), helper_.gaia_id());
 
   // Check that interception happens.
   base::HistogramTester histogram_tester;
-  signin_interceptor()->MaybeInterceptWebSignin(WebContents(), account_id,
-                                                /*is_new_account=*/true,
-                                                /*is_sync_signin=*/false);
-  EXPECT_TRUE(signin_interceptor()->is_interception_in_progress());
+  DiceWebSigninInterceptor* signin_interceptor =
+      helper_.GetSigninInterceptor(profile);
+  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
+                                              /*is_new_account=*/true,
+                                              /*is_sync_signin=*/false);
+  EXPECT_TRUE(signin_interceptor->is_interception_in_progress());
 
   // Add the new password, password bubble not triggered.
   std::unique_ptr<BubbleObserver> prompt_observer =
