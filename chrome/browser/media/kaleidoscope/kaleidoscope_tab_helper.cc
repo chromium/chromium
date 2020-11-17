@@ -65,6 +65,18 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
 
   RecordMetricsOnNavigation(handle);
   SetAutoplayOnNavigation(handle);
+
+  if (IsOpenedFromKaleidoscope(handle)) {
+    is_kaleidoscope_derived_ = true;
+    return;
+  }
+
+  auto current_origin =
+      url::Origin::Create(handle->GetWebContents()->GetLastCommittedURL());
+  auto new_origin = url::Origin::Create(handle->GetURL());
+  if (!current_origin.IsSameOriginWith(new_origin)) {
+    is_kaleidoscope_derived_ = false;
+  }
 }
 
 void KaleidoscopeTabHelper::RecordMetricsOnNavigation(

@@ -28,6 +28,10 @@ class KaleidoscopeTabHelper
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
 
+  // A tab is Kaleidoscope derived if the tab was opened by Kaleidoscope and
+  // remains on the same origin.
+  bool IsKaleidoscopeDerived() const { return is_kaleidoscope_derived_; }
+
  private:
   friend class content::WebContentsUserData<KaleidoscopeTabHelper>;
 
@@ -35,6 +39,8 @@ class KaleidoscopeTabHelper
 
   void RecordMetricsOnNavigation(content::NavigationHandle* handle);
   void SetAutoplayOnNavigation(content::NavigationHandle* handle);
+
+  bool is_kaleidoscope_derived_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -57,6 +57,10 @@ class KaleidoscopeTabHelperBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  KaleidoscopeTabHelper* GetTabHelper() {
+    return KaleidoscopeTabHelper::FromWebContents(GetWebContents());
+  }
+
   base::HistogramTester histogram_tester_;
 };
 
@@ -70,6 +74,7 @@ IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
 
   // Autoplay should not be allowed since that is the default.
   EXPECT_FALSE(AttemptPlay(GetWebContents()));
+  EXPECT_FALSE(GetTabHelper()->IsKaleidoscopeDerived());
 
   histogram_tester_.ExpectTotalCount(
       KaleidoscopeTabHelper::kKaleidoscopeNavigationHistogramName, 0);
@@ -91,10 +96,12 @@ IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
 
   // Autoplay should be allowed because this page was opened from Kaleidoscope.
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
+  EXPECT_TRUE(GetTabHelper()->IsKaleidoscopeDerived());
 
   // Autoplay should not be allowed since this is a derived navigation.
   NavigateInRenderer(GetWebContents(), kTestPageUrl);
   EXPECT_FALSE(AttemptPlay(GetWebContents()));
+  EXPECT_TRUE(GetTabHelper()->IsKaleidoscopeDerived());
 
   histogram_tester_.ExpectBucketCount(
       KaleidoscopeTabHelper::kKaleidoscopeNavigationHistogramName,
@@ -106,4 +113,8 @@ IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
 
   auto* ukm_entry = ukm_entries.back();
   test_ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, kTestPageUrl);
+
+  NavigateInRenderer(GetWebContents(), embedded_test_server()->GetURL(
+                                           "example.com", kTestPagePath));
+  EXPECT_FALSE(GetTabHelper()->IsKaleidoscopeDerived());
 }
