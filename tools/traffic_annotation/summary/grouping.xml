@@ -297,6 +297,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="optimization_guide_model"/>
       <traffic_annotation unique_id="optimization_guide_model_download"/>
       <traffic_annotation unique_id="previews_litepage_prober"/>
+      <traffic_annotation unique_id="litepages_robots_rules"/>
     </sender>
     <sender name="Network">
       <traffic_annotation unique_id="network_time_component"/>

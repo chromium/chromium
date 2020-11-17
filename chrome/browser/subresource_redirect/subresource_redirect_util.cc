@@ -11,6 +11,7 @@
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/escape.h"
 #include "third_party/blink/public/common/features.h"
 
 #if defined(OS_ANDROID)
@@ -119,6 +120,29 @@ void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
   GetDataReductionProxyChromeSettings(web_contents)
       ->https_image_compression_bypass_decider()
       ->NotifyCompressedImageFetchFailed(retry_after);
+}
+
+GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
+  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
+  DCHECK(origin.IsValid());
+
+  auto lite_page_robots_origin = base::GetFieldTrialParamValueByFeature(
+      blink::features::kSubresourceRedirect, "lite_page_robots_origin");
+  GURL lite_page_robots_url(lite_page_robots_origin.empty()
+                                ? "https://litepages.googlezip.net/"
+                                : lite_page_robots_origin);
+
+  std::string query_str =
+      "u=" +
+      net::EscapeQueryParamValue(origin.GetURL().spec(), true /* use_plus */);
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr("/robots");
+  replacements.SetQueryStr(query_str);
+
+  lite_page_robots_url = lite_page_robots_url.ReplaceComponents(replacements);
+  DCHECK(lite_page_robots_url.is_valid());
+  return lite_page_robots_url;
 }
 
 }  // namespace subresource_redirect

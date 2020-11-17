@@ -1753,6 +1753,8 @@ static_library("browser") {
     "subresource_redirect/https_image_compression_bypass_decider.h",
     "subresource_redirect/https_image_compression_infobar_decider.cc",
     "subresource_redirect/https_image_compression_infobar_decider.h",
+    "subresource_redirect/origin_robots_rules.cc",
+    "subresource_redirect/origin_robots_rules.h",
     "subresource_redirect/subresource_redirect_observer.cc",
     "subresource_redirect/subresource_redirect_observer.h",
     "subresource_redirect/subresource_redirect_util.cc",

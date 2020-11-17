@@ -7,6 +7,8 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace content {
 class NavigationHandle;
@@ -41,6 +43,10 @@ bool ShowInfoBarAndGetImageCompressionState(
 // Notifies to LiteMode that image compression fetch had failed.
 void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
                                       base::TimeDelta retry_after);
+
+// Returns the LitePages robots rules server endpoint URL to fetch for the given
+// |origin|.
+GURL GetRobotsServerURL(const url::SchemeHostPort& origin);
 
 }  // namespace subresource_redirect
 

@@ -3665,6 +3665,8 @@ test("unit_tests") {
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
     "../browser/subresource_redirect/https_image_compression_bypass_decider_unittest.cc",
     "../browser/subresource_redirect/https_image_compression_infobar_decider_unittest.cc",
+    "../browser/subresource_redirect/origin_robots_rules_unittest.cc",
+    "../browser/subresource_redirect/subresource_redirect_util_unit_test.cc",
 
     # TODO(hashimoto): those tests should be componentized and moved to
     # //components:components_unittests, http://crbug.com/527882.

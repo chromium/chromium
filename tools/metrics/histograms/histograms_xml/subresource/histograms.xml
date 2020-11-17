@@ -606,6 +606,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceRedirect.RobotsRulesFetcher.CacheHit" units="ms"
+    expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether LitePages robots rules was fetched from Chrome network
+    cache. Recorded for every fetch.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.RobotsRulesFetcher.NetErrorCode"
+    enum="NetErrorCodes" expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Net error codes for the LitePages robots rules fetcher. Recorded on every
+    fetch after completion or failure.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.RobotsRulesFetcher.ResponseCode"
+    units="ms" expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    HTTP response code for the LitePages robots rules fetcher. Recorded on every
+    fetch after completion or failure.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
