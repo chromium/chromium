@@ -18,7 +18,7 @@ namespace execution_context_priority {
 // the maximum vote for each frame. The upstream voting channel must be set
 // before any votes are submitted to this aggregator. New voting channels may
 // continue to be issued at any time during its lifetime, however.
-class MaxVoteAggregator : public VoteConsumer {
+class MaxVoteAggregator : public VoteObserver {
  public:
   MaxVoteAggregator();
   ~MaxVoteAggregator() override;
@@ -30,55 +30,48 @@ class MaxVoteAggregator : public VoteConsumer {
   void SetUpstreamVotingChannel(VotingChannel&& channel);
 
  protected:
-  // VoteConsumer implementation:
-  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
-                         voting::VoterId<Vote> voter_id,
-                         const ExecutionContext* execution_context,
-                         const Vote& vote) override;
-  void ChangeVote(util::PassKey<AcceptedVote>,
-                  AcceptedVote* old_vote,
-                  const Vote& new_vote) override;
-  void VoteInvalidated(util::PassKey<AcceptedVote>,
-                       AcceptedVote* vote) override;
+  // VoteObserver implementation:
+  void OnVoteSubmitted(VoterId voter_id,
+                       const ExecutionContext* execution_context,
+                       const Vote& vote) override;
+  void OnVoteChanged(VoterId voter_id,
+                     const ExecutionContext* execution_context,
+                     const Vote& new_vote) override;
+  void OnVoteInvalidated(VoterId voter_id,
+                         const ExecutionContext* execution_context) override;
 
  private:
   friend class MaxVoteAggregatorTestAccess;
 
-  // A StampedVote is an AcceptedVote with a serial number that can be used to
-  // order votes by the order in which they were received. This ensures that
-  // votes upstreamed by this aggregator remain as stable as possible.
-  struct StampedVote {
+  // A StampedVote is a Vote with a serial number that can be used to order
+  // votes by the order in which they were received. This ensures that votes
+  // upstreamed by this aggregator remain as stable as possible.
+  class StampedVote : public base::InternalHeapHandleStorage {
+   public:
     StampedVote();
-    StampedVote(AcceptedVote&& vote, uint32_t vote_id);
+    StampedVote(const Vote& vote, uint32_t vote_id);
     StampedVote(StampedVote&&);
     StampedVote(const StampedVote&) = delete;
-    ~StampedVote();
+    ~StampedVote() override;
 
     StampedVote& operator=(StampedVote&&) = default;
     StampedVote& operator=(const StampedVote&) = delete;
 
     bool operator<(const StampedVote& rhs) const {
-      if (vote.vote().value() != rhs.vote.vote().value())
-        return vote.vote().value() < rhs.vote.vote().value();
+      if (vote_.value() != rhs.vote_.value())
+        return vote_.value() < rhs.vote_.value();
       // Higher |vote_id| values are of lower priority.
-      return vote_id > rhs.vote_id;
+      return vote_id_ > rhs.vote_id_;
     }
 
-    // Given an AcceptedVote that's embedded in a StampedVote::vote, retrieve
-    // the embedding StampedVote instance.
-    static StampedVote* FromAcceptedVote(AcceptedVote* accepted_vote);
+    const Vote& vote() const { return vote_; }
+    uint32_t vote_id() const { return vote_id_; }
 
-    // IntrusiveHeap contract. We actually don't need HeapHandles, as we already
-    // know the positions of the elements in the heap directly, as they are
-    // tracked with explicit back pointers.
-    void SetHeapHandle(base::HeapHandle) {}
-    void ClearHeapHandle() {}
-    base::HeapHandle GetHeapHandle() const {
-      return base::HeapHandle::Invalid();
-    }
+    void SetVote(const Vote& new_vote) { vote_ = new_vote; }
 
-    AcceptedVote vote;
-    uint32_t vote_id = 0;
+   private:
+    Vote vote_;
+    uint32_t vote_id_ = 0;
   };
 
   // The collection of votes for a single execution context. This is move-only
@@ -95,21 +88,19 @@ class MaxVoteAggregator : public VoteConsumer {
     ~VoteData();
 
     // Adds a vote. Returns true if a new upstream vote is needed.
-    bool AddVote(AcceptedVote&& vote, uint32_t vote_id);
+    bool AddVote(VoterId voter_id, const Vote& vote, uint32_t vote_id);
 
     // Updates the vote from its given index to a new index. Returns true if the
     // root was disturbed and a new upstream vote is needed.
-    bool UpdateVote(size_t index, uint32_t vote_id);
+    bool UpdateVote(VoterId voter_id, const Vote& new_vote);
 
     // Removes the vote at the provided index. Returns true if the root was
     // disturbed and a new upstream vote is needed.
-    bool RemoveVote(size_t index);
-
-    // Gets the index of the given vote.
-    size_t GetVoteIndex(AcceptedVote* vote);
+    bool RemoveVote(VoterId voter_id);
 
     // Upstreams the vote for this vote data, using the given voting |channel|.
-    void UpstreamVote(VotingChannel* channel);
+    void UpstreamVote(const ExecutionContext* execution_context,
+                      VotingChannel* channel);
 
     // Returns the number of votes in this structure.
     size_t GetSize() const { return votes_.size(); }
@@ -117,12 +108,12 @@ class MaxVoteAggregator : public VoteConsumer {
     // Returns true if this VoteData is empty.
     bool IsEmpty() const { return votes_.empty(); }
 
-    AcceptedVote& GetVoteForTesting(size_t index) {
-      return const_cast<AcceptedVote&>(votes_[index].vote);
-    }
-
    private:
     base::IntrusiveHeap<StampedVote> votes_;
+
+    // Maps each voting channel to the HeapHandle to their associated vote in
+    // |votes_|.
+    std::map<VoterId, base::HeapHandle*> heap_handles_;
 
     // The receipt for the vote we've upstreamed.
     VoteReceipt receipt_;
@@ -130,15 +121,15 @@ class MaxVoteAggregator : public VoteConsumer {
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
 
-  // Looks up the VoteData associated with the provided |vote|. The data is
-  // expected to already exist (enforced by a DCHECK).
-  VoteDataMap::iterator GetVoteData(AcceptedVote* vote);
+  // Looks up the VoteData associated with the provided |execution_context|. The
+  // data is expected to already exist (enforced by a DCHECK).
+  VoteDataMap::iterator GetVoteData(const ExecutionContext* execution_context);
 
   // Our channel for upstreaming our votes.
   VotingChannel channel_;
 
-  // Our VotingChannelFactory for providing VotingChannels to our input voters.
-  VotingChannelFactory factory_;
+  // Provides VotingChannels to our input voters.
+  VoteConsumerDefaultImpl vote_consumer_default_impl_;
 
   // The next StampedVote ID to use.
   uint32_t next_vote_id_;

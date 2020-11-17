@@ -448,7 +448,9 @@ class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
 
   VotingChannelFactory<VoteImpl> voting_channel_factory_;
 
-  std::map<const ContextType*, AcceptedVote<VoteImpl>> accepted_votes_;
+  std::map<VoterId<VoteImpl>,
+           std::map<const ContextType*, AcceptedVote<VoteImpl>>>
+      accepted_votes_by_voter_id_;
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -872,12 +874,14 @@ VoteReceipt<VoteImpl> VoteConsumerDefaultImpl<VoteImpl>::SubmitVote(
     VoterId<VoteImpl> voter_id,
     const ContextType* context,
     const VoteImpl& vote) {
+  auto& accepted_votes = accepted_votes_by_voter_id_[voter_id];
+
   AcceptedVote<VoteImpl> accepted_vote(this, voter_id, context, vote);
 
   VoteReceipt<VoteImpl> vote_receipt = accepted_vote.IssueReceipt();
 
   bool inserted =
-      accepted_votes_.emplace(context, std::move(accepted_vote)).second;
+      accepted_votes.emplace(context, std::move(accepted_vote)).second;
   DCHECK(inserted);
 
   vote_observer_->OnVoteSubmitted(voter_id, context, vote);
@@ -890,8 +894,12 @@ void VoteConsumerDefaultImpl<VoteImpl>::ChangeVote(
     util::PassKey<AcceptedVote<VoteImpl>>,
     AcceptedVote<VoteImpl>* old_vote,
     const VoteImpl& new_vote) {
-  auto it = accepted_votes_.find(old_vote->context());
-  DCHECK(it != accepted_votes_.end());
+  VoterId<VoteImpl> voter_id = old_vote->voter_id();
+  auto& accepted_votes = accepted_votes_by_voter_id_[voter_id];
+
+  auto it = accepted_votes.find(old_vote->context());
+  DCHECK(it != accepted_votes.end());
+
   auto* accepted_vote = &it->second;
   DCHECK_EQ(accepted_vote, old_vote);
 
@@ -905,15 +913,24 @@ template <class VoteImpl>
 void VoteConsumerDefaultImpl<VoteImpl>::VoteInvalidated(
     util::PassKey<AcceptedVote<VoteImpl>>,
     AcceptedVote<VoteImpl>* vote) {
-  auto it = accepted_votes_.find(vote->context());
-  DCHECK(it != accepted_votes_.end());
+  VoterId<VoteImpl> voter_id = vote->voter_id();
+  auto& accepted_votes = accepted_votes_by_voter_id_[voter_id];
+
+  auto it = accepted_votes.find(vote->context());
+  DCHECK(it != accepted_votes.end());
+
   auto* accepted_vote = &it->second;
   DCHECK_EQ(accepted_vote, vote);
 
   vote_observer_->OnVoteInvalidated(accepted_vote->voter_id(),
                                     accepted_vote->context());
 
-  accepted_votes_.erase(it);
+  accepted_votes.erase(it);
+
+  if (accepted_votes.empty()) {
+    size_t removed = accepted_votes_by_voter_id_.erase(voter_id);
+    DCHECK_EQ(removed, 1u);
+  }
 }
 
 }  // namespace voting
