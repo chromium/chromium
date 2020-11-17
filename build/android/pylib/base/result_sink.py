@@ -48,8 +48,10 @@ class ResultSinkClient(object):
   server is listening.
   """
   def __init__(self, context):
-    self.url = ('http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' %
-                context['address'])
+    base_url = 'http://%s/prpc/luci.resultsink.v1.Sink' % context['address']
+    self.test_results_url = base_url + '/ReportTestResults'
+    self.report_artifacts_url = base_url + '/ReportInvocationLevelArtifacts'
+
     self.headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -97,7 +99,22 @@ class ResultSinkClient(object):
     if artifacts:
       tr['artifacts'] = artifacts
 
-    res = requests.post(url=self.url,
+    res = requests.post(url=self.test_results_url,
                         headers=self.headers,
                         data=json.dumps({'testResults': [tr]}))
+    res.raise_for_status()
+
+  def ReportInvocationLevelArtifacts(self, artifacts):
+    """Uploads invocation-level artifacts to the ResultSink server.
+
+    This is for artifacts that don't apply to a single test but to the test
+    invocation as a whole (eg: system logs).
+
+    Args:
+      artifacts: A dict of artifacts to attach to the invocation.
+    """
+    req = {'artifacts': artifacts}
+    res = requests.post(url=self.report_artifacts_url,
+                        headers=self.headers,
+                        data=json.dumps(req))
     res.raise_for_status()
