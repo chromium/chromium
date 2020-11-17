@@ -17,7 +17,8 @@ namespace ui {
 namespace {
 
 bool EchoCursor(const ui::Cursor& in, ui::Cursor* out) {
-  return mojom::Cursor::Deserialize(mojom::Cursor::Serialize(&in), out);
+  return mojom::Cursor::DeserializeFromMessage(
+      mojom::Cursor::SerializeAsMessage(&in), out);
 }
 
 using CursorStructTraitsTest = testing::Test;

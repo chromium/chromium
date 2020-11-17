@@ -69,11 +69,13 @@ class {{export_attribute}} {{struct.name}} {
 {%- set serialization_result_type = "WTF::Vector<uint8_t>"
         if for_blink else "std::vector<uint8_t>" %}
 
+{%- if not struct|contains_handles_or_interfaces %}
   template <typename UserType>
   static {{serialization_result_type}} Serialize(UserType* input) {
     return mojo::internal::SerializeImpl<
         {{struct.name}}::DataView, {{serialization_result_type}}>(input);
   }
+{%- endif %}
 
   template <typename UserType>
   static mojo::Message SerializeAsMessage(UserType* input) {
