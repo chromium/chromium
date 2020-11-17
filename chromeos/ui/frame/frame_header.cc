@@ -129,14 +129,16 @@ class FrameHeader::FrameAnimatorView : public views::View,
     new_layer->SetName(old_layer->name());
     old_layer->SetName(old_layer->name() + ":Old");
     old_layer->SetTransform(gfx::Transform());
+    // Layer in maximized / fullscreen / snapped state is set to
+    // opaque, which can prevent resterizing the new layer immediately.
+    old_layer->SetFillsBoundsOpaquely(false);
 
     layer_owner_ = std::move(old_layer_owner);
 
     AddLayerBeneathView(old_layer);
 
-    // The old layer is on top and should fade out. Make it non opaque
-    // so that new layer gets resterized immediately.
-    old_layer->SetOpacity(0.99f);
+    // The old layer is on top and should fade out.
+    old_layer->SetOpacity(1.f);
     new_layer->SetOpacity(1.f);
     {
       ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
