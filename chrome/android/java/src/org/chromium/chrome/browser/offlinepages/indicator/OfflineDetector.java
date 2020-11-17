@@ -141,7 +141,7 @@ class OfflineDetector
         if (sMockConnectivityDetector != null) {
             mConnectivityDetector = sMockConnectivityDetector;
         } else {
-            mConnectivityDetector = new ConnectivityDetector(this);
+            mConnectivityDetector = new ConnectivityDetector(this, "OfflineDetector");
         }
     }
 

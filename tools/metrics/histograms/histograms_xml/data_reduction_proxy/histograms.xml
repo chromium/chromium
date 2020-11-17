@@ -21,6 +21,68 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="ConnectivityDetector.ConnectionState.{Client}"
+    enum="ConnectivityDetectorConnectionState" expires_after="2021-11-15">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <summary>
+    Result of the connection state after the HTTP Probe made by connectivity
+    detector finishes and the connection state is updated.
+  </summary>
+  <token key="Client">
+    <variant name="OfflineDetector"/>
+    <variant name="OfflineIndicatorController"/>
+  </token>
+</histogram>
+
+<histogram name="ConnectivityDetector.DefaultHttpProbeResult.{Client}"
+    enum="ProbeResult" expires_after="2021-11-15">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <summary>
+    Result of the HTTP Probe made by connectivity detector. Recorded everytime
+    the probe to the default URL completes (in either success or failure) or
+    timeouts.
+  </summary>
+  <token key="Client">
+    <variant name="OfflineDetector"/>
+    <variant name="OfflineIndicatorController"/>
+  </token>
+</histogram>
+
+<histogram name="ConnectivityDetector.FallbackHttpProbeResult.{Client}"
+    enum="ProbeResult" expires_after="2021-11-15">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <summary>
+    Result of the HTTP Probe made by connectivity detector. Recorded everytime
+    the probe to the fallback URL completes (in either success or failure) or
+    timeouts.
+  </summary>
+  <token key="Client">
+    <variant name="OfflineDetector"/>
+    <variant name="OfflineIndicatorController"/>
+  </token>
+</histogram>
+
+<histogram name="ConnectivityDetector.SentHttpProbe.{Client}" units="count"
+    expires_after="2021-11-15">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    Count of times when a HTTP Probe was made by connectivity detector.
+  </summary>
+  <token key="Client">
+    <variant name="OfflineDetector"/>
+    <variant name="OfflineIndicatorController"/>
+  </token>
+</histogram>
+
 <histogram name="DataReductionProxy.BypassedBytes" units="bytes"
     expires_after="M85">
   <owner>bengr@chromium.org</owner>

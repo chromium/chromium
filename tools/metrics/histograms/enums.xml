@@ -11918,6 +11918,16 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="TLS-1.2">An SSL connection that uses TLS 1.2</int>
 </enum>
 
+<enum name="ConnectivityDetectorConnectionState">
+  <int value="0" label="Initial state or connection state can't be evaluated"/>
+  <int value="1" label="The network is disconnected"/>
+  <int value="2"
+      label="The network is connected, but it can't reach the Internet"/>
+  <int value="3"
+      label="The network is connected, but capitive portal is detected"/>
+  <int value="4" label="The network is validated"/>
+</enum>
+
 <enum name="ConnectivityDiagnosticsTestVerdict">
   <int value="0" label="NO_PROBLEM"/>
   <int value="1" label="POTENTIAL_PROBLEM"/>

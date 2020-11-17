@@ -49,7 +49,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
             NetworkChangeNotifier.forceConnectivityState(true);
             ConnectivityDetector.overrideConnectivityCheckInitialDelayMs(1000);
             ConnectivityDetector.setDelegateForTesting(mConnectivityDetectorDelegate);
-            mConnectivityDetector = new ConnectivityDetector(this);
+            mConnectivityDetector = new ConnectivityDetector(this, "ConnectivityDetectorTest");
             mConnectivityDetectorDelegate.setConnectionStateFromSystem(
                     ConnectivityDetector.ConnectionState.NONE);
         });

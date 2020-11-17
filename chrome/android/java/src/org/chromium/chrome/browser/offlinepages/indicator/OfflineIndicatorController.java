@@ -79,7 +79,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         if (isUsingTopSnackbar()) {
             mTopSnackbarManager = new TopSnackbarManager();
         }
-        mConnectivityDetector = new ConnectivityDetector(this);
+        mConnectivityDetector = new ConnectivityDetector(this, "OfflineIndicatorController");
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
