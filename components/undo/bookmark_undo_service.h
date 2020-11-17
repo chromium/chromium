@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -70,8 +70,9 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   bookmarks::BookmarkModel* model_;
   bookmarks::BookmarkUndoProvider* undo_provider_;
   UndoManager undo_manager_;
-  ScopedObserver<bookmarks::BookmarkModel, bookmarks::BookmarkModelObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkUndoService);
 };

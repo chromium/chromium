@@ -336,13 +336,13 @@ BookmarkUndoService::~BookmarkUndoService() {
 void BookmarkUndoService::Start(BookmarkModel* model) {
   DCHECK(!model_);
   model_ = model;
-  scoped_observer_.Add(model);
+  scoped_observation_.Observe(model);
   model->SetUndoDelegate(this);
 }
 
 void BookmarkUndoService::Shutdown() {
   DCHECK(model_);
-  scoped_observer_.RemoveAll();
+  scoped_observation_.RemoveObservation();
   model_->SetUndoDelegate(nullptr);
 }
 
