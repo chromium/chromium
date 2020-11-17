@@ -178,12 +178,28 @@ def DownloadAndUnpackPackage(package_file, output_dir, host_os):
     sys.exit(1)
 
 
+def DownloadAndUnpackClangMacRuntime(output_dir):
+  cds_file = "clang-%s.tgz" % PACKAGE_VERSION
+  cds_full_url = GetPlatformUrlPrefix('mac') + cds_file
+  path_prefixes = [
+      'lib/clang/' + RELEASE_VERSION + '/lib/darwin', 'include/c++/v1'
+  ]
+  try:
+    DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
+  except URLError:
+    print('Failed to download prebuilt clang %s' % cds_file)
+    print('Use build.py if you want to build locally.')
+    print('Exiting.')
+    sys.exit(1)
+
+
 # TODO(hans): Create a clang-win-runtime package instead.
 def DownloadAndUnpackClangWinRuntime(output_dir):
-  cds_file = "clang-%s.tgz" %  PACKAGE_VERSION
+  cds_file = "clang-%s.tgz" % PACKAGE_VERSION
   cds_full_url = GetPlatformUrlPrefix('win') + cds_file
-  path_prefixes =  [ 'lib/clang/' + RELEASE_VERSION + '/lib/',
-                     'bin/llvm-symbolizer.exe' ]
+  path_prefixes = [
+      'lib/clang/' + RELEASE_VERSION + '/lib/windows', 'bin/llvm-symbolizer.exe'
+  ]
   try:
     DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
   except URLError:
@@ -256,6 +272,8 @@ def UpdatePackage(package_name, host_os):
 
   DownloadAndUnpackPackage(package_file, LLVM_BUILD_DIR, host_os)
 
+  if package_name == 'clang' and 'mac' in target_os:
+    DownloadAndUnpackClangMacRuntime(LLVM_BUILD_DIR)
   if package_name == 'clang' and 'win' in target_os:
     # When doing win/cross builds on other hosts, get the Windows runtime
     # libraries, and llvm-symbolizer.exe (needed in asan builds).
