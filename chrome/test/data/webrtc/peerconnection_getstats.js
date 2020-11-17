@@ -303,6 +303,7 @@ addRTCStatsToWhitelist(
  * @private
  */
 let kRTCCodecStats = new RTCStats(null, {
+  transportId: 'string',
   payloadType: 'number',
   mimeType: 'string',
   // TODO(hbos): As soon as |codec| has been renamed |mimeType| in the webrtc
