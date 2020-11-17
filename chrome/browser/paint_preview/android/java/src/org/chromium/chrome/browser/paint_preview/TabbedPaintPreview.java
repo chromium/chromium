@@ -48,6 +48,7 @@ public class TabbedPaintPreview implements UserData {
     private int mPersistentToolbarToken = TokenHolder.INVALID_TOKEN;
 
     private static PaintPreviewTabService sPaintPreviewTabServiceForTesting;
+    private boolean mWasEverShown;
 
     public static TabbedPaintPreview get(Tab tab) {
         if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
@@ -114,6 +115,7 @@ public class TabbedPaintPreview implements UserData {
                 /*ignoreInitialScrollOffset=*/false);
         mTab.getTabViewManager().addTabViewProvider(mTabbedPainPreviewViewProvider);
         mIsAttachedToTab = true;
+        mWasEverShown = true;
         return true;
     }
 
@@ -215,6 +217,11 @@ public class TabbedPaintPreview implements UserData {
     @VisibleForTesting
     static void overridePaintPreviewTabServiceForTesting(PaintPreviewTabService service) {
         sPaintPreviewTabServiceForTesting = service;
+    }
+
+    @VisibleForTesting
+    boolean wasEverShown() {
+        return mWasEverShown;
     }
 
     @VisibleForTesting

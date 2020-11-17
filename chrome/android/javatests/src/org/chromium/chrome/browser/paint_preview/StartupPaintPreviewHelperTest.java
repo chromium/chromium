@@ -18,7 +18,6 @@ import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -95,7 +94,6 @@ public class StartupPaintPreviewHelperTest {
     @Test
     @MediumTest
     @Restriction(StartupPaintPreviewHelperTestRunner.RESTRICTION_TYPE_KEEP_ACTIVITIES)
-    @DisabledTest(message = "https://crbug.com/1145783")
     public void testDisplayOnStartup() throws ExecutionException {
         mActivityTestRule.startMainActivityWithURL(
                 mActivityTestRule.getTestServer().getURL(TEST_URL));
@@ -110,7 +108,10 @@ public class StartupPaintPreviewHelperTest {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
                 TestThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
-        TabbedPaintPreviewTest.assertAttachedAndShown(tabbedPaintPreview, true, true);
+
+        // Paint Preview might be showed and get removed before we can assert it's showing. Hence,
+        // we assert that is was *ever* shown for this tab, instead.
+        TabbedPaintPreviewTest.assertWasEverShown(tabbedPaintPreview, true);
 
         // Closing the tab should delete its captured paint preview.
         TestThreadUtils.runOnUiThreadBlocking(()

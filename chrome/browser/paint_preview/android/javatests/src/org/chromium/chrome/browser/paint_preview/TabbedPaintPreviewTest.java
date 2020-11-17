@@ -253,6 +253,14 @@ public class TabbedPaintPreviewTest {
         CriteriaHelper.pollUiThread(() -> tabbedPaintPreview.isShowing() == shown, shownMessage);
     }
 
+    public static void assertWasEverShown(
+            TabbedPaintPreview tabbedPaintPreview, boolean everShown) {
+        String shownMessage = everShown ? "Paint Preview should was never shown."
+                                        : "Paint Preview should was shown.";
+        CriteriaHelper.pollUiThread(
+                () -> tabbedPaintPreview.wasEverShown() == everShown, shownMessage);
+    }
+
     private static class TestControlsVisibilityDelegate
             extends BrowserStateBrowserControlsVisibilityDelegate {
         private int mLastToken = TokenHolder.INVALID_TOKEN;
