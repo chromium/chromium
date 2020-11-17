@@ -89,6 +89,15 @@ class FuchsiaCdm : public ContentDecryptionModule,
       uint32_t promise_id,
       base::Optional<CdmPromise::Exception> exception);
   void OnProcessLicenseServerMessageStatus(
+      const std::string& session_id,
+      uint32_t promise_id,
+      base::Optional<CdmPromise::Exception> exception);
+  void OnSessionLoaded(std::unique_ptr<CdmSession> session,
+                       uint32_t promise_id,
+                       bool loaded);
+
+  void OnGenerateLicenseReleaseStatus(
+      const std::string& session_id,
       uint32_t promise_id,
       base::Optional<CdmPromise::Exception> exception);
 

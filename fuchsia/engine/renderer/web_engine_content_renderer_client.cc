@@ -41,10 +41,10 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
  public:
   PlayreadyKeySystemProperties(const std::string& key_system_name,
                                media::SupportedCodecs supported_codecs,
-                               bool persistent_license_support)
+                               bool persistent_usage_record_support)
       : key_system_name_(key_system_name),
         supported_codecs_(supported_codecs),
-        persistent_license_support_(persistent_license_support) {}
+        persistent_usage_record_support_(persistent_usage_record_support) {}
 
   std::string GetKeySystemName() const override { return key_system_name_; }
 
@@ -72,16 +72,24 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return media::EmeConfigRule::NOT_SUPPORTED;
   }
 
+  // For backward compatible, currently JS will create a persistent license
+  // session and inject a special init data as the persistent usage record
+  // session signal. In other words, the platform has to announce the support of
+  // persistent license session to allow JS use the persistent usage record
+  // session functions.
+  // TODO(internal b/142749428): Remove once the temporary solution is removed.
   media::EmeSessionTypeSupport GetPersistentLicenseSessionSupport()
       const override {
-    return persistent_license_support_
+    return persistent_usage_record_support_
                ? media::EmeSessionTypeSupport::SUPPORTED
                : media::EmeSessionTypeSupport::NOT_SUPPORTED;
   }
 
   media::EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
       const override {
-    return media::EmeSessionTypeSupport::NOT_SUPPORTED;
+    return persistent_usage_record_support_
+               ? media::EmeSessionTypeSupport::SUPPORTED
+               : media::EmeSessionTypeSupport::NOT_SUPPORTED;
   }
 
   media::EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -104,7 +112,7 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
  private:
   const std::string key_system_name_;
   const media::SupportedCodecs supported_codecs_;
-  const bool persistent_license_support_;
+  const bool persistent_usage_record_support_;
 };
 
 }  // namespace
@@ -201,20 +209,20 @@ void WebEngineContentRendererClient::AddSupportedKeySystems(
         cdm::WidevineKeySystemProperties::Robustness::
             HW_SECURE_CRYPTO,  // max audio robustness
         cdm::WidevineKeySystemProperties::Robustness::
-            HW_SECURE_ALL,                            // max video robustness
-        media::EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent license
-        media::EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent usage record
-        media::EmeFeatureSupport::ALWAYS_ENABLED,     // persistent state
-        media::EmeFeatureSupport::ALWAYS_ENABLED));   // distinctive identifier
+            HW_SECURE_ALL,                           // max video robustness
+        media::EmeSessionTypeSupport::SUPPORTED,     // persistent license
+        media::EmeSessionTypeSupport::SUPPORTED,     // persistent usage record
+        media::EmeFeatureSupport::ALWAYS_ENABLED,    // persistent state
+        media::EmeFeatureSupport::ALWAYS_ENABLED));  // distinctive identifier
   }
 
   std::string playready_key_system =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kPlayreadyKeySystem);
   if (!playready_key_system.empty()) {
-    key_systems->emplace_back(
-        new PlayreadyKeySystemProperties(playready_key_system, supported_codecs,
-                                         /*persistent_license_support=*/false));
+    key_systems->emplace_back(new PlayreadyKeySystemProperties(
+        playready_key_system, supported_codecs,
+        /*persistent_usage_record_support=*/true));
   }
 }
 
