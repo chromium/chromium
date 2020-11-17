@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -37,11 +38,14 @@ public class ImageDescriptionsDialog
     private boolean mShouldShowDontAskAgainOption;
     private boolean mOnlyOnWifiState;
     private boolean mDontAskAgainState;
+    private WebContents mWebContents;
 
     protected ImageDescriptionsDialog(Context context, ModalDialogManager modalDialogManager,
-            ImageDescriptionsControllerDelegate delegate, boolean shouldShowDontAskAgainOption) {
+            ImageDescriptionsControllerDelegate delegate, boolean shouldShowDontAskAgainOption,
+            WebContents webContents) {
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
+        mWebContents = webContents;
 
         // Set initial state.
         mShouldShowDontAskAgainOption = shouldShowDontAskAgainOption;
@@ -118,7 +122,7 @@ public class ImageDescriptionsDialog
                 mControllerDelegate.enableImageDescriptions();
                 mControllerDelegate.setOnlyOnWifiRequirement(mOnlyOnWifiState);
             } else if (mOptionJustOnceRadioButton.isChecked()) {
-                mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState);
+                mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState, mWebContents);
             }
 
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;

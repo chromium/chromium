@@ -667,6 +667,7 @@ group("jni_headers") {
     "//chrome/browser/download/android:jni_headers",
     "//chrome/browser/enterprise/util:jni_headers",
     "//chrome/browser/flags:jni_headers",
+    "//chrome/browser/image_descriptions:jni_headers",
     "//chrome/browser/image_fetcher:jni_headers",
     "//chrome/browser/performance_hints/android:jni_headers",
     "//chrome/browser/preferences:jni_headers",

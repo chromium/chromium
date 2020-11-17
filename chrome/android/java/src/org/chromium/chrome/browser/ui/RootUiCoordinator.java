@@ -470,8 +470,8 @@ public class RootUiCoordinator
         } else if (id == R.id.paint_preview_show_id) {
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
         } else if (id == R.id.get_image_descriptions_id) {
-            ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(
-                    mActivity, mActivity.getModalDialogManager());
+            ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(mActivity,
+                    mActivity.getModalDialogManager(), mActivityTabProvider.get().getWebContents());
         }
 
         return false;

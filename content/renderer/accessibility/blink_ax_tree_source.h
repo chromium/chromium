@@ -79,7 +79,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
   // provide automatic labels for images.
   void AddImageAnnotator(AXImageAnnotator* const annotator) {
     DCHECK_EQ(image_annotator_, nullptr);
-    DCHECK(!first_unlabeled_image_id_.has_value());
     image_annotator_ = annotator;
   }
   void RemoveImageAnnotator() {

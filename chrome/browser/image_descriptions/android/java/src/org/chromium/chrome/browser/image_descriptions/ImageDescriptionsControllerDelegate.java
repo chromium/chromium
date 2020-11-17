@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
+import org.chromium.content_public.browser.WebContents;
+
 /**
  * A delegate to {@link ImageDescriptionsController} to allow UIs to control its state.
  */
@@ -38,6 +40,7 @@ public interface ImageDescriptionsControllerDelegate {
      * option in shared prefs so users can easily fetch one-off descriptions bypassing the dialog.
      *
      * @param dontAskAgain  Boolean - whether or not to ask again before next one-off use.
+     * @param webContents   WebContents - The web contents of the tab to get descriptions for.
      */
-    void getImageDescriptionsJustOnce(boolean dontAskAgain);
+    void getImageDescriptionsJustOnce(boolean dontAskAgain, WebContents webContents);
 }

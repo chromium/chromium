@@ -45,6 +45,21 @@ void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
+void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
+    bool enabled,
+    BrowserContext* profile) {
+  std::vector<WebContentsImpl*> web_contents_vector =
+      WebContentsImpl::GetAllWebContents();
+  for (size_t i = 0; i < web_contents_vector.size(); ++i) {
+    if (web_contents_vector[i]->GetBrowserContext() != profile)
+      continue;
+
+    ui::AXMode ax_mode = web_contents_vector[i]->GetAccessibilityMode();
+    ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
+    web_contents_vector[i]->SetAccessibilityMode(ax_mode);
+  }
+}
+
 // static
 void JNI_BrowserAccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,

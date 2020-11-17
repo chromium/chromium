@@ -63,6 +63,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetCaretBrowsingState(bool enabled) override;
+#if defined(OS_ANDROID)
+  void SetImageLabelsModeForProfile(bool enabled,
+                                    BrowserContext* profile) override;
+#endif
 
   // Returns whether caret browsing is enabled for the most recently
   // used profile.

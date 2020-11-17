@@ -33,6 +33,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
+#else
+#include "base/android/jni_android.h"
+#include "chrome/browser/image_descriptions/jni_headers/ImageDescriptionsController_jni.h"
+#include "content/public/browser/web_contents.h"
 #endif
 
 using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;
@@ -164,7 +168,11 @@ void AccessibilityLabelsService::Init() {
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
+#if !defined(OS_ANDROID)
       prefs::kAccessibilityImageLabelsEnabled,
+#else
+      prefs::kAccessibilityImageLabelsEnabledAndroid,
+#endif
       base::BindRepeating(
           &AccessibilityLabelsService::OnImageLabelsEnabledChanged,
           weak_factory_.GetWeakPtr()));
@@ -188,7 +196,11 @@ ui::AXMode AccessibilityLabelsService::GetAXMode() {
   if (base::FeatureList::IsEnabled(
           features::kExperimentalAccessibilityLabels)) {
     bool enabled = profile_->GetPrefs()->GetBoolean(
+#if !defined(OS_ANDROID)
         prefs::kAccessibilityImageLabelsEnabled);
+#else
+        prefs::kAccessibilityImageLabelsEnabledAndroid);
+#endif
     ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
   }
 
@@ -200,8 +212,8 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
     return;
   }
 
-  // TODO(crbug.com/905419): Implement for Android, which does not support
-  // BrowserList::GetInstance.
+  // For Android, we call through the JNI (see below) and send the web contents
+  // directly, since Android does not support BrowserList::GetInstance.
 #if !defined(OS_ANDROID)
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser)
@@ -243,8 +255,6 @@ void AccessibilityLabelsService::OverrideImageAnnotatorBinderForTesting(
 }
 
 void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
-  // TODO(dmazzoni) Implement for Android, which doesn't support
-  // AllTabContentses(). crbug.com/905419
 #if !defined(OS_ANDROID)
   bool enabled = profile_->GetPrefs()->GetBoolean(
                      prefs::kAccessibilityImageLabelsEnabled) &&
@@ -258,6 +268,15 @@ void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
     ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
     web_contents->SetAccessibilityMode(ax_mode);
   }
+#else
+  bool enabled = profile_->GetPrefs()->GetBoolean(
+                     prefs::kAccessibilityImageLabelsEnabledAndroid) &&
+                 accessibility_state_utils::IsScreenReaderEnabled();
+
+  // Android does not support AllTabContentses(), so we will get all web
+  // contents from the state and set the new AXMode there.
+  content::BrowserAccessibilityState::GetInstance()
+      ->SetImageLabelsModeForProfile(enabled, profile_);
 #endif
 }
 
@@ -269,3 +288,21 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));
 }
+
+#if defined(OS_ANDROID)
+void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kAnnotatePageImages;
+
+  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
+  for (content::RenderFrameHost* frame : frames) {
+    if (frame->IsRenderFrameLive())
+      frame->AccessibilityPerformAction(action_data);
+  }
+}
+#endif

@@ -532,9 +532,7 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
       break;
 
     case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      AppendTextToString(
-          GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation),
-          &text);
+      text = GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation);
       break;
 
     case ax::mojom::ImageAnnotationStatus::kNone:

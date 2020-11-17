@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -43,6 +44,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -67,6 +69,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
 
     @Mock
     private PrefService mPrefService;
+
+    @Mock
+    private WebContents mWebContents;
 
     private SharedPreferencesManager mManager;
     private ImageDescriptionsController mController;
@@ -100,7 +105,8 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
                     .thenReturn(false);
             mManager.writeInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT, 0);
             mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
-            mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
+            mController.onImageDescriptionsMenuItemSelected(
+                    getActivity(), mModalDialogManager, mWebContents);
         });
     }
 
@@ -109,7 +115,8 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
             when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                     .thenReturn(false);
             mManager.writeInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT, 5);
-            mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
+            mController.onImageDescriptionsMenuItemSelected(
+                    getActivity(), mModalDialogManager, mWebContents);
         });
     }
 
@@ -285,7 +292,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         verify(mDelegate, never()).enableImageDescriptions();
         verify(mDelegate, never()).disableImageDescriptions();
         verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
-        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
+        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
     }
 
     @Test
@@ -305,7 +312,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         verify(mDelegate, never()).enableImageDescriptions();
         verify(mDelegate, never()).disableImageDescriptions();
         verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
-        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(false);
+        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(false, mWebContents);
     }
 
     @Test
@@ -329,7 +336,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         verify(mDelegate, never()).enableImageDescriptions();
         verify(mDelegate, never()).disableImageDescriptions();
         verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
-        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(true);
+        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(true, mWebContents);
     }
 
     @Test
@@ -357,7 +364,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         verify(mDelegate, times(1)).enableImageDescriptions();
         verify(mDelegate, times(1)).setOnlyOnWifiRequirement(false);
         verify(mDelegate, never()).disableImageDescriptions();
-        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
+        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
     }
 
     @Test
@@ -374,6 +381,6 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         verify(mDelegate, times(1)).enableImageDescriptions();
         verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true);
         verify(mDelegate, never()).disableImageDescriptions();
-        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
+        verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
     }
 }

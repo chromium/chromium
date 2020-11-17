@@ -604,7 +604,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   EXPECT_EQ(base::ASCIIToUTF16("test_annotation"),
             image_succeeded->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16("image_name, test_annotation"),
+  EXPECT_EQ(base::ASCIIToUTF16("test_annotation"),
             image_succeeded_with_name->GetInnerText());
 }
 

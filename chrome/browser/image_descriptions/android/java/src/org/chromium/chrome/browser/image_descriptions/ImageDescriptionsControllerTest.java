@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -51,6 +53,9 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     private ImageDescriptionsControllerDelegate mDelegate;
 
     @Mock
+    private ImageDescriptionsController.Natives mControllerJniMock;
+
+    @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
 
     @Mock
@@ -61,6 +66,9 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
 
     @Mock
     private ModalDialogManager mModalDialogManager;
+
+    @Mock
+    private WebContents mWebContents;
 
     private SharedPreferencesManager mManager;
     private ImageDescriptionsController mController;
@@ -73,6 +81,8 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
+        mJniMocker.mock(ImageDescriptionsControllerJni.TEST_HOOKS, mControllerJniMock);
 
         resetSharedPreferences();
 
@@ -88,19 +98,19 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     public void testSharedPrefs_justOnceCounter() {
-        mController.getImageDescriptionsJustOnce(false);
+        mController.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 1, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertFalse("Don't ask again should only be true if our just once count is >= 3",
                 mController.shouldShowDontAskAgainOption());
 
-        mController.getImageDescriptionsJustOnce(false);
+        mController.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 2, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertFalse("Don't ask again should only be true if our just once count is >= 3",
                 mController.shouldShowDontAskAgainOption());
 
-        mController.getImageDescriptionsJustOnce(false);
+        mController.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 3, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertTrue("Don't ask again should be true since our just once count is >= 3",
@@ -114,7 +124,7 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
                 mManager.readBoolean(
                         ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false));
 
-        mController.getImageDescriptionsJustOnce(true);
+        mController.getImageDescriptionsJustOnce(true, mWebContents);
 
         Assert.assertTrue("After user sets dont ask again, value should stay true",
                 mManager.readBoolean(
@@ -162,8 +172,9 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         Assert.assertFalse("Image descriptions should be disabled by default",
                 mController.imageDescriptionsEnabled());
 
-        mController.getImageDescriptionsJustOnce(false);
+        mController.getImageDescriptionsJustOnce(false, mWebContents);
         verify(mPrefService, never()).setBoolean(anyString(), anyBoolean());
+        verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(mWebContents);
     }
 
     @Test
@@ -174,7 +185,8 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         Assert.assertTrue(
                 "Image descriptions should be enabled", mController.imageDescriptionsEnabled());
 
-        mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
+        mController.onImageDescriptionsMenuItemSelected(
+                getActivity(), mModalDialogManager, mWebContents);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
@@ -189,8 +201,9 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
                 .thenReturn(false);
         mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, true);
 
-        mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
-        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(anyBoolean());
+        mController.onImageDescriptionsMenuItemSelected(
+                getActivity(), mModalDialogManager, mWebContents);
+        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(anyBoolean(), eq(mWebContents));
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 
@@ -202,7 +215,8 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
                     .thenReturn(false);
             mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
 
-            mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
+            mController.onImageDescriptionsMenuItemSelected(
+                    getActivity(), mModalDialogManager, mWebContents);
             verify(mModalDialogManager, times(1)).showDialog(any(), anyInt());
         });
     }
