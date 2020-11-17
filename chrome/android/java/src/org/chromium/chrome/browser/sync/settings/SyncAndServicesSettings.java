@@ -188,7 +188,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         SettingsUtils.addPreferencesFromResource(this, R.xml.sync_and_services_preferences);
 
         mSigninPreference = (SignInPreference) findPreference(PREF_SIGNIN);
-        mSigninPreference.setPersonalizedPromoEnabled(false);
         mManageYourGoogleAccount = findPreference(PREF_MANAGE_YOUR_GOOGLE_ACCOUNT);
         mManageYourGoogleAccount.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openGoogleMyAccount(getActivity())));

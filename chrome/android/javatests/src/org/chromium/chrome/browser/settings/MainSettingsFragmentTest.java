@@ -62,8 +62,9 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
-import org.chromium.chrome.browser.sync.settings.SignInPreference.State;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
+import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
+import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -435,18 +436,21 @@ public class MainSettingsFragmentTest {
     public void testAccountSignIn() {
         launchSettingsActivity();
 
-        SignInPreference signInPreference =
-                (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
-        Assert.assertEquals("SignInPreference should be at the personalized promo state. ",
-                signInPreference.getState(), State.PERSONALIZED_PROMO);
+        SyncPromoPreference syncPromoPreference =
+                (SyncPromoPreference) mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
+        Assert.assertEquals(
+                "SyncPromoPreference should be at the personalized signin promo state. ",
+                syncPromoPreference.getState(), State.PERSONALIZED_SIGNIN_PROMO);
         Assert.assertFalse("Account section header should be hidden when promo is shown.",
                 mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION).isVisible());
 
         // SignIn to see the changes
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
+        SignInPreference signInPreference =
+                (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
         Assert.assertEquals("SignInPreference should be at the signed in state. ",
-                signInPreference.getState(), State.SIGNED_IN);
+                signInPreference.getState(), SignInPreference.State.SIGNED_IN);
         Assert.assertNotNull("Account section header should appear when user signed in.",
                 mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION));
     }
@@ -460,10 +464,11 @@ public class MainSettingsFragmentTest {
     public void testAccountSignInWithMobileIdentityConsistency() throws InterruptedException {
         launchSettingsActivity();
 
-        SignInPreference signInPreference =
-                (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
-        Assert.assertEquals("SignInPreference should be at the personalized promo state. ",
-                signInPreference.getState(), State.PERSONALIZED_PROMO);
+        SyncPromoPreference syncPromoPreference =
+                (SyncPromoPreference) mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
+        Assert.assertEquals(
+                "SyncPromoPreference should be at the personalized signin promo state. ",
+                syncPromoPreference.getState(), State.PERSONALIZED_SIGNIN_PROMO);
         Assert.assertFalse("Account section header should be hidden when promo is shown.",
                 mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
                         .isVisible());
@@ -473,8 +478,10 @@ public class MainSettingsFragmentTest {
         // SignIn to see the changes
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
+        SignInPreference signInPreference =
+                (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
         Assert.assertEquals("SignInPreference should be at the signed in state. ",
-                signInPreference.getState(), State.SIGNED_IN);
+                signInPreference.getState(), SignInPreference.State.SIGNED_IN);
         Assert.assertTrue("Account section header should appear when user signed in.",
                 mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
                         .isVisible());
