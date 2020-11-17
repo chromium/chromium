@@ -666,10 +666,15 @@ public class PaymentRequestService
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
-        if (isCurrentPaymentRequestShowing()
-                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
-                        mSpec.getRawTotal(), mSpec.getPaymentOptions())) {
-            return;
+        if (isCurrentPaymentRequestShowing()) {
+            String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
+                    mSpec.getRawTotal(), mSpec.getPaymentOptions());
+            if (error != null) {
+                mJourneyLogger.setNotShown(NotShownReason.OTHER);
+                disconnectFromClientWithDebugMessage(error, PaymentErrorReason.USER_CANCEL);
+                if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
+                return;
+            }
         }
 
         mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
@@ -936,10 +941,15 @@ public class PaymentRequestService
         if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
             return;
         }
-        if (isFinishedQueryingPaymentApps()
-                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
-                        mSpec.getRawTotal(), mSpec.getPaymentOptions())) {
-            return;
+        if (isFinishedQueryingPaymentApps()) {
+            String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
+                    mSpec.getRawTotal(), mSpec.getPaymentOptions());
+            if (error != null) {
+                mJourneyLogger.setNotShown(NotShownReason.OTHER);
+                disconnectFromClientWithDebugMessage(error, PaymentErrorReason.USER_CANCEL);
+                if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
+                return;
+            }
         }
 
         mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();

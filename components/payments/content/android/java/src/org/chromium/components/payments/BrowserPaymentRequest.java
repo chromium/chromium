@@ -127,13 +127,15 @@ public interface BrowserPaymentRequest {
     /**
      * Shows the payment apps selector.
      * @param isShowWaitingForUpdatedDetails Whether {@link PaymentRequest#show} is waiting for the
+     *        updated details.
      * @param total The total amount specified in the payment request.
      * @param paymentOptions The payment options specified in the payment request.
-     * @return Whether the showing is successful.
+     * @return The error of the showing if any; null if success.
      */
-    default boolean showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    @Nullable
+    default String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             PaymentOptions paymentOptions) {
-        return false;
+        return null;
     }
 
     /**

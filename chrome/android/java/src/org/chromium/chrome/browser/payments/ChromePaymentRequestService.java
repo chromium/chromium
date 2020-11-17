@@ -216,7 +216,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             PaymentOptions paymentOptions) {
         assert mPaymentRequestService
                 != null : "This method is only supposed to be called by mPaymentRequestService.";
@@ -231,23 +231,16 @@ public class ChromePaymentRequestService
                 mPaymentRequestService.isUserGestureShow(), mDelegate.skipUiForBasicCard(),
                 mSpec.getPaymentOptions(), mSpec.getMethodData().keySet());
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (quitShowIfActivityNotFound(chromeActivity)) return false;
+        if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
                 /*isWebContentsActive=*/
                 PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
                 /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
-        if (error != null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(error);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return false;
-        }
+        if (error != null) return error;
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
             mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
-        return true;
+        return null;
     }
 
     private void dimBackgroundIfNotBottomSheetPaymentHandler(PaymentApp selectedApp) {
@@ -266,19 +259,6 @@ public class ChromePaymentRequestService
         mPaymentUiService.getPaymentRequestUI().dimBackground();
     }
 
-    /** @return True if show() is quited. */
-    private boolean quitShowIfActivityNotFound(@Nullable ChromeActivity chromeActivity) {
-        if (chromeActivity == null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return true;
-        }
-        return false;
-    }
-
     // Implements BrowserPaymentRequest:
     @Override
     public void triggerPaymentAppUiSkipIfApplicable() {
@@ -293,7 +273,15 @@ public class ChromePaymentRequestService
 
             if (isMinimalUiApplicable()) {
                 ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-                if (quitShowIfActivityNotFound(chromeActivity)) return;
+                if (chromeActivity == null) {
+                    mJourneyLogger.setNotShown(NotShownReason.OTHER);
+                    disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
+                    if (PaymentRequestService.getObserverForTest() != null) {
+                        PaymentRequestService.getObserverForTest()
+                                .onPaymentRequestServiceShowFailed();
+                    }
+                    return;
+                }
                 if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
                             /*dismissObserver=*/
