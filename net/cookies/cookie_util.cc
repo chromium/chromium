@@ -368,6 +368,13 @@ GURL SimulatedCookieSource(const CanonicalCookie& cookie,
                                   source_scheme);
 }
 
+CookieAccessScheme ProvisionalAccessScheme(const GURL& source_url) {
+  return source_url.SchemeIsCryptographic()
+             ? CookieAccessScheme::kCryptographic
+             : IsLocalhost(source_url) ? CookieAccessScheme::kTrustworthy
+                                       : CookieAccessScheme::kNonCryptographic;
+}
+
 bool IsDomainMatch(const std::string& domain, const std::string& host) {
   // Can domain match in two ways; as a domain cookie (where the cookie
   // domain begins with ".") or as a host cookie (where it doesn't).

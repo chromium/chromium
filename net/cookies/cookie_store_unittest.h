@@ -438,14 +438,17 @@ TYPED_TEST_P(CookieStoreTest, FilterTest) {
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs, std::move(cc), this->www_foo_bar_.url(), true /*modify_httponly*/));
 
-  // Because of strict secure cookies, it should not be possible to create
-  // a secure cookie with an HTTP URL.
-
+  // We permit creating a a secure cookie with an HTTP URL (since the
+  // CookieAccessDelegate may permit some sites to be used as such for
+  // development environment purposes), but it can't actually be set in this
+  // test since no such delegate is configured here.
   cc = CanonicalCookie::CreateSanitizedCookie(
       this->http_www_foo_.url(), "E", "F", std::string(), std::string(),
       base::Time(), base::Time(), base::Time(), true, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
-  ASSERT_FALSE(cc);
+  ASSERT_TRUE(cc);
+  EXPECT_FALSE(this->SetCanonicalCookie(
+      cs, std::move(cc), this->http_www_foo_.url(), true /*modify_httponly*/));
 
   cc = CanonicalCookie::CreateSanitizedCookie(
       this->https_www_foo_.url(), "E", "F", std::string(), std::string(),
@@ -765,6 +768,27 @@ TYPED_TEST_P(CookieStoreTest, SecureEnforcement) {
           base::Time(), false, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       http_url, true /*modify_httponly*/));
+}
+
+// Check that Secure cookies can be set from a localhost URL, regardless of
+// scheme.
+TYPED_TEST_P(CookieStoreTest, SecureCookieLocalhost) {
+  CookieStore* cs = this->GetCookieStore();
+  EXPECT_TRUE(this->CreateAndSetCookie(cs, GURL("https://localhost/path"),
+                                       "A=B;Secure",
+                                       CookieOptions::MakeAllInclusive()));
+  EXPECT_TRUE(this->CreateAndSetCookie(cs, GURL("https://127.0.0.1/path"),
+                                       "A=B;Secure",
+                                       CookieOptions::MakeAllInclusive()));
+  EXPECT_TRUE(this->CreateAndSetCookie(cs, GURL("http://localhost/path"),
+                                       "A=B;Secure",
+                                       CookieOptions::MakeAllInclusive()));
+  EXPECT_TRUE(this->CreateAndSetCookie(cs, GURL("http://127.0.0.1/path"),
+                                       "A=B;Secure",
+                                       CookieOptions::MakeAllInclusive()));
+  EXPECT_TRUE(this->CreateAndSetCookie(cs, GURL("http://[::1]/path"),
+                                       "A=B;Secure",
+                                       CookieOptions::MakeAllInclusive()));
 }
 
 // The iOS networking stack uses the iOS cookie parser, which we do not
@@ -1805,6 +1829,7 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreTest,
                             FilterTest,
                             SetCanonicalCookieTest,
                             SecureEnforcement,
+                            SecureCookieLocalhost,
                             EmptyKeyTest,
                             DomainTest,
                             DomainWithTrailingDotTest,

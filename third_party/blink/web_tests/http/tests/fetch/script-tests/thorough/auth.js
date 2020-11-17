@@ -63,7 +63,7 @@ var TEST_TARGETS = [
    [fetchRejected]],
   [OTHER_BASE_URL + 'Auth&mode=cors&credentials=include&ACAOrigin=' +
    BASE_ORIGIN + '&ACACredentials=true',
-   [fetchResolved, hasBody, typeCors], [onlyForCrossSiteCookieTest(authCheck2)]],
+   [fetchResolved, hasBody, typeCors], [authCheck2]],
   [OTHER_BASE_URL + 'Auth&mode=cors&credentials=include&ACAOrigin=http://www.example.com&ACACredentials=true',
    [fetchRejected]],
 
@@ -92,7 +92,7 @@ var TEST_TARGETS = [
   [OTHER_BASE_URL + 'Auth&mode=cors&credentials=include&ACAOrigin=' +
    BASE_ORIGIN + '&PACAOrigin=' + BASE_ORIGIN +
    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&PreflightTest=200',
-   [fetchResolved, hasBody, typeCors], [onlyForCrossSiteCookieTest(authCheck2)]],
+   [fetchResolved, hasBody, typeCors], [authCheck2]],
 
   // Rejected because CORS preflight response returns 401.
   [OTHER_BASE_URL + 'PAuth&mode=cors&credentials=omit&ACAOrigin=*&PACAOrigin=*&method=PUT&PACAMethods=PUT&PreflightTest=200',

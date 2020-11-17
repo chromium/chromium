@@ -122,7 +122,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const url::Origin& top_frame_origin,
            net::CookieOptions options,
            mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
-      : restricted_cookie_manager_(restricted_cookie_manager),
+      : cookie_store_(cookie_store),
+        restricted_cookie_manager_(restricted_cookie_manager),
         url_(url),
         site_for_cookies_(site_for_cookies),
         top_frame_origin_(top_frame_origin),
@@ -151,9 +152,16 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
   // net::CookieChangeDispatcher callback.
   void OnCookieChange(const net::CookieChangeInfo& change) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    bool delegate_treats_url_as_trustworthy =
+        cookie_store_->cookie_access_delegate() &&
+        cookie_store_->cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(
+            url_);
+
     if (!change.cookie
              .IncludeForRequestURL(url_, options_,
-                                   change.access_result.access_semantics)
+                                   change.access_result.access_semantics,
+                                   delegate_treats_url_as_trustworthy)
              .status.IsInclude()) {
       return;
     }
@@ -169,6 +177,9 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
 
     mojo_listener_->OnCookieChange(change);
   }
+
+  // Expected to outlive |restricted_cookie_manager_| which outlives this.
+  const net::CookieStore* cookie_store_;
 
   // The CookieChangeDispatcher subscription used by this listener.
   std::unique_ptr<net::CookieChangeSubscription> cookie_store_subscription_;
@@ -381,6 +392,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // Update the creation and last access times.
   base::Time now = base::Time::NowFromSystemTime();
   // TODO(http://crbug.com/1024053): Log metrics
+  const GURL& origin_url = origin_.GetURL();
   net::CookieSourceScheme source_scheme =
       GURL::SchemeIsCryptographic(origin_.scheme())
           ? net::CookieSourceScheme::kSecure
@@ -400,7 +412,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // for setting a cookie, we would need to validate the path of |url| somehow
   // and pass |url| instead of |origin_.GetURL()|.
   cookie_store_->SetCanonicalCookieAsync(
-      std::move(sanitized_cookie), origin_.GetURL(), options,
+      std::move(sanitized_cookie), origin_url, options,
       base::BindOnce(&RestrictedCookieManager::SetCanonicalCookieResult,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      cookie_copy, options, std::move(callback)));

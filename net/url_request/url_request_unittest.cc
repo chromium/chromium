@@ -2568,6 +2568,7 @@ TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
@@ -2577,11 +2578,13 @@ TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
   context.set_network_delegate(&network_delegate);
   context.Init();
 
-  // Try to set a Secure __Secure- cookie.
+  // Try to set a Secure __Secure- cookie on http://a.test (non-secure origin).
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        http_server.GetURL("/set-cookie?__Secure-nonsecure-origin=1;Secure"),
+        http_server.GetURL("a.test",
+                           "/set-cookie?__Secure-nonsecure-origin=1;Secure&"
+                           "cookienotsecure=1"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
@@ -2589,17 +2592,19 @@ TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that the cookie is not set.
+  // Verify that the __Secure- cookie was not set by checking cookies for
+  // https://a.test (secure origin).
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        https_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        https_server.GetURL("a.test", "/echoheader?Cookie"), DEFAULT_PRIORITY,
+        &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("__Secure-nonsecure-origin=1"),
               std::string::npos);
+    EXPECT_NE(d.data_received().find("cookienotsecure=1"), std::string::npos);
     EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
@@ -2686,6 +2691,7 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
@@ -2695,11 +2701,13 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
   context.set_network_delegate(&network_delegate);
   context.Init();
 
-  // Try to set a Secure cookie, with experimental features enabled.
+  // Try to set a Secure cookie and a non-Secure cookie from a nonsecure origin.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        http_server.GetURL("/set-cookie?nonsecure-origin=1;Secure"),
+        http_server.GetURL("a.test",
+                           "/set-cookie?nonsecure-origin=1;Secure&"
+                           "cookienotsecure=1"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
@@ -2707,16 +2715,17 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that the cookie is not set.
+  // Verify that the Secure cookie was not set.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        https_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        https_server.GetURL("a.test", "/echoheader?Cookie"), DEFAULT_PRIORITY,
+        &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("nonsecure-origin=1"), std::string::npos);
+    EXPECT_NE(d.data_received().find("cookienotsecure=1"), std::string::npos);
     EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
@@ -7228,10 +7237,10 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
     // included had it not been for the new SameSite features should have a
     // warning attached.
     TestDelegate d;
-    GURL test_url = test_server.GetURL(
-        "/set-cookie?blockeduserpreference=true&"
-        "unspecifiedsamesite=1&"
-        "invalidsecure=1;Secure");
+    GURL test_url = test_server.GetURL("this.example",
+                                       "/set-cookie?blockeduserpreference=true&"
+                                       "unspecifiedsamesite=1&"
+                                       "invalidsecure=1;Secure");
     GURL cross_site_url = test_server.GetURL("other.example", "/");
     std::unique_ptr<URLRequest> req(context.CreateRequest(
         test_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));

@@ -2848,6 +2848,79 @@ TEST_F(CookieMonsterTest, NumKeysHistogram) {
   }
 }
 
+// Test that localhost URLs can set and get secure cookies, even if
+// non-cryptographic.
+TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
+
+  GURL insecure_localhost("http://localhost");
+  GURL secure_localhost("https://localhost");
+
+  // Insecure localhost can set secure cookie, and warning is attached to
+  // status.
+  {
+    auto cookie = CanonicalCookie::Create(insecure_localhost,
+                                          "from_insecure_localhost=1; Secure",
+                                          base::Time::Now(), base::nullopt);
+    ASSERT_TRUE(cookie);
+    CookieInclusionStatus status =
+        SetCanonicalCookieReturnAccessResult(cm.get(), std::move(cookie),
+                                             insecure_localhost,
+                                             true /* can_modify_httponly */)
+            .status;
+    EXPECT_TRUE(status.IsInclude());
+    EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+        {CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC}));
+  }
+  // Secure localhost can set secure cookie, and warning is not attached to
+  // status.
+  {
+    auto cookie = CanonicalCookie::Create(insecure_localhost,
+                                          "from_secure_localhost=1; Secure",
+                                          base::Time::Now(), base::nullopt);
+    ASSERT_TRUE(cookie);
+    CookieInclusionStatus status =
+        SetCanonicalCookieReturnAccessResult(cm.get(), std::move(cookie),
+                                             secure_localhost,
+                                             true /* can_modify_httponly */)
+            .status;
+    EXPECT_EQ(CookieInclusionStatus(), status);
+  }
+
+  // Insecure localhost can get secure cookies, and warning is attached to
+  // status.
+  {
+    GetCookieListCallback callback;
+    cm->GetCookieListWithOptionsAsync(insecure_localhost,
+                                      CookieOptions::MakeAllInclusive(),
+                                      callback.MakeCallback());
+    callback.WaitUntilDone();
+    EXPECT_EQ(2u, callback.cookies_with_access_results().size());
+    for (const auto& cookie_item : callback.cookies_with_access_results()) {
+      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_TRUE(cookie_item.access_result.status.IsInclude());
+      EXPECT_TRUE(
+          cookie_item.access_result.status.HasExactlyWarningReasonsForTesting(
+              {CookieInclusionStatus::
+                   WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC}));
+    }
+  }
+  // Secure localhost can get secure cookies, and warning is not attached to
+  // status.
+  {
+    GetCookieListCallback callback;
+    cm->GetCookieListWithOptionsAsync(secure_localhost,
+                                      CookieOptions::MakeAllInclusive(),
+                                      callback.MakeCallback());
+    callback.WaitUntilDone();
+    EXPECT_EQ(2u, callback.cookies_with_access_results().size());
+    for (const auto& cookie_item : callback.cookies_with_access_results()) {
+      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_EQ(CookieInclusionStatus(), cookie_item.access_result.status);
+    }
+  }
+}
+
 TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
   scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
   std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));

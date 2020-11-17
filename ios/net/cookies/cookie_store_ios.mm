@@ -244,9 +244,11 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   // engine.
   DCHECK(!options.exclude_httponly());
 
-  bool secure_source = source_url.SchemeIsCryptographic();
+  CookieAccessScheme access_scheme =
+      cookie_util::ProvisionalAccessScheme(source_url);
 
-  if (cookie->IsSecure() && !secure_source) {
+  if (cookie->IsSecure() &&
+      access_scheme == CookieAccessScheme::kNonCryptographic) {
     if (!callback.is_null())
       std::move(callback).Run(
           net::CookieAccessResult(net::CookieInclusionStatus(
@@ -468,7 +470,10 @@ void CookieStoreIOS::DeleteCookiesMatchingInfoAsync(
       base::BindRepeating(
           [](const CookieDeletionInfo& delete_info,
              const net::CanonicalCookie& cc) {
-            return delete_info.Matches(cc);
+            // No extra trustworthy URLs.
+            bool delegate_treats_url_as_trustworthy = false;
+            return delete_info.Matches(cc, net::CookieAccessSemantics::UNKNOWN,
+                                       delegate_treats_url_as_trustworthy);
           },
           std::move(delete_info)),
       std::move(callback));

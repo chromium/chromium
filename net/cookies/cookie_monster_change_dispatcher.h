@@ -22,13 +22,17 @@
 
 namespace net {
 
+class CookieAccessDelegate;
+class CookieMonster;
+
 // CookieChangeDispatcher implementation used by CookieMonster.
 class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
  public:
   using CookieChangeCallbackList =
       base::CallbackList<void(const CookieChangeInfo&)>;
 
-  CookieMonsterChangeDispatcher();
+  // Expects |cookie_monster| to outlive this.
+  explicit CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster);
   ~CookieMonsterChangeDispatcher() override;
 
   // The key in CookieNameMap for a cookie name.
@@ -79,7 +83,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     const std::string& name_key() const { return name_key_; }
 
     // Dispatches a cookie change notification if the listener is interested.
-    void DispatchChange(const CookieChangeInfo& change);
+    void DispatchChange(const CookieChangeInfo& change,
+                        const CookieAccessDelegate* cookie_access_delegate);
 
    private:
     base::WeakPtr<CookieMonsterChangeDispatcher> change_dispatcher_;
@@ -133,6 +138,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   //
   // Called by the Subscription destructor.
   void UnlinkSubscription(Subscription* subscription);
+
+  const CookieMonster* cookie_monster_;
 
   CookieDomainMap cookie_domain_map_;
 

@@ -19,8 +19,7 @@ var TEST_TARGETS = [
    '&mode=no-cors&method=GET&headers=CUSTOM',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsGET, noCustomHeader,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, noCustomHeader, authCheck2])],
 
   // Status code tests for mode="no-cors"
   // The 301 redirect response changes POST method to GET method.
@@ -28,29 +27,25 @@ var TEST_TARGETS = [
    '&mode=no-cors&method=POST&Status=301',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsGET,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, authCheck2])],
   // The 302 redirect response changes POST method to GET method.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
    '&mode=no-cors&method=POST',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsGET,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, authCheck2])],
   // GET method must be used for 303 redirect.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
    '&mode=no-cors&method=POST&Status=303',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsGET,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, authCheck2])],
   // The 307 redirect response doesn't change the method.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
    '&mode=no-cors&method=POST&Status=307',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsPOST,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck2])],
   // The 308 redirect response doesn't change the method.
   // FIXME: disabled due to https://crbug.com/451938
   // [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
@@ -107,8 +102,7 @@ var TEST_TARGETS = [
    '&mode=no-cors&method=GET',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque,
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
-   onlyOnServiceWorkerProxiedTest([methodIsGET,
-                                   onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, authCheck2])],
 ];
 
 if (self.importScripts) {

@@ -140,11 +140,16 @@ MATCHER(IsErrorTooManyRedirects, "") {
 
 class ContentSettingsTest : public InProcessBrowserTest {
  public:
-  ContentSettingsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  ContentSettingsTest() {
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
-  net::EmbeddedTestServer https_server_;
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // Test the combination of different ways of accessing cookies --- JS, HTML,
@@ -887,42 +892,24 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
           ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
-// TODO(jww): This should be removed after strict secure cookies is enabled for
-// all and this test should be moved into ContentSettingsTest above.
-class ContentSettingsStrictSecureCookiesBrowserTest
-    : public ContentSettingsTest {
- public:
-  ContentSettingsStrictSecureCookiesBrowserTest() = default;
-  ~ContentSettingsStrictSecureCookiesBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
-  void SetUpOnMainThread() override {
-    ContentSettingsTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-};
-
-// This test verifies that if strict secure cookies is enabled, the site
-// settings accurately reflect that an attempt to create a secure cookie by an
-// insecure origin fails.
-IN_PROC_BROWSER_TEST_F(ContentSettingsStrictSecureCookiesBrowserTest, Cookies) {
+// This test verifies that the site settings accurately reflect that an attempt
+// to create a secure cookie by an insecure origin fails.
+IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SecureCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
 
-  GURL http_url = embedded_test_server()->GetURL("/setsecurecookie.html");
-  GURL https_url = https_server.GetURL("/setsecurecookie.html");
+  GURL http_url =
+      embedded_test_server()->GetURL("a.test", "/setsecurecookie.html");
+  GURL https_url = https_server.GetURL("a.test", "/setsecurecookie.html");
 
   ui_test_utils::NavigateToURL(browser(), http_url);
   EXPECT_TRUE(GetSiteSettingsCookieContainer(browser())->empty());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server.GetURL("/setsecurecookie.html"));
+  ui_test_utils::NavigateToURL(browser(), https_url);
   EXPECT_FALSE(GetSiteSettingsCookieContainer(browser())->empty());
 }
 

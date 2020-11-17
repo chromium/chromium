@@ -19,6 +19,12 @@ class NET_EXPORT CookieAccessDelegate {
   CookieAccessDelegate();
   virtual ~CookieAccessDelegate();
 
+  // Returns true if the passed in |url| should be permitted to access secure
+  // cookies in addition to URLs that normally do so. Returning false from this
+  // method on a URL that would already be treated as secure by default, e.g. an
+  // https:// one has no effect.
+  virtual bool ShouldTreatUrlAsTrustworthy(const GURL& url) const;
+
   // Gets the access semantics to apply to |cookie|, based on its domain (i.e.,
   // whether a policy specifies that legacy access semantics should apply).
   virtual CookieAccessSemantics GetAccessSemantics(

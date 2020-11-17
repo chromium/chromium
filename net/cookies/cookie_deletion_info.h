@@ -94,11 +94,14 @@ struct NET_EXPORT CookieDeletionInfo {
   // should not matter because the CookieOptions used for this check includes
   // all cookies for a URL regardless of SameSite).
   //
+  // |delegate_treats_url_as_trustworthy| should be set to true if |url| was
+  // granted access to secure cookies by the CookieAccessDelegate.
+  //
   // All members are used. See comments above other members for specifics
   // about how checking is done for that value.
   bool Matches(const CanonicalCookie& cookie,
-               CookieAccessSemantics access_semantics =
-                   CookieAccessSemantics::UNKNOWN) const;
+               CookieAccessSemantics access_semantics,
+               bool delegate_treats_url_as_trustworthy) const;
 
   // See comment above for TimeRange::Contains() for more info.
   TimeRange creation_range;

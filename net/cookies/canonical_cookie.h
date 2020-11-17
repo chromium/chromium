@@ -147,9 +147,11 @@ class NET_EXPORT CanonicalCookie {
   CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }
   bool IsSameParty() const { return same_party_; }
-  // Returns an enum indicating the source scheme that set this cookie. This is
-  // not part of the cookie spec but is being used to collect metrics for a
-  // potential change to the cookie spec.
+
+  // Returns an enum indicating the scheme of the origin that
+  // set this cookie. This is not part of the cookie spec but is being used to
+  // collect metrics for a potential change to the cookie spec
+  // (https://tools.ietf.org/html/draft-west-cookie-incrementalism-01#section-3.4)
   CookieSourceScheme SourceScheme() const { return source_scheme_; }
   bool IsDomainCookie() const {
     return !domain_.empty() && domain_[0] == '.'; }
@@ -253,13 +255,18 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns if the cookie should be included (and if not, why) for the given
   // request |url| using the CookieInclusionStatus enum. HTTP only cookies can
-  // be filter by using appropriate cookie |options|. PLEASE NOTE that this
-  // method does not check whether a cookie is expired or not!
+  // be filter by using appropriate cookie |options|.
+  // |delegate_treats_url_as_trustworthy| should be passed as true if the
+  // CookieAccessDelegate has authorized access to secure cookies from URLs
+  // which might not otherwise be able to do so.
+  //
+  // PLEASE NOTE that this method does not check whether a cookie is expired or
+  // not!
   CookieAccessResult IncludeForRequestURL(
       const GURL& url,
       const CookieOptions& options,
-      CookieAccessSemantics access_semantics =
-          CookieAccessSemantics::UNKNOWN) const;
+      CookieAccessSemantics access_semantics,
+      bool delegate_treats_url_as_trustworthy) const;
 
   // Returns if the cookie with given attributes can be set in context described
   // by |options|, and if no, describes why.

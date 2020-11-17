@@ -86,8 +86,10 @@ CookieDeletionInfo& CookieDeletionInfo::operator=(CookieDeletionInfo&& rhs) =
 CookieDeletionInfo& CookieDeletionInfo::operator=(
     const CookieDeletionInfo& rhs) = default;
 
-bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
-                                 CookieAccessSemantics access_semantics) const {
+bool CookieDeletionInfo::Matches(
+    const CanonicalCookie& cookie,
+    CookieAccessSemantics access_semantics,
+    bool delegate_treats_url_as_trustworthy) const {
   if (session_control != SessionControl::IGNORE_CONTROL &&
       (cookie.IsPersistent() !=
        (session_control == SessionControl::PERSISTENT_COOKIES))) {
@@ -115,7 +117,8 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
   if (url.has_value() &&
       !cookie
            .IncludeForRequestURL(url.value(), CookieOptions::MakeAllInclusive(),
-                                 access_semantics)
+                                 access_semantics,
+                                 delegate_treats_url_as_trustworthy)
            .status.IsInclude()) {
     return false;
   }

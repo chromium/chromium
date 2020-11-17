@@ -279,7 +279,7 @@ CanonicalCookie::CanonicalCookie(const std::string& name,
                                  CookieSameSite same_site,
                                  CookiePriority priority,
                                  bool same_party,
-                                 CookieSourceScheme scheme_secure)
+                                 CookieSourceScheme source_scheme)
     : name_(name),
       value_(value),
       domain_(domain),
@@ -292,7 +292,7 @@ CanonicalCookie::CanonicalCookie(const std::string& name,
       same_site_(same_site),
       priority_(priority),
       same_party_(same_party),
-      source_scheme_(scheme_secure) {}
+      source_scheme_(source_scheme) {}
 
 CanonicalCookie::~CanonicalCookie() = default;
 
@@ -429,6 +429,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   CookieSameSite samesite = parsed_cookie.SameSite(&samesite_string);
   RecordCookieSameSiteAttributeValueHistogram(samesite_string,
                                               parsed_cookie.IsSameParty());
+
   CookieSourceScheme source_scheme = url.SchemeIsCryptographic()
                                          ? CookieSourceScheme::kSecure
                                          : CookieSourceScheme::kNonSecure;
@@ -486,9 +487,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   CookieSourceScheme source_scheme = url.SchemeIsCryptographic()
                                          ? CookieSourceScheme::kSecure
                                          : CookieSourceScheme::kNonSecure;
-
-  if (secure && source_scheme == CookieSourceScheme::kNonSecure)
-    return nullptr;
 
   std::string cookie_path = CanonicalCookie::CanonPathWithString(url, path);
   if (!path.empty() && cookie_path != path)
@@ -615,15 +613,30 @@ bool CanonicalCookie::IsDomainMatch(const std::string& host) const {
 CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     const GURL& url,
     const CookieOptions& options,
-    CookieAccessSemantics access_semantics) const {
+    CookieAccessSemantics access_semantics,
+    bool delegate_treats_url_as_trustworthy) const {
   CookieInclusionStatus status;
   // Filter out HttpOnly cookies, per options.
   if (options.exclude_httponly() && IsHttpOnly())
     status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_HTTP_ONLY);
   // Secure cookies should not be included in requests for URLs with an
-  // insecure scheme.
-  if (IsSecure() && !url.SchemeIsCryptographic())
-    status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+  // insecure scheme, unless it is a localhost url, or the CookieAccessDelegate
+  // otherwise denotes them as trustworthy
+  // (`delegate_treats_url_as_trustworthy`).
+  if (IsSecure()) {
+    CookieAccessScheme cookie_access_scheme =
+        cookie_util::ProvisionalAccessScheme(url);
+    if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
+        delegate_treats_url_as_trustworthy) {
+      cookie_access_scheme = CookieAccessScheme::kTrustworthy;
+    }
+    if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic) {
+      status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+    } else if (cookie_access_scheme == CookieAccessScheme::kTrustworthy) {
+      status.AddWarningReason(
+          CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
+    }
+  }
   // Don't include cookies for requests that don't apply to the cookie domain.
   if (!IsDomainMatch(url.host()))
     status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);

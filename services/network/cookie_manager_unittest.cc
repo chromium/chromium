@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/cookies/cookie_access_result.h"
@@ -27,6 +28,9 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/cookie_access_delegate_impl.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/session_cleanup_cookie_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -181,6 +185,31 @@ class SynchronousCookieManager {
         base::BindLambdaForTesting(
             [&run_loop, &result_out](net::CookieAccessResult result) {
               result_out = result;
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+    return result_out;
+  }
+
+  // TODO(chlily): Clean up these Set*() methods to all use proper source_url.
+  net::CookieInclusionStatus SetCanonicalCookieFromUrlWithStatus(
+      const net::CanonicalCookie& cookie,
+      const GURL& source_url,
+      bool modify_http_only) {
+    base::RunLoop run_loop;
+    net::CookieOptions options;
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    if (modify_http_only)
+      options.set_include_httponly();
+    net::CookieInclusionStatus result_out(
+        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+    cookie_service_->SetCanonicalCookie(
+        cookie, source_url, options,
+        base::BindLambdaForTesting(
+            [&run_loop, &result_out](net::CookieAccessResult result) {
+              result_out = result.status;
               run_loop.Quit();
             }));
 
@@ -880,6 +909,73 @@ TEST_F(CookieManagerTest, ConfirmSecureSetFails) {
       service_wrapper()->GetAllCookies();
 
   ASSERT_EQ(0u, cookies.size());
+}
+
+// Test CookieAccessDelegateImpl functionality for allowing Secure cookie access
+// from potentially trustworthy origins, even if non-cryptographic.
+TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
+  GURL http_localhost_url("http://localhost/path");
+  auto http_localhost_cookie = net::CanonicalCookie::Create(
+      http_localhost_url, "http_localhost=1; Secure", base::Time::Now(),
+      base::nullopt);
+
+  // Secure cookie can be set from non-cryptographic localhost URL.
+  EXPECT_TRUE(service_wrapper()
+                  ->SetCanonicalCookieFromUrlWithStatus(
+                      *http_localhost_cookie, http_localhost_url,
+                      false /* modify_http_only */)
+                  .IsInclude());
+  // And can be retrieved from such.
+  std::vector<net::CanonicalCookie> http_localhost_cookies =
+      service_wrapper()->GetCookieList(http_localhost_url,
+                                       net::CookieOptions::MakeAllInclusive());
+  ASSERT_EQ(1u, http_localhost_cookies.size());
+  EXPECT_EQ("http_localhost", http_localhost_cookies[0].Name());
+  EXPECT_EQ(net::CookieSourceScheme::kNonSecure,
+            http_localhost_cookies[0].SourceScheme());
+  EXPECT_TRUE(http_localhost_cookies[0].IsSecure());
+
+  GURL http_other_url("http://other.test/path");
+  auto http_other_cookie = net::CanonicalCookie::Create(
+      http_other_url, "http_other=1; Secure", base::Time::Now(), base::nullopt);
+
+  // Secure cookie cannot be set from another non-cryptographic URL if there is
+  // no CookieAccessDelegate.
+  EXPECT_TRUE(
+      service_wrapper()
+          ->SetCanonicalCookieFromUrlWithStatus(
+              *http_other_cookie, http_other_url, false /* modify_http_only */)
+          .HasExactlyExclusionReasonsForTesting(
+              {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+
+  // Set a CookieAccessDelegateImpl which allows other origins registered
+  // as trustworthy to set a Secure cookie.
+  auto delegate = std::make_unique<CookieAccessDelegateImpl>(
+      mojom::CookieAccessDelegateType::ALWAYS_LEGACY, nullptr);
+  cookie_store()->SetCookieAccessDelegate(std::move(delegate));
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      switches::kUnsafelyTreatInsecureOriginAsSecure, "http://other.test");
+  SecureOriginAllowlist::GetInstance().ResetForTesting();
+  ASSERT_TRUE(IsUrlPotentiallyTrustworthy(http_other_url));
+
+  // Secure cookie can be set from non-cryptographic but potentially trustworthy
+  // origin, if CookieAccessDelegate allows it.
+  EXPECT_TRUE(
+      service_wrapper()
+          ->SetCanonicalCookieFromUrlWithStatus(
+              *http_other_cookie, http_other_url, false /* modify_http_only */)
+          .IsInclude());
+  // And can be retrieved from such.
+  std::vector<net::CanonicalCookie> http_other_cookies =
+      service_wrapper()->GetCookieList(http_other_url,
+                                       net::CookieOptions::MakeAllInclusive());
+  ASSERT_EQ(1u, http_other_cookies.size());
+  EXPECT_EQ("http_other", http_other_cookies[0].Name());
+  EXPECT_EQ(net::CookieSourceScheme::kNonSecure,
+            http_other_cookies[0].SourceScheme());
+  EXPECT_TRUE(http_other_cookies[0].IsSecure());
 }
 
 TEST_F(CookieManagerTest, ConfirmHttpOnlySetFails) {

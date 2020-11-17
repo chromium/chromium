@@ -17,7 +17,8 @@ class PreloadedFirstPartySets;
 
 // This class acts as a delegate for the CookieStore to query the
 // CookieManager's CookieSettings for instructions on how to handle a given
-// cookie with respect to SameSite.
+// cookie with respect to SameSite, and to apply developer preferences on
+// trusted sites for purpose of secure cookies.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
     : public net::CookieAccessDelegate {
  public:
@@ -34,6 +35,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   ~CookieAccessDelegateImpl() override;
 
   // net::CookieAccessDelegate implementation:
+  bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
   net::CookieAccessSemantics GetAccessSemantics(
       const net::CanonicalCookie& cookie) const override;
   bool ShouldIgnoreSameSiteRestrictions(

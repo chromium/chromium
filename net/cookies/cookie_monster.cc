@@ -312,6 +312,7 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
                              NetLog* net_log)
     : num_keys_(0u),
+      change_dispatcher_(this),
       initialized_(false),
       started_fetching_all_cookies_(false),
       finished_fetching_all_cookies_(false),
@@ -619,7 +620,16 @@ void CookieMonster::DeleteAllMatchingInfo(CookieDeletionInfo delete_info,
     CanonicalCookie* cc = curit->second.get();
     ++it;
 
-    if (delete_info.Matches(*cc, GetAccessSemanticsForCookie(*cc))) {
+    bool delegate_treats_url_as_trustworthy = false;  // irrelevant if no URL.
+    if (delete_info.url.has_value()) {
+      delegate_treats_url_as_trustworthy =
+          cookie_access_delegate() &&
+          cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(
+              delete_info.url.value());
+    }
+
+    if (delete_info.Matches(*cc, GetAccessSemanticsForCookie(*cc),
+                            delegate_treats_url_as_trustworthy)) {
       InternalDeleteCookie(curit, true, /*sync_to_store*/
                            DELETE_COOKIE_EXPLICIT);
       ++num_deleted;
@@ -954,13 +964,18 @@ void CookieMonster::FilterCookiesWithOptions(
   Time current_time = Time::Now();
   RecordPeriodicStats(current_time);
 
+  bool delegate_treats_url_as_trustworthy =
+      cookie_access_delegate() &&
+      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
+
   for (std::vector<CanonicalCookie*>::iterator it = cookie_ptrs->begin();
        it != cookie_ptrs->end(); it++) {
     // Filter out cookies that should not be included for a request to the
     // given |url|. HTTP only cookies are filtered depending on the passed
     // cookie |options|.
     CookieAccessResult access_result = (*it)->IncludeForRequestURL(
-        url, options, GetAccessSemanticsForCookie(**it));
+        url, options, GetAccessSemanticsForCookie(**it),
+        delegate_treats_url_as_trustworthy);
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies())
@@ -978,7 +993,7 @@ void CookieMonster::FilterCookiesWithOptions(
 void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     const std::string& key,
     const CanonicalCookie& cookie_being_set,
-    bool source_secure,
+    bool allowed_to_set_secure_cookie,
     bool skip_httponly,
     bool already_expired,
     base::Time* creation_date_to_inherit,
@@ -1009,7 +1024,7 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     // equivalence is slightly more inclusive than the usual IsEquivalent() one.
     //
     // See: https://tools.ietf.org/html/draft-ietf-httpbis-cookie-alone
-    if (cur_existing_cookie->IsSecure() && !source_secure &&
+    if (cur_existing_cookie->IsSecure() && !allowed_to_set_secure_cookie &&
         cookie_being_set.IsEquivalentForSecureCookieMatching(
             *cur_existing_cookie)) {
       // Hold onto this for additional Netlogging later if we end up preserving
@@ -1134,12 +1149,43 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
 
   CookieAccessResult access_result;
 
-  bool secure_source = source_url.SchemeIsCryptographic();
-  cc->SetSourceScheme(secure_source ? CookieSourceScheme::kSecure
-                                    : CookieSourceScheme::kNonSecure);
-  if ((cc->IsSecure() && !secure_source)) {
-    access_result.status.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+  // TODO(morlovich): This is only needed becausea a bunch of spots don't set it
+  // consistently on construction.
+  cc->SetSourceScheme(source_url.SchemeIsCryptographic()
+                          ? net::CookieSourceScheme::kSecure
+                          : net::CookieSourceScheme::kNonSecure);
+
+  CookieAccessScheme access_scheme =
+      cookie_util::ProvisionalAccessScheme(source_url);
+  if (access_scheme == CookieAccessScheme::kNonCryptographic &&
+      cookie_access_delegate() &&
+      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url)) {
+    access_scheme = CookieAccessScheme::kTrustworthy;
+  }
+
+  bool allowed_to_set_secure_cookie = false;
+  switch (access_scheme) {
+    case CookieAccessScheme::kNonCryptographic:
+      if (cc->IsSecure()) {
+        access_result.status.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      }
+      break;
+
+    case CookieAccessScheme::kCryptographic:
+      // All cool!
+      allowed_to_set_secure_cookie = true;
+      break;
+
+    case CookieAccessScheme::kTrustworthy:
+      allowed_to_set_secure_cookie = true;
+      if (cc->IsSecure()) {
+        // OK, but want people aware of this.
+        access_result.status.AddWarningReason(
+            CookieInclusionStatus::
+                WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
+      }
+      break;
   }
 
   if (!IsCookieableScheme(source_url.scheme())) {
@@ -1161,9 +1207,12 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
 
   base::Time creation_date_to_inherit;
 
+  // Iterates through existing cookies for the same eTLD+1, and potentially
+  // deletes an existing cookie, so any ExclusionReasons in |status| that would
+  // prevent such deletion should be finalized beforehand.
   MaybeDeleteEquivalentCookieAndUpdateStatus(
-      key, *cc, secure_source, options.exclude_httponly(), already_expired,
-      &creation_date_to_inherit, &access_result.status);
+      key, *cc, allowed_to_set_secure_cookie, options.exclude_httponly(),
+      already_expired, &creation_date_to_inherit, &access_result.status);
 
   if (access_result.status.HasExclusionReason(
           CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE) ||
@@ -1206,8 +1255,10 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
       // http:// URLs, but not cookies that are cleared by http:// URLs, to
       // understand if the former behavior can be deprecated for Secure
       // cookies.
+      // TODO(crbug.com/993120): Consider removing this histogram. The decision
+      // it was added to evaluate has been implemented and standardized.
       CookieSource cookie_source_sample =
-          (secure_source
+          (source_url.SchemeIsCryptographic()
                ? (cc->IsSecure()
                       ? COOKIE_SOURCE_SECURE_COOKIE_CRYPTOGRAPHIC_SCHEME
                       : COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME)

@@ -138,12 +138,15 @@ IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, Cookies) {
 
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetTestDataFilePath());
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
   // The server sends a HttpOnly cookie. The RenderFrameMessageFilter should
   // never allow this to be sent to any renderer process.
-  GURL https_url = https_server.GetURL("/set-cookie?notforjs=1;HttpOnly");
-  GURL http_url = embedded_test_server()->GetURL("/frame_with_load_event.html");
+  GURL https_url =
+      https_server.GetURL("a.test", "/set-cookie?notforjs=1;HttpOnly");
+  GURL http_url =
+      embedded_test_server()->GetURL("a.test", "/frame_with_load_event.html");
 
   Shell* shell2 = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
@@ -164,9 +167,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameMessageFilterBrowserTest, Cookies) {
     EXPECT_FALSE(web_contents_http->GetSiteInstance()->IsRelatedSiteInstance(
         web_contents_https->GetSiteInstance()));
   } else {
-    EXPECT_EQ("http://127.0.0.1/",
+    EXPECT_EQ("http://a.test/",
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
-    EXPECT_EQ("https://127.0.0.1/",
+    EXPECT_EQ("https://a.test/",
               web_contents_https->GetSiteInstance()->GetSiteURL().spec());
   }
 

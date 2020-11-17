@@ -160,6 +160,13 @@ class NET_EXPORT CookieInclusionStatus {
     // same-site).
     WARN_SAMESITE_COMPAT_PAIR = 8,
 
+    // Advisory warning attached when a Secure cookie is accessed from (sent to,
+    // or set by) a non-cryptographic URL. This can happen if the URL is
+    // potentially trustworthy (e.g. a localhost URL, or another URL that
+    // the CookieAccessDelegate is configured to allow).
+    // TODO(chlily): Add metrics for how often and where this occurs.
+    WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 9,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };

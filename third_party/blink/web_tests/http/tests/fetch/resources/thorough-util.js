@@ -36,16 +36,6 @@ function onlyOnServiceWorkerProxiedTest(checkFuncs) {
   return [];
 }
 
-// Cookies accessed in a cross-site context must be marked SameSite=None and
-// Secure, so tests for cross-site cookies must only run on https.
-function shouldIncludeCrossSiteCookieTests() {
-  return location.href.indexOf("other-https") !== -1;
-}
-
-function onlyForCrossSiteCookieTest(checkFunc) {
-  return shouldIncludeCrossSiteCookieTests() ? checkFunc : cookieCheckNone;
-}
-
 // Functions to check the result from the ServiceWorker.
 var checkFetchResult = function(expected, url, data) {
   assert_equals(data.fetchResult, expected, url + ' should be ' + expected);

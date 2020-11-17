@@ -107,6 +107,14 @@ NET_EXPORT GURL CookieOriginToURL(const std::string& domain, bool is_https);
 NET_EXPORT GURL SimulatedCookieSource(const CanonicalCookie& cookie,
                                       const std::string& source_scheme);
 
+// Provisional evaluation of acceptability of setting secure cookies on
+// `source_url` based only on the `source_url`'s scheme and whether it
+// is a localhost URL.  If this returns kNonCryptographic, it may be upgraded to
+// kTrustworthy by a CookieAccessDelegate when the cookie operation is being
+// performed, as the delegate may have access to user settings like manually
+// configured test domains which declare additional things trustworthy.
+NET_EXPORT CookieAccessScheme ProvisionalAccessScheme(const GURL& source_url);
+
 // |domain| is the output of cookie.Domain() for some cookie. This returns true
 // if a |domain| indicates that the cookie can be accessed by |host|.
 // See comment on CanonicalCookie::IsDomainMatch().

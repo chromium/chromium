@@ -211,7 +211,24 @@ enum class CookiePort {
 
   // Keep as last value.
   kMaxValue = k9095
+};
 
+// Scheme or trustworthiness used to access or set a cookie.
+// "potentially trustworthy" here refers to the notion from
+// https://www.w3.org/TR/powerful-features/#is-origin-trustworthy
+enum class CookieAccessScheme {
+  // Scheme was non-cryptographic. The non-cryptographic source origin was
+  // either not potentially trustworthy, or its potential
+  // trustworthiness wasn't checked.
+  kNonCryptographic = 0,
+  // Scheme was cryptographic (https or wss). This implies potentially
+  // trustworthy.
+  kCryptographic = 1,
+  // Source was non-cryptographic, but URL was otherwise potentially
+  // trustworthy.
+  kTrustworthy = 2,
+
+  kMaxValue = kTrustworthy  // Keep as the last value.
 };
 
 // Returns the Set-Cookie header priority token corresponding to |priority|.

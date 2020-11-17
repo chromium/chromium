@@ -75,7 +75,11 @@ public class CookieManagerTest {
     @SmallTest
     @MinWebLayerVersion(83)
     public void testSetCookieNotSet() throws Exception {
-        Assert.assertFalse(setCookie("foo=bar; Secure"));
+        // Attempting to set a Secure cookie from an insecure origin is rejected.
+        // A different hostname must be used because non-cryptographic localhost origins such as
+        // http://127.0.0.1 are considered trustworthy and are allowed to set Secure cookies.
+        Assert.assertFalse(mActivityTestRule.setCookie(
+                mCookieManager, Uri.parse("http://a.test/path"), "foo=bar; Secure"));
     }
 
     @Test

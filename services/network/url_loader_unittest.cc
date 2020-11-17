@@ -4812,9 +4812,9 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
   {
     MockNetworkServiceClient network_service_client;
     MockNetworkContextClient network_context_client;
-    GURL dest_url = test_server()->GetURL("/nocontent");
+    GURL dest_url = test_server()->GetURL("a.test", "/nocontent");
     GURL redirecting_url = test_server()->GetURL(
-        "/server-redirect-with-cookie?" + dest_url.spec());
+        "a.test", "/server-redirect-with-cookie?" + dest_url.spec());
 
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest("GET", redirecting_url);
@@ -4866,9 +4866,9 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
   {
     MockNetworkServiceClient network_service_client;
     MockNetworkContextClient network_context_client;
-    GURL dest_url = test_server()->GetURL("/nocontent");
+    GURL dest_url = test_server()->GetURL("a.test", "/nocontent");
     GURL redirecting_url = test_server()->GetURL(
-        "/server-redirect-with-secure-cookie?" + dest_url.spec());
+        "a.test", "/server-redirect-with-secure-cookie?" + dest_url.spec());
 
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest("GET", redirecting_url);
@@ -4918,7 +4918,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         MockNetworkContextClient::CredentialsResponse::NO_CREDENTIALS);
 
     GURL url = test_server()->GetURL(
-        "/auth-basic?set-cookie-if-challenged&password=PASS");
+        "a.test", "/auth-basic?set-cookie-if-challenged&password=PASS");
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest("GET", url);
     // Set the devtools id to trigger the RawResponse call
@@ -4965,7 +4965,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         MockNetworkContextClient::CredentialsResponse::NO_CREDENTIALS);
 
     GURL url = test_server()->GetURL(
-        "/auth-basic?set-secure-cookie-if-challenged&password=PASS");
+        "a.test", "/auth-basic?set-secure-cookie-if-challenged&password=PASS");
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest("GET", url);
     // Set the devtools id to trigger the RawResponse call
@@ -5050,6 +5050,8 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
 
   net::test_server::EmbeddedTestServer https_server(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(https_server.Start());
@@ -5060,7 +5062,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     MockNetworkContextClient network_context_client;
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest(
-        "GET", https_server.GetURL("/set-cookie?a=b;Secure"));
+        "GET", https_server.GetURL("a.test", "/set-cookie?a=b;Secure"));
     // Make this a third-party request.
     url::Origin third_party_origin =
         url::Origin::Create(GURL("http://www.example.com"));
@@ -5117,7 +5119,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     test_network_delegate()->set_cookie_options(
         net::TestNetworkDelegate::NO_SET_COOKIE);
     ResourceRequest request = CreateResourceRequest(
-        "GET", https_server.GetURL("/set-cookie?a=b;Secure"));
+        "GET", https_server.GetURL("a.test", "/set-cookie?a=b;Secure"));
     // Make this a third-party request.
     url::Origin third_party_origin =
         url::Origin::Create(GURL("http://www.example.com"));
@@ -5168,7 +5170,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     MockNetworkContextClient network_context_client;
     TestURLLoaderClient loader_client;
     ResourceRequest request = CreateResourceRequest(
-        "GET", test_server()->GetURL("/set-cookie?a=b;Secure&d=e"));
+        "GET", test_server()->GetURL("a.test", "/set-cookie?a=b;Secure&d=e"));
 
     base::RunLoop delete_run_loop;
     mojo::PendingRemote<mojom::URLLoader> loader;

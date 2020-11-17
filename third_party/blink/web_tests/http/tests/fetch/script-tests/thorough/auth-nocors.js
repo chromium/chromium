@@ -32,16 +32,14 @@ var TEST_TARGETS = [
   // Test that default mode is no-cors in serviceworker-proxied tests.
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'Auth',
-     [fetchResolved, noBody, typeOpaque],
-     [onlyForCrossSiteCookieTest(authCheck2)]]),
+     [fetchResolved, noBody, typeOpaque], [authCheck2]]),
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'Auth&credentials=omit',
      [fetchResolved, noBody, typeOpaque],
      [checkJsonpError]]),
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'Auth&credentials=include',
-     [fetchResolved, noBody, typeOpaque],
-     [onlyForCrossSiteCookieTest(authCheck2)]]),
+     [fetchResolved, noBody, typeOpaque], [authCheck2]]),
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'Auth&credentials=same-origin',
      [fetchResolved, noBody, typeOpaque],
@@ -53,7 +51,7 @@ var TEST_TARGETS = [
    onlyOnServiceWorkerProxiedTest([checkJsonpError])],
   [OTHER_BASE_URL + 'Auth&mode=no-cors&credentials=include',
    [fetchResolved, noBody, typeOpaque],
-   onlyOnServiceWorkerProxiedTest([onlyForCrossSiteCookieTest(authCheck2)])],
+   onlyOnServiceWorkerProxiedTest([authCheck2])],
   [OTHER_BASE_URL + 'Auth&mode=no-cors&credentials=same-origin',
    [fetchResolved, noBody, typeOpaque],
    onlyOnServiceWorkerProxiedTest([checkJsonpError])],

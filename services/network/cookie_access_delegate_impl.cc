@@ -6,6 +6,7 @@
 
 #include "net/cookies/cookie_util.h"
 #include "services/network/first_party_sets/preloaded_first_party_sets.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace network {
 
@@ -21,6 +22,11 @@ CookieAccessDelegateImpl::CookieAccessDelegateImpl(
 }
 
 CookieAccessDelegateImpl::~CookieAccessDelegateImpl() = default;
+
+bool CookieAccessDelegateImpl::ShouldTreatUrlAsTrustworthy(
+    const GURL& url) const {
+  return IsUrlPotentiallyTrustworthy(url);
+}
 
 net::CookieAccessSemantics CookieAccessDelegateImpl::GetAccessSemantics(
     const net::CanonicalCookie& cookie) const {

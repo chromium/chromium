@@ -56,8 +56,11 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
     // and not secure will not be included), and legacy mode.
     cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
   }
+  // No extra trustworthy URLs.
+  bool delegate_treats_url_as_trustworthy = false;
   return canonical_cookie
-      ->IncludeForRequestURL(url, options, cookie_access_semantics)
+      ->IncludeForRequestURL(url, options, cookie_access_semantics,
+                             delegate_treats_url_as_trustworthy)
       .status.IsInclude();
 }
 

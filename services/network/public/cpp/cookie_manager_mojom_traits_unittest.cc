@@ -229,6 +229,17 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessSemantics) {
   }
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_CookieSourceScheme) {
+  for (net::CookieSourceScheme source_scheme :
+       {net::CookieSourceScheme::kUnset, net::CookieSourceScheme::kNonSecure,
+        net::CookieSourceScheme::kSecure}) {
+    net::CookieSourceScheme roundtrip;
+    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::CookieSourceScheme>(
+        source_scheme, &roundtrip));
+    EXPECT_EQ(source_scheme, roundtrip);
+  }
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeCause) {
   for (net::CookieChangeCause change_cause :
        {net::CookieChangeCause::INSERTED, net::CookieChangeCause::EXPLICIT,
