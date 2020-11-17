@@ -3954,6 +3954,30 @@ TEST_P(TabletModeOverviewSessionTest, MultiTouch) {
   EXPECT_FALSE(overview_controller()->InOverviewSession());
 }
 
+// Tests that when exiting overview in a way that causes windows to minimize,
+// rounded corners are removed, otherwise they will be visible after
+// unminimizing. Regression test for https://crbug.com/1146240.
+TEST_P(TabletModeOverviewSessionTest, MinimizedRoundedCorners) {
+  const gfx::Rect bounds(400, 400);
+  std::unique_ptr<aura::Window> window(CreateTestWindow(bounds));
+
+  // Enter overview. Spin the run loop since rounded corners are applied on a
+  // post task.
+  ToggleOverview();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(overview_controller()->InOverviewSession());
+
+  // Tap on a point on the wallpaper to minimize the window and exit overview.
+  GetEventGenerator()->set_current_screen_location(gfx::Point(10, 10));
+  GetEventGenerator()->ClickLeftButton();
+
+  // Tests that the window layer has rounded corners removed after exiting
+  // overview.
+  EXPECT_FALSE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
+  EXPECT_EQ(gfx::RoundedCornersF(), window->layer()->rounded_corner_radii());
+}
+
 // Test the split view and overview functionalities in tablet mode.
 class SplitViewOverviewSessionTest : public OverviewSessionTest {
  public:
