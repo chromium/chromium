@@ -464,11 +464,9 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
     return false;
   if (decoded_frame_count_ == 1)
     return ImageDecoder::FrameIsReceivedAtIndex(index);
-  // frame_buffer_cache_.size() is equal to the return value of
-  // DecodeFrameCount(). Since DecodeFrameCount() returns the number of frames
-  // whose encoded data have been received, we can return true if |index| is
-  // valid for frame_buffer_cache_. See crbug.com/1148577.
-  return index < frame_buffer_cache_.size();
+  return index < frame_buffer_cache_.size() &&
+         (IsAllDataReceived() ||
+          avifDecoderNthImageReady(decoder_.get(), index) == AVIF_RESULT_OK);
 }
 
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(size_t index) const {
@@ -530,19 +528,8 @@ void AVIFImageDecoder::DecodeSize() {
 size_t AVIFImageDecoder::DecodeFrameCount() {
   if (!Failed())
     ParseMetadata();
-  if (!IsDecodedSizeAvailable())
-    return frame_buffer_cache_.size();
-  if (decoded_frame_count_ == 1 || IsAllDataReceived())
-    return decoded_frame_count_;
-  // For a multi-frame image, Chrome expects DecodeFrameCount() to return the
-  // number of frames whose encoded data have been received.
-  size_t index;
-  for (index = frame_buffer_cache_.size(); index < decoded_frame_count_;
-       ++index) {
-    if (avifDecoderNthImageReady(decoder_.get(), index) != AVIF_RESULT_OK)
-      break;
-  }
-  return index;
+  return IsDecodedSizeAvailable() ? decoded_frame_count_
+                                  : frame_buffer_cache_.size();
 }
 
 void AVIFImageDecoder::InitializeNewFrame(size_t index) {

@@ -440,15 +440,12 @@ void DeferredImageDecoder::PrepareLazyDecodedFrames() {
     frame_data_[i].duration_ = metadata_decoder_->FrameDurationAtIndex(i);
     frame_data_[i].orientation_ = metadata_decoder_->Orientation();
     frame_data_[i].density_corrected_size_ = metadata_decoder_->DensityCorrectedSize();
-    frame_data_[i].is_received_ = metadata_decoder_->FrameIsReceivedAtIndex(i);
   }
 
-  // The last lazy decoded frame created from previous call might be
-  // incomplete so update its state.
-  if (previous_size) {
-    const size_t last_frame = previous_size - 1;
-    frame_data_[last_frame].is_received_ =
-        metadata_decoder_->FrameIsReceivedAtIndex(last_frame);
+  // Update the is_received_ state of incomplete frames.
+  while (received_frame_count_ < frame_data_.size() &&
+         metadata_decoder_->FrameIsReceivedAtIndex(received_frame_count_)) {
+    frame_data_[received_frame_count_++].is_received_ = true;
   }
 
   can_yuv_decode_ =

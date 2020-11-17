@@ -131,6 +131,9 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Caches frame state information.
   Vector<DeferredFrameData> frame_data_;
+  // The number of received/complete frames in |frame_data_|. Note: This is also
+  // the index of the first unreceived/incomplete frame in |frame_data_|.
+  size_t received_frame_count_ = 0;
   scoped_refptr<ImageFrameGenerator> frame_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(DeferredImageDecoder);
