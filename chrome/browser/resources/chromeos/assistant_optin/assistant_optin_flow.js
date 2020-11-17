@@ -20,7 +20,7 @@
  */
 
 Polymer({
-  is: 'assistant-optin-flow',
+  is: 'assistant-optin-flow-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
 
