@@ -251,12 +251,6 @@ if (enable_vr) {
   }
 }
 
-# TODO(chouinard): Remove this wrapper target after downstream dependencies on it are replaced.
-android_resources("chrome_download_java_resources") {
-  sources = []
-  deps = [ "//chrome/browser/download/android:java_resources" ]
-}
-
 android_library("app_hooks_java") {
   sources = [ app_hooks_impl ]
   deps = [ ":chrome_java" ]
