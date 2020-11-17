@@ -87,7 +87,11 @@ template("midl") {
   dlldata_file = "{{source_name_part}}.dlldata.c"
   interface_identifier_file = "{{source_name_part}}_i.c"
   proxy_file = "{{source_name_part}}_p.c"
-  type_library_file = "{{source_name_part}}.tlb"
+  if (writes_tlb) {
+    type_library_file = "{{source_name_part}}.tlb"
+  } else {
+    type_library_file = "none"
+  }
 
   # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
   python2_action_foreach(action_name) {
