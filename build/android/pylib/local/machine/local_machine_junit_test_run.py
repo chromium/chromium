@@ -27,6 +27,18 @@ from py_utils import tempfile_ext
 _EXCLUDED_CLASSES_PREFIXES = ('android', 'junit', 'org/bouncycastle/util',
                               'org/hamcrest', 'org/junit', 'org/mockito')
 
+# Suites we shouldn't shard, usually because they don't contain enough test
+# cases. Some suites have poorly formed tests that rely on setup in other
+# tests.
+_EXCLUDED_SUITES = {
+    # Too small to shard test suites.
+    'password_check_junit_tests',
+    'touch_to_fill_junit_tests',
+    # Poorly formed test suites.
+    # TODO: (crbug.com/1147740) Remove component_junit_tests when it's fixed.
+    'components_junit_tests'
+}
+
 # Running time for chrome_junit_tests locally:
 # 1 shard: 3 min 15 sec, 4 shards: 1 min 29 sec,
 # 6 shards: 1 min 10 sec, 8 shards 1 min 6 sec,
@@ -118,13 +130,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     # This avoids searching through the classparth jars for tests classes,
     # which takes about 1-2 seconds.
-    if self._test_instance.shards == 1 or self._test_instance.test_filter:
+    if (self._test_instance.shards == 1 or self._test_instance.test_filter
+        or self._test_instance.suite in _EXCLUDED_SUITES):
       test_classes = []
       shards = 1
     else:
       test_classes = _GetTestClasses(wrapper_path)
       shards = ChooseNumOfShards(test_classes, self._test_instance.shards)
 
+    logging.info('Running tests on %d shard(s).', shards)
     group_test_list = GroupTestsForShard(shards, test_classes)
 
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
