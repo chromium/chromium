@@ -2256,7 +2256,6 @@ test("ash_unittests") {
     "wm/container_finder_unittest.cc",
     "wm/default_window_resizer_unittest.cc",
     "wm/desks/autotest_desks_api_unittests.cc",
-    "wm/desks/desk_animation_impl_unittest.cc",
     "wm/desks/desks_unittests.cc",
     "wm/desks/root_window_desk_switch_animator_unittest.cc",
     "wm/drag_window_resizer_unittest.cc",

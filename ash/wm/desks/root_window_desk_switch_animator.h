@@ -266,8 +266,8 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   bool UpdateSwipeAnimation(float scroll_delta_x);
 
   // Called when a user ends a touchpad swipe. This will animate to the most
-  // visible desk, whose index is also returned.
-  int EndSwipeAnimation();
+  // visible desk.
+  void EndSwipeAnimation();
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
