@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -23,6 +24,7 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -698,6 +700,11 @@ TEST_F(AccountTrackerServiceTest, FindAccountInfoByEmail) {
 }
 
 TEST_F(AccountTrackerServiceTest, Persistence) {
+#if defined(OS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
+
   // Define a user data directory for the account image storage.
   base::ScopedTempDir scoped_user_data_dir;
   ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
@@ -854,6 +861,11 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
 }
 
 TEST_F(AccountTrackerServiceTest, UpgradeToFullAccountInfo) {
+#if defined(OS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
+
   // Start by simulating an incomplete account info and let it be saved to
   // prefs.
   ResetAccountTracker();
@@ -981,8 +993,10 @@ TEST_F(AccountTrackerServiceTest, LegacyDottedAccountIds) {
 }
 
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
-  if (!AccountTrackerService::IsMigrationSupported())
-    return;
+#if defined(OS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1028,8 +1042,10 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
-  if (!AccountTrackerService::IsMigrationSupported())
-    return;
+#if defined(OS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1074,8 +1090,10 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
-  if (!AccountTrackerService::IsMigrationSupported())
-    return;
+#if defined(OS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);

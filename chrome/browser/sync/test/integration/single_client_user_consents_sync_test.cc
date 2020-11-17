@@ -27,13 +27,7 @@ using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 namespace {
 
 CoreAccountId GetAccountId() {
-#if defined(OS_CHROMEOS)
-  // TODO(vitaliii): Unify the two, because it takes ages to debug and
-  // impossible to discover otherwise.
-  return CoreAccountId("user@gmail.com");
-#else
   return CoreAccountId("gaia_id_for_user_gmail.com");
-#endif
 }
 
 class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {

@@ -32,7 +32,7 @@ namespace policy {
 namespace {
 
 constexpr char kAffiliatedUserEmail[] = "affiliated-user@example.com";
-constexpr char kAffiliatedUserGaiaId[] = "affiliated-user@example.com";
+constexpr char kAffiliatedUserGaiaId[] = "affiliated-user_example.com";
 constexpr char kAffiliationID[] = "some-affiliation-id";
 constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
 

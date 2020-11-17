@@ -63,6 +63,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -302,29 +303,30 @@ class OAuth2Test : public OobeBaseTest {
   void LoginAsExistingUser() {
     // PickAccountId does not work at this point as the primary user profile has
     // not yet been created.
-    const std::string email = kTestEmail;
-    EXPECT_EQ(GetOAuthStatusFromLocalState(email),
+    EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
               user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
     // Try login.  Primary profile has changed.
-    ash::LoginScreenTestApi::SubmitPassword(
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
-        kTestAccountPassword, true /*check_if_submittable */);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
+    ash::LoginScreenTestApi::SubmitPassword(account_id, kTestAccountPassword,
+                                            true /*check_if_submittable */);
     test::WaitForPrimaryUserSessionStart();
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    CoreAccountId account_id = PickAccountId(profile, kTestGaiaId, kTestEmail);
-    ASSERT_EQ(email, account_id.ToString());
 
     // Wait for the session merge to finish.
     WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
+    EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
+              user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
-    // Check for existence of refresh token.
+    // Check for existence of the primary account and its refresh token.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
-
-    EXPECT_EQ(GetOAuthStatusFromLocalState(account_id.ToString()),
-              user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
+    CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+    EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, primary_account.email));
+    EXPECT_EQ(kTestGaiaId, primary_account.gaia);
+    EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+        primary_account.account_id));
   }
 
   bool TryToLogin(const AccountId& account_id, const std::string& password) {
@@ -340,14 +342,14 @@ class OAuth2Test : public OobeBaseTest {
   }
 
   user_manager::User::OAuthTokenStatus GetOAuthStatusFromLocalState(
-      const std::string& account_id) const {
+      const std::string& email) const {
     PrefService* local_state = g_browser_process->local_state();
     const base::DictionaryValue* prefs_oauth_status =
         local_state->GetDictionary("OAuthTokenStatus");
     int oauth_token_status = user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
     if (prefs_oauth_status &&
         prefs_oauth_status->GetIntegerWithoutPathExpansion(
-            account_id, &oauth_token_status)) {
+            email, &oauth_token_status)) {
       user_manager::User::OAuthTokenStatus result =
           static_cast<user_manager::User::OAuthTokenStatus>(oauth_token_status);
       return result;
@@ -517,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_PRE_PRE_MergeSession) {
       IdentityManagerFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
 
-  EXPECT_EQ(GetOAuthStatusFromLocalState(account_id.ToString()),
+  EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
   CookieReader cookie_reader;
   cookie_reader.ReadCookies(GetProfile());
@@ -566,21 +568,20 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, MergeSession) {
 
   // PickAccountId does not work at this point as the primary user profile has
   // not yet been created.
-  const std::string account_id = kTestEmail;
-  EXPECT_EQ(GetOAuthStatusFromLocalState(account_id),
+  EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   EXPECT_TRUE(
       TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
                  kTestAccountPassword));
 
-  ASSERT_EQ(account_id,
+  ASSERT_EQ(kTestGaiaId,
             PickAccountId(GetProfile(), kTestGaiaId, kTestEmail).ToString());
 
   // Wait for the session merge to finish.
-  WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_FAILED);
+  WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
 
-  EXPECT_EQ(GetOAuthStatusFromLocalState(account_id),
+  EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
 }
 

@@ -391,7 +391,6 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
     observer.GoogleSignedOut(account_info);
 }
 
-#if !defined(OS_CHROMEOS)
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
   token_service_->RemoveObserver(this);
 
@@ -415,4 +414,3 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
     }
   }
 }
-#endif  // !defined(OS_CHROMEOS)

@@ -186,15 +186,6 @@ AccountInfo AccountTrackerService::FindAccountInfoByEmail(
   return AccountInfo();
 }
 
-// static
-bool AccountTrackerService::IsMigrationSupported() {
-#if defined(OS_CHROMEOS)
-  return base::FeatureList::IsEnabled(switches::kAccountIdMigration);
-#else
-  return true;
-#endif
-}
-
 AccountTrackerService::AccountIdMigrationState
 AccountTrackerService::GetMigrationState() const {
   return GetMigrationState(pref_service_);
@@ -366,10 +357,7 @@ void AccountTrackerService::MigrateToGaiaId() {
   }
 }
 
-bool AccountTrackerService::IsMigrationDone() const {
-  if (!IsMigrationSupported())
-    return false;
-
+bool AccountTrackerService::AreAllAccountsMigrated() const {
   for (const auto& pair : accounts_) {
     if (pair.first.ToString() != pair.second.gaia)
       return false;
@@ -380,9 +368,21 @@ bool AccountTrackerService::IsMigrationDone() const {
 
 AccountTrackerService::AccountIdMigrationState
 AccountTrackerService::ComputeNewMigrationState() const {
-  // If migration is not supported, skip migration.
-  if (!IsMigrationSupported())
+  if (accounts_.empty()) {
+    // If there are no accounts in the account tracker service, then we expect
+    // that this is profile that was never signed in to Chrome. Consider the
+    // migration done as there are no accounts to migrate..
+    return MIGRATION_DONE;
+  }
+
+#if defined(OS_CHROMEOS)
+  // Migration on ChromeOS is not started by default due to the following risks:
+  // * a lot more data than on desktop is keyed by the account id
+  // * bugs in the migration flow can lead to user not being able to sign in
+  //   to their device which makes the device unusable.
+  if (!base::FeatureList::IsEnabled(switches::kAccountIdMigration))
     return MIGRATION_NOT_STARTED;
+#endif
 
   bool migration_required = false;
   for (const auto& pair : accounts_) {
@@ -399,7 +399,7 @@ AccountTrackerService::ComputeNewMigrationState() const {
 }
 
 void AccountTrackerService::SetMigrationState(AccountIdMigrationState state) {
-  DCHECK(state != MIGRATION_DONE || IsMigrationDone());
+  DCHECK(state != MIGRATION_DONE || AreAllAccountsMigrated());
   pref_service_->SetInteger(prefs::kAccountIdMigrationState, state);
 }
 
@@ -554,24 +554,16 @@ void AccountTrackerService::LoadFromPrefs() {
     RemoveAccountImageFromDisk(account_id);
   }
 
-  if (IsMigrationSupported()) {
-    if (GetMigrationState() != MIGRATION_DONE) {
-      const AccountIdMigrationState new_state = ComputeNewMigrationState();
-      SetMigrationState(new_state);
+  if (GetMigrationState() != MIGRATION_DONE) {
+    const AccountIdMigrationState new_state = ComputeNewMigrationState();
+    SetMigrationState(new_state);
 
-      if (new_state == MIGRATION_IN_PROGRESS) {
-        MigrateToGaiaId();
-      }
+    if (new_state == MIGRATION_IN_PROGRESS) {
+      MigrateToGaiaId();
     }
-  } else {
-    // ChromeOS running on Linux and Linux share the preferences, so the
-    // migration may have been performed on Linux. Reset the migration
-    // state to ensure that the same code path is used whether ChromeOS
-    // is running on Linux on a dev build or on real ChromeOS device.
-    SetMigrationState(MIGRATION_NOT_STARTED);
   }
 
-  DCHECK(GetMigrationState() != MIGRATION_DONE || IsMigrationDone());
+  DCHECK(GetMigrationState() != MIGRATION_DONE || AreAllAccountsMigrated());
   UMA_HISTOGRAM_ENUMERATION("Signin.AccountTracker.GaiaIdMigrationState",
                             GetMigrationState(), NUM_MIGRATION_STATES);
 

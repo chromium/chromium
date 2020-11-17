@@ -193,10 +193,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
       bool assert_signout_allowed,
       SigninClient::SignoutDecision signout_decision);
 
-#if !defined(OS_CHROMEOS)
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
-#endif
 
   const CoreAccountInfo& primary_account_info() const {
     return primary_account_info_;

@@ -2206,15 +2206,8 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
 }
 
 TEST_F(IdentityManagerTest, AccountIdMigration_DoneOnInitialization) {
-  // Migration gets marked as DONE while initializing the AccountTrackerService
-  // on platforms supporting account ID migration only.
-  if (account_tracker()->IsMigrationSupported()) {
-    EXPECT_EQ(identity_manager()->GetAccountIdMigrationState(),
-              IdentityManager::AccountIdMigrationState::MIGRATION_DONE);
-  } else {
-    EXPECT_EQ(identity_manager()->GetAccountIdMigrationState(),
-              IdentityManager::AccountIdMigrationState::MIGRATION_NOT_STARTED);
-  }
+  EXPECT_EQ(IdentityManager::AccountIdMigrationState::MIGRATION_DONE,
+            identity_manager()->GetAccountIdMigrationState());
 }
 
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info

@@ -121,10 +121,6 @@ class AccountTrackerService {
 
   void RemoveAccount(const CoreAccountId& account_id);
 
-  // Is migration of the account id from normalized email to gaia id supported
-  // on the current platform?
-  static bool IsMigrationSupported();
-
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
 
@@ -213,7 +209,7 @@ class AccountTrackerService {
 
   // Returns whether the accounts are all keyed by gaia id. This should
   // be the case when the migration state is set to MIGRATION_DONE.
-  bool IsMigrationDone() const;
+  bool AreAllAccountsMigrated() const;
 
   // Computes the new migration state. The state is saved to preference
   // before performing the migration in order to support resuming the
