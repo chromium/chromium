@@ -545,21 +545,25 @@ TEST_F(SecurityOriginTest, PunycodeNotUnicode) {
   EXPECT_FALSE(origin->CanRequest(unicode_url));
 }
 
-TEST_F(SecurityOriginTest, Port) {
+TEST_F(SecurityOriginTest, PortAndEffectivePortMethod) {
   struct TestCase {
     uint16_t port;
+    uint16_t effective_port;
     const char* origin;
   } cases[] = {
-      {80, "http://example.com"},       {80, "http://example.com:80"},
-      {81, "http://example.com:81"},    {443, "https://example.com"},
-      {443, "https://example.com:443"}, {444, "https://example.com:444"},
-      {0, "https://example.com:0"},     {0, "file:///"},
+      {0, 80, "http://example.com"},
+      {0, 80, "http://example.com:80"},
+      {81, 81, "http://example.com:81"},
+      {0, 443, "https://example.com"},
+      {0, 443, "https://example.com:443"},
+      {444, 444, "https://example.com:444"},
   };
 
   for (const auto& test : cases) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromString(test.origin);
     EXPECT_EQ(test.port, origin->Port());
+    EXPECT_EQ(test.effective_port, origin->EffectivePort());
   }
 }
 
@@ -571,7 +575,6 @@ TEST_F(SecurityOriginTest, CreateFromTuple) {
     const char* origin;
   } cases[] = {
       {"http", "example.com", 80, "http://example.com"},
-      {"http", "example.com", 0, "http://example.com"},
       {"http", "example.com", 81, "http://example.com:81"},
       {"https", "example.com", 443, "https://example.com"},
       {"https", "example.com", 444, "https://example.com:444"},
@@ -689,7 +692,6 @@ TEST_F(SecurityOriginTest, UrlOriginConversions) {
       {"http://example.com:123/?query", "http", "example.com", 123},
       {"https://example.com/#1234", "https", "example.com", 443},
       {"https://u:p@example.com:123/?query#1234", "https", "example.com", 123},
-      {"https://example.com:0/", "https", "example.com", 0},
 
       // Nonstandard schemes.
       {"unrecognized-scheme://localhost/", "", "", 0, true},
@@ -737,8 +739,10 @@ TEST_F(SecurityOriginTest, UrlOriginConversions) {
     EXPECT_EQ(test_case.scheme, security_origin_via_kurl->Protocol());
     EXPECT_EQ(test_case.host, security_origin_via_gurl->Host());
     EXPECT_EQ(test_case.host, security_origin_via_kurl->Host());
-    EXPECT_EQ(test_case.port, security_origin_via_gurl->Port());
-    EXPECT_EQ(test_case.port, security_origin_via_kurl->Port());
+    EXPECT_EQ(security_origin_via_gurl->Port(),
+              security_origin_via_kurl->Port());
+    EXPECT_EQ(test_case.port, security_origin_via_gurl->EffectivePort());
+    EXPECT_EQ(test_case.port, security_origin_via_kurl->EffectivePort());
     EXPECT_EQ(test_case.opaque, security_origin_via_gurl->IsOpaque());
     EXPECT_EQ(test_case.opaque, security_origin_via_kurl->IsOpaque());
     EXPECT_EQ(!test_case.opaque, security_origin_via_kurl->IsSameOriginWith(

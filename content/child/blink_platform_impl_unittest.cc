@@ -22,9 +22,10 @@ void CheckCastedOriginsAlreadyNormalized(
 
   base::Optional<url::Origin> checked_origin =
       url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
-          origin.Protocol().Utf8(), origin.Host().Utf8(), origin.Port());
+          origin.Protocol().Utf8(), origin.Host().Utf8(),
+          origin.EffectivePort());
   url::Origin non_checked_origin = url::Origin::CreateFromNormalizedTuple(
-      origin.Protocol().Utf8(), origin.Host().Utf8(), origin.Port());
+      origin.Protocol().Utf8(), origin.Host().Utf8(), origin.EffectivePort());
   EXPECT_EQ(checked_origin, non_checked_origin);
 }
 
@@ -94,7 +95,7 @@ TEST(BlinkPlatformTest, CastWebSecurityOrigin) {
             blink::WebString::FromUTF8(test.url));
     EXPECT_EQ(test.scheme, web_origin.Protocol().Utf8());
     EXPECT_EQ(test.host, web_origin.Host().Utf8());
-    EXPECT_EQ(test.port, web_origin.Port());
+    EXPECT_EQ(test.port, web_origin.EffectivePort());
 
     url::Origin url_origin = web_origin;
     EXPECT_EQ(test.scheme, url_origin.scheme());
@@ -104,7 +105,7 @@ TEST(BlinkPlatformTest, CastWebSecurityOrigin) {
     web_origin = url::Origin::Create(GURL(test.url));
     EXPECT_EQ(test.scheme, web_origin.Protocol().Utf8());
     EXPECT_EQ(test.host, web_origin.Host().Utf8());
-    EXPECT_EQ(test.port, web_origin.Port());
+    EXPECT_EQ(test.port, web_origin.EffectivePort());
 
     CheckCastedOriginsAlreadyNormalized(web_origin);
   }

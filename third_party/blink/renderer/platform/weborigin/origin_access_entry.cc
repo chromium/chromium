@@ -43,7 +43,7 @@ OriginAccessEntry::OriginAccessEntry(
     network::mojom::CorsOriginAccessMatchPriority priority)
     : private_(origin.Protocol().Ascii(),
                origin.Domain().Ascii(),
-               origin.Port(),
+               origin.EffectivePort(),
                match_mode,
                network::mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort,
                priority) {}

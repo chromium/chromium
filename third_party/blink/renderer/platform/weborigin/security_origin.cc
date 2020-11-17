@@ -133,25 +133,29 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
 }
 
 SecurityOrigin::SecurityOrigin(const KURL& url)
-    : SecurityOrigin(
-          EnsureNonNull(url.Protocol()),
-          EnsureNonNull(url.Host()),
-          // This mimics the logic in url::SchemeHostPort(const GURL&). In
-          // particular, it ensures a URL with a port of 0 will translate into
-          // an origin with an effective port of 0.
-          (url.HasPort() || !url.IsValid() || !url.IsHierarchical())
-              ? url.Port()
-              : DefaultPortForProtocol(url.Protocol())) {}
+    : protocol_(EnsureNonNull(url.Protocol())),
+      host_(EnsureNonNull(url.Host())),
+      domain_(host_),
+      port_(IsDefaultPortForProtocol(url.Port(), protocol_) ? kInvalidPort
+                                                            : url.Port()),
+      effective_port_(port_ ? port_ : DefaultPortForProtocol(protocol_)) {
+  DCHECK(!ShouldTreatAsOpaqueOrigin(url));
+  // By default, only local SecurityOrigins can load local resources.
+  can_load_local_resources_ = IsLocal();
+}
 
 SecurityOrigin::SecurityOrigin(const String& protocol,
                                const String& host,
                                uint16_t port)
-    : protocol_(protocol), host_(host), domain_(host_), port_(port) {
+    : protocol_(protocol),
+      host_(host),
+      domain_(host_),
+      port_(IsDefaultPortForProtocol(port, protocol_) ? kInvalidPort : port),
+      effective_port_(port_ ? port_ : DefaultPortForProtocol(protocol_)) {
   DCHECK(url::SchemeHostPort(protocol.Utf8(), host.Utf8(), port,
                              url::SchemeHostPort::CHECK_CANONICALIZATION)
              .IsValid());
   DCHECK(!IsOpaque());
-  // By default, only local SecurityOrigins can load local resources.
   can_load_local_resources_ = IsLocal();
 }
 
@@ -165,6 +169,7 @@ SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
       host_(other->host_.IsolatedCopy()),
       domain_(other->domain_.IsolatedCopy()),
       port_(other->port_),
+      effective_port_(other->effective_port_),
       nonce_if_opaque_(other->nonce_if_opaque_),
       universal_access_(other->universal_access_),
       domain_was_set_in_dom_(other->domain_was_set_in_dom_),
@@ -185,6 +190,7 @@ SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
       host_(other->host_),
       domain_(other->domain_),
       port_(other->port_),
+      effective_port_(other->effective_port_),
       nonce_if_opaque_(other->nonce_if_opaque_),
       universal_access_(other->universal_access_),
       domain_was_set_in_dom_(other->domain_was_set_in_dom_),
@@ -266,7 +272,7 @@ url::Origin SecurityOrigin::ToUrlOrigin() const {
   const SecurityOrigin* unmasked = GetOriginOrPrecursorOriginIfOpaque();
   std::string scheme = unmasked->protocol_.Utf8();
   std::string host = unmasked->host_.Utf8();
-  uint16_t port = unmasked->port_;
+  uint16_t port = unmasked->effective_port_;
   if (nonce_if_opaque_) {
     url::Origin result = url::Origin::CreateOpaqueFromNormalizedPrecursorTuple(
         std::move(scheme), std::move(host), port, *nonce_if_opaque_);
@@ -515,9 +521,7 @@ void SecurityOrigin::BuildRawString(StringBuilder& builder) const {
   builder.Append("://");
   builder.Append(host_);
 
-  // TODO(crbug.com/1136966): Fix this, and url::Origin's serialization logic,
-  // to make origins with port 0 serialize their ports.
-  if (port_ && port_ != DefaultPortForProtocol(protocol_)) {
+  if (port_) {
     builder.Append(':');
     builder.AppendNumber(port_);
   }

@@ -10896,19 +10896,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 // 1) initiated by a cross-site frame
 // 2) same-document
 // 3) to a http URL with port 0.
-//
-// The history: before https://crbug.com/1065532 was fixed, this was a browser
-// crash; afterwards, but before crbug.com/1136678 was fixed, it led to a
-// renderer kill; now, it should just be a failed navigation (assuming port 0 is
-// unreachable).
+// This is the scenario behind https://crbug.com/1065532.
+// TODO(crbug.com/1138540): Flakes.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       SameDocumentNavigationToHttpPortZero) {
-  // The test server doesn't support port 0 (and, more generally, serving files
-  // from a specific port), so we add a URLLoaderInterceptor that will provide
-  // a response to our requests to port 0 later on.
-  auto interceptor = URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-      "content/test/data", GURL("http://another-site.com:0"));
-
+                       DISABLED_SameDocumentNavigationToHttpPortZero) {
   GURL page_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
@@ -10934,33 +10925,63 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // http URL that has port=0.  Note that this is valid port according to the
   // URL spec (https://url.spec.whatwg.org/#port-state).
   //
-  // Before the fix for SchemeHostPort's handling of port=0 the navigation
-  // below would produce a browser process CHECK/crash, because port 0 confused
-  // url::Origin::Resolve.
+  // Before the fix for SchemeHostPort's handling of port=0 the 2nd iteration
+  // below would produce a browser process CHECK/crash:
+  // - Iteration #1: The navigation will error out (because nothing is listening
+  //   on port zero in the test case).  Since
+  //   RenderFrameHostImpl::FailedNavigation doesn't call
+  //   GetOriginForURLLoaderFactory, this iteration wouldn't trigger a crash.
+  // - Iteration #2: The navigation will be treated as a same-document
+  //   navigation, because |old_url| and |new_url| will be considered the same
+  //   when inspected by GetNavigationType in navigation_controller_impl.cc.
+  //   This will trigger a call to GetOriginForURLLoaderFactory which will
+  //   crash if port=0 confuses url::Origin::Resolve.  It is unclear if treating
+  //   the 2nd iteration as same-document should be considered a bug (see also
+  //   https://crbug.com/1065532#c4).
+  //
+  // After the fix for SchemeHostPort's handling of port=0, both iterations
+  // would trigger a CANNOT_COMMIT_ORIGIN kill (see below).
   GURL::Replacements replace_port_and_ref;
   replace_port_and_ref.SetPortStr("0");
   replace_port_and_ref.SetRefStr("someRef");
   GURL subframe_ref_url =
       subframe_initial_url.ReplaceComponents(replace_port_and_ref);
+  // Doing 2 iterations, to test the same-document navigation case as outlined
+  // in the big comment above.  This test coverage will be important if we ever
+  // fix the renderer kill that started happening after fixing SchemeHostPort's
+  // handling of port=0..
+  for (int i = 0; i < 2; i++) {
+    SCOPED_TRACE(::testing::Message() << "Navigation #" << i);
 
-  // Navigating this frame is at least sometimes an AUTO_SUBFRAME navigation
-  // type; in these cases, it won't commit a navigation entry, so using
-  // TestNavigationObserver would hang.
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
-  LoadCommittedCapturer capturer(root->child_at(0));
-  ASSERT_TRUE(
-      ExecJs(shell(), JsReplace("document.querySelector('iframe').src = $1;",
-                                subframe_ref_url)));
-  // Shouldn't crash.
-  capturer.Wait();
+    // TODO(lukasza): https://crbug.com/1065532: blink::KURL and
+    // blink::SecurityOrigin treat port=0 as an invalid port, which leads to
+    // committing an origin with port=80 rather than port=0 which leads to a
+    // CANNOT_COMMIT_ORIGIN renderer kill.  This is bad, but not as bad as a
+    // browser crash from the bug, so let's keep things this way going forward.
+    ASSERT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
+    RenderProcessHostBadIpcMessageWaiter bad_ipc_waiter(
+        shell()->web_contents()->GetAllFrames()[1]->GetProcess());
 
-  // As a reasonableness check, make sure we committed the right URL:
-  EXPECT_EQ(root->child_at(0)->current_frame_host()->GetLastCommittedURL(),
-            GURL("http://another-site.com:0/title2.html#someRef"));
-  EXPECT_EQ(root->child_at(0)->current_frame_host()->GetLastCommittedOrigin(),
-            url::Origin::Create(GURL("http://another-site.com:0")));
+    TestNavigationObserver subframe_ref_observer(shell()->web_contents(), 1);
+    ASSERT_TRUE(
+        ExecJs(shell(), JsReplace("document.querySelector('iframe').src = $1;",
+                                  subframe_ref_url)));
+
+#if 1
+    // TODO(lukasza): https://crbug.com/1065532: blink::KURL and
+    // blink::SecurityOrigin treat port=0 as an invalid port [...]
+    // (see the same comment above).
+    EXPECT_EQ(bad_message::RFH_INVALID_ORIGIN_ON_COMMIT, bad_ipc_waiter.Wait());
+    if (!AreAllSitesIsolatedForTesting()) {
+      // Without site-per-process the main frame and the subframe are hosted in
+      // the same (killed) renderer process, which makes it difficult to
+      // continue the test after the first kill.
+      return;
+    }
+#else
+    subframe_ref_url.WaitForNavigationFinished();
+#endif
+  }
 }
 
 // Navigating a subframe to the same URL should not generate a history entry.

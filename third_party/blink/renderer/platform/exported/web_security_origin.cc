@@ -72,6 +72,11 @@ uint16_t WebSecurityOrigin::Port() const {
   return private_->Port();
 }
 
+uint16_t WebSecurityOrigin::EffectivePort() const {
+  DCHECK(private_);
+  return private_->EffectivePort();
+}
+
 bool WebSecurityOrigin::IsOpaque() const {
   DCHECK(private_);
   return private_->IsOpaque();
