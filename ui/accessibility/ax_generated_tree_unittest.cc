@@ -255,7 +255,10 @@ TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
           ASSERT_TRUE(serializer.SerializeChanges(tree0.root(), &update0));
 
           AXTree dst_tree;
-          ASSERT_TRUE(dst_tree.Unserialize(update0));
+          ASSERT_TRUE(dst_tree.Unserialize(update0))
+              << dst_tree.error() << "\n"
+              << TreeToString(dst_tree)
+              << "\nTree update: " << update0.ToString();
 
           // At this point, |dst_tree| should now be identical to |tree0|.
           EXPECT_EQ(TreeToString(tree0), TreeToString(dst_tree));
@@ -275,7 +278,12 @@ TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
             AXTreeUpdate update;
             ASSERT_TRUE(
                 serializer.SerializeChanges(tree1.GetFromId(id), &update));
-            ASSERT_TRUE(dst_tree.Unserialize(update));
+            std::string tree_before_str = TreeToString(dst_tree);
+            ASSERT_TRUE(dst_tree.Unserialize(update))
+                << dst_tree.error() << "\nTree before   : " << tree_before_str
+                << "\nTree after    : " << TreeToString(dst_tree)
+                << "\nExpected after: " << TreeToString(tree1)
+                << "\nTree update   : " << update.ToString();
           }
 
           // After the sequence of updates, |dst_tree| should now be
@@ -327,7 +335,13 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         AXEventGenerator event_generator(&fat_tree);
         AXTreeUpdate update =
             MakeTreeUpdateFromIgnoredChanges(fat_tree, fat_tree1);
-        ASSERT_TRUE(fat_tree.Unserialize(update));
+        std::string fat_tree_before_str = TreeToString(fat_tree);
+        ASSERT_TRUE(fat_tree.Unserialize(update))
+            << fat_tree.error() << "\nTree before   : " << fat_tree_before_str
+            << "\nTree after    :" << TreeToString(fat_tree)
+            << "\nExpected after: " << TreeToString(fat_tree1)
+            << "\nTree update   : " << update.ToString();
+
         EXPECT_EQ(TreeToString(fat_tree), TreeToString(fat_tree1));
 
         // Capture the events generated.
@@ -346,7 +360,14 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         // the generated events.
         AXEventGenerator skinny_event_generator(&skinny_tree);
         AXTreeUpdate skinny_update = SerializeEntireTree(skinny_tree1);
-        ASSERT_TRUE(skinny_tree.Unserialize(skinny_update));
+        std::string skinny_tree_before_str = TreeToString(skinny_tree);
+        ASSERT_TRUE(skinny_tree.Unserialize(skinny_update))
+            << skinny_tree.error()
+            << "\nTree before   : " << skinny_tree_before_str
+            << "\nTree after    :" << TreeToString(skinny_tree)
+            << "\nExpected after: " << TreeToString(skinny_tree1)
+            << "\nTree update   : " << skinny_update.ToString();
+
         EXPECT_EQ(TreeToString(skinny_tree), TreeToString(skinny_tree1));
 
         std::map<AXNode::AXID, std::set<AXEventGenerator::Event>>
