@@ -6,13 +6,17 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_content_browser_client.h"
+#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/web_engine_main_delegate.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace cr_fuchsia {
 
@@ -59,8 +63,15 @@ void WebEngineBrowserTest::PostRunTestOnMainThread() {
 
 fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrame(
     fuchsia::web::NavigationEventListener* listener) {
+  return CreateFrameWithParams(listener, {});
+}
+
+fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrameWithParams(
+    fuchsia::web::NavigationEventListener* listener,
+    fuchsia::web::CreateFrameParams params) {
   fuchsia::web::FramePtr frame;
-  context_->CreateFrame(frame.NewRequest());
+
+  context_->CreateFrameWithParams(std::move(params), frame.NewRequest());
 
   if (listener) {
     frame->SetNavigationEventListener(
@@ -72,6 +83,13 @@ fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrame(
   base::RunLoop().RunUntilIdle();
 
   return frame;
+}
+
+void WebEngineBrowserTest::SetHeadlessInCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchNative(switches::kOzonePlatform,
+                                   switches::kHeadless);
+  command_line->AppendSwitch(switches::kHeadless);
 }
 
 // static

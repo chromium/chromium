@@ -65,6 +65,8 @@ void WebComponent::StartComponent() {
   // Create the underlying Frame and get its NavigationController.
   fuchsia::web::CreateFrameParams create_params;
   create_params.set_enable_remote_debugging(enable_remote_debugging_);
+  create_params.set_autoplay_policy(
+      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
   runner_->CreateFrameWithParams(std::move(create_params), frame_.NewRequest());
 
   // If the Frame unexpectedly disconnects then tear-down this Component.

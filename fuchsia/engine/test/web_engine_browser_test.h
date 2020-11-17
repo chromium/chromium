@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "content/public/test/browser_test_base.h"
 #include "fuchsia/engine/browser/context_impl.h"
 
@@ -26,10 +27,17 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   // object by WebEngineBrowserTest.
   static void SetContextClientChannel(zx::channel channel);
 
-  // Creates a Frame for this Context.
+  // Creates a Frame for this Context using default parameters.
   // |listener|: If set, specifies the navigation listener for the Frame.
   fuchsia::web::FramePtr CreateFrame(
       fuchsia::web::NavigationEventListener* listener);
+
+  // Creates a Frame for this Context using non-default parameters.
+  // |listener|: If set, specifies the navigation listener for the Frame.
+  // |params|: The CreateFrameParams to use.
+  fuchsia::web::FramePtr CreateFrameWithParams(
+      fuchsia::web::NavigationEventListener* listener,
+      fuchsia::web::CreateFrameParams params);
 
   // Gets the client object for the Context service.
   fuchsia::web::ContextPtr& context() { return context_; }
@@ -41,6 +49,8 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   navigation_listener_bindings() {
     return navigation_listener_bindings_;
   }
+
+  void SetHeadlessInCommandLine(base::CommandLine* command_line);
 
   void set_test_server_root(const base::FilePath& path) {
     test_server_root_ = path;
