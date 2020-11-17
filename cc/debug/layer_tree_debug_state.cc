@@ -4,10 +4,29 @@
 
 #include "cc/debug/layer_tree_debug_state.h"
 
+
 namespace cc {
 
 // IMPORTANT: new fields must be added to Equal() and Unite()
-LayerTreeDebugState::LayerTreeDebugState() = default;
+LayerTreeDebugState::LayerTreeDebugState()
+    : show_fps_counter(false),
+      show_debug_borders(false),
+      show_layout_shift_regions(false),
+      show_paint_rects(false),
+      show_property_changed_rects(false),
+      show_surface_damage_rects(false),
+      show_screen_space_rects(false),
+      show_touch_event_handler_rects(false),
+      show_wheel_event_handler_rects(false),
+      show_scroll_event_handler_rects(false),
+      show_non_fast_scrollable_rects(false),
+      show_main_thread_scrolling_reason_rects(false),
+      show_layer_animation_bounds_rects(false),
+      slow_down_raster_scale_factor(0),
+      rasterize_only_visible_content(false),
+      highlight_non_lcd_text_layers(false),
+      show_hit_test_borders(false),
+      record_rendering_stats_(false) {}
 
 LayerTreeDebugState::LayerTreeDebugState(const LayerTreeDebugState& other) =
     default;
@@ -22,11 +41,11 @@ bool LayerTreeDebugState::RecordRenderingStats() const {
   return record_rendering_stats_;
 }
 
-bool LayerTreeDebugState::ShouldCreateHudLayer() const {
-  return show_fps_counter || ShowDebugRects() || show_web_vital_metrics;
+bool LayerTreeDebugState::ShowHudInfo() const {
+  return show_fps_counter || ShowHudRects();
 }
 
-bool LayerTreeDebugState::ShowDebugRects() const {
+bool LayerTreeDebugState::ShowHudRects() const {
   return show_paint_rects || show_property_changed_rects ||
          show_surface_damage_rects || show_screen_space_rects ||
          show_touch_event_handler_rects || show_wheel_event_handler_rects ||
@@ -37,10 +56,6 @@ bool LayerTreeDebugState::ShowDebugRects() const {
 
 bool LayerTreeDebugState::ShowMemoryStats() const {
   return show_fps_counter;
-}
-
-bool LayerTreeDebugState::ShouldDrawHudInfo() const {
-  return show_fps_counter || show_web_vital_metrics;
 }
 
 bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
@@ -65,7 +80,6 @@ bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
       a.rasterize_only_visible_content == b.rasterize_only_visible_content &&
       a.highlight_non_lcd_text_layers == b.highlight_non_lcd_text_layers &&
       a.show_hit_test_borders == b.show_hit_test_borders &&
-      a.show_web_vital_metrics == b.show_web_vital_metrics &&
       a.record_rendering_stats_ == b.record_rendering_stats_);
 }
 
@@ -95,8 +109,6 @@ LayerTreeDebugState LayerTreeDebugState::Unite(const LayerTreeDebugState& a,
   r.highlight_non_lcd_text_layers |= b.highlight_non_lcd_text_layers;
 
   r.show_hit_test_borders |= b.show_hit_test_borders;
-
-  r.show_web_vital_metrics |= b.show_web_vital_metrics;
 
   r.record_rendering_stats_ |= b.record_rendering_stats_;
 

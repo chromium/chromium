@@ -2429,7 +2429,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   memory_history_->SaveEntry(tile_manager_.memory_stats_from_last_assign());
 
-  if (debug_state_.ShowDebugRects()) {
+  if (debug_state_.ShowHudRects()) {
     debug_rect_history_->SaveDebugRectsForCurrentFrame(
         active_tree(), active_tree_->hud_layer(), *frame->render_surface_list,
         debug_state_);

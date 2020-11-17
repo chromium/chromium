@@ -127,11 +127,6 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void DrawDebugRects(PaintCanvas* canvas,
                       DebugRectHistory* debug_rect_history);
 
-  SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
-                             int right,
-                             int top,
-                             int width) const;
-
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
   viz::DrawQuad* current_quad_ = nullptr;
