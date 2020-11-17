@@ -12,9 +12,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
-import './icons.js';
 import './page_size_select.js';
 import './resolution_select.js';
+import './scan_done_section.js';
 import './scan_preview.js';
 import './scan_to_select.js';
 import './scanner_select.js';
@@ -372,7 +372,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowDonePage_() {
+  shouldShowDoneSection_() {
     return this.appState_ === AppState.DONE;
   },
 
@@ -442,4 +442,12 @@ Polymer({
 
     this.appState_ = newState;
   },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onChangeAppState_(event) {
+    this.setAppState_(event.detail);
+  }
 });

@@ -23,6 +23,8 @@
       <include name="IDR_SCANNING_APP_SCANNER_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanner_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SOURCE_SELECT_HTML" file="source_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SOURCE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/source_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCAN_DONE_SECTION_HTML" file="scan_done_section.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCAN_DONE_SECTION_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_done_section.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_HTML" file="file_type_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/file_type_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_HTML" file="color_mode_select.html" type="BINDATA"/>

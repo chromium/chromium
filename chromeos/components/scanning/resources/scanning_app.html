@@ -4,16 +4,6 @@
     color: var(--scanning-section-title-text-color);
   }
 
-  #checkMarkIcon {
-    margin-inline-end: 12px;
-    min-width: 24px;
-    padding-bottom: 2px;
-  }
-
-  #fileSaved {
-    display: inline-block;
-  }
-
   #moreSettingsButton {
     --ink-color: var(--menu-text-color);
     --paper-ripple-opacity: 0;
@@ -85,12 +75,6 @@
     justify-content: flex-end;
     width: 289px;
   }
-
-  .done-button-container {
-    display: flex;
-    justify-content: flex-end;
-    width: 280px;
-  }
 </style>
 <div id="scanningContainer">
   <div class="panel-container">
@@ -100,7 +84,7 @@
           progress-percent="[[progressPercent_]]"></scan-preview>
     </div>
     <div class="right-panel">
-      <template is="dom-if" if="[[!shouldShowDonePage_(appState_)]]">
+      <template is="dom-if" if="[[!shouldShowDoneSection_(appState_)]]">
         <h1 id="appTitle">[[i18n('appTitle')]]</h1>
         <scanner-select id="scannerSelect" scanners="[[scanners_]]"
             loaded="[[areScannersLoaded_(appState_)]]"
@@ -154,17 +138,9 @@
         </div>
         <p id="statusText">[[statusText_]]</p>
       </template>
-      <template is="dom-if" if="[[shouldShowDonePage_(appState_)]]">
-        <iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
-        <h1 id="fileSaved" class="title">
-          [[getFileSavedText_(pageNumber_)]]
-        </h1>
-        <div class="done-button-container">
-          <cr-button id="doneButton" class="action-button"
-              on-click="onDoneClick_">
-            [[i18n('doneButtonText')]]
-          </cr-button>
-        </div>
+      <template is="dom-if" if="[[shouldShowDoneSection_(appState_)]]">
+        <scan-done-section page-number="[[pageNumber_]]"
+            on-change-app-state="onChangeAppState_"></scan-done-section>
       </template>
     </div>
   </div>

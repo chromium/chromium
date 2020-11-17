@@ -276,7 +276,7 @@ export function scanningAppTest() {
    * @return {!Promise}
    */
   function clickDoneButton() {
-    const button = scanningApp.$$('#doneButton');
+    const button = scanningApp.$$('scan-done-section').$$('#doneButton');
     assertTrue(!!button);
     button.click();
     return flushTasks();
@@ -380,7 +380,8 @@ export function scanningAppTest() {
           assertTrue(isVisible(helperText));
           assertFalse(isVisible(scanProgress));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('scan-done-section'))));
 
           // Click the Scan button and wait till the scan is started.
           scanButton.click();
@@ -403,7 +404,8 @@ export function scanningAppTest() {
           assertFalse(isVisible(helperText));
           assertTrue(isVisible(scanProgress));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('scan-done-section'))));
           assertEquals('Scanning page 1', progressText.textContent.trim());
           assertEquals(0, progressBar.value);
 
@@ -440,10 +442,13 @@ export function scanningAppTest() {
         })
         .then(() => {
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('scan-done-section'))));
           assertEquals(
               'Scanned files saved!',
-              scanningApp.$$('#fileSaved').textContent.trim());
+              scanningApp.$$('scan-done-section')
+                  .$$('#title')
+                  .textContent.trim());
 
           // Click the Done button to return to READY state.
           return clickDoneButton();
@@ -463,7 +468,8 @@ export function scanningAppTest() {
           assertTrue(isVisible(helperText));
           assertFalse(isVisible(scanProgress));
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('scan-done-section'))));
         });
   });
 

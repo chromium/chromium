@@ -1,0 +1,30 @@
+<style include="scanning-fonts">
+  #checkMarkIcon {
+    margin-inline-end: 12px;
+    min-width: 24px;
+    padding-bottom: 2px;
+  }
+
+  .done-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+    width: 264px;
+  }
+
+  #title {
+    @apply --scanning-done-section-title-font;
+    color: var(--scanning-done-section-title-text-color);
+    display: inline-block;
+  }
+</style>
+<iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
+<h1 id="title" >
+  [[getTitleText_(pageNumber)]]
+</h1>
+<div class="done-button-container">
+  <cr-button id="doneButton" class="action-button"
+      on-click="onDoneClick_">
+    [[i18n('doneButtonText')]]
+  </cr-button>
+</div>

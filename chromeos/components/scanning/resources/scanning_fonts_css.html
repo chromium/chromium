@@ -1,6 +1,8 @@
 <template>
   <style>
     :host {
+      --scanning-done-section-title-font-family: "Google Sans", Roboto, sans-serif;
+      --scanning-done-section-option-font-family: Roboto;
       --scanning-helper-text-font-family: "Google Sans", Roboto, sans-serif;
       --scanning-more-settings-font-family: Roboto;
       --scanning-progress-text-font-family: "Google Sans", Roboto, sans-serif;
@@ -8,6 +10,8 @@
       --scanning-select-font-family: Roboto;
 
       --scanning-chevron-icon-font-size: 20px;
+      --scanning-done-section-title-font-size: 20px;
+      --scanning-done-section-options-font-size: 13px;
       --scanning-helper-text-font-size: 16px;
       --scanning-more-settings-font-size: 12px;
       --scanning-progress-text-font-size: 16px;
@@ -15,6 +19,8 @@
       --scanning-select-font-size: 13px;
 
       --scanning-chevron-icon-color: var(--google-grey-700);
+      --scanning-done-section-title-text-color: var(--google-grey-900);
+      --scanning-done-section-option-text-color: var(--google-grey-900);
       --scanning-helper-text-color: var(--google-grey-700);
       --scanning-more-settings-text-color: var(--google-grey-700);
       --scanning-progress-text-color: var(--google-grey-700);
@@ -39,6 +45,16 @@
       --scanning-progress-text-font: {
         font-family: var(--scanning-progress-text-font-family);
         font-size: var(--scanning-progress-text-font-size);
+      }
+
+      --scanning-done-section-title-font: {
+        font-family: var(--scanning-done-section-title-font-family);
+        font-size: var(--scanning-done-section-title-font-size);
+      }
+
+      --scanning-done-section-option-font: {
+        font-family: var(--scanning-done-section-option-font-family);
+        font-size: var(--scanning-done-section-option-font-size);
       }
     }
   </style>
