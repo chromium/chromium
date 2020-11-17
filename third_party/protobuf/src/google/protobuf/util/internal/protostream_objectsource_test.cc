@@ -47,9 +47,9 @@
 #include <google/protobuf/util/internal/testdata/timestamp_duration.pb.h>
 #include <google/protobuf/util/internal/type_info_test_helper.h>
 #include <google/protobuf/util/internal/constants.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/casts.h>
+#include <google/protobuf/stubs/status.h>
 
 
 namespace google {
@@ -57,6 +57,7 @@ namespace protobuf {
 namespace util {
 namespace converter {
 
+using ::google::protobuf::Any;
 using io::ArrayInputStream;
 using io::CodedInputStream;
 using proto_util_converter::testing::AnyM;
@@ -152,13 +153,13 @@ class ProtostreamObjectSourceTest
         ->RenderInt32("", 3208)
         ->EndList()
         ->StartList("repFix64")
-        ->RenderUint64("", bit_cast<uint64>(6401LL))
-        ->RenderUint64("", bit_cast<uint64>(0LL))
+        ->RenderUint64("", bit_cast<uint64>(int64{6401}))
+        ->RenderUint64("", bit_cast<uint64>(int64{0}))
         ->EndList()
         ->StartList("repU64")
-        ->RenderUint64("", bit_cast<uint64>(0LL))
-        ->RenderUint64("", bit_cast<uint64>(6402LL))
-        ->RenderUint64("", bit_cast<uint64>(6403LL))
+        ->RenderUint64("", bit_cast<uint64>(int64{0}))
+        ->RenderUint64("", bit_cast<uint64>(int64{6402}))
+        ->RenderUint64("", bit_cast<uint64>(int64{6403}))
         ->EndList()
         ->StartList("repI64")
         ->RenderInt64("", 6404L)
@@ -325,8 +326,8 @@ TEST_P(ProtostreamObjectSourceTest, Primitives) {
       ->RenderInt32("i32", 3203)
       ->RenderInt32("sf32", 3204)
       ->RenderInt32("s32", 3205)
-      ->RenderUint64("fix64", bit_cast<uint64>(6401LL))
-      ->RenderUint64("u64", bit_cast<uint64>(6402LL))
+      ->RenderUint64("fix64", bit_cast<uint64>(int64{6401}))
+      ->RenderUint64("u64", bit_cast<uint64>(int64{6402}))
       ->RenderInt64("i64", 6403L)
       ->RenderInt64("sf64", 6404L)
       ->RenderInt64("s64", 6405L)
@@ -1155,6 +1156,7 @@ TEST_P(ProtostreamObjectSourceTimestampTest, TimestampDurationDefaultValue) {
 
   DoTest(out, TimestampDuration::descriptor());
 }
+
 
 
 }  // namespace converter

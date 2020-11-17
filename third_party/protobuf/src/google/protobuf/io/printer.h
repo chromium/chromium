@@ -37,11 +37,12 @@
 #ifndef GOOGLE_PROTOBUF_IO_PRINTER_H__
 #define GOOGLE_PROTOBUF_IO_PRINTER_H__
 
+
 #include <map>
 #include <string>
 #include <vector>
-#include <google/protobuf/stubs/common.h>
 
+#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -53,7 +54,7 @@ class ZeroCopyOutputStream;  // zero_copy_stream.h
 // Records annotations about a Printer's output.
 class PROTOBUF_EXPORT AnnotationCollector {
  public:
-  // Annotation is a ofset range and a payload pair.
+  // Annotation is a offset range and a payload pair.
   typedef std::pair<std::pair<size_t, size_t>, std::string> Annotation;
 
   // Records that the bytes in file_path beginning with begin_offset and ending
@@ -193,8 +194,8 @@ class PROTOBUF_EXPORT Printer {
 
   ~Printer();
 
-  // Link a subsitution variable emitted by the last call to Print to the object
-  // described by descriptor.
+  // Link a substitution variable emitted by the last call to Print to the
+  // object described by descriptor.
   template <typename SomeDescriptor>
   void Annotate(const char* varname, const SomeDescriptor* descriptor) {
     Annotate(varname, varname, descriptor);
@@ -217,7 +218,7 @@ class PROTOBUF_EXPORT Printer {
     Annotate(begin_varname, end_varname, descriptor->file()->name(), path);
   }
 
-  // Link a subsitution variable emitted by the last call to Print to the file
+  // Link a substitution variable emitted by the last call to Print to the file
   // with path file_name.
   void Annotate(const char* varname, const std::string& file_name) {
     Annotate(varname, varname, file_name);

@@ -45,9 +45,9 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/compiler/plugin.pb.h>
 #include <google/protobuf/compiler/code_generator.h>
-#include <google/protobuf/io/io_win32.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.h>
+#include <google/protobuf/io/io_win32.h>
 
 
 namespace google {
@@ -83,6 +83,16 @@ class GeneratorResponseContext : public GeneratorContext {
     CodeGeneratorResponse::File* file = response_->add_file();
     file->set_name(filename);
     file->set_insertion_point(insertion_point);
+    return new io::StringOutputStream(file->mutable_content());
+  }
+
+  virtual io::ZeroCopyOutputStream* OpenForInsertWithGeneratedCodeInfo(
+      const std::string& filename, const std::string& insertion_point,
+      const google::protobuf::GeneratedCodeInfo& info) {
+    CodeGeneratorResponse::File* file = response_->add_file();
+    file->set_name(filename);
+    file->set_insertion_point(insertion_point);
+    *file->mutable_generated_code_info() = info;
     return new io::StringOutputStream(file->mutable_content());
   }
 
@@ -131,6 +141,8 @@ bool GenerateCode(const CodeGeneratorRequest& request,
   std::string error;
   bool succeeded = generator.GenerateAll(parsed_files, request.parameter(),
                                          &context, &error);
+
+  response->set_supported_features(generator.GetSupportedFeatures());
 
   if (!succeeded && error.empty()) {
     error =

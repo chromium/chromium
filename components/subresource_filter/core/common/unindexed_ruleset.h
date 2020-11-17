@@ -70,7 +70,7 @@ class UnindexedRulesetWriter {
   int max_rules_per_chunk() const { return max_rules_per_chunk_; }
 
   // Returns whether an I/O error occurred since this object was created.
-  bool had_error() const { return coded_stream_.HadError(); }
+  bool had_error() { return coded_stream_.HadError(); }
 
   // Places the |rule| to the current chunk, and serializes the chunk if it has
   // grown up to |max_rules_per_chunk|.

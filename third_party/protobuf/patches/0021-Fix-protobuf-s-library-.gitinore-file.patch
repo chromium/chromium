@@ -1,12 +1,10 @@
-diff --git a/.gitignore b/.gitignore
-index db8a893a..e966c6b6 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -53,6 +53,7 @@ src/google/protobuf/util/**/*.pb.h
  *.pyc
  *.egg-info
  *_pb2.py
-+!python/google/protobuf/descriptor_pb2.py
- python/*.egg
+++!python/google/protobuf/descriptor_pb2.py
+ python/**/*.egg
  python/.eggs/
  python/.tox

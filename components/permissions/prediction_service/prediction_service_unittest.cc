@@ -109,8 +109,7 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_avg_grant_rate(0);
   permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0);
   permission_feature->mutable_permission_stats()->set_prompts_count(0);
-  permission_feature->mutable_notification_permission()
-      ->InitAsDefaultInstance();
+  permission_feature->mutable_notification_permission()->Clear();
 
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
@@ -138,8 +137,7 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_avg_grant_rate(0.29);
   permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0.24);
   permission_feature->mutable_permission_stats()->set_prompts_count(21);
-  permission_feature->mutable_notification_permission()
-      ->InitAsDefaultInstance();
+  permission_feature->mutable_notification_permission()->Clear();
 
   kRequestEqualCountsTotal100.mutable_client_features()
       ->mutable_client_stats()
@@ -167,8 +165,7 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_avg_grant_rate(.25);
   permission_feature->mutable_permission_stats()->set_avg_ignore_rate(.25);
   permission_feature->mutable_permission_stats()->set_prompts_count(100);
-  permission_feature->mutable_notification_permission()
-      ->InitAsDefaultInstance();
+  permission_feature->mutable_notification_permission()->Clear();
 
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
@@ -196,8 +193,7 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_avg_grant_rate(0);
   permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0);
   permission_feature->mutable_permission_stats()->set_prompts_count(0);
-  permission_feature->mutable_notification_permission()
-      ->InitAsDefaultInstance();
+  permission_feature->mutable_notification_permission()->Clear();
 
   auto* prediction = kResponseLikely.mutable_suggestion()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(

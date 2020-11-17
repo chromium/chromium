@@ -113,7 +113,8 @@ class FileGenerator {
   void GenerateSourceIncludes(io::Printer* printer);
   void GenerateSourceDefaultInstance(int idx, io::Printer* printer);
 
-  void GenerateInitForSCC(const SCC* scc, io::Printer* printer);
+  void GenerateInitForSCC(const SCC* scc, const CrossFileReferences& refs,
+                          io::Printer* printer);
   void GenerateTables(io::Printer* printer);
   void GenerateReflectionInitializationCode(io::Printer* printer);
 
@@ -147,7 +148,7 @@ class FileGenerator {
   // Generates extension identifiers.
   void GenerateExtensionIdentifiers(io::Printer* printer);
 
-  // Generates inline function defintions.
+  // Generates inline function definitions.
   void GenerateInlineFunctionDefinitions(io::Printer* printer);
 
   void GenerateProto2NamespaceEnumSpecializations(io::Printer* printer);

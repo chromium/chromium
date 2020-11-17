@@ -32,14 +32,16 @@
 #define GOOGLE_PROTOBUF_UTIL_CONVERTER_OBJECT_WRITER_H__
 
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/stringpiece.h>
+#include <google/protobuf/stubs/strutil.h>
 
+// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
 namespace util {
 namespace converter {
+
 
 class DataPiece;
 
@@ -91,7 +93,6 @@ class PROTOBUF_EXPORT ObjectWriter {
 
   // Renders a double value.
   virtual ObjectWriter* RenderDouble(StringPiece name, double value) = 0;
-
   // Renders a float value.
   virtual ObjectWriter* RenderFloat(StringPiece name, float value) = 0;
 
@@ -109,6 +110,7 @@ class PROTOBUF_EXPORT ObjectWriter {
   // Renders a DataPiece object to a ObjectWriter.
   static void RenderDataPieceTo(const DataPiece& data, StringPiece name,
                                 ObjectWriter* ow);
+
 
   // Indicates whether this ObjectWriter has completed writing the root message,
   // usually this means writing of one complete object. Subclasses must override

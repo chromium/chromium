@@ -36,7 +36,7 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/type.pb.h>
-#include <google/protobuf/stubs/stringpiece.h>
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/statusor.h>
 
 #include <google/protobuf/port_def.inc>
@@ -54,7 +54,7 @@ class ProtoWriter;
 //
 // For string, a StringPiece is stored. For Cord, a pointer to Cord is stored.
 // Just like StringPiece, the DataPiece class does not own the storage for
-// the actual string or Cord, so it is the user's responsiblity to guarantee
+// the actual string or Cord, so it is the user's responsibility to guarantee
 // that the underlying storage is still valid when the DataPiece is accessed.
 class PROTOBUF_EXPORT DataPiece {
  public:

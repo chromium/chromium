@@ -103,6 +103,8 @@ class PROTOBUF_EXPORT TextFormat {
 
     virtual void Indent() {}
     virtual void Outdent() {}
+    // Returns the current indentation size in characters.
+    virtual size_t GetCurrentIndentationSize() const { return 0; }
 
     // Print text to the output stream.
     virtual void Print(const char* text, size_t size) = 0;
@@ -147,6 +149,14 @@ class PROTOBUF_EXPORT TextFormat {
     virtual void PrintMessageStart(const Message& message, int field_index,
                                    int field_count, bool single_line_mode,
                                    BaseTextGenerator* generator) const;
+    // Allows to override the logic on how to print the content of a message.
+    // Return false to use the default printing logic. Note that it is legal for
+    // this function to print something and then return false to use the default
+    // content printing (although at that point it would behave similarly to
+    // PrintMessageStart).
+    virtual bool PrintMessageContent(const Message& message, int field_index,
+                                     int field_count, bool single_line_mode,
+                                     BaseTextGenerator* generator) const;
     virtual void PrintMessageEnd(const Message& message, int field_index,
                                  int field_count, bool single_line_mode,
                                  BaseTextGenerator* generator) const;
@@ -155,8 +165,8 @@ class PROTOBUF_EXPORT TextFormat {
     GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(FastFieldValuePrinter);
   };
 
-  class PROTOBUF_EXPORT PROTOBUF_DEPRECATED_MSG(
-      "Please use FastFieldValuePrinter") FieldValuePrinter {
+  // Deprecated: please use FastFieldValuePrinter instead.
+  class PROTOBUF_EXPORT FieldValuePrinter {
    public:
     FieldValuePrinter();
     virtual ~FieldValuePrinter();
@@ -234,7 +244,6 @@ class PROTOBUF_EXPORT TextFormat {
   class PROTOBUF_EXPORT Printer {
    public:
     Printer();
-    ~Printer();
 
     // Like TextFormat::Print
     bool Print(const Message& message, io::ZeroCopyOutputStream* output) const;
@@ -285,10 +294,12 @@ class PROTOBUF_EXPORT TextFormat {
     // sequences. This will change the default FastFieldValuePrinter.
     void SetUseUtf8StringEscaping(bool as_utf8);
 
-    // Set the default (Fast)FieldValuePrinter that is used for all fields that
+    // Set the default FastFieldValuePrinter that is used for all fields that
     // don't have a field-specific printer registered.
     // Takes ownership of the printer.
     void SetDefaultFieldValuePrinter(const FastFieldValuePrinter* printer);
+
+    PROTOBUF_DEPRECATED_MSG("Please use FastFieldValuePrinter")
     void SetDefaultFieldValuePrinter(const FieldValuePrinter* printer);
 
     // Sets whether we want to hide unknown fields or not.
@@ -334,15 +345,17 @@ class PROTOBUF_EXPORT TextFormat {
       truncate_string_field_longer_than_ = truncate_string_field_longer_than;
     }
 
-    // Register a custom field-specific (Fast)FieldValuePrinter for fields
+    // Register a custom field-specific FastFieldValuePrinter for fields
     // with a particular FieldDescriptor.
     // Returns "true" if the registration succeeded, or "false", if there is
     // already a printer for that FieldDescriptor.
     // Takes ownership of the printer on successful registration.
     bool RegisterFieldValuePrinter(const FieldDescriptor* field,
-                                   const FieldValuePrinter* printer);
-    bool RegisterFieldValuePrinter(const FieldDescriptor* field,
                                    const FastFieldValuePrinter* printer);
+
+    PROTOBUF_DEPRECATED_MSG("Please use FastFieldValuePrinter")
+    bool RegisterFieldValuePrinter(const FieldDescriptor* field,
+                                   const FieldValuePrinter* printer);
 
     // Register a custom message-specific MessagePrinter for messages with a
     // particular Descriptor.
@@ -355,6 +368,8 @@ class PROTOBUF_EXPORT TextFormat {
     // Forward declaration of an internal class used to print the text
     // output to the OutputStream (see text_format.cc for implementation).
     class TextGenerator;
+
+    static const char* const kDoNotParse;
 
     // Internal Print method, used for writing to the OutputStream via
     // the TextGenerator class.
@@ -386,34 +401,36 @@ class PROTOBUF_EXPORT TextFormat {
 
     // Print the fields in an UnknownFieldSet.  They are printed by tag number
     // only.  Embedded messages are heuristically identified by attempting to
-    // parse them.
+    // parse them (subject to the recursion budget).
     void PrintUnknownFields(const UnknownFieldSet& unknown_fields,
-                            TextGenerator* generator) const;
+                            TextGenerator* generator,
+                            int recursion_budget) const;
 
     bool PrintAny(const Message& message, TextGenerator* generator) const;
 
+    const FastFieldValuePrinter* GetFieldPrinter(
+        const FieldDescriptor* field) const {
+      auto it = custom_printers_.find(field);
+      return it == custom_printers_.end() ? default_field_value_printer_.get()
+                                          : it->second.get();
+    }
+
     int initial_indent_level_;
-
     bool single_line_mode_;
-
     bool use_field_number_;
-
     bool use_short_repeated_primitives_;
-
     bool hide_unknown_fields_;
-
     bool print_message_fields_in_index_order_;
-
     bool expand_any_;
-
     int64 truncate_string_field_longer_than_;
 
     std::unique_ptr<const FastFieldValuePrinter> default_field_value_printer_;
-    typedef std::map<const FieldDescriptor*, const FastFieldValuePrinter*>
+    typedef std::map<const FieldDescriptor*,
+                     std::unique_ptr<const FastFieldValuePrinter>>
         CustomPrinterMap;
     CustomPrinterMap custom_printers_;
 
-    typedef std::map<const Descriptor*, const MessagePrinter*>
+    typedef std::map<const Descriptor*, std::unique_ptr<const MessagePrinter>>
         CustomMessagePrinterMap;
     CustomMessagePrinterMap custom_message_printers_;
 
@@ -437,7 +454,7 @@ class PROTOBUF_EXPORT TextFormat {
   // google::protobuf::MessageLite::ParseFromString().
   static bool Parse(io::ZeroCopyInputStream* input, Message* output);
   // Like Parse(), but reads directly from a string.
-  static bool ParseFromString(const std::string& input, Message* output);
+  static bool ParseFromString(ConstStringParam input, Message* output);
 
   // Like Parse(), but the data is merged into the given message, as if
   // using Message::MergeFrom().
@@ -466,8 +483,9 @@ class PROTOBUF_EXPORT TextFormat {
   // value parsed from the text.
   class PROTOBUF_EXPORT ParseInfoTree {
    public:
-    ParseInfoTree();
-    ~ParseInfoTree();
+    ParseInfoTree() = default;
+    ParseInfoTree(const ParseInfoTree&) = delete;
+    ParseInfoTree& operator=(const ParseInfoTree&) = delete;
 
     // Returns the parse location for index-th value of the field in the parsed
     // text. If none exists, returns a location with line = -1. Index should be
@@ -496,13 +514,12 @@ class PROTOBUF_EXPORT TextFormat {
 
     // Defines the map from the index-th field descriptor to the nested parse
     // info tree.
-    typedef std::map<const FieldDescriptor*, std::vector<ParseInfoTree*> >
+    typedef std::map<const FieldDescriptor*,
+                     std::vector<std::unique_ptr<ParseInfoTree>>>
         NestedMap;
 
     LocationMap locations_;
     NestedMap nested_;
-
-    GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ParseInfoTree);
   };
 
   // For more control over parsing, use this class.
@@ -514,7 +531,7 @@ class PROTOBUF_EXPORT TextFormat {
     // Like TextFormat::Parse().
     bool Parse(io::ZeroCopyInputStream* input, Message* output);
     // Like TextFormat::ParseFromString().
-    bool ParseFromString(const std::string& input, Message* output);
+    bool ParseFromString(ConstStringParam input, Message* output);
     // Like TextFormat::Merge().
     bool Merge(io::ZeroCopyInputStream* input, Message* output);
     // Like TextFormat::MergeFromString().

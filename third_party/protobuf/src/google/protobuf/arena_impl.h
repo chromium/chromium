@@ -107,7 +107,27 @@ class PROTOBUF_EXPORT ArenaImpl {
   uint64 SpaceAllocated() const;
   uint64 SpaceUsed() const;
 
-  void* AllocateAligned(size_t n);
+  void* AllocateAligned(size_t n) {
+    SerialArena* arena;
+    if (PROTOBUF_PREDICT_TRUE(GetSerialArenaFast(&arena))) {
+      return arena->AllocateAligned(n);
+    } else {
+      return AllocateAlignedFallback(n);
+    }
+  }
+
+  // This function allocates n bytes if the common happy case is true and
+  // returns true. Otherwise does nothing and returns false. This strange
+  // semantics is necessary to allow callers to program functions that only
+  // have fallback function calls in tail position. This substantially improves
+  // code for the happy path.
+  PROTOBUF_ALWAYS_INLINE bool MaybeAllocateAligned(size_t n, void** out) {
+    SerialArena* a;
+    if (PROTOBUF_PREDICT_TRUE(GetSerialArenaFromThreadCache(&a))) {
+      return a->MaybeAllocateAligned(n, out);
+    }
+    return false;
+  }
 
   void* AllocateAlignedAndAddCleanup(size_t n, void (*cleanup)(void*));
 
@@ -115,6 +135,8 @@ class PROTOBUF_EXPORT ArenaImpl {
   void AddCleanup(void* elem, void (*cleanup)(void*));
 
  private:
+  friend class ArenaBenchmark;
+
   void* AllocateAlignedFallback(size_t n);
   void* AllocateAlignedAndAddCleanupFallback(size_t n, void (*cleanup)(void*));
   void AddCleanupFallback(void* elem, void (*cleanup)(void*));
@@ -156,10 +178,12 @@ class PROTOBUF_EXPORT ArenaImpl {
     void CleanupList();
     uint64 SpaceUsed() const;
 
+    bool HasSpace(size_t n) { return n <= static_cast<size_t>(limit_ - ptr_); }
+
     void* AllocateAligned(size_t n) {
       GOOGLE_DCHECK_EQ(internal::AlignUpTo8(n), n);  // Must be already aligned.
       GOOGLE_DCHECK_GE(limit_, ptr_);
-      if (PROTOBUF_PREDICT_FALSE(static_cast<size_t>(limit_ - ptr_) < n)) {
+      if (PROTOBUF_PREDICT_FALSE(!HasSpace(n))) {
         return AllocateAlignedFallback(n);
       }
       void* ret = ptr_;
@@ -168,6 +192,20 @@ class PROTOBUF_EXPORT ArenaImpl {
       ASAN_UNPOISON_MEMORY_REGION(ret, n);
 #endif  // ADDRESS_SANITIZER
       return ret;
+    }
+
+    // Allocate space if the current region provides enough space.
+    bool MaybeAllocateAligned(size_t n, void** out) {
+      GOOGLE_DCHECK_EQ(internal::AlignUpTo8(n), n);  // Must be already aligned.
+      GOOGLE_DCHECK_GE(limit_, ptr_);
+      if (PROTOBUF_PREDICT_FALSE(!HasSpace(n))) return false;
+      void* ret = ptr_;
+      ptr_ += n;
+#ifdef ADDRESS_SANITIZER
+      ASAN_UNPOISON_MEMORY_REGION(ret, n);
+#endif  // ADDRESS_SANITIZER
+      *out = ret;
+      return true;
     }
 
     void AddCleanup(void* elem, void (*cleanup)(void*)) {
@@ -250,16 +288,16 @@ class PROTOBUF_EXPORT ArenaImpl {
   };
   static std::atomic<LifecycleId> lifecycle_id_generator_;
 #if defined(GOOGLE_PROTOBUF_NO_THREADLOCAL)
-  // Android ndk does not support GOOGLE_THREAD_LOCAL keyword so we use a custom thread
+  // Android ndk does not support __thread keyword so we use a custom thread
   // local storage class we implemented.
-  // iOS also does not support the GOOGLE_THREAD_LOCAL keyword.
+  // iOS also does not support the __thread keyword.
   static ThreadCache& thread_cache();
 #elif defined(PROTOBUF_USE_DLLS)
   // Thread local variables cannot be exposed through DLL interface but we can
   // wrap them in static functions.
   static ThreadCache& thread_cache();
 #else
-  static GOOGLE_THREAD_LOCAL ThreadCache thread_cache_;
+  static PROTOBUF_THREAD_LOCAL ThreadCache thread_cache_;
   static ThreadCache& thread_cache() { return thread_cache_; }
 #endif
 
@@ -291,8 +329,32 @@ class PROTOBUF_EXPORT ArenaImpl {
 
   Block* NewBlock(Block* last_block, size_t min_bytes);
 
-  SerialArena* GetSerialArena();
-  bool GetSerialArenaFast(SerialArena** arena);
+  PROTOBUF_ALWAYS_INLINE bool GetSerialArenaFast(SerialArena** arena) {
+    if (GetSerialArenaFromThreadCache(arena)) return true;
+
+    // Check whether we own the last accessed SerialArena on this arena.  This
+    // fast path optimizes the case where a single thread uses multiple arenas.
+    ThreadCache* tc = &thread_cache();
+    SerialArena* serial = hint_.load(std::memory_order_acquire);
+    if (PROTOBUF_PREDICT_TRUE(serial != NULL && serial->owner() == tc)) {
+      *arena = serial;
+      return true;
+    }
+    return false;
+  }
+
+  PROTOBUF_ALWAYS_INLINE bool GetSerialArenaFromThreadCache(
+      SerialArena** arena) {
+    // If this thread already owns a block in this arena then try to use that.
+    // This fast path optimizes the case where multiple threads allocate from
+    // the same arena.
+    ThreadCache* tc = &thread_cache();
+    if (PROTOBUF_PREDICT_TRUE(tc->last_lifecycle_id_seen == lifecycle_id_)) {
+      *arena = tc->last_serial_arena;
+      return true;
+    }
+    return false;
+  }
   SerialArena* GetSerialArenaFallback(void* me);
   LifecycleId lifecycle_id_;  // Unique for each arena. Changes on Reset().
 

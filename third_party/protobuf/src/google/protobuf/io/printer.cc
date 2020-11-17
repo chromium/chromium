@@ -32,11 +32,12 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
+#include <google/protobuf/io/printer.h>
+
 #include <cctype>
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 
 namespace google {
@@ -304,7 +305,7 @@ void Printer::FormatInternal(const std::vector<std::string>& args,
 }
 
 const char* Printer::WriteVariable(
-    const std::vector<string>& args,
+    const std::vector<std::string>& args,
     const std::map<std::string, std::string>& vars, const char* format,
     int* arg_index, std::vector<AnnotationCollector::Annotation>* annotations) {
   auto start = format;

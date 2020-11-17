@@ -32,12 +32,10 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/time.h>
 #include <google/protobuf/util/internal/expecting_objectwriter.h>
 #include <google/protobuf/util/internal/object_writer.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <gtest/gtest.h>
-
+#include <google/protobuf/stubs/time.h>
 #include <google/protobuf/stubs/status.h>
 
 
@@ -90,9 +88,9 @@ class JsonStreamParserTest : public ::testing::Test {
   virtual ~JsonStreamParserTest() {}
 
   util::Status RunTest(StringPiece json, int split,
-                       bool coerce_utf8 = false, bool allow_empty_null = false,
-                       bool loose_float_number_conversion = false) {
+                       std::function<void(JsonStreamParser*)> setup) {
     JsonStreamParser parser(&mock_);
+    setup(&parser);
 
     // Special case for split == length, test parsing one character at a time.
     if (split == json.length()) {
@@ -124,21 +122,22 @@ class JsonStreamParserTest : public ::testing::Test {
     return result;
   }
 
-  void DoTest(StringPiece json, int split, bool coerce_utf8 = false,
-              bool allow_empty_null = false,
-              bool loose_float_number_conversion = false) {
-    util::Status result = RunTest(json, split, coerce_utf8, allow_empty_null,
-                                  loose_float_number_conversion);
+  void DoTest(
+      StringPiece json, int split,
+      std::function<void(JsonStreamParser*)> setup = [](JsonStreamParser* p) {
+      }) {
+    util::Status result = RunTest(json, split, setup);
     if (!result.ok()) {
       GOOGLE_LOG(WARNING) << result;
     }
-    EXPECT_OK(result);
+    EXPECT_TRUE(result.ok());
   }
 
-  void DoErrorTest(StringPiece json, int split,
-                   StringPiece error_prefix, bool coerce_utf8 = false,
-                   bool allow_empty_null = false) {
-    util::Status result = RunTest(json, split, coerce_utf8, allow_empty_null);
+  void DoErrorTest(
+      StringPiece json, int split, StringPiece error_prefix,
+      std::function<void(JsonStreamParser*)> setup = [](JsonStreamParser* p) {
+      }) {
+    util::Status result = RunTest(json, split, setup);
     EXPECT_EQ(util::error::INVALID_ARGUMENT, result.code());
     StringPiece error_message(result.error_message());
     EXPECT_EQ(error_prefix, error_message.substr(0, error_prefix.size()));
@@ -147,7 +146,7 @@ class JsonStreamParserTest : public ::testing::Test {
 
 #ifndef _MSC_VER
   // TODO(xiaofeng): We have to disable InSequence check for MSVC because it
-  // causes stack overflow due to its use of a linked list that is desctructed
+  // causes stack overflow due to its use of a linked list that is destructed
   // recursively.
   ::testing::InSequence in_sequence_;
 #endif  // !_MSC_VER
@@ -236,7 +235,7 @@ TEST_F(JsonStreamParserTest, SimpleInt) {
 TEST_F(JsonStreamParserTest, SimpleNegativeInt) {
   StringPiece str = "-79497823553162765";
   for (int i = 0; i <= str.length(); ++i) {
-    ow_.RenderInt64("", -79497823553162765LL);
+    ow_.RenderInt64("", int64{-79497823553162765});
     DoTest(str, i);
   }
 }
@@ -244,7 +243,7 @@ TEST_F(JsonStreamParserTest, SimpleNegativeInt) {
 TEST_F(JsonStreamParserTest, SimpleUnsignedInt) {
   StringPiece str = "11779497823553162765";
   for (int i = 0; i <= str.length(); ++i) {
-    ow_.RenderUint64("", 11779497823553162765ULL);
+    ow_.RenderUint64("", uint64{11779497823553162765u});
     DoTest(str, i);
   }
 }
@@ -326,6 +325,33 @@ TEST_F(JsonStreamParserTest, ObjectKeyTypes) {
   }
 }
 
+TEST_F(JsonStreamParserTest, UnquotedObjectKeyWithReservedPrefxes) {
+  StringPiece str = "{ nullkey: \"a\", truekey: \"b\", falsekey: \"c\"}";
+  for (int i = 0; i <= str.length(); ++i) {
+    ow_.StartObject("")
+        ->RenderString("nullkey", "a")
+        ->RenderString("truekey", "b")
+        ->RenderString("falsekey", "c")
+        ->EndObject();
+    DoTest(str, i);
+  }
+}
+
+TEST_F(JsonStreamParserTest, UnquotedObjectKeyWithReservedKeyword) {
+  StringPiece str = "{ null: \"a\", true: \"b\", false: \"c\"}";
+  for (int i = 0; i <= str.length(); ++i) {
+    DoErrorTest(str, i, "Expected an object key or }.");
+  }
+}
+
+TEST_F(JsonStreamParserTest, UnquotedObjectKeyWithEmbeddedNonAlphanumeric) {
+  StringPiece str = "{ foo-bar-baz: \"a\"}";
+  for (int i = 0; i <= str.length(); ++i) {
+    DoErrorTest(str, i, "Expected : between key:value pair.");
+  }
+}
+
+
 // - array containing primitive values (true, false, null, num, string)
 TEST_F(JsonStreamParserTest, ArrayPrimitiveValues) {
   StringPiece str = "[true, false, null, 'one', \"two\"]";
@@ -352,7 +378,7 @@ TEST_F(JsonStreamParserTest, ArrayComplexValues) {
         ->RenderInt64("", -127)
         ->RenderDouble("", 45.3)
         ->RenderDouble("", -1056.4)
-        ->RenderUint64("", 11779497823553162765ULL)
+        ->RenderUint64("", uint64{11779497823553162765u})
         ->EndList()
         ->StartObject("")
         ->RenderBool("key", true)
@@ -380,7 +406,7 @@ TEST_F(JsonStreamParserTest, ObjectValues) {
         ->RenderInt64("ni", -127)
         ->RenderDouble("pd", 45.3)
         ->RenderDouble("nd", -1056.4)
-        ->RenderUint64("pl", 11779497823553162765ULL)
+        ->RenderUint64("pl", uint64{11779497823553162765u})
         ->StartList("l")
         ->StartList("")
         ->EndList()

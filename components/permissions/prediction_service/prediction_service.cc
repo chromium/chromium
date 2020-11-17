@@ -179,7 +179,7 @@ PredictionService::GetPredictionRequestProto(
   switch (entity.type) {
     case PermissionRequestType::PERMISSION_NOTIFICATIONS:
       permission_features->mutable_notification_permission()
-          ->InitAsDefaultInstance();
+          ->Clear();
       break;
     default:
       NOTREACHED() << "CPSS only supports notifications at the moment.";
