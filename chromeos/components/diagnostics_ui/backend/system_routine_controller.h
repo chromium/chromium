@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace base {
 class OneShotTimer;
@@ -52,11 +54,27 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       mojom::RoutineType routine_type,
       cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
+  void OnPowerRoutineStarted(
+      mojom::RoutineType routine_type,
+      cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
+
+  void ContinuePowerRoutine(mojom::RoutineType routine_type, int32_t id);
+
+  void OnPowerRoutineContinued(
+      mojom::RoutineType routine_type,
+      int32_t id,
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+
   void CheckRoutineStatus(mojom::RoutineType routine_type, int32_t id);
 
   void OnRoutineStatusUpdated(mojom::RoutineType routine_type,
                               int32_t id,
                               cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+
+  void HandlePowerRoutineStatusUpdate(
+      mojom ::RoutineType routine_type,
+      int32_t id,
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsRoutineRunning() const;
 
@@ -64,8 +82,23 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                                   mojom::RoutineType routine_type,
                                   int32_t id);
 
+  void ParsePowerRoutineResult(mojom::RoutineType routine_type,
+                               mojom::StandardRoutineResult result,
+                               mojo::ScopedHandle output_handle);
+
+  void OnPowerRoutineResultFetched(mojom::RoutineType routine_type,
+                                   const std::string& file_contents);
+
+  void OnPowerRoutineJsonParsed(mojom::RoutineType routine_type,
+                                data_decoder::DataDecoder::ValueOrError result);
+
   void OnStandardRoutineResult(mojom::RoutineType routine_type,
                                mojom::StandardRoutineResult result);
+
+  void OnPowerRoutineResult(mojom::RoutineType routine_type,
+                            mojom::StandardRoutineResult result,
+                            double percent_change,
+                            uint32_t seconds_elapsed);
 
   void BindCrosHealthdDiagnosticsServiceIfNeccessary();
 
@@ -80,6 +113,8 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       diagnostics_service_;
 
   mojo::Receiver<mojom::SystemRoutineController> receiver_{this};
+
+  base::WeakPtrFactory<SystemRoutineController> weak_factory_{this};
 };
 
 }  // namespace diagnostics

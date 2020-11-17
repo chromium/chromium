@@ -3,6 +3,7 @@ include_rules = [
   "+chromeos/grit/chromeos_diagnostics_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+content/public/browser",
+  "+services/data_decoder/public",
   "+ui/base",
   "+ui/resources",
   "+ui/webui",

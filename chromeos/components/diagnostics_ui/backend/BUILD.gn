@@ -27,6 +27,7 @@ static_library("backend") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
+    "//services/data_decoder/public/cpp",
   ]
 }
 
@@ -49,6 +50,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }

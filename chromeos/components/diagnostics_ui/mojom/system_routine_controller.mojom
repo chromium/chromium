@@ -5,6 +5,8 @@
 module chromeos.diagnostics.mojom;
 
 enum RoutineType {
+  kBatteryCharge,
+  kBatteryDischarge,
   kCpuCache,
   kCpuStress,
   kCpuFloatingPoint,
@@ -19,8 +21,15 @@ enum StandardRoutineResult {
   kUnableToRun,
 };
 
+struct PowerRoutineResult {
+  StandardRoutineResult simple_result;
+  double percent_change;
+  uint32 time_elapsed_seconds;
+};
+
 union RoutineResult {
   StandardRoutineResult simple_result;
+  PowerRoutineResult power_result;
 };
 
 struct RoutineResultInfo {
