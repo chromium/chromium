@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -107,9 +107,9 @@ class AutofillProfileSyncBridge
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
 
-  ScopedObserver<AutofillWebDataBackend,
-                 AutofillWebDataServiceObserverOnDBSequence>
-      scoped_observer_{this};
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridge);
 };

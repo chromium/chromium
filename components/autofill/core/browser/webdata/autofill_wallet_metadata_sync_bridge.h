@@ -10,7 +10,7 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -124,9 +124,9 @@ class AutofillWalletMetadataSyncBridge
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
 
-  ScopedObserver<AutofillWebDataBackend,
-                 AutofillWebDataServiceObserverOnDBSequence>
-      scoped_observer_{this};
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   // Cache of the local data that allows figuring out the diff for local
   // changes; keyed by storage keys.
