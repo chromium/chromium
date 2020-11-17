@@ -5,9 +5,13 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_MANAGER_IMPL_H_
 
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
+#include "base/util/type_safety/pass_key.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "components/services/storage/public/mojom/native_file_system_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
@@ -37,6 +41,7 @@ class NativeFileSystemFileHandleImpl;
 class NativeFileSystemDirectoryHandleImpl;
 class NativeFileSystemTransferTokenImpl;
 class NativeFileSystemDragDropTokenImpl;
+class NativeFileSystemFileWriterImpl;
 class StoragePartitionImpl;
 
 // This is the browser side implementation of the
@@ -56,6 +61,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       public storage::mojom::NativeFileSystemContext {
  public:
   using BindingContext = NativeFileSystemEntryFactory::BindingContext;
+  using PassKey = util::PassKey<NativeFileSystemManagerImpl>;
 
   // State that is shared between handles that are derived from each other.
   // Handles that are created through ChooseEntries or GetSandboxedFileSystem
@@ -155,6 +161,16 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
                    const storage::FileSystemURL& url,
                    const storage::FileSystemURL& swap_url,
                    const SharedHandleState& handle_state);
+  // Returns a raw pointer to a newly created NativeFileSystemFileWriterImpl.
+  // Useful for tests
+  NativeFileSystemFileWriterImpl* CreateFileWriter(
+      const BindingContext& binding_context,
+      const storage::FileSystemURL& url,
+      const storage::FileSystemURL& swap_url,
+      const SharedHandleState& handle_state,
+      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
+      bool has_transient_user_activation,
+      download::QuarantineConnectionCallback quarantine_connection_callback);
 
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(
@@ -209,6 +225,10 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       base::Optional<FileSystemChooser::ResultEntry> result_entry) {
     auto_file_picker_result_for_test_ = result_entry;
   }
+
+  // Remove |writer| from |writer_receivers|. It is an error to try to remove
+  // a writer that doesn't exist.
+  void RemoveFileWriter(NativeFileSystemFileWriterImpl* writer);
 
   // Remove |token| from |transfer_tokens_|. It is an error to try to remove
   // a token that doesn't exist.
@@ -340,7 +360,8 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       file_receivers_;
   mojo::UniqueReceiverSet<blink::mojom::NativeFileSystemDirectoryHandle>
       directory_receivers_;
-  mojo::UniqueReceiverSet<blink::mojom::NativeFileSystemFileWriter>
+  base::flat_set<std::unique_ptr<NativeFileSystemFileWriterImpl>,
+                 base::UniquePtrComparator>
       writer_receivers_;
 
   bool off_the_record_;

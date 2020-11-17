@@ -718,16 +718,35 @@ NativeFileSystemManagerImpl::CreateFileWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> result;
-
   RenderFrameHost* rfh = RenderFrameHost::FromID(binding_context.frame_id);
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
-  writer_receivers_.Add(
-      std::make_unique<NativeFileSystemFileWriterImpl>(
-          this, binding_context, url, swap_url, handle_state,
-          has_transient_user_activation,
-          GetContentClient()->browser()->GetQuarantineConnectionCallback()),
-      result.InitWithNewPipeAndPassReceiver());
+
+  CreateFileWriter(
+      binding_context, url, swap_url, handle_state,
+      result.InitWithNewPipeAndPassReceiver(), has_transient_user_activation,
+      GetContentClient()->browser()->GetQuarantineConnectionCallback());
   return result;
+}
+
+NativeFileSystemFileWriterImpl* NativeFileSystemManagerImpl::CreateFileWriter(
+    const BindingContext& binding_context,
+    const storage::FileSystemURL& url,
+    const storage::FileSystemURL& swap_url,
+    const SharedHandleState& handle_state,
+    mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
+    bool has_transient_user_activation,
+    download::QuarantineConnectionCallback quarantine_connection_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto writer = std::make_unique<NativeFileSystemFileWriterImpl>(
+      this, PassKey(), binding_context, url, swap_url, handle_state,
+      std::move(receiver), has_transient_user_activation,
+      quarantine_connection_callback);
+
+  NativeFileSystemFileWriterImpl* writer_ptr = writer.get();
+  writer_receivers_.insert(std::move(writer));
+
+  return writer_ptr;
 }
 
 void NativeFileSystemManagerImpl::CreateTransferToken(
@@ -1043,6 +1062,14 @@ void NativeFileSystemManagerImpl::CreateTransferTokenImpl(
       url, origin, handle_state, handle_type, this, std::move(receiver));
   auto token = token_impl->token();
   transfer_tokens_.emplace(token, std::move(token_impl));
+}
+
+void NativeFileSystemManagerImpl::RemoveFileWriter(
+    NativeFileSystemFileWriterImpl* writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t count_removed = writer_receivers_.erase(writer);
+  DCHECK_EQ(1u, count_removed);
 }
 
 void NativeFileSystemManagerImpl::RemoveToken(

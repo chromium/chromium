@@ -136,18 +136,23 @@ struct NativeFileSystemFileWriterImpl::WriteState {
 
 NativeFileSystemFileWriterImpl::NativeFileSystemFileWriterImpl(
     NativeFileSystemManagerImpl* manager,
+    util::PassKey<NativeFileSystemManagerImpl> pass_key,
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
     const SharedHandleState& handle_state,
+    mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
     bool has_transient_user_activation,
     download::QuarantineConnectionCallback quarantine_connection_callback)
     : NativeFileSystemHandleBase(manager, context, url, handle_state),
+      receiver_(this, std::move(receiver)),
       swap_url_(swap_url),
       quarantine_connection_callback_(
           std::move(quarantine_connection_callback)),
       has_transient_user_activation_(has_transient_user_activation) {
   DCHECK_EQ(swap_url.type(), url.type());
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &NativeFileSystemFileWriterImpl::OnDisconnect, base::Unretained(this)));
 }
 
 NativeFileSystemFileWriterImpl::~NativeFileSystemFileWriterImpl() {
@@ -331,6 +336,12 @@ class BlobReaderClient : public base::SupportsWeakPtr<BlobReaderClient>,
 };
 
 }  // namespace
+
+void NativeFileSystemFileWriterImpl::OnDisconnect() {
+  // TODO(https://crbug.com/1135687): Auto-close file on disconnect if flag is
+  // specified.
+  manager()->RemoveFileWriter(this);
+}
 
 void NativeFileSystemFileWriterImpl::WriteImpl(
     uint64_t offset,

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_FILE_WRITER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/util/type_safety/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/download/quarantine/quarantine.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -13,7 +14,9 @@
 #include "content/browser/file_system_access/native_file_system_handle_base.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_file_system_permission_context.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_file_writer.mojom.h"
 
@@ -36,12 +39,15 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // file, and is valid.
   // If no |quarantine_connection_callback| is passed in no quarantine is done,
   // other than setting source information directly if on windows.
+  // FileWriters should only be created via the NativeFileSystemManagerImpl.
   NativeFileSystemFileWriterImpl(
       NativeFileSystemManagerImpl* manager,
+      util::PassKey<NativeFileSystemManagerImpl> pass_key,
       const BindingContext& context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
       const SharedHandleState& handle_state,
+      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
       bool has_transient_user_activation,
       download::QuarantineConnectionCallback quarantine_connection_callback);
   ~NativeFileSystemFileWriterImpl() override;
@@ -68,6 +74,10 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // State that is kept for the duration of a write operation, to keep track of
   // progress until the write completes.
   struct WriteState;
+
+  mojo::Receiver<blink::mojom::NativeFileSystemFileWriter> receiver_;
+
+  void OnDisconnect();
 
   void WriteImpl(uint64_t offset,
                  mojo::PendingRemote<blink::mojom::Blob> data,

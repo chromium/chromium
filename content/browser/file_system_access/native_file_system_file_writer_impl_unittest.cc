@@ -163,18 +163,17 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    handle_ = std::make_unique<NativeFileSystemFileWriterImpl>(
-        manager_.get(),
+    handle_ = manager_->CreateFileWriter(
         NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                     kFrameId),
         test_file_url_, test_swap_url_,
         NativeFileSystemManagerImpl::SharedHandleState(
             permission_grant_, permission_grant_, std::move(fs)),
+        remote_.InitWithNewPipeAndPassReceiver(),
         /*has_transient_user_activation=*/false, quarantine_callback_);
   }
 
   void TearDown() override {
-    handle_.reset();
     manager_.reset();
 
     task_environment_.RunUntilIdle();
@@ -336,7 +335,9 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
           FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
-  std::unique_ptr<NativeFileSystemFileWriterImpl> handle_;
+
+  mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> remote_;
+  NativeFileSystemFileWriterImpl* handle_;
 };
 
 class NativeFileSystemFileWriterImplWriteTest
@@ -667,7 +668,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, HandleCloseDuringCheck) {
   handle_->Close(base::DoNothing());
   loop.Run();
 
-  handle_.reset();
+  remote_.reset();
   // Destructor should not have deleted swap file with an active safe browsing
   // check pending.
   task_environment_.RunUntilIdle();
@@ -707,13 +708,14 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url_));
 
-  handle_ = std::make_unique<NativeFileSystemFileWriterImpl>(
-      manager_.get(),
+  mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> remote;
+  handle_ = manager_->CreateFileWriter(
       NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                   kFrameId),
       test_file_url_, test_swap_url_,
       NativeFileSystemManagerImpl::SharedHandleState(permission_grant_,
                                                      permission_grant_, {}),
+      remote.InitWithNewPipeAndPassReceiver(),
       /*has_transient_user_activation=*/false, quarantine_callback_);
 
   uint64_t bytes_written;
@@ -748,7 +750,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   // About to start the move operation. Now destroy the writer. The
   // move will still complete, but make sure that quarantine was also
   // applied to the resulting file.
-  handle_.reset();
+  remote_.reset();
   task_environment_.RunUntilIdle();
 
   // Swap file should have been deleted since writer was closed.
