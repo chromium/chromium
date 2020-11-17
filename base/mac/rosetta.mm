@@ -42,14 +42,14 @@ bool ProcessIsTranslated() {
 #if defined(ARCH_CPU_ARM64)
 
 bool IsRosettaInstalled() {
-  // Chromium currently requires the 10.15 SDK, but code compiled for Arm must
-  // be compiled against at least the 11.0 SDK and will run on at least macOS
-  // 11.0, so this is safe. __builtin_available doesn't work for 11.0 yet;
-  // https://crbug.com/1115294
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability-new"
-  return CFBundleIsArchitectureLoadable(CPU_TYPE_X86_64);
-#pragma clang diagnostic pop
+  if (@available(macOS 11.0, *)) {
+    return CFBundleIsArchitectureLoadable(CPU_TYPE_X86_64);
+  } else {
+    // Arm Macs require at least 11.0 to run, so this branch will never be
+    // taken.
+    NOTREACHED();
+    return false;
+  }
 }
 
 void RequestRosettaInstallation(
