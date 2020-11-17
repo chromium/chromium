@@ -106,6 +106,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // is selected, do nothing.
   void DeleteSelectedMenuItemIfAny();
 
+  // Delete the menu item specified by `command_id` and its corresponding data.
+  void DeleteItemWithCommandId(int command_id);
+
   // Advances the pseudo focus (backward if `reverse` is true).
   void AdvancePseudoFocus(bool reverse);
 
