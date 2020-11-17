@@ -25363,6 +25363,8 @@ Called by update_extension_histograms.py.-->
   <int value="1530" label="ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL"/>
   <int value="1531" label="TAB_GROUPS_MOVE"/>
   <int value="1532" label="SCRIPTING_EXECUTESCRIPT"/>
+  <int value="1533" label="DECLARATIVENETREQUEST_UPDATESESSIONRULES"/>
+  <int value="1534" label="DECLARATIVENETREQUEST_GETSESSIONRULES"/>
 </enum>
 
 <enum name="ExtensionIconState">
