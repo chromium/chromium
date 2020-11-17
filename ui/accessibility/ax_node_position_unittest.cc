@@ -2854,53 +2854,54 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   ASSERT_NE(nullptr, inline_box2_position);
   ASSERT_TRUE(inline_box2_position->IsTextPosition());
 
-  TestPositionType test_position =
-      root_position->LowestCommonAncestor(*null_position.get());
+  TestPositionType test_position = root_position->LowestCommonAncestor(
+      *null_position.get(), ax::mojom::MoveDirection::kForward);
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
 
-  test_position = root_position->LowestCommonAncestor(*root_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = root_position->LowestCommonAncestor(
+      *root_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(root_.id, test_position->anchor_id());
   // The child index should be for an "after children" position, i.e. it should
   // be unchanged.
   EXPECT_EQ(3, test_position->child_index());
 
-  test_position =
-      button_position->LowestCommonAncestor(*text_field_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = button_position->LowestCommonAncestor(
+      *text_field_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(root_.id, test_position->anchor_id());
   // The child index should point to the button.
   EXPECT_EQ(0, test_position->child_index());
 
-  test_position =
-      static_text2_position->LowestCommonAncestor(*static_text1_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = static_text2_position->LowestCommonAncestor(
+      *static_text1_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   // The child index should point to the second static text node.
   EXPECT_EQ(2, test_position->child_index());
 
-  test_position =
-      static_text1_position->LowestCommonAncestor(*text_field_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = static_text1_position->LowestCommonAncestor(
+      *text_field_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   // The child index should point to the first static text node.
   EXPECT_EQ(0, test_position->child_index());
 
-  test_position =
-      inline_box1_position->LowestCommonAncestor(*inline_box2_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = inline_box1_position->LowestCommonAncestor(
+      *inline_box2_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  test_position =
-      inline_box2_position->LowestCommonAncestor(*inline_box1_position.get());
-  EXPECT_NE(nullptr, test_position);
+  test_position = inline_box2_position->LowestCommonAncestor(
+      *inline_box1_position.get(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   // The text offset should point to the second line.
@@ -5214,15 +5215,29 @@ TEST_F(AXPositionTest, CreateParentPositionWithNullPosition) {
 
 TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      GetTreeID(), check_box_.id, 0 /* child_index */);
+      GetTreeID(), check_box_.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(root_.id, test_position->anchor_id());
-  // |child_index| should point to the check box node.
+  // |child_index| should point to the check box node because the original
+  // position was a "before text" position on the check box.
   EXPECT_EQ(1, test_position->child_index());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
+
+  // Create a position that points at the end of the first line, right after the
+  // check box: an "after text" position on the check box.
+  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), check_box_.id,
+                                                     0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  test_position = tree_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTreePosition());
+  EXPECT_EQ(root_.id, test_position->anchor_id());
+  // |child_index| should point to after the check box node because the original
+  // position was an "after text" position.
+  EXPECT_EQ(2, test_position->child_index());
 
   tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
                                                      1 /* child_index */);
@@ -5230,6 +5245,45 @@ TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
   test_position = tree_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
+
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box2_.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ASSERT_TRUE(tree_position->IsTreePosition());
+
+  test_position = tree_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTreePosition());
+  EXPECT_EQ(static_text2_.id, test_position->anchor_id());
+  // A "before text" position on the inline text box should result in a "before
+  // children" position on the static text parent.
+  EXPECT_EQ(0, test_position->child_index());
+
+  test_position = test_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTreePosition());
+  EXPECT_EQ(text_field_.id, test_position->anchor_id());
+  EXPECT_EQ(2, test_position->child_index());
+
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box2_.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ASSERT_TRUE(tree_position->IsTreePosition());
+
+  test_position = tree_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTreePosition());
+  EXPECT_EQ(static_text2_.id, test_position->anchor_id());
+  // An "After text" position on the inline text box should result in an "after
+  // children" position on the static text parent.
+  EXPECT_EQ(1, test_position->child_index());
+
+  test_position = test_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTreePosition());
+  EXPECT_EQ(text_field_.id, test_position->anchor_id());
+  EXPECT_EQ(3, test_position->child_index());
 }
 
 TEST_F(AXPositionTest, CreateParentPositionWithTextPosition) {
@@ -5251,10 +5305,19 @@ TEST_F(AXPositionTest, CreateParentPositionWithTextPosition) {
   EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, test_position->affinity());
 
   text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_.id, 2 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  test_position = text_position->CreateParentPosition();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+
+  text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box2_.id, 5 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
+
   test_position = text_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
@@ -5270,6 +5333,297 @@ TEST_F(AXPositionTest, CreateParentPositionWithTextPosition) {
   // static text node position was pointing at.
   EXPECT_EQ(12, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
+}
+
+TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
+  // This test only applies when "object replacement characters" are used in the
+  // accessibility tree, e.g., in IAccessible2, UI Automation and Linux ATK
+  // APIs.
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // This test ensures that "CreateParentPosition" (and by extension
+  // "CreateAncestorPosition") works correctly when it is given either a tree or
+  // a text position whose parent position is inside an "object replacement
+  // character". The resulting parent position should be either before or after
+  // the "object replacement character", based on the provided move direction.
+  //
+  // Nodes represented by an embedded object character, such as a link, a
+  // paragraph, a text field or a check box, may create an ambiguity as to where
+  // the parent position should be located. For example, look at the following
+  // accessibility tree.
+  //
+  // ++1 kRootWebArea isLineBreakingObject
+  // ++++2 kLink "<embedded_object>"
+  // ++++++3 kStaticText "Hello"
+  // ++++++++4 kInlineTextBox "hello"
+  // ++++++5 kParagraph "<embedded_object>"
+  // ++++++++6 kStaticText "world."
+  // ++++++++++7 kInlineTextBox "world."
+  //
+  // The parent position of a text position inside the inline text box with the
+  // word "world", may either be before or after the paragraph. They are both
+  // equally valid and the choice depends on which navigation operation we are
+  // trying to accomplish, e.g. move to the start of the line vs. the end.
+
+  AXNodeData root_1;
+  AXNodeData link_2;
+  AXNodeData static_text_3;
+  AXNodeData inline_box_4;
+  AXNodeData paragraph_5;
+  AXNodeData static_text_6;
+  AXNodeData inline_box_7;
+
+  root_1.id = 1;
+  link_2.id = 2;
+  static_text_3.id = 3;
+  inline_box_4.id = 4;
+  paragraph_5.id = 5;
+  static_text_6.id = 6;
+  inline_box_7.id = 7;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {link_2.id};
+  root_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+
+  link_2.role = ax::mojom::Role::kLink;
+  link_2.child_ids = {static_text_3.id, paragraph_5.id};
+
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.child_ids = {inline_box_4.id};
+  static_text_3.SetName("Hello");
+
+  inline_box_4.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_4.SetName("Hello");
+
+  paragraph_5.role = ax::mojom::Role::kParagraph;
+  paragraph_5.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_5.child_ids = {static_text_6.id};
+
+  static_text_6.role = ax::mojom::Role::kStaticText;
+  static_text_6.child_ids = {inline_box_7.id};
+  static_text_6.SetName("world.");
+
+  inline_box_7.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_7.SetName("world.");
+
+  SetTree(CreateAXTree({root_1, link_2, static_text_3, inline_box_4,
+                        paragraph_5, static_text_6, inline_box_7}));
+
+  //
+  // Tree positions.
+  //
+
+  // Find the equivalent position on the root, when the original position is
+  // before "Hello", with a forward direction.
+  TestPositionType tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_4.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  TestPositionType ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be before the "object replacement character" for the
+  // link in the root's text, because the original index was before "Hello",
+  // i.e., before all the text contained in the link. The move direction should
+  // not matter.
+  EXPECT_EQ(0, ancestor_position->child_index());
+
+  // Find the equivalent position on the root, when the original position is
+  // before "Hello", with a backward direction.
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_4.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be before the "object replacement character" for the
+  // link in the root's text, because the original index was before "Hello",
+  // i.e., before all the text contained in the link. The move direction should
+  // not matter.
+  EXPECT_EQ(0, ancestor_position->child_index());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "Hello", with a forward direction.
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_4.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be after the "object replacement character" for the
+  // link in the root's text, because the original index was after "Hello",
+  // i.e., in the middle of the link's text, and the direction was forward.
+  EXPECT_EQ(1, ancestor_position->child_index());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "Hello", with a backward direction.
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_4.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be before the "object replacement character" for the
+  // link in the root's text, because even though the original index was after
+  // "Hello" the direction was backward.
+  EXPECT_EQ(0, ancestor_position->child_index());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "world.", with a forward direction.
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_7.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be after the "object replacement character" for the
+  // link in the root's text, because the original index was after "world.",
+  // i.e., after all of the text in the link. The move direction should not
+  // matter.
+  EXPECT_EQ(1, ancestor_position->child_index());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "world.", with a backward direction.
+  tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_7.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, tree_position);
+  ancestor_position = tree_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTreePosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The child index should be after the "object replacement character" for the
+  // link in the root's text, because the original index was after "world.",
+  // i.e., after all of the text in the link. The move direction should not
+  // matter.
+  EXPECT_EQ(1, ancestor_position->child_index());
+
+  //
+  // Text positions.
+  //
+
+  // Find the equivalent position on the root, when the original position is
+  // before "Hello", with a forward direction.
+  TestPositionType text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_4.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be before the "object replacement character" for the
+  // link in the root's text, because the original offset was before "Hello",
+  // i.e., before all the text contained in the link. The move direction should
+  // not matter.
+  EXPECT_EQ(0, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
+
+  // Find the equivalent position on the root, when the original position is
+  // before "Hello", with a backward direction.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_4.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be before the "object replacement character" for the
+  // link in the root's text, because the original offset was before "Hello",
+  // i.e., before all the text contained in the link. The move direction should
+  // not matter.
+  EXPECT_EQ(0, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "Hello", with a forward direction.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_4.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be after the "object replacement character" for the
+  // link in the root's text, because the original offset was after "Hello" and
+  // the move direction was forward.
+  EXPECT_EQ(1, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
+
+  // Find the equivalent position on the root, when the original position is
+  // after "Hello", with a backward direction.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_4.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be before the "object replacement character" for the
+  // link in the root's text, because even though the original offset was after
+  // "Hello", the move direction was backward.
+  EXPECT_EQ(0, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
+
+  // Find the equivalent position on the root, when the original position is
+  // inside "world.", with a forward direction.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_7.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kForward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be after the "object replacement character" for the
+  // link in the root's text, because the original offset was inside "world."
+  // and the move direction was forward.
+  EXPECT_EQ(1, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
+
+  // Find the equivalent position on the root, when the original position is
+  // inside "world.", with a backward direction.
+  text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_7.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ancestor_position = text_position->CreateAncestorPosition(
+      GetRootAsAXNode(), ax::mojom::MoveDirection::kBackward);
+  ASSERT_NE(nullptr, ancestor_position);
+  EXPECT_TRUE(ancestor_position->IsTextPosition());
+  EXPECT_EQ(root_1.id, ancestor_position->anchor_id());
+  // The text offset should be before the "object replacement character" for the
+  // link in the root's text, because even though the original offset was inside
+  // "world.", the move direction was backward.
+  EXPECT_EQ(0, ancestor_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream,
+            ancestor_position->affinity());
 }
 
 TEST_F(AXPositionTest, CreateNextAndPreviousLeafTextPositionWithNullPosition) {
@@ -6729,20 +7083,6 @@ TEST_F(AXPositionTest, OperatorEquals) {
   ASSERT_TRUE(text_position2->IsTextPosition());
   EXPECT_EQ(*text_position1, *text_position2);
 
-  // Two text positions that are consecutive, one "before text" and one "after
-  // text".
-  text_position1 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), inline_box2_.id, 0 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_NE(nullptr, text_position1);
-  ASSERT_TRUE(text_position1->IsTextPosition());
-  text_position2 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), line_break_.id, 1 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_NE(nullptr, text_position2);
-  ASSERT_TRUE(text_position2->IsTextPosition());
-  EXPECT_EQ(*text_position1, *text_position2);
-
   // Two "after text" positions on a parent and child should be equivalent, in
   // the middle of the document...
   text_position1 = AXNodePosition::CreateTextPosition(
@@ -6933,13 +7273,23 @@ TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {
   EXPECT_GT(*text_position1, *text_position2);
   EXPECT_LT(*text_position2, *text_position1);
 
-  // Two consecutive positions. One "before text" and one "after text".
+  // Two consecutive positions. One "before text" and one "after text". When
+  // converted to their ancestor equivalent positions in the text field, one
+  // will have an upstream affinity and the other a downstream affinity. This is
+  // because one position is right after the line break character while the
+  // other at the start of the line after the line break. The positions are not
+  // equivalent because line break characters always appear at the end of the
+  // line and they are part of the line they end. One way to understand why this
+  // makes sense is to think what should the behavior be when a line break
+  // character is on a blank line of its own? The line break character in that
+  // case forms the blank line's text contents.
   text_position2 = AXNodePosition::CreateTextPosition(
       GetTreeID(), line_break_.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position2);
   ASSERT_TRUE(text_position2->IsTextPosition());
-  EXPECT_EQ(*text_position1, *text_position2);
+  EXPECT_GT(*text_position1, *text_position2);
+  EXPECT_LT(*text_position2, *text_position1);
 
   // A text position at the end of the document versus one that isn't.
   text_position1 = AXNodePosition::CreateTextPosition(

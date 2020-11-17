@@ -50,19 +50,16 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
     const char* url,
     const std::vector<const char*>& filters,
     const char* expected) const {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
-
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url)));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(url)));
   waiter.WaitForNotification();
 
-  // Set property filters
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AccessibilityTreeFormatter::Create();
-
   std::vector<ui::AXPropertyFilter> property_filters;
 
   for (const char* filter : filters) {
@@ -73,12 +70,11 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   formatter->AddDefaultFilters(&property_filters);
   formatter->SetPropertyFilters(property_filters);
 
-  // Format the tree
   BrowserAccessibility* root = GetManager()->GetRoot();
-  CHECK(root);
+  ASSERT_NE(nullptr, root);
 
-  std::string got = formatter->Format(root);
-  EXPECT_EQ(got, expected);
+  std::string actual = formatter->Format(root);
+  EXPECT_EQ(actual, expected);
 }
 
 void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(

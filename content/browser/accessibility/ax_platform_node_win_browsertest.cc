@@ -637,11 +637,19 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
 
   EXPECT_LT(*before_iframe_node->CreatePositionAt(0),
             *inside_iframe_node->CreatePositionAt(0));
-  EXPECT_EQ(*before_iframe_node->CreatePositionAt(13),
+  // The following positions should not be equivalent because they are on two
+  // separate lines in the accessibility tree's text representation, i.e. the
+  // first has an upstream affinity while the second has a downstream affinity.
+  // Note that an iframe boundary is also a line boundary.
+  EXPECT_LT(*before_iframe_node->CreatePositionAt(13),
             *inside_iframe_node->CreatePositionAt(0));
   EXPECT_LT(*inside_iframe_node->CreatePositionAt(0),
             *after_iframe_node->CreatePositionAt(0));
-  EXPECT_EQ(*inside_iframe_node->CreatePositionAt(14),
+  // The following positions should not be equivalent because they are on two
+  // separate lines in the accessibility tree's text representation, i.e. the
+  // first has an upstream affinity while the second has a downstream affinity.
+  // Note that an iframe boundary is also a line boundary.
+  EXPECT_LT(*inside_iframe_node->CreatePositionAt(14),
             *after_iframe_node->CreatePositionAt(0));
 
   // Traverse the leaves of the AXTree forwards.

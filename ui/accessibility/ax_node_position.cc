@@ -258,11 +258,19 @@ bool AXNodePosition::IsEmbeddedObjectInParent() const {
       return false;
     case AXEmbeddedObjectBehavior::kExposeCharacter:
       // We don't need to expose an "embedded object character" for textual
-      // nodes and nodes that are invisible to platform APIs. Textual nodes are
-      // represented by their actual text.
+      // nodes as well as nodes that are invisible to platform APIs, AKA nodes
+      // that are descendants of platform leaves. In the former case, textual
+      // nodes are represented by their actual text in the text of their parent
+      // nodes, in order to maintain compatibility with how Firefox exposes text
+      // in IAccessibleText. For the latter case, an example of a platform leaf
+      // is a plain text field.
+      //
+      // On the other hand, we do need to expose an "embedded object character"
+      // for empty objects, such as an empty text field, for navigational
+      // purposes. This is because such objects need to act as a word and
+      // character boundary.
       return !IsNullPosition() && !GetAnchor()->IsText() &&
-             !GetAnchor()->IsDescendantOfPlainTextField() &&
-             GetAnchor()->IsChildOfLeaf();
+             !GetAnchor()->IsChildOfLeaf();
   }
 }
 

@@ -323,7 +323,7 @@ TEST_F(AXRangeTest, EqualityOperators) {
       GetTreeID(), button_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance test_position2 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), line_break1_.id, 1 /* text_offset */,
+      GetTreeID(), text_field_.id, 7 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance test_position3 = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box2_.id, 0 /* text_offset */,

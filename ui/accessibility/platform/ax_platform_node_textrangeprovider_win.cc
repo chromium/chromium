@@ -455,10 +455,11 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     // someday, and if so, we'll have to address this issue.
     const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
     AXPositionInstance start_ancestor_position =
-        start()->CreateAncestorPosition(common_anchor);
+        start()->CreateAncestorPosition(common_anchor,
+                                        ax::mojom::MoveDirection::kForward);
     DCHECK(!start_ancestor_position->IsNullPosition());
-    AXPositionInstance end_ancestor_position =
-        end()->CreateAncestorPosition(common_anchor);
+    AXPositionInstance end_ancestor_position = end()->CreateAncestorPosition(
+        common_anchor, ax::mojom::MoveDirection::kForward);
     DCHECK(!end_ancestor_position->IsNullPosition());
     AXTreeID tree_id = start_ancestor_position->tree_id();
     AXNode::AXID anchor_id = start_ancestor_position->anchor_id();
@@ -896,12 +897,14 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
 
   const AXPositionInstance start_common_ancestor =
-      start()->LowestCommonAncestor(*end());
+      start()->LowestCommonAncestor(*end(),
+                                    ax::mojom::MoveDirection::kBackward);
   const AXPositionInstance end_common_ancestor =
-      end()->LowestCommonAncestor(*start());
+      end()->LowestCommonAncestor(*start(), ax::mojom::MoveDirection::kForward);
   if (start_common_ancestor->IsNullPosition() ||
-      end_common_ancestor->IsNullPosition())
+      end_common_ancestor->IsNullPosition()) {
     return E_INVALIDARG;
+  }
 
   const AXNode* common_ancestor_anchor = start_common_ancestor->GetAnchor();
   DCHECK(common_ancestor_anchor == end_common_ancestor->GetAnchor());
@@ -1147,7 +1150,12 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByPage(
     int* units_moved) {
   // Per UIA spec, if the document containing the current endpoint doesn't
   // support pagination, default to document navigation.
-  AXPositionInstance common_ancestor = start()->LowestCommonAncestor(*end());
+  //
+  // Note that the "ax::mojom::MoveDirection" should not matter when calculating
+  // the ancestor position for use when navigating by page or document, so we
+  // use a backward direction as the default.
+  AXPositionInstance common_ancestor = start()->LowestCommonAncestor(
+      *end(), ax::mojom::MoveDirection::kBackward);
   if (!common_ancestor->GetAnchor()->tree()->HasPaginationSupport())
     return MoveEndpointByDocument(std::move(endpoint), count, units_moved);
 
