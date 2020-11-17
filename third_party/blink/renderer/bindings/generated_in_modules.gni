@@ -1285,6 +1285,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_uuid.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_broadcast_channel.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_broadcast_channel.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_bucket_manager.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_bucket_manager.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cache.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cache.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cache_storage.cc",

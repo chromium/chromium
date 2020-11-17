@@ -1867,6 +1867,10 @@
       status: "test",
     },
     {
+      name: "StorageBuckets",
+      status: "experimental",
+    },
+    {
       name: "StrictMimeTypesForWorkers",
       status: "experimental"
     },

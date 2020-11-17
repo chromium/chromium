@@ -86,6 +86,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method postMessage
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
+[Worker] interface BucketManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method delete
+[Worker]     method keys
+[Worker]     method openOrCreate
 [Worker] interface ByteLengthQueuingStrategy
 [Worker]     attribute @@toStringTag
 [Worker]     getter highWaterMark
@@ -3106,6 +3112,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter product
 [Worker]     getter serial
 [Worker]     getter storage
+[Worker]     getter storageBuckets
 [Worker]     getter usb
 [Worker]     getter userAgent
 [Worker]     getter userAgentData

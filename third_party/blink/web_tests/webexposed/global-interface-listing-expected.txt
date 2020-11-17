@@ -585,6 +585,12 @@ interface BroadcastChannel : EventTarget
     method postMessage
     setter onmessage
     setter onmessageerror
+interface BucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method openOrCreate
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -5467,6 +5473,7 @@ interface Navigator
     getter serial
     getter serviceWorker
     getter storage
+    getter storageBuckets
     getter usb
     getter userActivation
     getter userAgent
