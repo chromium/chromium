@@ -366,13 +366,12 @@ void VideoEncoderClient::BitstreamBufferReady(
 
   if (bitstream_processors_.empty()) {
     BitstreamBufferProcessed(bitstream_buffer_id);
-    return;
-  }
-
-  auto bitstream_ref = CreateBitstreamRef(bitstream_buffer_id, metadata);
-  ASSERT_TRUE(bitstream_ref);
-  for (auto& bitstream_processor_ : bitstream_processors_) {
-    bitstream_processor_->ProcessBitstream(bitstream_ref, frame_index_);
+  } else {
+    auto bitstream_ref = CreateBitstreamRef(bitstream_buffer_id, metadata);
+    ASSERT_TRUE(bitstream_ref);
+    for (auto& bitstream_processor_ : bitstream_processors_) {
+      bitstream_processor_->ProcessBitstream(bitstream_ref, frame_index_);
+    }
   }
   frame_index_++;
   FlushDoneTaskIfNeeded();
