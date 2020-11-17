@@ -371,12 +371,6 @@ TEST_F(ContentSettingsStoreTest, DisallowWildcardsInFlash) {
   // Here we will have one rule because wildcard patterns are allowed for
   // ContentSettingsType::COOKIES.
   ASSERT_EQ(rules.size(), 1u);
-
-  std::unique_ptr<content_settings::RuleIterator> discarded_rules_iterator =
-      store()->GetDiscardedRuleIterator(ContentSettingsType::PLUGINS, false);
-  ASSERT_TRUE(discarded_rules_iterator->HasNext());
-  ASSERT_EQ(discarded_rules_iterator->Next().primary_pattern, primary_pattern);
-  ASSERT_FALSE(discarded_rules_iterator->HasNext());
 }
 
 }  // namespace extensions

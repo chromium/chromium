@@ -58,14 +58,6 @@ class ContentSettingsStore
       ContentSettingsType type,
       bool incognito) const;
 
-  std::unique_ptr<content_settings::RuleIterator> GetDiscardedRuleIterator(
-      ContentSettingsType type,
-      bool incognito) const;
-
-  std::unique_ptr<content_settings::RuleIterator> GetAllRulesIterator(
-      ContentSettingsType type,
-      bool incognito) const;
-
   // Sets the content |setting| for |pattern| of extension |ext_id|. The
   // |incognito| flag allow to set whether the provided setting is for
   // incognito mode only.

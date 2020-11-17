@@ -30,13 +30,6 @@ std::unique_ptr<RuleIterator> CustomExtensionProvider::GetRuleIterator(
                                                incognito);
 }
 
-std::unique_ptr<RuleIterator> CustomExtensionProvider::GetDiscardedRuleIterator(
-    ContentSettingsType content_type,
-    bool incognito) const {
-  return extensions_settings_->GetDiscardedRuleIterator(content_type,
-                                                        incognito);
-}
-
 bool CustomExtensionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
