@@ -9,6 +9,7 @@
 
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -40,6 +41,9 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   // mojom::SystemRoutineController:
   void RunRoutine(mojom::RoutineType type,
                   mojo::PendingRemote<mojom::RoutineRunner> runner) override;
+
+  void BindInterface(
+      mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver);
 
  private:
   void ExecuteRoutine(mojom::RoutineType routine_type);

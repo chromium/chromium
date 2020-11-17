@@ -99,6 +99,11 @@ void SystemRoutineController::RunRoutine(
   ExecuteRoutine(type);
 }
 
+void SystemRoutineController::BindInterface(
+    mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
+}
+
 void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
 
