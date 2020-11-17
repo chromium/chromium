@@ -101,6 +101,7 @@ Polymer({
     appState_: {
       type: Number,
       value: AppState.GETTING_SCANNERS,
+      observer: 'onAppStateChange_',
     },
 
     /** @private {!Array<string>} */
@@ -136,6 +137,37 @@ Polymer({
 
     /** @private {string} */
     statusText_: String,
+
+    /**
+     * Determines whether settings should be disabled based on the current app
+     * state. Settings should be disabled until after the selected scanner's
+     * capabilities are fetched since the capabilities determine what options
+     * are available in the settings. They should also be disabled while
+     * scanning since settings cannot be changed while a scan is in progress.
+     * @private {boolean}
+     */
+    settingsDisabled_: {
+      type: Boolean,
+      value: true,
+    },
+
+    /** @private {boolean} */
+    scannersLoaded_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    showDoneSection_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    showCancelButton_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
@@ -348,35 +380,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean}
-   * @private
-   */
-  areScannersLoaded_() {
-    return this.appState_ !== AppState.GETTING_SCANNERS;
-  },
-
-  /**
-   * Determines whether settings should be disabled based on the current app
-   * state. Settings should be disabled until after the selected scanner's
-   * capabilities are fetched since the capabilities determine what options are
-   * available in the settings. They should also be disabled while scanning
-   * since settings cannot be changed while a scan is in progress.
-   * @return {boolean}
-   * @private
-   */
-  areSettingsDisabled_() {
-    return this.appState_ !== AppState.READY;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowDoneSection_() {
-    return this.appState_ === AppState.DONE;
-  },
-
-  /**
    * @return {string}
    * @private
    */
@@ -399,14 +402,6 @@ Polymer({
    * @param {boolean} success
    */
   onCancelComplete(success) {},
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCancelButton_() {
-    return this.appState_ === AppState.SCANNING;
-  },
 
   /**
    * Sets the app state if the state transition is allowed.
@@ -441,6 +436,14 @@ Polymer({
     }
 
     this.appState_ = newState;
+  },
+
+  /** @private */
+  onAppStateChange_() {
+    this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS;
+    this.settingsDisabled_ = this.appState_ !== AppState.READY;
+    this.showCancelButton_ = this.appState_ === AppState.SCANNING;
+    this.showDoneSection_ = this.appState_ === AppState.DONE;
   },
 
   /**
