@@ -393,6 +393,22 @@ template <bool thread_safe>
 PCScan<thread_safe>::~PCScan() = default;
 
 template <bool thread_safe>
+PCScan<thread_safe>::PCScan(Root* root) : root_(root) {
+  root->lock_.AssertAcquired();
+  // Commit quarantine bitmaps.
+  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
+  for (auto* super_page_extent = root->first_extent; super_page_extent;
+       super_page_extent = super_page_extent->next) {
+    for (char* super_page = super_page_extent->super_page_base;
+         super_page != super_page_extent->super_pages_end;
+         super_page += kSuperPageSize) {
+      SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
+                           quarantine_bitmaps_size_to_commit, PageReadWrite);
+    }
+  }
+}
+
+template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   TRACE_EVENT0("partition_alloc", "PCScan");
 
