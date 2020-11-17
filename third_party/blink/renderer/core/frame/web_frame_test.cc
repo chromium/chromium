@@ -351,6 +351,7 @@ class WebFrameTest : public testing::Test {
       frame_test_helpers::WebViewHelper* web_view_helper) {
     web_view_helper->InitializeAndLoad(url);
     web_view_helper->GetWebView()->GetSettings()->SetDefaultFontSize(12);
+    web_view_helper->GetWebView()->MainFrameWidget()->SetFocus(true);
     web_view_helper->Resize(gfx::Size(640, 480));
   }
 

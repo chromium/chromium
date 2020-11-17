@@ -2861,7 +2861,7 @@ void WebFrameWidgetBase::ForEachRemoteFrameControlledByWidget(
 
 void WebFrameWidgetBase::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
                                                   gfx::Rect& focus_root_frame) {
-  auto* local_frame = DynamicTo<LocalFrame>(FocusedCoreFrame());
+  const LocalFrame* local_frame = FocusedLocalFrameInWidget();
   if (!local_frame)
     return;
 
