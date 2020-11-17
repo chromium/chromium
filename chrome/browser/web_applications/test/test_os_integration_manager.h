@@ -67,6 +67,8 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   void SetFileHandlerManager(
       std::unique_ptr<FileHandlerManager> file_handler_manager);
 
+  TestOsIntegrationManager* AsTestOsIntegrationManager() override;
+
  private:
   size_t num_create_shortcuts_calls_ = 0;
   size_t num_register_run_on_os_login_calls_ = 0;

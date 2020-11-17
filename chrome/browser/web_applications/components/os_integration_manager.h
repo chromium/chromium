@@ -30,6 +30,7 @@ class WebContents;
 namespace web_app {
 
 class AppIconManager;
+class TestOsIntegrationManager;
 class WebAppUiManager;
 
 // OsHooksResults contains the result of all Os hook deployments
@@ -133,6 +134,8 @@ class OsIntegrationManager {
 
   // Suppress calling individual OS managers for testing.
   void SuppressOsManagersForTesting();
+
+  virtual TestOsIntegrationManager* AsTestOsIntegrationManager();
 
  protected:
   AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
