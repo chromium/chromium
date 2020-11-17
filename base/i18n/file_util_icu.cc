@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -30,19 +29,22 @@ namespace {
 
 class IllegalCharacters {
  public:
+  IllegalCharacters(const IllegalCharacters&) = delete;
+  IllegalCharacters& operator=(const IllegalCharacters&) = delete;
+
   static IllegalCharacters* GetInstance() {
     return Singleton<IllegalCharacters>::get();
   }
 
-  bool DisallowedEverywhere(UChar32 ucs4) {
+  bool DisallowedEverywhere(UChar32 ucs4) const {
     return !!illegal_anywhere_->contains(ucs4);
   }
 
-  bool DisallowedLeadingOrTrailing(UChar32 ucs4) {
+  bool DisallowedLeadingOrTrailing(UChar32 ucs4) const {
     return !!illegal_at_ends_->contains(ucs4);
   }
 
-  bool IsAllowedName(const string16& s) {
+  bool IsAllowedName(const string16& s) const {
     return s.empty() || (!!illegal_anywhere_->containsNone(
                              icu::UnicodeString(s.c_str(), s.size())) &&
                          !illegal_at_ends_->contains(*s.begin()) &&
@@ -61,8 +63,6 @@ class IllegalCharacters {
 
   // set of characters considered invalid at either end of a filename.
   std::unique_ptr<icu::UnicodeSet> illegal_at_ends_;
-
-  DISALLOW_COPY_AND_ASSIGN(IllegalCharacters);
 };
 
 IllegalCharacters::IllegalCharacters() {
