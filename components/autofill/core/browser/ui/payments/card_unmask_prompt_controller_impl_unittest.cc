@@ -308,6 +308,10 @@ class LoggingValidationTestForNickname
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
+#if defined(OS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
     SetCreditCardForTesting(card_has_nickname_
                                 ? test::GetMaskedServerCardWithNickname()
                                 : test::GetMaskedServerCard());
@@ -635,6 +639,10 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
+#if defined(OS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
   }
 
  private:
@@ -674,6 +682,10 @@ class CvcInputAmexValidationTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
+#if defined(OS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
   }
 
  private:
@@ -722,6 +734,10 @@ class ExpirationDateValidationTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
+#if defined(OS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
   }
 
  private:

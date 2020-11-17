@@ -40,8 +40,8 @@ const base::Feature kAutofillCreditCardAblationExperiment{
 // credit cards from Google payments.
 const base::Feature kAutofillCreditCardAuthentication{
   "AutofillCreditCardAuthentication",
-#if defined(OS_WIN) || defined(OS_MAC)
-      // Better Auth project is fully launched on Win/Mac.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+      // Better Auth project is fully launched on Win/Mac/Clank.
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
