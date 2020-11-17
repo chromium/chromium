@@ -202,6 +202,9 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
         receiver_from_engine_.BindNewPipeAndPassRemote(), {},
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), new_engine_id));
+
+    active_engine_id_ = new_engine_id;
+    remote_to_engine_->OnInputMethodChanged(new_engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
@@ -452,11 +455,6 @@ void NativeInputMethodEngine::ImeObserver::OnConnected(base::Time start,
              base::Time::Now() - start);
   LogEvent(bound ? ImeServiceEvent::kActivateImeSuccess
                  : ImeServiceEvent::kActivateImeSuccess);
-
-  active_engine_id_ = engine_id;
-  if (ShouldUseFstMojoEngine(engine_id)) {
-    remote_to_engine_->OnInputMethodChanged(engine_id);
-  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {

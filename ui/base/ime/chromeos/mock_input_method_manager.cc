@@ -124,7 +124,8 @@ void MockInputMethodManager::State::SetUIStyle(
 MockInputMethodManager::State::~State() = default;
 
 MockInputMethodManager::MockInputMethodManager()
-    : features_enabled_state_(InputMethodManager::FEATURE_ALL) {}
+    : state_(new State()),
+      features_enabled_state_(InputMethodManager::FEATURE_ALL) {}
 
 MockInputMethodManager::~MockInputMethodManager() = default;
 
@@ -193,7 +194,7 @@ scoped_refptr<InputMethodManager::State> MockInputMethodManager::CreateNewState(
 
 scoped_refptr<InputMethodManager::State>
 MockInputMethodManager::GetActiveIMEState() {
-  return nullptr;
+  return state_;
 }
 
 void MockInputMethodManager::SetState(

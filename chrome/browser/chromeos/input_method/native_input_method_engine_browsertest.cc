@@ -49,6 +49,7 @@ namespace {
 
 constexpr char kEmojiData[] = "happy,😀;😃;😄";
 
+// TODO(crbug.com/1148157): Use StubInputMethodEngineObserver.
 class TestObserver : public InputMethodEngineBase::Observer {
  public:
   TestObserver() = default;

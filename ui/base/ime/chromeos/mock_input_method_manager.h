@@ -142,6 +142,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
   bool IsKeyboardVisible() override;
 
  private:
+  scoped_refptr<State> state_;
   uint32_t features_enabled_state_;
 
   DISALLOW_COPY_AND_ASSIGN(MockInputMethodManager);
