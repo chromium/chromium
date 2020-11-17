@@ -2,6 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import '../elements/audio_player.m.js';
+// #import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
+// #import {FilteredVolumeManager} from '../../base/js/filtered_volume_manager.m.js';
+// #import {AllowedPaths} from '../../base/js/volume_manager_types.m.js';
+// #import {MediaSessionPlaybackState} from '../../base/js/mediasession_types.m.js';
+// #import * as appUtilWrapped from '../../base/js/app_util.m.js'; const {appUtil} = appUtilWrapped;
+// #import * as wrappedAsyncUtil from '../../file_manager/common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
+// #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
+// #import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.m.js';
+// clang-format on
+
 /**
  * Overrided metadata worker's path.
  * @type {string}
@@ -12,7 +26,7 @@ ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
  * @param {Element} container Container element.
  * @constructor
  */
-function AudioPlayer(container) {
+/* #export */ function AudioPlayer(container) {
   this.container_ = container;
 
   this.volumeManager_ = new FilteredVolumeManager(
@@ -157,7 +171,7 @@ AudioPlayer.load = function() {
 /**
  * Unloads the player.
  */
-function unload() {
+/* #export */ function unload() {
   if (AudioPlayer.instance) {
     AudioPlayer.instance.onUnload();
   }
@@ -166,7 +180,7 @@ function unload() {
 /**
  * Reloads the player.
  */
-function reload() {
+/* #export */ function reload() {
   AudioPlayer.instance.load(/** @type {Playlist} */ (window.appState));
 }
 
@@ -690,12 +704,21 @@ AudioPlayer.TrackInfo.prototype.setMetadata = function(
 /**
  * initializeAudioPlayer: loads the audio player.
  */
-function initializeAudioPlayer() {
-  window.HTMLImports.whenReady(AudioPlayer.load);
+/* #ignore */ function initializeAudioPlayer() {
+  /* #ignore */ window.HTMLImports.whenReady(AudioPlayer.load);
+/* #ignore */ }
+
+/**
+ * initializeAudioPlayer: loads the audio player.
+ */
+function moduleInitializeAudioPlayer() {
+  AudioPlayer.load();
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeAudioPlayer);
-} else {
+// clang-format off
+/* #ignore */ if (document.readyState === 'loading') {
+  /* #ignore */ document.addEventListener('DOMContentLoaded', initializeAudioPlayer);
+/* #ignore */ } else {
   initializeAudioPlayer();
-}
+/* #ignore */ }
+// clang-format on
