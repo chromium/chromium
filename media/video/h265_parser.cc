@@ -942,7 +942,8 @@ const H265PPS* H265Parser::GetPPS(int pps_id) const {
 }
 
 H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
-                                                H265SliceHeader* shdr) {
+                                                H265SliceHeader* shdr,
+                                                H265SliceHeader* prior_shdr) {
   // 7.4.7 Slice segment header
   DVLOG(4) << "Parsing slice header";
   Result res = kOk;
@@ -969,20 +970,6 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   sps = GetSPS(pps->pps_seq_parameter_set_id);
   DCHECK(sps);  // We already validated this when we parsed the PPS.
 
-  // Set these defaults if they are not present here.
-  shdr->pic_output_flag = 1;
-  shdr->num_ref_idx_l0_active_minus1 =
-      pps->num_ref_idx_l0_default_active_minus1;
-  shdr->num_ref_idx_l1_active_minus1 =
-      pps->num_ref_idx_l1_default_active_minus1;
-  shdr->collocated_from_l0_flag = 1;
-  shdr->slice_deblocking_filter_disabled_flag =
-      pps->pps_deblocking_filter_disabled_flag;
-  shdr->slice_beta_offset_div2 = pps->pps_beta_offset_div2;
-  shdr->slice_tc_offset_div2 = pps->pps_tc_offset_div2;
-  shdr->slice_loop_filter_across_slices_enabled_flag =
-      pps->pps_loop_filter_across_slices_enabled_flag;
-
   if (!shdr->first_slice_segment_in_pic_flag) {
     if (pps->dependent_slice_segments_enabled_flag)
       READ_BOOL_OR_RETURN(&shdr->dependent_slice_segment_flag);
@@ -991,8 +978,33 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     IN_RANGE_OR_RETURN(shdr->slice_segment_address, 0,
                        sps->pic_size_in_ctbs_y - 1);
   }
-  shdr->curr_rps_idx = sps->num_short_term_ref_pic_sets;
-  if (!shdr->dependent_slice_segment_flag) {
+  if (shdr->dependent_slice_segment_flag) {
+    if (!prior_shdr) {
+      DVLOG(1) << "Cannot parse dependent slice w/out prior slice data";
+      return kInvalidStream;
+    }
+    // Copy everything in the structure starting at |slice_type| going forward.
+    // This is copying the dependent slice data that we do not parse below.
+    size_t skip_amount = offsetof(H265SliceHeader, slice_type);
+    memcpy(reinterpret_cast<uint8_t*>(shdr) + skip_amount,
+           reinterpret_cast<uint8_t*>(prior_shdr) + skip_amount,
+           sizeof(H265SliceHeader) - skip_amount);
+  } else {
+    // Set these defaults if they are not present here.
+    shdr->pic_output_flag = 1;
+    shdr->num_ref_idx_l0_active_minus1 =
+        pps->num_ref_idx_l0_default_active_minus1;
+    shdr->num_ref_idx_l1_active_minus1 =
+        pps->num_ref_idx_l1_default_active_minus1;
+    shdr->collocated_from_l0_flag = 1;
+    shdr->slice_deblocking_filter_disabled_flag =
+        pps->pps_deblocking_filter_disabled_flag;
+    shdr->slice_beta_offset_div2 = pps->pps_beta_offset_div2;
+    shdr->slice_tc_offset_div2 = pps->pps_tc_offset_div2;
+    shdr->slice_loop_filter_across_slices_enabled_flag =
+        pps->pps_loop_filter_across_slices_enabled_flag;
+    shdr->curr_rps_idx = sps->num_short_term_ref_pic_sets;
+
     // slice_reserved_flag
     SKIP_BITS_OR_RETURN(pps->num_extra_slice_header_bits);
     READ_UE_OR_RETURN(&shdr->slice_type);
@@ -1461,6 +1473,7 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
     int abs_delta_rps_minus1;
     READ_BOOL_OR_RETURN(&delta_rps_sign);
     READ_UE_OR_RETURN(&abs_delta_rps_minus1);
+    IN_RANGE_OR_RETURN(abs_delta_rps_minus1, 0, 0x7FFF);
     int delta_rps = (1 - 2 * delta_rps_sign) * (abs_delta_rps_minus1 + 1);
     const H265StRefPicSet& ref_set = sps.st_ref_pic_set[ref_rps_idx];
     bool used_by_curr_pic_flag[kMaxShortTermRefPicSets];
@@ -1542,6 +1555,7 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
     for (int i = 0; i < st_ref_pic_set->num_negative_pics; ++i) {
       int delta_poc_s0_minus1;
       READ_UE_OR_RETURN(&delta_poc_s0_minus1);
+      IN_RANGE_OR_RETURN(delta_poc_s0_minus1, 0, 0x7FFF);
       if (i == 0) {
         st_ref_pic_set->delta_poc_s0[i] = -(delta_poc_s0_minus1 + 1);
       } else {
@@ -1553,6 +1567,7 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
     for (int i = 0; i < st_ref_pic_set->num_positive_pics; ++i) {
       int delta_poc_s1_minus1;
       READ_UE_OR_RETURN(&delta_poc_s1_minus1);
+      IN_RANGE_OR_RETURN(delta_poc_s1_minus1, 0, 0x7FFF);
       if (i == 0) {
         st_ref_pic_set->delta_poc_s1[i] = delta_poc_s1_minus1 + 1;
       } else {

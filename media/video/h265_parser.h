@@ -479,7 +479,12 @@ class MEDIA_EXPORT H265Parser {
 
   // Parse a slice header, returning it in |*shdr|. |*nalu| must be set to
   // the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.
-  Result ParseSliceHeader(const H265NALU& nalu, H265SliceHeader* shdr);
+  // |prior_shdr| should be the last parsed header in decoding order for
+  // handling dependent slice segments. If |prior_shdr| is null and this is a
+  // dependent slice segment, an error will be returned.
+  Result ParseSliceHeader(const H265NALU& nalu,
+                          H265SliceHeader* shdr,
+                          H265SliceHeader* prior_shdr);
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 

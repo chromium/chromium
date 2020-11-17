@@ -24,6 +24,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       break;
 
     media::H265SliceHeader shdr;
+    media::H265SliceHeader prior_shdr;
     switch (nalu.nal_unit_type) {
       case media::H265NALU::SPS_NUT:
         int sps_id;
@@ -49,7 +50,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       case media::H265NALU::IDR_W_RADL:
       case media::H265NALU::IDR_N_LP:
       case media::H265NALU::CRA_NUT:  // fallthrough
-        res = parser.ParseSliceHeader(nalu, &shdr);
+        res = parser.ParseSliceHeader(nalu, &shdr, &prior_shdr);
+        prior_shdr = shdr;
         break;
       default:
         // Skip any other NALU.

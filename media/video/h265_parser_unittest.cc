@@ -79,6 +79,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       DVLOG(4) << "Found NALU " << nalu.nal_unit_type;
 
       H265SliceHeader shdr;
+      H265SliceHeader prior_shdr;
       switch (nalu.nal_unit_type) {
         case H265NALU::SPS_NUT:
           int sps_id;
@@ -106,7 +107,8 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
         case H265NALU::IDR_W_RADL:
         case H265NALU::IDR_N_LP:
         case H265NALU::CRA_NUT:  // fallthrough
-          res = parser_.ParseSliceHeader(nalu, &shdr);
+          res = parser_.ParseSliceHeader(nalu, &shdr, &prior_shdr);
+          prior_shdr = shdr;
           break;
         default:
           break;
@@ -236,7 +238,8 @@ TEST_F(H265ParserTest, SliceHeaderParsing) {
   // Do an IDR slice header first.
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::IDR_W_RADL));
   H265SliceHeader shdr;
-  EXPECT_EQ(H265Parser::kOk, parser_.ParseSliceHeader(target_nalu, &shdr));
+  EXPECT_EQ(H265Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, &shdr, nullptr));
   EXPECT_TRUE(shdr.first_slice_segment_in_pic_flag);
   EXPECT_FALSE(shdr.no_output_of_prior_pics_flag);
   EXPECT_EQ(shdr.slice_pic_parameter_set_id, 0);
@@ -249,7 +252,8 @@ TEST_F(H265ParserTest, SliceHeaderParsing) {
 
   // Then do a non-IDR slice header.
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::TRAIL_R));
-  EXPECT_EQ(H265Parser::kOk, parser_.ParseSliceHeader(target_nalu, &shdr));
+  EXPECT_EQ(H265Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, &shdr, nullptr));
   EXPECT_TRUE(shdr.first_slice_segment_in_pic_flag);
   EXPECT_EQ(shdr.slice_pic_parameter_set_id, 0);
   EXPECT_FALSE(shdr.dependent_slice_segment_flag);

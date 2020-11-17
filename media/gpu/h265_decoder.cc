@@ -185,16 +185,8 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       case H265NALU::CRA_NUT:
         if (!curr_slice_hdr_) {
           curr_slice_hdr_.reset(new H265SliceHeader());
-          if (last_slice_hdr_) {
-            // This is a multi-slice picture, so we should copy all of the prior
-            // slice header data to the new slice and use those as the default
-            // values that don't have syntax elements present.
-            memcpy(curr_slice_hdr_.get(), last_slice_hdr_.get(),
-                   sizeof(H265SliceHeader));
-            last_slice_hdr_.reset();
-          }
-          par_res =
-              parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
+          par_res = parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get(),
+                                             last_slice_hdr_.get());
           if (par_res == H265Parser::kMissingParameterSet) {
             // We may still be able to recover if we skip until we find the
             // SPS/PPS.
@@ -385,16 +377,6 @@ H265Decoder::H265Accelerator::Status H265Decoder::PreprocessCurrentSlice() {
       return result;
 
     DCHECK(!curr_pic_);
-  }
-
-  // Validate that NumPicTotalCurr is non-zero for P/B slices. We do check this
-  // in the parser, but there's a way it can slip by when
-  // dependent_slice_segment_flag is set (and then we can't verify until we
-  // copy the defaults to the next slice in the decoder).
-  if ((slice_hdr->IsPSlice() || slice_hdr->IsBSlice()) &&
-      !slice_hdr->num_pic_total_curr) {
-    DVLOG(2) << "Zero valued NumPicTotalCurr for P/B slice";
-    return H265Accelerator::Status::kFail;
   }
 
   return H265Accelerator::Status::kOk;
