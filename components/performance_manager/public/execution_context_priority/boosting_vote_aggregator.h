@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
@@ -69,7 +70,7 @@ class BoostingVote {
 // execution context Y". It is intended to serve as the root of a tree of voters
 // and aggregators, allowing priority boost semantics to be implemented. This
 // class must outlive all boosting votes registered with it.
-class BoostingVoteAggregator : public VoteConsumer {
+class BoostingVoteAggregator : public VoteObserver {
  public:
   BoostingVoteAggregator();
   ~BoostingVoteAggregator() override;
@@ -126,15 +127,21 @@ class BoostingVoteAggregator : public VoteConsumer {
     NodeData& operator=(NodeData&& rhs) = default;
     ~NodeData();
 
-    const AcceptedVote& incoming() const { return incoming_; }
+    const Vote& incoming_vote() const { return incoming_vote_.value(); }
     const VoteReceipt& receipt() const { return receipt_; }
 
-    // For modifying |incoming_|.
-    VoteReceipt SetIncomingVote(VoteConsumer* consumer,
-                                voting::VoterId<Vote> voter_id,
-                                const ExecutionContext* execution_context,
-                                const Vote& vote);
-    void UpdateIncomingVote(const Vote& vote) { incoming_.UpdateVote(vote); }
+    void SetIncomingVote(const Vote& incoming_vote) {
+      DCHECK(!incoming_vote_.has_value());
+      incoming_vote_ = incoming_vote;
+    }
+    void UpdateIncomingVote(const Vote& incoming_vote) {
+      DCHECK(incoming_vote_.has_value());
+      incoming_vote_ = incoming_vote;
+    }
+    void RemoveIncomingVote() {
+      DCHECK(incoming_vote_.has_value());
+      incoming_vote_ = base::nullopt;
+    }
 
     // For modifying |receipt_|.
     void ChangeOutgoingVote(base::TaskPriority priority, const char* reason) {
@@ -147,10 +154,10 @@ class BoostingVoteAggregator : public VoteConsumer {
 
     // Returns true if this node has an active |incoming| vote. If false that
     // means this node exists only because it is referenced by a BoostedVote.
-    // Same as |incoming_.IsValid()|, but more readable.
-    bool HasIncomingVote() const { return incoming_.IsValid(); }
+    // Same as |incoming_vote_.has_value()|, but more readable.
+    bool HasIncomingVote() const { return incoming_vote_.has_value(); }
 
-    // Returns true if this node has an active outgoing vote. Sam as
+    // Returns true if this node has an active outgoing vote. Same as
     // |receipt_.HasVote()|, but more readable.
     bool HasOutgoingVote() const { return receipt_.HasVote(); }
 
@@ -174,7 +181,7 @@ class BoostingVoteAggregator : public VoteConsumer {
     size_t edge_count_ = 0;
 
     // The input vote we've received, if any.
-    AcceptedVote incoming_;
+    base::Optional<Vote> incoming_vote_;
 
     // The receipt for the vote we've upstreamed, if any.
     VoteReceipt receipt_;
@@ -267,16 +274,15 @@ class BoostingVoteAggregator : public VoteConsumer {
   void SubmitBoostingVote(const BoostingVote* boosting_vote);
   void CancelBoostingVote(const BoostingVote* boosting_vote);
 
-  // VoteConsumer implementation:
-  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
-                         voting::VoterId<Vote> voter_id,
-                         const ExecutionContext* execution_context,
-                         const Vote& vote) override;
-  void ChangeVote(util::PassKey<AcceptedVote>,
-                  AcceptedVote* old_vote,
-                  const Vote& new_vote) override;
-  void VoteInvalidated(util::PassKey<AcceptedVote>,
-                       AcceptedVote* vote) override;
+  // VoteObserver implementation:
+  void OnVoteSubmitted(VoterId voter_id,
+                       const ExecutionContext* execution_context,
+                       const Vote& vote) override;
+  void OnVoteChanged(VoterId voter_id,
+                     const ExecutionContext* execution_context,
+                     const Vote& new_vote) override;
+  void OnVoteInvalidated(VoterId voter_id,
+                         const ExecutionContext* execution_context) override;
 
   // Helper functions for enumerating over incoming and outgoing edges.
   // |function| should accept a single input parameter that is a
@@ -287,10 +293,6 @@ class BoostingVoteAggregator : public VoteConsumer {
   void ForEachIncomingEdge(const ExecutionContext* node, Function&& function);
   template <typename Function>
   void ForEachOutgoingEdge(const ExecutionContext* node, Function&& function);
-
-  // Looks up the NodeData associated with the provided |vote|. The data is
-  // expected to already exist (enforced by a DCHECK).
-  NodeDataMap::iterator GetNodeDataByVote(AcceptedVote* vote);
 
   // Finds or creates the node data associated with the given node.
   NodeDataMap::iterator FindOrCreateNodeData(const ExecutionContext* node);
@@ -371,8 +373,8 @@ class BoostingVoteAggregator : public VoteConsumer {
   // Our channel for upstreaming our votes.
   VotingChannel channel_;
 
-  // Our VotingChannelFactory for providing a VotingChannel to our input voter.
-  VotingChannelFactory factory_;
+  // Provides a VotingChannel to our input voter.
+  VoteConsumerDefaultImpl vote_consumer_default_impl_;
 
   // Nodes and associated metadata in the "priority flow graph". An entry exists
   // in this map for any node that has an active non-default vote, or for any
