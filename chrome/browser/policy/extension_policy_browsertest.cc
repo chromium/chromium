@@ -56,7 +56,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -1659,11 +1658,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // Mark as enterprise managed.
 #if defined(OS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(true);
-  // External extensions are initially disabled for windows. The users are
-  // prompted before enabling them. Explicitly override the flag with 'false' to
-  // disable prompting.
-  extensions::FeatureSwitch::ScopedOverride external_prompt_override(
-      extensions::FeatureSwitch::prompt_for_external_extensions(), false);
 #endif
 
   extensions::ExtensionService* service = extension_service();
@@ -1686,11 +1680,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::TestExtensionRegistryObserver observer(registry);
   UpdateProviderPolicy(policies);
   observer.WaitForExtensionWillBeInstalled();
+
+  // TODO(crbug.com/1006342): There is a race condition here where the extension
+  // may or may not be enabled by the time we get here.
   EXPECT_TRUE(registry->GetExtensionById(
-      kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
+      kGoodCrxId, extensions::ExtensionRegistry::ENABLED |
+                      extensions::ExtensionRegistry::DISABLED));
 
   // The user is not allowed to uninstall recommended-installed extensions.
   UninstallExtension(kGoodCrxId, false);
+
+  // Explicitly re-enables the extension.
+  service->EnableExtension(kGoodCrxId);
 
   // But the user is allowed to disable them.
   EXPECT_TRUE(service->IsExtensionEnabled(kGoodCrxId));
