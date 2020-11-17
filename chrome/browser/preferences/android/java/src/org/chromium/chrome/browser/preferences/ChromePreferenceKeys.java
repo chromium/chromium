@@ -531,6 +531,12 @@ public final class ChromePreferenceKeys {
     public static final String PREFETCH_NOTIFICATION_TIME = "prefetch_notification_shown_time";
     public static final String PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
 
+    /**
+     * Whether users turn on the feature track prices on tabs.
+     */
+    public static final String PRICE_TRACKING_TRACK_PRICES_ON_TABS =
+            "Chrome.PriceTracking.TrackPricesOnTabs";
+
     public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
     public static final String PRIVACY_METRICS_IN_SAMPLE = "in_metrics_sample";
     public static final String PRIVACY_NETWORK_PREDICTIONS = "network_predictions";
@@ -831,6 +837,7 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
+                PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
