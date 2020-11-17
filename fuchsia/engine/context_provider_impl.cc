@@ -492,6 +492,12 @@ void ContextProviderImpl::Create(
                                       kCdmDataPath);
     launch_options.paths_to_transfer.push_back(base::PathToTransfer{
         base::FilePath(kCdmDataPath), cdm_data_directory_channel.get()});
+
+    if (params.has_cdm_data_quota_bytes()) {
+      launch_command.AppendSwitchNative(
+          switches::kCdmDataQuotaBytes,
+          base::NumberToString(params.cdm_data_quota_bytes()));
+    }
   }
 
   bool enable_hardware_video_decoder =

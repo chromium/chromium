@@ -18,6 +18,7 @@
 #include "content/public/common/main_function_params.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
+#include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/switches.h"
@@ -99,6 +100,12 @@ void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
     legacy_metrics_client_->Start(kMetricsReportingInterval);
   }
+
+  // Create the MediaResourceProviderService at startup rather than on-demand,
+  // to allow it to perform potentially expensive startup work in the
+  // background.
+  media_resource_provider_service_ =
+      std::make_unique<MediaResourceProviderService>();
 
   // Quit the browser main loop when the Context connection is dropped.
   context_binding_->set_error_handler([this](zx_status_t status) {

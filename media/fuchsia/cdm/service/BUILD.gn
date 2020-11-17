@@ -39,9 +39,9 @@ source_set("unittests") {
   ]
 
   sources = [
-    "fuchsia_cdm_manager_test.cc",
+    "fuchsia_cdm_manager_unittest.cc",
     "mock_provision_fetcher.cc",
     "mock_provision_fetcher.h",
-    "provisioning_fetcher_impl_test.cc",
+    "provisioning_fetcher_impl_unittest.cc",
   ]
 }

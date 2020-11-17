@@ -146,8 +146,8 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
   media::FuchsiaCdmManager::CreateKeySystemCallbackMap
       create_key_system_callbacks;
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableWidevine)) {
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableWidevine)) {
     create_key_system_callbacks.emplace(
         kWidevineKeySystem,
         base::BindRepeating(
@@ -155,8 +155,7 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
   }
 
   std::string playready_key_system =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kPlayreadyKeySystem);
+      command_line->GetSwitchValueASCII(switches::kPlayreadyKeySystem);
   if (!playready_key_system.empty()) {
     create_key_system_callbacks.emplace(
         playready_key_system,
@@ -165,12 +164,20 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
   }
 
   std::string cdm_data_directory =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kCdmDataDirectory);
+      command_line->GetSwitchValueASCII(switches::kCdmDataDirectory);
+
+  base::Optional<uint64_t> cdm_data_quota_bytes;
+  if (command_line->HasSwitch(switches::kCdmDataQuotaBytes)) {
+    uint64_t value = 0;
+    CHECK(base::StringToUint64(
+        command_line->GetSwitchValueASCII(switches::kCdmDataQuotaBytes),
+        &value));
+    cdm_data_quota_bytes = value;
+  }
 
   return std::make_unique<media::FuchsiaCdmManager>(
       std::move(create_key_system_callbacks),
-      base::FilePath(cdm_data_directory));
+      base::FilePath(cdm_data_directory), cdm_data_quota_bytes);
 }
 
 }  // namespace

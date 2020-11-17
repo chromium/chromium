@@ -53,6 +53,9 @@ extern const char kEnableCastStreamingReceiver[];
 // Data directory to be used for CDM user data.
 extern const char kCdmDataDirectory[];
 
+// Quota to apply to the CDM user data directory, in bytes.
+extern const char kCdmDataQuotaBytes[];
+
 // Enables reporting of an Android-like User Agent string.
 extern const char kUseLegacyAndroidUserAgent[];
 

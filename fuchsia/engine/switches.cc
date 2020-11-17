@@ -18,6 +18,7 @@ const char kUseLegacyMetricsService[] = "use-legacy-metrics-service";
 const char kCorsExemptHeaders[] = "cors-exempt-headers";
 const char kEnableCastStreamingReceiver[] = "enable-cast-streaming-receiver";
 const char kCdmDataDirectory[] = "cdm-data-directory";
+const char kCdmDataQuotaBytes[] = "cdm-data-quota-bytes";
 const char kUseLegacyAndroidUserAgent[] = "use-legacy-android-user-agent";
 const char kDataQuotaBytes[] = "data-quota-bytes";
 
