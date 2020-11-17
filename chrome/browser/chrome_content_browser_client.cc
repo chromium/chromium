@@ -1177,7 +1177,8 @@ bool IsErrorPageAutoReloadEnabled() {
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     base::Optional<std::string> brand,
-    std::string major_version) {
+    std::string major_version,
+    base::Optional<std::string> maybe_greasey_brand) {
   DCHECK_GE(seed, 0);
   const int npermutations = 6;  // 3!
   int permutation = seed % npermutations;
@@ -1197,7 +1198,8 @@ blink::UserAgentBrandList GenerateBrandVersionList(
       base::StrCat({escaped_chars[order[0]], "Not", escaped_chars[order[1]],
                     "A", escaped_chars[order[2]], "Brand"});
 
-  blink::UserAgentBrandVersion greasey_bv = {greasey_brand, "99"};
+  blink::UserAgentBrandVersion greasey_bv = {
+      maybe_greasey_brand.value_or(greasey_brand), "99"};
   blink::UserAgentBrandVersion chromium_bv = {"Chromium", major_version};
 
   blink::UserAgentBrandList greased_brand_version_list(3);
@@ -1229,8 +1231,14 @@ const blink::UserAgentBrandList& GetBrandVersionList() {
 #if !BUILDFLAG(CHROMIUM_BRANDING)
         brand = version_info::GetProductName();
 #endif
+        base::Optional<std::string> maybe_param_override =
+            base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
+                                                   "brand_override");
+        if (maybe_param_override->empty())
+          maybe_param_override = base::nullopt;
+
         return GenerateBrandVersionList(major_version_number, brand,
-                                        major_version);
+                                        major_version, maybe_param_override);
       }());
   return *greased_brand_version_list;
 }
