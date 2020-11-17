@@ -351,6 +351,12 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
          data.role == ax::mojom::Role::kPopUpButton;
 }
 
+// Check whether |selector| is an accessibility setter. This is a heuristic but
+// seems to be a pretty good one.
+bool IsAXSetter(SEL selector) {
+  return [NSStringFromSelector(selector) hasPrefix:@"setAccessibility"];
+}
+
 }  // namespace
 
 @interface AXPlatformNodeCocoa (Private)
@@ -995,33 +1001,26 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
   if (!_node)
     return NO;
 
-  const ax::mojom::Restriction restriction = _node->GetData().GetRestriction();
-  if (restriction == ax::mojom::Restriction::kDisabled)
-    return NO;
+  if (selector == @selector(setAccessibilityFocused:))
+    return _node->GetData().HasState(ax::mojom::State::kFocusable);
 
-  if (selector == @selector(setAccessibilityValue:)) {
+  if (selector == @selector(setAccessibilityValue:) &&
+      _node->GetData().role == ax::mojom::Role::kTab) {
     // Tabs use the radio button role on Mac, so they are selected by calling
     // setSelected on an individual tab, rather than by setting the selected
     // element on the tabstrip as a whole.
-    if (_node->GetData().role == ax::mojom::Role::kTab) {
-      return !_node->GetData().GetBoolAttribute(
-          ax::mojom::BoolAttribute::kSelected);
-    }
-    return restriction != ax::mojom::Restriction::kReadOnly;
+    return !_node->GetData().GetBoolAttribute(
+        ax::mojom::BoolAttribute::kSelected);
   }
 
+  // Don't allow calling AX setters on disabled elements.
   // TODO(https://crbug.com/692362): Once the underlying bug in
   // views::Textfield::SetSelectionRange() described in that bug is fixed,
-  // remove the check here; right now, this check serves to prevent
-  // accessibility clients from trying to set the selection range, which won't
-  // work because of 692362.
-  if (selector == @selector(setAccessibilitySelectedText:) ||
-      selector == @selector(setAccessibilitySelectedTextRange:)) {
-    return restriction != ax::mojom::Restriction::kReadOnly;
-  }
-
-  if (selector == @selector(setAccessibilityFocused:))
-    return _node->GetData().HasState(ax::mojom::State::kFocusable);
+  // remove the check here when the selector is setAccessibilitySelectedText*;
+  // right now, this check serves to prevent accessibility clients from trying
+  // to set the selection range, which won't work because of 692362.
+  if (_node->GetData().IsReadOnlyOrDisabled() && IsAXSetter(selector))
+    return NO;
 
   // TODO(https://crbug.com/386671): What about role-specific selectors?
   return [super isAccessibilitySelectorAllowed:selector];
