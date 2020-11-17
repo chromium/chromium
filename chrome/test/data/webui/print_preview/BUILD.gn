@@ -22,8 +22,6 @@ js_type_check("closure_compile") {
     ":color_settings_test",
     ":copies_settings_test",
     ":custom_margins_test",
-    ":destination_dialog_interactive_test",
-    ":destination_dialog_test",
     ":destination_item_test",
     ":destination_list_test",
     ":destination_settings_test",
@@ -71,6 +69,8 @@ js_type_check("closure_compile") {
 
   if (is_chromeos) {
     deps += [
+      ":destination_dialog_cros_interactive_test",
+      ":destination_dialog_cros_test",
       ":destination_dropdown_cros_test",
       ":destination_item_test_cros",
       ":destination_search_test_chromeos",
@@ -78,6 +78,8 @@ js_type_check("closure_compile") {
     ]
   } else {
     deps += [
+      ":destination_dialog_interactive_test",
+      ":destination_dialog_test",
       ":destination_search_test",
       ":destination_select_test",
     ]
@@ -201,30 +203,60 @@ js_library("destination_settings_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("destination_dialog_test") {
-  deps = [
-    ":cloud_print_interface_stub",
-    ":native_layer_stub",
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+if (is_chromeos) {
+  js_library("destination_dialog_cros_test") {
+    deps = [
+      ":cloud_print_interface_stub",
+      ":native_layer_stub",
+      ":print_preview_test_utils",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
+} else {
+  js_library("destination_dialog_test") {
+    deps = [
+      ":cloud_print_interface_stub",
+      ":native_layer_stub",
+      ":print_preview_test_utils",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 }
 
-js_library("destination_dialog_interactive_test") {
-  deps = [
-    ":cloud_print_interface_stub",
-    ":native_layer_stub",
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+if (is_chromeos) {
+  js_library("destination_dialog_cros_interactive_test") {
+    deps = [
+      ":cloud_print_interface_stub",
+      ":native_layer_stub",
+      ":print_preview_test_utils",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
+} else {
+  js_library("destination_dialog_interactive_test") {
+    deps = [
+      ":cloud_print_interface_stub",
+      ":native_layer_stub",
+      ":print_preview_test_utils",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 }
 
 js_library("destination_list_test") {

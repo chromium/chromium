@@ -27,7 +27,7 @@ destination_search_test_chromeos.TestNames = {
 };
 
 suite(destination_search_test_chromeos.suiteName, function() {
-  /** @type {PrintPreviewDestinationDialogElement} */
+  /** @type {PrintPreviewDestinationDialogCrosElement} */
   let dialog;
 
   /** @type {DestinationStore} */
@@ -56,8 +56,8 @@ suite(destination_search_test_chromeos.suiteName, function() {
         [] /* recentDestinations */);
 
     // Set up dialog
-    dialog = /** @type {!PrintPreviewDestinationDialogElement} */ (
-        document.createElement('print-preview-destination-dialog'));
+    dialog = /** @type {!PrintPreviewDestinationDialogCrosElement} */ (
+        document.createElement('print-preview-destination-dialog-cros'));
     dialog.users = [];
     dialog.activeUser = '';
     dialog.destinationStore = destinationStore;

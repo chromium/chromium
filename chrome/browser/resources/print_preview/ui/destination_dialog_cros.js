@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 Polymer({
-  is: 'print-preview-destination-dialog',
+  is: 'print-preview-destination-dialog-cros',
 
   _template: html`{__html_template__}`,
 
@@ -81,6 +81,15 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /** @private */
+    saveToDriveFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('printSaveToDrive');
+      },
+      readOnly: true,
+    },
   },
 
   listeners: {
@@ -89,6 +98,9 @@ Polymer({
 
   /** @private {!EventTracker} */
   tracker_: new EventTracker(),
+
+  /** @private {?Destination} */
+  destinationInConfiguring_: null,
 
   /** @private {boolean} */
   initialized_: false,
@@ -154,6 +166,14 @@ Polymer({
    */
   getDestinationList_() {
     const destinations = this.destinationStore.destinations(this.activeUser);
+    // When |saveToDriveFlagEnabled_| is true, we don't want to show a
+    // 'Save to Drive' option in the destination dialog.
+    if (this.saveToDriveFlagEnabled_) {
+      return destinations.filter(
+          destination => destination.id !== Destination.GooglePromotedId.DOCS &&
+              destination.id !==
+                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
+    }
 
     return destinations;
   },
@@ -211,6 +231,36 @@ Polymer({
           });
       return;
     }
+
+    // Destination must be a CrOS local destination that needs to be set up.
+    // The user is only allowed to set up printer at one time.
+    if (this.destinationInConfiguring_) {
+      return;
+    }
+
+    // Show the configuring status to the user and resolve the destination.
+    listItem.onConfigureRequestAccepted();
+    this.destinationInConfiguring_ = destination;
+    this.destinationStore.resolveCrosDestination(destination)
+        .then(
+            response => {
+              this.destinationInConfiguring_ = null;
+              listItem.onConfigureComplete(response.success);
+              if (response.success) {
+                destination.capabilities = response.capabilities;
+                if (response.policies) {
+                  destination.policies = response.policies;
+                }
+                this.selectDestination_(destination);
+                // After destination is selected, start fetching for the EULA
+                // URL.
+                this.destinationStore.fetchEulaUrl(destination.id);
+              }
+            },
+            () => {
+              this.destinationInConfiguring_ = null;
+              listItem.onConfigureComplete(false);
+            });
   },
 
   /**

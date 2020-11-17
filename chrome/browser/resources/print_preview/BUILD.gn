@@ -125,7 +125,7 @@ preprocess_grit("preprocess_generated") {
     "ui/button_strip.js",
     "ui/color_settings.js",
     "ui/copies_settings.js",
-    "ui/destination_dialog.js",
+    "ui/destination_dialog_css.js",
     "ui/destination_list.js",
     "ui/destination_list_item.js",
     "ui/destination_select_css.js",
@@ -162,11 +162,13 @@ preprocess_grit("preprocess_generated") {
       "ui/destination_dropdown_cros.js",
       "ui/destination_select_cros.js",
       "ui/pin_settings.js",
+      "ui/destination_dialog_cros.js",
     ]
   } else {
     in_files += [
       "ui/destination_select.js",
       "ui/link_container.js",
+      "ui/destination_dialog.js",
     ]
   }
 }

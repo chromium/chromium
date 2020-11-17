@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,18 @@ import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
-window.destination_dialog_test = {};
-const destination_dialog_test = window.destination_dialog_test;
-destination_dialog_test.suiteName = 'DestinationDialogTest';
+window.destination_dialog_cros_test = {};
+const destination_dialog_cros_test = window.destination_dialog_cros_test;
+destination_dialog_cros_test.suiteName = 'DestinationDialogCrosTest';
 /** @enum {string} */
-destination_dialog_test.TestNames = {
+destination_dialog_cros_test.TestNames = {
   PrinterList: 'PrinterList',
   ShowProvisionalDialog: 'ShowProvisionalDialog',
   UserAccounts: 'UserAccounts',
 };
 
-suite(destination_dialog_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationDialogElement} */
+suite(destination_dialog_cros_test.suiteName, function() {
+  /** @type {!PrintPreviewDestinationDialogCrosElement} */
   let dialog;
 
   /** @type {!DestinationStore} */
@@ -46,6 +46,9 @@ suite(destination_dialog_test.suiteName, function() {
 
   /** @type {!Array<!RecentDestination>} */
   let recentDestinations = [];
+
+  /** @type {boolean} */
+  const saveToDriveFlagEnabled = loadTimeData.getBoolean('printSaveToDrive');
 
   /** @override */
   suiteSetup(function() {
@@ -70,8 +73,8 @@ suite(destination_dialog_test.suiteName, function() {
         recentDestinations /* recentDestinations */);
 
     // Set up dialog
-    dialog = /** @type {!PrintPreviewDestinationDialogElement} */ (
-        document.createElement('print-preview-destination-dialog'));
+    dialog = /** @type {!PrintPreviewDestinationDialogCrosElement} */ (
+        document.createElement('print-preview-destination-dialog-cros'));
     dialog.activeUser = '';
     dialog.users = [];
     dialog.destinationStore = destinationStore;
@@ -92,7 +95,7 @@ suite(destination_dialog_test.suiteName, function() {
   }
 
   // Test that destinations are correctly displayed in the lists.
-  test(assert(destination_dialog_test.TestNames.PrinterList), async () => {
+  test(assert(destination_dialog_cros_test.TestNames.PrinterList), async () => {
     await finishSetup();
     const list = dialog.$$('print-preview-destination-list');
 
@@ -120,7 +123,7 @@ suite(destination_dialog_test.suiteName, function() {
   // destinations dialog, and that the escape key closes only the provisional
   // dialog when it is open, not the destinations dialog.
   test(
-      assert(destination_dialog_test.TestNames.ShowProvisionalDialog),
+      assert(destination_dialog_cros_test.TestNames.ShowProvisionalDialog),
       async () => {
         let provisionalDialog = null;
         const provisionalDestination = {
@@ -193,6 +196,10 @@ suite(destination_dialog_test.suiteName, function() {
         'print-preview-destination-list-item:not([hidden])');
     assertEquals(numPrinters, printerItems.length);
 
+    if (saveToDriveFlagEnabled) {
+      return;
+    }
+
     const drivePrinter = Array.from(printerItems).find(item => {
       return item.destination.id === Destination.GooglePromotedId.DOCS;
     });
@@ -203,94 +210,98 @@ suite(destination_dialog_test.suiteName, function() {
   }
 
   // Test that signing in and switching accounts works as expected.
-  test(assert(destination_dialog_test.TestNames.UserAccounts), async () => {
-    // Set up the cloud print interface with Google Drive printer for a couple
-    // different accounts.
-    const user1 = 'foo@chromium.org';
-    const user2 = 'bar@chromium.org';
-    cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
-    cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
-    // Override so that privet printers will also be fetched, since we are
-    // simulating the case where the enterprise override is enabled.
-    loadTimeData.overrideValues(
-        {'cloudPrintDeprecationWarningsSuppressed': true});
-    let userSelect = null;
+  test(
+      assert(destination_dialog_cros_test.TestNames.UserAccounts), async () => {
+        // Set up the cloud print interface with Google Drive printer for a
+        // couple different accounts.
+        const user1 = 'foo@chromium.org';
+        const user2 = 'bar@chromium.org';
+        cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
+        cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
+        // Override so that privet printers will also be fetched, since we are
+        // simulating the case where the enterprise override is enabled.
+        loadTimeData.overrideValues(
+            {'cloudPrintDeprecationWarningsSuppressed': true});
+        let userSelect = null;
 
-    await finishSetup();
-    // Check that the user dropdown is hidden when there are no active users.
-    assertTrue(dialog.$$('.user-info').hidden);
-    userSelect = dialog.$$('.md-select');
+        await finishSetup();
+        // Check that the user dropdown is hidden when there are no active
+        // users.
+        assertTrue(dialog.$$('.user-info').hidden);
+        userSelect = dialog.$$('.md-select');
 
-    // Enable cloud print.
-    assertSignedInState('', 0);
-    // Local, extension, privet, and cloud (since
-    // startLoadAllDestinations() was called).
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
-    assertEquals(1, cloudPrintInterface.getCallCount('search'));
+        // Enable cloud print.
+        assertSignedInState('', 0);
+        // Local, extension, privet, and cloud (since
+        // startLoadAllDestinations() was called).
+        assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+        assertEquals(1, cloudPrintInterface.getCallCount('search'));
 
-    // 6 printers, no Google drive (since not signed in).
-    assertNumPrintersWithDriveAccount(6, '');
+        // 6 printers, no Google drive (since not signed in).
+        assertNumPrintersWithDriveAccount(6, '');
 
-    // Set an active user.
-    destinationStore.setActiveUser(user1);
-    destinationStore.reloadUserCookieBasedDestinations(user1);
-    dialog.activeUser = user1;
-    dialog.users = [user1];
-    flush();
+        // Set an active user.
+        destinationStore.setActiveUser(user1);
+        destinationStore.reloadUserCookieBasedDestinations(user1);
+        dialog.activeUser = user1;
+        dialog.users = [user1];
+        flush();
 
-    // Select shows the signed in user.
-    assertSignedInState(user1, 1);
+        // Select shows the signed in user.
+        assertSignedInState(user1, 1);
 
-    // Now have 7 printers (Google Drive), with user1 signed in.
-    const expectedPrinters = 7;
-    assertNumPrintersWithDriveAccount(expectedPrinters, user1);
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
-    // Cloud printers should have been re-fetched.
-    assertEquals(2, cloudPrintInterface.getCallCount('search'));
+        // Now have 7 printers (Google Drive), with user1 signed in.
+        // On CrOS we do not show Save to Drive destination so 6 printers
+        // expected.
+        const expectedPrinters = saveToDriveFlagEnabled ? 6 : 7;
+        assertNumPrintersWithDriveAccount(expectedPrinters, user1);
+        assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+        // Cloud printers should have been re-fetched.
+        assertEquals(2, cloudPrintInterface.getCallCount('search'));
 
-    // Simulate signing into a second account.
-    userSelect.value = '';
-    userSelect.dispatchEvent(new CustomEvent('change'));
+        // Simulate signing into a second account.
+        userSelect.value = '';
+        userSelect.dispatchEvent(new CustomEvent('change'));
 
-    await nativeLayer.whenCalled('signIn');
-    // No new printer fetch until the user actually changes the active
-    // account.
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
-    assertEquals(2, cloudPrintInterface.getCallCount('search'));
-    dialog.users = [user1, user2];
-    flush();
+        await nativeLayer.whenCalled('signIn');
+        // No new printer fetch until the user actually changes the active
+        // account.
+        assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+        assertEquals(2, cloudPrintInterface.getCallCount('search'));
+        dialog.users = [user1, user2];
+        flush();
 
-    // Select shows the signed in user.
-    assertSignedInState(user1, 2);
+        // Select shows the signed in user.
+        assertSignedInState(user1, 2);
 
-    // Still have 7 printers (Google Drive), with user1 signed in.
-    assertNumPrintersWithDriveAccount(expectedPrinters, user1);
+        // Still have 7 printers (Google Drive), with user1 signed in.
+        assertNumPrintersWithDriveAccount(expectedPrinters, user1);
 
-    // Select the second account.
-    const whenEventFired = eventToPromise('account-change', dialog);
-    userSelect.value = user2;
-    userSelect.dispatchEvent(new CustomEvent('change'));
+        // Select the second account.
+        const whenEventFired = eventToPromise('account-change', dialog);
+        userSelect.value = user2;
+        userSelect.dispatchEvent(new CustomEvent('change'));
 
-    await whenEventFired;
-    flush();
+        await whenEventFired;
+        flush();
 
-    // This will all be done by app.js and user_manager.js in response
-    // to the account-change event.
-    destinationStore.setActiveUser(user2);
-    dialog.activeUser = user2;
-    const whenInserted = eventToPromise(
-        DestinationStore.EventType.DESTINATIONS_INSERTED, destinationStore);
-    destinationStore.reloadUserCookieBasedDestinations(user2);
+        // This will all be done by app.js and user_manager.js in response
+        // to the account-change event.
+        destinationStore.setActiveUser(user2);
+        dialog.activeUser = user2;
+        const whenInserted = eventToPromise(
+            DestinationStore.EventType.DESTINATIONS_INSERTED, destinationStore);
+        destinationStore.reloadUserCookieBasedDestinations(user2);
 
-    await whenInserted;
-    flush();
+        await whenInserted;
+        flush();
 
-    assertSignedInState(user2, 2);
+        assertSignedInState(user2, 2);
 
-    // 7 printers (Google Drive), with user2 signed in.
-    assertNumPrintersWithDriveAccount(expectedPrinters, user2);
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
-    // Cloud print should have been queried again for the new account.
-    assertEquals(3, cloudPrintInterface.getCallCount('search'));
-  });
+        // 7 printers (Google Drive), with user2 signed in.
+        assertNumPrintersWithDriveAccount(expectedPrinters, user2);
+        assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+        // Cloud print should have been queried again for the new account.
+        assertEquals(3, cloudPrintInterface.getCallCount('search'));
+      });
 });

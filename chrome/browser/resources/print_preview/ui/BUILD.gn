@@ -20,7 +20,6 @@ js_type_check("closure_compile_module") {
     ":button_strip",
     ":color_settings",
     ":copies_settings",
-    ":destination_dialog",
     ":destination_list",
     ":destination_list_item",
     ":destination_settings",
@@ -53,12 +52,16 @@ js_type_check("closure_compile_module") {
 
   if (is_chromeos) {
     deps += [
+      ":destination_dialog_cros",
       ":destination_dropdown_cros",
       ":destination_select_cros",
       ":pin_settings",
     ]
   } else {
-    deps += [ ":destination_select" ]
+    deps += [
+      ":destination_dialog",
+      ":destination_select",
+    ]
   }
 }
 
@@ -139,7 +142,6 @@ js_library("header") {
 
 js_library("destination_settings") {
   deps = [
-    ":destination_dialog",
     ":settings_behavior",
     "..:cloud_print_interface_impl",
     "../data:destination",
@@ -154,9 +156,15 @@ js_library("destination_settings") {
   ]
 
   if (is_chromeos) {
-    deps += [ ":destination_select_cros" ]
+    deps += [
+      ":destination_dialog_cros",
+      ":destination_select_cros",
+    ]
   } else {
-    deps += [ ":destination_select" ]
+    deps += [
+      ":destination_dialog",
+      ":destination_select",
+    ]
   }
 }
 
@@ -439,22 +447,42 @@ js_library("invitation_promo") {
   ]
 }
 
-js_library("destination_dialog") {
-  deps = [
-    ":destination_list",
-    ":invitation_promo",
-    ":print_preview_search_box",
-    ":provisional_destination_resolver",
-    "..:metrics",
-    "..:native_layer",
-    "../data:destination",
-    "../data:destination_store",
-    "../data:invitation_store",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
-  ]
+if (is_chromeos) {
+  js_library("destination_dialog_cros") {
+    deps = [
+      ":destination_list",
+      ":invitation_promo",
+      ":print_preview_search_box",
+      ":provisional_destination_resolver",
+      "..:metrics",
+      "..:native_layer",
+      "../data:destination",
+      "../data:destination_store",
+      "../data:invitation_store",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+      "//ui/webui/resources/js:event_tracker.m",
+      "//ui/webui/resources/js:list_property_update_behavior.m",
+    ]
+  }
+} else {
+  js_library("destination_dialog") {
+    deps = [
+      ":destination_list",
+      ":invitation_promo",
+      ":print_preview_search_box",
+      ":provisional_destination_resolver",
+      "..:metrics",
+      "..:native_layer",
+      "../data:destination",
+      "../data:destination_store",
+      "../data:invitation_store",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+      "//ui/webui/resources/js:event_tracker.m",
+      "//ui/webui/resources/js:list_property_update_behavior.m",
+    ]
+  }
 }
 
 js_library("destination_list") {
@@ -537,7 +565,7 @@ html_to_js("web_components") {
     "button_strip.js",
     "color_settings.js",
     "copies_settings.js",
-    "destination_dialog.js",
+    "destination_dialog_css.js",
     "destination_list_item.js",
     "destination_list.js",
     "destination_select_css.js",
@@ -571,11 +599,15 @@ html_to_js("web_components") {
   ]
   if (is_chromeos) {
     js_files += [
+      "destination_dialog_cros.js",
       "destination_dropdown_cros.js",
       "destination_select_cros.js",
       "pin_settings.js",
     ]
   } else {
-    js_files += [ "destination_select.js" ]
+    js_files += [
+      "destination_dialog.js",
+      "destination_select.js",
+    ]
   }
 }

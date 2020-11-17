@@ -26,6 +26,18 @@
       recent-destination-list="[[displayedDestinations_]]"
       on-selected-option-change="onSelectedDestinationOptionChange_">
   </print-preview-destination-select>
+  <cr-lazy-render id="destinationDialog">
+    <template>
+      <print-preview-destination-dialog
+          destination-store="[[destinationStore_]]"
+          invitation-store="[[invitationStore_]]"
+          recent-destination-list="[[recentDestinationList_]]"
+          active-user="[[activeUser_]]" users="[[users_]]"
+          current-destination-account="[[destination.account]]"
+          on-account-change="onAccountChange_" on-close="onDialogClose_">
+      </print-preview-destination-dialog>
+    </template>
+  </cr-lazy-render>
 </if>
 <if expr="chromeos">
   <print-preview-destination-select-cros id="destinationSelect"
@@ -40,16 +52,16 @@
       recent-destination-list="[[displayedDestinations_]]"
       on-selected-option-change="onSelectedDestinationOptionChange_">
   </print-preview-destination-select-cros>
+  <cr-lazy-render id="destinationDialog">
+    <template>
+      <print-preview-destination-dialog-cros
+          destination-store="[[destinationStore_]]"
+          invitation-store="[[invitationStore_]]"
+          recent-destination-list="[[recentDestinationList_]]"
+          active-user="[[activeUser_]]" users="[[users_]]"
+          current-destination-account="[[destination.account]]"
+          on-account-change="onAccountChange_" on-close="onDialogClose_">
+      </print-preview-destination-dialog-cros>
+    </template>
+  </cr-lazy-render>
 </if>
-<cr-lazy-render id="destinationDialog">
-  <template>
-    <print-preview-destination-dialog
-        destination-store="[[destinationStore_]]"
-        invitation-store="[[invitationStore_]]"
-        recent-destination-list="[[recentDestinationList_]]"
-        active-user="[[activeUser_]]" users="[[users_]]"
-        current-destination-account="[[destination.account]]"
-        on-account-change="onAccountChange_" on-close="onDialogClose_">
-    </print-preview-destination-dialog>
-  </template>
-</cr-lazy-render>

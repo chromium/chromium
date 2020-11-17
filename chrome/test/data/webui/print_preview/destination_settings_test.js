@@ -715,8 +715,15 @@ suite(destination_settings_test.suiteName, function() {
           return waitBeforeNextRender(destinationSettings);
         })
         .then(() => {
-          assertTrue(destinationSettings.$$('print-preview-destination-dialog')
-                         .isOpen());
+          if (isChromeOS) {
+            assertTrue(
+                destinationSettings.$$('print-preview-destination-dialog-cros')
+                    .isOpen());
+          } else {
+            assertTrue(
+                destinationSettings.$$('print-preview-destination-dialog')
+                    .isOpen());
+          }
         });
   });
 
@@ -770,7 +777,9 @@ suite(destination_settings_test.suiteName, function() {
               return waitBeforeNextRender(destinationSettings);
             })
             .then(() => {
-              const dialog =
+              const dialog = isChromeOS ?
+                  destinationSettings.$$(
+                      'print-preview-destination-dialog-cros') :
                   destinationSettings.$$('print-preview-destination-dialog');
               assertTrue(dialog.isOpen());
               const whenAdded = eventToPromise(
