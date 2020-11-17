@@ -167,7 +167,7 @@ public class ContextualSearchManager
     private long mLoadedSearchUrlTimeMs;
     private boolean mWereSearchResultsSeen;
     private boolean mWereInfoBarsHidden;
-    private int mPromoteSearchNavigationCounter;
+    private boolean mDidPromoteSearchNavigation;
 
     private boolean mWasActivatedByTap;
     private boolean mIsInitialized;
@@ -643,8 +643,7 @@ public class ContextualSearchManager
             if (surroundingText.length() == 0) {
                 mInternalStateController.reset(StateChangeReason.UNKNOWN);
             } else {
-                mContext.setSurroundingText(encoding, surroundingText, startOffset, endOffset,
-                        mPolicy.isProcessingRelatedSearch());
+                mContext.setSurroundingText(encoding, surroundingText, startOffset, endOffset);
                 mInternalStateController.notifyFinishedWorkOn(InternalState.GATHERING_SURROUNDINGS);
             }
         }
@@ -770,10 +769,9 @@ public class ContextualSearchManager
             // TODO(donnd): Instead of preloading, we should prefetch (ie the URL should not
             // appear in the user's history until the user views it).  See crbug.com/406446.
             boolean shouldPreload = !doPreventPreload && mPolicy.shouldPrefetchSearchResult();
-            boolean doRequireGoogleUrl = !mPolicy.isProcessingRelatedSearch();
             mSearchRequest = new ContextualSearchRequest(searchTerm, alternateTerm,
                     resolvedSearchTerm.mid(), shouldPreload, resolvedSearchTerm.searchUrlFull(),
-                    resolvedSearchTerm.searchUrlPreload(), doRequireGoogleUrl);
+                    resolvedSearchTerm.searchUrlPreload());
             // Trigger translation, if enabled.
             mTranslateController.forceTranslateIfNeeded(mSearchRequest,
                     resolvedSearchTerm.contextLanguage(), mSelectionController.isTapSelection());
@@ -1040,7 +1038,7 @@ public class ContextualSearchManager
 
         @Override
         public void onContentLoadStarted(String url) {
-            mPromoteSearchNavigationCounter++;
+            mDidPromoteSearchNavigation = false;
         }
 
         @Override
@@ -1191,16 +1189,14 @@ public class ContextualSearchManager
      * @param url The URL we are navigating to.
      */
     public void onExternalNavigation(String url) {
-        if (mSearchPanel != null && !BLACKLISTED_URL.equals(url)
-                && !url.startsWith(INTENT_URL_PREFIX) && shouldPromoteSearchNavigation()
-                && mPromoteSearchNavigationCounter
-                        > mPolicy.navigateWithoutPromotionLimitForRelatedSearches()) {
+        if (!mDidPromoteSearchNavigation && mSearchPanel != null && !BLACKLISTED_URL.equals(url)
+                && !url.startsWith(INTENT_URL_PREFIX) && shouldPromoteSearchNavigation()) {
             // Do not promote to a regular tab if we're loading our Resolved Search
             // URL, otherwise we'll promote it when prefetching the Serp.
             // Don't promote URLs when they are navigating to an intent - this is
             // handled by the InterceptNavigationDelegate which uses a faster
             // maximizing animation.
-            mPromoteSearchNavigationCounter = 0;
+            mDidPromoteSearchNavigation = true;
             mSearchPanel.maximizePanelThenPromoteToTab(StateChangeReason.SERP_NAVIGATION);
         }
     }
@@ -1680,17 +1676,6 @@ public class ContextualSearchManager
             /** Starts showing the Tap UI by selecting a word around the current caret. */
             @Override
             public void startShowingTapUi() {
-                // Related Searches skips the "Show Tap UI" so the word tapped does not select.
-                // Otherwise the regular tap pipeline continues.
-                if (mPolicy.isProcessingRelatedSearch()) {
-                    // Skip showing the tap-ui (selecting the word) for Related Searches.
-                    mInternalStateController.notifyStartingWorkOn(
-                            InternalState.START_SHOWING_TAP_UI);
-                    mInternalStateController.notifyFinishedWorkOn(
-                            InternalState.START_SHOWING_TAP_UI);
-                    return;
-                }
-
                 WebContents baseWebContents = getBaseWebContents();
                 if (baseWebContents != null) {
                     mInternalStateController.notifyStartingWorkOn(
@@ -1750,8 +1735,6 @@ public class ContextualSearchManager
                 mInternalStateController.notifyStartingWorkOn(InternalState.RESOLVING);
 
                 String selection = mSelectionController.getSelectedText();
-                selection = mPolicy.overrideSelectionIfProcessingRelatedSearches(
-                        selection, mContext.getWordTapped());
                 assert !TextUtils.isEmpty(selection);
                 mNetworkCommunicator.startSearchTermResolutionRequest(
                         selection, mSelectionController.isAdjustedSelection());

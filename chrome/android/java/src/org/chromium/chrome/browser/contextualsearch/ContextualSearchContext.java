@@ -87,12 +87,6 @@ public abstract class ContextualSearchContext {
     // Whether the Related Searches functionality should also be activated.
     private boolean mDoRelatedSearches;
 
-    /**
-     * Support for Related Searches.  When {@code true} this allows the context to resolve even
-     * when the selection is a simple insertion-point.
-     */
-    private boolean mCanResolveInsertionPoint;
-
     /** A {@link ContextualSearchContext} that ignores changes to the selection. */
     static class ChangeIgnoringContext extends ContextualSearchContext {
         @Override
@@ -154,13 +148,10 @@ public abstract class ContextualSearchContext {
      * @param surroundingText The text from the base page surrounding the selection.
      * @param startOffset The offset of start the selection.
      * @param endOffset The offset of the end of the selection
-     * @param canResolveInsertionPoint Whether an insertion-point selection is considered a valid
-     *        selection to pass to the server Resolve request.
      */
-    void setSurroundingText(String encoding, String surroundingText, int startOffset, int endOffset,
-            boolean canResolveInsertionPoint) {
-        setSurroundingText(
-                encoding, surroundingText, startOffset, endOffset, canResolveInsertionPoint, false);
+    void setSurroundingText(
+            String encoding, String surroundingText, int startOffset, int endOffset) {
+        setSurroundingText(encoding, surroundingText, startOffset, endOffset, false);
     }
 
     /**
@@ -181,19 +172,16 @@ public abstract class ContextualSearchContext {
      * @param surroundingText The text from the base page surrounding the selection.
      * @param startOffset The offset of start the selection.
      * @param endOffset The offset of the end of the selection.
-     * @param canResolveInsertionPoint Whether an insertion-point selection is considered a valid
-     *        selection to pass to the server Resolve request.
      * @param setNative Whether to set the native context too by passing it through JNI.
      */
     @VisibleForTesting
     void setSurroundingText(String encoding, String surroundingText, int startOffset, int endOffset,
-            boolean canResolveInsertionPoint, boolean setNative) {
+            boolean setNative) {
         assert startOffset <= endOffset;
         mEncoding = encoding;
         mSurroundingText = surroundingText;
         mSelectionStartOffset = startOffset;
         mSelectionEndOffset = endOffset;
-        mCanResolveInsertionPoint = canResolveInsertionPoint;
         if (startOffset == endOffset && startOffset <= surroundingText.length()
                 && !hasAnalyzedTap()) {
             analyzeTap(startOffset);
@@ -389,12 +377,10 @@ public abstract class ContextualSearchContext {
      */
     @VisibleForTesting
     boolean hasValidSelection() {
-        boolean validSelectionAllowingInsertionPoint = !TextUtils.isEmpty(mSurroundingText)
-                && mSelectionStartOffset != INVALID_OFFSET && mSelectionEndOffset != INVALID_OFFSET
-                && mSelectionStartOffset <= mSelectionEndOffset
-                && mSelectionEndOffset <= mSurroundingText.length();
-        return validSelectionAllowingInsertionPoint
-                && (mCanResolveInsertionPoint || mSelectionStartOffset < mSelectionEndOffset);
+        return !TextUtils.isEmpty(mSurroundingText) && mSelectionStartOffset != INVALID_OFFSET
+                && mSelectionEndOffset != INVALID_OFFSET
+                && mSelectionStartOffset < mSelectionEndOffset
+                && mSelectionEndOffset < mSurroundingText.length();
     }
 
     /**

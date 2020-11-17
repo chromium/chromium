@@ -229,14 +229,6 @@ public class ContextualSearchContextTest {
 
     @Test
     @Feature({"ContextualSearch", "Context"})
-    public void testAllowInsertionPointSelection() {
-        String sample = "sample";
-        mContext.setSurroundingText(UTF_8, sample, sample.length(), sample.length(), true, false);
-        assertTrue(mContext.hasValidSelection());
-    }
-
-    @Test
-    @Feature({"ContextualSearch", "Context"})
     public void testRedundantLanguages() {
         // Most common to least common
         doNothing()
