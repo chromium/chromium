@@ -94,7 +94,7 @@ if (is_chrome_branded) {
     deps = [
       ":conflicts_dll",
       ":module_list_proto",
-      "//chrome/browser",
+      "//chrome/browser:browser_process",
       "//chrome/chrome_elf:third_party_shared_defines",
       "//chrome/test:test_support_ui",
       "//components/services/quarantine/public/cpp:features",

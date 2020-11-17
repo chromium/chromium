@@ -98,6 +98,18 @@ proto_library("ntp_background_proto") {
   generate_python = false
 }
 
+source_set("browser_process") {
+  sources = [
+    "browser_process.cc",
+    "browser_process.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:buildflags",
+    "//media:media_buildflags",
+  ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it.This makes linking more efficient.
 static_library("browser") {
@@ -206,8 +218,6 @@ static_library("browser") {
     "browser_about_handler.h",
     "browser_features.cc",
     "browser_features.h",
-    "browser_process.cc",
-    "browser_process.h",
     "browser_process_impl.cc",
     "browser_process_impl.h",
     "browser_process_platform_part.h",
@@ -1926,6 +1936,7 @@ static_library("browser") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
     "//chrome/browser/devtools",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media:media_engagement_preload_proto",
@@ -6615,6 +6626,7 @@ static_library("test_support") {
   deps = [
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
     "//components/consent_auditor:test_support",
@@ -6879,6 +6891,7 @@ if (!is_android) {
     deps = [
       ":browser",
       "//chrome:browser_tests_pak",
+      "//chrome/browser:browser_process",
       "//chrome/common:mojo_bindings",
       "//chrome/test/data:web_ui_test_bindings",
       "//components/metrics:test_support",

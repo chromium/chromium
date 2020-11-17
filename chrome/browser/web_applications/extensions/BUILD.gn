@@ -38,6 +38,7 @@ source_set("extensions") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/browser/web_applications/components",

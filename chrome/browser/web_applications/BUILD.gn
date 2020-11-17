@@ -73,6 +73,7 @@ source_set("web_applications") {
 
   deps = [
     ":web_app_group",
+    "//chrome/browser:browser_process",
     "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/common",
