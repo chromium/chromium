@@ -1947,7 +1947,7 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
   DCHECK(profile);
   bool is_ephemeral =
       profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles);
-  if (!profile->IsOffTheRecord() && !is_ephemeral && !browser->is_type_app() &&
+  if (!profile->IsOffTheRecord() && !is_ephemeral &&
       ++browser_counts_[profile] == 1) {
     active_profiles_.push_back(profile);
     SaveActiveProfiles();
@@ -1962,8 +1962,7 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
 void ProfileManager::OnBrowserClosed(Browser* browser) {
   Profile* profile = browser->profile();
   DCHECK(profile);
-  if (!profile->IsOffTheRecord() && !browser->is_type_app() &&
-      --browser_counts_[profile] == 0) {
+  if (!profile->IsOffTheRecord() && --browser_counts_[profile] == 0) {
     active_profiles_.erase(
         std::find(active_profiles_.begin(), active_profiles_.end(), profile));
     if (!closing_all_browsers_)

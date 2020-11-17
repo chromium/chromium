@@ -681,8 +681,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   // complete run of the Chrome Cleanup tool. If post-cleanup settings reset is
   // enabled, we delay checks for settings reset prompt until the scheduled
   // reset is finished.
-  if (safe_browsing::PostCleanupSettingsResetter::IsEnabled() &&
-      !parsed_command_line().HasSwitch(switches::kAppId)) {
+  if (safe_browsing::PostCleanupSettingsResetter::IsEnabled()) {
     // Using last opened profiles, because we want to find reset the profile
     // that was open in the last Chrome run, which may not be open yet in
     // the current run.

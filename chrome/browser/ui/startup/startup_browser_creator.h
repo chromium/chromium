@@ -133,8 +133,6 @@ class StartupBrowserCreator {
                            CommandLineTab);
   FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
                            CommandLineWindow);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
-                           LastUsedProfilesWithWebApp);
 
   bool ProcessCmdLineImpl(const base::CommandLine& command_line,
                           const base::FilePath& cur_dir,
