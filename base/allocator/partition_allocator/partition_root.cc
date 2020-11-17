@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
+#include "base/allocator/partition_allocator/pcscan.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -607,6 +608,12 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
+  // TODO(chromium:1129751): Change to LIKELY once PCScan is enabled by default.
+  if (UNLIKELY(pcscan)) {
+    pcscan->PerformScan(
+        internal::PCScan<thread_safe>::InvocationMode::kBlocking);
+  }
+
   {
     ScopedGuard guard{lock_};
     if (flags & PartitionPurgeDecommitEmptySlotSpans)

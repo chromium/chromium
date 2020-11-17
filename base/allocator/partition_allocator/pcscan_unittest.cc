@@ -27,8 +27,7 @@ class PCScanTest : public testing::Test {
   }
 
   void RunPCScan() {
-    root().pcscan->ScheduleTask(
-        PCScan<ThreadSafe>::TaskType::kBlockingForTesting);
+    root().pcscan->PerformScan(PCScan<ThreadSafe>::InvocationMode::kBlocking);
   }
 
   bool IsInQuarantine(void* ptr) const {

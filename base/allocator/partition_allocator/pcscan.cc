@@ -354,7 +354,7 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
 }
 
 template <bool thread_safe>
-void PCScan<thread_safe>::ScheduleTask(TaskType task_type) {
+void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   PA_DCHECK(root_);
   PA_DCHECK(root_->pcscan);
 
@@ -370,7 +370,7 @@ void PCScan<thread_safe>::ScheduleTask(TaskType task_type) {
 
   // Post PCScan task.
   const auto callback = [](PCScanTask task) { std::move(task).RunOnce(); };
-  if (UNLIKELY(task_type == TaskType::kBlockingForTesting)) {
+  if (UNLIKELY(invocation_mode == InvocationMode::kBlocking)) {
     // Blocking is only used for testing.
     callback(std::move(task));
   } else if (LIKELY(base::ThreadPoolInstance::Get())) {
@@ -379,6 +379,7 @@ void PCScan<thread_safe>::ScheduleTask(TaskType task_type) {
                                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
                                base::BindOnce(callback, std::move(task)));
   } else {
+    PA_DCHECK(InvocationMode::kNonBlocking == invocation_mode);
     // Otherwise, retreat to kernel threads. TODO(bikineev): Use base's threads.
     std::thread{callback, std::move(task)}.detach();
   }
