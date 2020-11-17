@@ -34,7 +34,8 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kImageHeightDip = 256;
+constexpr gfx::Size kImageSizeDip = {216, 216};
+constexpr int kImageRowHeightDip = 256;
 constexpr int kButtonSpacingDip = 8;
 constexpr int kButtonContainerTopPaddingDip = 16;
 constexpr int kProgressBarHeightDip = 2;
@@ -57,38 +58,8 @@ void AddColumnWithSidePadding(views::GridLayout* layout, int padding, int id) {
 
 }  // namespace
 
-PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress) {
-  InitLayout(show_progress);
-}
-
-PhoneHubInterstitialView::~PhoneHubInterstitialView() = default;
-
-void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
-  // Expect a non-empty string for the title.
-  DCHECK(!image.isNull());
-  image_->SetImage(image);
-  image_->SetImageSize(gfx::Size(
-      kTrayMenuWidth - 2 * kBubbleHorizontalSidePaddingDip, kImageHeightDip));
-}
-
-void PhoneHubInterstitialView::SetTitle(const base::string16& title) {
-  // Expect a non-empty string for the title.
-  DCHECK(!title.empty());
-  title_->SetText(title);
-}
-
-void PhoneHubInterstitialView::SetDescription(const base::string16& desc) {
-  // Expect a non-empty string for the description.
-  DCHECK(!desc.empty());
-  description_->SetText(desc);
-}
-
-void PhoneHubInterstitialView::AddButton(
-    std::unique_ptr<views::Button> button) {
-  button_container_->AddChildView(std::move(button));
-}
-
-void PhoneHubInterstitialView::InitLayout(bool show_progress) {
+PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
+                                                   bool show_image) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -119,9 +90,15 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
     progress_bar_->SetValue(kInfiniteLoadingProgressValue);
   }
 
-  // Set up layout row for the image view.
-  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
-  image_ = layout->AddView(std::make_unique<views::ImageView>());
+  // Set up layout row for the image if any.
+  if (show_image) {
+    layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId,
+                     kImageRowHeightDip);
+    image_ =
+        layout->AddView(std::make_unique<views::ImageView>(), 1, 1,
+                        views::GridLayout::CENTER, views::GridLayout::CENTER);
+    image_->SetImageSize(kImageSizeDip);
+  }
 
   // Set up layout row for the title view, which should be left-aligned.
   layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
@@ -160,6 +137,32 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   button_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kButtonSpacingDip));
+}
+
+PhoneHubInterstitialView::~PhoneHubInterstitialView() = default;
+
+void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
+  // Expect an initialized |image_| view and a non-empty image.
+  DCHECK(image_);
+  DCHECK(!image.isNull());
+  image_->SetImage(image);
+}
+
+void PhoneHubInterstitialView::SetTitle(const base::string16& title) {
+  // Expect a non-empty string for the title.
+  DCHECK(!title.empty());
+  title_->SetText(title);
+}
+
+void PhoneHubInterstitialView::SetDescription(const base::string16& desc) {
+  // Expect a non-empty string for the description.
+  DCHECK(!desc.empty());
+  description_->SetText(desc);
+}
+
+void PhoneHubInterstitialView::AddButton(
+    std::unique_ptr<views::Button> button) {
+  button_container_->AddChildView(std::move(button));
 }
 
 BEGIN_METADATA(PhoneHubInterstitialView, views::View)
