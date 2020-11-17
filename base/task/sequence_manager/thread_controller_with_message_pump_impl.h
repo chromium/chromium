@@ -182,11 +182,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   TaskAnnotator task_annotator_;
 
-#if DCHECK_IS_ON()
-  const bool log_runloop_quit_and_quit_when_idle_;
-  bool quit_when_idle_requested_ = false;
-#endif
-
   const TickClock* time_source_;  // Not owned.
 
   // Non-null provider of id state for identifying distinct work items executed

@@ -73,14 +73,6 @@ SequenceManager::Settings::Builder::SetLogTaskDelayExpiry(
 }
 
 SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetLogRunloopQuitAndQuitWhenIdle(
-    bool log_runloop_quit_and_quit_when_idle_val) {
-  settings_.log_runloop_quit_and_quit_when_idle =
-      log_runloop_quit_and_quit_when_idle_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetPerPriorityCrossThreadTaskDelay(
     std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
         per_priority_cross_thread_task_delay_val) {

@@ -116,9 +116,6 @@ class BASE_EXPORT SequenceManager {
     // to run.
     bool log_task_delay_expiry = false;
 
-    // If true usages of the RunLoop API will be logged.
-    bool log_runloop_quit_and_quit_when_idle = false;
-
     // Scheduler policy induced raciness is an area of concern. This lets us
     // apply an extra delay per priority for cross thread posting.
     std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
@@ -283,10 +280,6 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   // Whether or not debug logs will be emitted when a delayed task becomes
   // eligible to run.
   Builder& SetLogTaskDelayExpiry(bool log_task_delay_expiry);
-
-  // Whether or not usages of the RunLoop API will be logged.
-  Builder& SetLogRunloopQuitAndQuitWhenIdle(
-      bool log_runloop_quit_and_quit_when_idle);
 
   // Scheduler policy induced raciness is an area of concern. This lets us
   // apply an extra delay per priority for cross thread posting.

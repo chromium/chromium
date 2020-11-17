@@ -43,10 +43,6 @@ ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
     : associated_thread_(AssociatedThreadId::CreateUnbound()),
       work_deduplicator_(associated_thread_),
-#if DCHECK_IS_ON()
-      log_runloop_quit_and_quit_when_idle_(
-          settings.log_runloop_quit_and_quit_when_idle),
-#endif
       time_source_(settings.clock) {
 }
 
@@ -355,14 +351,6 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
         task_annotator_.RunTask("SequenceManager RunTask", task);
       }
 
-#if DCHECK_IS_ON()
-      if (log_runloop_quit_and_quit_when_idle_ && !quit_when_idle_requested_ &&
-          ShouldQuitWhenIdle()) {
-        DVLOG(1) << "ThreadControllerWithMessagePumpImpl::QuitWhenIdle";
-        quit_when_idle_requested_ = true;
-      }
-#endif
-
       // This processes microtasks, hence all scoped operations above must end
       // after it.
       main_thread_only().task_source->DidRunTask();
@@ -455,10 +443,6 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
       (timeout == TimeDelta::Max()) ? TimeTicks::Max()
                                     : time_source_->NowTicks() + timeout);
 
-#if DCHECK_IS_ON()
-  AutoReset<bool> quit_when_idle_requested(&quit_when_idle_requested_, false);
-#endif
-
   main_thread_only().run_level_tracker.OnRunLoopStarted(
       RunLevelTracker::kSelectingNextTask);
 
@@ -475,11 +459,6 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
   } else {
     pump_->Run(this);
   }
-
-#if DCHECK_IS_ON()
-  if (log_runloop_quit_and_quit_when_idle_)
-    DVLOG(1) << "ThreadControllerWithMessagePumpImpl::Quit";
-#endif
 
   main_thread_only().run_level_tracker.OnRunLoopEnded();
   main_thread_only().quit_pending = false;
