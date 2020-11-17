@@ -24,11 +24,6 @@ namespace {
 // Fuchsia's default root node ID.
 constexpr uint32_t kFuchsiaRootNodeId = 0;
 
-// Remapped value for AXNode::kInvalidAXID.
-// Value is chosen to be outside the range of a 32-bit signed int, so as to not
-// conflict with other AXIDs.
-constexpr uint32_t kInvalidIdRemappedForFuchsia = 1u + INT32_MAX;
-
 fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     const ui::AXNodeData& node) {
   fuchsia::accessibility::semantics::Attributes attributes;
@@ -184,11 +179,12 @@ std::vector<fuchsia::accessibility::semantics::Action> ConvertActions(
 }
 
 std::vector<uint32_t> ConvertChildIds(std::vector<int32_t> ids,
-                                      int32_t ax_root_id) {
+                                      const ui::AXTreeID& tree_id,
+                                      NodeIDMapper* id_mapper) {
   std::vector<uint32_t> child_ids;
   child_ids.reserve(ids.size());
-  for (auto i : ids) {
-    child_ids.push_back(ConvertToFuchsiaNodeId(i, ax_root_id));
+  for (const auto& i : ids) {
+    child_ids.push_back(id_mapper->ToFuchsiaNodeID(tree_id, i, false));
   }
   return child_ids;
 }
@@ -217,14 +213,18 @@ fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
 
 fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
     const ui::AXNodeData& node,
-    int32_t ax_root_id) {
+    const ui::AXTreeID& tree_id,
+    bool is_root,
+    NodeIDMapper* id_mapper) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
-  fuchsia_node.set_node_id(ConvertToFuchsiaNodeId(node.id, ax_root_id));
+  fuchsia_node.set_node_id(
+      id_mapper->ToFuchsiaNodeID(tree_id, node.id, is_root));
   fuchsia_node.set_role(AxRoleToFuchsiaSemanticRole(node.role));
   fuchsia_node.set_states(ConvertStates(node));
   fuchsia_node.set_attributes(ConvertAttributes(node));
   fuchsia_node.set_actions(ConvertActions(node));
-  fuchsia_node.set_child_ids(ConvertChildIds(node.child_ids, ax_root_id));
+  fuchsia_node.set_child_ids(
+      ConvertChildIds(node.child_ids, tree_id, id_mapper));
   fuchsia_node.set_location(ConvertBoundingBox(node.relative_bounds.bounds));
   if (node.relative_bounds.transform) {
     fuchsia_node.set_transform(
@@ -261,24 +261,68 @@ bool ConvertAction(fuchsia::accessibility::semantics::Action fuchsia_action,
   }
 }
 
-uint32_t ConvertToFuchsiaNodeId(int32_t ax_node_id, int32_t ax_root_node_id) {
-  if (ax_node_id == ax_root_node_id)
-    return kFuchsiaRootNodeId;
+NodeIDMapper::NodeIDMapper()
+    : root_(std::make_pair(ui::AXTreeIDUnknown(), 0)) {}
 
-  // kInvalidAXID has the same value as the Fuchsia root ID. It is remapped to
-  // avoid a conflict.
-  if (ax_node_id == ui::AXNode::kInvalidAXID)
-    return kInvalidIdRemappedForFuchsia;
+NodeIDMapper::~NodeIDMapper() = default;
 
-  return base::checked_cast<uint32_t>(ax_node_id);
+uint32_t NodeIDMapper::ToFuchsiaNodeID(const ui::AXTreeID& ax_tree_id,
+                                       int32_t ax_node_id,
+                                       bool is_tree_root) {
+  const bool should_change_root =
+      is_tree_root && (root_.first != ax_tree_id || root_.second != ax_node_id);
+
+  CHECK_LE(next_fuchsia_id_, UINT32_MAX);
+  uint32_t fuchsia_node_id;
+  if (should_change_root) {
+    // The node that points to the root is changing. Update the old root to
+    // receive an unique ID, and make the new root receive the default value.
+    if (root_.first != ui::AXTreeIDUnknown())
+      id_map_[root_.first][root_.second] = next_fuchsia_id_++;
+    root_ = std::make_pair(ax_tree_id, ax_node_id);
+    fuchsia_node_id = kFuchsiaRootNodeId;
+  } else {
+    auto it = id_map_.find(ax_tree_id);
+    if (it != id_map_.end()) {
+      auto node_id_it = it->second.find(ax_node_id);
+      if (node_id_it != it->second.end())
+        return node_id_it->second;
+    }
+
+    // The ID is not in the map yet, so give it a new value.
+    fuchsia_node_id = next_fuchsia_id_++;
+  }
+
+  id_map_[ax_tree_id][ax_node_id] = fuchsia_node_id;
+  return fuchsia_node_id;
 }
 
-int32_t ConvertToAxNodeId(uint32_t fuchsia_node_id, int32_t ax_root_node_id) {
-  if (fuchsia_node_id == kFuchsiaRootNodeId)
-    return ax_root_node_id;
+base::Optional<std::pair<ui::AXTreeID, int32_t>> NodeIDMapper::ToAXNodeID(
+    uint32_t fuchsia_node_id) {
+  for (const auto& tree_id_to_node_ids : id_map_) {
+    for (const auto& ax_id_to_fuchsia_id : tree_id_to_node_ids.second) {
+      if (ax_id_to_fuchsia_id.second == fuchsia_node_id)
+        return std::make_pair(tree_id_to_node_ids.first,
+                              ax_id_to_fuchsia_id.first);
+    }
+  }
 
-  if (fuchsia_node_id == kInvalidIdRemappedForFuchsia)
-    return ui::AXNode::kInvalidAXID;
+  return base::nullopt;
+}
 
-  return base::checked_cast<int32_t>(fuchsia_node_id);
+bool NodeIDMapper::UpdateAXTreeIDForCachedNodeIDs(
+    const ui::AXTreeID& old_ax_tree_id,
+    const ui::AXTreeID& new_ax_tree_id) {
+  if (old_ax_tree_id == new_ax_tree_id)
+    return false;
+
+  auto it = id_map_.find(old_ax_tree_id);
+  if (it == id_map_.end())
+    return false;
+
+  // The iterator is not stable, so the order of operations here is important.
+  auto data = std::move(it->second);
+  id_map_.erase(it);
+  id_map_[new_ax_tree_id] = std::move(data);
+  return true;
 }

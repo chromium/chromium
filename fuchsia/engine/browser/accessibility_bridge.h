@@ -16,6 +16,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "fuchsia/engine/browser/ax_tree_converter.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -124,6 +125,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
 
   // The root id of |ax_tree_|.
   int32_t root_id_ = 0;
+
+  // Maps node IDs from one platform to another.
+  std::unique_ptr<NodeIDMapper> id_mapper_;
 
   base::OnceClosure event_received_callback_for_test_;
 

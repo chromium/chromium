@@ -12,7 +12,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "fuchsia/engine/browser/ax_tree_converter.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -114,7 +113,8 @@ void AccessibilityBridge::AccessibilityEventReceived(
         pending_hit_test_callbacks_.find(event.action_request_id) !=
             pending_hit_test_callbacks_.end()) {
       fuchsia::accessibility::semantics::Hit hit;
-      hit.set_node_id(ConvertToFuchsiaNodeId(event.id, root_id_));
+      hit.set_node_id(id_mapper_->ToFuchsiaNodeID(ax_tree_.data().tree_id,
+                                                  event.id, false));
 
       // Run the pending callback with the hit.
       pending_hit_test_callbacks_[event.action_request_id](std::move(hit));
@@ -138,7 +138,14 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     return;
   }
 
-  action_data.target_node_id = ConvertToAxNodeId(node_id, root_id_);
+  auto ax_id = id_mapper_->ToAXNodeID(node_id);
+  if (!ax_id) {
+    // Fuchsia is targeting a node that does not exist.
+    callback(false);
+    return;
+  }
+
+  action_data.target_node_id = ax_id->second;
 
   if (action == fuchsia::accessibility::semantics::Action::SHOW_ON_SCREEN) {
     ui::AXNode* node = ax_tree_.GetFromId(action_data.target_node_id);
@@ -192,6 +199,7 @@ void AccessibilityBridge::OnSemanticsModeChanged(
 
   enable_semantic_updates_ = updates_enabled;
   if (updates_enabled) {
+    id_mapper_ = std::make_unique<NodeIDMapper>();
     // The first call to AccessibilityEventReceived after this call will be
     // the entire semantic tree.
     web_contents_->EnableWebContentsOnlyAccessibilityMode();
@@ -214,7 +222,8 @@ void AccessibilityBridge::OnSemanticsModeChanged(
 
 void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
                                               ui::AXNode* node) {
-  to_delete_.push_back(ConvertToFuchsiaNodeId(node->id(), root_id_));
+  to_delete_.push_back(
+      id_mapper_->ToFuchsiaNodeID(ax_tree_.data().tree_id, node->id(), false));
 }
 
 void AccessibilityBridge::OnAtomicUpdateFinished(
@@ -229,8 +238,9 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
   // deleted are already gone, which means that all updates collected here in
   // |to_update_| are going to be executed after |to_delete_|.
   for (const ui::AXTreeObserver::Change& change : changes) {
-    to_update_.push_back(
-        AXNodeDataToSemanticNode(change.node->data(), root_id_));
+    const auto& node = change.node->data();
+    to_update_.push_back(AXNodeDataToSemanticNode(
+        node, ax_tree_.data().tree_id, node.id == root_id_, id_mapper_.get()));
   }
   // TODO(https://crbug.com/1134737): Separate updates of atomic updates and
   // don't allow all of them to be in the same commit.
