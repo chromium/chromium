@@ -51,7 +51,6 @@ source_set("platform_apps") {
 
   deps = [
     "//chrome/app:command_ids",
-    "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/sharing/proto:proto",

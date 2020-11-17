@@ -131,7 +131,16 @@ source_set("components") {
   deps = [
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/browser:browser_process",
+
+    # web_applications:components uses header files from chrome/browser/banners/
+    # via |allow_circular_includes_from| mechanism enabled for the whole
+    # chrome/browser/ directory. In turn, chrome/browser/banners/ uses header
+    # files from chrome/browser/engagement/. This two-way circular dependency
+    # isn't automatically verified by |gn check| tool and it breaks incremental
+    # distributed build occasionally. For now, we should explicitly depend on
+    # chrome/browser/engagement: gn parts (like mojo_bindings) to fix this.
+    #
+    # TODO(crbug.com/1039736): Refactor AppBannerManager to remove this dep.
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/common",
     "//components/crx_file",
