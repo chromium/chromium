@@ -17603,6 +17603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Graphics.Smoothness.FrameSequenceLength"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
+  <affected-histogram name="Graphics.Smoothness.MaxStale"/>
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.CompositorThread"/>
   <affected-histogram
@@ -17622,6 +17623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread"/>
   <affected-histogram
       name="Graphics.Smoothness.PercentMissedDeadlineFrames.ScrollingThread"/>
+  <affected-histogram name="Graphics.Smoothness.Stale"/>
   <affected-histogram name="SingleThreadedCompositorLatency"/>
   <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame"/>
   <affected-histogram

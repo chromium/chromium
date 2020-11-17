@@ -5869,6 +5869,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Smoothness.MaxStale" units="ms"
+    expires_after="2021-11-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the maximum staleness value for all presentations for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    Typically, a frame presentation is expected to last at least one vsync
+    cycle, plus any number of additional vsync cycles if no updates are expected
+    duration that time. If the presentation interval is prolonged due to reasons
+    other than listed above, then that prolonged portion will be considered
+    staleness for that frame.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.PercentDroppedFrames" units="%"
     expires_after="2020-12-31">
   <owner>sadrul@chromium.org</owner>
@@ -6024,6 +6047,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Note that this metric is reported only when there are sufficient number of
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Stale" units="ms"
+    expires_after="2021-11-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the staleness value for each frame presentation for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    Typically, a frame presentation is expected to last at least one vsync
+    cycle, plus any number of additional vsync cycles if no updates are expected
+    duration that time. If the presentation interval is prolonged due to reasons
+    other than listed above, then that prolonged portion will be considered
+    staleness.
+
+    Note that the reporting of this metric occurs as soon as a frame is
+    presented, and is not affected by the length of the frame sequence.
   </summary>
 </histogram>
 
