@@ -556,6 +556,11 @@ bool PathProvider(int key, base::FilePath* result) {
       create_dir = false;
       break;
 #endif  // defined(OS_CHROMEOS)
+    case chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
+        return false;
+      cur = cur.Append(FILE_PATH_LITERAL("OptimizationGuidePredictionModels"));
+      break;
 
     default:
       return false;

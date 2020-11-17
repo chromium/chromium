@@ -5,12 +5,25 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/common/chrome_paths.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/download_service.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/services/unzip/content/unzip_service.h"
+#include "components/services/unzip/public/cpp/unzip.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace optimization_guide {
@@ -46,13 +59,37 @@ const net::NetworkTrafficAnnotationTag
           policy_exception_justification: "Not yet implemented."
         })");
 
+const base::FilePath::CharType kModelInfoFileName[] =
+    FILE_PATH_LITERAL("model-info.pb");
+const base::FilePath::CharType kModelFileName[] =
+    FILE_PATH_LITERAL("model.tflite");
+
+bool IsRelevantFile(const base::FilePath& file_path) {
+  base::FilePath::StringType base_name_value = file_path.BaseName().value();
+  return base_name_value == kModelFileName ||
+         base_name_value == kModelInfoFileName;
+}
+
+base::FilePath GetFilePathForModelInfo(const proto::ModelInfo& model_info) {
+  base::FilePath models_dir;
+  base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                         &models_dir);
+  return models_dir.AppendASCII(base::StringPrintf(
+      "%s_%s.tflite",
+      proto::OptimizationTarget_Name(model_info.optimization_target()).c_str(),
+      base::NumberToString(model_info.version()).c_str()));
+}
+
 }  // namespace
 
-PredictionModelDownloadManager::PredictionModelDownloadManager(Profile* profile)
+PredictionModelDownloadManager::PredictionModelDownloadManager(
+    Profile* profile,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(
           DownloadServiceFactory::GetForKey(profile->GetProfileKey())),
       is_available_for_downloads_(true),
-      api_key_(features::GetOptimizationGuideServiceAPIKey()) {}
+      api_key_(features::GetOptimizationGuideServiceAPIKey()),
+      background_task_runner_(background_task_runner) {}
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
 
@@ -63,7 +100,7 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
   download_params.guid = base::GenerateGUID();
   download_params.callback =
       base::BindRepeating(&PredictionModelDownloadManager::OnDownloadStarted,
-                          weak_ptr_factory_.GetWeakPtr());
+                          ui_weak_ptr_factory_.GetWeakPtr());
   download_params.traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kOptimizationGuidePredictionModelsTrafficAnnotation);
   download_params.request_params.url = download_url;
@@ -88,6 +125,20 @@ void PredictionModelDownloadManager::CancelAllPendingDownloads() {
 
 bool PredictionModelDownloadManager::IsAvailableForDownloads() const {
   return is_available_for_downloads_;
+}
+
+void PredictionModelDownloadManager::AddObserver(
+    PredictionModelDownloadObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  observers_.AddObserver(observer);
+}
+
+void PredictionModelDownloadManager::RemoveObserver(
+    PredictionModelDownloadObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  observers_.RemoveObserver(observer);
 }
 
 void PredictionModelDownloadManager::OnDownloadServiceReady(
@@ -118,13 +169,143 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
     const base::FilePath& file_path) {
   pending_download_guids_.erase(guid);
 
-  // TODO(crbug/1146151): Verify download.
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PredictionModelDownloadManager::ProcessDownload,
+                     base::Unretained(this), file_path),
+      base::BindOnce(&PredictionModelDownloadManager::StartUnzipping,
+                     ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PredictionModelDownloadManager::OnDownloadFailed(const std::string& guid) {
   pending_download_guids_.erase(guid);
 
   // TODO(crbug/1146151): Log histogram.
+}
+
+base::Optional<std::pair<base::FilePath, base::FilePath>>
+PredictionModelDownloadManager::ProcessDownload(
+    const base::FilePath& file_path) {
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+
+  if (should_verify_download_) {
+    // Verify that the |file_path| contains a file signed with a key we trust.
+    crx_file::VerifierResult verifier_result = crx_file::Verify(
+        file_path, crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
+        /*required_key_hashes=*/{},
+        /*required_file_hash=*/{}, /*public_key=*/nullptr,
+        /*crx_id=*/nullptr);
+    if (verifier_result != crx_file::VerifierResult::OK_FULL) {
+      // TODO(crbug/1146151): Add histogram for exact status.
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      return base::nullopt;
+    }
+  }
+
+  // Unzip download.
+  base::FilePath temp_dir_path;
+  if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
+                                    &temp_dir_path)) {
+    // TODO(crbug/1146151): Log histogram.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(base::GetDeleteFileCallback(), file_path));
+    return base::nullopt;
+  }
+
+  return std::make_pair(file_path, temp_dir_path);
+}
+
+void PredictionModelDownloadManager::StartUnzipping(
+    const base::Optional<std::pair<base::FilePath, base::FilePath>>&
+        unzip_paths) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!unzip_paths)
+    return;
+
+  unzip::UnzipWithFilter(
+      unzip::LaunchUnzipper(), unzip_paths->first, unzip_paths->second,
+      base::BindRepeating(&IsRelevantFile),
+      base::BindOnce(&PredictionModelDownloadManager::OnDownloadUnzipped,
+                     ui_weak_ptr_factory_.GetWeakPtr(), unzip_paths->first,
+                     unzip_paths->second));
+}
+
+void PredictionModelDownloadManager::OnDownloadUnzipped(
+    const base::FilePath& original_file_path,
+    const base::FilePath& unzipped_dir_path,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Clean up original download file when this function finishes.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::GetDeleteFileCallback(), original_file_path));
+
+  if (!success) {
+    // TODO(crbug/1146151): Log histogram.
+    return;
+  }
+
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PredictionModelDownloadManager::ProcessUnzippedContents,
+                     base::Unretained(this), unzipped_dir_path),
+      base::BindOnce(&PredictionModelDownloadManager::NotifyModelReady,
+                     ui_weak_ptr_factory_.GetWeakPtr()));
+}
+
+base::Optional<std::pair<proto::ModelInfo, base::FilePath>>
+PredictionModelDownloadManager::ProcessUnzippedContents(
+    const base::FilePath& unzipped_dir_path) {
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+
+  // Clean up temp dir when this function finishes.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                                unzipped_dir_path));
+
+  // Unpack and verify model info file.
+  base::FilePath model_info_path = unzipped_dir_path.Append(kModelInfoFileName);
+  std::string binary_model_info_pb;
+  if (!base::ReadFileToString(model_info_path, &binary_model_info_pb)) {
+    // TODO(crbug/1146151): Log histogram.
+    return base::nullopt;
+  }
+  proto::ModelInfo model_info;
+  if (!model_info.ParseFromString(binary_model_info_pb)) {
+    // TODO(crbug/1146151): Log histogram.
+    return base::nullopt;
+  }
+
+  // Move model file away from temp directory.
+  base::FilePath temp_model_path = unzipped_dir_path.Append(kModelFileName);
+  base::FilePath model_path = GetFilePathForModelInfo(model_info);
+  if (!base::ReplaceFile(temp_model_path, model_path, /*error=*/nullptr)) {
+    // TODO(crbug/1146151): Log histogram.
+    return base::nullopt;
+  }
+
+  return std::make_pair(model_info, model_path);
+}
+
+void PredictionModelDownloadManager::NotifyModelReady(
+    const base::Optional<std::pair<proto::ModelInfo, base::FilePath>>&
+        model_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!model_contents)
+    return;
+
+  for (PredictionModelDownloadObserver& observer : observers_)
+    observer.OnModelReady(model_contents->first, model_contents->second);
+}
+
+void PredictionModelDownloadManager::TurnOffVerificationForTesting() {
+  should_verify_download_ = false;
 }
 
 }  // namespace optimization_guide

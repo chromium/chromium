@@ -233,7 +233,10 @@ PredictionManager::PredictionManager(
           std::max(features::MaxHostModelFeaturesCacheSize(), size_t(1))),
       prediction_model_download_manager_(
           features::IsModelDownloadingEnabled()
-              ? std::make_unique<PredictionModelDownloadManager>(profile)
+              ? std::make_unique<PredictionModelDownloadManager>(
+                    profile,
+                    base::ThreadPool::CreateSequencedTaskRunner(
+                        {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
               : nullptr),
       top_host_provider_(top_host_provider),
       model_and_features_store_(std::move(model_and_features_store)),
@@ -241,10 +244,14 @@ PredictionManager::PredictionManager(
       pref_service_(pref_service),
       profile_(profile),
       clock_(base::DefaultClock::GetInstance()) {
+  if (prediction_model_download_manager_)
+    prediction_model_download_manager_->AddObserver(this);
   Initialize(optimization_targets_at_initialization);
 }
 
 PredictionManager::~PredictionManager() {
+  if (prediction_model_download_manager_)
+    prediction_model_download_manager_->RemoveObserver(this);
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
 }
@@ -882,6 +889,11 @@ void PredictionManager::UpdatePredictionModels(
         base::BindOnce(&PredictionManager::OnPredictionModelsStored,
                        ui_weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void PredictionManager::OnModelReady(const proto::ModelInfo& model_info,
+                                     const base::FilePath& file_path) {
+  // TODO(crbug/1146151): Clean up old model for target and update target.
 }
 
 void PredictionManager::OnPredictionModelsStored() {

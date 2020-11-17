@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom-forward.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
@@ -72,7 +73,8 @@ using PostModelLoadCallback =
 // OptimizationTargetDecision by evaluating the corresponding prediction model
 // for an OptimizationTarget.
 class PredictionManager
-    : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
+    : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
+      public PredictionModelDownloadObserver {
  public:
   PredictionManager(
       const std::vector<optimization_guide::proto::OptimizationTarget>&
@@ -184,6 +186,10 @@ class PredictionManager
   void OverrideTargetDecisionForTesting(
       proto::OptimizationTarget optimization_target,
       OptimizationGuideDecision optimization_guide_decision);
+
+  // PredictionModelDownloadObserver:
+  void OnModelReady(const proto::ModelInfo& model_info,
+                    const base::FilePath& model_file_path) override;
 
  protected:
   // Return the prediction model for the optimization target used by this

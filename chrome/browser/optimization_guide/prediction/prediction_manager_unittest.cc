@@ -171,8 +171,10 @@ class FakeTopHostProvider : public TopHostProvider {
 class FakePredictionModelDownloadManager
     : public PredictionModelDownloadManager {
  public:
-  explicit FakePredictionModelDownloadManager(Profile* profile)
-      : PredictionModelDownloadManager(profile) {}
+  FakePredictionModelDownloadManager(
+      Profile* profile,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : PredictionModelDownloadManager(profile, task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
   void StartDownload(const GURL& url) override {
@@ -568,6 +570,10 @@ class PredictionManagerTest
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
+  }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
  private:
@@ -1201,7 +1207,8 @@ TEST_P(PredictionManagerMLServiceTest,
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(profile()));
+      std::make_unique<FakePredictionModelDownloadManager>(
+          profile(), task_environment()->GetMainThreadTaskRunner()));
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
   prediction_manager()->RegisterOptimizationTargets(
@@ -1232,7 +1239,8 @@ TEST_P(PredictionManagerMLServiceTest, UpdateModelWithDownloadUrl) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(profile()));
+      std::make_unique<FakePredictionModelDownloadManager>(
+          profile(), task_environment()->GetMainThreadTaskRunner()));
 
   prediction_manager()->RegisterOptimizationTargets(
       {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});

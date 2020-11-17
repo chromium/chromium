@@ -84,9 +84,9 @@ enum {
                              // playback.
   FILE_PEPPER_FLASH_PLUGIN,  // Full path to the bundled Pepper Flash plugin
                              // file.
-  DIR_PNACL_BASE,                   // Full path to the base dir for PNaCl.
-  DIR_PNACL_COMPONENT,              // Full path to the latest PNaCl version
-                                    // (subdir of DIR_PNACL_BASE).
+  DIR_PNACL_BASE,            // Full path to the base dir for PNaCl.
+  DIR_PNACL_COMPONENT,       // Full path to the latest PNaCl version
+                             // (subdir of DIR_PNACL_BASE).
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   DIR_BUNDLED_WIDEVINE_CDM,  // Full path to the directory containing the
                              // bundled Widevine CDM.
@@ -143,6 +143,9 @@ enum {
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
 #endif  // defined(OS_CHROMEOS)
+  DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
+                                             // downloaded by the Optimization
+                                             // Guide are stored.
   PATH_END
 };
 

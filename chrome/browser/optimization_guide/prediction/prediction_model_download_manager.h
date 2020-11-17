@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
 
 class Profile;
@@ -21,11 +22,18 @@ class DownloadService;
 namespace optimization_guide {
 
 class PredictionModelDownloadClient;
+class PredictionModelDownloadObserver;
+
+namespace proto {
+class ModelInfo;
+}  // namespace proto
 
 // Manages the downloads of prediction models.
 class PredictionModelDownloadManager {
  public:
-  explicit PredictionModelDownloadManager(Profile* profile);
+  PredictionModelDownloadManager(
+      Profile* profile,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
       delete;
@@ -40,6 +48,12 @@ class PredictionModelDownloadManager {
 
   // Returns whether the downloader can download models.
   virtual bool IsAvailableForDownloads() const;
+
+  // Adds and removes observers.
+  //
+  // All methods called on observers will be invoked on the UI thread.
+  virtual void AddObserver(PredictionModelDownloadObserver* observer);
+  virtual void RemoveObserver(PredictionModelDownloadObserver* observer);
 
  private:
   friend class PredictionModelDownloadClient;
@@ -71,6 +85,42 @@ class PredictionModelDownloadManager {
   // Invoked when the download as specified by |failed_download_guid| failed.
   void OnDownloadFailed(const std::string& failed_download_guid);
 
+  // Verifies the download came from a trusted source and process the downloaded
+  // contents. Returns a pair of file paths of the form (src, dst) if
+  // |file_path| is successfully verified.
+  //
+  // Must be called on the background thread, as it performs file I/O.
+  base::Optional<std::pair<base::FilePath, base::FilePath>> ProcessDownload(
+      const base::FilePath& file_path);
+
+  // Starts unzipping the contents of |unzip_paths|, if present. |unzip_paths|
+  // is a pair of the form (src, dst), if present.
+  void StartUnzipping(
+      const base::Optional<std::pair<base::FilePath, base::FilePath>>&
+          unzip_paths);
+
+  // Invoked when the contents of |original_file_path| have been unzipped to
+  // |unzipped_dir_path|.
+  void OnDownloadUnzipped(const base::FilePath& original_file_path,
+                          const base::FilePath& unzipped_dir_path,
+                          bool success);
+
+  // Processes the contents in |unzipped_dir_path|.
+  //
+  // Must be called on the background thread, as it performs file I/O.
+  base::Optional<std::pair<proto::ModelInfo, base::FilePath>>
+  ProcessUnzippedContents(const base::FilePath& unzipped_dir_path);
+
+  // Notifies |observers_| that a model is ready.
+  //
+  // Must be invoked on the UI thread.
+  void NotifyModelReady(
+      const base::Optional<std::pair<proto::ModelInfo, base::FilePath>>&
+          model_contents);
+
+  // Turns off CRX3 verification for testing.
+  void TurnOffVerificationForTesting();
+
   // The set of GUIDs that are still pending download.
   std::set<std::string> pending_download_guids_;
 
@@ -85,7 +135,18 @@ class PredictionModelDownloadManager {
   // The API key to attach to download requests.
   std::string api_key_;
 
-  base::WeakPtrFactory<PredictionModelDownloadManager> weak_ptr_factory_{this};
+  // The set of observers to be notified of completed downloads.
+  base::ObserverList<PredictionModelDownloadObserver> observers_;
+
+  // Whether the download should be verified. Should only be false for testing.
+  bool should_verify_download_ = true;
+
+  // Background thread where download file processing should be performed.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Used to get weak ptr to self on the UI thread.
+  base::WeakPtrFactory<PredictionModelDownloadManager> ui_weak_ptr_factory_{
+      this};
 };
 
 }  // namespace optimization_guide
