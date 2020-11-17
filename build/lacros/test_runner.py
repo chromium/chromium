@@ -83,6 +83,7 @@ _TARGETS_REQUIRE_ASH_CHROME = [
     'content_unittests',
     'dbus_unittests',
     'extensions_unittests',
+    'media_unittests',
     'message_center_unittests',
     'snapshot_unittests',
     'sync_integration_tests',

@@ -19,19 +19,35 @@
 
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"  // nogncheck
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
 namespace media {
 
-TEST(UserInputMonitorTest, CreatePlatformSpecific) {
-#if defined(USE_OZONE)
-  // TODO(crbug.com/1109112): enable those tests for Ozone.
-  // Here, the only issue why they don't work is that the Ozone platform is not
-  // initialised.
-  if (features::IsUsingOzonePlatform())
-    return;
-#endif
+namespace {
 
+class UserInputMonitorTest : public testing::Test {
+ protected:
+  // testing::Test.
+  void SetUp() override {
+#if defined(USE_OZONE)
+    if (features::IsUsingOzonePlatform()) {
+      if (ui::OzonePlatform::GetPlatformNameForTest() == "drm") {
+        // OzonePlatformDrm::InitializeUI hangs in tests on the DRM platform.
+        GTEST_SKIP();
+      }
+      // Initialise Ozone in single process mode, as all tests do.
+      ui::OzonePlatform::InitParams params;
+      params.single_process = true;
+      ui::OzonePlatform::InitializeForUI(params);
+    }
+#endif
+  }
+};
+
+}  // namespace
+
+TEST_F(UserInputMonitorTest, CreatePlatformSpecific) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -53,15 +69,7 @@ TEST(UserInputMonitorTest, CreatePlatformSpecific) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST(UserInputMonitorTest, CreatePlatformSpecificWithMapping) {
-#if defined(USE_OZONE)
-  // TODO(crbug.com/1109112): enable those tests for Ozone.
-  // Here, the only issue why they don't work is that the Ozone platform is not
-  // initialised.
-  if (features::IsUsingOzonePlatform())
-    return;
-#endif
-
+TEST_F(UserInputMonitorTest, CreatePlatformSpecificWithMapping) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -90,7 +98,7 @@ TEST(UserInputMonitorTest, CreatePlatformSpecificWithMapping) {
   EXPECT_EQ(0u, ReadKeyPressMonitorCount(readonly_mapping));
 }
 
-TEST(UserInputMonitorTest, ReadWriteKeyPressMonitorCount) {
+TEST_F(UserInputMonitorTest, ReadWriteKeyPressMonitorCount) {
   std::unique_ptr<base::MappedReadOnlyRegion> shmem =
       std::make_unique<base::MappedReadOnlyRegion>(
           base::ReadOnlySharedMemoryRegion::Create(sizeof(uint32_t)));
