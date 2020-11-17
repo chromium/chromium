@@ -40,6 +40,7 @@
 #include "ios/chrome/app/startup/setup_debugging.h"
 #import "ios/chrome/app/startup_tasks.h"
 #include "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/accessibility/window_accessibility_change_notifier_app_agent.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
@@ -605,6 +606,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Create app state agents.
   [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
+
+  // Create the window accessibility agent only when multuple windows are
+  // possible.
+  if (IsMultipleScenesSupported()) {
+    [appState addAgent:[[WindowAccessibityChangeNotifierAppAgent alloc] init]];
+  }
 }
 
 - (id<BrowserInterfaceProvider>)interfaceProvider {

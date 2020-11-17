@@ -2702,6 +2702,11 @@ New Search
           =1 {{domain} and 1 other}
           other {{domain} and {count} others}}
       </message>
+      <message name="IDS_IOS_WINDOW_COUNT_CHANGE" is_accessibility_with_no_ui="true" desc="VoiceOver text spoken when the count of visible windows changes -- note: this text is only spoken, never displayed on screen">
+        {count, plural,
+          =1 {Now showing 1 Chrome window}
+          other {Now showing {count} Chrome windows}}
+      </message>
     </messages>
   </release>
 </grit>
