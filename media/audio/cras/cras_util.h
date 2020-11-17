@@ -31,6 +31,9 @@ struct CrasDevice {
 // Enumerates all devices of |type|.
 std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
+// Returns if there is a keyboard mic in CRAS.
+bool CrasHasKeyboardMic();
+
 // Returns if system AEC is supported in CRAS.
 int CrasGetAecSupported();
 

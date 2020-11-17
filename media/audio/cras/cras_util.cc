@@ -18,6 +18,7 @@ namespace {
 const char kInternalInputVirtualDevice[] = "Built-in mic";
 const char kInternalOutputVirtualDevice[] = "Built-in speaker";
 const char kHeadphoneLineOutVirtualDevice[] = "Headphone/Line Out";
+const char kKeyBoardMic[] = "KEYBOARD_MIC";
 
 // Returns if that an input or output audio device is for simple usage like
 // playback or recording for user. In contrast, audio device such as loopback,
@@ -141,6 +142,29 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
 
   CrasDisconnect(&client);
   return devices;
+}
+
+bool CrasHasKeyboardMic() {
+  cras_client* client = CrasConnect();
+  if (!client)
+    return false;
+
+  struct cras_iodev_info devs[CRAS_MAX_IODEVS];
+  struct cras_ionode_info nodes[CRAS_MAX_IONODES];
+  size_t num_devs = CRAS_MAX_IODEVS, num_nodes = CRAS_MAX_IONODES;
+
+  int rc =
+      cras_client_get_input_devices(client, devs, nodes, &num_devs, &num_nodes);
+  if (rc < 0) {
+    LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
+    return false;
+  }
+
+  for (size_t i = 0; i < num_nodes; i++) {
+    if (std::string(nodes[i].type) == kKeyBoardMic)
+      return true;
+  }
+  return false;
 }
 
 int CrasGetAecSupported() {

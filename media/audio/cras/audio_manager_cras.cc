@@ -92,6 +92,9 @@ AudioParameters AudioManagerCras::GetInputStreamParameters(
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
 
+  if (CrasHasKeyboardMic())
+    params.set_effects(AudioParameters::KEYBOARD_MIC);
+
   // Allow experimentation with system echo cancellation with all devices,
   // but enable it by default on devices that actually support it.
   params.set_effects(params.effects() |
