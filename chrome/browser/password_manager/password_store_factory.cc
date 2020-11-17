@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
+#include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -39,24 +40,17 @@
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-#include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
-#endif
-
 using password_manager::PasswordStore;
 
 namespace {
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 std::string GetSyncUsername(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
   return identity_manager ? identity_manager->GetPrimaryAccountInfo().email
                           : std::string();
 }
-#endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 bool IsSignedIn(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
@@ -64,7 +58,6 @@ bool IsSignedIn(Profile* profile) {
              ? !identity_manager->GetAccountsWithRefreshTokens().empty()
              : false;
 }
-#endif
 
 }  // namespace
 
@@ -109,11 +102,9 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(WebDataServiceFactory::GetInstance());
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // TODO(crbug.com/715987). Remove when PasswordReuseDetector is decoupled
   // from PasswordStore.
   DependsOn(IdentityManagerFactory::GetInstance());
-#endif
 }
 
 PasswordStoreFactory::~PasswordStoreFactory() = default;
@@ -152,10 +143,8 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // Prepare password hash data for reuse detection.
   ps->PreparePasswordHashData(GetSyncUsername(profile), IsSignedIn(profile));
-#endif
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

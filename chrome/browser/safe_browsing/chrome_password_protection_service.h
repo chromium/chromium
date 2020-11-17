@@ -472,7 +472,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   // Returns whether the profile is valid and has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   void MaybeLogPasswordReuseLookupResult(
       content::WebContents* web_contents,
       sync_pb::GaiaPasswordReuse::PasswordReuseLookup::LookupResult result);
@@ -545,8 +544,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       RequestOutcome outcome,
       LoginReputationClientResponse::VerdictType verdict_type,
       const std::string& verdict_token);
-
-#endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Get the content area size of current browsing window.

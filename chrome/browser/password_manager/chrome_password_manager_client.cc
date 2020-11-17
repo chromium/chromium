@@ -794,13 +794,11 @@ autofill::LanguageCode ChromePasswordManagerClient::GetPageLanguage() const {
   return autofill::LanguageCode();
 }
 
-#if defined(ON_FOCUS_PING_ENABLED) || defined(PASSWORD_REUSE_DETECTION_ENABLED)
 safe_browsing::PasswordProtectionService*
 ChromePasswordManagerClient::GetPasswordProtectionService() const {
   return safe_browsing::ChromePasswordProtectionService::
       GetPasswordProtectionService(profile_);
 }
-#endif
 
 #if defined(ON_FOCUS_PING_ENABLED)
 void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
@@ -816,7 +814,6 @@ void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
 }
 #endif  // defined(ON_FOCUS_PING_ENABLED)
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
     PasswordType password_type,
     const std::string& username,
@@ -832,7 +829,6 @@ void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
       web_contents(), web_contents()->GetLastCommittedURL(), username,
       password_type, matching_reused_credentials, password_field_exists);
 }
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 
 #if defined(PASSWORD_REUSE_WARNING_ENABLED)
 void ChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
@@ -1062,25 +1058,19 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
 #if defined(OS_ANDROID)
 void ChromePasswordManagerClient::OnImeTextCommittedEvent(
     const base::string16& text_str) {
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   password_reuse_detection_manager_.OnKeyPressedCommitted(text_str);
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 }
 
 void ChromePasswordManagerClient::OnImeSetComposingTextEvent(
     const base::string16& text_str) {
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   last_composing_text_ = text_str;
   password_reuse_detection_manager_.OnKeyPressedUncommitted(
       last_composing_text_);
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 }
 
 void ChromePasswordManagerClient::OnImeFinishComposingTextEvent() {
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   password_reuse_detection_manager_.OnKeyPressedCommitted(last_composing_text_);
   last_composing_text_.clear();
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 }
 #endif  // defined(OS_ANDROID)
 
@@ -1167,9 +1157,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           profile_->GetPrefs(),
           ProfileSyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
       password_reuse_detection_manager_(this),
-#endif
       driver_factory_(nullptr),
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
@@ -1242,9 +1230,7 @@ void ChromePasswordManagerClient::DidFinishNavigation(
   // requests.
   content_credential_manager_.DisconnectBinding();
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(https://crbug.com/1104919): Remove this logging.
@@ -1353,7 +1339,6 @@ void ChromePasswordManagerClient::OnInputEvent(
     const blink::WebInputEvent& event) {
 #if defined(OS_ANDROID)
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // On Android, key down events are triggered if a user types in through a
   // number bar on Android keyboard. If text is typed in through other parts of
   // Android keyboard, ImeTextCommittedEvent is triggered instead.
@@ -1362,7 +1347,6 @@ void ChromePasswordManagerClient::OnInputEvent(
   const blink::WebKeyboardEvent& key_event =
       static_cast<const blink::WebKeyboardEvent&>(event);
   password_reuse_detection_manager_.OnKeyPressedCommitted(key_event.text);
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 
 #else   // !defined(OS_ANDROID)
   if (event.GetType() != blink::WebInputEvent::Type::kChar)

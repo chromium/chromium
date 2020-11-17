@@ -362,7 +362,6 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     LocalAuth::SetLocalAuthCredentials(profile_, password_);
   }
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   if (!password_.empty()) {
     scoped_refptr<password_manager::PasswordStore> password_store =
         PasswordStoreFactory::GetForProfile(profile_,
@@ -374,7 +373,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
               SAVED_ON_CHROME_SIGNIN);
     }
   }
-#endif
+
   if (reason == HandlerSigninReason::UNLOCK) {
     DCHECK(!identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                 .IsEmpty());
