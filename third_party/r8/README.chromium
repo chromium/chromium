@@ -1,6 +1,6 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Revision: dfeb0e3200aa737742fa1d72e64505c44b3a5f3c
+Revision: 1d0cad3ec27fc88a1ca4ffc4d3d4d5d0b3f80f5b
 Version: Unknown
 License: BSD 3-Clause
 License File: NOT_SHIPPED
@@ -53,6 +53,7 @@ cd $CHROMIUM_SRC/third_party/r8
 cipd create --pkg-def cipd.yaml # Make note of the instance ID
 
 # Update backported methods list:
+cd $CHROMIUM_SRC
 java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 16 > third_party/r8/backported_methods.txt
 
 # Manually update:

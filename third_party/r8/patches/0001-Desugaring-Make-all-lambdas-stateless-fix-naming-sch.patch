@@ -1,4 +1,4 @@
-From 6c4560832fd411b70669b2dfcb14bbff98524256 Mon Sep 17 00:00:00 2001
+From 43c8250f2420c41640305d68b9d4512d69b850b0 Mon Sep 17 00:00:00 2001
 From: Sam Maier <smaier@chromium.org>
 Date: Tue, 19 May 2020 15:55:44 -0400
 Subject: [PATCH 1/3] Desugaring: Make all lambdas stateless & fix naming
@@ -35,5 +35,5 @@ index c9e47c259..b5b72c0ab 100644
  
    void addSynthesizedFrom(DexProgramClass clazz) {
 -- 
-2.29.0.rc1.297.gfa9743e501-goog
+2.29.2.299.gdc1121823c-goog
 
