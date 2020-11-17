@@ -5,6 +5,3 @@ file://chrome/browser/ui/cocoa/OWNERS
 estark@chromium.org
 felt@chromium.org
 meacer@chromium.org
-
-# COMPONENT: UI>Browser>Bubbles>PageInfo
-# TEAM: security-enamel@chromium.org

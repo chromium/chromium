@@ -8,5 +8,3 @@ tapted@chromium.org
 thakis@chromium.org
 
 per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS
-
-# COMPONENT: UI>Browser
