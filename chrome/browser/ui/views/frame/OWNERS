@@ -9,5 +9,3 @@ per-file desktop_linux_browser_frame_view*=thomasanderson@chromium.org
 per-file immersive_mode_controller*=pkotwicz@chromium.org
 per-file system_web_app_non_client_frame_view_browsertest.cc=file://chrome/browser/web_applications/OWNERS
 per-file top_controls_slide_controller*=afakhry@chromium.org
-
-# COMPONENT: UI>Browser

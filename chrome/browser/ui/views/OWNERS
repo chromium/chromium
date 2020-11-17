@@ -25,5 +25,3 @@ per-file drag_and_drop_interactive_uitest.*=file://content/OWNERS
 per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS
 
 per-file select_file_dialog_extension*=file://ui/file_manager/OWNERS
-
-# COMPONENT: UI>Browser
