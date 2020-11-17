@@ -47,13 +47,6 @@ constexpr int kInitFactorFinch = 4;
 constexpr int kRestartFactorFinch = 4;
 #endif
 
-// Do not change this number. It's for histogram "GPU.GPUChannelHostWaitTime".
-// This is the max wait time when waiting for sync in the GPU channel Host. It
-// needs to be bigger than (kGpuWatchdogTimeout * kRestartFactor) for all
-// platforms.
-constexpr base::TimeDelta kGpuChannelHostMaxWaitTime =
-    base::TimeDelta::FromSeconds(120);
-
 }  // namespace gpu
 
 #endif  // GPU_IPC_COMMON_GPU_WATCHDOG_TIMEOUT_H_

@@ -640,13 +640,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUChannelHostWaitTime2" units="ms"
-    expires_after="2020-11-29">
+    expires_after="2020-11-18">
+  <obsolete>
+    Used by GPU watchdog V2 finch. Obsolete since 11/18/2020.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     The wait time between the IPC message sent from the GPU channel host and the
     event sync from the GPU process. If the wait time takes longer than 120
     seconds, 120 seconds will be recoreded.
+  </summary>
+</histogram>
+
+<histogram name="GPU.GPUChannelHostWaitTime3" units="microseconds"
+    expires_after="2021-12-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <summary>
+    The wait time between the IPC message sent from the GPU channel host and the
+    event sync from the GPU process. This is the time the browser UI thread
+    spends blocked. Recorded only for users with high-resolution clocks.
   </summary>
 </histogram>
 
