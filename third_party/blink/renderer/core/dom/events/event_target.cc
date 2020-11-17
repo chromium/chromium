@@ -506,6 +506,9 @@ bool EventTarget::AddEventListenerInternal(
   if (!listener)
     return false;
 
+  if (options->signal() && options->signal()->aborted())
+    return false;
+
   if (event_type == event_type_names::kTouchcancel ||
       event_type == event_type_names::kTouchend ||
       event_type == event_type_names::kTouchmove ||
