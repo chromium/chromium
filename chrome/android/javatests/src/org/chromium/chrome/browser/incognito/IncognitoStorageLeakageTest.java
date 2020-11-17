@@ -25,7 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
@@ -53,21 +53,22 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoStorageLeakageTest {
-    private String mSiteDataTestPage;
-    private EmbeddedTestServer mTestServer;
-
     private static final String SITE_DATA_HTML_PATH =
             "/content/test/data/browsing_data/site_data.html";
 
     private static final List<String> sSiteData = Arrays.asList(
             "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem", "WebSql");
 
+    private String mSiteDataTestPage;
+    private EmbeddedTestServer mTestServer;
+
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
+            new IncognitoCustomTabActivityTestRule();
 
     @Before
     public void setUp() throws TimeoutException {

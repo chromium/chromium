@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalCustomTabIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
@@ -19,11 +23,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -157,15 +159,11 @@ public class IncognitoDataTestUtils {
 
     private static Tab launchUrlInCCT(
             CustomTabActivityTestRule testRule, String url, boolean incognito) {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), url);
-
-        if (incognito) {
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        }
+        Context context = InstrumentationRegistry.getContext();
+        Intent intent = incognito ? createMinimalIncognitoCustomTabIntent(context, url)
+                                  : createMinimalCustomTabIntent(context, url);
 
         testRule.startCustomTabActivityWithIntent(intent);
-
         Tab tab = testRule.getActivity().getActivityTab();
 
         // Giving time to the WebContents to be ready.

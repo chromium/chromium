@@ -56,8 +56,8 @@ public class IncognitoCustomTabActivityRenderTest {
     private Intent mIntent;
 
     @Rule
-    public final CustomTabActivityTestRule mCustomTabActivityTestRule =
-            new CustomTabActivityTestRule();
+    public final IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
+            new IncognitoCustomTabActivityTestRule();
 
     @Rule
     public final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
