@@ -287,9 +287,7 @@ base::string16 BorealisInstallerView::GetSecondaryMessage() const {
         default:
         case ResultEnum::kBorealisInstallInProgress:
           return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
-              base::NumberToString16(
-                  static_cast<std::underlying_type_t<ResultEnum>>(*result_)));
+              IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE, app_name_);
         case ResultEnum::kBorealisNotAllowed:
         case ResultEnum::kDlcUnsupportedError:
           return l10n_util::GetStringFUTF16(
@@ -301,8 +299,8 @@ base::string16 BorealisInstallerView::GetSecondaryMessage() const {
               IDS_BOREALIS_INSTALLER_OFFLINE_MESSAGE);
         // DLC Failures.
         case ResultEnum::kDlcInternalError:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE);
         case ResultEnum::kDlcBusyError:
           return l10n_util::GetStringFUTF16(
               IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE, app_name_);

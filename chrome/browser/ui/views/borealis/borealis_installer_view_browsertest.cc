@@ -220,10 +220,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringFUTF16(
-                IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
-                base::NumberToString16(
-                    static_cast<std::underlying_type_t<InstallationResult>>(
-                        error_type))));
+                IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE, app_name_));
 
   AcceptInstallation();
 
@@ -247,10 +244,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, InProgressError) {
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringFUTF16(
-                IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
-                base::NumberToString16(
-                    static_cast<std::underlying_type_t<InstallationResult>>(
-                        error_type))));
+                IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE, app_name_));
 
   ClickCancel();
 }
@@ -279,9 +273,9 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcInternalError) {
 
   view_->OnInstallationEnded(error_type);
   ExpectInstallationFailedWithRetry();
-  EXPECT_EQ(view_->GetSecondaryMessage(),
-            l10n_util::GetStringFUTF16(IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE,
-                                       app_name_));
+  EXPECT_EQ(
+      view_->GetSecondaryMessage(),
+      l10n_util::GetStringUTF16(IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE));
 
   ClickCancel();
 }

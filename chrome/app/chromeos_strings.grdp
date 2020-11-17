@@ -5592,7 +5592,7 @@
     Your device is offline, please connect to the internet and try again.
   </message>
   <message name="IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE" desc="" translateable="false">
-    Your device needs to be updated before you can use <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>.
+    Something went wrong. Ensure that your device is up to date and please try again.
   </message>
   <message name="IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE" desc="" translateable="false">
     Something went wrong. Please wait a few minutes and run <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph> again.
@@ -5605,6 +5605,9 @@
   </message>
   <message name="IDS_BOREALIS_GENERIC_ERROR_MESSAGE" desc="" translateable="false">
       Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Please try again later. Error code: <ph name="ERROR_CODE">$2<ex>7</ex></ph>.
+  </message>
+  <message name="IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE" desc="" translateable="false">
+      Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Another process is already trying to install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph> or hasn't finished cancelling. Please try again later.
   </message>
   <!--
     ==================================================================================
