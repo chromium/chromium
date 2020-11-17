@@ -96,8 +96,7 @@ void InspectorMediaAgent::RegisterAgent() {
   instrumenting_agents_->AddInspectorMediaAgent(this);
   auto* cache = MediaInspectorContextImpl::From(
       *local_frame_->DomWindow()->GetExecutionContext());
-  Vector<WebString> players = cache->AllPlayerIdsAndMarkSent();
-  cache->IncrementActiveSessionCount();
+  Vector<WebString> players = cache->AllPlayerIds();
   PlayersCreated(players);
   for (const auto& player_id : players) {
     const auto& media_player = cache->MediaPlayerFromId(player_id);
@@ -125,9 +124,6 @@ protocol::Response InspectorMediaAgent::disable() {
     return protocol::Response::Success();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorMediaAgent(this);
-  auto* cache = MediaInspectorContextImpl::From(
-      *local_frame_->DomWindow()->GetExecutionContext());
-  cache->DecrementActiveSessionCount();
   return protocol::Response::Success();
 }
 
