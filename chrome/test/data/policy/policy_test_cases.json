@@ -1241,7 +1241,7 @@
     "policy_pref_mapping_test": [
       {
         "policies": { "AuthServerWhitelist": "localhost" },
-        "prefs": { "auth.server_whitelist": { "local_state": true } }
+        "prefs": { "auth.server_allowlist": { "local_state": true } }
       }
     ]
   },
@@ -1251,7 +1251,7 @@
     "policy_pref_mapping_test": [
       {
         "policies": { "AuthServerAllowlist": "localhost" },
-        "prefs": { "auth.server_whitelist": { "local_state": true } }
+        "prefs": { "auth.server_allowlist": { "local_state": true } }
       }
     ]
   },

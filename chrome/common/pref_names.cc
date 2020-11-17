@@ -2007,7 +2007,7 @@ const char kEnableAuthNegotiatePort[] = "auth.enable_negotiate_port";
 // Allowlist containing servers for which Integrated Authentication is enabled.
 // Note that this used to be `kAuthServerWhitelist`, hence the difference
 // between the variable name and the string value.
-const char kAuthServerAllowlist[] = "auth.server_whitelist";
+const char kAuthServerAllowlist[] = "auth.server_allowlist";
 
 // Allowlist containing servers Chrome is allowed to do Kerberos delegation
 // with. Note that this used to be `kAuthNegotiateDelegateWhitelist`, hence the
