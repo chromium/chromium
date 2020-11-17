@@ -4,6 +4,10 @@
 
 #include "cc/trees/animated_paint_worklet_tracker.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "cc/layers/picture_layer_impl.h"
 
 namespace cc {
@@ -30,7 +34,7 @@ void AnimatedPaintWorkletTracker::OnCustomPropertyMutated(
     PaintWorkletInput::PropertyValue custom_property_value) {
   // This function is called to update custom property value only.
   DCHECK(!custom_property_name.empty());
-  PaintWorkletInput::PropertyKey key{custom_property_name, element_id};
+  PaintWorkletInput::PropertyKey key(custom_property_name, element_id);
   auto iter = input_properties_.find(key);
   // OnCustomPropertyMutated is called for all composited custom property
   // animations, but there may not be a matching PaintWorklet, and thus no entry

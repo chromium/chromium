@@ -220,7 +220,8 @@ void PaintWorkletProxyClient::ApplyAnimatedPropertyOverrides(
         animated_property_values) {
   for (const auto& property_value : animated_property_values) {
     DCHECK(property_value.second.has_value());
-    String property_name(property_value.first.c_str());
+    String property_name(
+        property_value.first.custom_property_name.value().c_str());
     DCHECK(style_map->StyleMapData().Contains(property_name));
     CrossThreadStyleValue* old_value =
         style_map->StyleMapData().at(property_name);

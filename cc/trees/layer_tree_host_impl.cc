@@ -745,16 +745,16 @@ PaintWorkletJobMap LayerTreeHostImpl::GatherDirtyPaintWorklets(
 
       PaintWorkletJob::AnimatedPropertyValues animated_property_values;
       for (const auto& element : input->GetPropertyKeys()) {
-        // We should not have multiple property ids with the same name.
-        DCHECK(!animated_property_values.contains(element.first));
+        DCHECK(!animated_property_values.contains(element));
+        // TODO(xidachen): extend this to support two cases: custom property and
+        // native property.
+        DCHECK(element.custom_property_name.has_value());
         const PaintWorkletInput::PropertyValue& animated_property_value =
             paint_worklet_tracker_.GetPropertyAnimationValue(element);
         // No value indicates that the input property was not mutated by CC
         // animation.
-        if (animated_property_value.has_value()) {
-          animated_property_values.emplace(element.first,
-                                           animated_property_value);
-        }
+        if (animated_property_value.has_value())
+          animated_property_values.emplace(element, animated_property_value);
       }
 
       job_vector->data.emplace_back(layer->id(), input,
