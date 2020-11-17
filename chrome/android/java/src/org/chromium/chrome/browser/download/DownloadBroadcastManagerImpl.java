@@ -201,7 +201,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             }
 
             @Override
-            public boolean startServiceManagerOnly() {
+            public boolean startMinimalBrowser() {
                 if (!LegacyHelpers.isLegacyDownload(id)) return false;
                 return CachedFeatureFlags.isEnabled(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD)
                         && !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());

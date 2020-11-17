@@ -15,7 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.init.ServiceManagerStartupUtils;
+import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
 import org.chromium.chrome.browser.offlinepages.BackgroundScheduler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -49,7 +49,7 @@ public class ChromeBackgroundServiceImpl extends ChromeBackgroundService.Impl {
                     break;
 
                 // This is only for tests.
-                case ServiceManagerStartupUtils.TASK_TAG:
+                case MinimalBrowserStartupUtils.TASK_TAG:
                     handleServicificationStartupTask(context, taskTag);
                     break;
 

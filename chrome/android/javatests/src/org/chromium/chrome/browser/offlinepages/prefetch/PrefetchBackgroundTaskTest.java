@@ -191,12 +191,12 @@ public class PrefetchBackgroundTaskTest {
         OfflineTestUtil.setPrefetchingEnabledByServer(true);
         OfflineTestUtil.setGCMTokenForTesting("dummy_gcm_token");
 
-        PrefetchBackgroundTask.alwaysSupportServiceManagerOnlyForTesting();
+        PrefetchBackgroundTask.alwaysSupportMinimalBrowserForTesting();
     }
 
     @After
     public void tearDown() {
-        mNativeTestRule.assertOnlyServiceManagerStarted();
+        mNativeTestRule.assertMinimalBrowserStarted();
     }
 
     private void scheduleTask(int additionalDelaySeconds) {

@@ -232,7 +232,7 @@ public class NativePostTaskTest {
 
     private void startNativeScheduler() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        ContentMain.start(/* startServiceManagerOnly */ false);
+        ContentMain.start(/* startMinimalBrowser */ false);
         ThreadPoolTestHelpers.enableThreadPoolExecutionForTesting();
     }
 }

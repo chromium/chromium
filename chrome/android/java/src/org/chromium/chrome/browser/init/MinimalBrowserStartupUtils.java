@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.init;
 
 /**
- * Helper class for features that can be run in the ServiceManager only mode.
+ * Helper class for features that can be run in the minimal browser mode.
  */
-public class ServiceManagerStartupUtils {
+public class MinimalBrowserStartupUtils {
     public static final String TASK_TAG = "Servicification Startup Task";
 }

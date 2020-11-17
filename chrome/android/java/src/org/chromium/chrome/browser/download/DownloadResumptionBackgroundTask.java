@@ -46,7 +46,7 @@ public class DownloadResumptionBackgroundTask extends NativeBackgroundTask {
     }
 
     @Override
-    protected boolean supportsServiceManagerOnly() {
+    protected boolean supportsMinimalBrowser() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD);
     }
 

@@ -22,7 +22,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.init.ServiceManagerStartupUtils;
+import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.io.File;
@@ -32,7 +32,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 /**
- * Tests background tasks can be run in Service Manager only mode, i.e., without starting the full
+ * Tests background tasks can be run in minimal browser mode, i.e., without starting the full
  * browser.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -54,7 +54,7 @@ public final class ServicificationBackgroundServiceTest {
     @Before
     public void setUp() {
         mServicificationBackgroundService =
-                new ServicificationBackgroundService(true /*supportsServiceManagerOnly*/);
+                new ServicificationBackgroundService(true /*supportsMinimalBrowser*/);
     }
 
     @After
@@ -107,7 +107,7 @@ public final class ServicificationBackgroundServiceTest {
 
     private static void startServiceAndWaitForNative(
             ServicificationBackgroundService backgroundService) {
-        backgroundService.onRunTask(new TaskParams(ServiceManagerStartupUtils.TASK_TAG));
+        backgroundService.onRunTask(new TaskParams(MinimalBrowserStartupUtils.TASK_TAG));
         backgroundService.assertLaunchBrowserCalled();
         backgroundService.waitForNativeLoaded();
     }
@@ -120,15 +120,15 @@ public final class ServicificationBackgroundServiceTest {
     // Verifies that the memory-mapped file for persistent histogram data exists and contains a
     // valid SystemProfile. This test isn't run on low end devices which use local memory for
     // storing histogram data.
-    public void testHistogramsPersistedWithServiceManagerOnlyStart() {
+    public void testHistogramsPersistedWithMinimalBrowserStart() {
         createBrowserMetricsSpareFile();
         Assert.assertTrue(mSpareFile.exists());
 
         startServiceAndWaitForNative(mServicificationBackgroundService);
-        ServicificationBackgroundService.assertOnlyServiceManagerStarted();
+        ServicificationBackgroundService.assertMinimalBrowserStarted();
 
         mServicificationBackgroundService.assertPersistentHistogramsOnDiskSystemProfile();
-        ServicificationBackgroundService.assertOnlyServiceManagerStarted();
+        ServicificationBackgroundService.assertMinimalBrowserStarted();
     }
 
     @Test
@@ -138,19 +138,19 @@ public final class ServicificationBackgroundServiceTest {
         startServiceAndWaitForNative(mServicificationBackgroundService);
 
         mServicificationBackgroundService.assertBackgroundSessionStart();
-        ServicificationBackgroundService.assertOnlyServiceManagerStarted();
+        ServicificationBackgroundService.assertMinimalBrowserStarted();
     }
 
     @Test
     @MediumTest
     @Feature({"ServicificationStartup"})
-    public void testFullBrowserStartsAfterServiceManager() {
+    public void testFullBrowserStartsAfterMinimalBrowser() {
         startServiceAndWaitForNative(mServicificationBackgroundService);
-        ServicificationBackgroundService.assertOnlyServiceManagerStarted();
+        ServicificationBackgroundService.assertMinimalBrowserStarted();
 
-        // Now native is loaded in service manager only mode, lets try and load the full browser to
-        // test the transition from service manager only to full browser.
-        mServicificationBackgroundService.setSupportsServiceManagerOnly(false);
+        // Now native is loaded in minimal browser mode, lets try and load the full browser to
+        // test the transition from minimal browser to full browser.
+        mServicificationBackgroundService.setSupportsMinimalBrowser(false);
         startServiceAndWaitForNative(mServicificationBackgroundService);
         ServicificationBackgroundService.assertFullBrowserStarted();
     }

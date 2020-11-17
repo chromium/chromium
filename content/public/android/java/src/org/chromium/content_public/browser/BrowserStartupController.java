@@ -47,13 +47,12 @@ public interface BrowserStartupController {
      *                           LibraryProcessType.PROCESS_WEBVIEW or
      *                           LibraryProcessType.PROCESS_WEBLAYER.
      * @param startGpuProcess Whether to start the GPU process if it is not started.
-     * @param startServiceManagerOnly Whether browser startup will be paused after ServiceManager
+     * @param startMinimalBrowser Whether browser startup will be paused after a minimal environment
      *                                is started.
      * @param callback the callback to be called when browser startup is complete.
      */
     void startBrowserProcessesAsync(@LibraryProcessType int libraryProcessType,
-            boolean startGpuProcess, boolean startServiceManagerOnly,
-            final StartupCallback callback);
+            boolean startGpuProcess, boolean startMinimalBrowser, final StartupCallback callback);
 
     /**
      * Start the browser process synchronously. If the browser is already being started
@@ -74,21 +73,21 @@ public interface BrowserStartupController {
 
     /**
      * @return Whether the browser process has been started in "Full Browser" mode successfully. See
-     *         {@link #isRunningInServiceManagerMode} for information about the other mode of native
+     *         {@link #isRunningInMinimalBrowserMode} for information about the other mode of native
      *         startup.
      */
     boolean isFullBrowserStarted();
 
     /**
-     * @return Whether the browser is currently running in "service manager only" mode. "Service
-     *         Manager Only" mode is a state of native where only the minimum required
-     *         initialization is done (eg: no Profile and minimal content/ initialization).
+     * @return Whether the browser is currently running in minimal browser mode. This is a state
+     *         of native where only the minimum required initialization is done (eg: no Profile and
+     *         minimal content/ initialization).
      */
-    boolean isRunningInServiceManagerMode();
+    boolean isRunningInMinimalBrowserMode();
 
     /**
      * @return Whether native is loaded successfully and running in any mode. See {@link
-     *         #isRunningInServiceManagerMode} and {@link #isFullBrowserStarted} for more
+     *         #isRunningInMinimalBrowserMode} and {@link #isFullBrowserStarted} for more
      * information about the two modes.
      */
     boolean isNativeStarted();
@@ -106,9 +105,9 @@ public interface BrowserStartupController {
     void setContentMainCallbackForTests(Runnable r);
 
     /**
-     * @return how Chrome is launched, either in ServiceManager only mode or as full browser, as
+     * @return how Chrome is launched, either in minimal mode or as full browser, as
      * well as either cold start or warm start.
      * See {@link org.chromium.content.browser.ServicificationStartupUma} for more details.
      */
-    int getStartupMode(boolean startServiceManagerOnly);
+    int getStartupMode(boolean startMinimalBrowser);
 }

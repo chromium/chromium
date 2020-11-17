@@ -235,7 +235,7 @@ task.
 After the advent of servicfication in chrome, we have the option of launching a
 background task in a reduced service manager only mode without the need to
 launch the full browser process. In order to enable this, you have to override
-`NativeBackgroundTask#supportsServiceManagerOnly` and return true or false
+`NativeBackgroundTask#supportsMinimalBrowser` and return true or false
 depending on whether you want to launch service-manager only mode or full
 browser.
 

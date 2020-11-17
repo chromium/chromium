@@ -79,7 +79,7 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
     }
 
     @Override
-    protected boolean supportsServiceManagerOnly() {
+    protected boolean supportsMinimalBrowser() {
         // Return true here if you want your task to be run in reduced mode.
         return false;
     }

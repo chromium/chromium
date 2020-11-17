@@ -28,7 +28,7 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     private static final int MINIMUM_BATTERY_PERCENTAGE_FOR_PREFETCHING = 50;
 
     private static boolean sSkipConditionCheckingForTesting;
-    private static boolean sAlwaysSupportServiceManagerOnlyForTesting;
+    private static boolean sAlwaysSupportMinimalBrowserForTesting;
     private static boolean sSkipCachingFlagForTesting;
 
     private long mNativeTask;
@@ -86,8 +86,8 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     }
 
     @VisibleForTesting
-    static void alwaysSupportServiceManagerOnlyForTesting() {
-        sAlwaysSupportServiceManagerOnlyForTesting = true;
+    static void alwaysSupportMinimalBrowserForTesting() {
+        sAlwaysSupportMinimalBrowserForTesting = true;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     }
 
     private boolean isBrowserRunningInReducedMode() {
-        return getBrowserStartupController().isRunningInServiceManagerMode();
+        return getBrowserStartupController().isRunningInMinimalBrowserMode();
     }
 
     @Override
@@ -187,12 +187,12 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     }
 
     @Override
-    protected boolean supportsServiceManagerOnly() {
-        if (sAlwaysSupportServiceManagerOnlyForTesting) {
+    protected boolean supportsMinimalBrowser() {
+        if (sAlwaysSupportMinimalBrowserForTesting) {
             return true;
         }
 
-        return PrefetchConfiguration.isServiceManagerForBackgroundPrefetchEnabled();
+        return PrefetchConfiguration.isMinimalBrowserForBackgroundPrefetchEnabled();
     }
 
     @NativeMethods

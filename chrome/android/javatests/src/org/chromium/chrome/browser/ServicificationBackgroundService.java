@@ -18,15 +18,15 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Class for launching the service manager only mode for tests.
+ * Class for launching the minimal browser mode for tests.
  */
 public class ServicificationBackgroundService extends ChromeBackgroundServiceImpl {
     private boolean mLaunchBrowserCalled;
     private boolean mNativeLoaded;
-    private boolean mSupportsServiceManagerOnly;
+    private boolean mSupportsMinimalBrowser;
 
-    public ServicificationBackgroundService(boolean supportsServiceManagerOnly) {
-        mSupportsServiceManagerOnly = supportsServiceManagerOnly;
+    public ServicificationBackgroundService(boolean supportsMinimalBrowser) {
+        mSupportsMinimalBrowser = supportsMinimalBrowser;
     }
 
     @Override
@@ -47,8 +47,8 @@ public class ServicificationBackgroundService extends ChromeBackgroundServiceImp
             }
 
             @Override
-            public boolean startServiceManagerOnly() {
-                return mSupportsServiceManagerOnly;
+            public boolean startMinimalBrowser() {
+                return mSupportsMinimalBrowser;
             }
         };
 
@@ -65,14 +65,14 @@ public class ServicificationBackgroundService extends ChromeBackgroundServiceImp
 
     public void waitForNativeLoaded() {
         CriteriaHelper.pollUiThread(
-                () -> mNativeLoaded, "Failed while waiting for starting Service Manager.");
+                () -> mNativeLoaded, "Failed while waiting for starting minimal browser.");
     }
 
-    public void setSupportsServiceManagerOnly(boolean supportsServiceManagerOnly) {
-        mSupportsServiceManagerOnly = supportsServiceManagerOnly;
+    public void setSupportsMinimalBrowser(boolean supportsMinimalBrowser) {
+        mSupportsMinimalBrowser = supportsMinimalBrowser;
     }
 
-    public static void assertOnlyServiceManagerStarted() {
+    public static void assertMinimalBrowserStarted() {
         // This task will always be queued and executed after
         // the BrowserStartupControllerImpl#browserStartupComplete() is called on the UI thread when
         // the full browser starts. So we can use it to checks whether the
@@ -80,7 +80,7 @@ public class ServicificationBackgroundService extends ChromeBackgroundServiceImp
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Native has not been started.",
                     BrowserStartupController.getInstance().isNativeStarted());
-            Assert.assertFalse("The full browser is started instead of ServiceManager only.",
+            Assert.assertFalse("The full browser is started instead of a minimal browser.",
                     BrowserStartupController.getInstance().isFullBrowserStarted());
         });
     }

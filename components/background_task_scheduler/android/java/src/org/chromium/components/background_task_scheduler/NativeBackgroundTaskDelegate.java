@@ -12,21 +12,21 @@ public interface NativeBackgroundTaskDelegate {
     /**
      * Initializes native and runs the task.
      * @param taskId The id of the associated task.
-     * @param serviceManagerOnlyMode Whether only ServiceManager should be launched during the
+     * @param minimalBrowserMode Whether a minimal browser should be launched during the
      *         startup, without running remaining parts of the Chrome.
      * @param onSuccess The runnable that represents the task to be run after loading
      *         native successfully.
      * @param onFailure The runnable to be run in case the initialization fails.
      */
     void initializeNativeAsync(
-            int taskId, boolean serviceManagerOnlyMode, Runnable onSuccess, Runnable onFailure);
+            int taskId, boolean minimalBrowserMode, Runnable onSuccess, Runnable onFailure);
 
     /**
      * Records memory usage after loading native.
      * @param taskId The id of the associated task.
-     * @param serviceManagerOnlyMode Whether only ServiceManager was launched during startup.
+     * @param minimalBrowserMode Whether a minimal browser was launched during startup.
      */
-    void recordMemoryUsageWithRandomDelay(int taskId, boolean serviceManagerOnlyMode);
+    void recordMemoryUsageWithRandomDelay(int taskId, boolean minimalBrowserMode);
 
     /** @return Helper class to report UMA stats. */
     BackgroundTaskSchedulerExternalUma getUmaReporter();

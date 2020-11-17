@@ -211,7 +211,7 @@ public class UiThreadSchedulerTest {
             @Override
             public void run() {
                 try {
-                    ContentMain.start(/* startServiceManagerOnly */ true);
+                    ContentMain.start(/* startMinimalBrowser */ true);
                     synchronized (lock) {
                         uiThreadInitalized.set(true);
                         lock.notify();

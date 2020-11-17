@@ -207,7 +207,7 @@ public class PrefetchFeedFlowTest {
     private void doSetUp(boolean isReducedMode) throws Exception {
         mUseReducedMode = isReducedMode;
         if (mUseReducedMode) {
-            PrefetchBackgroundTask.alwaysSupportServiceManagerOnlyForTesting();
+            PrefetchBackgroundTask.alwaysSupportMinimalBrowserForTesting();
         }
 
         TestNetworkClient client = new TestNetworkClient();

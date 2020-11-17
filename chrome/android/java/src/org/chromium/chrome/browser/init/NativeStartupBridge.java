@@ -10,7 +10,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
- * A class for native code to request full browser start when running in service manager only mode.
+ * A class for native code to request full browser start when running in minimal browser mode.
  */
 public class NativeStartupBridge {
     private static final String TAG = "NativeStartupBridge";

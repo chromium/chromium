@@ -34,7 +34,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import java.util.List;
 
 /**
- * Tests interrupted download can be resumed with Service Manager only mode.
+ * Tests interrupted download can be resumed with minimal browser mode.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class ServicificationDownloadTest {
@@ -104,7 +104,7 @@ public final class ServicificationDownloadTest {
     @Feature({"Download"})
     public void testResumeInterruptedDownload() {
         if (useDownloadOfflineContentProvider()) return;
-        mNativeTestRule.assertOnlyServiceManagerStarted();
+        mNativeTestRule.assertMinimalBrowserStarted();
 
         String tempFile = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()
@@ -137,7 +137,7 @@ public final class ServicificationDownloadTest {
     @CommandLineFlags.Add({"enable-features=UseDownloadOfflineContentProvider"})
     public void testResumeInterruptedDownloadUsingDownloadOfflineContentProvider() {
         if (!useDownloadOfflineContentProvider()) return;
-        mNativeTestRule.assertOnlyServiceManagerStarted();
+        mNativeTestRule.assertMinimalBrowserStarted();
 
         String tempFile = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()

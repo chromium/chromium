@@ -988,7 +988,7 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
 #if defined(OS_ANDROID)
     if (start_service_manager_only) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&ServiceManagerStartupComplete));
+          FROM_HERE, base::BindOnce(&MinimalBrowserStartupComplete));
     }
 #endif
   }

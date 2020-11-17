@@ -137,12 +137,12 @@ public class ChromeCachedFlags {
     }
 
     /**
-     * Caches flags that are enabled in ServiceManager only mode and must take effect on startup but
-     * are set via native code. This function needs to be called in ServiceManager only mode to mark
-     * these field trials as active, otherwise histogram data recorded in ServiceManager only mode
+     * Caches flags that are enabled in minimal browser mode and must take effect on startup but
+     * are set via native code. This function needs to be called in minimal browser mode to mark
+     * these field trials as active, otherwise histogram data recorded in minimal browser mode
      * won't be tagged with their corresponding field trial experiments.
      */
-    public void cacheServiceManagerOnlyFlags() {
+    public void cacheMinimalBrowserFlags() {
         // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
         CachedFeatureFlags.cacheNativeFlags(
                 Arrays.asList(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD,

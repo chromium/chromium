@@ -53,7 +53,7 @@ class DownloadManagerService
   ~DownloadManagerService() override;
 
   // Called to Initialize this object. If |is_profile_added| is false,
-  // it means only the service manager is launched. OnProfileAdded() will
+  // it means only a minimal browser is launched. OnProfileAdded() will
   // be called later when the profile is added.
   void Init(JNIEnv* env, jobject obj, bool is_profile_added);
 

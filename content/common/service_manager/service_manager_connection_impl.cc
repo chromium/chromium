@@ -27,13 +27,6 @@
 #include "services/service_manager/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
-#if defined(OS_ANDROID)
-#include "base/android/jni_android.h"
-#include "content/public/android/content_jni_headers/ServiceManagerConnectionImpl_jni.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/mojom/connector.mojom.h"
-#endif
-
 namespace content {
 namespace {
 
@@ -275,23 +268,6 @@ class ServiceManagerConnectionImpl::IOThreadContext
 
   DISALLOW_COPY_AND_ASSIGN(IOThreadContext);
 };
-
-#if defined(OS_ANDROID)
-// static
-jint JNI_ServiceManagerConnectionImpl_GetConnectorMessagePipeHandle(
-    JNIEnv* env) {
-  DCHECK(ServiceManagerConnection::GetForProcess());
-
-  mojo::PendingRemote<service_manager::mojom::Connector> connector_remote;
-  ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindConnectorReceiver(
-          connector_remote.InitWithNewPipeAndPassReceiver());
-
-  return connector_remote.PassPipe().release().value();
-}
-
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // ServiceManagerConnection, public:

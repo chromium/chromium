@@ -275,7 +275,6 @@ android_library("content_java") {
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content/common/ContentSwitchUtils.java",
-    "java/src/org/chromium/content/common/ServiceManagerConnectionImpl.java",
     "java/src/org/chromium/content/common/SurfaceWrapper.java",
     "java/src/org/chromium/content_public/app/ChildProcessServiceFactory.java",
     "java/src/org/chromium/content_public/browser/AccessibilitySnapshotCallback.java",
@@ -336,7 +335,6 @@ android_library("content_java") {
     "java/src/org/chromium/content_public/common/Referrer.java",
     "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
     "java/src/org/chromium/content_public/common/ScreenOrientationConstants.java",
-    "java/src/org/chromium/content_public/common/ServiceManagerConnection.java",
     "java/src/org/chromium/content_public/common/UseZoomForDSFPolicy.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -424,7 +422,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/sms/SmsProviderGms.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
-    "java/src/org/chromium/content/common/ServiceManagerConnectionImpl.java",
     "java/src/org/chromium/content/common/SurfaceWrapper.java",
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",
     "java/src/org/chromium/content_public/browser/NavigationHandle.java",

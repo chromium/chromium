@@ -27,16 +27,16 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
 
     @Override
     public void initializeNativeAsync(
-            int taskId, boolean serviceManagerOnlyMode, Runnable onSuccess, Runnable onFailure) {
+            int taskId, boolean minimalBrowserMode, Runnable onSuccess, Runnable onFailure) {
         final BrowserParts parts = new EmptyBrowserParts() {
             @Override
             public void finishNativeInitialization() {
                 PostTask.postTask(UiThreadTaskTraits.DEFAULT, onSuccess);
-                recordMemoryUsageWithRandomDelay(taskId, serviceManagerOnlyMode);
+                recordMemoryUsageWithRandomDelay(taskId, minimalBrowserMode);
             }
             @Override
-            public boolean startServiceManagerOnly() {
-                return serviceManagerOnlyMode;
+            public boolean startMinimalBrowser() {
+                return minimalBrowserMode;
             }
             @Override
             public void onStartupFailure(Exception failureCause) {
@@ -56,7 +56,7 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
     }
 
     @Override
-    public void recordMemoryUsageWithRandomDelay(int taskId, boolean serviceManagerOnlyMode) {
+    public void recordMemoryUsageWithRandomDelay(int taskId, boolean minimalBrowserMode) {
         // The metrics are emitted only once so that the average does not converge towards the
         // memory usage after the task is executed, but reflects the task being executed.
         // The statistical distribution of the delay is uniform between 0s and 60s. The Offline
@@ -64,7 +64,7 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
         final int delay = (int) (new Random().nextFloat() * MAX_MEMORY_MEASUREMENT_DELAY_MS);
 
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
-            BackgroundTaskMemoryMetricsEmitter.reportMemoryUsage(serviceManagerOnlyMode,
+            BackgroundTaskMemoryMetricsEmitter.reportMemoryUsage(minimalBrowserMode,
                     BackgroundTaskSchedulerExternalUma.toMemoryHistogramAffixFromTaskId(taskId));
         }, delay);
     }

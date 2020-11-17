@@ -161,10 +161,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     }
 
     @Override
-    public void reportTaskStartedNative(int taskId, boolean serviceManagerOnlyMode) {
+    public void reportTaskStartedNative(int taskId, boolean minimalBrowserMode) {
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.BackgroundTaskScheduler.TaskLoadedNative", umaEnumValue);
-        if (serviceManagerOnlyMode) {
+        if (minimalBrowserMode) {
             cacheEvent(
                     "Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode", umaEnumValue);
         } else {
@@ -174,10 +174,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     }
 
     @Override
-    public void reportNativeTaskStarted(int taskId, boolean serviceManagerOnlyMode) {
+    public void reportNativeTaskStarted(int taskId, boolean minimalBrowserMode) {
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.NativeBackgroundTask.TaskStarted", umaEnumValue);
-        if (serviceManagerOnlyMode) {
+        if (minimalBrowserMode) {
             cacheEvent("Android.NativeBackgroundTask.TaskStarted.ReducedMode", umaEnumValue);
         } else {
             cacheEvent("Android.NativeBackgroundTask.TaskStarted.FullBrowser", umaEnumValue);
@@ -185,10 +185,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     }
 
     @Override
-    public void reportNativeTaskFinished(int taskId, boolean serviceManagerOnlyMode) {
+    public void reportNativeTaskFinished(int taskId, boolean minimalBrowserMode) {
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.NativeBackgroundTask.TaskFinished", umaEnumValue);
-        if (serviceManagerOnlyMode) {
+        if (minimalBrowserMode) {
             cacheEvent("Android.NativeBackgroundTask.TaskFinished.ReducedMode", umaEnumValue);
         } else {
             cacheEvent("Android.NativeBackgroundTask.TaskFinished.FullBrowser", umaEnumValue);

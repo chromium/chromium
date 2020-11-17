@@ -77,7 +77,7 @@ public class NativeBackgroundTaskTest {
 
         @Override
         public void startBrowserProcessesAsync(@LibraryProcessType int libraryProcessType,
-                boolean startGpuProcess, boolean startServiceManagerOnly,
+                boolean startGpuProcess, boolean startMinimalBrowser,
                 final StartupCallback callback) {}
 
         @Override
@@ -96,7 +96,7 @@ public class NativeBackgroundTaskTest {
         }
 
         @Override
-        public boolean isRunningInServiceManagerMode() {
+        public boolean isRunningInMinimalBrowserMode() {
             return false;
         }
 
@@ -107,7 +107,7 @@ public class NativeBackgroundTaskTest {
         public void setContentMainCallbackForTests(Runnable r) {}
 
         @Override
-        public int getStartupMode(boolean startServiceManagerOnly) {
+        public int getStartupMode(boolean startMinimalBrowser) {
             assertFalse(isNativeStarted());
             return 0 /*ServicificationStartupUma.ServicificationStartup.CHROME_COLD*/;
         }
