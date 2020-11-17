@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -27,6 +28,16 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/login/login_manager_test.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#endif
 
 namespace web_app {
 
@@ -430,6 +441,133 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
+
+#if defined(OS_CHROMEOS)
+// Use LoginManagerTest here instead of SystemWebAppManagerBrowserTest, because
+// it's less complicated to add SWA to LoginManagerTest than adding multi-logins
+// to SWA browsertest.
+class SystemWebAppManagerMultiDesktopLaunchBrowserTest
+    : public chromeos::LoginManagerTest {
+ public:
+  SystemWebAppManagerMultiDesktopLaunchBrowserTest()
+      : chromeos::LoginManagerTest() {
+    login_mixin_.AppendRegularUsers(2);
+    account_id1_ = login_mixin_.users()[0].account_id;
+    account_id2_ = login_mixin_.users()[1].account_id;
+    installation_ =
+        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation(
+            /* use_web_app_info*/ true);
+  }
+
+  ~SystemWebAppManagerMultiDesktopLaunchBrowserTest() override = default;
+
+  void WaitForSystemWebAppInstall(Profile* profile) {
+    base::RunLoop run_loop;
+    web_app::WebAppProvider::Get(profile)
+        ->system_web_app_manager()
+        .on_apps_synchronized()
+        .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
+                // Wait one execution loop for on_apps_synchronized() to be
+                // called on all listeners.
+                base::ThreadTaskRunnerHandle::Get()->PostTask(
+                    FROM_HERE, run_loop.QuitClosure());
+              }));
+    run_loop.Run();
+  }
+
+  Browser* LaunchAppOnProfile(Profile* profile) {
+    SystemWebAppManager& manager =
+        web_app::WebAppProvider::Get(profile)->system_web_app_manager();
+
+    base::Optional<AppId> app_id =
+        manager.GetAppIdForSystemApp(installation_->GetType());
+    CHECK(app_id.has_value());
+
+    auto launch_params = apps::AppLaunchParams(
+        *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::CURRENT_TAB,
+        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+
+    content::TestNavigationObserver navigation_observer(
+        installation_->GetAppUrl());
+
+    // Watch new WebContents to wait for launches that open an app for the first
+    // time.
+    navigation_observer.StartWatchingNewWebContents();
+
+    // Watch existing WebContents to wait for launches that re-use the
+    // WebContents e.g. launching an already opened SWA.
+    navigation_observer.WatchExistingWebContents();
+
+    content::WebContents* web_contents =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParams(std::move(launch_params));
+
+    navigation_observer.Wait();
+
+    return chrome::FindBrowserWithWebContents(web_contents);
+  }
+
+ protected:
+  std::unique_ptr<TestSystemWebAppInstallation> installation_;
+  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  AccountId account_id1_;
+  AccountId account_id2_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
+                       LaunchToActiveDesktop) {
+  // Login two users.
+  LoginUser(account_id1_);
+  base::RunLoop().RunUntilIdle();
+  chromeos::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  base::RunLoop().RunUntilIdle();
+
+  // Wait for System Apps to be installed on both user profiles.
+  auto* user_manager = user_manager::UserManager::Get();
+  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUser(
+      user_manager->FindUser(account_id1_));
+  Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(
+      user_manager->FindUser(account_id2_));
+  WaitForSystemWebAppInstall(profile1);
+  WaitForSystemWebAppInstall(profile2);
+
+  // Set user 1 to be active.
+  user_manager->SwitchActiveUser(account_id1_);
+  EXPECT_TRUE(multi_user_util::IsProfileFromActiveUser(profile1));
+  EXPECT_FALSE(multi_user_util::IsProfileFromActiveUser(profile2));
+
+  // Launch the app from user 2 profile. The window should be on user 1
+  // (the active) desktop.
+  Browser* browser2 = LaunchAppOnProfile(profile2);
+  EXPECT_TRUE(
+      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
+          browser2->window()->GetNativeWindow(), account_id1_));
+
+  // Launch the app from user 1 profile. The window should be on user 1 (the
+  // active) desktop. And there should be two different browser windows
+  // (for each profile).
+  Browser* browser1 = LaunchAppOnProfile(profile1);
+  EXPECT_TRUE(
+      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
+          browser1->window()->GetNativeWindow(), account_id1_));
+
+  EXPECT_NE(browser1, browser2);
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+
+  // Switch to user 2, then launch the app. SWAs reuse their window, so it
+  // should bring `browser2` to user 2 (the active) desktop.
+  user_manager->SwitchActiveUser(account_id2_);
+  Browser* browser2_relaunch = LaunchAppOnProfile(profile2);
+
+  EXPECT_EQ(browser2, browser2_relaunch);
+  EXPECT_TRUE(
+      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
+          browser2->window()->GetNativeWindow(), account_id2_));
+}
+#endif  // defined(OS_CHROMEOS)
 
 // The following tests are disabled in DCHECK builds. LaunchSystemWebApp DCHECKs
 // if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants) aren't

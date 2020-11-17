@@ -36,6 +36,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#endif
+
 namespace {
 // Returns the profile where we should launch System Web Apps into. It returns
 // the most appropriate profile for launching, if the provided |profile| is
@@ -254,8 +258,16 @@ Browser* LaunchSystemWebApp(Profile* profile,
     }
   }
 
-  // TODO(crbug.com/1114939): Need to make sure the browser is shown on the
-  // correct desktop, when used in multi-profile mode.
+#if defined(OS_CHROMEOS)
+  // LaunchSystemWebApp may be called with a profile associated with an
+  // inactive (background) desktop (e.g. when multiple users are logged in).
+  // Here we move the newly created browser window (or the existing one on the
+  // inactive desktop) to the current active (visible) desktop, so the user
+  // always see the launched app.
+  multi_user_util::MoveWindowToCurrentDesktop(
+      browser->window()->GetNativeWindow());
+#endif
+
   browser->window()->Show();
   return browser;
 }
