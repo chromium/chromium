@@ -1052,7 +1052,11 @@ void FidoDeviceAuthenticator::GetUvToken(
                      std::move(permissions), std::move(callback)));
 }
 
-uint32_t FidoDeviceAuthenticator::MinPINLength() {
+uint32_t FidoDeviceAuthenticator::CurrentMinPINLength() {
+  return ForcePINChange() ? kMinPinLength : NewMinPINLength();
+}
+
+uint32_t FidoDeviceAuthenticator::NewMinPINLength() {
   return device()->device_info()->min_pin_length.value_or(kMinPinLength);
 }
 

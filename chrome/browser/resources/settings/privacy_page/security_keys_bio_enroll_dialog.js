@@ -86,6 +86,9 @@ Polymer({
     enrollments_: Array,
 
     /** @private */
+    minPinLength_: Number,
+
+    /** @private */
     progressArcLabel_: String,
 
     /** @private */
@@ -113,7 +116,8 @@ Polymer({
     this.addWebUIListener(
         'security-keys-bio-enroll-status', this.onEnrollmentSample_.bind(this));
     this.browserProxy_ = SecurityKeysBioEnrollProxyImpl.getInstance();
-    this.browserProxy_.startBioEnroll().then(() => {
+    this.browserProxy_.startBioEnroll().then(([minPinLength]) => {
+      this.minPinLength_ = minPinLength;
       this.dialogPage_ = BioEnrollDialogPage.PIN_PROMPT;
     });
   },

@@ -38,8 +38,9 @@
               <p>$i18nRaw{securityKeysCurrentPINIntro}</p>
 
               <div id="currentPINRow">
-                <cr-input id="currentPIN" value="{{currentPIN_}}" minLength="4"
-                    maxLength="255" spellcheck="false"
+                <cr-input id="currentPIN" value="{{currentPIN_}}"
+                    min-length="[[currentMinPinLength_]]"
+                    max-length="255" spellcheck="false"
                     on-input="onCurrentPINInput_"
                     invalid="[[isNonEmpty_(currentPINError_)]]"
                     label="$i18n{securityKeysCurrentPIN}" tabindex="0"
@@ -58,8 +59,9 @@
             <p>$i18n{securityKeysNewPIN}</p>
 
             <div id="newPINRow">
-              <cr-input id="newPIN" value="{{newPIN_}}" minLength="4"
-                  maxLength="255" spellcheck="false" on-input="onNewPINInput_"
+              <cr-input id="newPIN" value="{{newPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false" on-input="onNewPINInput_"
                   label="$i18n{securityKeysPIN}"
                   tabindex="0" type$="[[inputType_(pinsVisible_)]]"
                   invalid="[[isNonEmpty_(newPINError_)]]"
@@ -71,8 +73,9 @@
                 <div style="height: 36px" slot="suffix"
                      hidden="[[showCurrentEntry_]]"></div>
               </cr-input>
-              <cr-input id="confirmPIN" value="{{confirmPIN_}}" minLength="4"
-                  maxLength="255" spellcheck="false"
+              <cr-input id="confirmPIN" value="{{confirmPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false"
                   on-input="onConfirmPINInput_"
                   label="$i18n{securityKeysConfirmPIN}" tabindex="0"
                   invalid="[[isNonEmpty_(confirmPINError_)]]"

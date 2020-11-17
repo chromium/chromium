@@ -35,6 +35,10 @@ namespace settings {
 
 // Base class for message handlers on the "Security Keys" settings subpage.
 class SecurityKeysHandlerBase : public SettingsPageUIHandler {
+ public:
+  SecurityKeysHandlerBase(const SecurityKeysHandlerBase&) = delete;
+  SecurityKeysHandlerBase& operator=(const SecurityKeysHandlerBase&) = delete;
+
  protected:
   SecurityKeysHandlerBase() = default;
 
@@ -44,9 +48,6 @@ class SecurityKeysHandlerBase : public SettingsPageUIHandler {
  private:
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
-
-  SecurityKeysHandlerBase(const SecurityKeysHandlerBase&) = delete;
-  SecurityKeysHandlerBase& operator=(const SecurityKeysHandlerBase&) = delete;
 };
 
 // SecurityKeysPINHandler processes messages from the "Create a PIN" dialog of
@@ -71,7 +72,9 @@ class SecurityKeysPINHandler : public SecurityKeysHandlerBase {
   void Close() override;
 
   void HandleStartSetPIN(const base::ListValue* args);
-  void OnGatherPIN(base::Optional<int64_t> num_retries);
+  void OnGatherPIN(uint32_t current_min_pin_length,
+                   uint32_t new_min_pin_length,
+                   base::Optional<int64_t> num_retries);
   void OnSetPINComplete(device::CtapDeviceResponseCode code);
   void HandleSetPIN(const base::ListValue* args);
 
@@ -152,7 +155,9 @@ class SecurityKeysCredentialHandler : public SecurityKeysHandlerBase {
           std::vector<device::AggregatedEnumerateCredentialsResponse>>
           responses,
       base::Optional<size_t> remaining_credentials);
-  void OnGatherPIN(int64_t num_retries, base::OnceCallback<void(std::string)>);
+  void OnGatherPIN(uint32_t min_pin_length,
+                   int64_t num_retries,
+                   base::OnceCallback<void(std::string)>);
   void OnCredentialsDeleted(device::CtapDeviceResponseCode status);
   void OnFinished(device::CredentialManagementStatus status);
 
@@ -193,7 +198,9 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   void HandleStart(const base::ListValue* args);
   void OnReady();
   void OnError(device::BioEnrollmentStatus status);
-  void OnGatherPIN(int64_t retries, base::OnceCallback<void(std::string)>);
+  void OnGatherPIN(uint32_t min_pin_length,
+                   int64_t retries,
+                   base::OnceCallback<void(std::string)>);
 
   void HandleProvidePIN(const base::ListValue* args);
 

@@ -187,7 +187,8 @@ void BioEnrollmentHandler::OnRetriesResponse(
   }
 
   state_ = State::kWaitingForPIN;
-  get_pin_callback_.Run(response->retries,
+  get_pin_callback_.Run(authenticator_->CurrentMinPINLength(),
+                        response->retries,
                         base::BindOnce(&BioEnrollmentHandler::OnHavePIN,
                                        weak_factory_.GetWeakPtr()));
 }

@@ -107,7 +107,9 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
         kSupportedButPinNotSet:
       state_ = State::kWaitingForPIN;
       CancelActiveAuthenticators(authenticator->GetId());
-      std::move(get_pin_callback_).Run(base::nullopt);
+      std::move(get_pin_callback_)
+          .Run(authenticator->CurrentMinPINLength(),
+               authenticator->NewMinPINLength(), base::nullopt);
       break;
   }
 }
@@ -125,7 +127,9 @@ void SetPINRequestHandler::OnRetriesResponse(
   }
 
   state_ = State::kWaitingForPIN;
-  std::move(get_pin_callback_).Run(response->retries);
+  std::move(get_pin_callback_)
+      .Run(authenticator_->CurrentMinPINLength(),
+           authenticator_->NewMinPINLength(), response->retries);
 }
 
 void SetPINRequestHandler::OnSetPINComplete(

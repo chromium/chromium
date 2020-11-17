@@ -78,6 +78,18 @@ export let EnrollmentResponse;
  */
 export let Enrollment;
 
+/**
+ * SetPINResponse represents the response to startSetPIN and setPIN requests.
+ *
+ * @typedef {{done: boolean,
+ *            error: (number|undefined),
+ *            currentMinPinLength: (number|undefined),
+ *            newMinPinLength: (number|undefined),
+ *            retries: (number|undefined)}}
+ * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
+ */
+export let SetPINResponse;
+
 /** @interface */
 export class SecurityKeysPINBrowserProxy {
   /**
@@ -88,7 +100,7 @@ export class SecurityKeysPINBrowserProxy {
    * |setPIN|. In this case the second number is either the number of tries
    * remaining to correctly specify the current PIN, or else null to indicate
    * that no PIN is currently set.
-   * @return {!Promise<!Array<number>>}
+   * @return {!Promise<!SetPINResponse>}
    */
   startSetPIN() {}
 
@@ -97,7 +109,7 @@ export class SecurityKeysPINBrowserProxy {
    * whose meaning is the same as with |startSetPIN|. The first number will
    * always be 1 to indicate that the process has completed and thus the
    * second will be the CTAP error code.
-   * @return {!Promise<!Array<number>>}
+   * @return {!Promise<!SetPINResponse>}
    */
   setPIN(oldPIN, newPIN) {}
 

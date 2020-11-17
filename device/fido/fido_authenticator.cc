@@ -47,7 +47,12 @@ void FidoAuthenticator::GetUvToken(
   NOTREACHED();
 }
 
-uint32_t FidoAuthenticator::MinPINLength() {
+uint32_t FidoAuthenticator::CurrentMinPINLength() {
+  NOTREACHED();
+  return kMinPinLength;
+}
+
+uint32_t FidoAuthenticator::NewMinPINLength() {
   NOTREACHED();
   return kMinPinLength;
 }

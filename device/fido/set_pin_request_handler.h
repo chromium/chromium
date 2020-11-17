@@ -35,10 +35,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
     : public FidoRequestHandlerBase {
  public:
   // GetPINCallback is called once, after the user has touched an authenticator,
-  // to request that the user enter a PIN. If the argument is |nullopt| then the
-  // authenticator has no PIN currently set. Otherwise it indicates the number
-  // of attempts remaining.
-  using GetPINCallback = base::OnceCallback<void(base::Optional<int64_t>)>;
+  // to request that the user enter a PIN.
+  // * The first argument indicates the minimum PIN length for the current PIN,
+  //   if set.
+  // * The second argument indicates the minimum PIN length for a new PIN.
+  // * If the third argument is |nullopt| then the authenticator has no PIN
+  //   currently set. Otherwise it indicates the number of attempts remaining.
+  using GetPINCallback =
+      base::OnceCallback<void(uint32_t current_min_pin_length,
+                              uint32_t new_min_pin_length,
+                              base::Optional<int64_t> attempts)>;
 
   // FinishedCallback is called multiple times once an attempt has completed.
   // This can be called prior to |GetPINCallback| if the touched authenticator

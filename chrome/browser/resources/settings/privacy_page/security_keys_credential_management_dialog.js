@@ -84,6 +84,9 @@ Polymer({
 
     /** @private */
     deleteInProgress_: Boolean,
+
+    /** @private */
+    minPinLength_: Number,
   },
 
   /** @private {?SecurityKeysCredentialBrowserProxy} */
@@ -100,7 +103,8 @@ Polymer({
         this.onError_.bind(this));
     this.checkedCredentialIds_ = new Set();
     this.browserProxy_ = SecurityKeysCredentialBrowserProxyImpl.getInstance();
-    this.browserProxy_.startCredentialManagement().then(() => {
+    this.browserProxy_.startCredentialManagement().then(([minPinLength]) => {
+      this.minPinLength_ = minPinLength;
       this.dialogPage_ = CredentialManagementDialogPage.PIN_PROMPT;
     });
   },

@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
 
   using ErrorCallback = base::OnceCallback<void(BioEnrollmentStatus)>;
   using GetPINCallback =
-      base::RepeatingCallback<void(int64_t retries,
+      base::RepeatingCallback<void(uint32_t min_pin_length,
+                                   int64_t retries,
                                    base::OnceCallback<void(std::string)>)>;
   using StatusCallback = base::OnceCallback<void(CtapDeviceResponseCode)>;
   using EnumerationCallback = base::OnceCallback<void(
@@ -59,6 +60,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
       GetPINCallback get_pin_callback,
       FidoDiscoveryFactory* factory);
   ~BioEnrollmentHandler() override;
+  BioEnrollmentHandler(const BioEnrollmentHandler&) = delete;
+  BioEnrollmentHandler(BioEnrollmentHandler&&) = delete;
 
   // Enrolls a new fingerprint template. The user must provide the required
   // number of samples by touching the authenticator's sensor repeatedly. For
@@ -144,9 +147,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   SampleCallback sample_callback_;
   base::Optional<pin::TokenResponse> pin_token_response_;
   base::WeakPtrFactory<BioEnrollmentHandler> weak_factory_{this};
-
-  BioEnrollmentHandler(const BioEnrollmentHandler&) = delete;
-  BioEnrollmentHandler(BioEnrollmentHandler&&) = delete;
 };
 
 }  // namespace device

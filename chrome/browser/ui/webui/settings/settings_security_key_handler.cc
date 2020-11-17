@@ -108,22 +108,27 @@ void SecurityKeysPINHandler::HandleStartSetPIN(const base::ListValue* args) {
                           weak_factory_.GetWeakPtr()));
 }
 
-void SecurityKeysPINHandler::OnGatherPIN(base::Optional<int64_t> num_retries) {
+void SecurityKeysPINHandler::OnGatherPIN(uint32_t current_min_pin_length,
+                                         uint32_t new_min_pin_length,
+                                         base::Optional<int64_t> num_retries) {
   DCHECK_EQ(State::kStartSetPIN, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value::ListStorage list;
-  list.emplace_back(0 /* process not complete */);
+  base::Value::DictStorage response;
+  response.emplace("done", false);
+  response.emplace("error", base::Value::Type::NONE);
+  response.emplace("currentMinPinLength",
+                   static_cast<int>(current_min_pin_length));
+  response.emplace("newMinPinLength", static_cast<int>(new_min_pin_length));
   if (num_retries) {
     state_ = State::kGatherChangePIN;
-    list.emplace_back(static_cast<int>(*num_retries));
+    response.emplace("retries", static_cast<int>(*num_retries));
   } else {
     state_ = State::kGatherNewPIN;
-    list.emplace_back(base::Value::Type::NONE);
   }
 
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(list)));
+                            base::Value(std::move(response)));
 }
 
 void SecurityKeysPINHandler::OnSetPINComplete(
@@ -139,11 +144,11 @@ void SecurityKeysPINHandler::OnSetPINComplete(
     set_pin_.reset();
   }
 
-  base::Value::ListStorage list;
-  list.emplace_back(1 /* process complete */);
-  list.emplace_back(static_cast<int>(code));
+  base::Value::DictStorage response;
+  response.emplace("done", true);
+  response.emplace("error", static_cast<int>(code));
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(list)));
+                            base::Value(std::move(response)));
 }
 
 void SecurityKeysPINHandler::HandleSetPIN(const base::ListValue* args) {
@@ -451,6 +456,7 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
 }
 
 void SecurityKeysCredentialHandler::OnGatherPIN(
+    uint32_t min_pin_length,
     int64_t num_retries,
     base::OnceCallback<void(std::string)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -459,18 +465,21 @@ void SecurityKeysCredentialHandler::OnGatherPIN(
 
   credential_management_provide_pin_cb_ = std::move(callback);
 
+  base::Value::ListStorage response;
+  response.emplace_back(static_cast<int>(min_pin_length));
   if (state_ == State::kStart) {
     // Resolve the promise to startCredentialManagement().
     state_ = State::kPIN;
     ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                              base::Value());
+                              base::Value(std::move(response)));
     return;
   }
 
   // Resolve the promise to credentialManagementProvidePIN().
   DCHECK_EQ(state_, State::kPIN);
+  response.emplace_back(static_cast<int>(num_retries));
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(static_cast<int>(num_retries)));
+                            base::Value(std::move(response)));
 }
 
 void SecurityKeysCredentialHandler::OnCredentialsDeleted(
@@ -646,6 +655,7 @@ void SecurityKeysBioEnrollmentHandler::OnError(
 }
 
 void SecurityKeysBioEnrollmentHandler::OnGatherPIN(
+    uint32_t min_pin_length,
     int64_t retries,
     base::OnceCallback<void(std::string)> cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -653,8 +663,11 @@ void SecurityKeysBioEnrollmentHandler::OnGatherPIN(
   DCHECK(state_ == State::kStart || state_ == State::kGatherPIN);
   state_ = State::kGatherPIN;
   provide_pin_cb_ = std::move(cb);
+  base::Value::ListStorage response;
+  response.emplace_back(static_cast<int>(min_pin_length));
+  response.emplace_back(static_cast<int>(retries));
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(static_cast<int>(retries)));
+                            base::Value(std::move(response)));
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(

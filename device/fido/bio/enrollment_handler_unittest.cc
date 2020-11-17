@@ -64,7 +64,8 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
     return {cb.status(), cb.value()};
   }
 
-  void GetPIN(int64_t attempts,
+  void GetPIN(uint32_t min_pin_length,
+              int64_t attempts,
               base::OnceCallback<void(std::string)> provide_pin) {
     std::move(provide_pin).Run(kPIN);
   }

@@ -125,8 +125,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual void GetUvToken(std::vector<pin::Permissions> permissions,
                           base::Optional<std::string> rp_id,
                           GetTokenCallback callback);
-  // Returns the minimum PIN length for this authenticator.
-  virtual uint32_t MinPINLength();
+  // Returns the minimum PIN length for this authenticator's currently set PIN.
+  virtual uint32_t CurrentMinPINLength();
+  // Returns the minimum PIN length required to set a new PIN for this
+  // authenticator.
+  virtual uint32_t NewMinPINLength();
   // Returns |true| if the PIN must be changed before attempting to obtain a PIN
   // token.
   virtual bool ForcePINChange();

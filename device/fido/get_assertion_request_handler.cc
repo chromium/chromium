@@ -673,7 +673,8 @@ void GetAssertionRequestHandler::OnPinRetriesResponse(
     return;
   }
   state_ = State::kWaitingForPIN;
-  observer()->CollectPIN(kMinPinLength, response->retries,
+  observer()->CollectPIN(authenticator_->CurrentMinPINLength(),
+                         response->retries,
                          base::BindOnce(&GetAssertionRequestHandler::OnHavePIN,
                                         weak_factory_.GetWeakPtr()));
 }
