@@ -654,6 +654,7 @@ void RenderFrameHostManager::RestoreFromBackForwardCache(
   // in the long run. For now, and to avoid complex edge cases, we simply reuse
   // it to preserve the understood logic in CommitPending.
   speculative_render_frame_host_ = std::move(entry->render_frame_host);
+  ValidateSpeculativeRenderFrameHostForBug1146573();
   bfcache_entry_to_restore_ = std::move(entry);
 }
 
@@ -693,6 +694,36 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
         dest_rfh == render_frame_host_.get()
             ? NavigationRequest::AssociatedSiteInstanceType::CURRENT
             : NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  }
+}
+
+void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573() {
+  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
+  if (ShouldCreateNewHostForSameSiteSubframe())
+    return;
+  // This can happen during destruction after the RFH has been cleared.
+  if (!render_frame_host_)
+    return;
+  if (render_frame_host_->must_be_replaced())
+    return;
+  if (!speculative_render_frame_host_)
+    return;
+  if (speculative_render_frame_host_->GetSiteInstance() ==
+      render_frame_host_->GetSiteInstance()) {
+    // This should never be true.
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, HostsEqual,
+                          speculative_render_frame_host_ == render_frame_host_);
+    DCHECK_NE(speculative_render_frame_host_, render_frame_host_);
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, Live,
+                          render_frame_host_->IsRenderFrameLive());
+    SCOPED_CRASH_KEY_STRING256(
+        ValidateSpeculative, OldSiteInstance,
+        render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
+    SCOPED_CRASH_KEY_STRING256(
+        ValidateSpeculative, NewSiteInstance,
+        speculative_render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
+    DCHECK(false);
+    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -2363,6 +2394,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
 
   speculative_render_frame_host_ = CreateSpeculativeRenderFrame(
       new_instance, recovering_without_early_commit);
+  ValidateSpeculativeRenderFrameHostForBug1146573();
 
   // If RenderViewHost was created along with the speculative RenderFrameHost,
   // ensure that RenderViewCreated is fired for it.  It is important to do this
@@ -3128,6 +3160,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host =
       std::move(render_frame_host_);
   render_frame_host_ = std::move(render_frame_host);
+  ValidateSpeculativeRenderFrameHostForBug1146573();
 
   if (render_frame_host_ && render_frame_host_->lifecycle_state() !=
                                 RenderFrameHostImpl::LifecycleState::kActive) {
