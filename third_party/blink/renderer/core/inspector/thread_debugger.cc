@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -206,6 +207,43 @@ ThreadDebugger::descriptionForValueSubtype(v8::Local<v8::Context> context,
     TrustedScriptURL* trusted_script_url =
         V8TrustedScriptURL::ToImplWithTypeCheck(isolate_, value);
     return ToV8InspectorStringBuffer(trusted_script_url->toString());
+  } else if (V8Node::HasInstance(value, isolate_)) {
+    Node* node = V8Node::ToImplWithTypeCheck(isolate_, value);
+    StringBuilder description;
+    switch (node->getNodeType()) {
+      case Node::kElementNode: {
+        const auto* element = To<blink::Element>(node);
+        description.Append(element->TagQName().ToString());
+
+        const AtomicString& id = element->GetIdAttribute();
+        if (!id.IsEmpty()) {
+          description.Append('#');
+          description.Append(id);
+        }
+        if (element->HasClass()) {
+          auto element_class_names = element->ClassNames();
+          auto n_classes = element_class_names.size();
+          for (unsigned i = 0; i < n_classes; ++i) {
+            description.Append('.');
+            description.Append(element_class_names[i]);
+          }
+        }
+        break;
+      }
+      case Node::kDocumentTypeNode: {
+        description.Append("<!DOCTYPE ");
+        description.Append(node->nodeName());
+        description.Append('>');
+        break;
+      }
+      default: {
+        description.Append(node->nodeName());
+        break;
+      }
+    }
+    DCHECK(description.length());
+
+    return ToV8InspectorStringBuffer(description.ToString());
   }
   return nullptr;
 }
