@@ -4,12 +4,19 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.junit.Assert.assertTrue;
+
+import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -27,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -92,10 +100,27 @@ public class IncognitoCustomTabActivityRenderTest {
         mRenderTestRule.render(toolbarView, renderTestId);
     }
 
+    private void startActivityWithTitle(String renderTestId) throws IOException {
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
+        View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        onView(isRoot()).check(waitForView(withId(R.id.title_bar), ViewUtils.VIEW_VISIBLE));
+        mRenderTestRule.render(toolbarView, renderTestId);
+    }
+
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testCCTToolbar() throws IOException {
         startActivity("default_incognito_cct_toolbar_with_https_" + mRunWithHttps);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testCCTTitleBar() throws IOException {
+        mIntent.putExtra(
+                CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
+        startActivityWithTitle(
+                "default_incognito_cct_toolbar_with_title_bar_and_with_https_" + mRunWithHttps);
     }
 }
