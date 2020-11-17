@@ -138,6 +138,7 @@ namespace chrome_browser_net {
 class Predictor;
 }
 namespace chrome_cleaner {
+class ResetShortcutsComponent;
 class SystemReportComponent;
 }
 namespace content {
@@ -450,6 +451,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::SourceStream;
   friend class blink::WorkerThread;
   friend class blink::scheduler::WorkerThread;
+  friend class chrome_cleaner::ResetShortcutsComponent;
   friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessSubThread;
