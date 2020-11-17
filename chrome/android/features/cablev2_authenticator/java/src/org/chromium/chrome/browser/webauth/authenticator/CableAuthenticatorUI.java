@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webauth.authenticator;
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +39,10 @@ import java.lang.ref.WeakReference;
  */
 public class CableAuthenticatorUI
         extends Fragment implements OnClickListener, QRScanDialog.Callback {
+    // ENABLE_BLUETOOTH_REQUEST_CODE is a random int used to identify responses
+    // to a request to enable Bluetooth. (Request codes can only be 16-bit.)
+    private static final int ENABLE_BLUETOOTH_REQUEST_CODE = 64907;
+
     private enum Mode {
         QR, // Triggered from Settings; can scan QR code to start handshake.
         FCM, // Triggered by user selecting notification; handshake already running.
@@ -49,6 +54,11 @@ public class CableAuthenticatorUI
     private LinearLayout mQRButton;
     private LinearLayout mUnlinkButton;
     private ImageView mHeader;
+
+    // The following two members store a pending QR-scan result while Bluetooth
+    // is enabled.
+    private String mPendingQRCode;
+    private boolean mPendingShouldLink;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,7 +195,16 @@ public class CableAuthenticatorUI
     @SuppressLint("SetTextI18n")
     public void onQRCode(String value, boolean link) {
         setHeader(R.style.step1);
-        mAuthenticator.onQRCode(value, link);
+
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter.isEnabled()) {
+            mAuthenticator.onQRCode(value, link);
+        } else {
+            mPendingQRCode = value;
+            mPendingShouldLink = link;
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                    ENABLE_BLUETOOTH_REQUEST_CODE);
+        }
     }
 
     void onStatus(int code) {
@@ -226,6 +245,13 @@ public class CableAuthenticatorUI
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ENABLE_BLUETOOTH_REQUEST_CODE) {
+            String qrCode = mPendingQRCode;
+            mPendingQRCode = null;
+            mAuthenticator.onQRCode(qrCode, mPendingShouldLink);
+            return;
+        }
+
         mAuthenticator.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -266,7 +292,14 @@ public class CableAuthenticatorUI
      */
     public static void onCloudMessage(
             long event, long systemNetworkContext, long registration, String activityClassName) {
-        CableAuthenticator.onCloudMessage(
-                event, systemNetworkContext, registration, activityClassName);
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter.isEnabled()) {
+            CableAuthenticator.onCloudMessage(event, systemNetworkContext, registration,
+                    activityClassName, /*needToDisableBluetooth=*/false);
+            return;
+        }
+
+        new PendingCloudMessage(
+                adapter, event, systemNetworkContext, registration, activityClassName);
     }
 }

@@ -182,7 +182,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       InteractionNeededCallback;
 
   AndroidPlatform(JNIEnv* env, const JavaRef<jobject>& cable_authenticator)
-      : env_(env), cable_authenticator_(cable_authenticator) {
+      : env_(env),
+        cable_authenticator_(cable_authenticator),
+        need_to_disable_bluetooth_(false) {
     DCHECK(env_->IsInstanceOf(
         cable_authenticator_.obj(),
         org_chromium_chrome_browser_webauth_authenticator_CableAuthenticator_clazz(
@@ -198,13 +200,18 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   // when ready, call the passed callback with a reference to it. The pending
   // action will then complete as normal.
   AndroidPlatform(JNIEnv* env,
-                  InteractionNeededCallback interaction_needed_callback)
+                  InteractionNeededCallback interaction_needed_callback,
+                  bool need_to_disable_bluetooth)
       : env_(env),
-        interaction_needed_callback_(std::move(interaction_needed_callback)) {}
+        interaction_needed_callback_(std::move(interaction_needed_callback)),
+        need_to_disable_bluetooth_(need_to_disable_bluetooth) {}
 
   ~AndroidPlatform() override {
     if (notification_showing_) {
       Java_CableAuthenticator_dropNotification(env_);
+    }
+    if (need_to_disable_bluetooth_) {
+      Java_CableAuthenticator_disableBluetooth(env_);
     }
   }
 
@@ -344,6 +351,12 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   std::unique_ptr<MakeCredentialParams> pending_make_credential_;
   std::unique_ptr<GetAssertionParams> pending_get_assertion_;
   InteractionNeededCallback interaction_needed_callback_;
+
+  // need_to_disable_bluetooth_ is true if Bluetooth was enabled on the system
+  // in order to handle this message and thus should be disabled once handling
+  // is complete.
+  const bool need_to_disable_bluetooth_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AndroidPlatform> weak_factory_{this};
 };
@@ -524,8 +537,10 @@ static void JNI_CableAuthenticator_Stop(JNIEnv* env) {
   ResetGlobalData();
 }
 
-static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
-                                                  jlong event_long) {
+static void JNI_CableAuthenticator_OnCloudMessage(
+    JNIEnv* env,
+    jlong event_long,
+    jboolean need_to_disable_bluetooth) {
   static_assert(sizeof(jlong) >= sizeof(void*), "");
   std::unique_ptr<device::cablev2::authenticator::Registration::Event> event(
       reinterpret_cast<device::cablev2::authenticator::Registration::Event*>(
@@ -533,15 +548,14 @@ static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
 
   GlobalData& global_data = GetGlobalData();
 
-  // TODO(agl): should enable Bluetooth here as needed.
-
   // There is deliberately no check for |!global_data.current_transaction|
   // because multiple Cloud messages may come in from different paired devices.
   // Only the most recent is processed.
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromFCM(
           std::make_unique<AndroidPlatform>(env,
-                                            base::BindOnce(&OnNeedInteractive)),
+                                            base::BindOnce(&OnNeedInteractive),
+                                            need_to_disable_bluetooth),
           global_data.network_context, global_data.root_secret,
           event->routing_id, event->tunnel_id, event->pairing_id,
           event->client_nonce);

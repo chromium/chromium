@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -469,10 +470,10 @@ class CableAuthenticator {
     /**
      * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
      */
-    static void onCloudMessage(
-            long event, long systemNetworkContext, long registration, String activityClassName) {
+    static void onCloudMessage(long event, long systemNetworkContext, long registration,
+            String activityClassName, boolean needToDisableBluetooth) {
         setup(registration, activityClassName, systemNetworkContext);
-        CableAuthenticatorJni.get().onCloudMessage(event);
+        CableAuthenticatorJni.get().onCloudMessage(event, needToDisableBluetooth);
     }
 
     /**
@@ -536,6 +537,12 @@ class CableAuthenticator {
         notificationManager.cancel(NOTIFICATION_CHANNEL_ID, ID);
     }
 
+    @CalledByNative
+    public static void disableBluetooth() {
+        Log.i(TAG, "Operation complete. Disabling Bluetooth.");
+        BluetoothAdapter.getDefaultAdapter().disable();
+    }
+
     @NativeMethods
     interface Natives {
         /**
@@ -581,11 +588,12 @@ class CableAuthenticator {
         void stop();
 
         /**
-         * Called when a GCM message is received. The argument is a pointer to a
+         * Called when a GCM message is received. The |event| argument is a pointer to a
          * |device::cablev2::authenticator::Registration::Event| object that the native code takes
-         * ownership of.
+         * ownership of. |needToDisableBluetooth| is true if Bluetooth was enabled for the purposes
+         * of processing this event and thus |disableBluetooth| should be called once complete.
          */
-        void onCloudMessage(long event);
+        void onCloudMessage(long event, boolean needToDisableBluetooth);
 
         /**
          * Called to alert native code of a response to a makeCredential request.
