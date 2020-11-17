@@ -30,6 +30,7 @@ js_type_check("closure_compile_jsmodules") {
     ":background.m",
     ":error_util.m",
     ":main.m",
+    ":metadata_worker.m",
   ]
 }
 
@@ -91,6 +92,13 @@ js_library("metadata_worker") {
   ]
 }
 
+js_library("metadata_worker.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/audio_player/js/metadata_worker.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("test_util") {
 }
 
@@ -118,6 +126,7 @@ js_modulizer("modulize") {
   input_files = [
     "background.js",
     "error_util.js",
+    "metadata_worker.js",
     "test_util.js",
   ]
 }
