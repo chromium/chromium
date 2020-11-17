@@ -3682,12 +3682,12 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "paint-preview-startup",
     "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "passive-listener-default",
