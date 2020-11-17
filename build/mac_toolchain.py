@@ -29,11 +29,10 @@ import shutil
 import subprocess
 import sys
 
-# This contains binaries from the Xcode 12.2 release candidate, along with the
-# macOS 11 SDK (aka 12B5044c). To build these packages, see comments in
-# build/xcode_binaries.yaml
+# This contains binaries from Xcode 12.2 12B45b, along with the macOS 11 SDK.
+# To build these packages, see comments in build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'UwKVijd1FvMzmCAjyoYq_sw6xXJZpw_mGBH420gwlrwC'
+MAC_BINARIES_TAG = 'Uez8drOxhQfCBsViLtHwcbwmi3VzShwUKE_WyBI4lzEC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the major version number for macOS 10.15. 12B5044c (Xcode 12.2rc) only runs
