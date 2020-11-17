@@ -20,6 +20,7 @@ namespace blink {
 class TransformationMatrix;
 class XRCubeMap;
 class XRLightEstimate;
+class XRLightProbeInit;
 class XRSession;
 class XRSpace;
 
@@ -27,7 +28,12 @@ class XRLightProbe : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRLightProbe(XRSession* session);
+  explicit XRLightProbe(XRSession* session, XRLightProbeInit* options);
+
+  enum XRReflectionFormat {
+    kReflectionFormatSRGBA8 = 0,
+    kReflectionFormatRGBA16F = 1
+  };
 
   XRSession* session() const { return session_; }
 
@@ -44,6 +50,8 @@ class XRLightProbe : public EventTargetWithInlineData {
   XRLightEstimate* getLightEstimate() { return light_estimate_; }
   XRCubeMap* getReflectionCubeMap() { return cube_map_.get(); }
 
+  XRReflectionFormat ReflectionFormat() const { return reflection_format_; }
+
   // EventTarget overrides.
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
@@ -55,6 +63,7 @@ class XRLightProbe : public EventTargetWithInlineData {
   mutable Member<XRSpace> probe_space_;
   Member<XRLightEstimate> light_estimate_;
 
+  XRReflectionFormat reflection_format_;
   double last_reflection_change_ = 0.0;
   std::unique_ptr<XRCubeMap> cube_map_;
 };

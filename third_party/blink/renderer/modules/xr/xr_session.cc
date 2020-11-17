@@ -1255,14 +1255,27 @@ ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kLightEstimationFeatureNotSupported);
-    return {};
+    return ScriptPromise();
+  }
+
+  if (light_probe_init->reflectionFormat() != "srgba8" &&
+      light_probe_init->reflectionFormat() != "rgba16f") {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Reflection format \"" +
+                                          light_probe_init->reflectionFormat() +
+                                          "\" not supported.");
+    return ScriptPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   if (!world_light_probe_) {
-    world_light_probe_ = MakeGarbageCollected<XRLightProbe>(this);
+    // TODO(https://crbug.com/1147569): This is problematic because it means the
+    // first reflection format that gets requested is the only one that can be
+    // returned.
+    world_light_probe_ =
+        MakeGarbageCollected<XRLightProbe>(this, light_probe_init);
   }
 
   resolver->Resolve(world_light_probe_);
