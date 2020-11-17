@@ -41,6 +41,10 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
+  views::View* reserved_grab_handle_space_for_testing() {
+    return reserved_grab_handle_space_;
+  }
+
   // views::AccessiblePaneView:
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;

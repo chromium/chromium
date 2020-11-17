@@ -93,22 +93,35 @@ class TabStripRegionViewTest : public TabStripRegionViewTestBase,
   ~TabStripRegionViewTest() override = default;
 };
 
-TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
-  const int kTabStripWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth, 20);
+TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
+  const int kTabStripRegionViewWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 100; ++i) {
     controller_->AddTab(i, (i == 0));
+    CompleteAnimationAndLayout();
+    EXPECT_LE(tab_strip_region_view_->reserved_grab_handle_space_for_testing()
+                  ->bounds()
+                  .right(),
+              kTabStripRegionViewWidth);
+  }
+}
 
-  CompleteAnimationAndLayout();
+TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
+  const int kTabStripRegionViewWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
-  EXPECT_LE(tab_strip_region_view_->new_tab_button()->bounds().right(),
-            kTabStripWidth);
+  for (int i = 0; i < 100; ++i) {
+    controller_->AddTab(i, (i == 0));
+    CompleteAnimationAndLayout();
+    EXPECT_LE(tab_strip_region_view_->new_tab_button()->bounds().right(),
+              kTabStripRegionViewWidth);
+  }
 }
 
 TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
-  const int kTabStripWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth, 20);
+  const int kTabStripRegionViewWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
   controller_->AddTab(0, true);
 
@@ -119,8 +132,8 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
 }
 
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
-  constexpr int kTabStripWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth,
+  constexpr int kTabStripRegionViewWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
                                     GetLayoutConstant(TAB_HEIGHT));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
@@ -194,6 +207,7 @@ TEST_F(TabStripRegionViewTestWithScrollingDisabled,
   while (GetInactiveTabWidth() > minimum_active_width) {
     controller_->AddTab(0, false);
     CompleteAnimationAndLayout();
+    EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
   }
 
   // Add a few more tabs after the tabstrip is full to ensure tabs added
@@ -233,6 +247,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   while (GetInactiveTabWidth() > minimum_active_width) {
     controller_->AddTab(0, false);
     CompleteAnimationAndLayout();
+    EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
   }
 
   // Add a few more tabs after the tabstrip is full to ensure the tabstrip
