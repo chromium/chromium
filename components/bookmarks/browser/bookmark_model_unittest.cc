@@ -639,8 +639,8 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   BookmarkNode::MetaInfoMap meta_info;
   const base::GUID guid = base::GUID::GenerateRandomV4();
 
-  const BookmarkNode* new_node = model_->AddFolder(
-      root, /*index=*/0, title, &meta_info, guid.AsLowercaseString());
+  const BookmarkNode* new_node =
+      model_->AddFolder(root, /*index=*/0, title, &meta_info, guid);
 
   EXPECT_EQ(guid, new_node->guid());
 }

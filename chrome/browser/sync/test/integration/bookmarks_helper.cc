@@ -590,7 +590,7 @@ const BookmarkNode* AddFolder(int profile,
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddFolder(
         v_parent, index, base::UTF8ToUTF16(title),
-        /*meta_info=*/nullptr, result->guid().AsLowercaseString());
+        /*meta_info=*/nullptr, result->guid());
     if (!v_node) {
       LOG(ERROR) << "Could not add folder " << title << " to the verifier";
       return nullptr;

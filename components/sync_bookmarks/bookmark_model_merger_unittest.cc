@@ -890,7 +890,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUIDAndReparent) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16("Folder Title"), nullptr, base::GenerateGUID());
+      base::UTF8ToUTF16("Folder Title"));
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16(kLocalTitle),
       GURL(kUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
@@ -950,10 +950,10 @@ TEST(BookmarkModelMergerTest, ShouldMergeFolderByGUIDAndNotSemantics) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder1 = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle1),
-      nullptr, kGuid1.AsLowercaseString());
+      /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* folder2 = bookmark_model->AddFolder(
-      /*parent=*/folder1, /*index=*/0, base::UTF8ToUTF16(kTitle2), nullptr,
-      kGuid2.AsLowercaseString());
+      /*parent=*/folder1, /*index=*/0, base::UTF8ToUTF16(kTitle2),
+      /*meta_info=*/nullptr, kGuid2);
   ASSERT_TRUE(folder1);
   ASSERT_TRUE(folder2);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder1));
@@ -1075,7 +1075,7 @@ TEST(
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16(kOriginalTitle), nullptr, kGuid1.AsLowercaseString());
+      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
       GURL("http://foo.com/"), nullptr, base::Time::Now(),
@@ -1158,7 +1158,7 @@ TEST(BookmarkModelMergerTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16(kOriginalTitle), nullptr, kGuid1.AsLowercaseString());
+      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
       GURL("http://foo.com/"), nullptr, base::Time::Now(),
@@ -1333,7 +1333,7 @@ TEST(BookmarkModelMergerTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16("Folder Title"), nullptr, kGuid1.AsLowercaseString());
+      base::UTF8ToUTF16("Folder Title"), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Foo's title"),
       GURL("http://foo.com"), nullptr, base::Time::Now(),

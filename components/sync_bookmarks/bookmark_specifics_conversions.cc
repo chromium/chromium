@@ -276,7 +276,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   const bookmarks::BookmarkNode* node;
   if (is_folder) {
     node = model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
-                            &metainfo, guid.AsLowercaseString());
+                            &metainfo, guid);
   } else {
     const int64_t create_time_us = specifics.creation_time_us();
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -329,9 +329,9 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
 
   const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
-    new_node = model->AddFolder(
-        node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
-        node->GetMetaInfoMap(), guid.AsLowercaseString());
+    new_node =
+        model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
+                         node->GetTitle(), node->GetMetaInfoMap(), guid);
   } else {
     new_node =
         model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
