@@ -483,8 +483,8 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   Init({ProtocolVersion::kCtap2});
   std::vector<ProtocolVersion> versions = {ProtocolVersion::kCtap2};
   if (config.u2f_support) {
-    // Devices with alwaysUv may disable u2f. Let's be strict here.
-    DCHECK(!config.always_uv);
+    // Devices with alwaysUv may disable u2f if they don't support internal uv.
+    DCHECK(!config.always_uv || config.internal_uv_support);
     versions.emplace_back(ProtocolVersion::kU2f);
     u2f_device_ = std::make_unique<VirtualU2fDevice>(NewReferenceToState());
   }
@@ -689,7 +689,8 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
   auto cmd_type = command[0];
   // The CTAP2 commands start at one, so a "command" of zero indicates that this
   // is a U2F message.
-  if (cmd_type == 0 && config_.u2f_support) {
+  if (cmd_type == 0 && config_.u2f_support &&
+      (!config_.always_uv || mutable_state()->fingerprints_enrolled)) {
     u2f_device_->DeviceTransact(std::move(command), std::move(cb));
     return 0;
   }

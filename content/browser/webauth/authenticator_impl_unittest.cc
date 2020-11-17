@@ -3961,6 +3961,40 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
   EXPECT_TRUE(HasUV(result.response));
 }
 
+TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUvU2fOnly) {
+  // Test that even if an authenticator is reporting alwaysUv = 1, cryptotoken
+  // requests don't try getting a PinUvAuthToken.
+  NavigateAndCommit(GURL(kCryptotokenOrigin));
+
+  for (bool internal_uv : {true, false}) {
+    SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
+    device::VirtualCtap2Device::Config config;
+    config.internal_uv_support = internal_uv;
+    config.u2f_support = internal_uv;
+    config.always_uv = true;
+    config.pin_support = true;
+    virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialCreationOptionsPtr options = make_credential_options(
+        device::UserVerificationRequirement::kDiscouraged);
+    if (internal_uv) {
+      MakeCredentialResult result =
+          AuthenticatorMakeCredential(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      EXPECT_FALSE(HasUV(result.response));
+    } else {
+      MakeCredentialResult result =
+          AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    }
+
+    // Look at the permissions to verify that a PinUvAuthToken was not obtained.
+    EXPECT_EQ(
+        virtual_device_factory_->mutable_state()->pin_uv_token_permissions, 0);
+  }
+}
+
 TEST_F(PINAuthenticatorImplTest, MakeCredentialMinPINLengthNewPIN) {
   // Test that an authenticator advertising a min PIN length other than the
   // default makes it all the way to CollectPIN when setting a new PIN.
@@ -4172,6 +4206,41 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUv) {
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(HasUV(result.response));
+}
+
+TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUvU2fOnly) {
+  // Test that even if an authenticator is reporting alwaysUv = 1, cryptotoken
+  // requests don't try getting a PinUvAuthToken.
+  NavigateAndCommit(GURL(kCryptotokenOrigin));
+  PublicKeyCredentialRequestOptionsPtr options =
+      get_credential_options(device::UserVerificationRequirement::kDiscouraged);
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id(), kTestRelyingPartyId));
+
+  for (bool internal_uv : {true, false}) {
+    SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
+    device::VirtualCtap2Device::Config config;
+    config.internal_uv_support = internal_uv;
+    config.u2f_support = internal_uv;
+    config.always_uv = true;
+    config.pin_support = true;
+    virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    if (internal_uv) {
+      GetAssertionResult result = AuthenticatorGetAssertion(options.Clone());
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      EXPECT_FALSE(HasUV(result.response));
+    } else {
+      GetAssertionResult result =
+          AuthenticatorGetAssertionAndWaitForTimeout(options.Clone());
+      EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    }
+
+    // Look at the permissions to verify that a PinUvAuthToken was not obtained.
+    EXPECT_EQ(
+        virtual_device_factory_->mutable_state()->pin_uv_token_permissions, 0);
+  }
 }
 
 TEST_F(PINAuthenticatorImplTest, MakeCredentialNoSupportedAlgorithm) {

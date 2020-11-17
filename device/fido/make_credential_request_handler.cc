@@ -850,10 +850,12 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       break;
   }
 
-  request->user_verification = request->resident_key_required ||
-                                       (auth_options && auth_options->always_uv)
-                                   ? UserVerificationRequirement::kRequired
-                                   : options_.user_verification;
+  if (!request->is_u2f_only && (request->resident_key_required ||
+                                (auth_options && auth_options->always_uv))) {
+    request->user_verification = UserVerificationRequirement::kRequired;
+  } else {
+    request->user_verification = options_.user_verification;
+  }
 
   if (options_.cred_protect_request &&
       authenticator->SupportsCredProtectExtension()) {

@@ -269,7 +269,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     specialized_request.large_blob_read = false;
     specialized_request.large_blob_write.reset();
   }
-  if (authenticator.Options() && authenticator.Options()->always_uv) {
+  if (!request.is_u2f_only && authenticator.Options() &&
+      authenticator.Options()->always_uv) {
     specialized_request.user_verification =
         UserVerificationRequirement::kRequired;
   }
