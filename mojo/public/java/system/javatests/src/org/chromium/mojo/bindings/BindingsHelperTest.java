@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 
 import java.nio.charset.Charset;
 
@@ -18,6 +19,7 @@ import java.nio.charset.Charset;
  * Testing {@link BindingsHelper}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class BindingsHelperTest {
     /**
      * Testing {@link BindingsHelper#utf8StringSizeInBytes(String)}.
