@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import json
 import logging
 import multiprocessing
 import os
+import select
 import subprocess
+import sys
 import zipfile
 
 from pylib import constants
@@ -141,9 +144,12 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
-      procs = [subprocess.Popen(cmd) for cmd in cmd_list]
-      for proc in procs:
-        proc.wait()
+      procs = [
+          subprocess.Popen(cmd,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT) for cmd in cmd_list
+      ]
+      PrintProcessesStdout(procs)
 
       results_list = []
       try:
@@ -216,6 +222,38 @@ def GroupTestsForShard(num_of_shards, test_classes):
     test_dict[count % num_of_shards].append(test_cls)
 
   return test_dict
+
+
+def PrintProcessesStdout(procs):
+  """Prints the stdout of all the processes.
+
+  Buffers the stdout of the processes and prints it when finished.
+
+  Args:
+    procs: A list of subprocesses.
+
+  Returns: N/A
+  """
+  streams = [p.stdout for p in procs]
+  outputs = collections.defaultdict(list)
+  first_fd = streams[0].fileno()
+
+  while streams:
+    rstreams, _, _ = select.select(streams, [], [])
+    for stream in rstreams:
+      line = stream.readline()
+      if line:
+        # Print out just one output so user can see work being done rather
+        # than waiting for it all at the end.
+        if stream.fileno() == first_fd:
+          sys.stdout.write(line)
+        else:
+          outputs[stream.fileno()].append(line)
+      else:
+        streams.remove(stream)  # End of stream.
+
+  for p in procs:
+    sys.stdout.write(''.join(outputs[p.stdout.fileno()]))
 
 
 def _GetTestClasses(file_path):
