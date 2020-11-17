@@ -45,7 +45,8 @@ class SandboxedShortcutParser : public ShortcutParserAPI {
       mojom::LnkParsingResult parsing_result,
       const base::Optional<std::wstring>& optional_file_path,
       const base::Optional<std::wstring>& optional_command_line_arguments,
-      const base::Optional<std::wstring>& optional_icon_location);
+      const base::Optional<std::wstring>& optional_icon_location,
+      int32_t icon_index);
 
   base::Lock lock_;
   MojoTaskRunner* mojo_task_runner_;

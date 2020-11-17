@@ -257,7 +257,7 @@ TEST_F(SandboxedShortcutParserTest, ParseShortcutsWithSpecifiedIconsOnly) {
   base::win::ShortcutProperties reported_shortcut_properties;
   reported_shortcut_properties.set_target(not_lnk_file_path_);
   reported_shortcut_properties.set_icon(kSomeChromeIconLocation,
-                                        /*icon_index=*/0);
+                                        /*icon_index=*/1);
 
   base::win::ScopedHandle reported_shortcut_handle =
       CreateAndOpenShortcutInTempDir("reported shortcut.lnk",
@@ -284,6 +284,7 @@ TEST_F(SandboxedShortcutParserTest, ParseShortcutsWithSpecifiedIconsOnly) {
   ASSERT_EQ(found_shortcuts.size(), 1u);
   EXPECT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].icon_location),
                         kSomeChromeIconLocation));
+  ASSERT_EQ(found_shortcuts[0].icon_index, 1);
 }
 
 }  // namespace chrome_cleaner

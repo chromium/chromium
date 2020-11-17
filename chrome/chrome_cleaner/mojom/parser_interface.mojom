@@ -27,7 +27,8 @@ interface Parser {
   ParseShortcut(handle<platform> lkn_file_handle)
    => (LnkParsingResult parsing_result, WString? target_path,
        WString? command_line_arguments,
-       WString? icon_location);
+       WString? icon_location,
+       int32 icon_index);
 
   // JSON parser:
   // Interface copied from services/data_decoder/public/mojom/json_parser.mojom,
