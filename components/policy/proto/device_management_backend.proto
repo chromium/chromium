@@ -1923,6 +1923,8 @@ message ChromeDesktopReportRequest {
   // information. When list is empty or unset, the report should contains all
   // information.
   repeated PartialReportType partial_report_types = 10;
+  // Public key that can be used for attesting the machine.
+  optional string machine_attestation_key = 11;
 }
 
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
