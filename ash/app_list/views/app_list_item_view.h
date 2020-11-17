@@ -25,7 +25,6 @@ class SimpleMenuModel;
 }  // namespace ui
 
 namespace views {
-class ImageView;
 class Label;
 }  // namespace views
 
@@ -258,7 +257,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   AppsGridView* apps_grid_view_;                // Parent view, owns this.
   IconImageView* icon_ = nullptr;               // Strongly typed child view.
   views::Label* title_ = nullptr;               // Strongly typed child view.
-  views::ImageView* icon_shadow_ = nullptr;     // Strongly typed child view.
 
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 

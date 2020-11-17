@@ -85,18 +85,6 @@ constexpr SkColor kContextSelectionFolder =
 // The width of the focus ring within a folder.
 constexpr int kFocusRingWidth = 2;
 
-// The shadow blur of title.
-constexpr int kTitleShadowBlur = 28;
-
-// The shadow color of title.
-constexpr SkColor kTitleShadowColor = SkColorSetA(SK_ColorBLACK, 82);
-
-// The shadow blur of icon.
-constexpr int kIconShadowBlur = 10;
-
-// The shadow color of icon.
-constexpr SkColor kIconShadowColor = SkColorSetA(SK_ColorBLACK, 31);
-
 // The size of the notification indicator circle over the size of the icon.
 constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 
@@ -319,15 +307,6 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
           features::IsNotificationIndicatorEnabled()) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  if (!is_in_folder && !is_folder_) {
-    // To display shadow for icon while not affecting the icon's bounds, icon
-    // shadow is behind the icon.
-    auto icon_shadow = std::make_unique<views::ImageView>();
-    icon_shadow->SetCanProcessEventsWithinSubtree(false);
-    icon_shadow->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    icon_shadow_ = AddChildView(std::move(icon_shadow));
-  }
-
   auto title = std::make_unique<views::Label>();
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHandlesTooltips(false);
@@ -337,14 +316,6 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
       apps_grid_view_->is_in_folder()
           ? SK_ColorBLACK
           : AppListColorProvider::Get()->GetAppListItemTextColor());
-
-  if (!is_in_folder) {
-    gfx::ShadowValues title_shadow = gfx::ShadowValues(
-        1,
-        gfx::ShadowValue(gfx::Vector2d(), kTitleShadowBlur, kTitleShadowColor));
-    title->SetShadows(title_shadow);
-    title_shadow_margins_ = gfx::ShadowValue::GetMargin(title_shadow);
-  }
 
   icon_ = AddChildView(std::make_unique<IconImageView>());
 
@@ -390,8 +361,6 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   // Clear icon and bail out if item icon is empty.
   if (icon.isNull()) {
     icon_->SetImage(nullptr);
-    if (icon_shadow_)
-      icon_shadow_->SetImage(nullptr);
     icon_image_ = gfx::ImageSkia();
     return;
   }
@@ -406,16 +375,6 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_bounds);
   icon_->SetImage(resized);
-
-  if (icon_shadow_) {
-    // Create a shadow for the shown icon.
-    gfx::ImageSkia shadowed =
-        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-            resized, gfx::ShadowValues(
-                         1, gfx::ShadowValue(gfx::Vector2d(), kIconShadowBlur,
-                                             kIconShadowColor)));
-    icon_shadow_->SetImage(shadowed);
-  }
 
   if (is_notification_indicator_enabled_ && notification_indicator_) {
     base::Optional<SkColor> notification_color =
@@ -770,12 +729,6 @@ void AppListItemView::Layout() {
       GetAppListConfig(), rect, icon_->GetImage().size(), icon_scale_);
   icon_->SetBoundsRect(icon_bounds);
 
-  if (icon_shadow_) {
-    const gfx::Rect icon_shadow_bounds = GetIconBoundsForTargetViewBounds(
-        GetAppListConfig(), rect, icon_shadow_->size(), icon_scale_);
-    icon_shadow_->SetBoundsRect(icon_shadow_bounds);
-  }
-
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
       GetAppListConfig(), rect, title_->GetPreferredSize(), icon_scale_);
   if (!apps_grid_view_->is_in_folder())
@@ -1054,8 +1007,6 @@ gfx::ImageSkia AppListItemView::GetIconImage() const {
 
 void AppListItemView::SetIconVisible(bool visible) {
   icon_->SetVisible(visible);
-  if (icon_shadow_)
-    icon_shadow_->SetVisible(visible);
 }
 
 void AppListItemView::SetDragUIState() {
