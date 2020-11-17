@@ -3001,13 +3001,14 @@ if (!is_android) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
 
-    if (is_mac || is_win || (is_linux && !is_chromeos)) {
+    if (is_mac || is_win || is_linux) {
       sources += [
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/browser_switcher/browser_switcher_browsertest.cc",
         "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
         "../browser/browser_switcher/ieem_sitelist_parser_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
+        "../browser/policy/audio_sandbox_enabled_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
     }

@@ -66,7 +66,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -113,7 +112,6 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/external_data_fetcher.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
@@ -1811,62 +1809,5 @@ IN_PROC_BROWSER_TEST_F(SharedClipboardPolicyTest, SharedClipboardEnabled) {
   EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSharedClipboardEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSharedClipboardEnabled));
 }
-
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
-
-class AudioSandboxEnabledTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<
-          /*policy::key::kAllowAudioSandbox=*/base::Optional<bool>> {
- public:
-  // InProcessBrowserTest implementation:
-  void SetUp() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    policy::PolicyMap values;
-    if (GetParam().has_value()) {
-      values.Set(policy::key::kAudioSandboxEnabled,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, base::Value(*GetParam()),
-                 nullptr);
-    }
-    policy_provider_.UpdateChromePolicy(values);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
-};
-
-IN_PROC_BROWSER_TEST_P(AudioSandboxEnabledTest, IsRespected) {
-  base::Optional<bool> enable_sandbox_via_policy = GetParam();
-  bool is_sandbox_enabled_by_default =
-      base::FeatureList::IsEnabled(features::kAudioServiceSandbox);
-
-  ASSERT_EQ(enable_sandbox_via_policy.value_or(is_sandbox_enabled_by_default),
-            IsAudioServiceSandboxEnabled());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    Enabled,
-    AudioSandboxEnabledTest,
-    ::testing::Values(/*policy::key::kAudioSandboxEnabled=*/true));
-
-INSTANTIATE_TEST_SUITE_P(
-    Disabled,
-    AudioSandboxEnabledTest,
-    ::testing::Values(/*policy::key::kAudioSandboxEnabled=*/false));
-
-INSTANTIATE_TEST_SUITE_P(
-    NotSet,
-    AudioSandboxEnabledTest,
-    ::testing::Values(/*policy::key::kAudioSandboxEnabled=*/base::nullopt));
-
-#endif  //  defined(OS_WIN) || defined (OS_MAC) || (defined(OS_LINUX) &&
-        //  !defined(OS_CHROMEOS))
 
 }  // namespace policy
