@@ -115,6 +115,7 @@ using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
 using HandleType = content::NativeFileSystemPermissionContext::HandleType;
 using PathType = content::NativeFileSystemPermissionContext::PathType;
+using PathInfo = content::NativeFileSystemPermissionContext::PathInfo;
 
 class NativeFileSystemManagerImplTest : public testing::Test {
  public:
@@ -1039,11 +1040,12 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_file.DirName()));
+              SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
+                                     PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,
@@ -1104,11 +1106,12 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_file.DirName()));
+              SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
+                                     PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,
@@ -1166,11 +1169,11 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_dir));
+              SetLastPickedDirectory(kTestOrigin, test_dir, PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,

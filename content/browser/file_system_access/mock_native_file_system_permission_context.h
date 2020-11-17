@@ -59,11 +59,12 @@ class MockNativeFileSystemPermissionContext
   MOCK_METHOD1(CanObtainReadPermission, bool(const url::Origin& origin));
   MOCK_METHOD1(CanObtainWritePermission, bool(const url::Origin& origin));
 
-  MOCK_METHOD2(SetLastPickedDirectory,
-               void(const url::Origin& origin, const base::FilePath& path));
-  MOCK_METHOD1(GetLastPickedDirectory,
-               base::FilePath(const url::Origin& origin));
-  MOCK_METHOD0(GetDefaultDirectory, base::FilePath());
+  MOCK_METHOD3(SetLastPickedDirectory,
+               void(const url::Origin& origin,
+                    const base::FilePath& path,
+                    const PathType type));
+  MOCK_METHOD1(GetLastPickedDirectory, PathInfo(const url::Origin& origin));
+  MOCK_METHOD0(GetDefaultDirectory, PathInfo());
 };
 
 }  // namespace content

@@ -484,10 +484,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context, SetLastPickedDirectory(origin, test_dir));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(
+                  origin, test_dir,
+                  NativeFileSystemPermissionContext::PathType::kLocal));
 
   EXPECT_CALL(
       permission_context,
@@ -557,9 +560,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
 
   EXPECT_CALL(
       permission_context,
@@ -618,9 +621,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
   EXPECT_CALL(permission_context, GetDefaultDirectory())
-      .WillOnce(testing::Return(base::FilePath()));
+      .WillOnce(testing::Return(NativeFileSystemPermissionContext::PathInfo()));
 
   EXPECT_CALL(
       permission_context,

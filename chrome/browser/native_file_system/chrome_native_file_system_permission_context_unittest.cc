@@ -417,48 +417,59 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyWriteBlockedForUrls) {
 }
 
 TEST_F(ChromeNativeFileSystemPermissionContextTest, GetLastPickedDirectory) {
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin),
-            base::FilePath());
+  auto file_info = permission_context()->GetLastPickedDirectory(kTestOrigin);
+  EXPECT_EQ(file_info.path, base::FilePath());
+  EXPECT_EQ(file_info.type, PathType::kLocal);
 }
 
 TEST_F(ChromeNativeFileSystemPermissionContextTest, SetLastPickedDirectory) {
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin),
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             base::FilePath());
 
-  permission_context()->SetLastPickedDirectory(kTestOrigin, kTestPath);
-  auto path = permission_context()->GetLastPickedDirectory(kTestOrigin);
-  EXPECT_EQ(path, kTestPath);
+  auto type = PathType::kLocal;
+  permission_context()->SetLastPickedDirectory(kTestOrigin, kTestPath, type);
+  auto path_info = permission_context()->GetLastPickedDirectory(kTestOrigin);
+  EXPECT_EQ(path_info.path, kTestPath);
+  EXPECT_EQ(path_info.type, type);
 
-  auto new_path = path.AppendASCII("baz");
-  permission_context()->SetLastPickedDirectory(kTestOrigin, new_path);
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin),
-            new_path);
+  auto new_path = path_info.path.AppendASCII("baz");
+  auto new_type = PathType::kExternal;
+  permission_context()->SetLastPickedDirectory(kTestOrigin, new_path, new_type);
+  auto new_path_info =
+      permission_context()->GetLastPickedDirectory(kTestOrigin);
+  EXPECT_EQ(new_path_info.path, new_path);
+  EXPECT_EQ(new_path_info.type, new_type);
 }
 
 TEST_F(ChromeNativeFileSystemPermissionContextTest,
        SetLastPickedDirectory_NewPermissionContext) {
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin),
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             base::FilePath());
 
   const base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/baz/bar"));
 
-  permission_context()->SetLastPickedDirectory(kTestOrigin, path);
-  ASSERT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin), path);
+  permission_context()->SetLastPickedDirectory(kTestOrigin, path,
+                                               PathType::kLocal);
+  ASSERT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
+            path);
 
   TestNativeFileSystemPermissionContext new_permission_context(
       browser_context());
-  EXPECT_EQ(new_permission_context.GetLastPickedDirectory(kTestOrigin), path);
+  EXPECT_EQ(new_permission_context.GetLastPickedDirectory(kTestOrigin).path,
+            path);
 
   auto new_path = path.AppendASCII("foo");
-  new_permission_context.SetLastPickedDirectory(kTestOrigin, new_path);
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin),
+  new_permission_context.SetLastPickedDirectory(kTestOrigin, new_path,
+                                                PathType::kLocal);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             new_path);
 }
 
 TEST_F(ChromeNativeFileSystemPermissionContextTest, GetDefaultDirectory) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
-  EXPECT_EQ(permission_context_->GetDefaultDirectory(), temp_dir_.GetPath());
+  EXPECT_EQ(permission_context_->GetDefaultDirectory().path,
+            temp_dir_.GetPath());
 }
 
 #endif  // !defined(OS_ANDROID)

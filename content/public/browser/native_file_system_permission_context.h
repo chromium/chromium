@@ -46,17 +46,24 @@ class NativeFileSystemPermissionContext {
   // handles.
   enum class HandleType { kFile, kDirectory };
 
+  // These values are used in json serialization. Entries should not be
+  // renumbered and numeric values should never be reused.
   enum class PathType {
     // A path on the local file system. Files with these paths can be operated
     // on by base::File.
-    kLocal,
+    kLocal = 0,
 
     // A path on an "external" file system. These paths can only be accessed via
     // the filesystem abstraction in //storage/browser/file_system, and a
     // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
     // This path type should be used for paths retrieved via the `virtual_path`
     // member of a ui::SelectedFileInfo struct.
-    kExternal
+    kExternal = 1
+  };
+
+  struct PathInfo {
+    PathType type = PathType::kLocal;
+    base::FilePath path;
   };
 
   // Returns the read permission grant to use for a particular path.
@@ -118,11 +125,12 @@ class NativeFileSystemPermissionContext {
 
   // Store the directory recently chosen using a file picker.
   virtual void SetLastPickedDirectory(const url::Origin& origin,
-                                      const base::FilePath& path) = 0;
+                                      const base::FilePath& path,
+                                      const PathType type) = 0;
   // Returns the directory recently chosen using a file picker.
-  virtual base::FilePath GetLastPickedDirectory(const url::Origin& origin) = 0;
+  virtual PathInfo GetLastPickedDirectory(const url::Origin& origin) = 0;
   // Return the default directory used by the File System Access API.
-  virtual base::FilePath GetDefaultDirectory() = 0;
+  virtual PathInfo GetDefaultDirectory() = 0;
 
  protected:
   virtual ~NativeFileSystemPermissionContext() = default;

@@ -311,12 +311,13 @@ void NativeFileSystemManagerImpl::ChooseEntries(
   }
 
   // TODO(https://crbug.com/1142824): Check if path exists.
+  // TODO(asully): If PathType is kExternal, use FileSystemURL resolved path.
   base::FilePath default_directory;
   if (permission_context_) {
     default_directory =
-        permission_context_->GetLastPickedDirectory(context.origin);
+        permission_context_->GetLastPickedDirectory(context.origin).path;
     if (default_directory.empty()) {
-      default_directory = permission_context_->GetDefaultDirectory();
+      default_directory = permission_context_->GetDefaultDirectory().path;
     }
   }
 
@@ -933,8 +934,8 @@ void NativeFileSystemManagerImpl::DidVerifySensitiveDirectoryAccess(
                 blink::mojom::ChooseFileSystemEntryType::kOpenDirectory
             ? entries.front().path
             : entries.front().path.DirName();
-    permission_context_->SetLastPickedDirectory(binding_context.origin,
-                                                picked_directory);
+    permission_context_->SetLastPickedDirectory(
+        binding_context.origin, picked_directory, entries.front().type);
   }
 
   if (options.type() ==

@@ -61,9 +61,10 @@ class ChromeNativeFileSystemPermissionContext
   bool CanObtainWritePermission(const url::Origin& origin) override;
 
   void SetLastPickedDirectory(const url::Origin& origin,
-                              const base::FilePath& path) override;
-  base::FilePath GetLastPickedDirectory(const url::Origin& origin) override;
-  base::FilePath GetDefaultDirectory() override;
+                              const base::FilePath& path,
+                              const PathType type) override;
+  PathInfo GetLastPickedDirectory(const url::Origin& origin) override;
+  PathInfo GetDefaultDirectory() override;
 
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);

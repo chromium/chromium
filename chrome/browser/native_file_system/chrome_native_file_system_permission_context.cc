@@ -36,8 +36,9 @@ namespace {
 
 using HandleType = content::NativeFileSystemPermissionContext::HandleType;
 
-// Dictionary key for the FILE_SYSTEM_LAST_PICKED_DIRECTORY website setting.
+// Dictionary keys for the FILE_SYSTEM_LAST_PICKED_DIRECTORY website setting.
 const char kLastPickedDirectoryKey[] = "default-path";
+const char kLastPickedDirectoryTypeKey[] = "default-path-type";
 
 void ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread(
     content::GlobalFrameRoutingId frame_id,
@@ -440,9 +441,11 @@ bool ChromeNativeFileSystemPermissionContext::OriginHasWriteAccess(
 
 void ChromeNativeFileSystemPermissionContext::SetLastPickedDirectory(
     const url::Origin& origin,
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    const PathType type) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey(kLastPickedDirectoryKey, util::FilePathToValue(path));
+  dict.SetIntKey(kLastPickedDirectoryTypeKey, static_cast<int>(type));
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),
@@ -450,21 +453,34 @@ void ChromeNativeFileSystemPermissionContext::SetLastPickedDirectory(
       base::Value::ToUniquePtrValue(std::move(dict)));
 }
 
-base::FilePath ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
+ChromeNativeFileSystemPermissionContext::PathInfo
+ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin) {
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
-  if (!value)
-    return base::FilePath();
 
-  return util::ValueToFilePath(value->FindKey(kLastPickedDirectoryKey))
-      .value_or(base::FilePath());
+  PathInfo path_info;
+  if (!value)
+    return path_info;
+
+  auto type_int = value->FindIntKey(kLastPickedDirectoryTypeKey)
+                      .value_or(static_cast<int>(PathType::kLocal));
+  path_info.type = type_int == static_cast<int>(PathType::kLocal)
+                       ? PathType::kLocal
+                       : PathType::kExternal;
+  path_info.path =
+      util::ValueToFilePath(value->FindKey(kLastPickedDirectoryKey))
+          .value_or(base::FilePath());
+
+  return path_info;
 }
 
-base::FilePath ChromeNativeFileSystemPermissionContext::GetDefaultDirectory() {
-  base::FilePath default_path;
+ChromeNativeFileSystemPermissionContext::PathInfo
+ChromeNativeFileSystemPermissionContext::GetDefaultDirectory() {
+  PathInfo path_info;
+  path_info.type = PathType::kLocal;
   // On failure, |default_path| will remain empty.
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
-  return default_path;
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &path_info.path);
+  return path_info;
 }
