@@ -4086,8 +4086,7 @@ proto_library("print_job_info_proto") {
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("device_policy_remover_generate") {
+action("device_policy_remover_generate") {
   script = "policy/tools/generate_device_policy_remover.py"
   descriptor_pool_path = "//third_party/protobuf/python"
   symbol_database_path = "$root_out_dir/pyproto"
