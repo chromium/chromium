@@ -72,7 +72,7 @@ executable("gcpw_extension") {
     ":version",
     "../eventlog:gcp_eventlog_messages",
     "../gaiacp:common",
-    "../gaiacp:tasks",
+    "../gaiacp:policies",
     "../gaiacp:util",
     "//base",
     "//components/crash/core/app:crash_export_thunks",

@@ -11,7 +11,7 @@
 namespace credential_provider {
 
 // Manager used to fetch user policies from GCPW backends.
-class COMPONENT_EXPORT(GCPW_TASKS) DevicePoliciesManager {
+class COMPONENT_EXPORT(GCPW_POLICIES) DevicePoliciesManager {
  public:
   // Get the user policies manager instance.
   static DevicePoliciesManager* Get();

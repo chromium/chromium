@@ -41,8 +41,13 @@ const base::TimeDelta kDefaultFetchPoliciesRequestTimeout =
     base::TimeDelta::FromMilliseconds(5000);
 
 // Path elements for the path where the policies are stored on disk.
-constexpr wchar_t kGcpwPoliciesDirectory[] = L"Policies";
-constexpr wchar_t kGcpwUserPolicyFileName[] = L"PolicyFetchResponse";
+constexpr base::FilePath::CharType kGcpwPoliciesDirectory[] = L"Policies";
+constexpr base::FilePath::CharType kGcpwUserPolicyFileName[] =
+    L"PolicyFetchResponse";
+
+// Registry key where the the last time the policy is refreshed for the user is
+// stored.
+const wchar_t kLastUserPolicyRefreshTimeRegKey[] = L"last_policy_refresh_time";
 
 // Maximum number of retries if a HTTP call to the backend fails.
 constexpr unsigned int kMaxNumHttpRetries = 1;
@@ -56,6 +61,57 @@ const char kPolicyFetchResponseKeyName[] = "policies";
 
 // True when cloud policies feature is enabled.
 bool g_cloud_policies_enabled = false;
+
+// Get the path to the directory where the policies will be stored for the user
+// with |sid|.
+base::FilePath GetUserPolicyDirectoryFilePath(const base::string16& sid) {
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &path)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
+    return base::FilePath();
+  }
+  path = path.Append(GetInstallParentDirectoryName())
+             .Append(kCredentialProviderFolder)
+             .Append(kGcpwPoliciesDirectory)
+             .Append(sid);
+  return path;
+}
+
+std::unique_ptr<base::File> GetOpenedPolicyFileForUser(
+    const base::string16& sid,
+    uint32_t open_flags) {
+  base::FilePath policy_dir = GetUserPolicyDirectoryFilePath(sid);
+  if (!base::DirectoryExists(policy_dir)) {
+    base::File::Error error;
+    if (!CreateDirectoryAndGetError(policy_dir, &error)) {
+      LOGFN(ERROR) << "Policy data directory could not be created for " << sid
+                   << " Error: " << error;
+      return nullptr;
+    }
+  }
+
+  base::FilePath policy_file_path = policy_dir.Append(kGcpwUserPolicyFileName);
+  std::unique_ptr<base::File> policy_file(
+      new base::File(policy_file_path, open_flags));
+
+  if (!policy_file->IsValid()) {
+    LOGFN(ERROR) << "Error opening policy file for user " << sid
+                 << " with flags " << open_flags
+                 << " Error: " << policy_file->error_details();
+    return nullptr;
+  }
+
+  base::File::Error lock_error =
+      policy_file->Lock(base::File::LockMode::kExclusive);
+  if (lock_error != base::File::FILE_OK) {
+    LOGFN(ERROR) << "Failed to obtain exclusive lock on policy file! Error: "
+                 << lock_error;
+    return nullptr;
+  }
+
+  return policy_file;
+}
 
 // Creates the URL used to fetch the policies from the backend based on the
 // credential present (OAuth vs DM token) for authentication.
@@ -238,8 +294,8 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   uint32_t open_flags = base::File::FLAG_CREATE_ALWAYS |
                         base::File::FLAG_WRITE |
                         base::File::FLAG_EXCLUSIVE_WRITE;
-  std::unique_ptr<base::File> policy_file = GetOpenedFileForUser(
-      sid, open_flags, kGcpwPoliciesDirectory, kGcpwUserPolicyFileName);
+  std::unique_ptr<base::File> policy_file =
+      GetOpenedPolicyFileForUser(sid, open_flags);
   if (!policy_file) {
     return (fetch_status_ = E_FAIL);
   }
@@ -266,14 +322,35 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   return (fetch_status_ = S_OK);
 }
 
+base::TimeDelta UserPoliciesManager::GetTimeDeltaSinceLastPolicyFetch(
+    const base::string16& sid) const {
+  wchar_t last_fetch_millis[512];
+  ULONG last_fetch_size = base::size(last_fetch_millis);
+  HRESULT hr = GetUserProperty(sid, kLastUserPolicyRefreshTimeRegKey,
+                               last_fetch_millis, &last_fetch_size);
+
+  if (FAILED(hr)) {
+    // The policy was never fetched before.
+    return base::TimeDelta::Max();
+  }
+
+  int64_t last_fetch_millis_int64;
+  base::StringToInt64(last_fetch_millis, &last_fetch_millis_int64);
+
+  int64_t time_delta_from_last_fetch_ms =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
+      last_fetch_millis_int64;
+
+  return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
+}
 
 bool UserPoliciesManager::GetUserPolicies(const base::string16& sid,
                                           UserPolicies* user_policies) const {
   DCHECK(user_policies);
 
   uint32_t open_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
-  std::unique_ptr<base::File> policy_file = GetOpenedFileForUser(
-      sid, open_flags, kGcpwPoliciesDirectory, kGcpwUserPolicyFileName);
+  std::unique_ptr<base::File> policy_file =
+      GetOpenedPolicyFileForUser(sid, open_flags);
   if (!policy_file) {
     return false;
   }
@@ -310,7 +387,7 @@ bool UserPoliciesManager::IsUserPolicyStaleOrMissing(
     return true;
   }
 
-  if (GetTimeDeltaSinceLastFetch(sid, kLastUserPolicyRefreshTimeRegKey) >
+  if (GetTimeDeltaSinceLastPolicyFetch(sid) >
       kMaxTimeDeltaSinceLastUserPolicyRefresh) {
     return true;
   }
