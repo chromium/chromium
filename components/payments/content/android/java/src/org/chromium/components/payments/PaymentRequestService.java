@@ -670,14 +670,28 @@ public class PaymentRequestService
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions());
             if (error != null) {
-                mJourneyLogger.setNotShown(NotShownReason.OTHER);
-                disconnectFromClientWithDebugMessage(error, PaymentErrorReason.USER_CANCEL);
-                if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
+                onShowFailed(error);
                 return;
             }
         }
 
-        mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
+        String error = mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
+        if (error != null) {
+            onShowFailed(error);
+            return;
+        }
+    }
+
+    private void onShowFailed(String error) {
+        onShowFailed(NotShownReason.OTHER, error, PaymentErrorReason.USER_CANCEL);
+    }
+
+    // notShowReason is defined in NotShownReason.
+    // paymentErrorReason is defined in PaymentErrorReason.
+    private void onShowFailed(int notShowReason, String error, int paymentErrorReason) {
+        mJourneyLogger.setNotShown(notShowReason);
+        disconnectFromClientWithDebugMessage(error, paymentErrorReason);
+        if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
     }
 
     /**
@@ -923,12 +937,8 @@ public class PaymentRequestService
             // The renderer can create multiple instances of PaymentRequest and call show() on each
             // one. Only the first one will be shown. This also prevents multiple tabs and windows
             // from showing PaymentRequest UI at the same time.
-            mJourneyLogger.setNotShown(NotShownReason.CONCURRENT_REQUESTS);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
-            if (sObserverForTest != null) {
-                sObserverForTest.onPaymentRequestServiceShowFailed();
-            }
+            onShowFailed(NotShownReason.CONCURRENT_REQUESTS, ErrorStrings.ANOTHER_UI_SHOWING,
+                    PaymentErrorReason.ALREADY_SHOWING);
             return;
         }
         sShowingPaymentRequest = this;
@@ -945,14 +955,16 @@ public class PaymentRequestService
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions());
             if (error != null) {
-                mJourneyLogger.setNotShown(NotShownReason.OTHER);
-                disconnectFromClientWithDebugMessage(error, PaymentErrorReason.USER_CANCEL);
-                if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
+                onShowFailed(error);
                 return;
             }
         }
 
-        mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
+        String error = mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
+        if (error != null) {
+            onShowFailed(error);
+            return;
+        }
     }
 
     // Implements PaymentDetailsConverter.MethodChecker:
@@ -963,7 +975,7 @@ public class PaymentRequestService
                 && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
     }
 
-    private void continueShow(PaymentDetails details) {
+    private String continueShow(PaymentDetails details) {
         assert mIsShowWaitingForUpdatedDetails;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
@@ -971,22 +983,17 @@ public class PaymentRequestService
         if (!PaymentValidator.validatePaymentDetails(details)
                 || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
-            return;
+            return ErrorStrings.INVALID_PAYMENT_DETAILS;
         }
 
-        if (!TextUtils.isEmpty(details.error)) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_STATE, PaymentErrorReason.USER_CANCEL);
-            return;
-        }
+        if (!TextUtils.isEmpty(details.error)) return ErrorStrings.INVALID_STATE;
 
         mSpec.updateWith(details);
 
         mIsShowWaitingForUpdatedDetails = false;
-        mBrowserPaymentRequest.continueShow();
+        String error = mBrowserPaymentRequest.continueShow();
+        if (error != null) return error;
+        return null;
     }
 
     /**
@@ -998,7 +1005,11 @@ public class PaymentRequestService
         if (mIsShowWaitingForUpdatedDetails) {
             // Under this condition, updateWith() is called in response to the resolution of
             // show()'s PaymentDetailsUpdate promise.
-            continueShow(details);
+            String error = continueShow(details);
+            if (error != null) {
+                onShowFailed(error);
+                return;
+            }
             return;
         }
 

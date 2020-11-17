@@ -24,7 +24,6 @@ import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
-import org.chromium.components.payments.NotShownReason;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppService;
@@ -261,7 +260,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void triggerPaymentAppUiSkipIfApplicable() {
+    public String triggerPaymentAppUiSkipIfApplicable() {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
@@ -273,15 +272,7 @@ public class ChromePaymentRequestService
 
             if (isMinimalUiApplicable()) {
                 ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-                if (chromeActivity == null) {
-                    mJourneyLogger.setNotShown(NotShownReason.OTHER);
-                    disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-                    if (PaymentRequestService.getObserverForTest() != null) {
-                        PaymentRequestService.getObserverForTest()
-                                .onPaymentRequestServiceShowFailed();
-                    }
-                    return;
-                }
+                if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
                 if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
                             /*dismissObserver=*/
@@ -290,10 +281,10 @@ public class ChromePaymentRequestService
                                             ErrorStrings.USER_CANCELLED))) {
                     mDidRecordShowEvent = true;
                     mJourneyLogger.setEventOccurred(Event.SHOWN);
+                    return null;
                 } else {
-                    disconnectFromClientWithDebugMessage(ErrorStrings.MINIMAL_UI_SUPPRESSED);
+                    return ErrorStrings.MINIMAL_UI_SUPPRESSED;
                 }
-                return;
             }
 
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
@@ -311,6 +302,7 @@ public class ChromePaymentRequestService
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
         }
+        return null;
     }
 
     /** @return Whether the minimal UI should be shown. */
@@ -418,13 +410,9 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void continueShow() {
+    public String continueShow() {
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (chromeActivity == null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            return;
-        }
+        if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
 
         mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
 
@@ -447,7 +435,8 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        triggerPaymentAppUiSkipIfApplicable();
+        String error = triggerPaymentAppUiSkipIfApplicable();
+        if (error != null) return error;
 
         if (mPaymentRequestService.isFinishedQueryingPaymentApps()
                 && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
@@ -455,6 +444,7 @@ public class ChromePaymentRequestService
                     mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
             if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
         }
+        return null;
     }
 
     // Implement BrowserPaymentRequest:

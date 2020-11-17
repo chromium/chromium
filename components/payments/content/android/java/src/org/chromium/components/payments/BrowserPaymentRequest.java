@@ -147,8 +147,12 @@ public interface BrowserPaymentRequest {
     /**
      * Skips the app selector UI whether it is currently opened or not, and if applicable, invokes a
      * payment app.
+     * @return The error if it fails; null otherwise.
      */
-    default void triggerPaymentAppUiSkipIfApplicable() {}
+    @Nullable
+    default String triggerPaymentAppUiSkipIfApplicable() {
+        return null;
+    }
 
     /**
      * Called when a new payment app is created.
@@ -209,8 +213,12 @@ public interface BrowserPaymentRequest {
     /**
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.
+     * @return The error if it fails; null otherwise.
      */
-    default void continueShow() {}
+    @Nullable
+    default String continueShow() {
+        return null;
+    }
 
     /**
      * If needed, do extra parsing and validation for details.
