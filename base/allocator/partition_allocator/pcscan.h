@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/allocator/partition_allocator/object_bitmap.h"
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -38,7 +39,7 @@ class BASE_EXPORT PCScan final {
   using Root = PartitionRoot<thread_safe>;
   using SlotSpan = SlotSpanMetadata<thread_safe>;
 
-  explicit PCScan(Root* root) : root_(root) {}
+  explicit PCScan(Root* root);
 
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
@@ -84,6 +85,22 @@ class BASE_EXPORT PCScan final {
 
 template <bool thread_safe>
 constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
+
+template <bool thread_safe>
+PCScan<thread_safe>::PCScan(Root* root) : root_(root) {
+  root->lock_.AssertAcquired();
+  // Commit quarantine bitmaps.
+  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
+  for (auto* super_page_extent = root->first_extent; super_page_extent;
+       super_page_extent = super_page_extent->next) {
+    for (char* super_page = super_page_extent->super_page_base;
+         super_page != super_page_extent->super_pages_end;
+         super_page += kSuperPageSize) {
+      SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
+                           quarantine_bitmaps_size_to_commit, PageReadWrite);
+    }
+  }
+}
 
 template <bool thread_safe>
 bool PCScan<thread_safe>::QuarantineData::Account(size_t size) {

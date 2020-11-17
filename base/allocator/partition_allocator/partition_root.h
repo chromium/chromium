@@ -303,27 +303,11 @@ struct BASE_EXPORT PartitionRoot {
 
   void EnablePCScan() {
     PA_CHECK(scannable && !pcscan.has_value());
-
-    {
-      // Setting |pcscan| and committing bitmaps has to be done under the lock
-      // to avoid racing with PartitionBucket::AllocNewSlotSpan.
-      internal::ScopedGuard<thread_safe> guard{lock_};
-
-      size_t quarantine_bitmaps_size_to_commit =
-          internal::CommittedQuarantineBitmapsSize();
-      for (auto* super_page_extent = first_extent; super_page_extent;
-           super_page_extent = super_page_extent->next) {
-        for (char* super_page = super_page_extent->super_page_base;
-             super_page != super_page_extent->super_pages_end;
-             super_page += kSuperPageSize) {
-          SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
-                               quarantine_bitmaps_size_to_commit,
-                               PageReadWrite);
-        }
-      }
-
-      pcscan.emplace(this);
-    }
+    // Setting |pcscan| and committing bitmaps has to be done under the lock to
+    // avoid racing with PartitionBucket::AllocNewSlotSpan and avoid racing on
+    // |pcscan| ifself during free calls.
+    internal::ScopedGuard<thread_safe> guard{lock_};
+    pcscan.emplace(this);
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
