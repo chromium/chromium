@@ -347,7 +347,8 @@ class _SchemasCCGenerator(object):
     c.Append('#include <algorithm>')
     c.Append('#include <iterator>')
     c.Append()
-    c.Append('#include "base/ranges/algorithm.h"')
+    c.Append('#include "base/containers/fixed_flat_map.h"')
+    c.Append('#include "base/strings/string_piece.h"')
     c.Append()
     c.Append('namespace {')
     for api in self._bundle._api_defs:
@@ -379,33 +380,18 @@ class _SchemasCCGenerator(object):
     c.Append('// static')
     c.Sblock('base::StringPiece %s::Get(base::StringPiece name) {' %
              self._bundle._GenerateBundleClass('GeneratedSchemas'))
-    c.Sblock('static constexpr struct kSchemaMapping {')
-    c.Append('const base::StringPiece name;')
-    c.Append('const base::StringPiece schema;')
-    c.Sblock('constexpr bool operator<(const kSchemaMapping& that) const {')
-    c.Append('return name < that.name;')
-    c.Eblock('}')
-    c.Eblock()
-    c.Sblock('} kSchemas[] = {')
+
+    c.Append('static constexpr auto kSchemas = '
+             'base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({')
+    c.Sblock()
     namespaces = [self._bundle._model.namespaces[api.get('namespace')].name
                   for api in self._bundle._api_defs]
     for namespace in sorted(namespaces):
       schema_constant_name = _FormatNameAsConstant(namespace)
       c.Append('{"%s", %s},' % (namespace, schema_constant_name))
-    c.Eblock('};')
-    c.Append('static_assert(base::ranges::is_sorted(kSchemas), "|kSchemas| '
-             'should be sorted.");')
-
-    c.Sblock('auto it = std::lower_bound(std::begin(kSchemas), '
-             'std::end(kSchemas),')
-    c.Append('kSchemaMapping{name, base::StringPiece()});')
-    c.Eblock()
-
-    c.Sblock('if (it != std::end(kSchemas) && it->name == name)')
-    c.Append('return it->schema;')
-    c.Eblock()
-
-    c.Append('return base::StringPiece();')
+    c.Eblock('});')
+    c.Append('auto it = kSchemas.find(name);')
+    c.Append('return it != kSchemas.end() ? it->second : base::StringPiece();')
     c.Eblock('}')
     c.Append()
     c.Concat(cpp_util.CloseNamespace(self._bundle._cpp_namespace))
