@@ -55,6 +55,8 @@ constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
     base::TimeDelta::FromMinutes(12);
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
     base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
+    base::TimeDelta::FromMilliseconds(3000);
 
 // Used to hash a token into a 4 digit string.
 constexpr int kHashModulo = 9973;
@@ -1722,20 +1724,22 @@ void NearbySharingServiceImpl::RemoveOutgoingShareTargetWithEndpointId(
 }
 
 void NearbySharingServiceImpl::OnTransferComplete() {
+  bool was_sending_files = is_sending_files_;
   is_receiving_files_ = false;
   is_transferring_ = false;
   is_sending_files_ = false;
 
   NS_LOG(VERBOSE) << __func__
                   << ": NearbySharing state change transfer finished";
-  // TODO(crbug.com/1123167): Check if we need to delay InvalidateSurfaceState()
-  // for 500ms similar to GmsCore impl.
-  // Post a task as InvalidateSurfaceState() might invalidate ShareTargetInfo
-  // object that are still in use.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  // Files transfer is done! Receivers can immediately cancel, but senders
+  // should add a short delay to ensure the final in-flight packet(s) make
+  // it to the remote device.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbySharingServiceImpl::InvalidateSurfaceState,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      was_sending_files ? kInvalidateSurfaceStateDelayAfterTransferDone
+                        : base::TimeDelta());
 }
 
 void NearbySharingServiceImpl::OnTransferStarted(bool is_incoming) {
