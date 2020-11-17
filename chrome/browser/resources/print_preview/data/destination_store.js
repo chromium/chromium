@@ -912,10 +912,16 @@ export class DestinationStore extends EventTarget {
   startLoadAllDestinations() {
     // Printer types that need to be retrieved from the handler.
     const types = [
-      PrinterType.PRIVET_PRINTER,
       PrinterType.EXTENSION_PRINTER,
       PrinterType.LOCAL_PRINTER,
     ];
+
+    // TODO (rbpotter): Remove the code below once this flag and policy are no
+    // longer supported. Remove the privet flag in M90.
+    if (loadTimeData.getBoolean('forceEnablePrivetPrinting') ||
+        loadTimeData.getBoolean('cloudPrintDeprecationWarningsSuppressed')) {
+      types.push(PrinterType.PRIVET_PRINTER);
+    }
 
     // Cloud destinations are pulled from the cloud print server instead of the
     // NativeLayer/PrintPreviewHandler.
