@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
+<translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
+<translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
+<translation id="1398634363027580500">Πολύ μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="ENROLLMENT_DOMAIN" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="4034824040120875894">Εκτυπωτής</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
+<translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
 <translation id="467510802200863975">Δεν ταιριάζουν οι κωδικοί πρόσβασης</translation>
+<translation id="467715984478005772">Πιθανή ύπαρξη τείχους προστασίας</translation>
 <translation id="4691278870498629773">Διακοπή - Λείπει δίσκος</translation>
 <translation id="469379815867856270">Ισχύς σήματος</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">Σφάλμα - Εμπλοκή χαρτιού</translation>
 <translation id="6050189528197190982">Κλίμακα του γκρι</translation>
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
+<translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
+<translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
+<translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
 <translation id="6839141349259399400">Δεν είναι δυνατή η σύνδεση σε σαρωτές;</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8294431847097064396">Πηγή</translation>
+<translation id="8302368968391049045">Τείχος προστασίας HTTPS</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>

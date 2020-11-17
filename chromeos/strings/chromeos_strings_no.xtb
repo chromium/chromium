@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1018656279737460067">Avbrutt</translation>
+<translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
+<translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
+<translation id="1398634363027580500">Svært høy HTTPS-tidsforsinkelse</translation>
 <translation id="1413240736185167732">Mislykket – filtersvikt</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1478594628797167447">Skanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="ENROLLMENT_DOMAIN" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
+<translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
 <translation id="467510802200863975">Passordene er ikke like</translation>
+<translation id="467715984478005772">Mistanke om brannmur</translation>
 <translation id="4691278870498629773">Stoppet – en skuff mangler</translation>
 <translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
@@ -115,6 +120,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6048107060512778456">Mislykket – papirstopp</translation>
 <translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
+<translation id="6061772781719867950">Mislykkede HTTP-forespørsler</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
@@ -133,6 +139,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
+<translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
+<translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
 <translation id="6839141349259399400">Kan du ikke koble til noen skannere?</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7162487448488904999">Galleri</translation>
@@ -140,6 +148,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +160,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8294431847097064396">Kilde</translation>
+<translation id="8302368968391049045">HTTPS-brannmur</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>

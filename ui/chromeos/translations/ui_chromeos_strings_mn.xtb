@@ -9,7 +9,7 @@
 <translation id="1049926623896334335">Word баримт</translation>
 <translation id="1060368002126861100">Файлуудыг <ph name="APP_NAME" />-р нээхийн тулд эхлээд тэдгээрийг Windows-н файлын фолдерт зөөнө үү.</translation>
 <translation id="1062407476771304334">Солих</translation>
-<translation id="1082570120854863773">Хятад (Уламжлалт) Пинен</translation>
+<translation id="1082570120854863773">Хятад (уламжлалт) пиньинь</translation>
 <translation id="1119069657431255176">Bzip2 файл нэгтгэн хадгалах программ</translation>
 <translation id="1120073797882051782">Хангыль Ромажа</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> олдсон.
@@ -96,7 +96,7 @@
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
-<translation id="2016165510591645686">Хятад Пинен</translation>
+<translation id="2016165510591645686">Хятад пиньинь</translation>
 <translation id="2028997212275086731">RAR архив</translation>
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="2060251957438343874">Герман (Герман)</translation>
@@ -138,7 +138,7 @@
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-д нэмэх</translation>
-<translation id="255285553751745003">Вьетнам Телекс</translation>
+<translation id="255285553751745003">Вьетнам телекс</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Frog</translation>
@@ -151,7 +151,7 @@
 <translation id="2664412712123763093">Файлын байршил</translation>
 <translation id="2672394958563893062">Алдаа гарлаа. Эхнээс нь дахин эхлүүлэхээр дарна уу.</translation>
 <translation id="2676946222714718093">-нд тоглуулж байна</translation>
-<translation id="2718873684053049373">Хятад Даяи</translation>
+<translation id="2718873684053049373">Хятад даи</translation>
 <translation id="2735623501230989521">Parallels Desktop-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="2771816809568414714">Бяслаг</translation>
 <translation id="2781645665747935084">Бельги</translation>
@@ -558,7 +558,7 @@
 <translation id="7106346894903675391">Илүү их хадгалалтын санг худалдаж аваарай...</translation>
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
-<translation id="714369685015246514">Хятад Эррэй</translation>
+<translation id="714369685015246514">Хятад матрицын арга</translation>
 <translation id="7155751472708812680">Араб суурьтай гартай сорани курд</translation>
 <translation id="7169438078134535111">F-гартай турк</translation>
 <translation id="7170467426996704624">Хөрвүүлэлт (салам → ሰላም)</translation>
@@ -566,7 +566,7 @@
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>
-<translation id="7221999925319694720">Хятад Зүен</translation>
+<translation id="7221999925319694720">Хятад жуинь</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>

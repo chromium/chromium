@@ -1137,13 +1137,6 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 
       Esta política empresarial es una adaptación por corto plazo y se quitará en Chrome 88.</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
-<translation id="2759426227259007018">Si estableces la política, se especificarán las apps que los usuarios pueden activar para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
-
-      Si la app preferida se habilita en la pantalla de bloqueo, aparecerá un elemento de IU para ejecutar la app preferida para tomar notas. Cuando se ejecute, la app podrá crear una ventana en la parte superior de la pantalla de bloqueo para tomar notas en este contexto. La app podrá importar las notas creadas a la sesión del usuario principal cuando la sesión se desbloquee. La pantalla de bloqueo solo admite apps para tomar notas de <ph name="PRODUCT_NAME" />.
-
-      Si estableces la política, los usuarios podrán activar una app en la pantalla de bloqueo siempre que el ID de extensión de la app aparezca en la lista de políticas. Por lo tanto, si la estableces con una lista vacía, se desactivará la función para tomar notas en la pantalla de bloqueo. Ten en cuenta que el hecho de que la política contenga un ID de app no implica necesariamente que el usuario pueda habilitar la app para tomar notas en la pantalla de bloqueo. Por ejemplo, en <ph name="PRODUCT_NAME" /> 61, la plataforma aplica otras restricciones al conjunto de apps disponibles.
-
-      Si no estableces la política, no se impondrán restricciones en la cantidad de apps que el usuario puede habilitar en la pantalla de bloqueo.</translation>
 <translation id="2761483219396643566">Demora para la advertencia de inactividad cuando el dispositivo está funcionando a batería</translation>
 <translation id="2765601181281280493">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir permiso a los usuarios para acceder a un puerto en serie.
 

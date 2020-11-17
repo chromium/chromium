@@ -1125,13 +1125,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Questo criterio aziendale è finalizzato al periodo di transizione e verrà rimosso in Chrome 88.</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
-<translation id="2759426227259007018">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
-
-      Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
-
-      La configurazione del criterio consente agli utenti di attivare un'app nella schermata di blocco se l'ID estensione dell'app è presente come valore nell'elenco del criterio. Pertanto, se il criterio viene impostato su un elenco vuoto, l'opzione per scrivere note nella schermata di blocco viene disattivata. L'esistenza dell'ID di un'app nel criterio non implica necessariamente che gli utenti possano attivare l'app come app per scrivere note nella schermata di blocco. Ad esempio, in <ph name="PRODUCT_NAME" /> 61, il gruppo di app disponibili viene limitato anche dalla piattaforma.
-
-      Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
 <translation id="2765601181281280493">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
 
@@ -1450,6 +1443,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
         * 4, il firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato in seguito alla registrazione, prima dell'accesso dell'utente.
 
       Se il criterio non viene configurato, la visualizzazione dell'aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non è disponibile.</translation>
+<translation id="3232691106293445015">Per le connessioni HTTP non sicure non è possibile usare l'autenticazione <ph name="BASIC_AUTH" />; sono richieste connessioni HTTPS</translation>
 <translation id="3236046242843493070">Pattern URL per consentire installazioni di estensioni, applicazioni e script utente da</translation>
 <translation id="3240609035816615922">Norma di accesso alla configurazione delle stampanti.</translation>
 <translation id="324062325008698789">Consente di configurare un elenco di stampanti</translation>
@@ -2622,6 +2616,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5090209345759901501">Applica l'impostazione dei contenuti Flash a tutti i contenuti</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
+<translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5101600510268095939">Consente di impostare un elenco di pattern URL che specificano i siti non autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali i contenuti misti bloccabili facoltativi (ossia passivi) verranno aggiornati.
 
           Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati, ma gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
@@ -3939,6 +3934,13 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Consente di specificare i flag da applicare all'avvio di <ph name="PRODUCT_NAME" />. I flag specificati vengono applicati soltanto alla schermata di accesso. I flag impostati tramite questa norma non vengono applicati anche alle sessioni utente.</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
+<translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
+
+      Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
+
+      La configurazione del criterio consente agli utenti di attivare un'app nella schermata di blocco se l'ID estensione dell'app è presente come valore nell'elenco del criterio. Pertanto, se il criterio viene impostato su un elenco vuoto, l'opzione per scrivere note nella schermata di blocco viene disattivata. L'esistenza dell'ID di un'app nel criterio non implica necessariamente che gli utenti possano attivare l'app come app per scrivere note nella schermata di blocco. Ad esempio, in <ph name="PRODUCT_NAME" /> 61, il gruppo di app disponibili viene limitato anche dalla piattaforma.
+
+      Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -4300,6 +4302,9 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7295019613773647480">Attiva utenti supervisionati</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
+<translation id="7319863628760093590">Se il criterio viene impostato su Attivato o se non viene configurato, le richieste di autenticazione <ph name="BASIC_AUTH" /> ricevute tramite connessioni HTTP non sicure sono consentite.
+
+      Se il criterio viene impostato su Disattivato, per le richieste HTTP non sicure non è consentito usare lo schema di autenticazione <ph name="BASIC_AUTH" />; sono consentite soltanto le connessioni HTTPS sicure.</translation>
 <translation id="7323896582714668701">Parametri aggiuntivi della riga di comando per <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
 <translation id="7331962793961469250">Quando la norma è impostata su True, le promozioni relative alle applicazioni del Chrome Web Store non vengono visualizzate nella pagina Nuova scheda. Se questa opzione viene impostata su False o non viene impostata, le promozioni relative alle applicazioni del Chrome Web Store vengono visualizzate nella pagina Nuova scheda.</translation>
@@ -5014,6 +5019,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8369602308428138533">Ritardo disattivazione schermo in caso di utilizzo di CA</translation>
 <translation id="8371178326720637170">Consente alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
+<translation id="8379317372795444261">L'autenticazione <ph name="BASIC_AUTH" /> è consentita per le connessioni HTTP</translation>
 <translation id="8380490658357556620">Attiva l'utilizzo dei relay server quando i client remoti tentano di stabilire una connessione con il computer.
 
           Se questa impostazione viene attivata, i client remoti possono utilizzare relay server per collegarsi al computer quando non è disponibile una connessione diretta (ad es. a causa di limitazioni del firewall).

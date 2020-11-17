@@ -148,6 +148,20 @@
       Wenn diese Richtlinie auf "true" gesetzt ist, wird die Funktion aktiviert und kann vom Nutzer geändert werden.
       Standardmäßig ist diese Richtlinie auf "false" gesetzt. Es werden keine Emojis vorgeschlagen und Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="1243570869342663665">Filterung von Inhalten nur für Erwachsene durch "SafeSites" konfigurieren.</translation>
+<translation id="1244309789361056660">Diese Richtlinie wurde in Version M87 entfernt und Basisverzeichnisse werden bei der Anmeldung automatisch auf ext4 umgestellt.
+      Das Festlegen der Richtlinie gibt an, welche Aktion durchgeführt werden soll, wenn das Basisverzeichnis des Nutzers mit eCryptfs-Verschlüsselung erstellt wurde. Sofern eCryptfs-verschlüsselte Basisverzeichnisse nicht auf die ext4-Verschlüsselung umgestellt werden, wird die Ausführung von Android-Apps möglicherweise beendet.
+
+      Bei der Festlegung der Richtlinie auf
+
+      * „Migrate“ oder eine nicht unterstützte Option wie etwa „AskUser“ oder „AskForEcryptfsArcUsers“ werden Verzeichnisse bei der Anmeldung automatisch auf ext4 umgestellt, ohne die Zustimmung des Nutzers einzuholen.
+
+      * „Wipe“ oder „MinimalMigrate“ werden alte eCryptfs-verschlüsselte Basisverzeichnisse bei der Anmeldung durch neue ext4-verschlüsselte Basisverzeichnisse ersetzt. Damit der Nutzer sich nicht immer wieder neu anmelden muss, versucht „MinimalMigrate“, die Anmeldetoken zu übernehmen.
+
+      * „DisallowArc“, oder wenn keine Einstellung festgelegt ist, erfolgt keine Migration und die Android-Apps des Nutzers werden beendet.
+
+      Diese Richtlinie gilt nicht für Kiosknutzer.
+
+      Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
 <translation id="1247850578871017740">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.</translation>
@@ -1100,13 +1114,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Chrome 88 entfernt.</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
-<translation id="2759426227259007018">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
-
-      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
-
-      Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
-
-      Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
 <translation id="2765601181281280493">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
 
@@ -1997,6 +2004,15 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Ist diese Einstellung nicht konfiguriert oder auf "false" gesetzt, suchen <ph name="PRODUCT_OS_NAME" />-Geräte automatisch nach Updates.
 
       Achtung: Es wird empfohlen, die automatischen Updates aktiviert zu lassen, damit Nutzer Softwareupdates und wichtige Sicherheitspatches erhalten. Bei Deaktivierung der automatischen Updates besteht eventuell ein Risiko für die Nutzer.</translation>
+<translation id="4016367078069682737">Diese Richtlinie wurde in M61 entfernt.
+
+      Damit wird festgelegt, wie sich ein Gerät verhalten soll, das mit eCryptfs geliefert wurde und nun eine ext4-Verschlüsselung benötigt.
+
+      Wenn diese Richtlinie auf „DisallowArc“ gesetzt ist, werden Android-Apps für alle Nutzer des Geräts deaktiviert – einschließlich derer, die die ext4-Verschlüsselung schon haben. Außerdem wird die Migration von eCryptfs- zur ext4-Verschlüsselung keinem Nutzer angeboten.
+
+      Wenn diese Richtlinie auf „AllowMigration“ gesetzt ist, wird Nutzern mit eCryptfs-verschlüsselten Basisverzeichnissen angeboten, diese je nach Bedarf in die ext4-Verschlüsselung zu migrieren (aktuell, wenn Android N für das Gerät zur Verfügung steht).
+
+      Diese Richtlinie gilt nicht für Kiosk-Apps – diese werden automatisch migriert. Sollte die Richtlinie nicht konfiguriert sein, kommt die Vorgehensweise für „DisallowArc“ zum Einsatz.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
@@ -2315,6 +2331,15 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn sie deaktiviert ist, können Seiten nicht im Inkognitomodus geöffnet werden.
 
       Mit dem Wert "Forced" können Seiten ausschließlich im Inkognitomodus geöffnet werden. Der Wert "Forced" funktioniert nicht bei Android Apps, die auf Chrome ausgeführt werden.</translation>
+<translation id="4594467366027975448">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Roaming-Kopie der Profile speichert.
+
+      Wenn Sie diese Richtlinie konfigurieren, nutzt <ph name="PRODUCT_NAME" /> das angegebene Verzeichnis, um die Roaming-Kopie der Profile darin zu speichern, sofern die Richtlinie „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ aktiviert wurde. Ist die Richtlinie „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert, wird der in dieser Richtlinie gespeicherte Wert nicht verwendet.
+
+      Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables finden Sie eine Liste mit Variablen, aus denen Sie wählen können.
+
+      Auf Nicht-Windows-Plattformen muss diese Richtlinie konfiguriert sein, damit Roaming-Profile funktionieren.
+
+      Wenn diese Richtlinie auf Windows nicht konfiguriert ist, wird der Standardpfad für Roaming-Profile verwendet.</translation>
 <translation id="4600786265870346112">Großen Cursor aktivieren</translation>
 <translation id="4604931264910482931">Sperrliste für natives Messaging konfigurieren</translation>
 <translation id="4607416370554533118">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern erstellen, die Websites angeben, für die Chrome automatisch ein Clientzertifikat auswählen kann. Der Wert ist ein Array von String-JSON-Wörterbüchern. Jedes Wörterbuch muss das Format <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> haben, wobei <ph name="URL_PATTERN_PLACEHOLDER" /> ein Muster zum Festlegen der Inhalte ist. <ph name="FILTER_PLACEHOLDER" /> schränkt ein, aus welchen Clientzertifikaten der Browser automatisch auswählt. Unabhängig vom Filter werden nur Zertifikate ausgewählt, die mit der Zertifizierungsanforderung des Servers übereinstimmen.
@@ -3310,6 +3335,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6070667616071269965">Tastaturlayouts der Anmeldeseite</translation>
 <translation id="6074963268421707432">Anzeige von Desktop-Benachrichtigungen für keine Website zulassen</translation>
 <translation id="6074964551275531965">Zeitraum für Updatebenachrichtigungen festlegen</translation>
+<translation id="6075316301208933536">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang endet. „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />-Akkulademodus verwendet.</translation>
 <translation id="6082161804984853051">Wird die Richtlinie festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das von Ihnen angegebenen Verzeichnis zum Speichern von im Cache gespeicherten Dateien auf dem Laufwerk unabhängig davon, ob der Nutzer das Flag "--disk-cache-dir" angegeben hat.
 
       Wurde die Richtlinie nicht festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das Cachestandardverzeichnis. Diese Einstellung können Nutzer jedoch mit dem Befehlszeilen-Flag "--disk-cache-dir" ändern.
@@ -4025,6 +4053,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7027785306666625591">Hiermit wird die Energieverwaltung in <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Mit diesen Richtlinien können Sie festlegen, wie <ph name="PRODUCT_OS_NAME" /> sich verhalten soll, wenn der Nutzer für einen bestimmten Zeitraum inaktiv ist.</translation>
+<translation id="7030205756530739128">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang startet. Der Wert muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
 <translation id="7032813174556919004">DoH (DNS over HTTPS) deaktivieren</translation>
 <translation id="7033778618670823541">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für ältere Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als "Nicht sicher" gekennzeichnet wird.
 

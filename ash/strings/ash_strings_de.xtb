@@ -323,6 +323,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4121728057981832179">Eine virtuelle Maschine verwendet dein Mikrofon</translation>
+<translation id="4126167871198063089">Vorlesefunktion beenden</translation>
 <translation id="4129129681837227511">Wenn Sie Benachrichtigungen auf dem Sperrbildschirm sehen möchten, entsperren Sie das Gerät, um die Einstellung zu ändern</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="DOMAIN" /></translation>
@@ -382,6 +383,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4570957409596482333">Vorlese-Schaltfläche</translation>
 <translation id="4577274620589681794">Die Zeit ist um · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Vorschauen anzeigen</translation>
 <translation id="4585337515783392668">Streaming an unbekannten Empfänger beenden</translation>
 <translation id="4596144739579517758">Dunkles Design ist deaktiviert</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
@@ -429,11 +431,13 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>
+<translation id="5003993274120026347">Nächster Satz</translation>
 <translation id="5019169674188023236">Bluetooth oder WLAN ist auf Ihrem <ph name="DEVICE_TYPE" /> deaktiviert. Sie benötigen eine Verbindung, um Phone Hub verwenden zu können.</translation>
 <translation id="5030687792513154421">Die Zeit ist abgelaufen</translation>
 <translation id="5033299697334913360">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
+<translation id="504465286040788597">Vorheriger Absatz</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
@@ -473,6 +477,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5571066253365925590">Bluetooth aktiviert</translation>
+<translation id="557563299383177668">Nächster Absatz</translation>
 <translation id="558849140439112033">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Zum Deaktivieren des gesprochenen Feedbacks drücken Sie Strg + Alt + Z.</translation>
@@ -723,6 +728,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8029247720646289474">Fehler bei Hotspotverbindung</translation>
 <translation id="8029629653277878342">Für mehr Sicherheit ist das Passwort oder die PIN erforderlich</translation>
 <translation id="8030169304546394654">Verbindung getrennt</translation>
+<translation id="8036504271468642248">Vorheriger Satz</translation>
 <translation id="8042893070933512245">Menü "Bedienungshilfen" öffnen</translation>
 <translation id="8048123526339889627">Bluetooth-Einstellungen</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
@@ -861,6 +867,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="921989828232331238">Deine Eltern haben dein Gerät für heute gesperrt</translation>
 <translation id="9220525904950070496">Konto entfernen</translation>
 <translation id="923686485342484400">Drücken Sie zum Abmelden zweimal Steuerung - Umschalttaste - Q.</translation>
+<translation id="925832987464884575">Vorschauen ausblenden</translation>
 <translation id="938963181863597773">Welche Termine stehen an?</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="98515147261107953">Querformat</translation>

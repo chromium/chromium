@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
+<translation id="2111166930115883695">Apasă pe Space pentru a juca</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Politica este ignorată, deoarece a fost înlocuită de <ph name="POLICY_NAME" />.</translation>
@@ -520,6 +521,7 @@
 <translation id="3010559122411665027">Intrarea din listă „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
 <translation id="3023071826883856138">You4 (Plic)</translation>
 <translation id="3024663005179499861">Tip de politică greșit</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
@@ -762,6 +764,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Cheie „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Plic)</translation>
+<translation id="4067669230157909013">Funcția de realizare a capturilor de ecran a fost reluată.</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4075732493274867456">Clientul și serverul nu acceptă o versiune a protocolului SSL sau o suită de codificare obișnuită.</translation>
@@ -846,6 +849,7 @@
 <translation id="4297502707443874121">Miniatură pentru pagina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4300675098767811073">Perforare multiplă în dreapta</translation>
+<translation id="4302514097724775343">Atinge dinozaurul ca să joci</translation>
 <translation id="4302965934281694568">Chou3 (Plic)</translation>
 <translation id="4305666528087210886">Fișierul nu a putut fi accesat</translation>
 <translation id="4305817255990598646">Comută</translation>
@@ -1258,6 +1262,7 @@
 <translation id="5963413905009737549">Secțiune</translation>
 <translation id="5967592137238574583">Editează informațiile de contact</translation>
 <translation id="5967867314010545767">Eliminați din istoric</translation>
+<translation id="5968793460449681917">La fiecare vizită</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5979084224081478209">Verifică parolele</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1473,6 +1478,7 @@
 <translation id="6895330447102777224">Cardul tău este confirmat</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Organizația (O)</translation>
+<translation id="6907293445143367439">Permite ca <ph name="SITE_NAME" /> să:</translation>
 <translation id="6910240653697687763">Adresa <ph name="URL" /> dorește să preia controlul complet asupra dispozitivelor MIDI</translation>
 <translation id="6915804003454593391">Utilizator:</translation>
 <translation id="6934672428414710184">Acest nume provine din Contul tău Google</translation>
@@ -1909,6 +1915,7 @@ Detalii suplimentare:
 <translation id="858637041960032120">Adăugați telefon
 </translation>
 <translation id="8589998999637048520">Calitate optimă</translation>
+<translation id="8600271352425265729">Doar de data aceasta</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
 <translation id="8606726445206553943">Folosească dispozitive MIDI</translation>
 <translation id="8612761427948161954">Salut, <ph name="USERNAME" />!
@@ -2066,6 +2073,7 @@ Detalii suplimentare:
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="945855313015696284">Verifică informațiile de mai jos și șterge cardurile nevalide</translation>
 <translation id="950736567201356821">Perforare triplă în partea de sus</translation>
+<translation id="951941430552851965">Funcția de realizare a capturilor de ecran a fost întreruptă de administrator din cauza conținutului de pe ecran.</translation>
 <translation id="961663415146723894">Legare în partea de jos</translation>
 <translation id="962484866189421427">Acest conținut poate încerca să instaleze aplicații înșelătoare care pretind a fi altceva sau colectează date care pot fi folosite pentru a te urmări. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Versiune oficială</translation>

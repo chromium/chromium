@@ -305,6 +305,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2107021941795971877">Understøttelse til udskrivning</translation>
 <translation id="2108755909498034140">Genstart computeren</translation>
+<translation id="2111166930115883695">Tryk på mellemrumstasten for at spille</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kort</translation>
 <translation id="2114841414352855701">Ignoreret, da den blev tilsidesat af <ph name="POLICY_NAME" /> .</translation>
@@ -522,6 +523,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3010559122411665027">Angiv posten "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3016780570757425217">Kende din placering</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tryk på Tab-tasten og derefter Enter for at fjerne forslaget.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Forkert politiktype</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
@@ -764,6 +766,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Nøgle "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Screenshot blev genoptaget.</translation>
 <translation id="4067947977115446013">Tilføj gyldig adresse</translation>
 <translation id="4072486802667267160">Der opstod en fejl under behandlingen af din ordre. Prøv igen.</translation>
 <translation id="4075732493274867456">Klienten og serveren understøtter ikke en fælles SSL-protokolversion eller et fælles krypteringsprogram.</translation>
@@ -848,6 +851,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Udvid</translation>
 <translation id="4300675098767811073">Flere huller i højre side</translation>
+<translation id="4302514097724775343">Tryk på dinoen for at spille</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Din fil kunne ikke tilgås</translation>
 <translation id="4305817255990598646">Skift</translation>
@@ -1260,6 +1264,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5963413905009737549">Afsnit</translation>
 <translation id="5967592137238574583">Rediger kontaktoplysninger</translation>
 <translation id="5967867314010545767">Fjern fra historik</translation>
+<translation id="5968793460449681917">Ved hvert besøg</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1475,6 +1480,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6895330447102777224">Dit kort er bekræftet</translation>
 <translation id="6897140037006041989">Brugeragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
+<translation id="6907293445143367439">Giv <ph name="SITE_NAME" /> tilladelse til at:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> anmoder om fuld kontrol over dine MIDI-enheder</translation>
 <translation id="6915804003454593391">Bruger:</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>
@@ -1911,6 +1917,7 @@ Yderligere oplysninger:
 <translation id="858637041960032120">Tilføj tlf.nr.
 </translation>
 <translation id="8589998999637048520">Bedste kvalitet:</translation>
+<translation id="8600271352425265729">Kun denne gang</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
 <translation id="8606726445206553943">Brug dine MIDI-enheder</translation>
 <translation id="8612761427948161954">Hej <ph name="USERNAME" />
@@ -2068,6 +2075,7 @@ Yderligere oplysninger:
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="945855313015696284">Se oplysningerne nedenfor, og slet eventuelle ugyldige kort</translation>
 <translation id="950736567201356821">Tre huller øverst</translation>
+<translation id="951941430552851965">Dit screenshot blev sat på pause af din administrator på grund af indhold på din skærm.</translation>
 <translation id="961663415146723894">Bind nederst</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Officiel version</translation>

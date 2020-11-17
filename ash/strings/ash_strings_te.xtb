@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">రాత్రి కాంతి ఆఫ్‌లో ఉంది.</translation>
 <translation id="1850504506766569011">Wi-Fi ఆఫ్ చేయబడింది.</translation>
 <translation id="1864454756846565995">USB-C పరికరం (వెనుకవైపు పోర్ట్)</translation>
+<translation id="1882814835921407042">ఏ మొబైల్ నెట్‌వర్క్ అందుబాటులో లేదు</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />కు మిర్రరింగ్ చేస్తోంది</translation>
 <translation id="1885785240814121742">వేలిముద్రతో అన్‌లాక్ చేయండి</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
+<translation id="2078034614700056995">తర్వాతి డెస్క్‌కు స్విచ్ చేయడానికి నాలుగు వేళ్లతో కుడి వైపుకు స్వైప్ చేయండి</translation>
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
+<translation id="2170530631236737939">ఓవర్‌వ్యూ నుండి నిష్క్రమించడానికి మూడు వేళ్లతో కిందకు స్వైప్ చేయండి</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222338659135520253">సైన్ ఇన్ చేయాలి</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="3249513730522716925">"<ph name="WINDOW_TITLE" />" విండో అన్నది "<ph name="ACTIVE_DESK" />" డెస్క్ నుండి "<ph name="TARGET_DESK" />" డెస్క్‌కు తరలించబడింది</translation>
 <translation id="3255483164551725916">నువ్వు ఏమి చేయగలవు?</translation>
+<translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3294437725009624529">అతిథి</translation>
 <translation id="3307642347673023554">ల్యాప్‌టాప్ మోడ్‌కు స్విచ్ చేయబడింది</translation>
@@ -294,6 +298,7 @@
 <translation id="3799080171973636491">మీరు పూర్తి స్క్రీన్‌ మాగ్నిఫైయర్‌ కోసం కీ‌బోర్డ్‌ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="380165613292957338">హాయ్, నేను ఎలా సహాయపడగలను?</translation>
 <translation id="3826099427150913765">పాస్‌వర్డ్‌కు స్విచ్ చేయి</translation>
+<translation id="383058930331066723">బ్యాటరీ సేవర్ మోడ్ ఆన్‌లో ఉంది</translation>
 <translation id="383629559565718788">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="3846214748874656680">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
 <translation id="3846575436967432996">నెట్‌వర్క్ సమాచారం అందుబాటులో లేదు</translation>
@@ -339,6 +344,7 @@
 <translation id="4217571870635786043">డిక్టేషన్</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
+<translation id="425364040945105958">SIM లేదు</translation>
 <translation id="4261870227682513959">నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి</translation>
 <translation id="4267383818855338811">ఒక వర్చువల్ మెషీన్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="4269883910223712419">ఈ పరికర నిర్వాహకుడికి వీటిని చేయగల సామర్థ్యం ఉంది:</translation>
@@ -471,14 +477,17 @@
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
 <translation id="5465662442746197494">సహాయం కావాలా?</translation>
 <translation id="5496819745535887422">మీ నిర్వాహకుడు మీ పరికరాన్ని ఉపసంహరిస్తున్నారు. పరికరం మళ్లీ ప్రారంభించినప్పుడు మొత్తం డేటా తొలగించబడుతుంది.</translation>
+<translation id="5516420770350073386">మీ స్క్రీన్‌పై కంటెంట్ కారణంగా మీ అడ్మినిస్ట్రేటర్ ద్వారా స్క్రీన్ రికార్డింగ్ ఆపివేయబడింది.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> కనెక్ట్ అవుతోంది.</translation>
+<translation id="5532994612895037630">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
 <translation id="553675580533261935">సెషన్ నుండి నిష్క్రమిస్తోంది</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">డిక్టేషన్‌ను టోగుల్ చేయి</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5571066253365925590">బ్లూటూత్‌ ప్రారంభించబడింది</translation>
 <translation id="557563299383177668">తర్వాతి పేరా</translation>
+<translation id="55808498489107691">మీ స్క్రీన్‌పైన కంటెంట్ కారణంగా మీ అడ్మినిస్ట్రేటర్ ద్వారా స్క్రీన్ క్యాప్చర్ బ్లాక్ చేయబడింది.</translation>
 <translation id="558849140439112033">క్యాప్చర్ చేసేందుకు ప్రదేశాన్ని ఎంచుకోవడానికి లాగండి</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">ప్రసంగ రూప అభిప్రాయాన్ని నిలిపివేయడానికి Ctrl + Alt + Z నొక్కండి.</translation>
@@ -529,6 +538,7 @@
 <translation id="602001110135236999">ఎడమకు స్క్రోల్ చేయి</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6030495522958826102">స్క్రీన్‌లో కింద ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
+<translation id="6032620807120418574">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6043212731627905357">మీ <ph name="DEVICE_TYPE" />తో ఈ మానిటర్ పని చేయడం లేదు (మానిటర్‌కు మద్దతు లేదు).</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
@@ -537,6 +547,7 @@
 <translation id="6059276912018042191">ఇటీవలి Chrome ట్యాబ్‌లు</translation>
 <translation id="6062360702481658777">మీరు <ph name="LOGOUT_TIME_LEFT" />లో స్వయంచాలకంగా సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="607652042414456612">మీ కంప్యూటర్ సమీప బ్లూటూత్ పరికరాల్లో కనుగొనబడుతుంది మరియు చిరునామా <ph name="ADDRESS" />తో "<ph name="NAME" />" లాగా కనిపిస్తుంది</translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google అసిస్టెంట్ పని చేయదు.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయి'ని తెరవండి</translation>
 <translation id="615957422585914272">స్క్రీన్‌పై కీబోర్డ్‌ను చూపు</translation>
@@ -551,6 +562,7 @@
 <translation id="6283712521836204486">"అంతరాయం కలిగించవద్దు" ఆఫ్‌లో ఉంది.</translation>
 <translation id="6284232397434400372">రిజల్యూషన్ మార్చబడింది</translation>
 <translation id="6288235558961782912">మీ తల్లి/తండ్రి అనుమతితో <ph name="USER_EMAIL_ADDRESS" />ను తిరిగి యాడ్ చేయవచ్చు.</translation>
+<translation id="6291221004442998378">ఛార్జ్ కావడం లేదు</translation>
 <translation id="6297287540776456956">ప్రాంతాన్ని ఎంచుకోవడానికి స్టైలస్‌ను ఉపయోగించండి</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" />కి తిప్పబడింది</translation>
 <translation id="6315170314923504164">వాయిస్</translation>
@@ -579,6 +591,7 @@
 <translation id="6537924328260219877">సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
 <translation id="6559976592393364813">నిర్వాహకుడిని అడగండి</translation>
+<translation id="6570902864550063460">USB ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="6585808820553845416">సెషన్ <ph name="SESSION_TIME_REMAINING" />లో ముగుస్తుంది.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>
@@ -656,6 +669,7 @@
 <translation id="7377169924702866686">Caps Lock ఆన్‌లో ఉంది.</translation>
 <translation id="7378203170292176219">రికార్డ్ చేసేందుకు ప్రదేశాన్ని ఎంచుకోవడానికి లాగండి</translation>
 <translation id="7378594059915113390">మీడియా నియంత్రణలు</translation>
+<translation id="7378889811480108604">బ్యాటరీ సేవర్ మోడ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="7392563512730092880">మీరు సెట్టింగ్‌ల నుండి తర్వాత ఎప్పుడైనా సెటప్ చేయవచ్చు.</translation>
 <translation id="7398254312354928459">నెట్‌వర్క్ కనెక్షన్ మార్చబడింది</translation>
 <translation id="7405710164030118432">పరికరాన్ని అన్‌లాక్ చేయడానికి, మీ Family Link తల్లి/తండ్రి యాక్సెస్ కోడ్‌ను నమోదు చేయండి</translation>
@@ -705,6 +719,7 @@
 <translation id="7837740436429729974">సమయం ముగిసింది</translation>
 <translation id="7842569679327885685">హెచ్చరిక: ప్రయోగాత్మక ఫీచర్</translation>
 <translation id="7846634333498149051">కీబోర్డ్</translation>
+<translation id="7860671499921112077">ఓవర్‌వ్యూకు ఎంటర్ అవ్వడానికి మూడు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="7868900307798234037">వేలిముద్రతో అన్‌లాక్ చేస్తోంది</translation>
 <translation id="7872786842639831132">ఆఫ్</translation>
 <translation id="7886169021410746335">గోప్యతా సెట్టింగ్‌లను సర్దుబాటు చేయండి</translation>
@@ -746,6 +761,7 @@
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
+<translation id="8170567869359129153">మొబైల్ నెట్‌వర్క్. <ph name="SIGNAL_STRENGTH" /> యొక్క సిగ్నల్ సామర్థ్యం</translation>
 <translation id="8192202700944119416">నోటిఫికేషన్‌లు దాచబడ్డాయి.</translation>
 <translation id="8196787716797768628">టాబ్లెట్ మోడ్‌లో, యాప్‌ల మధ్య త్వరగా మారడానికి, అలాగే మీ Chromebookతో ఇంటరాక్ట్ కావడానికి సంజ్ఞలను ఉపయోగించండి.</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
@@ -755,6 +771,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> కోసం అన్‌లాక్ చేయడానికి నమోదును నొక్కండి</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
+<translation id="8284362522226889623">మునుపటి డెస్క్‌కు స్విచ్ చేయడానికి నాలుగు వేళ్లతో ఎడమ వైపుకు స్వైప్ చేయండి</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>
@@ -811,6 +828,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />కు కనెక్ట్ చేయండి</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">ఇన్‌పుట్ విధానాల సెట్టింగ్‌లు</translation>
 <translation id="8825863694328519386">వెనుకకు వెళ్లడానికి ఎడమ వైపు నుండి స్వైప్ చేయండి</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">వెనుకకు బటన్</translation>

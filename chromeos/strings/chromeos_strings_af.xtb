@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1018656279737460067">Gekanselleer</translation>
+<translation id="1071587090247825784">Brandmuur is bespeur</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1204296502688602597">DNS-traagheid</translation>
+<translation id="1238612778414822719">HTTPS-traaagheid</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pas op skandeergebied</translation>
 <translation id="1397738625398125236">Deurgang kan gepieng word</translation>
+<translation id="1398634363027580500">Baie hoë HTTPS-traagheid</translation>
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="ENROLLMENT_DOMAIN" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="4034824040120875894">Drukker</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
+<translation id="4145784616224233563">HTTP-brandmuur</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
+<translation id="467715984478005772">Brandmuur word vermoed</translation>
 <translation id="4691278870498629773">Gestop – laai ontbreek</translation>
 <translation id="469379815867856270">Seinsterkte</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
@@ -115,6 +120,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6048107060512778456">Misluk – Papierknoop</translation>
 <translation id="6050189528197190982">Grysskaal</translation>
 <translation id="6058625436358447366">Voer jou ou en nuwe wagwoord in om dit te voltooi</translation>
+<translation id="6061772781719867950">Mislukte HTTP-versoeke</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
 <translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
 <translation id="6146993107019042706">Voer jou nuwe wagwoord in om dit te voltooi</translation>
@@ -133,6 +139,8 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
+<translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
+<translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>
 <translation id="6839141349259399400">Kan jy nie aan skandeerders koppel nie?</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
@@ -140,6 +148,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +160,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8294431847097064396">Bron</translation>
+<translation id="8302368968391049045">HTTPS-brandmuur</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>

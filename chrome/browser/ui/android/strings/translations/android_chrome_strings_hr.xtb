@@ -207,6 +207,7 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 <translation id="2450907520913474542">Ne morate napustiti stranicu da biste saznali koje su teme web-lokacija. Značajka Dodirnite za pretraživanje šalje Google pretraživanju riječ i njezin kontekst, a vraća definicije, slike, rezultate pretraživanja i druge pojedinosti.
 
 Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite precizirati pretraživanje, odaberite više ili manje riječi. Ako želite urediti pretraživanje, otvorite ploču, dodirnite ikonu da bi se otvorila nova kartica i unesite promjene u okvir za pretraživanje.</translation>
+<translation id="2459390580524506445">Poboljšano glasovno pretraživanje</translation>
 <translation id="246532703174860178">Podijeli</translation>
 <translation id="2478076885740497414">Instaliranje aplikacije</translation>
 <translation id="2479148705183875116">Otvori Postavke</translation>
@@ -275,6 +276,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2932150158123903946">Pohrana aplikacije Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Kartica pregleda je zatvorena</translation>
 <translation id="2956410042958133412">Računom upravljaju <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
 <translation id="2962095958535813455">Prešli ste na anonimne kartice</translation>
 <translation id="2979025552038692506">Odabrana anonimna kartica</translation>
 <translation id="2987620471460279764">Tekst podijeljen s drugog uređaja</translation>
@@ -324,6 +326,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="32895400574683172">Obavijesti su dopuštene</translation>
 <translation id="3290991969712132877">Da biste brže otvorili ovu stranicu, dodajte je na početni zaslon pomoću gumba Više opcija</translation>
 <translation id="3295530008794733555">Pregledavajte brže. Smanjite podatkovni promet.</translation>
+<translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3298243779924642547">Jednostav.</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
 <translation id="3315103659806849044">Trenutačno prilagođavate postavke sinkronizacije i Googleovih usluga. Da biste dovršili uključivanje sinkronizacije, dodirnite gumb Potvrdi pri dnu zaslona. Natrag</translation>
@@ -625,6 +628,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5524843473235508879">Preusmjeravanje je blokirano.</translation>
 <translation id="5527082711130173040">Chrome treba pristup lokaciji kako bi skenirao uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dopuštenja<ph name="END_LINK1" />. Pristup lokaciji također je <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori anonimne kartice</translation>
+<translation id="5530920986376047241">Stranice možete spremati na popis za čitanje da biste ih ponovo mogli pronaći</translation>
 <translation id="5534640966246046842">Web-lokacija kopirana</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="5561549206367097665">Čekanje na mrežu…</translation>
@@ -704,6 +708,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5982307838673692400">Otvaranje anonimne kartice</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6005538289190791541">Predložena zaporka</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranica}}</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
 <translation id="6036057147555329831">Dodatni ICU</translation>
 <translation id="6039379616847168523">Preskakanje na sljedeću karticu</translation>
@@ -938,6 +943,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7577900504646297215">Upravljaj interesima</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Preuzeta je <ph name="FILES_DOWNLOADED_ONE" /> datoteka}one{Preuzeta je <ph name="FILES_DOWNLOADED_MANY" /> datoteka}few{Preuzete su <ph name="FILES_DOWNLOADED_MANY" /> datoteke}other{Preuzeto je <ph name="FILES_DOWNLOADED_MANY" /> datoteka}}</translation>
+<translation id="7583262514280211622">Ovdje ćete pronaći svoj popis za čitanje</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je uključena Štednja baterije na uređaju</translation>
 <translation id="7593557518625677601">U postavkama omogućite sink. sustava Android da se pokrene Chrome sinkronizacija</translation>
 <translation id="7596558890252710462">Operativni sustav</translation>
@@ -969,6 +975,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="7772375229873196092">Zatvori aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Nove priče potražite kasnije</translation>
+<translation id="7786595606756654269">Google asistent pruža bolji glasovni doživljaj za pretraživanje weba i interakciju s web-lokacijama koje su otvorene. Google asistent primit će URL i sadržaj web-lokacija koje upotrebljavate uz njegovu pomoć.</translation>
 <translation id="7791543448312431591">Dodavanje</translation>
 <translation id="7798392620021911922">Kartice su vraćene (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -994,6 +1001,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
 <translation id="7963646190083259054">Dobavljač:</translation>
 <translation id="7967911570373677897">Da biste skenirali QR kôd, promijenite postavke tako da Chrome može koristiti vašu kameru</translation>
+<translation id="7968014550143838305">Dodano na popis za čitanje</translation>
 <translation id="7971136598759319605">Aktivan prije jednog dana</translation>
 <translation id="7975379999046275268">Pregled stranice <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
@@ -1055,6 +1063,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="8372925856448695381"><ph name="LANG" /> je spreman.</translation>
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8407396331882458341">1. Odaberite <ph name="APP_NAME" />.\n2. Dodirnite opciju "Uvijek".</translation>
+<translation id="8410695015584479363">Prati cijene</translation>
 <translation id="8413126021676339697">Pokaži cijelu povijest</translation>
 <translation id="8425213833346101688">Promijeni</translation>
 <translation id="8427875596167638501">Kartica pregleda je poluotvorena</translation>

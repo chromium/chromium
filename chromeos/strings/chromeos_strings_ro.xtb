@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1018656279737460067">Anulat</translation>
+<translation id="1071587090247825784">S-a detectat un firewall</translation>
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1204296502688602597">Latența DNS</translation>
+<translation id="1238612778414822719">Latență a solicitărilor HTTPS</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
+<translation id="1398634363027580500">Latență foarte mare a solicitărilor HTTPS</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1478594628797167447">Scaner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="ENROLLMENT_DOMAIN" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
+<translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>
 <translation id="467510802200863975">Parolele nu se potrivesc</translation>
+<translation id="467715984478005772">Posibil firewall</translation>
 <translation id="4691278870498629773">Oprită – Tavă lipsă</translation>
 <translation id="469379815867856270">Puterea semnalului</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
@@ -115,6 +120,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6048107060512778456">Nereușită – Blocaj de hârtie</translation>
 <translation id="6050189528197190982">Tonuri de gri</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
+<translation id="6061772781719867950">Solicitări HTTP nereușite</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
@@ -133,6 +139,8 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
+<translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
+<translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6839141349259399400">Nu te poți conecta la scanere?</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -140,6 +148,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7805768142964895445">Stare</translation>
@@ -151,6 +160,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8294431847097064396">Sursă</translation>
+<translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>

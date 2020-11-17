@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Εφαρμογές Android</translation>
 <translation id="2107021941795971877">Εκτύπωση υποστηριγμάτων</translation>
 <translation id="2108755909498034140">Επανεκκινήστε τον υπολογιστή σας</translation>
+<translation id="2111166930115883695">Πατήστε το πλήκτρο διαστήματος για να παίξετε.</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Παιχνίδια με κάρτες</translation>
 <translation id="2114841414352855701">Αγνοήθηκε επειδή αντικαταστάθηκε από την πολιτική <ph name="POLICY_NAME" />.</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">Καταχώριση λίστας "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
 <translation id="3016780570757425217">Πρόσβαση στην τοποθεσία σας</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Πατήστε το πλήκτρο Tab και μετά το πλήκτρο Enter για να καταργήσετε την πρόταση.</translation>
 <translation id="3023071826883856138">You4 (Φάκελος)</translation>
 <translation id="3024663005179499861">Λανθασμένος τύπος πολιτικής</translation>
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
@@ -764,6 +766,7 @@
 <translation id="4056223980640387499">Σέπια</translation>
 <translation id="4058922952496707368">Κλειδί "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Φάκελος)</translation>
+<translation id="4067669230157909013">H λήψη οθόνης ξεκίνησε ξανά.</translation>
 <translation id="4067947977115446013">Προσθήκη έγκυρης διεύθυνσης</translation>
 <translation id="4072486802667267160">Προέκυψε σφάλμα κατά την επεξεργασία της παραγγελίας σας. Δοκιμάστε ξανά.</translation>
 <translation id="4075732493274867456">Η εφαρμογή πελάτης και ο διακομιστής δεν υποστηρίζουν κάποια κοινή έκδοση πρωτοκόλλου SSL ή σουίτα κρυπτογράφησης.</translation>
@@ -849,6 +852,7 @@
 <translation id="4297502707443874121">Μικρογραφία για τη σελίδα <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Επέκταση</translation>
 <translation id="4300675098767811073">Πολλαπλό τρύπημα στα δεξιά</translation>
+<translation id="4302514097724775343">Πατήστε τον δεινόσαυρο για να παίξετε.</translation>
 <translation id="4302965934281694568">Chou3 (Φάκελος)</translation>
 <translation id="4305666528087210886">Δεν ήταν δυνατή η πρόσβαση στο αρχείο σας</translation>
 <translation id="4305817255990598646">Εναλλαγή</translation>
@@ -1261,6 +1265,7 @@
 <translation id="5963413905009737549">Ενότητα</translation>
 <translation id="5967592137238574583">Επεξεργασία στοιχείων επικοινωνίας</translation>
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
+<translation id="5968793460449681917">Σε κάθε επίσκεψη</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
 <translation id="5979084224081478209">Έλεγχος κωδικών πρόσβασης</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1476,6 +1481,7 @@
 <translation id="6895330447102777224">Η κάρτα σας επιβεβαιώθηκε</translation>
 <translation id="6897140037006041989">Παράγοντας χρήστη</translation>
 <translation id="6898699227549475383">Οργάνωση (O)</translation>
+<translation id="6907293445143367439">Να επιτρέπεται στον ιστότοπο <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Ο ιστότοπος <ph name="URL" /> επιθυμεί να αποκτήσει τον πλήρη έλεγχο των συσκευών σας MIDI</translation>
 <translation id="6915804003454593391">Χρήστης</translation>
 <translation id="6934672428414710184">Αυτό το όνομα προέρχεται από τον Λογαριασμό σας Google</translation>
@@ -1912,6 +1918,7 @@
 <translation id="858637041960032120">Προσθ. τηλεφ.
 </translation>
 <translation id="8589998999637048520">Βέλτιστη ποιότητα</translation>
+<translation id="8600271352425265729">Μόνο αυτήν τη φορά</translation>
 <translation id="860043288473659153">Όνομα κατόχου κάρτας</translation>
 <translation id="8606726445206553943">Χρήση των συσκευών σας MIDI</translation>
 <translation id="8612761427948161954">Γεια σας <ph name="USERNAME" />,
@@ -2069,6 +2076,7 @@
 <translation id="939736085109172342">Νέος φάκελος</translation>
 <translation id="945855313015696284">Ελέγξτε τις πληροφορίες παρακάτω και διαγράψτε τυχόν μη έγκυρες κάρτες</translation>
 <translation id="950736567201356821">Τριπλό τρύπημα στο επάνω μέρος</translation>
+<translation id="951941430552851965">Έγινε παύση της λήψης οθόνης από τον διαχειριστή σας λόγω του περιεχομένου που εμφανίζεται στην οθόνη.</translation>
 <translation id="961663415146723894">Δέσιμο στο κάτω μέρος</translation>
 <translation id="962484866189421427">Αυτό το περιεχόμενο μπορεί να επιχειρήσει να εγκαταστήσει παραπλανητικές εφαρμογές που προσποιούνται ότι είναι κάτι άλλο ή συλλέγουν δεδομένα τα οποία μπορεί να χρησιμοποιηθούν για την παρακολούθησή σας. <ph name="BEGIN_LINK" />Να εμφανίζεται ούτως ή άλλως<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Επίσημη έκδοση</translation>

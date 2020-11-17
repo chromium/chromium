@@ -148,6 +148,20 @@
       Si se asigna el valor "verdadero" a esta política, se habilitará esta función y los usuarios podrán cambiarla.
       De forma predeterminada, se le asignará el valor "falso", no se sugerirá ningún emoji y los usuarios no podrán anularla.</translation>
 <translation id="1243570869342663665">Controlar el filtrado de contenido para adultos de SafeSites.</translation>
+<translation id="1244309789361056660">Esta política se quitó en la versión M87, y los directorios principales se migrarán automáticamente a ext4 al iniciar sesión.
+      Si se asigna un valor a esta política, se especificará la acción que debe llevarse a cabo si el directorio principal del usuario se ha creado con cifrado eCryptfs. Es posible que las aplicaciones de Android dejen de funcionar si los directorios principales cifrados con eCryptfs no migran al cifrado de ext4.
+
+      Si a esta política se le asigna el valor:
+
+      * "Migrate" (o una opción no compatible, como "AskUser" o "AskForEcryptfsArcUsers"), los directorios se migrarán automáticamente a ext4 al iniciar sesión sin solicitar el consentimiento del usuario.
+
+      * "Wipe" o "MinimalMigrate", los antiguos directorios con cifrado eCryptfs se reemplazarán por nuevos directorios principales con cifrado de ext4 al iniciar sesión. Para ayudar al usuario a evitar inicios de sesión repetidos, "MinimalMigrate" intenta preservar los tokens de inicio de sesión.
+
+      * "DisallowArc" o no se le asigna ningún valor, se impedirá la migración y las aplicaciones Android del usuario dejarán de funcionar.
+
+      Esta política no se aplica a los usuarios de kiosko.
+
+      Advertencia: "Wipe" y "MinimalMigrate" eliminan los datos locales.</translation>
 <translation id="1247850578871017740">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
 
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.</translation>
@@ -1129,13 +1143,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política de empresa sirve para una adaptación a corto plazo y se eliminará en Chrome 88.</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
-<translation id="2759426227259007018">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
-
-      Si la aplicación preferida está habilitada en la pantalla de bloqueo, aparecerá en la pantalla un elemento de interfaz de usuario para iniciar la aplicación para tomar notas. Una vez iniciada, la aplicación podrá abrir una ventana sobre la pantalla de bloqueo y crear notas en este contexto. La aplicación puede importar las notas creadas a la sesión del usuario principal cuando se desbloquee la sesión. En la pantalla de bloqueo, solo se admiten las aplicaciones para tomar notas de <ph name="PRODUCT_NAME" />.
-
-      Después de establecer la política, los usuarios podrán activar una aplicación en la pantalla de bloqueo si el ID de extensión de la aplicación se encuentra entre los valores de la lista de la política. Por tanto, si se asigna una lista vacía a esta política, se desactivará la toma de notas en la pantalla de bloqueo. Que la política incluya el ID de una aplicación no significa que el usuario pueda activarla como aplicación para tomar notas en la pantalla de bloqueo. Por ejemplo, en <ph name="PRODUCT_NAME" /> 61, la plataforma también restringe el conjunto de aplicaciones disponibles.
-
-      Si no se establece la política, esta no restringirá el conjunto de aplicaciones que los usuarios pueden habilitar en la pantalla de bloqueo.</translation>
 <translation id="2761483219396643566">Tiempo de espera de advertencia de inactividad cuando el dispositivo funciona con batería</translation>
 <translation id="2765601181281280493">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios web no pueden pedir a los usuarios que les permitan acceder a un puerto serie.
 
@@ -1454,6 +1461,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
         * 4, el firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" /> se actualizará tras el registro, antes del inicio de sesión del usuario.
 
       Si no se define esta política, la actualización de firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" /> no estará disponible.</translation>
+<translation id="3232691106293445015">El uso de la autenticación <ph name="BASIC_AUTH" /> no está permitido para conexiones HTTP no seguras; se necesita una conexión HTTPS</translation>
 <translation id="3236046242843493070">Patrones de URL desde los que se puede instalar secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="3240609035816615922">Política de acceso a la configuración de impresoras.</translation>
 <translation id="324062325008698789">Configura una lista de impresoras.</translation>
@@ -2028,6 +2036,15 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se asigna el valor False a esta política o no se configura, los dispositivos con <ph name="PRODUCT_OS_NAME" /> comprobarán automáticamente si existe alguna actualización.
 
       Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas para que los usuarios reciban actualizaciones de software y correcciones de seguridad muy importantes. Desactivar las actualizaciones automáticas podría suponer un riesgo para los usuarios.</translation>
+<translation id="4016367078069682737">Esta política se quitó en la versión M61.
+
+      Especifica cómo debe comportarse un dispositivo que se ha enviado con eCryptfs y tiene que transferirse al sistema de cifrado ext4.
+
+      Si se asigna el valor "DisallowArc" a esta política, se inhabilitarán las aplicaciones Android para todos los usuarios del dispositivo (incluidos los que ya usen el sistema de cifrado ext4) y la migración de eCryptfs a ext4 no se ofrecerá a ningún usuario.
+
+      Si se asigna el valor "AllowMigration" a esta política, los usuarios que usen eCryptfs en sus directorios principales podrán migrarlos al sistema de cifrado ext4 si hace falta (cuando Android N esté disponible en el dispositivo).
+
+      Esta política no se aplica a las aplicaciones de kiosco, que se migran automáticamente. Si no se asigna ningún valor a esta política, el dispositivo se comportará como si se hubiera seleccionado "DisallowArc".</translation>
 <translation id="4020682745012723568">Las aplicaciones para Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
 <translation id="402759845255257575">No permitir que ningún sitio ejecute JavaScript</translation>
 <translation id="4027608872760987929">Habilitar proveedor de búsquedas predeterminadas</translation>
@@ -2346,6 +2363,15 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se inhabilita, las páginas no se podrán abrir en modo de incógnito.
 
       Si se asigna el valor "Forced" a esta política, las páginas solo se podrán abrir en modo de incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.</translation>
+<translation id="4594467366027975448">Permite configurar el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar la copia de itinerancia de los perfiles.
+
+      Si se asigna un valor a esta política, <ph name="PRODUCT_NAME" /> utilizará el directorio proporcionado para almacenar la copia de itinerancia de los perfiles si se ha habilitado la política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />. Si se inhabilita la política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> o no se le asigna ningún valor, no se utilizará el valor almacenado en esta política.
+
+      Para consultar una lista de variables que se pueden utilizar, visita https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.
+
+      En las plataformas que no utilicen Windows, debe asignarse un valor a esta política para que funcionen los perfiles de itinerancia.
+
+      En Windows, si no se asigna ningún valor a esta política, se usará la ruta predeterminada del perfil de itinerancia.</translation>
 <translation id="4600786265870346112">Habilitar cursor grande</translation>
 <translation id="4604931264910482931">Configurar la lista negra de mensajes nativos</translation>
 <translation id="4607416370554533118">Si configuras esta política, podrás crear una lista de patrones de URL donde se especifique en qué sitios web podrá usar Chrome un certificado de cliente de forma automática. El valor debe ser un conjunto de diccionarios JSON de tipo string, cada uno con el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los que puede elegir automáticamente el navegador. Independientemente del filtro, solo se seleccionarán los certificados que coincidan con la solicitud de certificado del servidor.
@@ -2612,6 +2638,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5090209345759901501">Extiende la configuración del contenido Flash a todo el contenido</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
+<translation id="5091315650312105069">Permite la autenticación <ph name="BASIC_AUTH" /> para conexiones HTTP</translation>
 <translation id="5101600510268095939">Permite definir una lista de patrones de URL donde se especifica qué sitios web no pueden mostrar contenido mixto (es decir, contenido HTTP en sitios web HTTPS) bloqueable (es decir, activo), y qué contenido mixto opcionalmente bloqueable (es decir, pasivo) se actualizará.
 
           Si no se establece esta política, el contenido mixto bloqueable se bloqueará y el contenido mixto opcionalmente bloqueable se actualizará, y los usuarios podrán establecer excepciones para permitir este contenido en sitios web concretos.
@@ -3344,6 +3371,9 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6070667616071269965">Diseños de teclado para la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="6074963268421707432">No permitir que ningún sitio muestre notificaciones de escritorio</translation>
 <translation id="6074964551275531965">Especificar el periodo de notificación de actualizaciones</translation>
+<translation id="6075316301208933536">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> se definirá cuándo deberá dejar de cargarse la batería, en función del porcentaje de carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe tener un valor al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Si no se asigna ningún valor a esta política, se aplicará el modo <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de carga de la batería.</translation>
 <translation id="6082161804984853051">Si se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> utilizará el directorio proporcionado para guardar archivos almacenados en caché en el disco independientemente de si los usuarios han especificado el indicador "--disk-cache-dir" o no.
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> usa el directorio de caché predeterminado, pero lo usuarios podrán cambiar el ajuste con el indicador de línea de comandos "--disk-cache-dir".
@@ -3929,6 +3959,13 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Especifica las opciones que se deben aplicar a <ph name="PRODUCT_NAME" /> cuando se inicia. Las opciones especificadas solo se aplican en la pantalla de inicio de sesión. Las opciones establecidas a través de esta política no se propagan a las sesiones del usuario.</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
+<translation id="68818134518270542">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
+
+      Si la aplicación preferida está habilitada en la pantalla de bloqueo, aparecerá en la pantalla un elemento de interfaz de usuario para iniciar la aplicación para tomar notas. Una vez iniciada, la aplicación podrá abrir una ventana sobre la pantalla de bloqueo y crear notas en este contexto. La aplicación puede importar las notas creadas a la sesión del usuario principal cuando se desbloquee la sesión. En la pantalla de bloqueo, solo se admiten las aplicaciones para tomar notas de <ph name="PRODUCT_NAME" />.
+
+      Después de establecer la política, los usuarios podrán activar una aplicación en la pantalla de bloqueo si el ID de extensión de la aplicación se encuentra entre los valores de la lista de la política. Por tanto, si se asigna una lista vacía a esta política, se desactivará la toma de notas en la pantalla de bloqueo. Que la política incluya el ID de una aplicación no significa que el usuario pueda activarla como aplicación para tomar notas en la pantalla de bloqueo. Por ejemplo, en <ph name="PRODUCT_NAME" /> 61, la plataforma también restringe el conjunto de aplicaciones disponibles.
+
+      Si no se establece esta política, no habrá restricciones impuestas por la política en relación con el conjunto de aplicaciones que los usuarios pueden habilitar en la pantalla de bloqueo.</translation>
 <translation id="6889123056995503704">El usuario decide el comportamiento del cambio a una versión inferior</translation>
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
 <translation id="6897730193187922386">Elimina los mensajes de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -4058,6 +4095,9 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
 Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante un periodo de tiempo determinado.</translation>
+<translation id="7030205756530739128">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> se definirá cuándo deberá empezar a cargarse la batería, en función del porcentaje de carga de la batería. El valor debe ser al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Si no se asigna ningún valor a esta política, se aplicará el modo de carga estándar de la batería.</translation>
 <translation id="7032813174556919004">Inhabilitar DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor staging para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
 
@@ -4286,6 +4326,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
 <translation id="7302043767260300182">Retraso de bloqueo de pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
+<translation id="7319863628760093590">Si se habilita la política o no se establece, permitirá las solicitudes de autenticación <ph name="BASIC_AUTH" /> recibidas desde conexiones HTTP no seguras.
+
+      Si se inhabilita la política, las solicitudes HTTP no seguras tendrán prohibido el uso del esquema de autenticación <ph name="BASIC_AUTH" />; solo se permitirán HTTP seguras.</translation>
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta conservar los tokens de inicio de sesión para que el usuario no tenga que volver a iniciar sesión.</translation>
 <translation id="7331962793961469250">Si se establece en "true", las promociones de aplicaciones de Chrome Web Store no aparecerán en la página Nueva pestaña.
@@ -5004,6 +5047,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8369602308428138533">Retraso de desconexión de la pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="8371178326720637170">Permite que las extensiones gestionadas usen la API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquear el acceso de escritura a archivos y directorios en estos sitios web</translation>
+<translation id="8379317372795444261">Se permite la autenticación <ph name="BASIC_AUTH" /> en conexiones HTTP</translation>
 <translation id="8380490658357556620">Permite habilitar el uso de servidores de retransmisión cuando los clientes remotos intentan conectarse a este ordenador.
 
           Si se habilita esta opción, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este ordenador cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).

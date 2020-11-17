@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">ከገጹ ሳይወጡ በድር ጣቢያዎች ላይ ስላሉ ርዕሶች ይወቁ። «ለመፈለግ ይንኩ» አንድ ቃል እና በዙሪያው ያለውን አውድ ወደ Google ፍለጋ ይልክና ትርጓሜዎችን፣ ስዕሎችን፣ የፍለጋ ውጤቶችን እና ሌሎች ዝርዝሮችን ይመልሳል።
 
 ለመፈለግ ማናቸውንም ቃል ይንኩ እና ይያዙ። የእርስዎን ፍለጋ ለማጥራት፣ ተጨማሪ ወይም ያነሱ ቃላትን ይምረጡ። የእርስዎን ፍለጋ ለማርትዕ ፓነሉን ይክፈቱ፣ በአዲስ ትር ለመክፈት አዶውን መታ ያድርጉ፣ እና በፍለጋ ሳጥኑ ውስጥ የእርስዎን ለውጦች ያከናውኑ።</translation>
+<translation id="2459390580524506445">የተሻሻለ የድምጽ ፍለጋ</translation>
 <translation id="246532703174860178">አጋራ</translation>
 <translation id="2478076885740497414">መተግበሪያ ይጫኑ</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">የGoogle <ph name="APP_NAME" /> ማከማቻ</translation>
 <translation id="2942036813789421260">የቅድመ-እይታ ትር ተዘግቷል</translation>
 <translation id="2956410042958133412">ይህ መለያ የሚቀናበረው በ<ph name="PARENT_NAME_1" /> እና <ph name="PARENT_NAME_2" /> ነው።</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ያልተነበበ ገጽ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}}</translation>
 <translation id="2962095958535813455">ወደ ማንነት የማያሳውቁ ትሮች ተቀይሯል</translation>
 <translation id="2979025552038692506">የተመረጠው ማንነት የማያሳውቅ ትር</translation>
 <translation id="2987620471460279764">ከሌሎች መሣሪያዎች የተጋራ ጽሑፍ</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">ማሳወቂያዎች ይፈቀዳሉ</translation>
 <translation id="3290991969712132877">በፍጥነት እዚህ ለመድረስ ከብዙ አማራጮች አዝራር ላይ ይህንን ገጽ ወደ መነሻ ገጽዎ ያክሉ</translation>
 <translation id="3295530008794733555">በበለጠ ፍጥነት ያስሱ። ያነሰ ውሂብን ይጠቀሙ።</translation>
+<translation id="3297344142967351106">የድምጽ እርዳታ</translation>
 <translation id="3298243779924642547">ቀላል</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
 <translation id="3315103659806849044">እርስዎ በአሁኑ ጊዜ የእርስዎን የስምረት እና የGoogle አገልግሎት ቅንብሮችን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">አቅጣጫ ማዞር ታግዷል።</translation>
 <translation id="5527082711130173040">Chrome መሣሪያዎችን መቃኘት እንዲችል የአካባቢ መዳረሻ ያስፈልገዋል። <ph name="BEGIN_LINK1" />ፈቃዶችን ያዘምኑ<ph name="END_LINK1" />። የአካባቢ መዳረሻ እንዲሁም <ph name="BEGIN_LINK2" />ለዚህ መዳረሻ ጠፍቷል<ph name="END_LINK2" />።</translation>
 <translation id="5530766185686772672">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
+<translation id="5530920986376047241">እነሱን እንደገና ለማግኘት ገጾችን በንባብ ዝርዝርዎ ውስጥ ማስቀመጥ ይችላሉ</translation>
 <translation id="5534640966246046842">ጣቢያ ተቀድቷል</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5561549206367097665">አውታረ መረብን በመጠበቅ ላይ…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">ማንነት የማያሳውቅ ትር ክፈት</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ገጽ አለዎት}one{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}other{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}}</translation>
 <translation id="6014293228235665243">ያልተነበበ</translation>
 <translation id="6036057147555329831">ተጨማሪ አይሲዩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
 <translation id="7577900504646297215">ፍላጎቶችን አቀናብር</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />ፋይል ወርዷል}one{<ph name="FILES_DOWNLOADED_MANY" /> ፋይሎች ወርደዋል}other{<ph name="FILES_DOWNLOADED_MANY" /> ፋይሎች ወርደዋል}}</translation>
+<translation id="7583262514280211622">የእርስዎን ንባብ ዝርዝር እዚህ ያገኛሉ</translation>
 <translation id="7588219262685291874">የመሣሪያዎ ባትሪ ቆጣቢ ሲበራ ጨለማ ገጽታን ያብሩ</translation>
 <translation id="7593557518625677601">የChrome ስምረትን ለመጀመር የAndroid ቅንብሮችን ይክፈቱና የAndroid ስርዓት ስምረትን ዳግም ያንቁ</translation>
 <translation id="7596558890252710462">ስርዓተ ክወና</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" />ን ዝጋ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7778840695157240389">ለአዳዲስ ዘገባዎች በኋላ ላይ መልሰው ይፈትሹ</translation>
+<translation id="7786595606756654269">Google ረዳት ድርን ለመፈለግ እና ከከፈቷቸው ጣቢያዎች ጋር ለመሳተፍ የተሻለ የድምጽ ተሞክሮ ይሰጣል። Google ረዳት ከእሱ ጋር የሚጠቀሙባቸውን ዩአርኤል እና ይዘቶች ይቀበላል።</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">የማከማቻ መዳረሻን አሰናክለዋል፣ እሱን ለማንቃት እባክዎ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7963646190083259054">አቅራቢ፦</translation>
 <translation id="7967911570373677897">የQR ኮድ ለመቃኘት Chrome የእርስዎን ካሜራ መጠቀም እንዲችል የእርስዎን ቅንብሮች ይለውጡ</translation>
+<translation id="7968014550143838305">ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="7971136598759319605">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="7975379999046275268">ገጽ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ቅድሚያ ይመልከቱ</translation>
 <translation id="7981313251711023384">ይበልጥ ፈጣን ለሆነ አሰሳ እና ፍለጋ ገጾችን ቅድሚያ ይጫኑ</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> ዝግጁ ነው።</translation>
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" />\n2ን ይምረጡ። «ዘወትር»ን መታ ያድርጉ</translation>
+<translation id="8410695015584479363">ዋጋዎችን ተከታተል</translation>
 <translation id="8413126021676339697">ሙሉ ታሪክ አሳይ</translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8427875596167638501">የቅድመ-እይታ ትር ግማሽ ተከፍቷል</translation>

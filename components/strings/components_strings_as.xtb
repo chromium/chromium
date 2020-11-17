@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android এপ্‌</translation>
 <translation id="2107021941795971877">প্ৰিণ্টৰ সমৰ্থন</translation>
 <translation id="2108755909498034140">আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="2111166930115883695">খেলিবলৈ স্পে’চ টিপক</translation>
 <translation id="2111256659903765347">ছুপাৰ-A</translation>
 <translation id="2113977810652731515">কাৰ্ড</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" />এ ইয়াক অ’ভাৰৰাইড কৰাৰ বাবে অৱজ্ঞা কৰা হৈছে।</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">তালিকাযুক্ত অন্তৰ্ভুক্তি "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3016780570757425217">আপোনাৰ অৱস্থান জানক</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, পৰামৰ্শ আঁতৰাবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক।</translation>
 <translation id="3023071826883856138">You4 (লেফাফা)</translation>
 <translation id="3024663005179499861">নীতিৰ প্ৰকাৰটো ভুল</translation>
 <translation id="3037605927509011580">আমি দুঃখিত!</translation>
@@ -761,6 +763,7 @@
 <translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4058922952496707368">চাবি "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (লেফাফা)</translation>
+<translation id="4067669230157909013">স্ক্ৰীন কেপচাৰ কৰাৰ সুবিধাটো পুনৰ আৰম্ভ কৰা হৈছে।</translation>
 <translation id="4067947977115446013">মান্য ঠিকনা দিয়ক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰট’কল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
 <translation id="4075941231477579656">স্পৰ্শ আইডি</translation>
@@ -843,6 +846,7 @@
 <translation id="4297502707443874121">পৃষ্ঠা <ph name="THUMBNAIL_PAGE" />ৰ বাবে থাম্বনেইল</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
 <translation id="4300675098767811073">সোঁফালে একাধিক পাঞ্চ কৰক</translation>
+<translation id="4302514097724775343">খেলিবলৈ ডাইন’ছৰত টিপক</translation>
 <translation id="4302965934281694568">Chou3 (লেফাফা)</translation>
 <translation id="4305666528087210886">আপোনাৰ ফাইলটো এক্সেছ কৰিব পৰা নগ’ল</translation>
 <translation id="4305817255990598646">সলনি কৰক</translation>
@@ -1253,6 +1257,7 @@
 <translation id="5963413905009737549">শাখা</translation>
 <translation id="5967592137238574583">সম্পর্কৰ তথ্য সম্পাদনা কৰক</translation>
 <translation id="5967867314010545767">ইতিহাসৰ পৰা আঁতৰাওক</translation>
+<translation id="5968793460449681917">প্ৰতিবাৰ যাওঁতে</translation>
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
 <translation id="5980920751713728343">সূচক-৩x৫</translation>
@@ -1467,6 +1472,7 @@
 <translation id="6895330447102777224">আপোনাৰ কার্ড নিশ্চিত কৰা হৈছে</translation>
 <translation id="6897140037006041989">ব্যৱহাৰকাৰীৰ এজেণ্ট</translation>
 <translation id="6898699227549475383">প্ৰতিষ্ঠান (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" />ক এয়া কৰিবলৈ অনুমতি দিয়ক:</translation>
 <translation id="6910240653697687763"><ph name="URL" />এ আপোনাৰ MIDI ডিভাইচসমূহৰ সম্পূর্ণ নিয়ন্ত্ৰণ পাব খোজে</translation>
 <translation id="6915804003454593391">ব্যৱহাৰকাৰী:</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
@@ -1899,6 +1905,7 @@
 <translation id="8574899947864779331">কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="858637041960032120">ফোন নম্বৰ যোগ কৰক</translation>
 <translation id="8589998999637048520">উত্তম গুণগত মান</translation>
+<translation id="8600271352425265729">কেৱল এইবাৰৰ বাবে</translation>
 <translation id="860043288473659153">কার্ডৰ গৰাকীৰ নাম</translation>
 <translation id="8606726445206553943">আপোনাৰ MIDI ডিভাইচসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="8612761427948161954">নমস্কাৰ <ph name="USERNAME" />,
@@ -2055,6 +2062,7 @@
 <translation id="939736085109172342">নতুন ফ'ল্ডাৰ</translation>
 <translation id="945855313015696284">তলৰ তথ্য পৰীক্ষা কৰক আৰু কোনো অমান্য কার্ড থাকিলে মচক</translation>
 <translation id="950736567201356821">ওপৰৰ অংশত তিনিবাৰ পাঞ্চ কৰা</translation>
+<translation id="951941430552851965">আপোনাৰ স্ক্ৰীনত থকা সমলৰ কাৰণে আপোনাৰ প্ৰশাসকে স্ক্ৰীন কেপচাৰ কৰাটো পজ কৰিছে।</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="962484866189421427">এই সমলে বিভ্ৰান্তিকৰ এপ্ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে যি আন ছদ্মৱেশ ধাৰণ কৰিব পাৰে বা আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিবলৈ ব্যৱহাৰ কৰা ডেটা সংগ্ৰহ কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">আনুষ্ঠানিক বিল্ড</translation>

@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
+<translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
+<translation id="1238612778414822719">HTTPS хоцролт</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
+<translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Энэ <ph name="DEVICE_TYPE" />-г <ph name="ENROLLMENT_DOMAIN" /> удирддаг. Администратор төхөөрөмжийг алсаас тохируулах боломжтой.</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
+<translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
 <translation id="4646949265910132906">Аюулгүй Wi-Fi холболт</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>
+<translation id="467715984478005772">Галт хана сэжиглэсэн</translation>
 <translation id="4691278870498629773">Зогссон - Цаасны тэвш алга</translation>
 <translation id="469379815867856270">Дохионы хүч</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">Амжилтгүй болсон - Цаас гацсан</translation>
 <translation id="6050189528197190982">Хараас цагаан өнгө</translation>
 <translation id="6058625436358447366">Дуусгахын тулд хуучин болон шинэ нууц үгээ оруулна уу</translation>
+<translation id="6061772781719867950">HTTP хүсэлт амжилтгүй</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6747215703636344499">Зогссон - Гаралт дүүрсэн</translation>
+<translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
+<translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
 <translation id="6839141349259399400">Сканнертай холбогдож чадахгүй байна уу?</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
+<translation id="8302368968391049045">HTTPS галт хана</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="8352772353338965963">Олон хэрэглэгч бүхий нэвтрэх хэсэгт бүртгэл нэмж оруулах. Бүх нэвтэрсэн бүртгэлүүд нууц үггүйгээр нэвтрэх боломжтой учраас энэ горимыг зөвхөн итгэл хүлээсэн бүртгэлүүдэд ашиглахыг зөвлөж байна.</translation>
 <translation id="8364946094152050673">DNS хоосон байна</translation>

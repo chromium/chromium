@@ -301,6 +301,7 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2107021941795971877">ბეჭდვის დამხმარე საშუალებები</translation>
 <translation id="2108755909498034140">თქვენი კომპიუტერის გადატვირთვა</translation>
+<translation id="2111166930115883695">დასაკრავად დააჭირეთ შორისს</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">ბიზნეს ბარათი დიზაინი</translation>
 <translation id="2114841414352855701">იგნორირებულია, რადგან იგი ჩანაცვლებულია <ph name="POLICY_NAME" />-ის მიერ.</translation>
@@ -516,6 +517,7 @@
 <translation id="3010559122411665027">სიის ჩანაწერი „<ph name="ENTRY_INDEX" />“ <ph name="ERROR" /></translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
 <translation id="3016780570757425217">თქვენი მდებარეობის ცოდნა</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, შემოთავაზების ამოსაშლელად დააჭირეთ ჯერ კლავიშს Tab, ხოლო შემდეგ Enter-ს.</translation>
 <translation id="3023071826883856138">You4 (კონვერტი)</translation>
 <translation id="3024663005179499861">არასწორი პოლიტიკის ტიპი</translation>
 <translation id="3037605927509011580">უი, ხარვეზი!</translation>
@@ -757,6 +759,7 @@
 <translation id="4056223980640387499">სეპია</translation>
 <translation id="4058922952496707368">გასაღები „<ph name="SUBKEY" />“ <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (კონვერტი)</translation>
+<translation id="4067669230157909013">ეკრანის აღბეჭდვა გაგრძელდა.</translation>
 <translation id="4067947977115446013">მიუთითეთ სწორი მისამართი</translation>
 <translation id="4072486802667267160">თქვენი შეკვეთის დამუშავება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="4075732493274867456">კლიენტისა და სერვერის მიერ არ არის მხარდაჭერილი SSL პროტოკოლის საერთო ვერსია ან შიფრატორების ნაკრები.</translation>
@@ -837,6 +840,7 @@
 <translation id="4297502707443874121">ესკიზი გვერდისთვის <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">გაშლა</translation>
 <translation id="4300675098767811073">მრავლად გახვრეტა მარჯვნივ</translation>
+<translation id="4302514097724775343">სათამაშოდ შეეხეთ დინოზავრს</translation>
 <translation id="4302965934281694568">Chou3 (კონვერტი)</translation>
 <translation id="4305666528087210886">თქვენს ფაილზე წვდომა ვერ მოხერხდა</translation>
 <translation id="4305817255990598646">გადართვა</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5963413905009737549">სექცია</translation>
 <translation id="5967592137238574583">საკონტაქტო ინფორმაციის რედაქტირება</translation>
 <translation id="5967867314010545767">ამოშალეთ ისტორიიდან</translation>
+<translation id="5968793460449681917">ყოველ ვიზიტზე</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5979084224081478209">პაროლების შემოწმება</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1464,6 +1469,7 @@
 <translation id="6895330447102777224">თქვენი ბარათი დადასტურდა</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" />-ისთვის დაშვებული იყოს:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ითხოვს თქვენი MIDI მოწყობილობების სრულად გაკონტროლების ნებართვას</translation>
 <translation id="6915804003454593391">მომხმარებელი:</translation>
 <translation id="6934672428414710184">ეს სახელი მომდინარეობს თქვენი Google ანგარიშიდან</translation>
@@ -1899,6 +1905,7 @@
 <translation id="8574899947864779331">Touch ID-ს გამოყენება ბარათების უფრო სწრაფად დასადასტურებლად</translation>
 <translation id="858637041960032120">დაამატეთ ტელეფონის ნომერი</translation>
 <translation id="8589998999637048520">საუკეთესო ხარისხი</translation>
+<translation id="8600271352425265729">მხოლოდ ამჯერად</translation>
 <translation id="860043288473659153">ბარათის მფლობელის სახელი</translation>
 <translation id="8606726445206553943">თქვენი MIDI მოწყობილობების გამოყენება</translation>
 <translation id="8612761427948161954">გამარჯობა, <ph name="USERNAME" />,
@@ -2056,6 +2063,7 @@
 <translation id="939736085109172342">ახალი საქაღალდე</translation>
 <translation id="945855313015696284">გაეცანით ქვემოთ მოცემულ ინფორმაციას და წაშალეთ არასწორი ბარათები</translation>
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
+<translation id="951941430552851965">ეკრანის აღბეჭდვა დაპაუზდა თქვენი ადმინისტრატორის მიერ, რადგან ეკრანზე გარკვეული ტიპის კონტენტი გაქვთ.</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
 <translation id="962484866189421427">ამ კონტენტის მეშვეობით შეიძლება დაინსტალირდეს შეცდომაში შემყვანი აპები, რომლებსაც შეუძლია თავის გასაღება სხვა აპებად ან ისეთი მონაცემების შეგროვება, რომელთა მეშვეობითაც შესაძლებელი იქნება თქვენთვის თვალის მიდევნება. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">ოფიციალური კონსტრუქცია</translation>

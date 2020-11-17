@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018656279737460067">בוטל</translation>
+<translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
+<translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
+<translation id="1398634363027580500">‏משך זמן אחזור HTTPS ארוך מאוד</translation>
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1478594628797167447">סורק</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="ENROLLMENT_DOMAIN" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="4034824040120875894">מדפסת</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
+<translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
+<translation id="467715984478005772">חומת אש חשודה</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">נכשלה – חסימת נייר</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
+<translation id="6061772781719867950">‏בקשות HTTP שנכשלו</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
+<translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
+<translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6839141349259399400">לא ניתן להתחבר לסורקים?</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8294431847097064396">מקור</translation>
+<translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>

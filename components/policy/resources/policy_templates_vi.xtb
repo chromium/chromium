@@ -1143,13 +1143,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Chính sách doanh nghiệp này được áp dụng ngắn hạn và sẽ bị loại bỏ trong Chrome 88.</translation>
 <translation id="2759224876420453487">Kiểm soát hoạt động của người dùng trong một phiên đa cấu hình</translation>
-<translation id="2759426227259007018">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định những ứng dụng mà người dùng có thể bật làm ứng dụng ghi chú trên màn hình khóa của <ph name="PRODUCT_OS_NAME" />.
-
-      Nếu ứng dụng ghi chú ưa thích được bật trên màn hình khóa, thì thành phần trên giao diện người dùng để chạy ứng dụng đó sẽ xuất hiện trên màn hình. Sau khi chạy, ứng dụng có thể tạo một cửa sổ ở phía trên màn hình khóa và tạo các ghi chú trong bối cảnh này. Ứng dụng này có thể nhập các ghi chú đã tạo vào phiên truy cập của người dùng chính, khi phiên được mở khóa. Chỉ các ứng dụng ghi chú của <ph name="PRODUCT_NAME" /> mới được hỗ trợ trên màn hình khóa.
-
-      Nếu bạn đặt chính sách này, người dùng có thể bật một ứng dụng trên màn hình khóa nếu mã tiện ích của ứng dụng đó có trong giá trị danh sách của chính sách. Do vậy, khi bạn đặt chính sách này thành một danh sách trống, tính năng ghi chú trên màn hình khóa sẽ bị tắt. Xin lưu ý rằng không phải cứ có mã ứng dụng trong chính sách là người dùng có thể bật ứng dụng đó làm ứng dụng ghi chú trên màn hình khóa. Ví dụ: trên <ph name="PRODUCT_NAME" /> 61, chúng tôi cũng hạn chế một số ứng dụng có sẵn theo nền tảng.
-
-      Nếu bạn không đặt chính sách này, sẽ không có hạn chế nào được áp dụng theo chính sách này cho một số ứng dụng mà người dùng có thể bật trên màn hình khóa.</translation>
 <translation id="2761483219396643566">Thời gian chờ cảnh báo trạng thái không sử dụng khi chạy trên nguồn pin</translation>
 <translation id="2765601181281280493">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp.
 

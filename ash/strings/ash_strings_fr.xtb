@@ -67,7 +67,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="1510238584712386396">Lanceur d'applications</translation>
 <translation id="1516740043221086139">Le mode Ne pas déranger est activé.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}many{Show notification settings. Notifications are off for # apps}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1525508553941733066">IGNORER</translation>
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
@@ -226,7 +226,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}many{Connected to # devices}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Régler le minuteur</translation>
 <translation id="3203405173652969239">Switch Access activé</translation>
 <translation id="3207953481422525583">Paramètres utilisateur</translation>
@@ -317,7 +317,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4028481283645788203">Veuillez saisir le mot de passe pour renforcer la sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}other{Notif. désactivées pour # applis}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}many{Off for # apps}other{Notif. désactivées pour # applis}}</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
@@ -610,7 +610,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}many{# digits remaining}other{# chiffres manquants}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="6896758677409633944">Copier</translation>
@@ -691,7 +691,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7662283695561029522">Appuyer pour configurer</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}many{# notifications}other{# notifications}}</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>

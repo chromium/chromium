@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
 <translation id="1850504506766569011">‏Wi-Fi آف ہے۔</translation>
 <translation id="1864454756846565995">‏USB-C آلہ (پیچھے کا پورٹ)</translation>
+<translation id="1882814835921407042">کوئی موبائل نیٹ ورک نہیں ہے</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> میں معکوس سازی</translation>
 <translation id="1885785240814121742">فنگر پرنٹ کی مدد سے غیر مقفل کریں</translation>
 <translation id="1888656773939766144">‏‫<ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />(Hz<ph name="SPECIFIED_REFRESH_RATE" />) کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) کر دیا گیا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">ڈیسک کا نام تبدیل کر کے <ph name="DESK_NAME" /> کر دیا گیا۔</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
+<translation id="2078034614700056995">اگلے ڈیسک پر سوئچ کرنے کے لیے چار انگلیوں سے دائیں سوائپ کریں۔</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
+<translation id="2170530631236737939">مجموعی جائزے سے باہر نکلنے کے لیے تین انگلیوں سے نیچے سوائپ کریں</translation>
 <translation id="2208323208084708176">متحد ڈیسک ٹاپ وضع</translation>
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="2222338659135520253">سائن ان درکار ہے</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">کوئی موبائل نیٹ ورک دستیاب نہیں ہے</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ونڈو کو <ph name="ACTIVE_DESK" /> ڈیسک سے <ph name="TARGET_DESK" /> ڈیسک میں منتقل کر دیا گیا ہے</translation>
 <translation id="3255483164551725916">آپ کیا کر سکتی ہیں؟</translation>
+<translation id="3289674678944039601">ایڈاپٹر کے ذریعے چارج ہو رہا ہے</translation>
 <translation id="3290356915286466215">غیر محفوظ</translation>
 <translation id="3294437725009624529">مہمان</translation>
 <translation id="3307642347673023554">لیپ ٹاپ وضح میں سوئچ کیا</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">آپ نے پوری اسکرین کے مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="380165613292957338">آداب، میں کیسے مدد کر سکتا ہوں؟</translation>
 <translation id="3826099427150913765">پاس ورڈ پر سوئچ کریں</translation>
+<translation id="383058930331066723">بیٹری سیور موڈ آن ہے</translation>
 <translation id="383629559565718788">کی بورڈ کی ترتیبات دکھائیں</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
 <translation id="3846575436967432996">نیٹ ورک کی کوئی معلومات دستیاب نہیں ہے</translation>
@@ -323,6 +328,7 @@
 <translation id="4112140312785995938">پیچھے کریں</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="4121728057981832179">ورچوئل مشین آپ کا مائیکروفون استعمال کر رہی ہے</translation>
+<translation id="4126167871198063089">سننے کیلئے منتخب کریں سے باہر نکلیں</translation>
 <translation id="4129129681837227511">اپنی مقفل اسکرین پر اطلاعات دیکھنے کیلئے، ترتیب تبدیل کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> کے زیر انتظام ہے</translation>
@@ -337,6 +343,7 @@
 <translation id="4217571870635786043">املاء</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
+<translation id="425364040945105958">‏کوئی SIM نہیں ہے</translation>
 <translation id="4261870227682513959">اطلاع کی ترتیبات دکھائیں۔ اطلاعات آف ہیں</translation>
 <translation id="4267383818855338811">ورچوئل مشین آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="4269883910223712419">اس آلہ کا منتظم یہ کام کر سکتا ہے:</translation>
@@ -382,6 +389,7 @@
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4570957409596482333">سننے کیلئے منتخب کریں بٹن</translation>
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">پیش مناظر دکھائیں</translation>
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
@@ -429,11 +437,13 @@
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4969092041573468113">h <ph name="MINUTES" />m <ph name="SECONDS" />s<ph name="HOURS" /></translation>
 <translation id="4975771730019223894">ایپ بیجینگ</translation>
+<translation id="5003993274120026347">اگلا جملہ</translation>
 <translation id="5019169674188023236">‏ایسا لگتا ہے کہ آپ کے <ph name="DEVICE_TYPE" /> پر آپ کا بلوٹوتھ یا Wi-Fi آف ہے۔ Phone Hub استعمال کرنے کیلئے، براہ کرم اپنا کنکشن چیک کریں۔</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
 <translation id="5033299697334913360">فُل اسکرین کیپچر کرنے کیلئے کہیں بھی کلک کریں</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> نئے فون سے منسلک ہو گیا</translation>
 <translation id="5035389544768382859">ڈسپلے کنفیگریشن کی تصدیق کریں</translation>
+<translation id="504465286040788597">گزشتہ پیراگراف</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
@@ -466,13 +476,17 @@
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5465662442746197494">مدد درکار ہے؟</translation>
 <translation id="5496819745535887422">آپ کا منتظم آپ کے آلے کو رول بیک کر رہا ہے۔ آلہ کے ری سٹارٹ کرنے پر تمام ڈیٹا حذف ہو جائے گا۔</translation>
+<translation id="5516420770350073386">آپ کی اسکرین پر موجود مواد کی وجہ سے آپ کے منتظم کی جانب سے اسکرین ریکارڈنگ بند کر دی گئی۔</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> منسلک ہو رہی ہے۔</translation>
+<translation id="5532994612895037630">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی تھپتھپائیں</translation>
 <translation id="553675580533261935">سیشن سے باہر نکل رہے ہیں</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
+<translation id="557563299383177668">اگلا پیراگراف</translation>
+<translation id="55808498489107691">آپ کی اسکرین پر موجود مواد کی وجہ سے آپ کے منتظم کی جانب سے اسکرین کیپچر مسدود کر دیا گیا۔</translation>
 <translation id="558849140439112033">کیپچر کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏صوتی تاثرات کو غیر فعال کرنے کے لیے Ctrl + Alt + Z دبائیں۔</translation>
@@ -523,6 +537,7 @@
 <translation id="602001110135236999">بائیں اسکرول کریں</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6030495522958826102">مینو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
+<translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6043212731627905357">یہ مانیٹر آپ کے <ph name="DEVICE_TYPE" /> کے ساتھ ٹھیک طرح سے کام نہیں کر رہا (مانیٹر تعاون یافتہ نہیں ہے)۔</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
@@ -531,6 +546,7 @@
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="607652042414456612">آپ کا کمپیوٹر قریبی بلوٹوتھ آلات کے ذریعہ قابل دریافت ہے اور "<ph name="NAME" />" کے بطور پتہ <ph name="ADDRESS" /> کے ساتھ ظاہر ہوگا</translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ہٹائیں کا ڈائیلاگ کھولیں</translation>
 <translation id="615957422585914272">آن اسکرین کی بورڈ دکھائیں</translation>
@@ -545,6 +561,7 @@
 <translation id="6283712521836204486">ڈسٹرب نہ کریں آف ہے۔</translation>
 <translation id="6284232397434400372">ریزولیوشن تبدیل ہو گئی</translation>
 <translation id="6288235558961782912">والد/والدہ کی اجازت سے <ph name="USER_EMAIL_ADDRESS" /> بعد میں دوبارہ شامل کیا جا سکتا ہے۔</translation>
+<translation id="6291221004442998378">چارج نہیں ہو رہا ہے</translation>
 <translation id="6297287540776456956">علاقہ منتخب کرنے کیلئے اسٹائلس استعمال کریں</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> کو <ph name="ROTATION" /> میں گھما دیا گیا تھا</translation>
 <translation id="6315170314923504164">آواز</translation>
@@ -573,6 +590,7 @@
 <translation id="6537924328260219877">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="6559976592393364813">منتظم سے پوچھیں</translation>
+<translation id="6570902864550063460">‏USB کے ذریعے چارج ہو رہا ہے</translation>
 <translation id="6585808820553845416">سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا۔</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
@@ -650,6 +668,7 @@
 <translation id="7377169924702866686">‏Caps Lock آن ہے۔</translation>
 <translation id="7378203170292176219">ریکارڈ کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>
+<translation id="7378889811480108604">بیٹری سیور وضع آف ہے</translation>
 <translation id="7392563512730092880">آپ ترتیبات سے بعد میں کسی بھی وقت سیٹ اپ کر سکتے ہیں۔</translation>
 <translation id="7398254312354928459">نیٹ ورک کنکشن سوئچ ہو گيا</translation>
 <translation id="7405710164030118432">‏آلہ کو غیر مقفل کرنے کیلئے، اپنے Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
@@ -699,6 +718,7 @@
 <translation id="7837740436429729974">وقت ختم ہو گیا</translation>
 <translation id="7842569679327885685">انتباہ: تجرباتی خصوصیت</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
+<translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>
 <translation id="7868900307798234037">فنگر پرنٹ سے غیر مقفل کیا جا رہا ہے</translation>
 <translation id="7872786842639831132">آف</translation>
 <translation id="7886169021410746335">رازداری کی ترتیبات کو ایڈجسٹ کریں</translation>
@@ -723,6 +743,7 @@
 <translation id="8029247720646289474">ہاٹ سپاٹ کنکشن نہیں ملا</translation>
 <translation id="8029629653277878342">‏مزید سیکیورٹی کیلئے PIN یا پاس ورڈ درکار ہے</translation>
 <translation id="8030169304546394654">منقطع</translation>
+<translation id="8036504271468642248">پچھلا جملہ</translation>
 <translation id="8042893070933512245">ایکسیسبیلٹی ترتیبات کا مینو کھولیں</translation>
 <translation id="8048123526339889627">بلوٹوتھ کی ترتیبات</translation>
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
@@ -739,6 +760,7 @@
 <translation id="8152092012181020186">‏بند کرنے کے لیے Ctrl + W‎ کو دبائیں۔</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
+<translation id="8170567869359129153">موبائل نیٹ ورک۔ <ph name="SIGNAL_STRENGTH" /> کی سگنل کی مضبوطی</translation>
 <translation id="8192202700944119416">اطلاعات پوشیدہ ہیں۔</translation>
 <translation id="8196787716797768628">‏ایپس کے درمیان فوری طور پر سوئچ کرنے کے لیے اشارات کا استعمال کریں اور ٹیبلیٹ وضع میں اپنے Chromebook کے ساتھ تعامل کریں۔</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
@@ -748,6 +770,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">‏<ph name="USER_EMAIL_ADDRESS" /> کی خاطر غیر مقفل کرنے کے لیے Enter دبائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8284362522226889623">پچھلے ڈیسک پر سوئچ کرنے کے لیے، چار انگلیوں سے بائیں سوائپ کریں</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8308637677604853869">پچھلا مینو</translation>
@@ -804,6 +827,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> سے منسلک کریں</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
 <translation id="8825863694328519386">پیچھے جانے کیلئے بائیں سے سوائپ کریں</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
@@ -861,6 +885,7 @@
 <translation id="921989828232331238">آپ کے والد/والدہ نے آپ کے آلے کو دن بھر کے لئے مقفل کر دیا</translation>
 <translation id="9220525904950070496">اکاؤنٹ ہٹائیں</translation>
 <translation id="923686485342484400">‏سائن آؤٹ کرنے کیلئے Control Shift Q کو دو بار دبائیں۔</translation>
+<translation id="925832987464884575">پیش مناظر چھپائیں</translation>
 <translation id="938963181863597773">میرے کیلینڈر میں کیا ہے؟</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="98515147261107953">لینڈ اسکیپ</translation>

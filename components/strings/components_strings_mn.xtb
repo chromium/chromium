@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2107021941795971877">Хэвлэлийн дэмжлэг</translation>
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
+<translation id="2111166930115883695">Тоглохын тулд space дээр дарна уу</translation>
 <translation id="2111256659903765347">Супер-A</translation>
 <translation id="2113977810652731515">Карт</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> нь өөрчилсөн учир энэ журам хүчингүй.</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">Оруулалтын жагсаалт "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
 <translation id="3016780570757425217">Байршлаа мэдэж аваарай</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, Зөвлөмжийг хасахын тулд Tab дээр дараа нь Enter дээр дарна уу.</translation>
 <translation id="3023071826883856138">You4 (Дугтуй)</translation>
 <translation id="3024663005179499861">Буруу журмын төрөл</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -765,6 +767,7 @@
 <translation id="4056223980640387499">Сепиа</translation>
 <translation id="4058922952496707368">Түлхүүр "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Дугтуй)</translation>
+<translation id="4067669230157909013">Дэлгэцийн зураг авахыг үргэлжлүүлсэн.</translation>
 <translation id="4067947977115446013">Хүчинтэй хаяг нэмэх</translation>
 <translation id="4072486802667267160">Таны захиалгыг боловсруулахад алдаа гарлаa. Дахин оролдоно уу.</translation>
 <translation id="4075732493274867456">Үйлчлүүлэгч болон сервер нь SSL протоколын нийтлэг хувилбар, эсвэл шифрийн бүрдлийг дэмждэггүй.</translation>
@@ -849,6 +852,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> хуудасны өнгөц зураг</translation>
 <translation id="42981349822642051">Өргөтгөх</translation>
 <translation id="4300675098767811073">Баруун ирмэг дагуу олон нүх цоолох</translation>
+<translation id="4302514097724775343">Тоглохын тулд диног товшино уу</translation>
 <translation id="4302965934281694568">Chou3 (Дугтуй)</translation>
 <translation id="4305666528087210886">Таны файлд хандаж чадсангүй</translation>
 <translation id="4305817255990598646">Сэлгэх</translation>
@@ -1261,6 +1265,7 @@
 <translation id="5963413905009737549">Хэсэг</translation>
 <translation id="5967592137238574583">Харилцагчийн мэдээллийг засах</translation>
 <translation id="5967867314010545767">Түүхэн хэсгээс устгах</translation>
+<translation id="5968793460449681917">Зочлох бүрд</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
 <translation id="5980920751713728343">Индекс-3x5</translation>
@@ -1475,6 +1480,7 @@
 <translation id="6895330447102777224">Таны картыг баталгаажуулсан байна</translation>
 <translation id="6897140037006041989">Хэрэглэгчийн төлөөлөгч</translation>
 <translation id="6898699227549475383">Байгууллага (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" />-г дараахад зөвшөөрөх:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> таны MIDI төхөөрөмжүүдийг бүрэн хянах хүсэлтэй байна</translation>
 <translation id="6915804003454593391">Хэрэглэгч:</translation>
 <translation id="6934672428414710184">Энэ нэрийг таны Google Бүртгэлээс гаргасан байна</translation>
@@ -1910,6 +1916,7 @@
 <translation id="8574899947864779331">Картуудыг илүү хурдан баталгаажуулахын тулд Touch ID-г ашиглах</translation>
 <translation id="858637041960032120">Утасны дугаар нэмэх</translation>
 <translation id="8589998999637048520">Хамгийн оновтой чанар</translation>
+<translation id="8600271352425265729">Зөвхөн энэ удаа</translation>
 <translation id="860043288473659153">Карт эзэмшигчийн нэр</translation>
 <translation id="8606726445206553943">MIDI төхөөрөмжүүдээ ашигла</translation>
 <translation id="8612761427948161954">Сайн байна уу <ph name="USERNAME" />,
@@ -2067,6 +2074,7 @@
 <translation id="939736085109172342">Шинэ хавтас</translation>
 <translation id="945855313015696284">Доорх мэдээллийг шалгаад хүчингүй бүх картыг устгана уу</translation>
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>
+<translation id="951941430552851965">Таны дэлгэцийн контентын улмаас таны администратор дэлгэцийн зураг авахыг түр зогсоосон байна.</translation>
 <translation id="961663415146723894">Доод булан дагуу үдэж хавтаслах</translation>
 <translation id="962484866189421427">Энэ контент ямар нэг дүр эсгэсэн эсвэл таныг хянахын тулд өгөгдөл цуглуулах зорилготой хуурамч апп суулгахыг оролдож болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулах<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Албан ёсоор бий болгох</translation>

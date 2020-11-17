@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1018656279737460067">გაუქმდა</translation>
+<translation id="1071587090247825784">აღმოჩენილია ქსელის დაცვა</translation>
 <translation id="1075811647922107217">გვერდის ზომა</translation>
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
 <translation id="1204296502688602597">DNS-ის რეაგირების დრო</translation>
+<translation id="1238612778414822719">HTTPS რეაგირების დრო</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">სკანირებად არეზე მორგება</translation>
 <translation id="1397738625398125236">გეითვეის ping-მეთოდით ტესტირება</translation>
+<translation id="1398634363027580500">HTTPS რეაგირების დრო ძალიან დიდია</translation>
 <translation id="1413240736185167732">ვერ მოხერხდა — ფილტრის ხარვეზი</translation>
 <translation id="1468664791493211953">შემოთავაზებები</translation>
 <translation id="1478594628797167447">სკანერი</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="ENROLLMENT_DOMAIN" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
+<translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
+<translation id="467715984478005772">სავარაუდოდ, გამოიყენება ქსელის დაცვა</translation>
 <translation id="4691278870498629773">გაჩერდა — ლანგარი აკლია</translation>
 <translation id="469379815867856270">სიგნალის სიძლიერე</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">ვერ მოხერხდა — ქაღალდის გაჭედვა</translation>
 <translation id="6050189528197190982">ნაცრისფერის ელფერები</translation>
 <translation id="6058625436358447366">დასასრულებლად შეიყვანეთ თქვენი ძველი და ახალი პაროლები</translation>
+<translation id="6061772781719867950">HTTP მოთხოვნები ვერ შესრულდა</translation>
 <translation id="6106186594183574873">დასასრულებლად შეიყვანეთ თქვენი ძველი პაროლი</translation>
 <translation id="6108689792487843350">გეითვეი მიუწვდომელია</translation>
 <translation id="6146993107019042706">დასასრულებლად შეიყვანეთ თქვენი ახალი პაროლი</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
 <translation id="6747215703636344499">გაჩერდა — გამომტანი სავსეა</translation>
+<translation id="6766275201586212568">DNS ვერ დარეგულირდა</translation>
+<translation id="6768237774506518020">DNS-ის წარუმატებელი დარეგულირებების მაჩვენებელი მაღალია</translation>
 <translation id="6839141349259399400">ვერ უკავშირდებით სკანერებს?</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7162487448488904999">გალერეა</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">ფაილის ტიპი</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8294431847097064396">წყარო</translation>
+<translation id="8302368968391049045">HTTPS ქსელის დაცვა</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8352772353338965963">დაამატეთ ანგარიში მრავლობითი შესვლისთვის. სისტემაში შესულ ანგარიშზე წვდომის მიღება შესაძლებელია პაროლის შეყვანის გარეშე, ამიტომ ეს ფუნქცია უნდა გამოიყენოთ მხოლოდ სანდო ანგარიშებზე.</translation>
 <translation id="8364946094152050673">სახელის ცარიელი სერვერები</translation>

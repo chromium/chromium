@@ -86,6 +86,7 @@
 <translation id="1091767800771861448">Apăsați pe ESCAPE pentru a ignora (numai versiunile neoficiale).</translation>
 <translation id="1093457606523402488">Rețele vizibile:</translation>
 <translation id="1094607894174825014">Operațiunea de citire sau de scriere a fost solicitată cu un decalaj nevalid pe: „<ph name="DEVICE_NAME" />”.</translation>
+<translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
 <translation id="109647177154844434">Dacă dezinstalezi Parallels Desktop, imaginea Windows va fi ștearsă. Aici sunt incluse aplicațiile, setările și datele conexe. Sigur vrei să continui?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{un link}few{# linkuri}other{# de linkuri}}</translation>
 <translation id="1097658378307015415">Înainte de a vă conecta, începeți o sesiune pentru invitați pentru activarea rețelei <ph name="NETWORK_ID" /></translation>
@@ -121,6 +122,7 @@
 <translation id="1128591060186966949">Editează motorul de căutare</translation>
 <translation id="1129850422003387628">Gestionează aplicații</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – parte a grupului <ph name="GROUP_NAME" /></translation>
+<translation id="1130712065489627903">Acum poți primi notificări de pe telefon pe dispozitivul <ph name="DEVICE_TYPE" />. Dacă închizi notificările pe <ph name="DEVICE_TYPE" />, le vei închide și pe telefon. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="1134009406053225289">Deschide într-o fereastră incognito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> din <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Cheia de securitate este blocată deoarece codul PIN a fost introdus greșit de prea multe ori. Scoate și introdu din nou cheia pentru a o debloca.</translation>
@@ -145,6 +147,7 @@
 <translation id="1151917987301063366">Permite întotdeauna accesul <ph name="HOST" /> la senzori</translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
 <translation id="1153636665119721804">Programul Protecție avansată Google</translation>
+<translation id="1155816283571436363">Se conectează la telefon</translation>
 <translation id="1161575384898972166">Conectează-te la <ph name="TOKEN_NAME" /> pentru a exporta certificatul client.</translation>
 <translation id="1163931534039071049">&amp;Afișează sursa cadrului</translation>
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
@@ -377,6 +380,15 @@
 <translation id="1420834118113404499">Licențe media</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pentru a permite asocierea</translation>
 <translation id="1422159345171879700">Încarcă scripturi nesigure</translation>
+<translation id="1423716227250567100">Această acțiune:
+          <ph name="LINE_BREAKS" />
+           • va reinițializa setările Chrome și comenzile rapide pentru Chrome;
+           <ph name="LINE_BREAK" />
+           • va dezactiva extensiile;
+           <ph name="LINE_BREAK" />
+           • va șterge cookie-urile și alte date temporare privind site-urile.
+            <ph name="LINE_BREAKS" />
+           Marcajele, istoricul și parolele salvate nu vor fi afectate.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> a fost blocată</translation>
 <translation id="1426870617281699524">Dă clic pe Reîncercare și acceptă solicitarea de pe computer</translation>
@@ -805,6 +817,7 @@
 <translation id="1887597546629269384">Rostește din nou „Hei Google"</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
+<translation id="1891362123137972260">Spațiul de pe disc este foarte redus. Eliberează spațiu pe disc.</translation>
 <translation id="189210018541388520">Deschide ecranul complet</translation>
 <translation id="1892341345406963517">Bună, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Alte limbi</translation>
@@ -1022,6 +1035,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2157474325782140681">Pentru a beneficia de mai multe funcții, folosește o stație de andocare Dell proiectată să funcționeze cu acest Chromebook.</translation>
 <translation id="215753907730220065">Ieși din ecranul complet</translation>
 <translation id="2157875535253991059">Acum această pagină este în modul ecran complet.</translation>
+<translation id="2160589599612868242">Primește notificări de pe telefon pe dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">Adăugați o rețea Wi-Fi...</translation>
 <translation id="2162155940152307086">Sincronizarea va porni după ce părăsești setările pentru sincronizare</translation>
 <translation id="2162838847352058695">Împiedică site-urile să descarce automat mai multe fișiere</translation>
@@ -1029,6 +1043,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2165421703844373933">Accesează Asistentul rostind „Ok Google”. Pentru a economisi bateria, alege „Activat (recomandat)”. Asistentul va răspunde doar atunci când dispozitivul este conectat la o sursă de alimentare sau când se încarcă.</translation>
 <translation id="2166369534954157698">Vând muzică de jazz și haine de bun-gust în New York și Quebec, la preț fix.</translation>
 <translation id="2169062631698640254">Conectați-vă oricum</translation>
+<translation id="2170054054876170358">Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="2172784515318616985">Continuă</translation>
 <translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
 <translation id="2173801458090845390">Adaugă ID-ul de solicitare la acest dispozitiv</translation>
@@ -1228,12 +1243,14 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2395616325548404795">Dispozitivul <ph name="DEVICE_TYPE" /> a fost înscris pentru gestionarea de întreprindere, dar nu a putut trimite informațiile despre locație și articol. Introdu manual aceste informații din consola de administrare pentru acest dispozitiv.</translation>
 <translation id="2396387085693598316">Administratorul a blocat extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="2396783860772170191">Introdu codul PIN de 4 cifre (0000 – 9999)</translation>
+<translation id="2399699884460174994">Notificări activate</translation>
 <translation id="2399939490305346086">Datele de conectare ale cheii de securitate</translation>
 <translation id="2400664245143453337">Este necesară actualizarea imediată</translation>
 <translation id="2408018932941436077">Se salvează cardul</translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="241082044617551207">Plugin necunoscut</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
+<translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Tastele pentru funcții de la tastatură</translation>
 <translation id="241727068219398187">Datele au fost criptate cu parola ta Google începând cu
           <ph name="TIME" />. Acest lucru nu este valabil și pentru metodele de plată și adresele din Google Pay.</translation>
@@ -1360,6 +1377,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2538084450874617176">Cine folosește acest <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2538361623464451692">Sincronizare dezactivată</translation>
 <translation id="2540449034743108469">Apasă „Pornește” ca să asculți activitățile extensiei</translation>
+<translation id="2540651571961486573">A apărut o eroare. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Optimizezi proiectarea pe ecran complet?</translation>
 <translation id="2541706104884128042">A fost setată o nouă oră de culcare</translation>
 <translation id="2542050502251273923">Setează nivelul de remediere a erorilor al managerului conexiunilor de rețea și al altor servicii folosind ff_debug.</translation>
@@ -1407,6 +1425,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2607101320794533334">Informații privind cheia publică a subiectului</translation>
 <translation id="2607968157341167679">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Creați comenzi rapide...</translation>
+<translation id="2609980095400624569">Nu s-a stabilit conexiunea</translation>
 <translation id="2610157865375787051">Inactivitate</translation>
 <translation id="2610260699262139870">Di&amp;mensiunea actuală</translation>
 <translation id="2610780100389066815">Semnarea listei de încredere Microsoft</translation>
@@ -1660,6 +1679,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2885729872133513017">A apărut o problemă la decodarea răspunsului serverului.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Deschide linkul cu...</translation>
+<translation id="2889481634493693121">Activează notificările pe telefon</translation>
 <translation id="2889925978073739256">Continuă blocarea pluginurilor scoase din mediul de testare</translation>
 <translation id="2893168226686371498">Browserul prestabilit</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{un mesaj text}few{# mesaje text}other{# de mesaje text}}</translation>
@@ -1804,6 +1824,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3058498974290601450">Poți să activezi sincronizarea oricând în setări</translation>
 <translation id="3060379269883947824">Activează „Selectează și ascultă”</translation>
 <translation id="3060952009917586498">Schimbă limba dispozitivului. Limba actuală este <ph name="LANGUAGE" />.</translation>
+<translation id="3060987956645097882">Nu s-a putut stabili o conexiune cu telefonul. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="3065041951436100775">Feedback despre fila eliminată.</translation>
 <translation id="306535478112428611">Nu au permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="3065522099314259755">Latența la repetare a tastaturii</translation>
@@ -1860,6 +1881,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3129215702932019810">Eroare la lansarea aplicației</translation>
 <translation id="3130528281680948470">Dispozitivul va fi resetat, iar toate conturile de utilizator și datele locale vor fi eliminate. Această operațiune nu poate fi anulată.</translation>
 <translation id="313205617302240621">Ai uitat parola?</translation>
+<translation id="3132277757485842847">Nu s-a putut păstra conexiunea cu telefonul. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="3132996321662585180">Actualizează zilnic</translation>
 <translation id="313963229645891001">Se descarcă, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar galben prestabilit</translation>
@@ -3329,6 +3351,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
+<translation id="4882670371033027418">Adaugă-ți amprenta pentru a debloca mai rapid dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="4882831918239250449">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea, anunțurile și alte servicii</translation>
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883436287898674711">Toate site-urile <ph name="WEBSITE_1" /></translation>
@@ -3797,6 +3820,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5457991019809708398">Activat, nu se utilizează roamingul</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notele pe ecranul de blocare</translation>
+<translation id="5461050611724244538">Conexiunea cu telefonul a fost întreruptă</translation>
 <translation id="5463231940765244860">Introdu</translation>
 <translation id="5463275305984126951">Index pentru <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Meniu conținând marcajele ascunse</translation>
@@ -4289,6 +4313,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6031600495088157824">Opțiunile de introducere a textului din bara de instrumente</translation>
 <translation id="6032715498678347852">Pentru a permite accesul unei extensii la acest site, dă clic pe extensie.</translation>
 <translation id="6032912588568283682">Sistem de fișiere</translation>
+<translation id="603539183851330738">Buton de anulare a corectării automate. Revino la <ph name="TYPED_WORD" />.  Apasă Enter pentru activare sau Escape pentru închidere.</translation>
 <translation id="6035517790085323771">Cine poate trimite fișiere dispozitivului tău</translation>
 <translation id="6038929619733116134">Blochează dacă site-ul afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="6039651071822577588">Dicționarul proprietăților de rețea este deteriorat</translation>
@@ -4498,6 +4523,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6268252012308737255">Deschide cu <ph name="APP" /></translation>
 <translation id="6270391203985052864">Site-urile îți pot solicita să îți trimită notificări</translation>
 <translation id="6270770586500173387">Trimite <ph name="BEGIN_LINK1" />informații despre sistem și aplicații<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /></translation>
+<translation id="6271348838875430303">corecția a fost anulată</translation>
 <translation id="6272643420381259437">A apărut o eroare (<ph name="ERROR" />) la descărcarea pluginului</translation>
 <translation id="6273677812470008672">Calitate</translation>
 <translation id="6276210637549544171">Pentru a accesa proxy-ul <ph name="PROXY_SERVER" />, trebuie să introduci un nume de utilizator și o parolă.</translation>
@@ -5121,6 +5147,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7005496624875927304">Permisiuni suplimentare</translation>
 <translation id="7005812687360380971">Eroare</translation>
 <translation id="7005848115657603926">Interval de pagini nevalid, utilizează <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="700651317925502808">Reinițializezi setările?</translation>
 <translation id="7006634003215061422">Margine jos</translation>
 <translation id="7007648447224463482">Deschide totul într-o fereastră nouă</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> folosește camera foto</translation>
@@ -5290,6 +5317,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7213903639823314449">Motorul de căutare folosit în bara de adrese</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
 <translation id="7216595297012131718">Ordonează limbile pe baza preferințelor tale</translation>
+<translation id="7219473482981809164">Am detectat mai multe profiluri disponibile pentru descărcare. Selectează-le pe cele pe care vrei să le descarci înainte de a continua.</translation>
 <translation id="7220019174139618249">Nu se pot exporta parole în „<ph name="FOLDER" />”</translation>
 <translation id="722055596168483966">Personalizează serviciile Google</translation>
 <translation id="722099540765702221">Sursa de încărcare</translation>
@@ -5574,6 +5602,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7556033326131260574">Smart Lock nu a putut verifica contul tău. Pentru acces, introdu parola.</translation>
 <translation id="7556242789364317684">Din păcate, <ph name="SHORT_PRODUCT_NAME" /> nu vă poate recupera setările. Pentru a remedia eroarea, este necesar ca <ph name="SHORT_PRODUCT_NAME" /> să reseteze dispozitivul utilizând Powerwash.</translation>
 <translation id="7557194624273628371">Redirecționarea de port în Linux</translation>
+<translation id="7559269329306630685">Datele privind amprentele sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7559719679815339381">Așteaptă... Aplicația de tip chioșc se actualizează. Nu scoate stickul USB.</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="756445078718366910">Deschide fereastra de browser</translation>
@@ -6027,6 +6056,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8045923671629973368">Introdu ID-ul aplicației sau adresa URL din magazinul web</translation>
 <translation id="8047242494569930800">Mut-o în Contul Google</translation>
 <translation id="804786196054284061">Acord de licență pentru utilizatorul final</translation>
+<translation id="8048977114738515028">Creează o comandă rapidă pe desktop pe dispozitiv ca să accesezi direct profilul</translation>
 <translation id="8049705080247101012">Google a semnalat „<ph name="EXTENSION_NAME" />” ca extensie rău intenționată și instalarea nu a fost permisă</translation>
 <translation id="8049948037269924837">Derularea inversă cu touchpadul</translation>
 <translation id="8050038245906040378">Semnare comercială a codului Microsoft</translation>
@@ -6458,6 +6488,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8569682776816196752">Nu au fost găsite destinații</translation>
 <translation id="8571213806525832805">Ultimele 4 săptămâni</translation>
 <translation id="8571687764447439720">Adaugă un tichet Kerberos</translation>
+<translation id="8571814292654854151">Denumește profilul</translation>
 <translation id="8574990355410201600">Permite întotdeauna sunetul pe <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Pentru a ieși, ține apăsată tasta <ph name="KEY_EQUIVALENT" />.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
@@ -6711,6 +6742,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8830796635868321089">Căutarea actualizărilor utilizând setările de proxy actuale nu a reușit. Ajustați <ph name="PROXY_SETTINGS_LINK_START" />setările de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8831140208248705279">Dispozitivul <ph name="DEVICE_TYPE" /> și telefonul Android funcționează mai bine împreună. Conectează-le ca să trimiți mesaje de pe computer, să permiți accesul la conexiunea la internet și să deblochezi dispozitivul <ph name="DEVICE_TYPE" /> cu ajutorul telefonului.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Configurarea rețelei este controlată de <ph name="USER_EMAIL" />.</translation>
+<translation id="8835786707922974220">Asigură-te că ai în permanență acces la parolele salvate</translation>
 <translation id="8838601485495657486">Opac</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Adnotează imaginea</translation>
@@ -7090,6 +7122,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="971774202801778802">Adresă URL marcaj</translation>
 <translation id="973473557718930265">Ieșiți</translation>
 <translation id="975893173032473675">Limba în care se traduce</translation>
+<translation id="976499800099896273">Caseta de anulare a corectării automate se afișează pentru <ph name="TYPED_WORD" />, corectat <ph name="CORRECTED_WORD" />.  Apasă săgeata în sus ca să accesezi cuvântul corectat sau Escape ca să-l ignori.</translation>
 <translation id="978146274692397928">Lățimea pentru punctuația inițială este completă</translation>
 <translation id="97905529126098460">Fereastra se va închide după ce anularea se finalizează.</translation>
 <translation id="980731642137034229">Butonul meniului de acțiuni</translation>

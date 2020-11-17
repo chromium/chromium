@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1018656279737460067">Preklicano</translation>
+<translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
+<translation id="1238612778414822719">Zakasnitev HTTPS</translation>
 <translation id="1290331692326790741">Šibek signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ustrezanje velikosti območja za optično branje</translation>
 <translation id="1397738625398125236">Prehod je mogoče preveriti</translation>
+<translation id="1398634363027580500">Precejšnja zakasnitev HTTPS</translation>
 <translation id="1413240736185167732">Napaka – napaka filtra</translation>
 <translation id="1468664791493211953">Ponudbe</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="ENROLLMENT_DOMAIN" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
+<translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
+<translation id="467715984478005772">Sum na požarni zid</translation>
 <translation id="4691278870498629773">Ustavljeno – ni pladnja</translation>
 <translation id="469379815867856270">Moč signala</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
@@ -115,6 +120,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6048107060512778456">Napaka – zastoj papirja</translation>
 <translation id="6050189528197190982">Sivine</translation>
 <translation id="6058625436358447366">Za dokončanje vnesite staro in novo geslo</translation>
+<translation id="6061772781719867950">Neuspele zahteve HTTP</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
@@ -133,6 +139,8 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6704062477274546131">Razrešitev DNS-ja</translation>
 <translation id="6747215703636344499">Ustavljeno – izhodni pladenj je poln</translation>
+<translation id="6766275201586212568">Neuspele razrešitve DNS</translation>
+<translation id="6768237774506518020">Visoko število napak pri razreševanju DNS</translation>
 <translation id="6839141349259399400">Ni mogoče vzpostaviti povezave z optičnimi bralniki?</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -140,6 +148,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7805768142964895445">Stanje</translation>
@@ -151,6 +160,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
 <translation id="8294431847097064396">Vir</translation>
+<translation id="8302368968391049045">Požarni zid HTTPS</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8352772353338965963">Dodajte račun za prijavo z več računi. Do vseh prijavljenih računov je mogoče dostopati brez gesla, zato to funkcijo uporabljajte samo z zaupanja vrednimi računi.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>

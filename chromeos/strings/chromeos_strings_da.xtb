@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1018656279737460067">Annulleret</translation>
+<translation id="1071587090247825784">En firewall blev registreret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1195447618553298278">Ukendt fejl.</translation>
 <translation id="1204296502688602597">DNS-forsinkelse</translation>
+<translation id="1238612778414822719">HTTPS-forsinkelse</translation>
 <translation id="1290331692326790741">Svagt signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
+<translation id="1398634363027580500">Meget høj HTTPS-forsinkelse</translation>
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="ENROLLMENT_DOMAIN" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
+<translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
+<translation id="467715984478005772">Der er muligvis en firewall</translation>
 <translation id="4691278870498629773">Stoppet – Bakke mangler</translation>
 <translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
@@ -114,6 +119,7 @@
 <translation id="6048107060512778456">Handlingen mislykkedes – Papirstop</translation>
 <translation id="6050189528197190982">Gråtone</translation>
 <translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
+<translation id="6061772781719867950">Mislykkede HTTP-anmodninger</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
@@ -132,6 +138,8 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
+<translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
+<translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
 <translation id="6839141349259399400">Kan du ikke oprette forbindelse til scannere?</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>
 <translation id="7162487448488904999">Galleri</translation>
@@ -139,6 +147,7 @@
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -150,6 +159,7 @@
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8294431847097064396">Kilde</translation>
+<translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>

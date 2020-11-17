@@ -67,7 +67,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="1516740043221086139">Le mode Ne pas déranger est activé.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}many{Show notification settings. Notifications are off for # apps}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1525508553941733066">IGNORER</translation>
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
@@ -226,7 +226,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de l'appareil peut surveiller votre activité de navigation.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre un certain temps</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}many{Connected to # devices}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Règle une minuterie</translation>
 <translation id="3203405173652969239">Switch Access est activé</translation>
 <translation id="3207953481422525583">Paramètres de l'utilisateur</translation>
@@ -317,12 +317,13 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4028481283645788203">Le mot de passe est exigé pour plus de sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}other{Désactivées pour # applis}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}many{Off for # apps}other{Désactivées pour # applis}}</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal moyen</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4121728057981832179">Une machine virtuelle utilise votre microphone</translation>
+<translation id="4126167871198063089">Quitter Sélectionner pour énoncer</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4149156641122542261">L'appareil <ph name="DEVICE_TYPE" /> est géré par <ph name="DOMAIN" /></translation>
@@ -382,6 +383,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4570957409596482333">Bouton Sélectionner pour énoncer</translation>
 <translation id="4577274620589681794">Temps écoulé : <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4585337515783392668">Arrêter la diffusion sur un récepteur inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4623167406982293031">Valider le compte</translation>
@@ -429,11 +431,13 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4961318399572185831">Diffuser un écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Badges d'applications</translation>
+<translation id="5003993274120026347">Phrase suivante</translation>
 <translation id="5019169674188023236">Il semble que votre connexion Bluetooth ou Wi-Fi soit désactivée sur votre <ph name="DEVICE_TYPE" />. Veuillez vérifier votre connexion pour utiliser Phone Hub.</translation>
 <translation id="5030687792513154421">Le temps est écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est connecté à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
+<translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
@@ -473,6 +477,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="554893713779400387">Activer/désactiver la dictée</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
+<translation id="557563299383177668">Paragraphe suivant</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
@@ -605,7 +610,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6850010208275816200">L'application actuelle s'affiche en plein écran. Si l'application vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}many{# digits remaining}other{Il reste # chiffres}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="6896758677409633944">Copier</translation>
@@ -686,7 +691,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7662283695561029522">Touchez pour configurer</translation>
 <translation id="7705524343798198388">RPV</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}many{# notifications}other{# notifications}}</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="776344839111254542">Cliquez pour afficher les détails de la mise à jour</translation>
@@ -723,6 +728,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8029247720646289474">Échec de la connexion au point d'accès sans fil</translation>
 <translation id="8029629653277878342">Le NIP ou le mot de passe est exigé pour plus de sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
+<translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
@@ -861,6 +867,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>
 <translation id="9220525904950070496">Supprimer le compte</translation>
 <translation id="923686485342484400">Appuyez deux fois sur Contrôle + Maj + Q pour vous déconnecter.</translation>
+<translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda?</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="98515147261107953">Paysage</translation>

@@ -207,6 +207,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2450907520913474542">Alamin ang tungkol sa mga paksa sa mga website nang hindi umaalis sa page. Nagpapadala ang Touch to Search ng salita at ng konteksto nito sa Google Search, at magbibigay ito ng mga pagpapakahulugan, larawan, resulta ng paghahanap, at iba pang detalye.
 
 Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pumili ng mas marami o mas kaunting salita. Para i-edit ang iyong paghahanap, buksan ang panel, i-tap ang icon para buksan sa bagong tab, at gawin ang iyong mga pagbabago sa box para sa paghahanap.</translation>
+<translation id="2459390580524506445">Pinahusay na paghahanap gamit ang boses</translation>
 <translation id="246532703174860178">Ibahagi</translation>
 <translation id="2478076885740497414">I-install ang app</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
@@ -275,6 +276,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2932150158123903946">Storage ng <ph name="APP_NAME" /> sa Google</translation>
 <translation id="2942036813789421260">Nakasara ang tab na preview</translation>
 <translation id="2956410042958133412">Pinapamahalaan ang account na ito ng <ph name="PARENT_NAME_1" /> at <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
 <translation id="2962095958535813455">Lumipat sa mga tab na incognito</translation>
 <translation id="2979025552038692506">Napiling Tab na Incognito</translation>
 <translation id="2987620471460279764">Ibinahaging text mula sa ibang device</translation>
@@ -324,6 +326,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="32895400574683172">Pinapayagan ang mga notification</translation>
 <translation id="3290991969712132877">Para mas mabilis na makapunta rito, idagdag ang page na ito sa iyong Home screen mula sa button na Higit pang opsyon</translation>
 <translation id="3295530008794733555">Mag-browse nang mas mabilis. Gumamit ng mas kaunting data.</translation>
+<translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
 <translation id="3315103659806849044">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync at serbisyo ng Google. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
@@ -625,6 +628,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5524843473235508879">Na-block ang pag-redirect.</translation>
 <translation id="5527082711130173040">Kailangan ng Chrome ng access sa lokasyon upang makapag-scan ng mga device. <ph name="BEGIN_LINK1" />I-update ang mga pahintulot<ph name="END_LINK1" />. Ang access sa lokasyon ay <ph name="BEGIN_LINK2" />naka-off din para sa device na ito<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Isara ang mga tab na incognito</translation>
+<translation id="5530920986376047241">Puwede kang mag-save ng mga page sa iyong listahan ng babasahin para mahanap ulit ang mga ito</translation>
 <translation id="5534640966246046842">Nakopya ang site</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5561549206367097665">Naghihintay ng network…</translation>
@@ -704,6 +708,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5982307838673692400">Magbukas ng tab na Incognito</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
 <translation id="6005538289190791541">Iminumungkahing password</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> na page}}</translation>
 <translation id="6014293228235665243">Hindi pa nababasa</translation>
 <translation id="6036057147555329831">Karagdagang ICU</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
@@ -938,6 +943,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="756809126120519699">Na-clear ang data ng Chrome</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file ang na-download}one{<ph name="FILES_DOWNLOADED_MANY" /> file ang na-download}other{<ph name="FILES_DOWNLOADED_MANY" /> na file ang na-download}}</translation>
+<translation id="7583262514280211622">Makikita mo rito ang iyong listahan ng babasahin</translation>
 <translation id="7588219262685291874">I-on ang madilim na tema kapag naka-on ang Pantipid ng Baterya ng iyong device</translation>
 <translation id="7593557518625677601">Buksan ang mga setting ng Android at muling i-enable ang Android system sync upang simulan ang Chrome sync</translation>
 <translation id="7596558890252710462">Operating system</translation>
@@ -969,6 +975,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7772375229873196092">Isara ang <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> na iba pa}}</translation>
 <translation id="7778840695157240389">Bumalik sa ibang pagkakataon para sa mga bagong kuwento</translation>
+<translation id="7786595606756654269">Nagbibigay ang Google Assistant ng mas magandang karanasan sa boses para sa paghahanap sa web at pakikipag-ugnayan sa mga site na binuksan mo. Matatanggap ng Google Assistant ang URL at mga content ng mga site na ginagamit mo sa pamamagitan nito.</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7798392620021911922">Na-restore ang <ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -994,6 +1001,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7967911570373677897">Para mag-scan ng QR code, baguhin ang iyong mga setting para magamit ng Chrome ang camera mo</translation>
+<translation id="7968014550143838305">Idinagdag sa list ng babasahin</translation>
 <translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">I-preload ang mga page para sa mas mabilis na pag-browse at paghahanap</translation>
@@ -1055,6 +1063,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8372925856448695381">Handa na ang <ph name="LANG" />.</translation>
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8407396331882458341">1. Piliin ang <ph name="APP_NAME" />\n2. I-tap ang “Palagi”</translation>
+<translation id="8410695015584479363">I-track ang mga presyo</translation>
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8427875596167638501">Nakabukas nang kalahati ang tab na preview</translation>

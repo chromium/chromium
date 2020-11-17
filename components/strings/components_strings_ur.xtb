@@ -306,6 +306,7 @@
 <translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
+<translation id="2111166930115883695">کھیلنے کے لیے اسپیس دبائیں</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">کارڈ</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> کی جانب سے اسے اوور رائڈ کیے جانے کی وجہ سے نظر انداز کر دیا گیا۔</translation>
@@ -524,6 +525,7 @@
 <translation id="3010559122411665027">فہرست کا اندراج "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
 <translation id="3016780570757425217">اپنا مقام جانیں</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />، تجویز ہٹانے کے لیے ٹیب، پھر اینٹر دبائیں۔</translation>
 <translation id="3023071826883856138">You4 ‎(Envelope‎)‎</translation>
 <translation id="3024663005179499861">پالیسی کی غلط قسم</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
@@ -767,6 +769,7 @@
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4058922952496707368">کلید "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 ‎(Envelope‎)‎</translation>
+<translation id="4067669230157909013">اسکرین کیپچر دوبارہ شروع کر دیا گیا۔</translation>
 <translation id="4067947977115446013">درست پتہ شامل کریں</translation>
 <translation id="4072486802667267160">آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آگئی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4075732493274867456">‏کلائنٹ اور سرور عام SSL پروٹوکول ورژن یا سائفر سوئٹ کا تعاون نہیں کرتے ہیں۔</translation>
@@ -851,6 +854,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> صفحہ کا تھمب نیل</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4300675098767811073">دائیں طرف متعدد سوراخ</translation>
+<translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
 <translation id="4302965934281694568">Chou3 ‎(Envelope‎)‎</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
 <translation id="4305817255990598646">سوئچ کریں</translation>
@@ -1250,6 +1254,7 @@
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> کی اصل پالیسی کے مطابق مسدود کردہ۔</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
+<translation id="5913377024445952699">اسکرین کیپچر روک دیا گیا</translation>
 <translation id="59174027418879706">فعال</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">آن</translation>
@@ -1262,6 +1267,7 @@
 <translation id="5963413905009737549">سیکشن</translation>
 <translation id="5967592137238574583">رابطے کی معلومات میں ترمیم کریں</translation>
 <translation id="5967867314010545767">سرگزشت سے ہٹا دیں</translation>
+<translation id="5968793460449681917">ہر ملاحظے پر</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1478,6 +1484,7 @@
 <translation id="6895330447102777224">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
 <translation id="6897140037006041989">صارف کا ایجنٹ</translation>
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> کو اس کی اجازت دیں:</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> آپ کے MIDI آلات کا پورا کنٹرول حاصل کرنا چاہتا ہے</translation>
 <translation id="6915804003454593391">صارف:</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
@@ -1913,6 +1920,7 @@
 <translation id="8574899947864779331">‏تیزی سے اپنے کارڈز کی تصدیق کرنے کے لیے Touch ID استعمال کریں</translation>
 <translation id="858637041960032120">فون نمبر شامل کریں</translation>
 <translation id="8589998999637048520">بہترین معیار</translation>
+<translation id="8600271352425265729">صرف اس وقت</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>
 <translation id="8606726445206553943">‏اپنے MIDI آلات استعمال کریں</translation>
 <translation id="8612761427948161954">آداب <ph name="USERNAME" />،
@@ -1922,6 +1930,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">کوئی مماثل پاس ورڈ نہیں۔ سبھی محفوظ پاس ورڈز دکھائيں</translation>
 <translation id="8625384913736129811">اس کارڈ کو اس آلہ میں محفوظ کریں</translation>
+<translation id="8627040765059109009">اسکرین کیپچر دوبارہ شروع کر دیا گیا</translation>
 <translation id="8657078576661269990">آپ کے منتظم نے <ph name="ORIGIN_NAME" /> سے <ph name="VM_NAME_1" /> اور <ph name="VM_NAME_2" /> میں اشتراک کرنا مسدود کر دیا ہے</translation>
 <translation id="8663226718884576429">آرڈر کا خلاصہ، <ph name="TOTAL_LABEL" />، مزید تفصیلات</translation>
 <translation id="867224526087042813">دستخط</translation>
@@ -2070,6 +2079,7 @@
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
+<translation id="951941430552851965">آپ کی اسکرین پر موجود مواد کی وجہ سے آپ کے منتظم کی جانب سے اسکرین کیپچر روک دیا گیا۔</translation>
 <translation id="961663415146723894">نیچے باندھیں</translation>
 <translation id="962484866189421427">ہو سکتا ہے کہ یہ مواد ایسی پُر فریب ایپس انسٹال کرنے کی کوشش کرے جو کچھ اور ہونے کا دکھاوا کریں یا آپ کی براؤزنگ سرگرمیوں پر نظر رکھنے کیلئے استعمال کیا جانے والا ڈیٹا جمع کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>

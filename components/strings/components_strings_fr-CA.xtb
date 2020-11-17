@@ -207,7 +207,7 @@
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1697532407822776718">Vous êtes prêt!</translation>
 <translation id="1703835215927279855">Lettre</translation>
-<translation id="1706954506755087368">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité semble dater de demain. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jour à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jours à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}}</translation>
+<translation id="1706954506755087368">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité semble dater de demain. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jour à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}many{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jours à la date du jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.}}</translation>
 <translation id="1710259589646384581">Systèmes d'exploitation</translation>
 <translation id="1712552549805331520">L'URL <ph name="URL" /> veut stocker des données de façon permanente sur votre ordinateur local</translation>
 <translation id="1713628304598226412">Bac 2</translation>
@@ -255,7 +255,7 @@
 <translation id="187918866476621466">Ouvrir les pages de démarrage</translation>
 <translation id="1883255238294161206">Réduire la liste</translation>
 <translation id="1898423065542865115">Filtrage</translation>
-<translation id="1901443836186977402">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré au cours des dernières 24 heures. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jour. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jours. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}}</translation>
+<translation id="1901443836186977402">{1,plural, =1{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré au cours des dernières 24 heures. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}one{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jour. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}many{This server could not prove that it is <ph name="DOMAIN" />; its security certificate expired # days ago. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE" />. Does that look right? If not, you should correct your system's clock and then refresh this page.}other{Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" /> : son certificat de sécurité a expiré il y a # jours. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela est-il correct? Si cela ne l'est pas, réglez l'horloge de votre système, puis actualisez cette page.}}</translation>
 <translation id="1902576642799138955">Période de validité</translation>
 <translation id="1908217026282415406">Utilisation et mouvement de la caméra</translation>
 <translation id="191374271204266022">Copier au format JSON</translation>
@@ -265,7 +265,7 @@
 <translation id="1917876262703816781">Une violation de données sur un site ou dans une application a exposé votre mot de passe. Chrome vous recommande de changer votre mot de passe sur <ph name="ORIGIN" /> maintenant.</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}many{# sites}other{# sites}}</translation>
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1947454675006758438">Agrafe en haut à droite</translation>
 <translation id="1959001866257244765">Aidez-nous à améliorer la sécurité pour tout le monde sur Internet en envoyant <ph name="BEGIN_WHITEPAPER_LINK" />les URL de certaines pages que vous visitez, certaines données système et certains contenus des pages en question<ph name="END_WHITEPAPER_LINK" /> à Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politique de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -277,7 +277,7 @@
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter les diagnostics de connectivité<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">L'URL <ph name="URL" /> veut stocker de façon permanente de grandes quantités de données sur votre ordinateur local</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{et 1 autre}one{et # autre}many{and # more}other{et # autres}}</translation>
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>
 <translation id="2003775180883135320">Quadruple perforation dans le haut</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
@@ -288,7 +288,7 @@
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
 <translation id="2053553514270667976">Code postal</translation>
 <translation id="2054665754582400095">Votre présence</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}other{# suggestions}}</translation>
+<translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}many{# suggestions}other{# suggestions}}</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="20817612488360358">Les paramètres de mandataire du système sont configurés pour être utilisés, mais une configuration de mandataire explicite est également spécifiée.</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
@@ -322,7 +322,7 @@
 <translation id="2169984857010174799">Enveloppe Kaku2</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
-<translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
+<translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}many{# addresses}other{# adresses}}</translation>
 <translation id="2187317261103489799">Détecter (par défaut)</translation>
 <translation id="2188375229972301266">Perforation multiple en bas</translation>
 <translation id="2202020181578195191">Entrez une année d'expiration valide</translation>
@@ -401,7 +401,7 @@
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2523886232349826891">Carte enregistrée sur cet appareil uniquement</translation>
 <translation id="2524461107774643265">Ajouter plus de renseignements</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}many{and # more}other{et # autres}}</translation>
 <translation id="2536110899380797252">Ajouter une adresse</translation>
 <translation id="2539524384386349900">Détecter</translation>
 <translation id="2544644783021658368">Document simple</translation>
@@ -427,7 +427,7 @@
 <translation id="2650446666397867134">Accès au fichier refusé</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2660779039299703961">Événement</translation>
-<translation id="2664887757054927933">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />)}many{# passwords (for <ph name="DOMAIN_LIST" />)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Haut</translation>
 <translation id="2666117266261740852">Fermer les autres onglets ou applications</translation>
 <translation id="2672201172023654893">Votre navigateur n'est pas géré.</translation>
@@ -489,7 +489,7 @@
 <translation id="2922350208395188000">Impossible de vérifier le certificat du serveur.</translation>
 <translation id="2925673989565098301">Mode de livraison rapide</translation>
 <translation id="2928905813689894207">Adresse de facturation</translation>
-<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
+<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2934466151127459956">Lettre (gouvernement)</translation>
@@ -537,7 +537,7 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Essayer d'exécuter Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Aucun}=1{données de connexion de 1 compte}one{données de connexion de # compte}other{données de connexion de # comptes}}</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Aucun}=1{données de connexion de 1 compte}one{données de connexion de # compte}many{sign-in data for # accounts}other{données de connexion de # comptes}}</translation>
 <translation id="3145945101586104090">Échec du décodage de la réponse</translation>
 <translation id="3150653042067488994">Erreur de serveur temporaire</translation>
 <translation id="3154506275960390542">Cette page inclut un formulaire qui pourrait ne pas être soumis en toute sécurité. Les données que vous envoyez peuvent être consultées par d'autres personnes pendant leur transfert ou pourraient être modifiées par un pirate informatique afin de changer ce que le serveur reçoit.</translation>
@@ -634,7 +634,7 @@
 <translation id="3518941727116570328">Gestion d'objets multiples</translation>
 <translation id="3528171143076753409">Le certificat du serveur n'est pas approuvé.</translation>
 <translation id="3528485271872257980">Brun foncé</translation>
-<translation id="3530944546672790857">{COUNT,plural, =0{Au moins 1 élément sur des appareils synchronisés}=1{1 élément (et plus sur des appareils synchronisés)}one{# élément (et plus sur des appareils synchronisés)}other{# éléments (et plus sur des appareils synchronisés)}}</translation>
+<translation id="3530944546672790857">{COUNT,plural, =0{Au moins 1 élément sur des appareils synchronisés}=1{1 élément (et plus sur des appareils synchronisés)}one{# élément (et plus sur des appareils synchronisés)}many{# items (and more on synced devices)}other{# éléments (et plus sur des appareils synchronisés)}}</translation>
 <translation id="3531780078352352885">Feuilles de travail</translation>
 <translation id="3532844647053365774">L'hôte <ph name="HOST" /> veut utiliser votre microphone</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
@@ -742,7 +742,7 @@
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963721102035795474">Mode Lecteur</translation>
 <translation id="3963837677003247395">Poursuivre manuellement?</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Aucun}=1{À partir de 1 site }one{À partir de # site }other{À partir de # sites }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{Aucun}=1{À partir de 1 site }one{À partir de # site }many{From # sites }other{À partir de # sites }}</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
 <translation id="3987405730340719549">Chrome a déterminé que ce site pourrait être faux ou frauduleux.
@@ -751,7 +751,7 @@
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3996311196211510766">Le site <ph name="ORIGIN" /> a exigé qu'une politique d'origine soit appliquée à toutes les demandes qu'il reçoit, mais cette politique ne peut pas être appliquée actuellement.</translation>
-<translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
+<translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}many{PDF document containing {COUNT} pages}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4032320456957708163">Votre navigateur est géré par <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -775,13 +775,13 @@
 <translation id="4117700440116928470">La portée de la règle n'est pas prise en charge.</translation>
 <translation id="4121428309786185360">Expire le</translation>
 <translation id="4123572138124678573">Triple perforation en bas</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 autre élément}one{# autre élément}other{# autres éléments}}</translation>
+<translation id="4129401438321186435">{COUNT,plural, =1{1 autre élément}one{# autre élément}many{# others}other{# autres éléments}}</translation>
 <translation id="4130226655945681476">De vérifier les câbles réseau, le modem et le routeur</translation>
 <translation id="413544239732274901">En savoir plus</translation>
 <translation id="4142935452406587478">Bac 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4151403195736952345">Paramètres par défaut (Détecter)</translation>
-<translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
+<translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}many{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154664944169082762">Empreintes</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -789,7 +789,7 @@
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="4173315687471669144">Foolscap</translation>
-<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> autre élément}one{<ph name="ITEM_COUNT" /> autre élément}other{<ph name="ITEM_COUNT" /> autres éléments}}</translation>
+<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> autre élément}one{<ph name="ITEM_COUNT" /> autre élément}many{<ph name="ITEM_COUNT" /> more items}other{<ph name="ITEM_COUNT" /> autres éléments}}</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Impossible d'enregistrer votre carte pour le moment</translation>
@@ -833,7 +833,7 @@
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
 <translation id="4279811152705618813">Votre appareil <ph name="DEVICE_TYPE" /> est géré par <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{La carte a été enregistrée dans votre compte Google}one{La carte a été enregistrée dans votre compte Google}other{Les cartes ont été enregistrées dans votre compte Google}}</translation>
+<translation id="428639260510061158">{NUM_CARDS,plural, =1{La carte a été enregistrée dans votre compte Google}one{La carte a été enregistrée dans votre compte Google}many{These cards have been saved in your Google Account}other{Les cartes ont été enregistrées dans votre compte Google}}</translation>
 <translation id="4297502707443874121">Miniature pour la page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
@@ -857,7 +857,7 @@
 <translation id="4358461427845829800">Gérer les modes de paiement</translation>
 <translation id="4359160567981085931">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="4367563149485757821">Enveloppe n° 12</translation>
-<translation id="4367839622597707614">{1,plural, =0{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" />. Chrome vous recommande de changer votre mot de passe sur <ph name="ORIGIN" /> maintenant.}=1{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et un autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}one{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}other{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autres sites. Chrome vous recommande de vérifier vos mots de passe enregistrés.}}</translation>
+<translation id="4367839622597707614">{1,plural, =0{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" />. Chrome vous recommande de changer votre mot de passe sur <ph name="ORIGIN" /> maintenant.}=1{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et un autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}one{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}many{A data breach on a site or app exposed your saved password for <ph name="ORIGIN" /> and <ph name="SITES_COUNT" /> other sites. Chrome recommends checking your saved passwords now.}other{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autres sites. Chrome vous recommande de vérifier vos mots de passe enregistrés.}}</translation>
 <translation id="437058704415269440">Solde du compte</translation>
 <translation id="4372516964750095882">Pli en éventail, É-U</translation>
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
@@ -950,7 +950,7 @@
           <ph name="LIST_ITEM" />Les fichiers que vous téléchargez dans cette fenêtre
         <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Une erreur inconnue s'est produite.</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fenêtre contextuelle bloquée}one{# fenêtre contextuelle bloquée}other{# fenêtres contextuelles bloquées}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fenêtre contextuelle bloquée}one{# fenêtre contextuelle bloquée}many{# pop-ups blocked}other{# fenêtres contextuelles bloquées}}</translation>
 <translation id="4780366598804516005">Boîte aux lettres 1</translation>
 <translation id="4780900888022378816">Votre appareil est géré par <ph name="ENROLLMENT_DOMAIN" />, et votre compte est géré par <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Basculer vers cet onglet</translation>
@@ -971,7 +971,7 @@
 <translation id="4854362297993841467">Ce mode de livraison n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="4876188919622883022">Affichage simplifié</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
-<translation id="4877083676943085827">{COUNT,plural, =0{Aucun}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{Aucun}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Rechercher <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatique (par défaut)</translation>
 <translation id="4879725228911483934">Ouvrir et placer des fenêtres sur vos écrans</translation>
@@ -1021,7 +1021,7 @@
 <translation id="5056549851600133418">Articles pour vous</translation>
 <translation id="5061227663725596739">Vouliez-vous dire <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 en cours d'utilisation)}one{(# en cours d'utilisation)}other{(# en cours d'utilisation)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 en cours d'utilisation)}one{(# en cours d'utilisation)}many{(# in use)}other{(# en cours d'utilisation)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />De vérifier l'adresse du mandataire<ph name="END_LINK" /></translation>
 <translation id="507130231501693183">Boîte aux lettres 4</translation>
 <translation id="5087286274860437796">Le certificat du serveur n'est pas valide présentement.</translation>
@@ -1125,7 +1125,7 @@
 <translation id="5452270690849572955">Cette page <ph name="HOST_NAME" /> est introuvable</translation>
 <translation id="5455374756549232013">Horodatage de la règle incorrect.</translation>
 <translation id="5457113250005438886">Non valide</translation>
-<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}one{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}other{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autres contacts}}</translation>
+<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}one{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}many{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autres contacts}}</translation>
 <translation id="5470861586879999274">&amp;Rétablir la modification</translation>
 <translation id="5478437291406423475">Enveloppe B6/C4</translation>
 <translation id="5481076368049295676">Ce contenu pourrait tenter d'installer des logiciels dangereux sur votre appareil afin de voler ou de supprimer vos données. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
@@ -1197,8 +1197,8 @@
 <translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="5728056243719941842">Enveloppe C5</translation>
 <translation id="5730040223043577876">Chrome recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Enregistrer la carte dans votre compte Google}one{Enregistrer la carte dans votre compte Google}other{Enregistrer les cartes dans votre compte Google}}</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Utiliser un numéro virtuel pour cette carte}one{Sélectionner une carte}other{Sélectionner des cartes}}</translation>
+<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Enregistrer la carte dans votre compte Google}one{Enregistrer la carte dans votre compte Google}many{Save cards in your Google Account}other{Enregistrer les cartes dans votre compte Google}}</translation>
+<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Utiliser un numéro virtuel pour cette carte}one{Sélectionner une carte}many{Select a card}other{Sélectionner des cartes}}</translation>
 <translation id="5759751709240058861">Utiliser et déplacer la caméra de votre appareil</translation>
 <translation id="5763042198335101085">Entrez une adresse de courriel valide</translation>
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
@@ -1216,7 +1216,7 @@
 <translation id="5804427196348435412">Utiliser des appareils NFC</translation>
 <translation id="5810442152076338065">Votre connexion au domaine <ph name="DOMAIN" /> est protégée par une suite de chiffrement obsolète.</translation>
 <translation id="5813119285467412249">&amp;Rétablir l'ajout</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cette carte sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}one{La carte que vous avez sélectionnée sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}other{Les cartes que vous avez sélectionnées seront débitées lorsque vous payerez, mais leur véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}}</translation>
+<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cette carte sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}one{La carte que vous avez sélectionnée sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}many{The card you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}other{Les cartes que vous avez sélectionnées seront débitées lorsque vous payerez, mais leur véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}}</translation>
 <translation id="5826507051599432481">Nom commun (CN)</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Nous vous déconseillons d'entrer des données sensibles sur ce site (par exemple, des mots de passe ou des cartes de crédit), car elles pourraient être volées par des pirates.</translation>
@@ -1236,6 +1236,7 @@
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5905445707201418379">Contenu bloqué conformément à la politique relative à l'origine de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronisé)</translation>
+<translation id="5913377024445952699">Capture d'écran mise en pause</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activé</translation>
@@ -1345,7 +1346,7 @@
 <translation id="6328786501058569169">Ce site est trompeur</translation>
 <translation id="6337133576188860026">Libère moins de <ph name="SIZE" />. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="6337534724793800597">Filtrer les règles par nom</translation>
-<translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}}</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}many{# passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}}</translation>
 <translation id="6358450015545214790">Qu'est-ce que c'est?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Vérifier la configuration du mandataire, du pare-feu et du DNS sécurisé<ph name="END_LINK" /></translation>
@@ -1353,7 +1354,7 @@
 <translation id="6377268785556383139">1 résultat trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Possibilité de frais facturés plus tard.</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 autre suggestion}one{# autre suggestion}other{# autres suggestions}}</translation>
+<translation id="6386120369904791316">{COUNT,plural, =1{1 autre suggestion}one{# autre suggestion}many{# other suggestions}other{# autres suggestions}}</translation>
 <translation id="6387645831795005740">Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement l'URL utilisée.</translation>
 <translation id="6389470377220713856">Nom sur carte</translation>
 <translation id="6390200185239044127">Demi-feuille de pli en Z</translation>
@@ -1416,7 +1417,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645291930348198241">Accéder aux témoins et aux données relatives aux sites.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}many{From # sites (you won't be signed out of your Google Account)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
 <translation id="6648524591329069940">Police avec empattement</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
@@ -1496,7 +1497,7 @@
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
 <translation id="7050187094878475250">Vous avez essayé d’atteindre <ph name="DOMAIN" />, mais le serveur a présenté un certificat dont la période de validité est trop longue pour être sûre.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{Cette carte ne peut pas être enregistrée pour le moment}one{Cette carte ne peut pas être enregistrée pour le moment}other{Ces cartes ne peuvent pas être enregistrées pour le moment}}</translation>
+<translation id="705310974202322020">{NUM_CARDS,plural, =1{Cette carte ne peut pas être enregistrée pour le moment}one{Cette carte ne peut pas être enregistrée pour le moment}many{These cards can't be saved right now}other{Ces cartes ne peuvent pas être enregistrées pour le moment}}</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> a vérifié que <ph name="ISSUER" /> a émis le certificat de ce site Web.</translation>
 <translation id="7062635574500127092">Turquoise</translation>
@@ -1521,12 +1522,12 @@
 <translation id="7139724024395191329">Émirat</translation>
 <translation id="714064300541049402">Décalage X de l'image côté 2</translation>
 <translation id="7152423860607593928">Enveloppe n° 14</translation>
-<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
+<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}many{<ph name="PAYMENT_METHOD_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
 <translation id="7153618581592392745">Lavande</translation>
 <translation id="7156870133441232244">Le serveur devrait effectuer la mise à niveau vers TLS 1.2 ou une version ultérieure.</translation>
 <translation id="717330890047184534">Identifiant Gaia :</translation>
 <translation id="7174545416324379297">Fusionnées</translation>
-<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
+<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}many{<ph name="SHIPPING_OPTION_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
 <translation id="7179323680825933600">Enregistrer et remplir les modes de paiement</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7181261019481237103">Ouvrir une fenêtre de navigation privée</translation>
@@ -1658,7 +1659,7 @@ Détails supplémentaires :
 <translation id="762844065391966283">Un à la fois</translation>
 <translation id="7633909222644580952">Données de performance et rapports de plantage</translation>
 <translation id="7637571805876720304">Supprimer la carte de crédit de Chromium?</translation>
-<translation id="7637586430889951925">{COUNT,plural, =0{Aucun}=1{1 mot de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}other{# mots de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="7637586430889951925">{COUNT,plural, =0{Aucun}=1{1 mot de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}many{# passwords in your account (for <ph name="DOMAIN_LIST" />)}other{# mots de passe dans votre compte (pour <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Ports série</translation>
 <translation id="7639968568612851608">Gris foncé</translation>
 <translation id="7647206758853451655">Qualité d'impression</translation>
@@ -1717,7 +1718,7 @@ Détails supplémentaires :
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> résultat(s) trouvé(s) pour « <ph name="SEARCH_STRING" /> »</translation>
 <translation id="782886543891417279">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter sa page de connexion.</translation>
 <translation id="7836231406687464395">Enveloppe Postfix</translation>
-<translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Vous n'êtes cependant pas devenu(e) invisible. L'utilisation du mode de navigation privée n'empêche pas votre employeur, votre fournisseur d'accès Internet ou les sites Web que vous avez consultés d'avoir accès aux données relatives à votre navigation.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Quitter le site?</translation>
@@ -1754,7 +1755,7 @@ Détails supplémentaires :
 <translation id="7995512525968007366">Non spécifié</translation>
 <translation id="800218591365569300">Essayez de fermer d'autres onglets ou programmes pour libérer de la mémoire.</translation>
 <translation id="8004582292198964060">Navigateur</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous serez en mesure de les utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}many{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous serez en mesure de les utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Les cyberpirates sur ce site peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple vos mots de passe, votre numéro de téléphone ou les données de votre carte de crédit).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8028960012888758725">Couper après la tâche</translation>
@@ -1863,7 +1864,7 @@ Détails supplémentaires :
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8457125768502047971">Indéfini</translation>
 <translation id="8461694314515752532">Chiffrer vos données synchronisées avec votre propre phrase de passe de synchronisation</translation>
-<translation id="8466379296835108687">{COUNT,plural, =1{1 carte de crédit}one{# carte de crédit}other{# cartes de crédit}}</translation>
+<translation id="8466379296835108687">{COUNT,plural, =1{1 carte de crédit}one{# carte de crédit}many{# credit cards}other{# cartes de crédit}}</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474910779563686872">Afficher les renseignements du concepteur</translation>
 <translation id="8479754468255770962">Agrafe en bas à gauche</translation>
@@ -1907,6 +1908,7 @@ Détails supplémentaires :
 <translation id="8622948367223941507">Légal extra</translation>
 <translation id="8623885649813806493">Aucun mot de passe correspondant. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8625384913736129811">Enregistrer cette carte sur cet appareil</translation>
+<translation id="8627040765059109009">Capture d'écran réactivée</translation>
 <translation id="8657078576661269990">Votre administrateur a bloqué le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME_1" /> et vers <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Résumé de la commande, <ph name="TOTAL_LABEL" />, plus de détails</translation>
 <translation id="867224526087042813">Signature</translation>
@@ -2058,7 +2060,7 @@ Détails supplémentaires :
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses qui prétendent être autre chose que ce qu'elles sont ou qui collectent des données pouvant être utilisées pour effectuer le suivi de votre activité. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Version officielle</translation>
 <translation id="973773823069644502">Ajouter une adresse de livraison</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}other{# éléments}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}many{# items}other{# éléments}}</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985199708454569384">&lt;p&gt;Cette erreur s'affiche si la date et l'heure de votre ordinateur ou de votre appareil mobile sont inexactes.&lt;/p&gt;

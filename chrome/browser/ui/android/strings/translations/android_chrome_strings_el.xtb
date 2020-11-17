@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Μάθετε περισσότερα για θέματα σε ιστοτόπους, χωρίς να απομακρυνθείτε από τη σελίδα. Η λειτουργία Αγγίξτε για αναζήτηση στέλνει μια λέξη και το συγκείμενό της στην Αναζήτηση Google και εμφανίζει ορισμούς, εικόνες, αποτελέσματα αναζήτησης και άλλες λεπτομέρειες.
 
 Αγγίξτε παρατεταμένα σε οποιαδήποτε λέξη για αναζήτηση. Για να κάνετε πιο συγκεκριμένη την αναζήτησή σας, επιλέξτε περισσότερες ή λιγότερες λέξεις. Για να επεξεργαστείτε την αναζήτησή σας, ανοίξτε το πλαίσιο, πατήστε το εικονίδιο για άνοιγμα σε νέα καρτέλα και πραγματοποιήστε τις αλλαγές σας στο πλαίσιο αναζήτησης.</translation>
+<translation id="2459390580524506445">Βελτιωμένη φωνητική αναζήτηση</translation>
 <translation id="246532703174860178">Κοινοποίηση</translation>
 <translation id="2478076885740497414">Εγκατάσταση εφαρμογής</translation>
 <translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Αποθηκευτικός χώρος Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Η καρτέλα προεπισκόπησης είναι κλειστή</translation>
 <translation id="2956410042958133412">Αυτός ο λογαριασμός τελεί υπό τη διαχείριση των γονέων <ph name="PARENT_NAME_1" /> και <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="2962095958535813455">Έγινε εναλλαγή σε καρτέλες ανώνυμης περιήγησης</translation>
 <translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="2987620471460279764">Κοινόχρηστο κείμενο από άλλη συσκευή</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Οι ειδοποιήσεις επιτρέπονται</translation>
 <translation id="3290991969712132877">Από το κουμπί Περισσότερες επιλογές, προσθέστε αυτήν τη σελίδα στην αρχική οθόνη για ταχύτερη μετάβαση.</translation>
 <translation id="3295530008794733555">Ταχύτερη περιήγηση. Χρήση λιγότερων δεδομένων.</translation>
+<translation id="3297344142967351106">Φωνητική βοήθεια</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Συνέχεια για λήψη του περιεχομένου;</translation>
 <translation id="3315103659806849044">Αυτήν τη στιγμή, προσαρμόζετε τις ρυθμίσεις του Συγχρονισμού και των Υπηρεσιών Google. Για να ολοκληρώσετε την ενεργοποίηση του συγχρονισμού, πατήστε το κουμπί Επιβεβαίωσης κοντά στην κορυφή της οθόνης. Πλοήγηση προς τα επάνω</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">Η ανακατεύθυνση αποκλείστηκε.</translation>
 <translation id="5527082711130173040">Το Chrome χρειάζεται πρόσβαση στην τοποθεσία, προκειμένου να κάνει σάρωση για συσκευές. <ph name="BEGIN_LINK1" />Ενημέρωση δικαιωμάτων<ph name="END_LINK1" />. Η πρόσβαση τοποθεσίας είναι επίσης <ph name="BEGIN_LINK2" />απενεργοποιημένη για αυτήν τη συσκευή<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Κλείσιμο καρτ.ανών.περιήγ.</translation>
+<translation id="5530920986376047241">Μπορείτε να αποθηκεύετε σελίδες στη λίστα ανάγνωσης για να τις βρίσκετε εύκολα ξανά.</translation>
 <translation id="5534640966246046842">Ο ιστότοπος αντιγράφηκε</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5561549206367097665">Αναμονή για δίκτυο…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">Άνοιγμα καρτέλας ανώνυμης περιήγησης</translation>
 <translation id="6000066717592683814">Διατήρηση του Google</translation>
 <translation id="6005538289190791541">Προτεινόμενος κωδικός πρόσβασης</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> σελίδα.}other{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> σελίδες.}}</translation>
 <translation id="6014293228235665243">Μη αναγνωσμένα</translation>
 <translation id="6036057147555329831">Επιπλέον ICU</translation>
 <translation id="6039379616847168523">Μετάβαση στην επόμενη καρτέλα</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Τα δεδομένα του Chrome διαγράφηκαν</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Έγινε λήψη <ph name="FILES_DOWNLOADED_ONE" /> αρχείου}other{Έγινε λήψη <ph name="FILES_DOWNLOADED_MANY" /> αρχείων}}</translation>
+<translation id="7583262514280211622">Εδώ θα βρείτε τη λίστα ανάγνωσής σας.</translation>
 <translation id="7588219262685291874">Ενεργοποιήστε το σκούρο θέμα όταν η λειτουργία εξοικονόμησης μπαταρίας της συσκευής σας είναι ενεργοποιημένη.</translation>
 <translation id="7593557518625677601">Ανοίξτε Ρυθμίσεις Android και ενεργοποιήστε τον συγχρ. συστ. Android για έναρξη Συγχρ. Chrome</translation>
 <translation id="7596558890252710462">Λειτουργικό σύστημα</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
+<translation id="7786595606756654269">Ο Βοηθός Google παρέχει μια βελτιωμένη φωνητική εμπειρία για την αναζήτηση στον ιστό και την αλληλεπίδραση με τους ιστοτόπους που ανοίγετε. Ο Βοηθός Google θα λαμβάνει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">Έχετε απενεργοποιήσει την πρόσβαση αποθηκευτικού χώρου. Μεταβείτε στις Ρυθμίσεις για να την ενεργοποιήσετε.</translation>
 <translation id="7963646190083259054">Πάροχος υπηρεσιών:</translation>
 <translation id="7967911570373677897">Για τη σάρωση ενός κωδικού QR, αλλάξτε τις ρυθμίσεις σας προκειμένου το Chrome να μπορεί να χρησιμοποιήσει την κάμερά σας</translation>
+<translation id="7968014550143838305">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7975379999046275268">Προεπισκόπηση σελίδας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Προφόρτωση ιστοσελίδων για ταχύτερη περιήγηση και αναζήτηση</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381">Η γλώσσα <ph name="LANG" /> είναι έτοιμη.</translation>
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8407396331882458341">1. Επιλέξτε την εφαρμογή <ph name="APP_NAME" />.\n2. Πατήστε την επιλογή Πάντα.</translation>
+<translation id="8410695015584479363">Παρακολούθηση τιμών</translation>
 <translation id="8413126021676339697">Εμφάνιση πλήρους ιστορικού</translation>
 <translation id="8425213833346101688">Αλλαγή</translation>
 <translation id="8427875596167638501">Η καρτέλα προεπισκόπησης έχει ανοίξει κατά το ήμισυ</translation>

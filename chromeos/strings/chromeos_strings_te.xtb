@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1018656279737460067">రద్దయింది</translation>
+<translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ పరిమాణం</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
+<translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ప్రాంతానికి అమర్చండి</translation>
 <translation id="1397738625398125236">గేట్‌వేను పింగ్ చేయవచ్చు</translation>
+<translation id="1398634363027580500">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
 <translation id="1478594628797167447">స్కానర్</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది. అడ్మినిస్ట్రేట‌ర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
+<translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="4646949265910132906">సురక్షిత Wi-Fi కనెక్షన్</translation>
 <translation id="467510802200863975">పాస్‌వర్డ్‌లు సరిపోలడం లేదు</translation>
+<translation id="467715984478005772">ఫైర్‌వాల్ అనుమానించబడింది</translation>
 <translation id="4691278870498629773">ఆగిపోయింది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="469379815867856270">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
@@ -114,6 +119,7 @@
 <translation id="6048107060512778456">విఫలమైంది - కాగితం జామ్ అయింది</translation>
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
 <translation id="6058625436358447366">దీనిని ముగించడానికి, మీ పాత, కొత్త పాస్‌వర్డ్‌లను నమోదు చేయండి</translation>
+<translation id="6061772781719867950">విఫలమైన HTTP రిక్వెస్ట్‌లు</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
 <translation id="6146993107019042706">దీనిని ముగించడానికి, మీ కొత్త పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
@@ -132,6 +138,8 @@
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
 <translation id="6747215703636344499">ఆగిపోయింది - అవుట్‌పుట్ నిండిపోయింది</translation>
+<translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
+<translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6839141349259399400">స్కానర్‌లకు కనెక్ట్ చేయడం సాధ్యపడటంలేదా?</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -139,6 +147,7 @@
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7805768142964895445">స్థితి</translation>
@@ -150,6 +159,7 @@
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8294431847097064396">మూలం</translation>
+<translation id="8302368968391049045">HTTPS ఫైర్‌వాల్</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>

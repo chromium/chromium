@@ -301,6 +301,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2102495993840063010">Aplikacje na Androida</translation>
 <translation id="2107021941795971877">Elementy pomocnicze drukowania</translation>
 <translation id="2108755909498034140">Uruchom ponownie komputer</translation>
+<translation id="2111166930115883695">Naciśnij spację, by zacząć grać</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Ignorowana, ponieważ jest zastąpiona przez <ph name="POLICY_NAME" />.</translation>
@@ -518,6 +519,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3010559122411665027">Pozycja listy „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3016780570757425217">Sprawdzanie Twojej lokalizacji</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Naciśnij Tab, a potem Enter, by usunąć sugestię.</translation>
 <translation id="3023071826883856138">You4 (koperta)</translation>
 <translation id="3024663005179499861">Nieprawidłowy typ zasady</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -759,6 +761,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Klucz „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (koperta)</translation>
+<translation id="4067669230157909013">Przechwytywanie ekranu zostało wznowione.</translation>
 <translation id="4067947977115446013">Dodaj poprawny adres</translation>
 <translation id="4072486802667267160">Podczas przetwarzania zamówienia wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="4075732493274867456">Klient i serwer nie obsługują wspólnej wersji protokołu SSL lub mechanizmu szyfrowania.</translation>
@@ -839,6 +842,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4297502707443874121">Miniatura strony <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4300675098767811073">Wiele otworów z prawej strony</translation>
+<translation id="4302514097724775343">Kliknij dinozaura, by zacząć grać</translation>
 <translation id="4302965934281694568">Chou3 (koperta)</translation>
 <translation id="4305666528087210886">Nie udało się uzyskać dostępu do pliku</translation>
 <translation id="4305817255990598646">Przełącz</translation>
@@ -1251,6 +1255,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5963413905009737549">Sekcja</translation>
 <translation id="5967592137238574583">Edytuj dane kontaktowe</translation>
 <translation id="5967867314010545767">Usuń z historii</translation>
+<translation id="5968793460449681917">Podczas każdej wizyty</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1466,6 +1471,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6895330447102777224">Karta została potwierdzona</translation>
 <translation id="6897140037006041989">Klient</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
+<translation id="6907293445143367439">Zezwól aplikacji <ph name="SITE_NAME" /> na:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> chce mieć pełny dostęp do sterowania urządzeniami MIDI</translation>
 <translation id="6915804003454593391">Użytkownik:</translation>
 <translation id="6934672428414710184">To imię i nazwisko pochodzi z Twojego konta Google</translation>
@@ -1901,6 +1907,7 @@ Dodatkowe informacje:
 <translation id="8574899947864779331">Używaj Touch ID, by szybciej potwierdzać karty</translation>
 <translation id="858637041960032120">Dodaj numer telefonu</translation>
 <translation id="8589998999637048520">Najlepsza jakość</translation>
+<translation id="8600271352425265729">Tylko tym razem</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>
 <translation id="8606726445206553943">Korzystać z urządzeń MIDI</translation>
 <translation id="8612761427948161954">Cześć <ph name="USERNAME" />,
@@ -2058,6 +2065,7 @@ Dodatkowe informacje:
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="945855313015696284">Sprawdź poniższe informacje i usuń karty z błędami</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
+<translation id="951941430552851965">Przechwytywanie ekranu zostało wstrzymane przez administratora z powodu wyświetlenia pewnych treści.</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>

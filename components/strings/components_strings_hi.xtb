@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android ऐप्लिकेशन</translation>
 <translation id="2107021941795971877">प्रिंट सहायता</translation>
 <translation id="2108755909498034140">अपना कंप्यूटर फिर से चालू करें</translation>
+<translation id="2111166930115883695">गेम चलाने के लिए, space दबाएं</translation>
 <translation id="2111256659903765347">सुपर-ए</translation>
 <translation id="2113977810652731515">कार्ड</translation>
 <translation id="2114841414352855701">ध्यान नहीं दिया गया क्योंकि यह <ph name="POLICY_NAME" /> द्वारा ओवरराइड की गई थी.</translation>
@@ -520,6 +521,7 @@
 <translation id="3010559122411665027">सूची प्रविष्ट‍ि "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
 <translation id="3016780570757425217">आपका स्‍थान पता करना</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, सुझाव हटाने के लिए पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="3023071826883856138">यू4 (एन्वेलप)</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
@@ -761,6 +763,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">कुंजी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">सी1 (एन्वेलप)</translation>
+<translation id="4067669230157909013">स्क्रीन कैप्चर करने की सुविधा फिर से शुरू की गई.</translation>
 <translation id="4067947977115446013">मान्य पता जोड़ें</translation>
 <translation id="4072486802667267160">आपका आदेश संसाधित करते समय गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="4075732493274867456">क्लाइंट और सर्वर, सामान्य SSL प्रोटोकॉल वर्शन या सिफ़र सुइट का समर्थन नहीं करते हैं.</translation>
@@ -845,6 +848,7 @@
 <translation id="4297502707443874121">पेज <ph name="THUMBNAIL_PAGE" /> का थंबनेल</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
 <translation id="4300675098767811073">दाईं ओर एक से ज़्यादा पंच</translation>
+<translation id="4302514097724775343">डायनो को चलाने के लिए, उस पर टैप करें</translation>
 <translation id="4302965934281694568">शू3 (एन्वेलप)</translation>
 <translation id="4305666528087210886">आपकी फ़ाइल ऐक्सेस नहीं की जा सकी</translation>
 <translation id="4305817255990598646">बदलें</translation>
@@ -1244,6 +1248,7 @@
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> की मूल नीति के मुताबिक रोक लगाई गई.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
+<translation id="5913377024445952699">स्क्रीन को कैप्चर करने की सुविधा रोक दी गई है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919090499915321845">बी10</translation>
 <translation id="5921185718311485855">चालू है</translation>
@@ -1256,6 +1261,7 @@
 <translation id="5963413905009737549">अनुभाग</translation>
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
 <translation id="5967867314010545767">इतिहास से निकालें</translation>
+<translation id="5968793460449681917">वेबसाइट पर किसी के भी आने पर</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
 <translation id="5980920751713728343">इंडेक्स-3x5</translation>
@@ -1471,6 +1477,7 @@
 <translation id="6895330447102777224">आपके कार्ड की पुष्टि हो गई है</translation>
 <translation id="6897140037006041989">उपयोगकर्ता एजेंट</translation>
 <translation id="6898699227549475383">संगठन (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> को इनकी अनुमति दें:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> वेबसाइट आपके MIDI डिवाइस का पूरा नियंत्रण पाना चाहती है</translation>
 <translation id="6915804003454593391">उपयोगकर्ता:</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
@@ -1907,6 +1914,7 @@
 <translation id="858637041960032120">फ़ोन नंबर जोड़ें
 </translation>
 <translation id="8589998999637048520">सबसे अच्छी क्वालिटी</translation>
+<translation id="8600271352425265729">सिर्फ़ इस बार अनुमति दें</translation>
 <translation id="860043288473659153">कार्डधारक का नाम</translation>
 <translation id="8606726445206553943">अपने MIDI डिवाइस का उपयोग करें</translation>
 <translation id="8612761427948161954">नमस्ते <ph name="USERNAME" />,
@@ -1916,6 +1924,7 @@
 <translation id="8622948367223941507">लीगल-एक्स्ट्रा</translation>
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8625384913736129811">इस कार्ड को इस डिवाइस में सेव करें</translation>
+<translation id="8627040765059109009">स्क्रीन को कैप्चर करने की सुविधा फिर से शुरू कर दी गई है</translation>
 <translation id="8657078576661269990">आपके एडमिन ने <ph name="ORIGIN_NAME" /> से <ph name="VM_NAME_1" /> और <ph name="VM_NAME_2" /> पर शेयर करने की सुविधा बंद कर दी है</translation>
 <translation id="8663226718884576429">ऑर्डर की खास बातें, <ph name="TOTAL_LABEL" />, ज़्यादा जानकारी</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
@@ -2063,6 +2072,7 @@
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="945855313015696284">नीचे दी गई जानकारी देखें और सभी गलत कार्ड मिटाएं</translation>
 <translation id="950736567201356821">सबसे ऊपर ट्रिपल पंच</translation>
+<translation id="951941430552851965">स्क्रीन पर दिख रहे कॉन्टेंट की वजह से, आपके एडमिन ने स्क्रीन कैप्चर करने की सुविधा रोक दी है.</translation>
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="962484866189421427">यह सामग्री ऐसे धोखा देने वाले ऐप्लिकेशन इंस्टॉल कर सकती है जो कुछ और होने का दावा करते हैं या ऐसा डेटा इकट्ठा करते हैं जिसका इस्तेमाल आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>

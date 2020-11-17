@@ -207,6 +207,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2450907520913474542">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. La funció Toca per cercar envia una paraula i el context que l'envolta a la Cerca de Google i torna definicions, imatges, resultats de la cerca i altres detalls.
 
 Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, selecciona més paraules o menys. Per editar la cerca, obre el tauler, toca la icona per obrir-la en una pestanya nova i fes els canvis al quadre de cerca.</translation>
+<translation id="2459390580524506445">Cerca per veu millorada</translation>
 <translation id="246532703174860178">Comparteix</translation>
 <translation id="2478076885740497414">Instal·la l'aplicació</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
@@ -275,6 +276,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2932150158123903946">Emmagatzematge de Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">La pestanya de previsualització està tancada</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" /> gestionen aquest compte.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
 <translation id="2962095958535813455">S'ha canviat a les pestanyes d'incògnit</translation>
 <translation id="2979025552038692506">Pestanya d'incògnit seleccionada</translation>
 <translation id="2987620471460279764">Text compartit d'un altre dispositiu</translation>
@@ -324,6 +326,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="32895400574683172">Es permeten les notificacions</translation>
 <translation id="3290991969712132877">Per accedir aquí més ràpidament, afegeix aquesta pàgina a la pantalla d'inici amb el botó Més opcions</translation>
 <translation id="3295530008794733555">Navega més de pressa. Utilitza menys dades.</translation>
+<translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3298243779924642547">Mode bàsic</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
 <translation id="3315103659806849044">Estàs personalitzant la configuració de la sincronització i del servei de Google. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha cap a la part inferior de la pantalla. Navega cap amunt</translation>
@@ -625,6 +628,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5524843473235508879">S'ha bloquejat la redirecció.</translation>
 <translation id="5527082711130173040">Chrome necessita accedir a la ubicació per poder cercar dispositius. <ph name="BEGIN_LINK1" />Actualitza els permisos<ph name="END_LINK1" />. L'accés a la ubicació també està <ph name="BEGIN_LINK2" />desactivat en aquest dispositiu<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Tanca pestanyes d'incògnit</translation>
+<translation id="5530920986376047241">Pots desar pàgines a la llista de lectura per trobar-les de nou</translation>
 <translation id="5534640966246046842">S'ha copiat el lloc web</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5561549206367097665">S'està esperant la xarxa…</translation>
@@ -704,6 +708,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5982307838673692400">Obre una pestanya d'incògnit</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pàgina}other{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pàgines}}</translation>
 <translation id="6014293228235665243">No llegits</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
@@ -938,6 +943,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxer baixat}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxers baixats}}</translation>
+<translation id="7583262514280211622">Trobaràs la llista de lectura aquí</translation>
 <translation id="7588219262685291874">Activa el tema fosc quan l'estalvi de bateria del dispositiu estigui activat</translation>
 <translation id="7593557518625677601">Obre la configuració d'Android i torna a activar la sincronització del sistema Android per començar la sincronització de Chrome</translation>
 <translation id="7596558890252710462">Sistema operatiu</translation>
@@ -969,6 +975,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7772375229873196092">Tanca <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="7778840695157240389">Torna més tard per veure històries noves</translation>
+<translation id="7786595606756654269">L'Assistent de Google ofereix una millor experiència de veu per fer cerques al web i interaccionar amb els llocs web que tens oberts. L'Assistent de Google rebrà l'URL i el contingut dels llocs web en què el facis servir.</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7798392620021911922">S'han restaurat <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="780301667611848630">No, gràcies</translation>
@@ -994,6 +1001,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7961926449547174351">Has desactivat l'accés a l'emmagatzematge. Ves a Configuració per activar-lo.</translation>
 <translation id="7963646190083259054">Proveïdor:</translation>
 <translation id="7967911570373677897">Per escanejar un codi QR, canvia la configuració perquè Chrome pugui utilitzar la càmera</translation>
+<translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Carrega les pàgines prèviament per poder-hi navegar i fer cerques més de pressa</translation>
@@ -1055,6 +1063,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8372925856448695381"><ph name="LANG" /> ja està a punt.</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8407396331882458341">1. Tria <ph name="APP_NAME" />\n2. Toca Sempre</translation>
+<translation id="8410695015584479363">Fes un seguiment dels preus</translation>
 <translation id="8413126021676339697">Mostra l'historial complet</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8427875596167638501">La pestanya de previsualització està oberta fins a la meitat</translation>

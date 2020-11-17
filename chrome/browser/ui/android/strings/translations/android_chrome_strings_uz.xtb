@@ -204,6 +204,7 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2450907520913474542">Tasvirlar, mavzular va boshqa maʼlumotlarni belgilangan sahifani tark etmasdan qidiring. Buning uchun soʻz tanlang va u Google qidiruv serverlariga kontekst bilan birga yuboriladi.
 
 Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish uchun kerakli soʻz yoki birikmani belgilang. Soʻrovni tahrirlash uchun panelni yuqoriga tortib oching, yangi varaq ochish uchun yoyish belgisini, keyin qidiruv oynasini bosing.</translation>
+<translation id="2459390580524506445">Kengaytirilgan ovozli qidiruv</translation>
 <translation id="246532703174860178">Ulashish</translation>
 <translation id="2478076885740497414">Ilovani o‘rnatish</translation>
 <translation id="2479148705183875116">Sozlamalarni ochish</translation>
@@ -272,6 +273,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> xotirasi</translation>
 <translation id="2942036813789421260">Razm solish sahifasi yopildi</translation>
 <translation id="2956410042958133412">Bu hisob <ph name="PARENT_NAME_1" /> va <ph name="PARENT_NAME_2" /> tomonlaridan boshqariladi.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ta sahifa oʻqilmagan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ta sahifa oʻqilmagan}}</translation>
 <translation id="2962095958535813455">Inkognito rejimidagi varaqlar o‘tildi</translation>
 <translation id="2979025552038692506">Tanlangan inkognito sahifa</translation>
 <translation id="2987620471460279764">Boshqa qurilmadan ulashilgan matn</translation>
@@ -320,6 +322,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="32895400574683172">Bildirishnomalarga ruxsat berildi</translation>
 <translation id="3290991969712132877">Bu sahifani tezroq ochish uchun Yana tugmasi orqali Bosh ekranga chiqaring</translation>
 <translation id="3295530008794733555">Tezroq kezing. Kamroq trafik sarflang.</translation>
+<translation id="3297344142967351106">Ovozli yordam</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Yuklab olinsinmi?</translation>
 <translation id="3315103659806849044">Siz hozir Sync va Google xizmati sozlamalaridasiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
@@ -619,6 +622,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5524843473235508879">Yo‘naltirish bloklandi.</translation>
 <translation id="5527082711130173040">Qurilmalarni tekshirish uchun Chrome brauzeriga joylashuv ma’lumotlarini ko‘rish ruxsati zarur. <ph name="BEGIN_LINK1" />Ruxsatlarni yangilang<ph name="END_LINK1" />. <ph name="BEGIN_LINK2" />Ushbu qurilma uchun joylashuv ma’lumotlariga ruxsat ham o‘chirib qo‘yilgan<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito oynalarini yopish</translation>
+<translation id="5530920986376047241">Sahifalarni keyinroq topish uchun mutolaa roʻyxatiga saqlash mumkin</translation>
 <translation id="5534640966246046842">Sayt nusxalandi</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="5561549206367097665">Tarmoq kutilmoqda...</translation>
@@ -697,6 +701,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5982307838673692400">Inkognito rejimida ochish</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
 <translation id="6005538289190791541">Taklif qilingan parol</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ta sahifa bor}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ta sahifa bor}}</translation>
 <translation id="6014293228235665243">Oʻqilmagan</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
@@ -930,6 +935,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="756809126120519699">Chrome ma’lumotlari tozalandi</translation>
 <translation id="7577900504646297215">Qiziqishlarni sozlash</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ta fayl yuklab olindi}other{<ph name="FILES_DOWNLOADED_MANY" /> ta fayl yuklab olindi}}</translation>
+<translation id="7583262514280211622">Brauzer mutolaa roʻyxati shu yerda chiqadi</translation>
 <translation id="7588219262685291874">Qurilmangizda Batareya quvvatini tejash rejimi yoqilganda tungi mavzu faollashadi</translation>
 <translation id="7593557518625677601">Android sozlamalarini oching va Chrome Sync xizmatini ishga tushirish uchun Android tizimini sinxronlashni qayta yoqib qo‘ying</translation>
 <translation id="7596558890252710462">Operatsion tizim</translation>
@@ -961,6 +967,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7772375229873196092">“<ph name="APP_NAME" />” oynasini yopish</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}}</translation>
 <translation id="7778840695157240389">Yangi hikoyalar uchun keyinroq qayta tekshiring</translation>
+<translation id="7786595606756654269">Google Assistent internetdan axborot qidirish va ochiq saytlar bilan ishlashda ovozli boshqaruvni yanada yaxshiroq bajaradi. Google Asssistent siz kiritgan saytlarni ularning URL manzili va kontenti bilan birga qabul qiladi.</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ta varaq tiklandi</translation>
 <translation id="780301667611848630">Kerak emas</translation>
@@ -986,6 +993,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7961926449547174351">Xotiraga kirishga ruxsat berilmagan. Ruxsat berish uchun sozlamalarga kiring.</translation>
 <translation id="7963646190083259054">Ta’minotchi:</translation>
 <translation id="7967911570373677897">Chrome QR kodni skanerlashi uchun sozlamalar orqali kamerani yoqing.</translation>
+<translation id="7968014550143838305">Mutolaa roʻyxatiga kiritildi</translation>
 <translation id="7971136598759319605">1 kun oldin onlayn edi</translation>
 <translation id="7975379999046275268">Sahifaga razm solish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Saytlarni kezish va qidiruv tezroq bajarilishi uchun sahifalar oldindan yuklansin</translation>
@@ -1046,6 +1054,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8372925856448695381"><ph name="LANG" /> tayyor.</translation>
 <translation id="8393700583063109961">Xabar yuborish</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> ilovasini tanlang\n2. “Har doim” ustiga bosing</translation>
+<translation id="8410695015584479363">Narxlarni kuzatish</translation>
 <translation id="8413126021676339697">Barcha tarixni ko‘rsatish</translation>
 <translation id="8425213833346101688">O‘zgartirish</translation>
 <translation id="8427875596167638501">Razm solish sahifasi yarim hajmda ochildi</translation>

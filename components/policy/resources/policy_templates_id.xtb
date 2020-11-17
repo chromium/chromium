@@ -1143,13 +1143,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di Chrome 88.</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
-<translation id="2759426227259007018">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
-
-      Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di atas layar kunci dan membuat catatan dalam konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.
-
-      Jika kebijakan disetel, pengguna akan dapat mengaktifkan aplikasi di layar kunci jika ID ekstensi aplikasi tercantum dalam nilai daftar kebijakan. Oleh karena itu, menyetel kebijakan ke daftar kosong akan menonaktifkan pencatatan di layar kunci. Kebijakan dengan ID aplikasi tidak selalu berarti bahwa pengguna dapat mengaktifkan aplikasi sebagai aplikasi pencatat di layar kunci. Misalnya, di <ph name="PRODUCT_NAME" /> 61, kumpulan aplikasi yang tersedia juga dibatasi oleh platform.
-
-      Jika kebijakan tidak disetel, tidak akan ada batasan pada kumpulan aplikasi yang dapat diaktifkan pengguna di layar kunci sebagaimana diberlakukan oleh kebijakan.</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="2765601181281280493">Jika menyetel kebijakan ini, Anda akan dapat menyetel daftar pola URL yang menentukan situs mana yang tidak dapat meminta izin pengguna untuk mengakses port serial.
 

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Хуудаснаас гаралгүйгээр веб сайтууд дээрх сэдвүүдийн талаар мэдээлэл аваарай. Хайхын тулд товших онцлог нь үг болон тухайн үгийн хам сэдвийг Google Хайлт руу илгээснээр тодорхойлолт, зураг, хайлтын илэрц болон бусад дэлгэрэнгүйг гаргаж ирнэ.
 
 Хайлт үүсгэхийн тулд дурын үгийг удаан дарна уу. Хайлтаа боловсронгуй болгохын тулд илүү олон эсвэл цөөн үг сонгоно уу. Хайлтаа засахын тулд түр зуурын самбарыг нээж, дүрс тэмдгийг товшин шинэ табд нээгээд хайх хэсэгт өөрчлөлтөө хийнэ үү.</translation>
+<translation id="2459390580524506445">Сайжруулсан дуут хайлт</translation>
 <translation id="246532703174860178">Хуваалцах</translation>
 <translation id="2478076885740497414">Програм суулгах</translation>
 <translation id="2479148705183875116">Тохиргоо руу очих</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сан</translation>
 <translation id="2942036813789421260">Урьдчилан үзэх таб хаалттай байна</translation>
 <translation id="2956410042958133412">Энэ хаягийг <ph name="PARENT_NAME_1" /> болон <ph name="PARENT_NAME_2" /> удирдаж байна.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> хуудас}other{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> хуудас}}</translation>
 <translation id="2962095958535813455">Нууцлалын горим бүхий чихтэй хуудас руу шилжүүлсэн</translation>
 <translation id="2979025552038692506">Сонгосон нууцлалын чихтэй хуудас</translation>
 <translation id="2987620471460279764">Өөр төхөөрөмжөөс хуваалцсан текст</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Мэдэгдлийг зөвшөөрсөн</translation>
 <translation id="3290991969712132877">Энд илүү шуурхай очихын тулд энэ хуудсыг Бусад сонголт товчлуураас Үндсэн нүүрэндээ нэмнэ үү</translation>
 <translation id="3295530008794733555">Хөтчийг илүү хурдан ашиглаарай. Бага дата ашиглах.</translation>
+<translation id="3297344142967351106">Дуут тусламж</translation>
 <translation id="3298243779924642547">Энгийн</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
 <translation id="3315103659806849044">Та одоогоор Синк болон Google-н үйлчилгээний тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Зөвшөөрөх товчлуурыг товшино уу. Дээш шилжих</translation>
@@ -366,7 +369,7 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-тай хуваалцаж байна</translation>
 <translation id="3632295766818638029">Нууц үгийг харуулах</translation>
-<translation id="363596933471559332">Хадгалсан итгэмжлэлийг ашиглан вебсайтад автоматаар нэвтрэх. Энэ үйлдлийг идэвхжүүлээгүй тохиолдолд аливаа вебсайтад хандах бүрт таниас баталгаажуулалт шаардана.</translation>
+<translation id="363596933471559332">Хадгалсан итгэмжлэлийг ашиглан вебсайтад автоматаар нэвтрэх. Энэ үйлдлийг идэвхжүүлээгүй тохиолдолд аливаа вебсайтад хандах бүрд таниас баталгаажуулалт шаардана.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Шинэчилснээр таны зочилсон сайтын жагсаалт зэрэг өгөгдөл хадгалалтын түүхийг устгана.</translation>
 <translation id="3692944402865947621">Сангийн байршил олдоогүй тул <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
@@ -624,6 +627,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5524843473235508879">Дахин чиглүүлэхийг блок хийсэн.</translation>
 <translation id="5527082711130173040">Төхөөрөмжүүд хайхын тулд Chrome-д байршлын хандалт хэрэгтэй. <ph name="BEGIN_LINK1" />Зөвшөөрлийг шинэчлэх<ph name="END_LINK1" />. <ph name="BEGIN_LINK2" />Энэ төхөөрөмжид<ph name="END_LINK2" /> байршлын хандалт унтраалттай байна.</translation>
 <translation id="5530766185686772672">Нууцлал бүхий цонхыг хаах</translation>
+<translation id="5530920986376047241">Та хуудаснуудыг дахин хайж олохын тулд тэдгээрийг унших жагсаалтдаа хадгалах боломжтой</translation>
 <translation id="5534640966246046842">Сайтыг хуулсан</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5561549206367097665">Сүлжээг хүлээж байна...</translation>
@@ -703,6 +707,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5982307838673692400">Нууцлалтай табыг нээх</translation>
 <translation id="6000066717592683814">Google хэвээр байлгах</translation>
 <translation id="6005538289190791541">Санал болгосон нууц үг</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Танд <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> хуудас байна}other{Танд <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> хуудас байна}}</translation>
 <translation id="6014293228235665243">Уншаагүй</translation>
 <translation id="6036057147555329831">Нэмэлт ICU</translation>
 <translation id="6039379616847168523">Дараагийн чихтэй хуудаст очих</translation>
@@ -937,6 +942,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="756809126120519699">Chrome-н өгөгдлийг устгасан</translation>
 <translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл татсан}other{<ph name="FILES_DOWNLOADED_MANY" /> файл татсан}}</translation>
+<translation id="7583262514280211622">Та унших жагсаалтаа эндээс олох болно</translation>
 <translation id="7588219262685291874">Таны төхөөрөмжийн Батарей хэмнэгч асаалттай үед бараан загварыг асаана</translation>
 <translation id="7593557518625677601">Chrome синкийг эхлүүлхийн тулд Андройдын тохиргоог нээж, Андройд системийн синкийг дахин идэвхжүүлнэ үү</translation>
 <translation id="7596558890252710462">Үйлдлийн систем</translation>
@@ -968,6 +974,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7772375229873196092"><ph name="APP_NAME" />-г хаах</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Шинэ түүхийг дараа дахин шалгана уу</translation>
+<translation id="7786595606756654269">Google Туслах нь вебээр хайх, нээсэн сайтуудтайгаа харьцах илүү сайн дуут туршлагаар хангадаг. Google Туслах нь таны үүнийг ашигладаг сайтуудын URL болон контентыг хүлээн авна.</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> табыг сэргээсэн</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
@@ -993,6 +1000,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7961926449547174351">Та хадгалах сангийн хандалтыг идэвхгүй болгосон байна, идэвхжүүлэхийн тулд Тохиргоо руу очно уу</translation>
 <translation id="7963646190083259054">Бэлтгэн нийлүүлэгч:</translation>
 <translation id="7967911570373677897">QR кодыг скан хийхийн тулд Chrome таны камерыг ашиглах боломжтой болгож тохиргоогоо өөрчилнө үү</translation>
+<translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
@@ -1054,6 +1062,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8372925856448695381"><ph name="LANG" /> бэлэн байна.</translation>
 <translation id="8393700583063109961">Мессеж илгээх</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" />-г сонгоно уу\n2. “Байнга”-ыг товшино уу</translation>
+<translation id="8410695015584479363">Үнэ хянах</translation>
 <translation id="8413126021676339697">Бүрэн түүхийг харуулах</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8427875596167638501">Урьдчилан үзэх табыг хагас нээсэн</translation>

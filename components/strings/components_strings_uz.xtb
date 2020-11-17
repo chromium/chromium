@@ -304,6 +304,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2102495993840063010">Android ilovalar</translation>
 <translation id="2107021941795971877">Chop etish mumkin</translation>
 <translation id="2108755909498034140">Kompyuterni o‘chirib yoqing</translation>
+<translation id="2111166930115883695">Boshlash uchun probelni bosing</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Inkor qilindi, chunki <ph name="POLICY_NAME" /> parametri undan ustunroq.</translation>
@@ -521,6 +522,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3010559122411665027">“<ph name="ENTRY_INDEX" />” ro‘yxat bandi: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
 <translation id="3016780570757425217">Joylashuvingiz haqidagi ma’lumotlar</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, taklifni olib tashlash uchun avval Tab, keyin esa Enter tugmasini bosing.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Qoida turi noto‘g‘ri</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
@@ -759,6 +761,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4056223980640387499">Sepiya</translation>
 <translation id="4058922952496707368">“<ph name="SUBKEY" />” kaliti: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Ekran lavhasini yozib olishda davom etamiz.</translation>
 <translation id="4067947977115446013">To‘g‘ri manzilni kiriting</translation>
 <translation id="4072486802667267160">To‘lovni amalga oshirishda xatolik yuz berdi. Qayta urinib ko‘ring.</translation>
 <translation id="4075732493274867456">Mijoz va server turli xil SSL protokoli versiyasi yoki shifrlar to‘plamidan foydalanmoqda.</translation>
@@ -843,6 +846,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4297502707443874121">Sahifa eskizi: <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4300675098767811073">Oʻngdan bir necha teshik ochish</translation>
+<translation id="4302514097724775343">Boshlash uchun dinozavrni bosing</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Fayldan foydalanishga ruxsat berilmadi</translation>
 <translation id="4305817255990598646">Almashtirish</translation>
@@ -1254,6 +1258,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5963413905009737549">Bo‘lim</translation>
 <translation id="5967592137238574583">Aloqa ma’lumotini tahrirlang</translation>
 <translation id="5967867314010545767">Tarixdan olib tashlash</translation>
+<translation id="5968793460449681917">Har tashrifda</translation>
 <translation id="5975083100439434680">Kichiklashtirish</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1468,6 +1473,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6895330447102777224">Kartangiz tasdiqlandi</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Tashkilot (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> uchun ruxsatlar:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> sayti MIDI qurilmalaringizni boshqarishga to‘liq ruxsat so‘ramoqda</translation>
 <translation id="6915804003454593391">Foydalanuvchi:</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
@@ -1903,6 +1909,7 @@ Batafsil axborot:
 <translation id="8574899947864779331">Kartalarni tezda tasdiqlash uchun Touch ID ishlating</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
 <translation id="8589998999637048520">Eng sifatli</translation>
+<translation id="8600271352425265729">Faqat shu safar</translation>
 <translation id="860043288473659153">Karta egasining ismi</translation>
 <translation id="8606726445206553943">MIDI qurilmalaridan foydalanish</translation>
 <translation id="8612761427948161954">Salom <ph name="USERNAME" />,
@@ -2059,6 +2066,7 @@ Batafsil axborot:
 <translation id="939736085109172342">Yangi jild</translation>
 <translation id="945855313015696284">Quyidagi axborotni tekshiring va yaroqsiz kartalarni olib tashlang</translation>
 <translation id="950736567201356821">Yuqoridan 3 ta teshik ochish</translation>
+<translation id="951941430552851965">Ekrandagi kontent tufayli ekrandan lavha yozib olish administrator tomonidan pauza qilindi.</translation>
 <translation id="961663415146723894">Quyi chekkasini belgilash</translation>
 <translation id="962484866189421427">Bu kontent soxta ilovalarni o‘rnatishga urinishi mumkin. Shuningdek, sizni kuzatishi yoki axborot yig‘ishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Rasmiy versiya</translation>

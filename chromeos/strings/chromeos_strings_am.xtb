@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1018656279737460067">ተሰርዟል</translation>
+<translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
 <translation id="1075811647922107217">የገጽ መጠን</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1204296502688602597">የዲኤንስ የሥርዓት ምላሽ ጊዜ</translation>
+<translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1397738625398125236">አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
+<translation id="1398634363027580500">በጣም ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1413240736185167732">አልተሳካም - ማጣሪያ አልተሳካም</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="ENROLLMENT_DOMAIN" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="4034824040120875894">አታሚ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
+<translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
+<translation id="467715984478005772">ኬላ ተጠርጥሯል</translation>
 <translation id="4691278870498629773">ቆሟል - መሳቢያ ይጎድላል</translation>
 <translation id="469379815867856270">የሲግናል ጥንካሬ</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">አልተሳካም - የወረቀት መታጨቅ</translation>
 <translation id="6050189528197190982">ግራጫማ ምጥጥን</translation>
 <translation id="6058625436358447366">ለማጠናቀቅ፣ የእርስዎን አሮጌ እና አዲስ የይለፍ ቃላት ያስገቡ</translation>
+<translation id="6061772781719867950">ያልተሳካ የHTTP ጥያቄ</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
 <translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6704062477274546131">የዲኤንኤስ መፍትሔ</translation>
 <translation id="6747215703636344499">ቆሟል - ውፅዓት ሞልቷል</translation>
+<translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
+<translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6839141349259399400">ከመቃኛዎች ጋር መገናኘት አልተቻለም?</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
+<translation id="8302368968391049045">የHTTPS ኬላ</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
 <translation id="8352772353338965963">አንድ መለያ ባለብዙ መለያ መግቢያ ላይ ያክሉ። ሁሉም የተገባባቸው መለያዎች ያለይለፍ ቃል ሊደረስባቸው ይችላሉ፣ ስለዚህ ይህ ባህሪ በታመኑ መለያዎች ላይ ብቻ ነው መጠቀም ያለባቸው።</translation>
 <translation id="8364946094152050673">ባዶ የስም አገልጋዮች</translation>

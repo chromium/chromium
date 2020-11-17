@@ -304,6 +304,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2102495993840063010">Androidi rakendused</translation>
 <translation id="2107021941795971877">Prinditeenuste toed</translation>
 <translation id="2108755909498034140">Taaskäivitage oma arvuti</translation>
+<translation id="2111166930115883695">Mängimiseks vajutage tühikuklahvi</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kaart</translation>
 <translation id="2114841414352855701">Seda ignoreeritakse, kuna reegel <ph name="POLICY_NAME" /> alistab selle.</translation>
@@ -521,6 +522,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3010559122411665027">Loendi kirje „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3016780570757425217">Teada teie asukohta</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, vajutage tabulaatorit ja seejärel sisestusklahvi, et soovitus eemaldada.</translation>
 <translation id="3023071826883856138">You4 (ümbrik)</translation>
 <translation id="3024663005179499861">Reegli tüüp on vale</translation>
 <translation id="3037605927509011580">Ups, ebaõnn!</translation>
@@ -763,6 +765,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4058922952496707368">Võti „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ümbrik)</translation>
+<translation id="4067669230157909013">Ekraanikuva jäädvustamist jätkatakse.</translation>
 <translation id="4067947977115446013">Sobiva aadressi lisamine</translation>
 <translation id="4072486802667267160">Teie tellimuse töötlemisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="4075732493274867456">Klient ja server ei toeta tavapärast SSL-protokolli versiooni ega šifreerimiskomplekti.</translation>
@@ -847,6 +850,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4297502707443874121">Lehe <ph name="THUMBNAIL_PAGE" /> pisipilt</translation>
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4300675098767811073">Mitu auku paremal</translation>
+<translation id="4302514097724775343">Mängimiseks puudutage dinosaurust</translation>
 <translation id="4302965934281694568">Chou3 (ümbrik)</translation>
 <translation id="4305666528087210886">Teie failile ei pääsetud juurde</translation>
 <translation id="4305817255990598646">Lüliti</translation>
@@ -1259,6 +1263,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5963413905009737549">Jaotis</translation>
 <translation id="5967592137238574583">Kontaktteabe muutmine</translation>
 <translation id="5967867314010545767">Eemalda ajaloost</translation>
+<translation id="5968793460449681917">Igal külastusel</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1474,6 +1479,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6895330447102777224">Teie kaart on kinnitatud</translation>
 <translation id="6897140037006041989">Kasutajaagent</translation>
 <translation id="6898699227549475383">Organisatsioon (O)</translation>
+<translation id="6907293445143367439">Lubage rakendusel <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> soovib teie MIDI-seadmeid täielikult juhtida</translation>
 <translation id="6915804003454593391">Kasutaja:</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>
@@ -1909,6 +1915,7 @@ Lisateave:
 <translation id="8574899947864779331">Kasutage kaartide kiiremaks kinnitamiseks Touch ID-d</translation>
 <translation id="858637041960032120">Lisage telefoninumber</translation>
 <translation id="8589998999637048520">Parim kvaliteet</translation>
+<translation id="8600271352425265729">Ainult see kord</translation>
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>
 <translation id="8606726445206553943">Kasutada MIDI-seadmeid</translation>
 <translation id="8612761427948161954">Tere, <ph name="USERNAME" />!
@@ -2066,6 +2073,7 @@ Lisateave:
 <translation id="939736085109172342">Uus kaust</translation>
 <translation id="945855313015696284">Vaadake allolevat teavet ja kustutage sobimatud kaardid</translation>
 <translation id="950736567201356821">Kolm auku ülal</translation>
+<translation id="951941430552851965">Administraator on ekraanikuva jäädvustamise ekraanil kuvatud sisu tõttu ajutiselt peatanud.</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="962484866189421427">Sisu võib üritada installida petturlikke rakendusi, mis esinevad millegi muuna või koguvad andmeid, mida saab kasutada teie jälgimiseks. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ametlik järk</translation>

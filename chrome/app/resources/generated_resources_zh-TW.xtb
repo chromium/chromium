@@ -2416,7 +2416,7 @@
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
 <translation id="3781742599892759500">Linux 麥克風存取權</translation>
-<translation id="378312418865624974">讀取這台電腦的專屬識別碼</translation>
+<translation id="378312418865624974">讀取這台電腦的專屬 ID</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
@@ -5812,7 +5812,7 @@
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
-<translation id="7826254698725248775">裝置識別碼發生衝突。</translation>
+<translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
 <translation id="7826346148677309647">你可以在 Play 商店中發掘更多適用於自己裝置的應用程式。</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
     <ph name="BR" />

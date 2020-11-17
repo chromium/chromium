@@ -1232,6 +1232,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5905445707201418379">Zablokováno na základě zásad webu <ph name="ORIGIN" /> ohledně původu.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronizováno)</translation>
+<translation id="5913377024445952699">Záznam obrazovky je pozastaven</translation>
 <translation id="59174027418879706">Povoleno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Zapnuto</translation>
@@ -1902,6 +1903,7 @@ Další podrobnosti:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nebyla nalezena žádná odpovídající hesla. Zobrazit všechna uložená hesla.</translation>
 <translation id="8625384913736129811">Uložit tuto kartu do zařízení</translation>
+<translation id="8627040765059109009">Záznam obrazovky byl znovu spuštěn</translation>
 <translation id="8657078576661269990">Váš administrátor zablokoval sdílení ze zdroje <ph name="ORIGIN_NAME" /> s virtuálními počítači <ph name="VM_NAME_1" /> a <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Shrnutí objednávky, <ph name="TOTAL_LABEL" />, další podrobnosti</translation>
 <translation id="867224526087042813">Podpis</translation>

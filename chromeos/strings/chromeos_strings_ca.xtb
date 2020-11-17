@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
+<translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
+<translation id="1238612778414822719">Latència d'HTTPS</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
+<translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1478594628797167447">Escàners</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="ENROLLMENT_DOMAIN" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
+<translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
+<translation id="467715984478005772">Possible tallafoc</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
 <translation id="469379815867856270">Intensitat del senyal</translation>
 <translation id="4731797938093519117">Accés parental</translation>
@@ -115,6 +120,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
+<translation id="6061772781719867950">Algunes sol·licituds HTTP han fallat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
@@ -133,6 +139,8 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
+<translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
+<translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6839141349259399400">No et pots connectar als escàners?</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -140,6 +148,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7805768142964895445">Estat</translation>
@@ -151,6 +160,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8294431847097064396">Font</translation>
+<translation id="8302368968391049045">Tallafoc HTTPS</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>

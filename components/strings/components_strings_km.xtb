@@ -307,6 +307,7 @@
 <translation id="2102495993840063010">កម្មវិធី Android</translation>
 <translation id="2107021941795971877">ជំនួយក្នុង​ការបោះពុម្ព</translation>
 <translation id="2108755909498034140">ចាប់ផ្តើុមកុំព្យូទ័ររបស់អ្នកឡើងវិញ</translation>
+<translation id="2111166930115883695">ចុច "space" ដើម្បីលេង</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">កាត</translation>
 <translation id="2114841414352855701">មិនបានអើពើ ពីព្រោះវាត្រូវបានបដិសេធដោយ <ph name="POLICY_NAME" />។</translation>
@@ -525,6 +526,7 @@
 <translation id="3010559122411665027">ធាតុបញ្ជី "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="3016780570757425217">ដឹងពីទីតាំងរបស់អ្នក</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ចុច "Tab" រួចចុច "Enter" ដើម្បី​លុបការណែនាំ។</translation>
 <translation id="3023071826883856138">You4 (ស្រោម​សំបុត្រ)</translation>
 <translation id="3024663005179499861">ប្រភេទគោលការណ៍ខុស</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
@@ -767,6 +769,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">សោ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ស្រោម​សំបុត្រ)</translation>
+<translation id="4067669230157909013">ការថតអេក្រង់​ត្រូវបានបន្ត។</translation>
 <translation id="4067947977115446013">បញ្ចូល​អាសយដ្ឋានដែល​ត្រឹមត្រូវ</translation>
 <translation id="4072486802667267160">មាន​បញ្ហា​ក្នុងការដំណើរការ​ការ​បញ្ជា​ទិញ​របស់​អ្នក។ សូម​ព្យាយាម​ម្ដង​ទៀត។</translation>
 <translation id="4075732493274867456">ម៉ាស៊ីនកូន និងម៉ាស៊ីនមេមិនគាំទ្រកំណែប្រូតូកូល SSL ទូទៅ ឬសៃភ័រស៊ូត (cipher suite) ទេ។</translation>
@@ -851,6 +854,7 @@
 <translation id="4297502707443874121">រូបភាព​តូចៗសម្រាប់ទំព័រ <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">ពង្រីក</translation>
 <translation id="4300675098767811073">ចោះ​ច្រើនរន្ធ​ខាងស្ដាំ</translation>
+<translation id="4302514097724775343">ចុច "ដាយណូស័រ" ដើម្បីលេង</translation>
 <translation id="4302965934281694568">Chou3 (ស្រោម​សំបុត្រ)</translation>
 <translation id="4305666528087210886">មិនអាចចូលប្រើ​ឯកសារ​របស់អ្នកបានទេ</translation>
 <translation id="4305817255990598646">ប្ដូរ​</translation>
@@ -1264,6 +1268,7 @@
 <translation id="5963413905009737549">ផ្នែក</translation>
 <translation id="5967592137238574583">កែសម្រួល​ព័ត៌មាន​ទំនាក់ទំនង</translation>
 <translation id="5967867314010545767">ដកចេញពីប្រវត្តិ</translation>
+<translation id="5968793460449681917">រាល់ពេល​ចូលមើល</translation>
 <translation id="5975083100439434680">បង្រួម</translation>
 <translation id="5979084224081478209">ពិនិត្យពាក្យសម្ងាត់</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1479,6 +1484,7 @@
 <translation id="6895330447102777224">កាតរបស់អ្នកបានបញ្ជាក់រួចហើយ</translation>
 <translation id="6897140037006041989">ភ្នាក់ងារអ្នកប្រើ</translation>
 <translation id="6898699227549475383">អង្គភាព (O)</translation>
+<translation id="6907293445143367439">អនុញ្ញាតឱ្យ <ph name="SITE_NAME" />៖</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ចង់​គ្រប់គ្រង​ឧបករណ៍ MIDI របស់អ្នក​ទាំងស្រុង</translation>
 <translation id="6915804003454593391">អ្នកប្រើ៖</translation>
 <translation id="6934672428414710184">ឈ្មោះ​នេះ​បាន​មកពី​គណនី Google របស់អ្នក</translation>
@@ -1915,6 +1921,7 @@
 <translation id="8574899947864779331">ប្រើ Touch ID ដើម្បី​បញ្ជាក់​បណ្ណឱ្យ​បាន​រហ័ស​ជាងមុន</translation>
 <translation id="858637041960032120">បន្ថែមលេខទូរស័ព្ទ</translation>
 <translation id="8589998999637048520">គុណភាព​ល្អបំផុត</translation>
+<translation id="8600271352425265729">តែពេលនេះ​ប៉ុណ្ណោះ</translation>
 <translation id="860043288473659153">ឈ្មោះ​ម្ចាស់​កាត</translation>
 <translation id="8606726445206553943">ប្រើឧបករណ៍ MIDI របស់អ្នក</translation>
 <translation id="8612761427948161954">សួស្ដី <ph name="USERNAME" />
@@ -2072,6 +2079,7 @@
 <translation id="939736085109172342">ថតឯកសារថ្មី</translation>
 <translation id="945855313015696284">សូមពិនិត្យ​មើលព័ត៌មាន​ខាងក្រោម រួចលុប​កាតដែល​មិនត្រឹមត្រូវ</translation>
 <translation id="950736567201356821">ចោះ​បីរន្ធ​ខាងលើ</translation>
+<translation id="951941430552851965">ការថត​អេក្រង់​ត្រូវបានផ្អាក​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក ដោយសារ​ខ្លឹមសារ​នៅលើ​អេក្រង់​របស់អ្នក។</translation>
 <translation id="961663415146723894">ភ្ជាប់​ខាងក្រោម</translation>
 <translation id="962484866189421427">ខ្លឹមសារនេះអាចព្យាយាមដំឡើងកម្មវិធីបោកប្រាស់ ដែល​ក្លែង​ធ្វើជាអ្វីម្យ៉ាង ឬ​ប្រមូល​ទិន្នន័យ​ដែល​អាច​ប្រើ​ដើម្បីតាម​ដានអ្នក។ <ph name="BEGIN_LINK" />បង្ហាញចុះមិន​អី​ទេ​<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">លេខកំណែផ្លូវការ</translation>

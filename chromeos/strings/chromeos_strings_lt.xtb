@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1018656279737460067">Atšaukta</translation>
+<translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
 <translation id="1204296502688602597">DNS delsa</translation>
+<translation id="1238612778414822719">HTTPS delsa</translation>
 <translation id="1290331692326790741">Silpnas signalas</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pritaikyti pagal nuskaitomą sritį</translation>
 <translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
+<translation id="1398634363027580500">Labai didelė HTTPS delsa</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="ENROLLMENT_DOMAIN" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="4034824040120875894">Spausdintuvas</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
+<translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
+<translation id="467715984478005772">Įtariama užkarda</translation>
 <translation id="4691278870498629773">Sustabdyta – nėra dėklo</translation>
 <translation id="469379815867856270">Signalo stiprumas</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
@@ -115,6 +120,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6048107060512778456">Nepavyko – įstrigęs popierius</translation>
 <translation id="6050189528197190982">Pilkumo tonas</translation>
 <translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
+<translation id="6061772781719867950">Nepavykusios HTTP užklausos</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
@@ -133,6 +139,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
+<translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
+<translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6839141349259399400">Nepavyko prisijungti prie skaitytuvų?</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -140,6 +148,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
 <translation id="7805768142964895445">Būsena</translation>
@@ -151,6 +160,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
+<translation id="8302368968391049045">HTTPS užkarda</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>

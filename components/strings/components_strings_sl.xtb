@@ -305,6 +305,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2102495993840063010">Aplikacije za Android</translation>
 <translation id="2107021941795971877">Podpora za tiskanje</translation>
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
+<translation id="2111166930115883695">Pritisnite preslednico, če želite igrati.</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kartica</translation>
 <translation id="2114841414352855701">Prezrto, ker je to preglasil pravilnik <ph name="POLICY_NAME" />.</translation>
@@ -522,6 +523,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3010559122411665027">Vnos na sznamu »<ph name="ENTRY_INDEX" />«: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3016780570757425217">podatke o vaši lokaciji</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, pritisnite tabulatorko, nato Enter, če želite odstraniti predlog.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Napačna vrsta pravilnika</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
@@ -764,6 +766,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Ključ »<ph name="SUBKEY" />«: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Zajem zaslona se je nadaljeval.</translation>
 <translation id="4067947977115446013">Dodajanje veljavnega naslova</translation>
 <translation id="4072486802667267160">Pri obdelavi naročila je prišlo do napake. Poskusite znova.</translation>
 <translation id="4075732493274867456">Odjemalec in strežnik ne podpirata skupne različice protokola SSL ali šifrirne zbirke.</translation>
@@ -848,6 +851,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4297502707443874121">Sličica za stran <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Razširi</translation>
 <translation id="4300675098767811073">Večkratno luknjanje na desni</translation>
+<translation id="4302514097724775343">Če želite igrati, se dotaknite dinozavra.</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Ni bilo mogoče dostopati do datoteke</translation>
 <translation id="4305817255990598646">Preklopi</translation>
@@ -1260,6 +1264,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5963413905009737549">Razdelek</translation>
 <translation id="5967592137238574583">Urejanje podatkov o stiku</translation>
 <translation id="5967867314010545767">Odstrani iz zgodovine</translation>
+<translation id="5968793460449681917">Ob vsakem obisku</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1475,6 +1480,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6895330447102777224">Kartica je potrjena.</translation>
 <translation id="6897140037006041989">Uporabnikov posrednik</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
+<translation id="6907293445143367439">Ali spletnemu mestu <ph name="SITE_NAME" /> dovolite, da:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> želi pridobiti popolni nadzor nad vašimi napravami MIDI</translation>
 <translation id="6915804003454593391">Uporabnik:</translation>
 <translation id="6934672428414710184">To ime je iz vašega računa za Google</translation>
@@ -1910,6 +1916,7 @@ Dodatne podrobnosti:
 <translation id="8574899947864779331">Uporabite Touch ID za hitrejše potrjevanje kartic</translation>
 <translation id="858637041960032120">Dodajte tel. št. </translation>
 <translation id="8589998999637048520">Najboljša kakovost</translation>
+<translation id="8600271352425265729">Samo tokrat</translation>
 <translation id="860043288473659153">Ime imetnika kartice</translation>
 <translation id="8606726445206553943">Uporaba naprav MIDI</translation>
 <translation id="8612761427948161954">Pozdravljeni, <ph name="USERNAME" />,
@@ -2067,6 +2074,7 @@ Dodatne podrobnosti:
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="945855313015696284">Preverite spodnje podatke in izbrišite neveljavne kartice</translation>
 <translation id="950736567201356821">Trojno luknjanje zgoraj</translation>
+<translation id="951941430552851965">Zajem zaslona je skrbnik začasno zaustavil zaradi vsebine na zaslonu.</translation>
 <translation id="961663415146723894">Vezava spodaj</translation>
 <translation id="962484866189421427">Ta vsebina lahko poskusi namestiti zavajajoče aplikacije, ki se izdajajo za kaj drugega ali zbirajo podatke, s katerimi vas je mogoče spremljati. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Uradna različica</translation>

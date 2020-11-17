@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">పేజీ వదిలిపెట్టకుండానే వెబ్‌సైట్‌లలోని అంశాల గురించి తెలుసుకోండి. 'వెతకడానికి తాకండి' అనే ఫీచర్ ద్వారా, ఏదైనా ఒక పదాన్ని, దానికి సంబంధించిన సందర్భాన్ని Google శోధనకు పంపవచ్చు. దీని వల్ల, ఆ పదానికి సంబంధించిన నిర్వచనాలు, ఫోటోలు, శోధన ఫలితాలు, ఇతర వివరాలు పొందవచ్చు.
 
 ఏదైనా పదంపై తాకి &amp; అలాగే నొక్కి ఉంచడం ద్వారా, దానిని వెతకండి. మీ శోధనను మెరుగుపరచడానికి, మరిన్ని లేదా తక్కువ పదాలను ఎంచుకోండి. మీ శోధనను ఎడిట్ చేయడానికి, ప్యానెల్‌ను తెరిచి, చిహ్నంపై ట్యాప్ చేయడం ద్వారా కొత్త ట్యాబ్‌లో తెరిచి, శోధన పెట్టెలో మీ మార్పులు చేయండి.</translation>
+<translation id="2459390580524506445">మెరుగైన వాయిస్ సెర్చ్</translation>
 <translation id="246532703174860178">షేర్ చేయండి</translation>
 <translation id="2478076885740497414">అనువర్తనాన్ని ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> నిల్వ</translation>
 <translation id="2942036813789421260">ప్రివ్యూ ట్యాబ్ మూసివేయబడింది</translation>
 <translation id="2956410042958133412">ఈ ఖాతా <ph name="PARENT_NAME_1" /> మరియు <ph name="PARENT_NAME_2" /> నిర్వహణలో ఉంది.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> చదవని పేజీ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> చదవని పేజీలు}}</translation>
 <translation id="2962095958535813455">అజ్ఞాత ట్యాబ్‌లకు మార్చబడింది</translation>
 <translation id="2979025552038692506">ఎంచుకున్న అజ్ఞాత ట్యాబ్</translation>
 <translation id="2987620471460279764">ఇతర పరికరం నుండి షేర్ చేయబడిన వచనం</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
 <translation id="3290991969712132877">ఈ పేజీని త్వరగా యాక్సెస్ చేయడానికి, 'మరిన్ని ఎంపికలు' బటన్ నుండి మీ మొదటి స్క్రీన్‌కు దీనిని జోడించండి</translation>
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
+<translation id="3297344142967351106">వాయిస్ సహాయం</translation>
 <translation id="3298243779924642547">లైట్</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
 <translation id="3315103659806849044">మీరు ప్రస్తుతం మీ సింక్, Google సేవా సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని నిర్ధారించు బటన్‌ను నొక్కండి. పైకి నావిగేట్ చేయి</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">మళ్లింపు బ్లాక్ చేయబడింది.</translation>
 <translation id="5527082711130173040">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK1" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK1" />. అలాగే స్థాన యాక్సెస్ <ph name="BEGIN_LINK2" />ఈ పరికరానికి ఆఫ్ చేయబడింది<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="5530920986376047241">పేజీలను తిరిగి కనుగొనడానికి మీరు వాటిని మీ చదవాల్సిన లిస్ట్‌కు సేవ్ చేయవచ్చు</translation>
 <translation id="5534640966246046842">సైట్ కాపీ చేయబడింది</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5561549206367097665">నెట్‌వర్క్ కోసం వేచి ఉంది…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> పేజీ ఉంది}other{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> పేజీలు ఉన్నాయి}}</translation>
 <translation id="6014293228235665243">చదవనివి</translation>
 <translation id="6036057147555329831">అదనపు ICU</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>
 <translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ఫైల్ డౌన్‌లోడ్ చేయబడింది}other{<ph name="FILES_DOWNLOADED_MANY" /> ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి}}</translation>
+<translation id="7583262514280211622">మీ చదవాల్సిన లిస్ట్‌ను మీరు ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="7588219262685291874">మీ పరికరం బ్యాటరీ సేవర్ ఆన్‌లో ఉన్నప్పుడు ముదురు రంగు థీమ్‌ను ఆన్ చేస్తుంది</translation>
 <translation id="7593557518625677601">Chrome సమకాలీకరణను ప్రారంభిండానికి Android సెట్టింగ్‌లు తెరిచి, Android సిస్టమ్ సమకాలీకరణను మళ్లీ ప్రారంభించండి</translation>
 <translation id="7596558890252710462">ఆపరేటింగ్ సిస్టమ్</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
+<translation id="7786595606756654269">వెబ్‌లో సెర్చ్ చేయడం కోసం, అలాగే మీరు తెరిచిన సైట్‌లతో ఎంగేజ్ అయ్యి ఉండటం కోసం Google Assistant మెరుగైన వాయిస్ అనుభవాన్ని అందిస్తుంది. Google Assistant మీరు దానితో ఉపయోగించే సైట్ల URL, అలాగే కంటెంట్‌లను అందుకుంటుంది.</translation>
 <translation id="7791543448312431591">జోడించు</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">మీరు స్టోరేజ్ యాక్సెస్‌ను డిజేబుల్ చేశారు, దానిని ఎనేబుల్ చేయడానికి దయచేసి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="7963646190083259054">విక్రేత:</translation>
 <translation id="7967911570373677897">QR కోడ్‌ను స్కాన్ చేయడానికి, మీ సెట్టింగ్‌లను మార్చండి. అప్పుడే, Chrome మీ కెమెరాను ఉపయోగించగలదు</translation>
+<translation id="7968014550143838305">చదవాల్సిన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="7971136598759319605">1 రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> పేజీని ప్రివ్యూ చేయండి</translation>
 <translation id="7981313251711023384">బ్రౌజింగ్, సెర్చ్‌లను మరింత వేగవంతం చేయడం కోసం పేజీలను ముందస్తుగా లోడ్ చేస్తుంది</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> సిద్ధంగా ఉంది.</translation>
 <translation id="8393700583063109961">సందేశాన్ని పంపండి</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" />ను ఎంచుకోండి\n2. “ఎల్లప్పుడూ”ను ట్యాప్ చేయండి</translation>
+<translation id="8410695015584479363">ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8413126021676339697">పూర్తి చరిత్రను చూపించు</translation>
 <translation id="8425213833346101688">మార్చు</translation>
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>

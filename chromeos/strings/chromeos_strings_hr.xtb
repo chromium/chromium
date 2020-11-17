@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
 <translation id="1204296502688602597">Latencija DNS-a</translation>
+<translation id="1238612778414822719">Latencija HTTPS-a</translation>
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području skeniranja</translation>
 <translation id="1397738625398125236">Pristupnik se može pingati</translation>
+<translation id="1398634363027580500">Vrlo visoka latencija HTTPS-a</translation>
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="ENROLLMENT_DOMAIN" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
 <translation id="4034824040120875894">Pisač</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
+<translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nema zadataka ispisa u tijeku</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="4646949265910132906">Sigurna Wi-Fi veza</translation>
 <translation id="467510802200863975">Zaporke se ne podudaraju</translation>
+<translation id="467715984478005772">Moguć je vatrozid</translation>
 <translation id="4691278870498629773">Zaustavljeno – nema ladice</translation>
 <translation id="469379815867856270">Jakost signala</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
@@ -115,6 +120,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6048107060512778456">Nije uspjelo – zaglavljeni papir</translation>
 <translation id="6050189528197190982">Sivi tonovi</translation>
 <translation id="6058625436358447366">Za dovršetak unesite staru i novu zaporku</translation>
+<translation id="6061772781719867950">Neuspješni HTTP zahtjevi</translation>
 <translation id="6106186594183574873">Za dovršetak unesite staru zaporku</translation>
 <translation id="6108689792487843350">Nije moguće dosegnuti pristupnik</translation>
 <translation id="6146993107019042706">Za dovršetak unesite novu zaporku</translation>
@@ -133,6 +139,8 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
+<translation id="6766275201586212568">Neuspješna razrješavanja DNS-a</translation>
+<translation id="6768237774506518020">Visoka stopa neuspješnih razrješavanja DNS-a</translation>
 <translation id="6839141349259399400">Ne možete se povezati sa skenerima?</translation>
 <translation id="714876143603641390">LAN povezivost</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -140,6 +148,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7561454561030345039">Tom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Visoka latencija HTTPS-a</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7690294790491645610">Potvrdite novu zaporku</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +160,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8294431847097064396">Izvor</translation>
+<translation id="8302368968391049045">Vatrozid za HTTPS</translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="8352772353338965963">Dodajte račun na višestruku prijavu. Svim računima na koje ste prijavljeni može se pristupiti bez zaporke, pa bi se ta značajka trebala upotrebljavati samo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni poslužitelji naziva</translation>

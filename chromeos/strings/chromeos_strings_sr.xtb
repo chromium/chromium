@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
+<translation id="1238612778414822719">HTTPS кашњење</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
 <translation id="1397738625398125236">Мрежни пролаз може да се пингује</translation>
+<translation id="1398634363027580500">Веома велико HTTPS кашњење</translation>
 <translation id="1413240736185167732">Није успело – филтер је отказао</translation>
 <translation id="1468664791493211953">Понуде</translation>
 <translation id="1478594628797167447">Скенер</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="4034824040120875894">Штампач</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
+<translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="4646949265910132906">Безбедна WiFi веза</translation>
 <translation id="467510802200863975">Лозинке се не подударају</translation>
+<translation id="467715984478005772">Сумња се на заштитни зид</translation>
 <translation id="4691278870498629773">Заустављено – недостаје посуда за одштампани материјал</translation>
 <translation id="469379815867856270">Јачина сигнала</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">Није успело – папир је заглављен</translation>
 <translation id="6050189528197190982">Сиви тонови</translation>
 <translation id="6058625436358447366">Да бисте завршили, унесите стару и нову лозинку</translation>
+<translation id="6061772781719867950">Неуспешни HTTPS захтеви</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6747215703636344499">Заустављено – посуда за одштампани материјал је пуна</translation>
+<translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
+<translation id="6768237774506518020">Велика стопа неуспеха DNS разрешавања</translation>
 <translation id="6839141349259399400">Повезивање са скенерима није успело?</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7162487448488904999">Галерија</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">Тип датотеке</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Велико HTTPS кашњење</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7690294790491645610">Потврдите нову лозинку</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
 <translation id="8294431847097064396">Извор</translation>
+<translation id="8302368968391049045">HTTPS заштитни зид</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>
 <translation id="8352772353338965963">Додајте налог за вишеструко пријављивање. Свим пријављеним налозима се може приступити без лозинке, па ову функцију треба користити само са поузданим налозима.</translation>
 <translation id="8364946094152050673">Празни сервери за имена</translation>

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">‏ניתן לקבל מידע על נושאים שמוזכרים באתרים מבלי לצאת מהדף. התכונה 'חיפוש בנגיעה' מאפשרת לשלוח מילה ביחד עם ההקשר שלה אל חיפוש Google, כדי לקבל הגדרות, תמונות, תוצאות חיפוש ופרטים אחרים.
 
 כדי לחפש מילה, לוחצים עליה לחיצה ארוכה. כדי להתאים את החיפוש, אפשר לבחור יותר מילים או פחות מילים. כדי לערוך את החיפוש, פותחים את החלונית, מקישים על הסמל כדי לפתוח את האפליקציה בכרטיסייה חדשה ומבצעים את השינויים בתיבת החיפוש.</translation>
+<translation id="2459390580524506445">חיפוש קולי משופר</translation>
 <translation id="246532703174860178">שיתוף</translation>
 <translation id="2478076885740497414">התקנת האפליקציה</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">‏נפח אחסון של <ph name="APP_NAME" />‏ Google</translation>
 <translation id="2942036813789421260">כרטיסיית התצוגה המקדימה סגורה</translation>
 <translation id="2956410042958133412">החשבון הזה מנוהל על ידי <ph name="PARENT_NAME_1" /> ו-<ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
 <translation id="2962095958535813455">בוצעה החלפה לכרטיסיות מצב אנונימי</translation>
 <translation id="2979025552038692506">כרטיסיית המצב האנונימי שנבחרה</translation>
 <translation id="2987620471460279764">טקסט ששותף ממכשיר אחר</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">יש הרשאה להצגת הודעות</translation>
 <translation id="3290991969712132877">רוצה להגיע לכאן מהר יותר? ניתן להוסיף את הדף הזה למסך הבית דרך לחצן האפשרויות הנוספות</translation>
 <translation id="3295530008794733555">יותר מהירות. פחות נתונים.</translation>
+<translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3298243779924642547">‏מצב Lite</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
 <translation id="3315103659806849044">‏מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון ושירותי Google. כדי להשלים את הפעלת הסנכרון, יש להקיש על הלחצן 'אישור' קרוב לתחתית המסך. ניווט למעלה</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">הפניה לכתובת אתר אחרת נחסמה.</translation>
 <translation id="5527082711130173040">‏כדי לבצע סריקה לאיתור מכשירים, Chrome זקוק לגישה לנתוני מיקום. <ph name="BEGIN_LINK1" />עדכון ההרשאות<ph name="END_LINK1" />. כמו כן, הגישה למיקום <ph name="BEGIN_LINK2" />כבויה במכשיר הזה<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">סגירת כרטיסיות מצב אנונימי</translation>
+<translation id="5530920986376047241">אפשר לשמור דפים ברשימת הקריאה כדי למצוא אותם שוב</translation>
 <translation id="5534640966246046842">האתר הועתק</translation>
 <translation id="5556459405103347317">ניסיון טעינה נוסף</translation>
 <translation id="5561549206367097665">בהמתנה לרשת…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">פתיחה של כרטיסיית מצב אנונימי</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{יש לך דף אחד (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />)}two{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}many{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}other{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}}</translation>
 <translation id="6014293228235665243">לא נקראו</translation>
 <translation id="6036057147555329831">‏ICU נוסף</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}many{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
+<translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
 <translation id="7593557518625677601">‏פתיחת הגדרות Android והפעלה מחדש של הסנכרון של מערכת Android כדי להתחיל בסנכרון של Chrome</translation>
 <translation id="7596558890252710462">מערכת הפעלה</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">סגירת <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}many{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
+<translation id="7786595606756654269">‏שירות Google Assistant מספק חוויה קולית טובה יותר במהלך חיפוש ברשת והתעניינות באתרים שפתחת. שירות Google Assistant יקבל את כתובת האתרים ואת התוכן של אתרים שהשתמשת בהם.</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
 <translation id="7963646190083259054">ספק:</translation>
 <translation id="7967911570373677897">‏כדי לסרוק קוד QR, צריך לשנות את ההגדרות כך שמערכת Chrome תוכל להשתמש במצלמה</translation>
+<translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> מוכנה לשימוש.</translation>
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8407396331882458341">‏1. בוחרים את <ph name="APP_NAME" />.\n2. מקישים על 'תמיד'.</translation>
+<translation id="8410695015584479363">מעקב אחר מחירים</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>

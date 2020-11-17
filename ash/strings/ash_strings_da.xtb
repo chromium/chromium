@@ -98,6 +98,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1838895407229022812">Nattelys er slået fra.</translation>
 <translation id="1850504506766569011">Wi-Fi er slået fra.</translation>
 <translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
+<translation id="1882814835921407042">Intet mobilnetværk</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik på Bekræft for at anvende ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
+<translation id="2078034614700056995">Stryg mod højre med fire fingre for at skifte til næste skrivebord</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
 <translation id="2126242104232412123">Nyt skrivebord</translation>
@@ -126,6 +128,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2132302418721800944">Optag hele skærmen</translation>
 <translation id="2135456203358955318">Fastgjort lupvindue</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
+<translation id="2170530631236737939">Stryg nedad med tre fingre for at lukke oversigten</translation>
 <translation id="2208323208084708176">Samlet skrivebordstilstand</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2222338659135520253">Login er påkrævet</translation>
@@ -235,6 +238,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3236488194889173876">Der er ingen tilgængelige mobilnetværk</translation>
 <translation id="3249513730522716925">Vindue <ph name="WINDOW_TITLE" /> blev flyttet fra Skrivebord <ph name="ACTIVE_DESK" /> til Skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
+<translation id="3289674678944039601">Oplader via adapter</translation>
 <translation id="3290356915286466215">Ikke beskyttet</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3307642347673023554">Skiftede til computertilstand</translation>
@@ -293,6 +297,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3799080171973636491">Du trykkede på tastaturgenvejen for forstørrelse af fuld skærm. Vil du aktivere indstillingen?</translation>
 <translation id="380165613292957338">Hej, hvad kan jeg hjælpe med?</translation>
 <translation id="3826099427150913765">Skift til adgangskode</translation>
+<translation id="383058930331066723">Tilstanden Batterisparefunktion er aktiveret</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
 <translation id="3846214748874656680">Afslut fuld skærm</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
@@ -338,6 +343,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Screenshot</translation>
+<translation id="425364040945105958">Intet SIM-kort</translation>
 <translation id="4261870227682513959">Vis indstillinger for notifikationer. Notifikationer er slået fra</translation>
 <translation id="4267383818855338811">En virtuel maskine anvender dit kamera</translation>
 <translation id="4269883910223712419">Administratoren af denne enhed kan gøre følgende:</translation>
@@ -470,14 +476,17 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="54609108002486618">Administreret</translation>
 <translation id="5465662442746197494">Har du brug for hjælp?</translation>
 <translation id="5496819745535887422">Din administrator gendanner en tidligere version på din enhed. Alle data slettes, når enheden genstartes.</translation>
+<translation id="5516420770350073386">Skærmoptagelsen blev stoppet af din administrator på grund af indhold på din skærm.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> opretter forbindelse.</translation>
+<translation id="5532994612895037630">Tryk et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="553675580533261935">Afslutter session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Slå diktering til/fra</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5571066253365925590">Bluetooth er aktiveret</translation>
 <translation id="557563299383177668">Næste afsnit</translation>
+<translation id="55808498489107691">Dit screenshot blev blokeret af din administrator på grund af indhold på din skærm.</translation>
 <translation id="558849140439112033">Træk for at vælge et område, der skal tages billeder af</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> d. <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
@@ -528,6 +537,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="602001110135236999">Rul til venstre</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6030495522958826102">Menuen blev flyttet til nederste venstre hjørne af skærmen.</translation>
+<translation id="6032620807120418574">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
@@ -536,6 +546,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Din computer kan registreres af Bluetooth-enheder i nærheden, og den vil blive vist som "<ph name="NAME" />" med adressen <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent er ikke tilgængelig i en gæstesession.</translation>
 <translation id="6137566720514957455">Åbn dialogboksen til fjernelse for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Vis skærmtastatur</translation>
@@ -551,6 +562,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6283712521836204486">Forstyr ikke er deaktiveret</translation>
 <translation id="6284232397434400372">Opløsningen blev ændret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan tilføjes igen senere, hvis en forælder giver tilladelse til det.</translation>
+<translation id="6291221004442998378">Oplader ikke</translation>
 <translation id="6297287540776456956">Brug styluspennen til at vælge et område</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> er roteret til <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Stemme</translation>
@@ -579,6 +591,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6537924328260219877">Signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Spørg din administrator</translation>
+<translation id="6570902864550063460">Oplader via USB</translation>
 <translation id="6585808820553845416">Sessionen slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
@@ -656,6 +669,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7377169924702866686">Caps Lock er slået til.</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
+<translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
 <translation id="7392563512730092880">Du kan altid konfigurere senere under Indstillinger.</translation>
 <translation id="7398254312354928459">Der blev skiftet netværksforbindelse</translation>
 <translation id="7405710164030118432">Angiv forældreadgangskoden til Family Link for at låse enheden op</translation>
@@ -705,6 +719,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7837740436429729974">Tiden er gået</translation>
 <translation id="7842569679327885685">Advarsel! Eksperimentel funktion</translation>
 <translation id="7846634333498149051">Tastatur</translation>
+<translation id="7860671499921112077">Stryg opad med tre fingre for at åbne oversigten</translation>
 <translation id="7868900307798234037">Låser op med fingeraftryk</translation>
 <translation id="7872786842639831132">Fra</translation>
 <translation id="7886169021410746335">Juster privatlivsindstillinger</translation>
@@ -746,6 +761,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8152092012181020186">Tryk på Ctrl+W for at lukke.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne indstilling administreres af din administrator.</translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Mobilnetværk. Signalstyrke: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Notifikationer er skjult.</translation>
 <translation id="8196787716797768628">Brug bevægelser til hurtigt at skifte mellem apps og bruge din Chromebook i tablettilstand.</translation>
 <translation id="8200772114523450471">Genoptag</translation>
@@ -755,6 +771,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryk på Enter for at låse op for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8284362522226889623">Stryg mod venstre med fire fingre for at skifte til forrige skrivebord</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Forrige menu</translation>
@@ -811,6 +828,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8785070478575117577">Opret forbindelse til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Indstillinger for indtastningsmetoder</translation>
 <translation id="8825863694328519386">Stryg fra venstre for at gå tilbage</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>

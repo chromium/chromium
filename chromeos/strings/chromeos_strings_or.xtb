@@ -7,6 +7,7 @@
 <translation id="1204296502688602597">DNS ଲାଟେନ୍ସି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
@@ -14,6 +15,7 @@
 <translation id="1482734542997480527">ଏହି ଡିଭାଇସ୍‌କୁ <ph name="ENROLLMENT_DOMAIN" /> ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିବାକୁ ସକ୍ଷମ ହୋଇପାରନ୍ତି।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
+<translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="1644574205037202324">ଇତିବୃତ୍ତି</translation>
 <translation id="1662989795263954667">ବନ୍ଦ ହୋଇଯାଇଛି - ସ୍ୟାହି ସରିଯାଇଛି</translation>
 <translation id="1703835215927279855">ଲେଟର୍</translation>
@@ -42,6 +44,7 @@
 <translation id="3083667275341675831">ସଂଯୋଗ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
@@ -69,6 +72,7 @@
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରାଯାଇଛି!</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
 <translation id="445059817448385655">ପୁରୁଣା ପାସ୍‌ୱାର୍ଡ</translation>
@@ -122,12 +126,14 @@
 <translation id="649050271426829538">ବନ୍ଦ ହୋଇଯାଇଛି - ପେପର୍ ଜାମ୍</translation>
 <translation id="6517239166834772319">ଏକ୍ସପ୍ଲୋର୍</translation>
 <translation id="6527081081771465939">ଅଜଣା ୱାଇଫାଇ ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍</translation>
+<translation id="65587193855025101">ଫ୍ଲାଟବେଡ୍</translation>
 <translation id="6564646048574748301">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6747215703636344499">ବନ୍ଦ ହୋଇଯାଇଛି - ଆଉଟପୁଟ୍ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
+<translation id="6839141349259399400">ସ୍କାନରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ କି?</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +143,11 @@
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
+<translation id="7855434858642800953">ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲକୁ ସେଭ୍ କରାଯାଇଛି!</translation>
 <translation id="7936303884198020182">କୌଣସି ନେମ୍ ସର୍ଭର୍ ମିଳୁ ନାହିଁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
+<translation id="8160445423316272678">ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖି <ph name="SPAN_BEGIN" />ସ୍କାନ୍ କରନ୍ତୁ<ph name="SPAN_END" />କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
@@ -159,5 +167,6 @@
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
+<translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 </translationbundle>

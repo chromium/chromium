@@ -7,7 +7,7 @@
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1330426557709298164">JPG</translation>
-<translation id="1337912285145772892">符合掃描區大小</translation>
+<translation id="1337912285145772892">符合掃瞄區大小</translation>
 <translation id="1397738625398125236">可連線偵測的閘道</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
 <translation id="1468664791493211953">優惠</translation>
@@ -72,7 +72,7 @@
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">已儲存掃描好的檔案！</translation>
+<translation id="4421943235406860811">已儲存掃瞄的檔案！</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
 <translation id="445059817448385655">舊密碼</translation>
@@ -133,7 +133,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
-<translation id="6839141349259399400">無法連線至掃描器嗎？</translation>
+<translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -143,11 +143,11 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7805768142964895445">狀態</translation>
-<translation id="7855434858642800953">已儲存掃描好的檔案！</translation>
+<translation id="7855434858642800953">已儲存掃瞄的檔案！</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="808894953321890993">變更密碼</translation>
-<translation id="8160445423316272678">將文件放到掃描器上，並選取 [掃描] 即可開始掃描<ph name="SPAN_BEGIN" /><ph name="SPAN_END" /></translation>
+<translation id="8160445423316272678">將文件放到掃瞄器上，並選取 [掃瞄]<ph name="SPAN_BEGIN" /><ph name="SPAN_END" /> 即可開始掃瞄</translation>
 <translation id="8208861521865154048">獎賞</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
 <translation id="8294431847097064396">來源</translation>
@@ -167,6 +167,6 @@
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
-<translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>
+<translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解鎖</translation>
 </translationbundle>

@@ -207,6 +207,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2450907520913474542">Finn ut mer om emner på nettsteder uten å forlate siden. «Trykk for å søke» sender ord til Google Søk sammen med den omkringliggende konteksten, og definisjoner, bilder, søkeresultater og annen informasjon returneres.
 
 Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere eller færre ord. For å redigere søket, åpne panelet, trykk på ikonet for å åpne i en ny fane, og gjør endringer i søkefeltet.</translation>
+<translation id="2459390580524506445">Forbedret talesøk</translation>
 <translation id="246532703174860178">Del</translation>
 <translation id="2478076885740497414">Installér appen</translation>
 <translation id="2479148705183875116">Gå til Innstillinger</translation>
@@ -275,6 +276,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-lagring</translation>
 <translation id="2942036813789421260">Fanen for forhåndsvisning er lukket</translation>
 <translation id="2956410042958133412">Denne kontoen er administrert av <ph name="PARENT_NAME_1" /> og <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulest side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> uleste sider}}</translation>
 <translation id="2962095958535813455">Byttet til inkognitofaner</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2987620471460279764">En annen enhet har delt tekst</translation>
@@ -324,6 +326,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="32895400574683172">Varsler er tillatt</translation>
 <translation id="3290991969712132877">For å komme hit raskere, legg til denne siden på startskjermen via Flere alternativer-knappen</translation>
 <translation id="3295530008794733555">Surf raskere. Bruk mindre data.</translation>
+<translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3298243779924642547">Forenklet</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
 <translation id="3315103659806849044">Du holder på å tilpasse innstillingene for Synkronisering og Google-tjenester. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
@@ -625,6 +628,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5524843473235508879">Viderekobling blokkert.</translation>
 <translation id="5527082711130173040">Chrome trenger posisjonstilgang for å søke etter enheter. <ph name="BEGIN_LINK1" />Oppdater tillatelsene<ph name="END_LINK1" />. Posisjonstilgang er også <ph name="BEGIN_LINK2" />slått av for denne enheten<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Lukk inkognitofaner</translation>
+<translation id="5530920986376047241">Du kan lagre sider på leselisten din for å finne dem igjen</translation>
 <translation id="5534640966246046842">Nettstedet er kopiert</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5561549206367097665">Venter på nettverket …</translation>
@@ -704,6 +708,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5982307838673692400">Åpne inkognitofane</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6005538289190791541">Foreslått passord</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> side}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sider}}</translation>
 <translation id="6014293228235665243">Ulest</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
@@ -938,6 +943,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="756809126120519699">Chrome-dataene er slettet</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil er lastet ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer er lastet ned}}</translation>
+<translation id="7583262514280211622">Her finner du leselisten din</translation>
 <translation id="7588219262685291874">Slå på mørkt tema når batterisparing er på</translation>
 <translation id="7593557518625677601">Start Chrome-synkronisering ved å slå på synkronisering i Android-innstillingene</translation>
 <translation id="7596558890252710462">Operativsystem</translation>
@@ -969,6 +975,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7772375229873196092">Lukk <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7778840695157240389">Kom tilbake senere for nye nyhetssaker</translation>
+<translation id="7786595606756654269">Google-assistenten gjør det lettere å bruke stemmen til å søke på nettet og utføre handlinger på nettstedene du er inne på. Google-assistenten mottar nettadressene til og innholdet på nettstedene der du bruker den.</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7798392620021911922">Gjenopprettet <ph name="TAB_COUNT" /> faner</translation>
 <translation id="780301667611848630">Nei takk</translation>
@@ -994,6 +1001,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
 <translation id="7967911570373677897">For å skanne QR-koder, endre innstillingene slik at Chrome kan bruke kameraet</translation>
+<translation id="7968014550143838305">Lagt til på leselisten</translation>
 <translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Last inn sider på forhånd for raskere nettlesing og søk</translation>
@@ -1055,6 +1063,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="8372925856448695381"><ph name="LANG" /> er klart.</translation>
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8407396331882458341">1. Velg <ph name="APP_NAME" />\n2. Trykk på «Alltid»</translation>
+<translation id="8410695015584479363">Spor priser</translation>
 <translation id="8413126021676339697">Vis fullstendig logg</translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8427875596167638501">Fanen for forhåndsvisning er halvveis åpnet</translation>

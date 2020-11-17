@@ -1116,13 +1116,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Dit bedrijfsbeleid is voor kortdurende aanpassing en wordt verwijderd in Chrome 88.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
-<translation id="2759426227259007018">Als je het beleid instelt, geef je de apps op die gebruikers kunnen inschakelen als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
-
-      Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.
-
-      Als je het beleid instelt, kunnen gebruikers een app inschakelen op het vergrendelscherm als de extensie-ID van de app is opgenomen in de beleidslijstwaarde. Dit betekent dat als je dit beleid instelt op een lege lijst, het maken van notities op het vergrendelscherm wordt uitgeschakeld. Het beleid met een app-ID betekent niet noodzakelijkerwijs dat gebruikers de app als notitie-app op het vergrendelscherm kunnen inschakelen. In <ph name="PRODUCT_NAME" /> 61 wordt de reeks beschikbare apps bijvoorbeeld ook beperkt door het platform.
-
-      Als je het beleid niet instelt, gelden er geen beleidsbeperkingen voor de reeks apps die de gebruiker kan inschakelen op het vergrendelscherm.</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="2765601181281280493">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een seriële poort.
 
@@ -1441,6 +1434,7 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
         * 4, wordt <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware geüpdatet nadat het apparaat is geregistreerd, voordat de gebruiker inlogt.
 
       Als je het beleid niet instelt, zijn <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware-updates niet beschikbaar.</translation>
+<translation id="3232691106293445015">Niet-beveiligde HTTP-verbindingen mogen <ph name="BASIC_AUTH" />-verificatie niet gebruiken. HTTPS is vereist.</translation>
 <translation id="3236046242843493070">URL-patronen om de installatie van extensies, apps en gebruikersscripts toe te staan vanaf</translation>
 <translation id="3240609035816615922">Toegangsbeleid voor printerconfiguratie.</translation>
 <translation id="324062325008698789">Hiermee wordt een lijst met printers geconfigureerd</translation>
@@ -2607,6 +2601,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5085647276663819155">Afdrukvoorbeeld uitschakelen</translation>
 <translation id="5090209345759901501">Instelling voor Flash-content uitbreiden naar alle content</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
+<translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5101600510268095939">Hiermee kun je een lijst met URL-patronen opgeven van sites waarop blokkeerbare (actieve) gecombineerde content (zoals HTTP-content op HTTPS-sites) niet mag worden weergegeven en waarvoor optioneel blokkeerbare (passieve) gecombineerde content wordt geüpgraded.
 
           Als dit beleid niet is ingesteld, wordt blokkeerbare gecombineerde content geblokkeerd en wordt optioneel blokkeerbare gecombineerde content geüpgraded. Gebruikers kunnen wel uitzonderingen instellen om dergelijke content toe te staan voor specifieke sites.
@@ -3922,6 +3917,13 @@ Als je ervoor kiest het volgende te gebruiken:
       Hiermee worden de markeringen gespecificeerd die bij het starten moeten worden toegepast op <ph name="PRODUCT_NAME" />. De opgegeven markeringen worden alleen toegepast op het inlogscherm. Markeringen die worden ingesteld via dit beleid, worden niet doorgevoerd in gebruikerssessies.</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
+<translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers kunnen inschakelen als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
+
+      Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.
+
+      Als je het beleid instelt, kunnen gebruikers een app inschakelen op het vergrendelscherm als de extensie-ID van de app is opgenomen in de beleidslijstwaarde. Dit betekent dat als je dit beleid instelt op een lege lijst, het maken van notities op het vergrendelscherm wordt uitgeschakeld. Het beleid met een app-ID betekent niet noodzakelijkerwijs dat gebruikers de app als notitie-app op het vergrendelscherm kunnen inschakelen. In <ph name="PRODUCT_NAME" /> 61 wordt de reeks beschikbare apps bijvoorbeeld ook beperkt door het platform.
+
+      Als je het beleid niet instelt, gelden er geen beperkingen voor de reeks apps die de gebruiker kan inschakelen op het vergrendelscherm.</translation>
 <translation id="6889123056995503704">De gebruiker bepaalt het downgradegedrag voor kanalen</translation>
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
 <translation id="6897730193187922386">Berichten over beëindiging van <ph name="CLOUD_PRINT_NAME" /> onderdrukken</translation>
@@ -4281,6 +4283,9 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="7295019613773647480">Gebruikers met beperkte rechten inschakelen</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
+<translation id="7319863628760093590">Als je het beleid inschakelt of niet instelt, mogen <ph name="BASIC_AUTH" />-verificatie-uitdagingen worden ontvangen via niet-beveiligde HTTP.
+
+      Als je het beleid uitschakelt, mogen niet-beveiligde HTTP-verzoeken het <ph name="BASIC_AUTH" />-verificatieschema niet gebruiken. Alleen beveiligde HTTPS is toegestaan.</translation>
 <translation id="7323896582714668701">Extra opdrachtregelparameters voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Vergelijkbaar met Wipe (waarde 2), maar probeert inlogtokens te behouden, zodat de gebruiker niet opnieuw hoeft in te loggen.</translation>
 <translation id="7331962793961469250">Wanneer dit is ingesteld op 'true', worden promoties voor apps van de Chrome Web Store niet weergegeven op de pagina 'Nieuw tabblad'.
@@ -4999,6 +5004,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8369602308428138533">Vertraging van scherm uitschakelen wanneer op netstroom wordt gewerkt</translation>
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
+<translation id="8379317372795444261"><ph name="BASIC_AUTH" />-verificatie is toegestaan voor HTTP-verbindingen</translation>
 <translation id="8380490658357556620">Hiermee wordt het gebruik van relayservers ingeschakeld wanneer externe clients proberen een verbinding met dit apparaat tot stand te brengen.
 
           Als deze instelling is ingeschakeld, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken wanneer er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld wegens beperkingen van de firewall).

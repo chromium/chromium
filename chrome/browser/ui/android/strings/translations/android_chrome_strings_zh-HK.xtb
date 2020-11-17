@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
-<translation id="1118561384561215815">協助你在網路上完成工作</translation>
+<translation id="1118561384561215815">協助您在網絡上完成工作</translation>
 <translation id="1123070903960493543">您與 Chrome 互動的方式、已選取的設定、Chrome 當機的詳情</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1129510026454351943">詳情：<ph name="ERROR_DESCRIPTION" /></translation>
@@ -103,7 +103,7 @@
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1754404134430936718">已複製文字</translation>
-<translation id="1772137089884020309">書籤資料夾清單已關閉</translation>
+<translation id="1772137089884020309">書籤資料夾清單閂咗</translation>
 <translation id="1782483593938241562">結束日期：<ph name="DATE" /></translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
@@ -183,7 +183,7 @@
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
-<translation id="230155349749732438">如要使用這項設定，請務必開啟<ph name="BEGIN_LINK" />改善搜尋和瀏覽體驗<ph name="END_LINK" />功能</translation>
+<translation id="230155349749732438">如要使用此設定，請務必開啟<ph name="BEGIN_LINK" />改善搜尋和瀏覽體驗<ph name="END_LINK" />功能</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
@@ -519,7 +519,7 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 項下載。}other{已完成 # 項下載。}}</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已預定 1 項下載。}other{已預定 # 項下載。}}</translation>
-<translation id="4791358705705538979">協助你在網路上完成工作 (例如結帳)</translation>
+<translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
 <translation id="4802417911091824046">密碼短語加密的資料並不包括 Google Pay 上的付款方法和地址。
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
@@ -669,7 +669,7 @@
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
-<translation id="5810864297166300463">網路協助</translation>
+<translation id="5810864297166300463">網絡協助</translation>
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="583281660410589416">不明</translation>
@@ -885,7 +885,7 @@
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
-<translation id="718926126787620637">書籤資料夾清單已開啟，顯示於整個畫面</translation>
+<translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7189372733857464326">正在等待 Google Play 服務完成更新</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7233236755231902816">如要以您的語言查看網頁，請下載 Chrome 的最新版本。</translation>
@@ -1024,7 +1024,7 @@
 <translation id="8127542551745560481">編輯首頁</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8137558756159375272">「輕觸搜尋」會將所選字詞和目前網頁以內容的形式傳送至 Google 搜尋。您可以在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中停用這項功能。</translation>
-<translation id="8153351135626613369">Google 助理偵測到可在支援的網站上提供協助時就會顯示</translation>
+<translation id="8153351135626613369">「Google 助理」偵測到可在支援的網站上提供協助時就會顯示</translation>
 <translation id="8156139159503939589">您看得懂哪些語言？</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
@@ -1122,7 +1122,7 @@
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8920114477895755567">正在等候家長的詳細資訊。</translation>
 <translation id="8922289737868596582">透過「更多選項」按鈕下載網頁，方便喺離線嗰陣使用</translation>
-<translation id="8928626432984354940">書籤資料夾清單已開啟，顯示在畫面下半部</translation>
+<translation id="8928626432984354940">書籤資料夾清單宜家顯示喺畫面下半部</translation>
 <translation id="8937772741022875483">要從「健康數碼生活」移除您的 Chrome 活動記錄嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8951232171465285730">Chrome 已為您節省 <ph name="MEGABYTES" /> MB</translation>

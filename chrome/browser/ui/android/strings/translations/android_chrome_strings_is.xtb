@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Skjámyndataka</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1113597929977215864">Sýna einfaldað yfirlit</translation>
+<translation id="1118561384561215815">Fáðu hjálp við verkefni á vefnum</translation>
 <translation id="1123070903960493543">Samskipti þín við Chrome, stillingar sem þú velur, upplýsingar um hrun Chrome</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
 <translation id="1129510026454351943">Upplýsingar: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Samstilltu bókamerkin þín</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="1754404134430936718">Texti afritaður</translation>
+<translation id="1772137089884020309">Listi yfir bókamerkjamöppur er lokaður</translation>
 <translation id="1782483593938241562">Lokadagur er <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Uppsett</translation>
 <translation id="1792959175193046959">Þú getur breytt staðsetningu niðurhals hvenær sem er</translation>
@@ -181,6 +183,7 @@
 <translation id="2276696007612801991">Skráðu þig inn á Google reikninginn þinn til að athuga aðgangsorðin þín</translation>
 <translation id="2286841657746966508">Heimilisfang greiðanda</translation>
 <translation id="230115972905494466">Engin samhæf tæki fundust</translation>
+<translation id="230155349749732438">Til að nota þessa stillingu verður að vera kveikt á <ph name="BEGIN_LINK" />Bæta leit og vefskoðun<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="2321086116217818302">Undirbýr aðgangsorð…</translation>
 <translation id="2321958826496381788">Dragðu sleðann þangað til þú getur lesið þetta áreynslulaust. Texti ætti að vera að minnsta kosti svona stór eftir að ýtt hefur verið tvisvar á efnisgrein.</translation>
@@ -315,6 +318,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="3269956123044984603">Kveiktu á „Samstilla gögn sjálfkrafa“ í reikningsstillingum Android til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
+<translation id="3284510035090979597">Hjálp að fyrra bragði</translation>
 <translation id="3285080554353377245">Myndskeið um hvernig á að nota Chrome</translation>
 <translation id="3288003805934695103">Endurhlaða síðuna</translation>
 <translation id="32895400574683172">Tilkynningar eru leyfðar</translation>
@@ -422,6 +426,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4084682180776658562">Bókamerki</translation>
 <translation id="4084712963632273211">Frá <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />birt af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Eyða forritsgögnum?</translation>
+<translation id="4095189195365058471">Lesa seinna <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Hjálpaðu til við að bæta Google Chrome með því að senda talnagögn um notkun og tilkynningar um hrun til Google.</translation>
 <translation id="4108998448622696017">Greinir hættuleg atvik og varar þig við þeim þegar þau eiga sér stað.</translation>
 <translation id="4116038641877404294">Náðu í síður til að nota þær án nettengingar</translation>
@@ -514,6 +519,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Ein skrá var sótt.}one{# skrá var sótt.}other{# skrár voru sóttar.}}</translation>
 <translation id="4766678251456904326">Bæta reikningi við tæki</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 niðurhal á áætlun.}one{# niðurhal á áætlun.}other{# niðurhal á áætlun.}}</translation>
+<translation id="4791358705705538979">Hjálpar þér að ljúka verkefnum á vefnum, til dæmis að ganga frá kaupum</translation>
 <translation id="4802417911091824046">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay.
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
@@ -663,6 +669,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5797070761912323120">Google notar hugsanlega ferilinn þinn til að sérsníða leitina, auglýsingar og aðra þjónustu Google</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Fyrir # klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="5810288467834065221">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
+<translation id="5810864297166300463">Vefhjálp</translation>
 <translation id="5814131985548525293">Sláðu inn hér eða ýttu á raddtáknið til að byrja</translation>
 <translation id="5817918615728894473">Para</translation>
 <translation id="583281660410589416">Óþekkt</translation>
@@ -878,6 +885,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7177466738963138057">Þú getur breytt þessu síðar í stillingunum</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
+<translation id="718926126787620637">Listi bókamerkjamappa opinn í fullri hæð</translation>
 <translation id="7189372733857464326">Bíður eftir að þjónusta Google Play ljúki við uppfærslu</translation>
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
 <translation id="7233236755231902816">Til að skoða vefinn á þínu tungumáli skaltu sækja nýjustu útgáfuna af Chrome</translation>
@@ -1016,6 +1024,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8127542551745560481">Breyta heimasíðu</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8137558756159375272">Snertileit sendir valið orð og núverandi síðu sem samhengisupplýsingar til Google leitar. Þú getur slökkt á þessu í <ph name="BEGIN_LINK" />stillingum<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Hjálparinn mun birtast þegar hann greinir að hann geti hjálpað þér á studdum vefsvæðum</translation>
 <translation id="8156139159503939589">Hvaða tungumál geturðu lesið?</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> skrár eftir</translation>
@@ -1113,6 +1122,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8912362522468806198">Google reikningur</translation>
 <translation id="8920114477895755567">Bíður eftir upplýsingum um foreldra.</translation>
 <translation id="8922289737868596582">Náðu í síður með hnappnum „Fleiri valkostir“ til að nota þær án nettengingar</translation>
+<translation id="8928626432984354940">Listi yfir bókamerkjamöppur er opinn á hálfum skjánum</translation>
 <translation id="8937772741022875483">Viltu fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan?</translation>
 <translation id="8942627711005830162">Opna í öðrum glugga</translation>
 <translation id="8951232171465285730">Chrome hefur sparað þér <ph name="MEGABYTES" /> MB</translation>
@@ -1164,6 +1174,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="93753284658583800">Heimasíðu breytt</translation>
 <translation id="938850635132480979">Villa: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
+<translation id="948039501338975565">Listi bókamerkjamappa</translation>
 <translation id="95817756606698420">Chrome getur notast við <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> fyrir leit í Kína. Þú getur breytt þessu í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Setja þetta forrit upp</translation>
 <translation id="968900484120156207">Síður sem þú heimsækir birtast hér</translation>

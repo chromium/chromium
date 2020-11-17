@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
+<translation id="1071587090247825784">ກວດເຫັນ firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
+<translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ພໍດີກັບພື້ນທີ່ສະແກນ</translation>
 <translation id="1397738625398125236">ສາມາດທົດສອບການເຊື່ອມຕໍ່ເກດເວໄດ້</translation>
+<translation id="1398634363027580500">ເວລາແຝງ HTTPS ສູງຫຼາຍ</translation>
 <translation id="1413240736185167732">ບໍ່ສຳເລັດ, ຕົວກັ່ນຕອງຂັດຂ້ອງ</translation>
 <translation id="1468664791493211953">ຂໍ້ສະເໜີ</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
+<translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
 <translation id="4646949265910132906">ການເຊື່ອມຕໍ່ WiFi ທີ່ປອດໄພ</translation>
 <translation id="467510802200863975">ລະຫັດຜ່ານບໍ່ກົງກັນ</translation>
+<translation id="467715984478005772">ສົງໄສວ່າເປັນ Firewall</translation>
 <translation id="4691278870498629773">ຢຸດພິມ, ບໍ່ມີຖາດເຈ້ຍ</translation>
 <translation id="469379815867856270">ຄວາມແຮງສັນຍານ</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">ບໍ່ສຳເລັດ, ເຈ້ຍຕິດ</translation>
 <translation id="6050189528197190982">ໂທນສີເທົາ</translation>
 <translation id="6058625436358447366">ເພື່ອສຳເລັດກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າ ແລະ ໃໝ່ຂອງທ່ານ</translation>
+<translation id="6061772781719867950">ຄຳຂໍ HTTP ບໍ່ສຳເລັດ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6704062477274546131">ຄວາມລະອຽດ DNS</translation>
 <translation id="6747215703636344499">ຢຸດພິມ, ຖາດເຈ້ຍອອກເຕັມແລ້ວ</translation>
+<translation id="6766275201586212568">ຄວາມລະອຽດ DNS ບໍ່ສຳເລັດ</translation>
+<translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="6839141349259399400">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄື່ອງສະແກນໄດ້ບໍ?</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">ເວລາແຝງ HTTPS ສູງ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
+<translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8347227221149377169">ວຽກການພິມ</translation>
 <translation id="8352772353338965963">ເພີ່ມບັນຊີໃສ່ຫຼາຍການລົງຊື່ເຂົ້າໃສ່. ສາມາດເຂົ້າ​ຫາທຸກບັນຊີທີ່ລົງຊື່ເຂົ້າ​ໃຊ້ແລ້ວໂດຍບໍ່ຕ້ອງມີລະຫັດຜ່ານ, ດັ່ງນັ້ນຄວນໃຊ້ແຕ່ຄຸນສົມບັດນີ້ກັບແຕ່ບັນຊີທີ່ເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="8364946094152050673">ເຊີບເວີຊື່ຫວ່າງເປົ່າ</translation>

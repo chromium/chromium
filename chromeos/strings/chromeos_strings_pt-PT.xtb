@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1071587090247825784">Firewall detetada</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
+<translation id="1238612778414822719">Latência de HTTPS</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
+<translation id="1398634363027580500">Latência muito elevada de HTTPS</translation>
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
+<translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>
+<translation id="467715984478005772">Firewall suspeita</translation>
 <translation id="4691278870498629773">Parada – Tabuleiro em falta</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
@@ -115,6 +120,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6048107060512778456">Falha – Encravamento de papel</translation>
 <translation id="6050189528197190982">Tons de cinzento</translation>
 <translation id="6058625436358447366">Para terminar, introduza a palavra-passe antiga e a nova</translation>
+<translation id="6061772781719867950">Pedidos HTTPS com falhas</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
@@ -133,6 +139,8 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
+<translation id="6766275201586212568">Resoluções de DNS com falhas</translation>
+<translation id="6768237774506518020">Taxa de falhas de resolução de DNS elevada</translation>
 <translation id="6839141349259399400">Não consegue ligar aos scanners?</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -140,6 +148,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -151,6 +160,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
 <translation id="8294431847097064396">Origem</translation>
+<translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta para início de sessão integrado. É possível aceder a todas as contas com a sessão iniciada sem uma palavra-passe, por isso, só deve utilizar esta funcionalidade com contas fidedignas.</translation>
 <translation id="8364946094152050673">Os servidores de nomes estão vazios.</translation>

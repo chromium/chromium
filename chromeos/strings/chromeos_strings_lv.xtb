@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1018656279737460067">Atcelts</translation>
+<translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
+<translation id="1238612778414822719">HTTPS latentums</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
 <translation id="1397738625398125236">Vārteju var ehotestēt</translation>
+<translation id="1398634363027580500">Ļoti liels HTTPS latentums</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
 <translation id="1478594628797167447">Skeneris</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Šī <ph name="DEVICE_TYPE" /> ierīce tiek pārvaldīta domēnā <ph name="ENROLLMENT_DOMAIN" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="4034824040120875894">Printeris</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
+<translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="4646949265910132906">Drošs Wi-Fi savienojums</translation>
 <translation id="467510802200863975">Paroles nav vienādas</translation>
+<translation id="467715984478005772">Aizdomas par ugunsmūri</translation>
 <translation id="4691278870498629773">Apturēts — trūkst paliktņa</translation>
 <translation id="469379815867856270">Signāla stiprums</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
@@ -115,6 +120,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6048107060512778456">Neizdevās — iestrēdzis papīrs</translation>
 <translation id="6050189528197190982">Pelēktoņi</translation>
 <translation id="6058625436358447366">Lai pabeigtu, ievadiet savu iepriekšējo un jauno paroli</translation>
+<translation id="6061772781719867950">Nesekmīgi HTTP pieprasījumi</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
 <translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
@@ -133,6 +139,8 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
+<translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
+<translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
 <translation id="6839141349259399400">Vai nevar izveidot savienojumu ar skeneriem?</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -140,6 +148,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7805768142964895445">Statuss</translation>
@@ -151,6 +160,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8294431847097064396">Avots</translation>
+<translation id="8302368968391049045">HTTPS ugunsmūris</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8364946094152050673">Tukši nosaukumu serveri</translation>

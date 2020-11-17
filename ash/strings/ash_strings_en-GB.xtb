@@ -479,6 +479,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5516420770350073386">Screen recording was stopped by your administrator due to content on your screen.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> is connecting.</translation>
+<translation id="5532994612895037630">Tap anywhere to record full screen</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
@@ -536,6 +537,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="602001110135236999">Scroll left</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6030495522958826102">Menu moved to the bottom-left corner of the screen.</translation>
+<translation id="6032620807120418574">Click anywhere to record full screen</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6043212731627905357">This monitor isn't getting along with your <ph name="DEVICE_TYPE" /> (the monitor is not supported).</translation>
 <translation id="6043994281159824495">Sign out now</translation>
