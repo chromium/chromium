@@ -1608,6 +1608,22 @@ TEST_F('OSSettingsPeoplePageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Tests for the People section with `kAccountManagementFlowsV2` flag enabled.
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageTestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsPeoplePageTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsPeoplePageTestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
+
 // Tests for the Privacy section.
 // eslint-disable-next-line no-var
 var OSSettingsPrivacyPageTest = class extends OSSettingsBrowserTest {

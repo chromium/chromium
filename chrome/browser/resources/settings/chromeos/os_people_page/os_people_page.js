@@ -106,6 +106,18 @@ Polymer({
       readOnly: true,
     },
 
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
+    },
+
     /** @private */
     showParentalControls_: {
       type: Boolean,
@@ -410,6 +422,24 @@ Polymer({
     this.profileEmail_ = accounts[0].email;
     this.profileIconUrl_ = accounts[0].pic;
 
+    await this.setProfileLabel(accounts);
+  },
+
+  /**
+   * @param {!Array<settings.Account>} accounts
+   * @private
+   */
+  async setProfileLabel(accounts) {
+    if (this.isAccountManagementFlowsV2Enabled_) {
+      // Template: "$1 Google accounts" with correct plural of "account".
+      const labelTemplate = await cr.sendWithPromise(
+          'getPluralString', 'profileLabel', accounts.length);
+
+      // Final output: "X Google accounts"
+      this.profileLabel_ = loadTimeData.substituteString(
+          labelTemplate, accounts[0].email, accounts.length);
+      return;
+    }
     const moreAccounts = accounts.length - 1;
     // Template: "$1, +$2 more accounts" with correct plural of "account".
     // Localization handles the case of 0 more accounts.
@@ -511,6 +541,14 @@ Polymer({
    */
   getIconImageSet_(iconUrl) {
     return cr.icon.getImage(iconUrl);
+  },
+
+  getProfileName_() {
+    if (this.isAccountManagerEnabled_ &&
+        this.isAccountManagementFlowsV2Enabled_) {
+      return loadTimeData.getString('osProfileName');
+    }
+    return this.profileName_;
   },
 
   /**

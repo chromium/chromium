@@ -60,82 +60,105 @@ namespace settings {
 namespace {
 
 const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_PEOPLE,
-       mojom::kPeopleSectionPath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kPeople}},
-      {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD,
-       mojom::kSecurityAndSignInSubpagePath,
-       mojom::SearchResultIcon::kLock,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kChangeAuthPin},
-       {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS,
-       mojom::kManageOtherPeopleSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowUsernamesAndPhotosAtSignIn},
-       {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT1,
-        IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT2,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
-       mojom::kMyAccountsSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kMyAccounts}},
-      {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD,
-       mojom::kMyAccountsSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAddAccount}},
-      {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_REMOVE,
-       mojom::kManageOtherPeopleSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRemoveFromUserAllowlist}},
-      {IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
-       mojom::kManageOtherPeopleSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kGuestBrowsing}},
-      {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
-       mojom::kSecurityAndSignInSubpagePath,
-       mojom::SearchResultIcon::kLock,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kLockScreen},
-       {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN,
-       mojom::kManageOtherPeopleSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRestrictSignIn},
-       {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ALT1, SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_LOCK_SCREEN,
-       mojom::kSecurityAndSignInSubpagePath,
-       mojom::SearchResultIcon::kLock,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSecurityAndSignIn}},
-      {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ADD,
-       mojom::kManageOtherPeopleSubpagePath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAddToUserAllowlist}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    std::vector<SearchConcept> all_tags({
+        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD,
+         mojom::kSecurityAndSignInSubpagePath,
+         mojom::SearchResultIcon::kLock,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kChangeAuthPin},
+         {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
+          SearchConcept::kAltTagEnd}},
+        {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS,
+         mojom::kManageOtherPeopleSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kShowUsernamesAndPhotosAtSignIn},
+         {IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT1,
+          IDS_OS_SETTINGS_TAG_USERNAMES_AND_PHOTOS_ALT2,
+          SearchConcept::kAltTagEnd}},
+        {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
+         mojom::kMyAccountsSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSubpage,
+         {.subpage = mojom::Subpage::kMyAccounts}},
+        {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_REMOVE,
+         mojom::kManageOtherPeopleSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kRemoveFromUserAllowlist}},
+        {IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
+         mojom::kManageOtherPeopleSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kGuestBrowsing}},
+        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
+         mojom::kSecurityAndSignInSubpagePath,
+         mojom::SearchResultIcon::kLock,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kLockScreen},
+         {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
+          SearchConcept::kAltTagEnd}},
+        {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN,
+         mojom::kManageOtherPeopleSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kRestrictSignIn},
+         {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ALT1,
+          SearchConcept::kAltTagEnd}},
+        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN,
+         mojom::kSecurityAndSignInSubpagePath,
+         mojom::SearchResultIcon::kLock,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSubpage,
+         {.subpage = mojom::Subpage::kSecurityAndSignIn}},
+        {IDS_OS_SETTINGS_TAG_RESTRICT_SIGN_IN_ADD,
+         mojom::kManageOtherPeopleSubpagePath,
+         mojom::SearchResultIcon::kAvatar,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kAddToUserAllowlist}},
+    });
+
+    if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+      all_tags.insert(all_tags.end(),
+                      {{IDS_OS_SETTINGS_TAG_PEOPLE_V2,
+                        mojom::kPeopleSectionPath,
+                        mojom::SearchResultIcon::kAvatar,
+                        mojom::SearchResultDefaultRank::kMedium,
+                        mojom::SearchResultType::kSection,
+                        {.section = mojom::Section::kPeople}},
+                       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2,
+                        mojom::kMyAccountsSubpagePath,
+                        mojom::SearchResultIcon::kAvatar,
+                        mojom::SearchResultDefaultRank::kMedium,
+                        mojom::SearchResultType::kSetting,
+                        {.setting = mojom::Setting::kAddAccount}}});
+    } else {
+      all_tags.insert(all_tags.end(),
+                      {{IDS_OS_SETTINGS_TAG_PEOPLE,
+                        mojom::kPeopleSectionPath,
+                        mojom::SearchResultIcon::kAvatar,
+                        mojom::SearchResultDefaultRank::kMedium,
+                        mojom::SearchResultType::kSection,
+                        {.section = mojom::Section::kPeople}},
+                       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD,
+                        mojom::kMyAccountsSubpagePath,
+                        mojom::SearchResultIcon::kAvatar,
+                        mojom::SearchResultDefaultRank::kMedium,
+                        mojom::SearchResultType::kSetting,
+                        {.setting = mojom::Setting::kAddAccount}}});
+    }
+    return all_tags;
+  }());
+
   return *tags;
 }
 
@@ -322,7 +345,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source) {
       {"accountManagerEducationAccountLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_EDUCATION_ACCOUNT},
       {"removeAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL},
-      {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL},
       {"addSchoolAccountLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_ADD_SCHOOL_ACCOUNT_LABEL},
       {"accountManagerSecondaryAccountsDisabledText",
@@ -352,6 +374,11 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("accountManagerLearnMoreUrl",
                          chrome::kAccountManagerLearnMoreURL);
+
+  html_source->AddLocalizedString(
+      "addAccountLabel", chromeos::features::IsAccountManagementFlowsV2Enabled()
+                             ? IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2
+                             : IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL);
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
@@ -731,6 +758,32 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
+  html_source->AddBoolean(
+      "isAccountManagementFlowsV2Enabled",
+      chromeos::features::IsAccountManagementFlowsV2Enabled());
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    html_source->AddLocalizedString("osPeoplePageTitle",
+                                    IDS_OS_SETTINGS_PEOPLE_V2);
+
+    user_manager::User* user =
+        ProfileHelper::Get()->GetUserByProfile(profile());
+    DCHECK(user);
+    // This string is not used if the flag is disabled.
+    html_source->AddString("osProfileName", l10n_util::GetStringFUTF16(
+                                                IDS_OS_SETTINGS_PROFILE_NAME,
+                                                user->GetGivenName()));
+    html_source->AddString(
+        "accountManagerPageTitle",
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2,
+                                   user->GetGivenName()));
+  } else {
+    static constexpr webui::LocalizedString kAccountManagerStrings[] = {
+        {"osPeoplePageTitle", IDS_OS_SETTINGS_PEOPLE},
+        {"accountManagerPageTitle", IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE},
+    };
+    AddLocalizedStringsBulk(html_source, kAccountManagerStrings);
+  }
+
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           account_manager_ != nullptr);
@@ -797,8 +850,13 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::ProfileInfoHandler>(profile()));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString("profileLabel",
-                                            IDS_OS_SETTINGS_PROFILE_LABEL);
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    plural_string_handler->AddLocalizedString("profileLabel",
+                                              IDS_OS_SETTINGS_PROFILE_LABEL_V2);
+  } else {
+    plural_string_handler->AddLocalizedString("profileLabel",
+                                              IDS_OS_SETTINGS_PROFILE_LABEL);
+  }
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   if (account_manager_) {

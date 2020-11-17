@@ -273,11 +273,17 @@
   <message name="IDS_OS_SETTINGS_TAG_PEOPLE" desc="Text for search result item which, when clicked, navigates the user to people settings.">
     People
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_V2" desc="Text for search result item which, when clicked, navigates the user to people settings.">
+    Accounts
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS" desc="Text for search result item which, when clicked, navigates the user to accounts settings.">
     My accounts
   </message>
   <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD" desc="Text for search result item which, when clicked, navigates the user to accounts settings, with a button to add a new account.">
     Add account
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2" desc="Text for search result item which, when clicked, navigates the user to accounts settings, with a button to add a new account.">
+    Add Google Account
   </message>
   <message name="IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE" desc="Text for search result item which, when clicked, navigates the user to accounts settings, with an option to remove an account.">
     Remove account

@@ -271,10 +271,12 @@ cr.define('settings_people_page', function() {
     });
 
     test('GAIA name and picture, account manager enabled', async () => {
+      const fakeOsProfileName = 'Currently signed in as username';
       loadTimeData.overrideValues({
         isAccountManagerEnabled: true,
         // settings-account-manager requires this to have a value.
         secondaryGoogleAccountSigninAllowed: true,
+        osProfileName: fakeOsProfileName,
       });
       peoplePage = document.createElement('os-settings-people-page');
       peoplePage.pageVisibility = settings.pageVisibility;
@@ -292,14 +294,24 @@ cr.define('settings_people_page', function() {
       chai.assert.include(
           profileIconEl.style.backgroundImage,
           'data:image/png;base64,primaryAccountPicData');
-      assertEquals('Primary Account', profileNameEl.textContent.trim());
+      if (peoplePage.isAccountManagementFlowsV2Enabled_) {
+        assertEquals(fakeOsProfileName, profileNameEl.textContent.trim());
+      } else {
+        assertEquals('Primary Account', profileNameEl.textContent.trim());
+      }
 
       // Rather than trying to mock cr.sendWithPromise('getPluralString', ...)
       // just force an update.
       await peoplePage.updateAccounts_();
-      assertEquals(
-          'primary@gmail.com, +2 more accounts',
-          peoplePage.$$('#profile-label').textContent.trim());
+      if (peoplePage.isAccountManagementFlowsV2Enabled_) {
+        assertEquals(
+            '3 Google Accounts',
+            peoplePage.$$('#profile-label').textContent.trim());
+      } else {
+        assertEquals(
+            'primary@gmail.com, +2 more accounts',
+            peoplePage.$$('#profile-label').textContent.trim());
+      }
 
       // Profile row items are actionable.
       assertTrue(profileIconEl.hasAttribute('actionable'));

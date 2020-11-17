@@ -185,11 +185,22 @@
   <message name="IDS_OS_SETTINGS_PEOPLE" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
     People
   </message>
+  <message name="IDS_OS_SETTINGS_PEOPLE_V2" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
+    Accounts
+  </message>
+  <message name="IDS_OS_SETTINGS_PROFILE_NAME" desc="Label with device account first name, showing which user is currently signed in.">
+    Currently signed in as <ph name="NAME">$1<ex>John</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_PROFILE_LABEL" desc="Label underneath the profile's real name, listing the email address and optionally the number of additional accounts">
     {COUNT, plural,
      =0 {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>}
      =1 {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>, +1 more account}
      other {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>, +<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> more accounts}}
+  </message>
+  <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
+    {COUNT, plural,
+     =1 {1 Google Account}
+     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
     Sync your settings
@@ -223,6 +234,9 @@
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE" desc="Title of Account Manager Settings page.">
     My accounts
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2" desc="Title of Account Manager Settings page.">
+    <ph name="NAME">$1<ex>John</ex></ph>'s accounts
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE" desc="Title of the fingerprint subpage.">
     Fingerprint
@@ -1142,6 +1156,9 @@
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL" desc="Label of the Add account button in Account Manager.">
     Add account
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2" desc="Label of the Add account button in Account Manager.">
+    Add Google Account
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_SCHOOL_ACCOUNT_LABEL" desc="Label of the button to add a school/EDU account in Account Manager.">
     Add school account
