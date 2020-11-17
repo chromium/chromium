@@ -23,10 +23,6 @@ namespace extensions {
 class StateStore;
 }
 
-namespace policy {
-class PolicyService;
-}
-
 namespace chromeos {
 namespace platform_keys {
 
@@ -39,15 +35,12 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
  public:
   // |profile_prefs| and |extensions_state_store| must not be null and must
   // outlive this object.
-  // If |profile_is_managed| is false, |profile_policies| is ignored. Otherwise,
-  // |profile_policies| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
   KeyPermissionsServiceImpl(
       bool is_regular_user_profile,
       bool profile_is_managed,
       PrefService* profile_prefs,
-      policy::PolicyService* profile_policies,
       extensions::StateStore* extensions_state_store,
       PlatformKeysService* platform_keys_service,
       KeyPermissionsManager* profile_key_permissions_manager);
@@ -102,7 +95,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   const bool is_regular_user_profile_;
   const bool profile_is_managed_;
   PrefService* const profile_prefs_;
-  policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
   PlatformKeysService* const platform_keys_service_;
   KeyPermissionsManager* const profile_key_permissions_manager_;

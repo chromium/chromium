@@ -22,7 +22,6 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -39,14 +38,12 @@ KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
     bool is_regular_user_profile,
     bool profile_is_managed,
     PrefService* profile_prefs,
-    policy::PolicyService* profile_policies,
     extensions::StateStore* extensions_state_store,
     PlatformKeysService* platform_keys_service,
     KeyPermissionsManager* profile_key_permissions_manager)
     : is_regular_user_profile_(is_regular_user_profile),
       profile_is_managed_(profile_is_managed),
       profile_prefs_(profile_prefs),
-      profile_policies_(profile_policies),
       extensions_state_store_(extensions_state_store),
       platform_keys_service_(platform_keys_service),
       profile_key_permissions_manager_(profile_key_permissions_manager) {
@@ -54,7 +51,6 @@ KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
   DCHECK(extensions_state_store_);
   DCHECK(platform_keys_service_);
   DCHECK(profile_key_permissions_manager || !is_regular_user_profile);
-  DCHECK(!profile_is_managed_ || profile_policies_);
 }
 
 KeyPermissionsServiceImpl::~KeyPermissionsServiceImpl() = default;
