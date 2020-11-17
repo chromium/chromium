@@ -11,8 +11,10 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -204,9 +206,16 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
   if (!view_ || !is_visible_)
     return;
 
+  // Users in a capture session may be trying to capture the app list.
+  if (features::IsCaptureModeEnabled() &&
+      CaptureModeController::Get()->IsActive()) {
+    return;
+  }
+
   aura::Window* target = static_cast<aura::Window*>(event->target());
   if (!target)
     return;
+
   // If the event happened on a menu, then the event should not close the app
   // list.
   RootWindowController* root_controller =

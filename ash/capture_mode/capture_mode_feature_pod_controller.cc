@@ -12,11 +12,15 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
-CaptureModeFeaturePodController::CaptureModeFeaturePodController() = default;
+CaptureModeFeaturePodController::CaptureModeFeaturePodController(
+    UnifiedSystemTrayController* tray_controller)
+    : tray_controller_(tray_controller) {}
+
 CaptureModeFeaturePodController::~CaptureModeFeaturePodController() = default;
 
 FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
@@ -31,6 +35,9 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
 }
 
 void CaptureModeFeaturePodController::OnIconPressed() {
+  // Close the system tray bubble. Deletes |this|.
+  tray_controller_->CloseBubble();
+
   CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
 }
 

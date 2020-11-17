@@ -445,7 +445,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<IMEFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
   if (features::IsCaptureModeEnabled())
-    AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>());
+    AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
   if (features::IsDarkLightModeEnabled())
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
