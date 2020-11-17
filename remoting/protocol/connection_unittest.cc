@@ -543,10 +543,9 @@ TEST_P(ConnectionTest, Video) {
   }
 }
 
-// TODO(crbug.com/1143311): Test is flaky.
 // Verifies that the VideoStream doesn't loose any video frames while the
 // connection is being established.
-TEST_P(ConnectionTest, DISABLED_VideoWithSlowSignaling) {
+TEST_P(ConnectionTest, VideoWithSlowSignaling) {
   // Add signaling delay to slow down connection handshake.
   host_session_->set_signaling_delay(base::TimeDelta::FromMilliseconds(100));
   client_session_->set_signaling_delay(base::TimeDelta::FromMilliseconds(100));
