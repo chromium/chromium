@@ -84,7 +84,9 @@ bool ReleaseNotesStorage::ShouldNotify() {
         ChromeVersionService::GetVersion(profile_->GetPrefs()));
     last_milestone = profile_version.components()[0];
   }
-  if (last_milestone >= GetMilestone()) {
+  // Hardcoding this to M86 as that was the last release notes update that the
+  // current chrome version should see. There is not an update every milestone.
+  if (last_milestone >= 86) {
     return false;
   }
   return true;

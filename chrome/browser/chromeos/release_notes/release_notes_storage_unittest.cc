@@ -102,6 +102,19 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
 }
 
+// We have previously seen another notification on M86, there have been no
+// new release notes since then so notification should not be shown.
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIf86Seen) {
+  std::unique_ptr<Profile> profile =
+      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
+  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
+      std::make_unique<ReleaseNotesStorage>(profile.get());
+  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
+                                        86);
+
+  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
+}
+
 // Release notes ShouldNotify is false after being shown once.
 TEST_F(ReleaseNotesStorageTest, ReleaseNotesShouldOnlyBeNotifiedOnce) {
   std::unique_ptr<Profile> profile =
