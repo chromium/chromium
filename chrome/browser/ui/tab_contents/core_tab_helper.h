@@ -60,6 +60,8 @@ class CoreTabHelper : public content::WebContentsObserver,
   void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void NavigationEntriesDeleted() override;
+  void OnWebContentsFocused(content::RenderWidgetHost*) override;
+  void OnWebContentsLostFocus(content::RenderWidgetHost*) override;
 
   void DoSearchByImageInNewTab(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>

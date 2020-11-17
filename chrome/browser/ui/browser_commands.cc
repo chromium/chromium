@@ -1537,7 +1537,7 @@ bool CanViewSource(const Browser* browser) {
                                              .CanViewSource();
 }
 
-void ToggleCaretBrowsing(Browser* browser) {
+bool CanToggleCaretBrowsing(Browser* browser) {
 #if defined(OS_MAC)
   // On Mac, ignore the keyboard shortcut unless web contents is focused,
   // because the keyboard shortcut interferes with a Japenese IME when the
@@ -1545,12 +1545,18 @@ void ToggleCaretBrowsing(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
-    return;
+    return false;
 
   content::RenderWidgetHostView* rwhv = web_contents->GetRenderWidgetHostView();
-  if (!rwhv || !rwhv->HasFocus())
-    return;
+  return rwhv && rwhv->HasFocus();
+#else
+  return true;
 #endif  // defined(OS_MAC)
+}
+
+void ToggleCaretBrowsing(Browser* browser) {
+  if (!CanToggleCaretBrowsing(browser))
+    return;
 
   PrefService* prefService = browser->profile()->GetPrefs();
   bool enabled = prefService->GetBoolean(prefs::kCaretBrowsingEnabled);

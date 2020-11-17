@@ -245,6 +245,26 @@ void CoreTabHelper::NavigationEntriesDeleted() {
 #endif
 }
 
+// Notify browser commands that depend on whether focus is in the
+// web contents or not.
+void CoreTabHelper::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+#if !defined(OS_ANDROID)
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (browser)
+    browser->command_controller()->WebContentsFocusChanged();
+#endif  // defined(OS_ANDROID)
+}
+
+void CoreTabHelper::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+#if !defined(OS_ANDROID)
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (browser)
+    browser->command_controller()->WebContentsFocusChanged();
+#endif  // defined(OS_ANDROID)
+}
+
 // Handles the image thumbnail for the context node, composes a image search
 // request based on the received thumbnail and opens the request in a new tab.
 void CoreTabHelper::DoSearchByImageInNewTab(

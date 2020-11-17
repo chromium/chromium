@@ -264,6 +264,7 @@ bool BrowserCommandController::IsReservedCommandOrKey(
 
 void BrowserCommandController::TabStateChanged() {
   UpdateCommandsForTabState();
+  UpdateCommandsForWebContentsFocus();
 }
 
 void BrowserCommandController::ZoomStateChanged() {
@@ -307,6 +308,10 @@ void BrowserCommandController::ExtensionStateChanged() {
 void BrowserCommandController::TabKeyboardFocusChangedTo(
     base::Optional<int> index) {
   UpdateCommandsForTabKeyboardFocus(index);
+}
+
+void BrowserCommandController::WebContentsFocusChanged() {
+  UpdateCommandsForWebContentsFocus();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1060,6 +1065,7 @@ void BrowserCommandController::InitCommandState() {
   UpdateCommandsForBookmarkEditing();
   UpdateCommandsForIncognitoAvailability();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
+  UpdateCommandsForWebContentsFocus();
 }
 
 // static
@@ -1486,6 +1492,15 @@ void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
       IDC_PIN_TARGET_TAB, normal_window && target_index.has_value());
   command_updater_.UpdateCommandEnabled(
       IDC_GROUP_TARGET_TAB, normal_window && target_index.has_value());
+}
+
+void BrowserCommandController::UpdateCommandsForWebContentsFocus() {
+#if defined(OS_MAC)
+  // On Mac, toggling caret browsing changes whether it's enabled or not
+  // based on web contents focus.
+  command_updater_.UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE,
+                                        CanToggleCaretBrowsing(browser_));
+#endif  // defined(OS_MAC)
 }
 
 BrowserWindow* BrowserCommandController::window() {
