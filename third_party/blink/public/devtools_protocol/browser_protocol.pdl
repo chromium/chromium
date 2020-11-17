@@ -6781,6 +6781,12 @@ domain Page
       # Frame object.
       Frame frame
 
+  # Fired when opening document to write to.
+  experimental event documentOpened
+    parameters
+      # Frame object.
+      Frame frame
+
   experimental event frameResized
 
   # Fired when a renderer-initiated navigation is requested.

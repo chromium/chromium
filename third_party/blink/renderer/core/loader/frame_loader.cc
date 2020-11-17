@@ -350,8 +350,7 @@ void FrameLoader::DispatchUnloadEvent(
 }
 
 void FrameLoader::DidExplicitOpen() {
-  probe::LifecycleEvent(frame_, GetDocumentLoader(), "init",
-                        base::TimeTicks::Now().since_origin().InSecondsF());
+  probe::DidOpenDocument(frame_, GetDocumentLoader());
   if (empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty)
     empty_document_status_ = EmptyDocumentStatus::kOnlyEmptyButExplicitlyOpened;
 
