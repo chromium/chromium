@@ -2698,6 +2698,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kUseHDRTransferFunction)},
 #endif  // OS_CHROMEOS
 #if defined(OS_CHROMEOS)
+    {"account-management-flows-v2",
+     flag_descriptions::kAccountManagementFlowsV2Name,
+     flag_descriptions::kAccountManagementFlowsV2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kAccountManagementFlowsV2)},
     {"dark-light-mode", flag_descriptions::kDarkLightTestName,
      flag_descriptions::kDarkLightTestDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDarkLightMode)},

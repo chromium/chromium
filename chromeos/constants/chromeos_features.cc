@@ -19,6 +19,11 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 
 }  // namespace
 
+// Enables redesign of account management flows.
+// https://crbug.com/1132472
+const base::Feature kAccountManagementFlowsV2{
+    "AccountManagementFlowsV2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Shows settings for adjusting scroll acceleration/sensitivity for
 // mouse/touchpad.
 const base::Feature kAllowScrollSettings{"AllowScrollSettings",
@@ -654,6 +659,10 @@ const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 ////////////////////////////////////////////////////////////////////////////////
+
+bool IsAccountManagementFlowsV2Enabled() {
+  return base::FeatureList::IsEnabled(kAccountManagementFlowsV2);
+}
 
 bool IsAmbientModeEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeFeature);

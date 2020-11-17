@@ -45,6 +45,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "account-management-flows-v2",
+    "owners": [ "anastasiian", "sinhak" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "add-web-content-drop-interaction",
     "owners": [ "edchin", "bling-flags@google.com" ],
     "expiry_milestone": 90

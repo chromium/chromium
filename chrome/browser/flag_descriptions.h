@@ -2069,6 +2069,9 @@ extern const char kVideoToolboxVp9DecodingDescription[];
 
 #if defined(OS_CHROMEOS)
 
+extern const char kAccountManagementFlowsV2Name[];
+extern const char kAccountManagementFlowsV2Description[];
+
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 

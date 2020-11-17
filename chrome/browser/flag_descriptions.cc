@@ -3569,6 +3569,13 @@ const char kVideoToolboxVp9DecodingDescription[] =
 
 #if defined(OS_CHROMEOS)
 
+const char kAccountManagementFlowsV2Name[] =
+    "Enable redesign of account management flows";
+const char kAccountManagementFlowsV2Description[] =
+    "Enables redesign of account management flows and Account Manager page in "
+    "Settings. "
+    "See go/betterAM";
+
 const char kAcceleratedMjpegDecodeName[] =
     "Hardware-accelerated mjpeg decode for captured frame";
 const char kAcceleratedMjpegDecodeDescription[] =

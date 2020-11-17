@@ -17,6 +17,8 @@ namespace features {
 // being rolled out via Finch, add a comment in the .cc file.
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAccountManagementFlowsV2;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAllowScrollSettings;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModeFeature;
@@ -299,6 +301,7 @@ extern const base::Feature kCrostiniResetLxdDb;
 
 // Keep alphabetized.
 
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAccountManagementFlowsV2Enabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
