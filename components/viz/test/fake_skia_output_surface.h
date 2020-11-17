@@ -90,7 +90,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;
   void ScheduleOverlays(OverlayList overlays,
-                        std::vector<gpu::SyncToken> sync_tokens) override {}
+                        std::vector<gpu::SyncToken> sync_tokens,
+                        base::OnceClosure on_finished) override {}
 #if defined(OS_WIN)
   void SetEnableDCLayers(bool enable) override {}
 #endif

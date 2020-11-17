@@ -142,7 +142,8 @@ class SkiaOutputSurfaceImplOnGpu
                              AggregatedRenderPassId id,
                              sk_sp<SkDeferredDisplayList> ddl,
                              std::vector<ImageContextImpl*> image_contexts,
-                             std::vector<gpu::SyncToken> sync_tokens);
+                             std::vector<gpu::SyncToken> sync_tokens,
+                             base::OnceClosure on_finished);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.
   void RemoveRenderPassResource(
@@ -165,7 +166,8 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
           image_contexts);
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
-                        std::vector<ImageContextImpl*> image_contexts);
+                        std::vector<ImageContextImpl*> image_contexts,
+                        base::OnceClosure on_finished);
 
   void SetEnableDCLayers(bool enable);
   void SetGpuVSyncEnabled(bool enabled);

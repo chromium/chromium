@@ -122,10 +122,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 
   // Finish painting the current frame or current render pass, depends on which
   // BeginPaint function is called last. This method will schedule a GPU task to
-  // play the DDL back on GPU thread on a cached SkSurface. This method returns
-  // a sync token which can be waited on in a command buffer to ensure the paint
-  // operation is completed. This token is released when the GPU ops from
-  // painting the render pass have been seen and processed by the GPU main.
+  // play the DDL back on GPU thread on a cached SkSurface.
   // Optionally the caller may specify |on_finished| callback to be called after
   // the GPU has finished processing all submitted commands. The callback may be
   // called on a different thread.
@@ -156,8 +153,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 
   // Schedule drawing overlays at next SwapBuffers() call. Waits on
   // |sync_tokens| for the overlay textures to be ready before scheduling.
+  // Optionally the caller may specify |on_finished| callback to be called after
+  // the GPU has finished processing all submitted commands. The callback may be
+  // called on a different thread.
   virtual void ScheduleOverlays(OverlayList overlays,
-                                std::vector<gpu::SyncToken> sync_tokens) = 0;
+                                std::vector<gpu::SyncToken> sync_tokens,
+                                base::OnceClosure on_finished) = 0;
 
   // Add context lost observer.
   virtual void AddContextLostObserver(ContextLostObserver* observer) = 0;
@@ -170,7 +171,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
 
-  // Flush pending GPU tasks.
+  // Flush pending GPU tasks. This method returns a sync token which can be
+  // waited on in a command buffer to ensure all pending tasks are executed on
+  // the GPU main thread.
   virtual gpu::SyncToken Flush() = 0;
 
 #if defined(OS_APPLE)
