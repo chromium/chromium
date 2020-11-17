@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/first_run/first_run_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -201,11 +200,6 @@ bool ShouldLaunchHelpApp(Profile* profile) {
 
 void LaunchHelpApp(Profile* profile) {
   AppLauncher::LaunchHelpAfterSWALoad(profile);
-}
-
-void LaunchTutorial() {
-  UMA_HISTOGRAM_BOOLEAN("CrosFirstRun.TutorialLaunched", true);
-  FirstRunController::Start();
 }
 
 }  // namespace first_run

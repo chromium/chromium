@@ -246,8 +246,6 @@ const char kChromeUICrostiniUpgraderHost[] = "crostini-upgrader";
 const char kChromeUICrostiniUpgraderUrl[] = "chrome://crostini-upgrader";
 const char kChromeUICryptohomeHost[] = "cryptohome";
 const char kChromeUIDeviceEmulatorHost[] = "device-emulator";
-const char kChromeUIFirstRunHost[] = "first-run";
-const char kChromeUIFirstRunURL[] = "chrome://first-run/";
 const char kChromeUIIntenetConfigDialogURL[] =
     "chrome://internet-config-dialog/";
 const char kChromeUIIntenetDetailDialogURL[] =
@@ -316,7 +314,6 @@ bool IsSystemWebUIHost(base::StringPiece host) {
       kChromeUICrostiniInstallerHost,
       kChromeUICryptohomeHost,
       kChromeUIDeviceEmulatorHost,
-      kChromeUIFirstRunHost,
       kChromeUIInternetConfigDialogHost,
       kChromeUIInternetDetailDialogHost,
       kChromeUILockScreenStartReauthHost,
@@ -539,7 +536,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUICrostiniCreditsHost,
     kChromeUICryptohomeHost,
     kChromeUIDriveInternalsHost,
-    kChromeUIFirstRunHost,
     kChromeUIMachineLearningInternalsHost,
     kChromeUINetworkHost,
     kChromeUIOobeHost,

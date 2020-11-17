@@ -25,9 +25,6 @@ bool ShouldLaunchHelpApp(Profile* profile);
 // immediately, but visible only after the session has begun.
 void LaunchHelpApp(Profile* profile);
 
-// Launches overlay tutorial for current user.
-void LaunchTutorial();
-
 }  // namespace first_run
 }  // namespace chromeos
 

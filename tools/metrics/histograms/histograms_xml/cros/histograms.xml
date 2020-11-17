@@ -152,6 +152,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosFirstRun.DialogShown" units="units"
     expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -161,6 +164,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosFirstRun.FurthestStep" units="units"
     expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -171,6 +177,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosFirstRun.TimeSpent" units="ms" expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>The total time that user spent on first-run tutorial.</summary>
@@ -178,6 +187,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosFirstRun.TimeSpentOnStep" units="ms"
     expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>The time that user spent on some step of tutorial.</summary>
@@ -185,6 +197,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosFirstRun.TutorialCompletion"
     enum="CrosFirstRunTutorialCompletionType" expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Tracks the way how user left tutorial.</summary>
@@ -192,6 +207,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosFirstRun.TutorialLaunched" units="units"
     expires_after="2020-12-01">
+  <obsolete>
+    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

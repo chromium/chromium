@@ -2454,7 +2454,6 @@ if (!is_android) {
         "../browser/chromeos/file_manager/image_loader_jstest.cc",
         "../browser/chromeos/file_manager/video_player_browsertest.cc",
         "../browser/chromeos/file_manager/video_player_jstest.cc",
-        "../browser/chromeos/first_run/chromeos_first_run_browsertest.cc",
         "../browser/chromeos/first_run/drive_first_run_browsertest.cc",
         "../browser/chromeos/input_method/input_method_engine_browsertests.cc",
         "../browser/chromeos/input_method/native_input_method_engine_browsertest.cc",

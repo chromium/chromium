@@ -3122,59 +3122,6 @@
     <ph name="DOMAIN">$1<ex>example.com</ex></ph> wants your device's identity to be verified, by Google, to determine eligibility for enhanced playback of protected content.
   </message>
 
-  <!-- First-run tutorial -->
-  <message name="IDS_FIRST_RUN_GREETING_STEP_HEADER" desc="Greeting message shown as header of the first dialog of first-run tutorial.">
-    Howdy, <ph name="USER_GIVEN_NAME">$1<ex>John</ex></ph>.
-  </message>
-  <message name="IDS_FIRST_RUN_GREETING_STEP_HEADER_GENERAL" desc="Greeting message shown as header of the first dialog of first-run tutorial in case when we don't know user's given name.">
-    Howdy.
-  </message>
-  <message name="IDS_FIRST_RUN_GREETING_STEP_TEXT_1" desc="First part of message shown on the first dialog of firsr-run tutorial.">
-    Welcome to the <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> family. This is no ordinary computer.
-  </message>
-  <message name="IDS_FIRST_RUN_GREETING_STEP_TEXT_2" desc="Second part of message shown on the first dialog of firsr-run tutorial.">
-    This <ph name="SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> device was designed to deliver the best experience of the web to you.
-  </message>
-  <message name="IDS_FIRST_RUN_GREETING_STEP_BUTTON" desc="Text on the button located on the first dialog of first-run tutorial.">
-    Take a tour
-  </message>
-  <message name="IDS_FIRST_RUN_APP_LIST_STEP_HEADER" desc="Header of the first-run bubble pointing to application list button.">
-    Get to your apps fast
-  </message>
-  <message name="IDS_FIRST_RUN_APP_LIST_STEP_TEXT_1" desc="First part of message on the first-run tutorial bubble pointing to application list button.">
-    Use the Launcher to quickly get to new apps and activities. To get here by keyboard, press Alt + Shift + L.
-  </message>
-  <message name="IDS_FIRST_RUN_APP_LIST_STEP_TEXT_2" desc="Second part of message on the first-run tutorial bubble pointing to application list button. Only shown if the device is Google Assistant capable.">
-    Just hold the Launcher icon to talk to your Google Assistant.
-  </message>
-  <message name="IDS_FIRST_RUN_TRAY_STEP_HEADER" desc="Header of the first-run tutorial bubble pointing to system tray bubble.">
-    Check your Chromebook status
-  </message>
-  <message name="IDS_FIRST_RUN_TRAY_STEP_TEXT" desc="Text on the first-run tutorial bubble pointing to system tray bubble.">
-    Manage connections, updates, and settings with the status tray. To get here by keyboard, press Alt + Shift + S.
-  </message>
-  <message name="IDS_FIRST_RUN_HELP_STEP_HEADER" desc="Header of the first-run tutorial bubble pointing to help button in system tray.">
-    Explore your Chromebook
-  </message>
-  <message name="IDS_FIRST_RUN_HELP_STEP_TEXT" desc="First part of text shown on the first-run tutorial bubble pointing to help button in system tray.">
-    Discover more features or get answers. Select “?” for help.
-  </message>
-  <message name="IDS_FIRST_RUN_HELP_STEP_KEEP_EXPLORING_BUTTON" desc="Text on the button located in the first-run tutorial bubble pointing to help button is system tray. After click on the button tutorial finishes and help app opens.">
-    Keep exploring
-  </message>
-  <message name="IDS_FIRST_RUN_HELP_STEP_FINISH_BUTTON" desc="Text on the button located in the first-run tutorial bubble pointing to help button is system tray. After click on the button tutorial finishes.">
-    Finish
-  </message>
-  <message name="IDS_FIRST_RUN_NEXT_BUTTON" desc="Text on the first-run tutorial button leading to next step of tutorial.">
-    Next
-  </message>
-  <message name="IDS_FIRST_RUN_ACCESSIBLE_TITLE" desc="Accessible title of the first screen in the first run app.">
-    Welcome
-  </message>
-  <message name="IDS_FIRST_RUN_STEP_ACCESSIBLE_TITLE" desc="Accessible title for all first run app screens except for the first screen.">
-    Tour
-  </message>
-
   <!-- Network portal notification -->
   <message name="IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED" desc="Title for the system notification that current wired network is behind captive portal">
     Connect to network

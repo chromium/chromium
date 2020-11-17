@@ -14,12 +14,6 @@
     <structures>
       <if expr="chromeos">
         <structure name="IDR_WALLPAPER_MANAGER_MAIN" file="chromeos/wallpaper_manager/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-        <if expr="not _google_chrome">
-          <structure name="IDR_FIRST_RUN_DIALOG_MAIN" file="chromeos/first_run/app/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" variables="GREETING_IMAGE=disabled" expand_variables="true"/>
-        </if>
-        <if expr="_google_chrome">
-          <structure name="IDR_FIRST_RUN_DIALOG_MAIN" file="chromeos/first_run/app/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" variables="GREETING_IMAGE=enabled" expand_variables="true"/>
-        </if>
       </if>
     </structures>
     <includes>
@@ -79,15 +73,6 @@
         <include name="IDR_WALLPAPER_MANAGER_ICON_192" file="chromeos/wallpaper_manager/images/icon192.png" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_MAIN_JS" file="chromeos/wallpaper_manager/js/main_scripts.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_UTIL_JS" file="chromeos/wallpaper_manager/js/util.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_BACKGROUND_JS" file="chromeos/first_run/app/background.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_MAIN_JS" file="chromeos/first_run/app/main.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_16" file="chromeos/first_run/app/icon/16.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_32" file="chromeos/first_run/app/icon/32.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_48" file="chromeos/first_run/app/icon/48.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_64" file="chromeos/first_run/app/icon/64.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_96" file="chromeos/first_run/app/icon/96.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_128" file="chromeos/first_run/app/icon/128.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_256" file="chromeos/first_run/app/icon/256.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN_CSS" file="chromeos/arc_support/main.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN_JS" file="chromeos/arc_support/main.js" type="BINDATA" />
