@@ -305,12 +305,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3D12FeatureLevel" enum="D3D12FeatureLevel"
-    expires_after="2020-12-01">
-  <owner>vmiura@chromium.org</owner>
+    expires_after="2021-12-01">
   <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
   <summary>
     The maximum D3D12 feature level supported in the gpu drivers. It is recorded
-    15 seconds after the browser launch.
+    in the browser process 120 seconds after the browser launch.
   </summary>
 </histogram>
 
@@ -1060,12 +1060,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SupportsDX12" enum="BooleanSupported"
-    expires_after="2020-12-01">
-  <owner>vmiura@chromium.org</owner>
+    expires_after="2021-12-01">
   <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
   <summary>
-    This metric shows whether the GPU supports D3D12. It is recorded 120 seconds
-    after the browser launch.
+    This metric shows whether the GPU supports D3D12. It is recorded in the
+    browser process 120 seconds after the browser launch.
   </summary>
 </histogram>
 

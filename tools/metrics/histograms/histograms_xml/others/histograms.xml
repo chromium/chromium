@@ -16037,7 +16037,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
-    enum="BooleanOverlayDamageRect" expires_after="2021-03-15">
+    enum="BooleanOverlayDamageRect" expires_after="2021-12-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -16046,7 +16046,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Underlay"
-    enum="UnderlayDamageRect" expires_after="2020-12-31">
+    enum="UnderlayDamageRect" expires_after="2021-12-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
