@@ -22,6 +22,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/help_app_launcher.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
@@ -65,6 +68,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/arc/arc_util.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -156,6 +160,17 @@ base::FilePath GetKerberosCredentialsCachePath() {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_HOME, &path));
   return path.Append("kerberos").Append("krb5cc");
+}
+
+void EnableArcForProfile(Profile* profile) {
+  arc::SetArcAvailableCommandLineForTesting(
+      base::CommandLine::ForCurrentProcess());
+  arc::ResetArcAllowedCheckForTesting(profile);
+  arc::SetArcPlayStoreEnabledForProfile(profile, true);
+
+  ArcAppListPrefsFactory::GetInstance()->RecreateServiceInstanceForTesting(
+      profile);
+  arc::ArcSessionManager::Get()->SetProfile(profile);
 }
 
 arc::data_snapshotd::ArcDataSnapshotdManager* arc_data_snapshotd_manager() {
@@ -762,6 +777,10 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 
   // Start auto-login and wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
+
+  // Setup profile before changing the state.
+  EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+  EnableArcForProfile(ProfileManager::GetActiveUserProfile());
 
   arc_data_snapshotd_manager()->OnSessionStateChanged();
 

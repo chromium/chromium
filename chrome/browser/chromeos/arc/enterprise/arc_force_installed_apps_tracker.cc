@@ -1,0 +1,237 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
+
+#include <algorithm>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/stl_util.h"
+#include "base/values.h"
+#include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
+
+namespace arc {
+namespace data_snapshotd {
+
+namespace {
+
+// Gets the profile from ArcSessionManager.
+Profile* GetProfile() {
+  auto* session_manager = ArcSessionManager::Get();
+  DCHECK(session_manager);
+  return session_manager->profile();
+}
+
+}  // namespace
+
+// This class starts observing force-installed/required ARC apps installation
+// steps on creation and stops on destruction.
+// It notifies back the caller via passed |update_callback| if the number of
+// installed observing apps changes.
+class ArcForceInstalledAppsObserver : public ArcAppListPrefs::Observer,
+                                      public policy::PolicyService::Observer {
+ public:
+  ArcForceInstalledAppsObserver(
+      ArcAppListPrefs* prefs,
+      policy::PolicyService* policy_service,
+      base::RepeatingCallback<void(int)> update_callback);
+  ArcForceInstalledAppsObserver(const ArcForceInstalledAppsObserver&) = delete;
+  ArcForceInstalledAppsObserver& operator=(
+      const ArcForceInstalledAppsObserver&) = delete;
+  ~ArcForceInstalledAppsObserver() override;
+
+  // ArcAppListPrefs::Observer overrides:
+  void OnPackageInstalled(
+      const arc::mojom::ArcPackageInfo& package_info) override;
+  void OnPackageRemoved(const std::string& package_name,
+                        bool uninstalled) override;
+
+  // PolicyService::Observer overrides.
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
+
+ private:
+  // Update the list of installed packages if the list of tracking packages is
+  // changed.
+  void UpdateInstalledPackages();
+
+  // Returns a [0..100] number - the percentage of installed packages among
+  // tracking packages.
+  // If there are no tracking packages, returns 100%, since no packages are
+  // awaited to be installed.
+  int CalculateInstallationProgress();
+
+  // Not owned singleton. Initialized in ctor.
+  ArcAppListPrefs* prefs_ = nullptr;
+  // Not owned singleton. Initialized in ctor.
+  policy::PolicyService* policy_service_ = nullptr;
+  // This callback is invoked when the number of installed tracking packages is
+  // changed. The floored percentage of installed tracking packages is passed to
+  // the callback.
+  base::RepeatingCallback<void(int)> update_callback_;
+
+  // Maps tracking package names into whether the package is installed.
+  base::flat_map<std::string, bool> tracking_packages_;
+  // Number of installed packages among tracking packages.
+  int installed_packages_num_ = 0;
+};
+
+ArcForceInstalledAppsObserver::ArcForceInstalledAppsObserver(
+    ArcAppListPrefs* prefs,
+    policy::PolicyService* policy_service,
+    base::RepeatingCallback<void(int)> update_callback)
+    : prefs_(prefs),
+      policy_service_(policy_service),
+      update_callback_(std::move(update_callback)) {
+  DCHECK(prefs_);
+  DCHECK(policy_service_);
+  prefs_->AddObserver(this);
+  policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  // Initialize the tracking and installed packages lists.
+  const policy::PolicyNamespace policy_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  OnPolicyUpdated(policy_namespace, policy::PolicyMap(),
+                  policy_service_->GetPolicies(policy_namespace));
+}
+
+ArcForceInstalledAppsObserver::~ArcForceInstalledAppsObserver() {
+  prefs_->RemoveObserver(this);
+  policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+}
+
+void ArcForceInstalledAppsObserver::OnPackageInstalled(
+    const arc::mojom::ArcPackageInfo& package_info) {
+  auto iter = tracking_packages_.find(package_info.package_name);
+  if (iter == tracking_packages_.end()) {
+    // Installed non-required/force-installed ARC system package.
+    VLOG(1) << "Installed not tracking package " << package_info.package_name;
+    return;
+  }
+  bool& installed = iter->second;
+  if (!installed) {
+    // If installed package is among tracking packages and not yet installed,
+    // mark it as installed.
+    installed = true;
+    installed_packages_num_++;
+    update_callback_.Run(CalculateInstallationProgress());
+  }
+}
+
+void ArcForceInstalledAppsObserver::OnPackageRemoved(
+    const std::string& package_name,
+    bool uninstalled) {
+  auto iter = tracking_packages_.find(package_name);
+  if (uninstalled && iter != tracking_packages_.end() && iter->second) {
+    // If an installed package is removed, proceed.
+    iter->second = false;
+    installed_packages_num_--;
+    update_callback_.Run(CalculateInstallationProgress());
+  }
+}
+
+void ArcForceInstalledAppsObserver::OnPolicyUpdated(
+    const policy::PolicyNamespace& ns,
+    const policy::PolicyMap& previous,
+    const policy::PolicyMap& current) {
+  if (ns.domain != policy::POLICY_DOMAIN_CHROME)
+    return;
+  const base::Value* const arc_policy =
+      current.GetValue(policy::key::kArcPolicy);
+  tracking_packages_.clear();
+
+  // Track packages only if ArcPolicy is set.
+  if (arc_policy && arc_policy->is_string()) {
+    // Get the required packages from ArcPolicy.
+    auto required_packages =
+        arc::policy_util::GetRequestedPackagesFromArcPolicy(
+            arc_policy->GetString());
+    std::vector<std::pair<std::string, bool>> required_packages_vector;
+    // Mark all required packages not yet installed in |tracking_packages_|.
+    std::transform(
+        required_packages.begin(), required_packages.end(),
+        std::back_inserter(required_packages_vector),
+        [](const std::string& v) { return std::make_pair(v, false); });
+    tracking_packages_ =
+        base::flat_map<std::string, bool>(std::move(required_packages_vector));
+  }
+  UpdateInstalledPackages();
+}
+
+void ArcForceInstalledAppsObserver::UpdateInstalledPackages() {
+  DCHECK(prefs_);
+  installed_packages_num_ = 0;
+  auto all_installed_packages = prefs_->GetPackagesFromPrefs();
+  for (const auto& package_name : all_installed_packages) {
+    auto package = tracking_packages_.find(package_name);
+    if (package != tracking_packages_.end() && !package->second) {
+      // If tracking this package, mark it as installed.
+      package->second = true;
+      installed_packages_num_++;
+    }
+  }
+  if (!update_callback_.is_null())
+    update_callback_.Run(CalculateInstallationProgress());
+}
+
+int ArcForceInstalledAppsObserver::CalculateInstallationProgress() {
+  return tracking_packages_.empty()
+             ? 100
+             : installed_packages_num_ * 100 / tracking_packages_.size();
+}
+
+ArcForceInstalledAppsTracker::ArcForceInstalledAppsTracker() = default;
+
+ArcForceInstalledAppsTracker::~ArcForceInstalledAppsTracker() = default;
+
+// static
+std::unique_ptr<ArcForceInstalledAppsTracker>
+ArcForceInstalledAppsTracker::CreateForTesting(
+    ArcAppListPrefs* prefs,
+    policy::PolicyService* policy_service) {
+  return base::WrapUnique(
+      new ArcForceInstalledAppsTracker(prefs, policy_service));
+}
+
+void ArcForceInstalledAppsTracker::StartTracking(
+    base::RepeatingCallback<void(int)> update_callback) {
+  DCHECK(!observer_);
+  Initialize();
+  observer_ = std::make_unique<ArcForceInstalledAppsObserver>(
+      prefs_, policy_service_, std::move(update_callback));
+}
+
+void ArcForceInstalledAppsTracker::StopTracking() {
+  observer_.reset();
+}
+
+ArcForceInstalledAppsTracker::ArcForceInstalledAppsTracker(
+    ArcAppListPrefs* prefs,
+    policy::PolicyService* policy_service)
+    : prefs_(prefs), policy_service_(policy_service) {}
+
+void ArcForceInstalledAppsTracker::Initialize() {
+  if (prefs_ && policy_service_)
+    return;
+  auto* profile = GetProfile();
+  DCHECK(profile);
+
+  prefs_ = ArcAppListPrefs::Get(profile);
+
+  auto* profile_policy_connector = profile->GetProfilePolicyConnector();
+  DCHECK(profile_policy_connector);
+
+  policy_service_ = profile_policy_connector->policy_service();
+}
+
+}  // namespace data_snapshotd
+}  // namespace arc

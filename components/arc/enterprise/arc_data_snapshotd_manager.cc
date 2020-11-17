@@ -9,16 +9,21 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -64,6 +69,13 @@ bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 
 // This class is owned by ChromeBrowserMainPartsChromeos.
 static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
+
+ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool last)
+    : is_last_(last) {
+  os_version_ = base::SysInfo::OperatingSystemVersion();
+  creation_date_ =
+      base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
+}
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
                                                     bool last)
@@ -127,8 +139,7 @@ bool ArcDataSnapshotdManager::SnapshotInfo::IsExpired() const {
 }
 
 bool ArcDataSnapshotdManager::SnapshotInfo::IsOsVersionUpdated() const {
-  // TODO(pbond): implement;
-  return false;
+  return os_version_ != base::SysInfo::OperatingSystemVersion();
 }
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(
@@ -219,6 +230,17 @@ void ArcDataSnapshotdManager::Snapshot::StartNewSnapshot() {
   Sync();
 }
 
+void ArcDataSnapshotdManager::Snapshot::OnSnapshotTaken() {
+  if (last_) {
+    LOG(WARNING) << "Last snapshot exists";
+    last_.reset();
+  }
+  last_ = std::make_unique<SnapshotInfo>(true /* last */);
+  // Clear snapshot started pref to highlight that the snapshot creation process
+  // is over.
+  started_ = false;
+}
+
 ArcDataSnapshotdManager::Snapshot::Snapshot(
     PrefService* local_state,
     bool blocked_ui_mode,
@@ -240,11 +262,18 @@ ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
 
 ArcDataSnapshotdManager::ArcDataSnapshotdManager(
     PrefService* local_state,
+    std::unique_ptr<Delegate> delegate,
+    std::unique_ptr<ArcAppsTracker> apps_tracker,
     base::OnceClosure attempt_user_exit_callback)
     : snapshot_{local_state},
+      delegate_(std::move(delegate)),
+      apps_tracker_(std::move(apps_tracker)),
       attempt_user_exit_callback_(std::move(attempt_user_exit_callback)) {
   DCHECK(!g_arc_data_snapshotd_manager);
   DCHECK(local_state);
+  DCHECK(delegate_);
+  DCHECK(apps_tracker_);
+
   g_arc_data_snapshotd_manager = this;
 
   snapshot_.Parse();
@@ -316,10 +345,31 @@ bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
 }
 
 void ArcDataSnapshotdManager::OnSessionStateChanged() {
-  if (state_ != State::kMgsToLaunch)
-    return;
-  if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount())
-    state_ = State::kMgsLaunched;
+  switch (state_) {
+    case State::kMgsLaunched:
+      if (user_manager::UserManager::Get() &&
+          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+        return;
+      }
+      LOG(ERROR) << "MGS has failed.";
+      state_ = State::kNone;
+      apps_tracker_->StopTracking();
+      OnSnapshotTaken(false /* success */);
+      break;
+    case State::kMgsToLaunch:
+      if (user_manager::UserManager::Get() &&
+          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+        state_ = State::kMgsLaunched;
+        apps_tracker_->StartTracking(base::BindRepeating(
+            &ArcDataSnapshotdManager::Update, weak_ptr_factory_.GetWeakPtr()));
+        return;
+      }
+      break;
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kRestored:
+      break;
+  }
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
@@ -359,7 +409,10 @@ void ArcDataSnapshotdManager::DoClearSnapshot(
 }
 
 void ArcDataSnapshotdManager::GenerateKeyPair() {
-  DCHECK(bridge_);
+  if (!bridge_) {
+    OnKeyPairGenerated(false /* success */);
+    return;
+  }
   bridge_->GenerateKeyPair(
       base::BindOnce(&ArcDataSnapshotdManager::OnKeyPairGenerated,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -368,8 +421,21 @@ void ArcDataSnapshotdManager::GenerateKeyPair() {
 void ArcDataSnapshotdManager::ClearSnapshot(
     bool last,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(bridge_);
+  if (!bridge_) {
+    std::move(callback).Run(false /* success */);
+    return;
+  }
   bridge_->ClearSnapshot(last, std::move(callback));
+}
+
+void ArcDataSnapshotdManager::TakeSnapshot(const std::string& account_id) {
+  if (!bridge_) {
+    OnSnapshotTaken(false /* success */);
+    return;
+  }
+  bridge_->TakeSnapshot(
+      account_id, base::BindOnce(&ArcDataSnapshotdManager::OnSnapshotTaken,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
@@ -441,6 +507,62 @@ void ArcDataSnapshotdManager::OnDaemonStopped(base::OnceClosure callback,
   }
   bridge_.reset();
   std::move(callback).Run();
+}
+
+void ArcDataSnapshotdManager::Update(int percent) {
+  DCHECK_EQ(state_, State::kMgsLaunched);
+
+  // TODO(pbond): wire up to arc-data-snapshotd.
+  if (percent == 100) {
+    // Stop tracking apps, 100% of required apps got installed.
+    // The snapshot can be taken right away.
+    // If the policy changes or an app gets uninstalled, the compliance with the
+    // required apps list will be fixed automatically on the next session
+    // startup.
+    apps_tracker_->StopTracking();
+    delegate_->RequestStopArcInstance(
+        base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to stop ARC instance.";
+    OnSnapshotTaken(false /* success */);
+    return;
+  }
+  std::string account_id = "";
+  // Take snapshots only for MGSs.
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
+      state_ == State::kMgsLaunched &&
+      user_manager::UserManager::Get()->GetActiveUser()) {
+    cryptohome::Identification id(
+        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+    account_id = id.id();
+  }
+  if (account_id.empty()) {
+    LOG(ERROR) << "Cryptohome account ID is empty.";
+    OnSnapshotTaken(false /* success */);
+    return;
+  }
+  EnsureDaemonStarted(base::BindOnce(&ArcDataSnapshotdManager::TakeSnapshot,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(account_id)));
+}
+
+void ArcDataSnapshotdManager::OnSnapshotTaken(bool success) {
+  if (success)
+    snapshot_.OnSnapshotTaken();
+  else
+    LOG(ERROR) << "Failed to take ARC data directory snapshot.";
+
+  snapshot_.set_blocked_ui_mode(false);
+  snapshot_.Sync();
+
+  DCHECK(!attempt_user_exit_callback_.is_null());
+  EnsureDaemonStopped(std::move(attempt_user_exit_callback_));
 }
 
 }  // namespace data_snapshotd

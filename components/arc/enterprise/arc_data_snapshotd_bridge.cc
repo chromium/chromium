@@ -109,7 +109,22 @@ void ArcDataSnapshotdBridge::ClearSnapshot(
     return;
   }
   VLOG(1) << "ClearSnapshot via D-Bus";
-  // TODO(pbond): implement
+  NOTIMPLEMENTED();
+
+  std::move(callback).Run(true /* success */);
+}
+
+void ArcDataSnapshotdBridge::TakeSnapshot(
+    const std::string& account_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (!is_available_) {
+    LOG(ERROR) << "TakeSnapshot call when D-Bus service is not available.";
+    std::move(callback).Run(false /* success */);
+    return;
+  }
+  VLOG(1) << "TakeSnapshot via D-Bus";
+  NOTIMPLEMENTED();
+
   std::move(callback).Run(true /* success */);
 }
 

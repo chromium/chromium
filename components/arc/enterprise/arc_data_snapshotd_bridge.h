@@ -29,6 +29,8 @@ class ArcDataSnapshotdBridge {
   // Delegates the key pair generation to arc-data-snapshotd daemon.
   void GenerateKeyPair(base::OnceCallback<void(bool)> callback);
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
+  void TakeSnapshot(const std::string& account_id,
+                    base::OnceCallback<void(bool)> callback);
 
   bool is_available_for_testing() { return is_available_; }
 

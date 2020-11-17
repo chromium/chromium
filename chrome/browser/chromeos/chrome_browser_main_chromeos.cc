@@ -42,6 +42,8 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
+#include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
@@ -686,6 +688,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   arc_data_snapshotd_manager_ =
       std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
           g_browser_process->local_state(),
+          std::make_unique<arc::data_snapshotd::ArcDataSnapshotdDelegate>(),
+          std::make_unique<arc::data_snapshotd::ArcForceInstalledAppsTracker>(),
           base::BindOnce(chrome::AttemptUserExit));
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc))
     wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();

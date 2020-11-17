@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class PrefService;
@@ -43,11 +44,26 @@ class ArcDataSnapshotdManager final
     kRestored,
   };
 
+  // This class is a delegate to perform actions in Chrome.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Requests to stop ARC instance and async invokes |stopped_callback| when
+    // ARC is not running with a success result or failure result if ARC is
+    // failed to stop.
+    // |stopped_callback| should never be null.
+    virtual void RequestStopArcInstance(
+        base::OnceCallback<void(bool)> stopped_callback) = 0;
+  };
+
   // This class operates with a snapshot related info either last or
   // backed-up (previous): stores and keeps in sync with an appropriate
   // preference in local state.
   class SnapshotInfo {
    public:
+    // Creates new snapshot with current parameters.
+    explicit SnapshotInfo(bool last);
     SnapshotInfo(const base::Value* value, bool last);
     SnapshotInfo(const SnapshotInfo&) = delete;
     SnapshotInfo& operator=(const SnapshotInfo&) = delete;
@@ -127,6 +143,9 @@ class ArcDataSnapshotdManager final
     // date.
     void StartNewSnapshot();
 
+    // Updates the last snapshot creation date and OS version.
+    void OnSnapshotTaken();
+
     void set_blocked_ui_mode(bool blocked_ui_mode) {
       blocked_ui_mode_ = blocked_ui_mode;
     }
@@ -148,12 +167,14 @@ class ArcDataSnapshotdManager final
     // Values should be kept in sync with values stored in arc.snapshot
     // preference.
     bool blocked_ui_mode_ = false;
-    bool started_;
+    bool started_ = false;
     std::unique_ptr<SnapshotInfo> last_;
     std::unique_ptr<SnapshotInfo> previous_;
   };
 
   ArcDataSnapshotdManager(PrefService* local_state,
+                          std::unique_ptr<Delegate> delegate,
+                          std::unique_ptr<ArcAppsTracker> apps_tracker,
                           base::OnceClosure attempt_user_exit_callback);
   ArcDataSnapshotdManager(const ArcDataSnapshotdManager&) = delete;
   ArcDataSnapshotdManager& operator=(const ArcDataSnapshotdManager&) = delete;
@@ -209,6 +230,7 @@ class ArcDataSnapshotdManager final
   // Delegates operations to |bridge_|
   void GenerateKeyPair();
   void ClearSnapshot(bool last, base::OnceCallback<void(bool)> callback);
+  void TakeSnapshot(const std::string& account_id);
 
   // Called once the outdated snapshots were removed or ensured that there are
   // no outdated snapshots.
@@ -219,13 +241,25 @@ class ArcDataSnapshotdManager final
   // |success|, runs |callback| afterwards.
   void OnDaemonStarted(base::OnceClosure callback, bool success);
   // Called once arc-data-snapshotd stopping process is finished with result
-  // |success", runs |callback| afterwards.
+  // |success|, runs |callback| afterwards.
   void OnDaemonStopped(base::OnceClosure callback, bool success);
+
+  // Callback to be passed to ArcAppsTracker::StartTracking to get notified
+  // about a percentage of installed apps.
+  void Update(int percent);
+
+  // Called once ARC instance is stopped.
+  void OnArcInstanceStopped(bool success);
+
+  // Called once a snapshot is taken.
+  void OnSnapshotTaken(bool success);
 
   static bool is_snapshot_enabled_for_testing_;
   State state_ = State::kNone;
   Snapshot snapshot_;
 
+  std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<ArcAppsTracker> apps_tracker_;
   std::unique_ptr<ArcDataSnapshotdBridge> bridge_;
 
   base::OnceClosure attempt_user_exit_callback_;
