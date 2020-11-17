@@ -46,6 +46,12 @@ suite('nearby-onboarding-page', function() {
     assertEquals(deviceName, element.$$('#deviceName').value);
   });
 
+  test('Device name is focused', async () => {
+    const input = /** @type {!CrInputElement} */ (element.$$('#deviceName'));
+    await test_util.waitAfterNextRender(/** @type {!HTMLElement} */ (input));
+    assertEquals(input, element.shadowRoot.activeElement);
+  });
+
   test('validate device name preference', async () => {
     loadTimeData.overrideValues({
       'nearbyShareDeviceNameEmptyError': 'non-empty',
