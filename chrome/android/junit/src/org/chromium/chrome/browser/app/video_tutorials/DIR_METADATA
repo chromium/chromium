@@ -1,0 +1,5 @@
+monorail {
+  component: "Upboarding>VideoTutorials"
+}
+team_email: "chrome-upboarding@chromium.org"
+os: ANDROID
