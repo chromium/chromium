@@ -27,7 +27,7 @@
   // The next decode request must be for a keyframe.
   //
   // TODO(chcunningham): Move the keyframe rule into the bytestream registry.
-  [RaisesException] void configure(EncodedAudioConfig config);
+  [RaisesException] void configure(AudioDecoderConfig config);
 
   // Request decoding of an input chunk.
   //

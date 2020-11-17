@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
@@ -40,7 +40,7 @@ class FakeFunction : public ScriptFunction {
 VideoDecoderConfig* MakeVideoDecoderConfig(
     const wc_fuzzer::ConfigureVideoDecoder& proto);
 
-EncodedAudioConfig* MakeAudioDecoderConfig(
+AudioDecoderConfig* MakeAudioDecoderConfig(
     const wc_fuzzer::ConfigureAudioDecoder& proto);
 
 VideoEncoderConfig* MakeEncoderConfig(
