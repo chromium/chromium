@@ -4705,9 +4705,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // OS_CHROMEOS
 
 #if !defined(OS_ANDROID)
-    {"enable-accessibility-live-captions",
-     flag_descriptions::kEnableAccessibilityLiveCaptionsName,
-     flag_descriptions::kEnableAccessibilityLiveCaptionsDescription, kOsDesktop,
+    {"enable-accessibility-live-caption",
+     flag_descriptions::kEnableAccessibilityLiveCaptionName,
+     flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
 #endif  // !defined(OS_ANDROID)
 

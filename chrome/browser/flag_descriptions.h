@@ -1866,8 +1866,8 @@ extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
-extern const char kEnableAccessibilityLiveCaptionsName[];
-extern const char kEnableAccessibilityLiveCaptionsDescription[];
+extern const char kEnableAccessibilityLiveCaptionName[];
+extern const char kEnableAccessibilityLiveCaptionDescription[];
 
 extern const char kCastMediaRouteProviderName[];
 extern const char kCastMediaRouteProviderDescription[];

@@ -3233,9 +3233,9 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
-const char kEnableAccessibilityLiveCaptionsName[] = "Live Captions";
-const char kEnableAccessibilityLiveCaptionsDescription[] =
-    "Enables the live captions feature which generates captions for "
+const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
+const char kEnableAccessibilityLiveCaptionDescription[] =
+    "Enables the live caption feature which generates captions for "
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
