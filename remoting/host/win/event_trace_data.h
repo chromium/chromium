@@ -22,6 +22,9 @@ struct EventTraceData {
   // Create an instance from the data in the |event| payload.
   static EventTraceData Create(EVENT_TRACE* event);
 
+  // Helper method to convert a logging severity into a displayable string.
+  static std::string SeverityToString(logging::LogSeverity severity);
+
   EventTraceData(EventTraceData&&);
   EventTraceData& operator=(EventTraceData&&);
   EventTraceData(const EventTraceData&) = delete;
@@ -44,9 +47,9 @@ struct EventTraceData {
   // The original timestamp from when the event was logged.
   base::Time::Exploded time_stamp = {};
 
-  // The path of the file which logged the event.  Note that this may not be
+  // The name of the file which logged the event.  Note that this may not be
   // present in all builds (it depends on the logging params).
-  std::string file;
+  std::string file_name;
 
   // The line in the file which logged the event.  Note that this may not be
   // present in all builds (it depends on the logging params).

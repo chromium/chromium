@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/host/win/event_trace_data.h"
@@ -20,32 +19,6 @@ namespace remoting {
 namespace {
 
 constexpr wchar_t kLatestLogSymbolicLinkName[] = L"latest.log";
-
-constexpr char kInfoSeverity[] = "INFO";
-constexpr char kWarningSeverity[] = "WARNING";
-constexpr char kErrorSeverity[] = "ERROR";
-constexpr char kFatalSeverity[] = "FATAL";
-constexpr char kVerboseSeverity[] = "VERBOSE";
-constexpr char kUnknownSeverity[] = "UNKNOWN";
-
-std::string SeverityToString(logging::LogSeverity severity) {
-  switch (severity) {
-    case logging::LOG_INFO:
-      return kInfoSeverity;
-    case logging::LOG_WARNING:
-      return kWarningSeverity;
-    case logging::LOG_ERROR:
-      return kErrorSeverity;
-    case logging::LOG_FATAL:
-      return kFatalSeverity;
-    default:
-      if (severity < 0) {
-        return kVerboseSeverity;
-      }
-      NOTREACHED();
-      return kUnknownSeverity;
-  }
-}
 
 }  // namespace
 
@@ -85,25 +58,21 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
   if (!::CreateSymbolicLink(sym_link_path.value().c_str(),
                             log_file_path.value().c_str(),
                             /*file*/ 0)) {
-    LOG(WARNING) << "Failed to create symbolic link for latest log file.";
+    PLOG(WARNING) << "Failed to create symbolic link for latest log file.";
   }
 
   return std::make_unique<HostEventFileLogger>(std::move(log_file));
 }
 
 void HostEventFileLogger::LogEvent(const EventTraceData& data) {
-  std::size_t pos = data.file.rfind("/");
-  std::string file_name =
-      pos != std::string::npos ? data.file.substr(pos + 1) : data.file;
-  std::string severity(SeverityToString(data.severity));
-
   // Log format is: [YYYYMMDD/HHMMSS.sss:severity:file_name(line)] <message>
   std::string message(base::StringPrintf(
       "[%4d%02d%02d/%02d%02d%02d.%03d:%s:%s(%d)] %s", data.time_stamp.year,
       data.time_stamp.month, data.time_stamp.day_of_month, data.time_stamp.hour,
       data.time_stamp.minute, data.time_stamp.second,
-      data.time_stamp.millisecond, severity.c_str(), file_name.c_str(),
-      data.line, data.message.c_str()));
+      data.time_stamp.millisecond,
+      EventTraceData::SeverityToString(data.severity).c_str(),
+      data.file_name.c_str(), data.line, data.message.c_str()));
 
   log_file_.Write(/*unused*/ 0, message.c_str(), message.size());
 }

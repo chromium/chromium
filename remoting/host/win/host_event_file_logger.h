@@ -25,6 +25,7 @@ class HostEventFileLogger : public HostEventLogger {
   HostEventFileLogger& operator=(const HostEventFileLogger&) = delete;
   ~HostEventFileLogger() override;
 
+  // HostEventLogger implementation.
   void LogEvent(const EventTraceData& data) override;
 
  private:
