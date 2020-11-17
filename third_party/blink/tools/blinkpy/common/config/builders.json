@@ -119,6 +119,28 @@
         "specifiers": ["Win10", "Release"],
         "is_try_builder": true
     },
+    "linux-rel": {
+        "master": "tryserver.chromium.linux",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "has_webdriver_tests": true,
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
+    "mac-rel": {
+        "master": "tryserver.chromium.mac",
+        "port_name": "mac-mac10.13",
+        "specifiers": ["Mac10.13", "Release"],
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
+    "win10_chromium_x64_rel_ng": {
+        "master": "tryserver.chromium.win",
+        "port_name": "win-win10",
+        "specifiers": ["Win10", "Release"],
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
     "android-pie-arm64-wpt-rel-non-cq": {
         "port_name": "android-android-pie",
         "specifiers": [

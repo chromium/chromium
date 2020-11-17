@@ -35,7 +35,6 @@ import json
 
 from blinkpy.common.path_finder import PathFinder
 
-
 class BuilderList(object):
     def __init__(self, builders_dict):
         """Creates and validates a builders list.
@@ -77,11 +76,14 @@ class BuilderList(object):
     def all_try_builder_names(self):
         return self.filter_builders(is_try=True)
 
+    def all_cq_try_builder_names(self):
+        return self.filter_builders(is_cq=True)
+
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 
     def filter_builders(self, exclude_specifiers=None, include_specifiers=None,
-                        is_try=False):
+                        is_try=False, is_cq=False):
         _lower_specifiers = lambda specifiers: {s.lower() for s in specifiers}
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
@@ -89,7 +91,11 @@ class BuilderList(object):
         for b in self._builders:
             builder_specifiers = _lower_specifiers(
                 self._builders[b].get('specifiers', {}))
-            if self._builders[b].get('is_try_builder', False) != is_try:
+            if is_try and self._builders[b].get('is_try_builder', False) != is_try:
+                continue
+            if is_cq and self._builders[b].get('is_cq_builder', False) != is_cq:
+                continue
+            if ((not is_cq and not is_try) and self._builders[b].get('is_try_builder', False)):
                 continue
             if builder_specifiers & exclude_specifiers:
                 continue

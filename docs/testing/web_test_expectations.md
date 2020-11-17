@@ -102,11 +102,17 @@ results from try jobs, by using the command-tool
 1. First, upload a CL.
 2. Trigger try jobs by running `blink_tool.py rebaseline-cl`. This should
    trigger jobs on
-   [tryserver.blink](https://build.chromium.org/p/tryserver.blink/builders).
+   [tryserver.blink](https://ci.chromium.org/p/chromium/g/tryserver.blink/builders).
+   In addition, this will also trigger the CQ try builders that run blink web tests.
+   linux-rel, mac-rel and win10_chromium_x64_rel_ng.
+   Optionally one can choose to trigger only blink try bots alone. 
+   Run the tool with the option -
+   `blink_tool.py rebaseline-cl --use-blink-try-bots-only`
 3. Wait for all try jobs to finish.
 4. Run `blink_tool.py rebaseline-cl` again to fetch new baselines.
    By default, this will download new baselines for any failing tests
-   in the try jobs.
+   in the blink try jobs and CQ try bots.
+   Again, there is an option to use only blink try jobs results for rebaselining. 
    (Run `blink_tool.py rebaseline-cl --help` for more specific options.)
 5. Commit the new baselines and upload a new patch.
 

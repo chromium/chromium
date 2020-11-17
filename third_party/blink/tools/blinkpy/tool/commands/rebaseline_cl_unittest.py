@@ -183,6 +183,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'verbose': False,
             'builders': [],
             'patchset': None,
+            'use_blink_try_bots_only': False
         }
         options.update(kwargs)
         return optparse.Values(dict(**options))

@@ -65,19 +65,22 @@ class BuilderListTest(unittest.TestCase):
                 'bucket': 'bucket.a',
                 'port_name': 'port-a',
                 'specifiers': ['A', 'Release'],
-                'is_try_builder': True
+                'is_try_builder': True,
+                'is_cq_builder': True
             },
             'CQ Try B': {
                 'bucket': 'bucket.b',
                 'port_name': 'port-b',
                 'specifiers': ['B', 'Release'],
-                'is_try_builder': True
+                'is_try_builder': True,
+                'is_cq_builder': True
             },
             'CQ Try C': {
                 'bucket': 'bucket.c',
                 'port_name': 'port-c',
                 'specifiers': ['c', 'Release'],
                 'is_try_builder': True,
+                'is_cq_builder': True,
                 'master': "luci",
                 'has_webdriver_tests': True
             },
@@ -107,6 +110,12 @@ class BuilderListTest(unittest.TestCase):
         self.assertEqual(
             ['CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'],
             builders.all_try_builder_names())
+
+    def test_all_cq_try_builder_names(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            ['CQ Try A', 'CQ Try B', 'CQ Try C'],
+            builders.all_cq_try_builder_names())
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()

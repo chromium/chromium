@@ -60,6 +60,14 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 '--no-fill-missing', dest='fill_missing',
                 action='store_false'),
             optparse.make_option(
+                '--use-blink-try-bots-only',
+                dest='use_blink_try_bots_only',
+                action='store_true',
+                default=False,
+                help='Use only the try jobs results for rebaselining. '
+                'Default behavior is to use results from both CQ builders '
+                'and try bots.'),
+            optparse.make_option(
                 '--test-name-file',
                 dest='test_name_file',
                 default=None,
@@ -84,7 +92,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def execute(self, options, args, tool):
         self._tool = tool
         self.git_cl = self.git_cl or GitCL(tool)
-
         if args and options.test_name_file:
             _log.error('Aborted: Cannot combine --test-name-file and '
                        'positional parameters.')
@@ -99,6 +106,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 try_builders.update(builder_names.split(','))
             self._selected_try_bots = frozenset(try_builders)
 
+        if options.use_blink_try_bots_only:
+            self._selected_try_bots = self.selected_try_bots - self.cq_try_bots
+
         jobs = self.git_cl.latest_try_jobs(
             builder_names=self.selected_try_bots, patchset=options.patchset)
         self._log_jobs(jobs)
@@ -110,6 +120,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if not options.trigger_jobs and not jobs:
             _log.info('Aborted: no try jobs and --no-trigger-jobs passed.')
             return 1
+
+        if options.use_blink_try_bots_only:
+            if not builders_with_no_jobs:
+                _log.info("All try bots have been run. ")
+                _log.info("Using only the try bots results")
+            elif options.trigger_jobs:
+                _log.info("Triggering try bots only.")
 
         if options.trigger_jobs and builders_with_no_jobs:
             self.trigger_try_jobs(builders_with_no_jobs)
@@ -175,6 +192,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             return self._selected_try_bots
         return frozenset(self._tool.builders.filter_builders(
             is_try=True, exclude_specifiers={'android'}))
+
+    @property
+    def cq_try_bots(self):
+        return frozenset(self._tool.builders.all_cq_try_builder_names())
 
     def _get_issue_number(self):
         """Returns the current CL issue number, or None."""
