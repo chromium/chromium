@@ -13,7 +13,6 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/assistant/ui/dialog_plate/mic_view.h"
-#include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
@@ -22,6 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -30,6 +30,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -311,11 +312,11 @@ void AssistantDialogPlate::InitLayout() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Molecule icon.
-  molecule_icon_ = AddChildView(LogoView::Create());
+  molecule_icon_ = AddChildView(std::make_unique<views::ImageView>());
   molecule_icon_->SetID(AssistantViewID::kModuleIcon);
   molecule_icon_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
-  molecule_icon_->SetState(LogoView::State::kMoleculeWavy,
-                           /*animate=*/false);
+  molecule_icon_->SetImage(gfx::CreateVectorIcon(
+      chromeos::kAssistantIcon, kIconSizeDip, gfx::kPlaceholderColor));
 
   // Input modality layout container.
   input_modality_layout_container_ =

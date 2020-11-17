@@ -28,11 +28,11 @@ class CallbackLayerAnimationObserver;
 
 namespace views {
 class ImageButton;
+class ImageView;
 }  // namespace views
 
 namespace ash {
 class AssistantViewDelegate;
-class LogoView;
 class MicView;
 
 // AssistantDialogPlate --------------------------------------------------------
@@ -98,7 +98,7 @@ class APP_LIST_EXPORT AssistantDialogPlate
   AssistantViewDelegate* const delegate_;
 
   // The following views are all owned by the view hierarchy
-  LogoView* molecule_icon_ = nullptr;
+  views::ImageView* molecule_icon_ = nullptr;
   views::View* input_modality_layout_container_ = nullptr;
   views::View* keyboard_layout_container_ = nullptr;
   views::View* voice_layout_container_ = nullptr;
