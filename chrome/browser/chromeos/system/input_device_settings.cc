@@ -342,6 +342,50 @@ void MouseSettings::Apply(const MouseSettings& mouse_settings,
   }
 }
 
+PointingStickSettings::PointingStickSettings() = default;
+
+PointingStickSettings::PointingStickSettings(
+    const PointingStickSettings& other) = default;
+
+PointingStickSettings& PointingStickSettings::operator=(
+    const PointingStickSettings& other) {
+  if (&other != this) {
+    sensitivity_ = other.sensitivity_;
+  }
+  return *this;
+}
+
+void PointingStickSettings::SetSensitivity(int value) {
+  sensitivity_ = value;
+}
+
+int PointingStickSettings::GetSensitivity() const {
+  return *sensitivity_;
+}
+
+bool PointingStickSettings::IsSensitivitySet() const {
+  return sensitivity_.has_value();
+}
+
+bool PointingStickSettings::Update(const PointingStickSettings& settings) {
+  bool updated = false;
+  if (UpdateIfHasValue(settings.sensitivity_, &sensitivity_))
+    updated = true;
+  return updated;
+}
+
+// static
+void PointingStickSettings::Apply(
+    const PointingStickSettings& pointing_stick_settings,
+    InputDeviceSettings* input_device_settings) {
+  if (!input_device_settings)
+    return;
+  if (pointing_stick_settings.sensitivity_.has_value()) {
+    input_device_settings->SetPointingStickSensitivity(
+        pointing_stick_settings.sensitivity_.value());
+  }
+}
+
 // static
 bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||

@@ -167,6 +167,11 @@ void InputControllerEvdev::SetMouseScrollSensitivity(int value) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::SetPointingStickSensitivity(int value) {
+  input_device_settings_.pointing_stick_sensitivity = value;
+  ScheduleUpdateDeviceSettings();
+}
+
 void InputControllerEvdev::SetPrimaryButtonRight(bool right) {
   button_map_->SetPrimaryButtonRight(right);
 }

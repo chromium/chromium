@@ -36,6 +36,7 @@ struct InputDeviceSettingsEvdev {
   int touchpad_scroll_sensitivity = kDefaultSensitivity;
   int mouse_sensitivity = kDefaultSensitivity;
   int mouse_scroll_sensitivity = kDefaultSensitivity;
+  int pointing_stick_sensitivity = kDefaultSensitivity;
 
   bool enable_devices = true;  // If false, all input is disabled.
   bool enable_internal_touchpad = true;

@@ -356,6 +356,13 @@ cr.define('device_page_tests', function() {
             value: 4,
           },
         },
+        pointing_stick: {
+          sensitivity: {
+            key: 'settings.pointing_stick.sensitivity',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: 4,
+          },
+        },
         language: {
           xkb_remap_search_key_to: {
             key: 'settings.language.xkb_remap_search_key_to',
@@ -692,6 +699,16 @@ cr.define('device_page_tests', function() {
         expectEquals(5, slider.pref.value);
       });
 
+      test('mouse speed also sets pointing stick speed', function() {
+        // TODO(crbug.com/1114828): remove once the feature is launched.
+        const slider = assert(pointersPage.$$('#mouse settings-slider'));
+        expectEquals(4, slider.pref.value);
+        MockInteractions.pressAndReleaseKeyOn(
+            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
+        expectEquals(
+            3, devicePage.prefs.settings.pointing_stick.sensitivity.value);
+      });
+
       test('touchpad', function() {
         expectTrue(isVisible(pointersPage.$$('#touchpad')));
 
@@ -831,6 +848,36 @@ cr.define('device_page_tests', function() {
               assertTrue(isVisible(page.$$('#touchpad')));
               assertTrue(isVisible(page.$$('#touchpad h2')));
             });
+      });
+
+      test('speed slider sets and responds to preference', function() {
+        const slider =
+            assert(pointersPage.$$('#pointingStick settings-slider'));
+        expectEquals(4, slider.pref.value);
+        MockInteractions.pressAndReleaseKeyOn(
+            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
+        expectEquals(
+            3, devicePage.prefs.settings.pointing_stick.sensitivity.value);
+
+        pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
+        expectEquals(5, slider.pref.value);
+      });
+
+      test('deep link to speed setting', async () => {
+        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+        const params = new URLSearchParams();
+        params.append('settingId', '435');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.POINTERS, params);
+
+        const deepLinkElement =
+            pointersPage.$$('#pointingStickSpeedSlider').$$('cr-slider');
+        await test_util.waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'pointing stick speed slider should be focused for settingId=435.');
       });
     });
 

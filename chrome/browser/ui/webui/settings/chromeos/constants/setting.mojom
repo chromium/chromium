@@ -121,6 +121,7 @@ enum Setting {
   kNightLightColorTemperature = 432,
   kPowerIdleBehaviorWhileOnBattery = 433,
   kDisplayOverscan = 434,
+  kPointingStickSpeed = 435,
 
   // Personalization section.
   kOpenWallpaper = 500,

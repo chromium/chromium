@@ -67,6 +67,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void SuspendMouseAcceleration() override;
   void EndMouseAccelerationSuspension() override;
   void SetMouseScrollAcceleration(bool enabled) override;
+  void SetPointingStickSensitivity(int value) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
   void SetTapToClickPaused(bool state) override;

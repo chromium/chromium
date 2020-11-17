@@ -257,6 +257,9 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kMouseScrollSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
+      ::prefs::kPointingStickSensitivity, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterIntegerPref(
       ::prefs::kTouchpadSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
@@ -513,6 +516,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   touchpad_sensitivity_.Init(::prefs::kTouchpadSensitivity, prefs, callback);
   touchpad_scroll_sensitivity_.Init(::prefs::kTouchpadScrollSensitivity, prefs,
                                     callback);
+  pointing_stick_sensitivity_.Init(::prefs::kPointingStickSensitivity, prefs,
+                                   callback);
   primary_mouse_button_right_.Init(::prefs::kPrimaryMouseButtonRight, prefs,
                                    callback);
   mouse_acceleration_.Init(::prefs::kMouseAcceleration, prefs, callback);
@@ -677,6 +682,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
   system::TouchpadSettings touchpad_settings;
   system::MouseSettings mouse_settings;
+  system::PointingStickSettings pointing_stick_settings;
 
   if (user_is_primary_ && (reason == REASON_INITIALIZATION ||
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
@@ -769,6 +775,22 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     ReportSensitivityPrefApplication(reason, "Mouse.ScrollSensitivity.Changed",
                                      "Mouse.ScrollSensitivity.Started",
                                      sensitivity_int);
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kPointingStickSensitivity) {
+    const int sensitivity_int = pointing_stick_sensitivity_.GetValue();
+    if (user_is_active) {
+      pointing_stick_settings.SetSensitivity(sensitivity_int);
+    }
+    system::PointerSensitivity sensitivity =
+        static_cast<system::PointerSensitivity>(sensitivity_int);
+    if (reason == REASON_PREF_CHANGED) {
+      base::UmaHistogramEnumeration("PointingStick.PointerSensitivity.Changed",
+                                    sensitivity);
+    } else if (reason == REASON_INITIALIZATION) {
+      base::UmaHistogramEnumeration("PointingStick.PointerSensitivity.Started",
+                                    sensitivity);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadSensitivity) {
@@ -930,6 +952,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     system::InputDeviceSettings::Get()->UpdateTouchpadSettings(
         touchpad_settings);
     system::InputDeviceSettings::Get()->UpdateMouseSettings(mouse_settings);
+    system::InputDeviceSettings::Get()->UpdatePointingStickSettings(
+        pointing_stick_settings);
   }
 
   if (pref_name == ::prefs::kUserTimezone &&

@@ -240,6 +240,18 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickSpeed}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetStylusSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_STYLUS_NOTE_APP,
@@ -885,6 +897,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kTouchpadAcceleration,
       mojom::Setting::kTouchpadScrollAcceleration,
       mojom::Setting::kTouchpadSpeed,
+      mojom::Setting::kPointingStickSpeed,
       mojom::Setting::kMouseSwapPrimaryButtons,
       mojom::Setting::kMouseReverseScrolling,
       mojom::Setting::kMouseAcceleration,
@@ -990,7 +1003,12 @@ void DeviceSection::MouseExists(bool exists) {
 }
 
 void DeviceSection::PointingStickExists(bool exists) {
-  // TODO(crbug.com/1114828): manage search tags when the UI is implemented.
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  if (exists)
+    updater.AddSearchTags(GetPointingStickSearchConcepts());
+  else
+    updater.RemoveSearchTags(GetPointingStickSearchConcepts());
 }
 
 void DeviceSection::OnDeviceListsComplete() {
@@ -1144,6 +1162,7 @@ void DeviceSection::AddDevicePointersStrings(
       {"pointerFast", IDS_SETTINGS_POINTER_SPEED_FAST_LABEL},
       {"mouseScrollSpeed", IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL},
       {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
+      {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
       {"mouseSwapButtons", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
       {"primaryMouseButtonLeft", IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL},
       {"primaryMouseButtonRight",

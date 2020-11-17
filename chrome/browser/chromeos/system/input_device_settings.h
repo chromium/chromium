@@ -140,6 +140,34 @@ class MouseSettings {
   base::Optional<int> sensitivity_;
 };
 
+// Auxiliary class used to update several pointing stick settings at a time.
+// User should set any number of settings and pass object to
+// UpdatePointingStickSettings method of InputDeviceSettings.
+// Objects of this class have no default values for settings, so it is error
+// to call Get* method before calling corresponding Set* method at least
+// once.
+class PointingStickSettings {
+ public:
+  PointingStickSettings();
+  PointingStickSettings(const PointingStickSettings& other);
+  PointingStickSettings& operator=(const PointingStickSettings& other);
+
+  void SetSensitivity(int value);
+  int GetSensitivity() const;
+  bool IsSensitivitySet() const;
+
+  // Updates |this| with |settings|. If at least one setting was updated returns
+  // true.
+  bool Update(const PointingStickSettings& settings);
+
+  // Apply |settings| to input devices.
+  static void Apply(const PointingStickSettings& pointing_stick_settings,
+                    InputDeviceSettings* input_device_settings);
+
+ private:
+  base::Optional<int> sensitivity_;
+};
+
 // Interface for configuring input device settings.
 class InputDeviceSettings {
  public:
@@ -154,6 +182,8 @@ class InputDeviceSettings {
     virtual void set_pointing_stick_exists(bool exists) = 0;
     virtual const TouchpadSettings& current_touchpad_settings() const = 0;
     virtual const MouseSettings& current_mouse_settings() const = 0;
+    virtual const PointingStickSettings& current_pointing_stick_settings()
+        const = 0;
   };
 
   virtual ~InputDeviceSettings() {}
@@ -227,6 +257,16 @@ class InputDeviceSettings {
   // stick is connected.
   virtual void PointingStickExists(DeviceExistsCallback callback) = 0;
 
+  // Updates several pointing stick settings at a time. Updates only settings
+  // that are set in |settings| object. It is more efficient to use this method
+  // to update several settings then calling Set* methods one by one.
+  virtual void UpdatePointingStickSettings(
+      const PointingStickSettings& settings) = 0;
+
+  // Sets the pointing stick sensitivity in the range [kMinPointerSensitivity,
+  // kMaxPointerSensitivity].
+  virtual void SetPointingStickSensitivity(int value) = 0;
+
   // Turns touchpad acceleration on/off.
   virtual void SetTouchpadAcceleration(bool enabled) = 0;
 
@@ -238,6 +278,9 @@ class InputDeviceSettings {
 
   // Reapplies previously set mouse settings.
   virtual void ReapplyMouseSettings() = 0;
+
+  // Reapplies previously set pointing stick settings.
+  virtual void ReapplyPointingStickSettings() = 0;
 
   // Returns an interface for faking settings, or nullptr.
   virtual FakeInterface* GetFakeInterface() = 0;

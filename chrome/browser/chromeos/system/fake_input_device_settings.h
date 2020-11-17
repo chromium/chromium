@@ -36,11 +36,15 @@ class FakeInputDeviceSettings : public InputDeviceSettings,
   void SetMouseAcceleration(bool enabled) override;
   void SetMouseScrollAcceleration(bool enabled) override;
   void PointingStickExists(DeviceExistsCallback callback) override;
+  void UpdatePointingStickSettings(
+      const PointingStickSettings& settings) override;
+  void SetPointingStickSensitivity(int value) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
   void SetNaturalScroll(bool enabled) override;
   void ReapplyTouchpadSettings() override;
   void ReapplyMouseSettings() override;
+  void ReapplyPointingStickSettings() override;
   InputDeviceSettings::FakeInterface* GetFakeInterface() override;
 
   // Overridden from InputDeviceSettings::FakeInterface.
@@ -49,10 +53,12 @@ class FakeInputDeviceSettings : public InputDeviceSettings,
   void set_pointing_stick_exists(bool exists) override;
   const TouchpadSettings& current_touchpad_settings() const override;
   const MouseSettings& current_mouse_settings() const override;
+  const PointingStickSettings& current_pointing_stick_settings() const override;
 
  private:
   TouchpadSettings current_touchpad_settings_;
   MouseSettings current_mouse_settings_;
+  PointingStickSettings current_pointing_stick_settings_;
 
   bool touchpad_exists_ = true;
   bool mouse_exists_ = true;

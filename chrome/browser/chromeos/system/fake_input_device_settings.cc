@@ -111,6 +111,17 @@ void FakeInputDeviceSettings::PointingStickExists(
   std::move(callback).Run(pointing_stick_exists_);
 }
 
+void FakeInputDeviceSettings::UpdatePointingStickSettings(
+    const PointingStickSettings& settings) {
+  current_pointing_stick_settings_.Update(settings);
+}
+
+void FakeInputDeviceSettings::SetPointingStickSensitivity(int value) {
+  PointingStickSettings settings;
+  settings.SetSensitivity(value);
+  UpdatePointingStickSettings(settings);
+}
+
 void FakeInputDeviceSettings::SetTouchpadAcceleration(bool enabled) {
   TouchpadSettings settings;
   settings.SetAcceleration(enabled);
@@ -128,6 +139,8 @@ void FakeInputDeviceSettings::ReapplyTouchpadSettings() {
 
 void FakeInputDeviceSettings::ReapplyMouseSettings() {
 }
+
+void FakeInputDeviceSettings::ReapplyPointingStickSettings() {}
 
 InputDeviceSettings::FakeInterface*
 FakeInputDeviceSettings::GetFakeInterface() {
@@ -153,6 +166,11 @@ const TouchpadSettings& FakeInputDeviceSettings::current_touchpad_settings()
 
 const MouseSettings& FakeInputDeviceSettings::current_mouse_settings() const {
   return current_mouse_settings_;
+}
+
+const PointingStickSettings&
+FakeInputDeviceSettings::current_pointing_stick_settings() const {
+  return current_pointing_stick_settings_;
 }
 
 }  // namespace system

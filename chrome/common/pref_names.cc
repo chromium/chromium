@@ -514,6 +514,9 @@ const char kTouchpadSensitivity[] = "settings.touchpad.sensitivity2";
 const char kTouchpadScrollSensitivity[] =
     "settings.touchpad.scroll_sensitivity";
 
+// A integer pref for pointing stick sensitivity.
+const char kPointingStickSensitivity[] = "settings.pointing_stick.sensitivity";
+
 // A boolean pref set to true if time should be displayed in 24-hour clock.
 const char kUse24HourClock[] = "settings.clock.use_24hour_clock";
 

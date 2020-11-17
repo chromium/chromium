@@ -342,7 +342,11 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   SetBoolPropertyForOneType(DT_MULTITOUCH, "Australian Scrolling",
                             input_device_settings_.natural_scroll_enabled);
 
+  SetIntPropertyForOneType(DT_MOUSE, "Pointer Sensitivity",
+                           input_device_settings_.mouse_sensitivity);
   ApplyRelativePointingDeviceSettings(DT_MOUSE);
+  SetIntPropertyForOneType(DT_POINTING_STICK, "Pointer Sensitivity",
+                           input_device_settings_.pointing_stick_sensitivity);
   ApplyRelativePointingDeviceSettings(DT_POINTING_STICK);
 
   SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Paused",
@@ -377,8 +381,6 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
 
 void InputDeviceFactoryEvdev::ApplyRelativePointingDeviceSettings(
     EventDeviceType type) {
-  SetIntPropertyForOneType(type, "Pointer Sensitivity",
-                           input_device_settings_.mouse_sensitivity);
   SetIntPropertyForOneType(type, "Mouse Scroll Sensitivity",
                            input_device_settings_.mouse_scroll_sensitivity);
   SetBoolPropertyForOneType(type, "Pointer Acceleration",

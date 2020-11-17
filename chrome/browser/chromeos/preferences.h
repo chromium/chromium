@@ -135,6 +135,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   IntegerPrefMember speed_factor_;
   IntegerPrefMember mouse_sensitivity_;
   IntegerPrefMember mouse_scroll_sensitivity_;
+  IntegerPrefMember pointing_stick_sensitivity_;
   IntegerPrefMember touchpad_sensitivity_;
   IntegerPrefMember touchpad_scroll_sensitivity_;
   BooleanPrefMember primary_mouse_button_right_;

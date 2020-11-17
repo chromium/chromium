@@ -14152,6 +14152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Started" label="Preference value upon startup."/>
   <affected-histogram name="Mouse.ScrollAcceleration"/>
   <affected-histogram name="Mouse.ScrollSensitivity"/>
+  <affected-histogram name="PointingStick.PointerSensitivity"/>
   <affected-histogram name="Touchpad.ScrollAcceleration"/>
   <affected-histogram name="Touchpad.ScrollSensitivity"/>
 </histogram_suffixes>

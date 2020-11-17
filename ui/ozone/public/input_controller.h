@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void EndMouseAccelerationSuspension() = 0;
   virtual void SetMouseScrollAcceleration(bool enabled) = 0;
 
+  // Pointing stick settings.
+  virtual void SetPointingStickSensitivity(int value) = 0;
+
   // Touch log collection.
   virtual void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) = 0;
   virtual void GetTouchEventLog(const base::FilePath& out_dir,

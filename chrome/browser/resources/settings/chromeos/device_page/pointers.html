@@ -63,11 +63,13 @@
           <div class="start" id="mouseSpeedLabel" aria-hidden="true">
             $i18n{mouseSpeed}
           </div>
-          <settings-slider pref="{{prefs.settings.mouse.sensitivity2}}"
+          <settings-slider id="mouseSpeedSlider"
+              pref="{{prefs.settings.mouse.sensitivity2}}"
               ticks="[[sensitivityValues_]]"
               label-aria="$i18n{mouseSpeed}"
               label-min="$i18n{pointerSlow}"
               label-max="$i18n{pointerFast}"
+              on-cr-slider-value-changed="onMouseSpeedChanged_"
               deep-link-focus-id$="[[Setting.kMouseSpeed]]">
           </settings-slider>
         </div>
@@ -113,7 +115,19 @@
         <!-- Subsection title only appears if multiple sections are visible. -->
         <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
         <div class$="[[subsectionClass_]]">
-          (Settings not implemented yet)
+          <div class="settings-box">
+            <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
+              $i18n{pointingStickSpeed}
+            </div>
+            <settings-slider id="pointingStickSpeedSlider"
+                pref="{{prefs.settings.pointing_stick.sensitivity}}"
+                ticks="[[sensitivityValues_]]"
+                label-aria="$i18n{pointingStickSpeed}"
+                label-min="$i18n{pointerSlow}"
+                label-max="$i18n{pointerFast}"
+                deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">
+            </settings-slider>
+          </div>
         </div>
       </div>
     </template>

@@ -69,6 +69,7 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetBoolean(prefs::kEnableTouchpadThreeFingerClick, !variant);
     prefs->SetInteger(prefs::kMouseSensitivity, !variant);
     prefs->SetInteger(prefs::kMouseScrollSensitivity, variant ? 1 : 4);
+    prefs->SetInteger(prefs::kPointingStickSensitivity, !variant);
     prefs->SetInteger(prefs::kTouchpadSensitivity, variant);
     prefs->SetInteger(prefs::kTouchpadScrollSensitivity, variant ? 1 : 4);
     prefs->SetBoolean(ash::prefs::kXkbAutoRepeatEnabled, variant);
@@ -104,6 +105,9 @@ class PreferencesTest : public LoginManagerTest {
               input_settings_->current_mouse_settings().GetSensitivity());
     EXPECT_EQ(prefs->GetInteger(prefs::kMouseScrollSensitivity),
               input_settings_->current_mouse_settings().GetScrollSensitivity());
+    EXPECT_EQ(
+        prefs->GetInteger(prefs::kPointingStickSensitivity),
+        input_settings_->current_pointing_stick_settings().GetSensitivity());
     EXPECT_EQ(prefs->GetInteger(prefs::kTouchpadSensitivity),
               input_settings_->current_touchpad_settings().GetSensitivity());
     EXPECT_EQ(
