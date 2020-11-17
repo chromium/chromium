@@ -228,7 +228,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kUpdateNotificationScheduleServiceImmediateShowOption,
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
-    &kWebApkAdaptiveIcon,
     &kPrefetchNotificationSchedulingIntegration,
     &features::kDnsOverHttps,
     &net::features::kSameSiteByDefaultCookies,
@@ -669,9 +668,6 @@ const base::Feature kVoiceButtonInTopToolbar{"VoiceButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kWebApkAdaptiveIcon{"WebApkAdaptiveIcon",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(

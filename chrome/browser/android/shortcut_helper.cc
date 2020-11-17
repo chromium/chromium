@@ -13,7 +13,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -21,7 +20,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 #include "chrome/browser/android/color_helpers.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
@@ -347,9 +345,8 @@ void ShortcutHelper::SetForceWebApkUpdate(const std::string& id) {
 
 // static
 bool ShortcutHelper::DoesAndroidSupportMaskableIcons() {
-  return base::FeatureList::IsEnabled(chrome::android::kWebApkAdaptiveIcon) &&
-         base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_OREO;
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_OREO;
 }
 
 // static

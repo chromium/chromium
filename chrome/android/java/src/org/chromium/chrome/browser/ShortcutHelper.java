@@ -39,7 +39,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
@@ -195,9 +194,7 @@ public class ShortcutHelper {
      * Check the running Android version supports adaptive icon (i.e. API level >= 26)
      */
     public static boolean doesAndroidSupportMaskableIcons() {
-        return ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.WEBAPK_ADAPTIVE_ICON)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 
     /**

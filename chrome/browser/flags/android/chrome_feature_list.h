@@ -137,7 +137,6 @@ extern const base::Feature
 extern const base::Feature kUserMediaScreenCapturing;
 extern const base::Feature kVoiceButtonInTopToolbar;
 extern const base::Feature kVrBrowsingFeedback;
-extern const base::Feature kWebApkAdaptiveIcon;
 extern const base::Feature kPrefetchNotificationSchedulingIntegration;
 
 }  // namespace android
