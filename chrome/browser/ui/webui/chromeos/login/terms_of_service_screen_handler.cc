@@ -95,12 +95,13 @@ void TermsOfServiceScreenHandler::Show() {
 
   // Switch to the user's UI locale before showing the screen.
   locale_util::SwitchLanguageCallback callback(
-      base::Bind(&TermsOfServiceScreenHandler::OnLanguageChangedCallback,
-                 base::Unretained(this)));
+      base::BindOnce(&TermsOfServiceScreenHandler::OnLanguageChangedCallback,
+                     base::Unretained(this)));
   locale_util::SwitchLanguage(locale,
                               true,   // enable_locale_keyboard_layouts
                               false,  // login_layouts_only
-                              callback, ProfileManager::GetActiveUserProfile());
+                              std::move(callback),
+                              ProfileManager::GetActiveUserProfile());
 }
 
 void TermsOfServiceScreenHandler::Hide() {

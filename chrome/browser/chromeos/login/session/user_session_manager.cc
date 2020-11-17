@@ -728,7 +728,7 @@ void UserSessionManager::DoBrowserLaunch(Profile* profile,
 bool UserSessionManager::RespectLocalePreference(
     Profile* profile,
     const user_manager::User* user,
-    const locale_util::SwitchLanguageCallback& callback) const {
+    locale_util::SwitchLanguageCallback callback) const {
   // TODO(alemate): http://crbug.com/288941 : Respect preferred language list in
   // the Google user profile.
   if (g_browser_process == NULL)
@@ -816,8 +816,8 @@ bool UserSessionManager::RespectLocalePreference(
   const bool enable_layouts =
       user_manager::UserManager::Get()->IsLoggedInAsGuest();
   locale_util::SwitchLanguage(pref_locale, enable_layouts,
-                              false /* login_layouts_only */, callback,
-                              profile);
+                              false /* login_layouts_only */,
+                              std::move(callback), profile);
 
   return true;
 }
@@ -1733,7 +1733,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       // Mark the device as registered., i.e. the second part of OOBE as
       // completed.
       if (!StartupUtils::IsDeviceRegistered())
-        StartupUtils::MarkDeviceRegistered(base::Closure());
+        StartupUtils::MarkDeviceRegistered(base::OnceClosure());
 
       ActivateWizard(TermsOfServiceScreenView::kScreenId);
       return false;
@@ -2107,9 +2107,9 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   if (!locale_pref_checked) {
     RespectLocalePreferenceWrapper(
-        profile,
-        base::Bind(&UserSessionManager::DoBrowserLaunchInternal, AsWeakPtr(),
-                   profile, login_host, true /* locale_pref_checked */));
+        profile, base::BindRepeating(
+                     &UserSessionManager::DoBrowserLaunchInternal, AsWeakPtr(),
+                     profile, login_host, true /* locale_pref_checked */));
     return;
   }
 
@@ -2170,27 +2170,31 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
 void UserSessionManager::RespectLocalePreferenceWrapper(
     Profile* profile,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
     return;
 
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  locale_util::SwitchLanguageCallback locale_switched_callback(base::Bind(
-      &UserSessionManager::RunCallbackOnLocaleLoaded, callback,
+  base::RepeatingClosure repeating_callback =
+      base::AdaptCallbackForRepeating(std::move(callback));
+  locale_util::SwitchLanguageCallback locale_switched_callback(base::BindOnce(
+      &UserSessionManager::RunCallbackOnLocaleLoaded, repeating_callback,
       base::Owned(new InputEventsBlocker)));  // Block UI events until
                                               // the ResourceBundle is
                                               // reloaded.
-  if (!RespectLocalePreference(profile, user, locale_switched_callback))
-    callback.Run();
+  if (!RespectLocalePreference(profile, user,
+                               std::move(locale_switched_callback))) {
+    std::move(repeating_callback).Run();
+  }
 }
 
 // static
 void UserSessionManager::RunCallbackOnLocaleLoaded(
-    const base::Closure& callback,
+    base::OnceClosure callback,
     InputEventsBlocker* /* input_events_blocker */,
     const locale_util::LanguageSwitchResult& /* result */) {
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void UserSessionManager::RemoveProfileForTesting(Profile* profile) {

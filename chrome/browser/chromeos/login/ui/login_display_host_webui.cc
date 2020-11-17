@@ -312,13 +312,13 @@ void TriggerShowLoginWizardFinish(
   if (switch_locale.empty()) {
     ShowLoginWizardFinish(data->first_screen, data->startup_manifest);
   } else {
-    chromeos::locale_util::SwitchLanguageCallback callback(
-        base::Bind(&OnLanguageSwitchedCallback, base::Passed(std::move(data))));
+    chromeos::locale_util::SwitchLanguageCallback callback(base::BindOnce(
+        &OnLanguageSwitchedCallback, base::Passed(std::move(data))));
 
     // Load locale keyboards here. Hardware layout would be automatically
     // enabled.
     chromeos::locale_util::SwitchLanguage(
-        switch_locale, true, true /* login_layouts_only */, callback,
+        switch_locale, true, true /* login_layouts_only */, std::move(callback),
         ProfileManager::GetActiveUserProfile());
   }
 }

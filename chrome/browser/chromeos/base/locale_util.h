@@ -35,8 +35,8 @@ struct LanguageSwitchResult {
 //   loaded_locale - actual locale name loaded.
 //   success - if locale load succeeded.
 // (const std::string* locale, const std::string* loaded_locale, bool success)
-typedef base::Callback<void(const LanguageSwitchResult& result)>
-    SwitchLanguageCallback;
+using SwitchLanguageCallback =
+    base::OnceCallback<void(const LanguageSwitchResult& result)>;
 
 // This function updates input methods only if requested. In general, you want
 // |enable_locale_keyboard_layouts = true|. |profile| is needed because IME
@@ -49,7 +49,7 @@ typedef base::Callback<void(const LanguageSwitchResult& result)>
 void SwitchLanguage(const std::string& locale,
                     const bool enable_locale_keyboard_layouts,
                     const bool login_layouts_only,
-                    const SwitchLanguageCallback& callback,
+                    SwitchLanguageCallback callback,
                     Profile* profile);
 
 // This function checks if the given language is allowed according to the list

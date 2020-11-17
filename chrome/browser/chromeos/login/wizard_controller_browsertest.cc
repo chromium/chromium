@@ -251,8 +251,8 @@ void RunSwitchLanguageTest(const std::string& locale,
                            const bool expect_success) {
   SwitchLanguageTestData data;
   locale_util::SwitchLanguageCallback callback(
-      base::Bind(&OnLocaleSwitched, base::Unretained(&data)));
-  locale_util::SwitchLanguage(locale, true, false, callback,
+      base::BindOnce(&OnLocaleSwitched, base::Unretained(&data)));
+  locale_util::SwitchLanguage(locale, true, false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 
   // Token writing moves control to BlockingPool and back.

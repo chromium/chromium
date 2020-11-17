@@ -34,15 +34,15 @@ struct SwitchLanguageData {
   SwitchLanguageData(const std::string& locale,
                      const bool enable_locale_keyboard_layouts,
                      const bool login_layouts_only,
-                     const locale_util::SwitchLanguageCallback& callback,
+                     locale_util::SwitchLanguageCallback callback,
                      Profile* profile)
-      : callback(callback),
+      : callback(std::move(callback)),
         result(locale, std::string(), false),
         enable_locale_keyboard_layouts(enable_locale_keyboard_layouts),
         login_layouts_only(login_layouts_only),
         profile(profile) {}
 
-  const locale_util::SwitchLanguageCallback callback;
+  locale_util::SwitchLanguageCallback callback;
 
   locale_util::LanguageSwitchResult result;
   const bool enable_locale_keyboard_layouts;
@@ -113,7 +113,7 @@ void FinishSwitchLanguage(std::unique_ptr<SwitchLanguageData> data) {
   ui::ResourceBundle::GetSharedInstance().ReloadFonts();
   gfx::PlatformFontSkia::ReloadDefaultFont();
   if (!data->callback.is_null())
-    data->callback.Run(data->result);
+    std::move(data->callback).Run(data->result);
 }
 
 // Get parsed list of preferred languages from the 'kPreferredLanguages'
@@ -142,12 +142,12 @@ LanguageSwitchResult::LanguageSwitchResult(const std::string& requested_locale,
 void SwitchLanguage(const std::string& locale,
                     const bool enable_locale_keyboard_layouts,
                     const bool login_layouts_only,
-                    const SwitchLanguageCallback& callback,
+                    SwitchLanguageCallback callback,
                     Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto data = std::make_unique<SwitchLanguageData>(
-      locale, enable_locale_keyboard_layouts, login_layouts_only, callback,
-      profile);
+      locale, enable_locale_keyboard_layouts, login_layouts_only,
+      std::move(callback), profile);
   // USER_BLOCKING because it blocks startup on ChromeOS. crbug.com/968554
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},

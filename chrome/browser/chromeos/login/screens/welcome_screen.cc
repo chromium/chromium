@@ -200,11 +200,12 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
 
   // Block UI while resource bundle is being reloaded.
   // (InputEventsBlocker will live until callback is finished.)
-  locale_util::SwitchLanguageCallback callback(base::Bind(
+  locale_util::SwitchLanguageCallback callback(base::BindOnce(
       &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
       base::Owned(new chromeos::InputEventsBlocker), input_method));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */, callback,
+                              true /* login_layouts_only */,
+                              std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 }
 
@@ -226,11 +227,12 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
 
   // Block UI while resource bundle is being reloaded.
   // (InputEventsBlocker will live until callback is finished.)
-  locale_util::SwitchLanguageCallback callback(base::Bind(
+  locale_util::SwitchLanguageCallback callback(base::BindOnce(
       &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
       base::Owned(new chromeos::InputEventsBlocker), std::string()));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */, callback,
+                              true /* login_layouts_only */,
+                              std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 }
 
