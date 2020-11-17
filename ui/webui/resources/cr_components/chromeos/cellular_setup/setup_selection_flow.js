@@ -52,9 +52,10 @@ Polymer({
     };
     if (selectedPage === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI ||
         selectedPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI) {
-      this.buttonState.next = cellularSetup.ButtonState.SHOWN_AND_ENABLED;
+      this.set('buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
     } else {
-      this.buttonState.next = cellularSetup.ButtonState.SHOWN_BUT_DISABLED;
+      this.set(
+          'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
     }
   }
 });

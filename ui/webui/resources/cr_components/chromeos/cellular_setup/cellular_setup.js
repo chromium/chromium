@@ -83,7 +83,7 @@ Polymer({
     // navigation any more. Switch back to the selection flow in this case so
     // that the user can select a flow again.
     if (!isNavHandled) {
-      this.currentPageName_ =
+      this.currentPageName =
           cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
     }
   },
@@ -106,9 +106,9 @@ Polymer({
   onForwardNavRequested_() {
     // Switch current page to user selected flow when navigating forward from
     // setup selection.
-    if (this.currentPageName_ ===
+    if (this.currentPageName ===
         cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION) {
-      this.currentPageName_ = this.selectedFlow_;
+      this.currentPageName = this.selectedFlow_;
       return;
     }
     this.currentPage_.navigateForward();
