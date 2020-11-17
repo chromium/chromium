@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "media/base/media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
 namespace media {
 class VideoEncoder;
@@ -34,7 +36,9 @@ class VideoEncoderInit;
 class VideoEncoderEncodeOptions;
 class Visitor;
 
-class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
+class MODULES_EXPORT VideoEncoder final
+    : public ScriptWrappable,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -60,6 +64,9 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   void close(ExceptionState&);
 
   String state() { return state_; }
+
+  // ExecutionContextLifecycleObserver override.
+  void ContextDestroyed() override;
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;
@@ -102,12 +109,14 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
       media::VideoEncoderOutput output,
       base::Optional<media::VideoEncoder::CodecDescription> codec_desc);
   void HandleError(DOMException* ex);
-  void HandleError(DOMExceptionCode code, const String& message);
+  void HandleError(std::string context, media::Status);
   void EnqueueRequest(Request* request);
   void ProcessRequests();
   void ProcessEncode(Request* request);
   void ProcessConfigure(Request* request);
   void ProcessFlush(Request* request);
+
+  void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
 
   void ResetInternal();
 
@@ -119,6 +128,16 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
 
   std::unique_ptr<ParsedConfig> active_config_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;
+
+  // |parent_media_log_| must be destroyed if ever the ExecutionContext is
+  // destroyed, since the blink::MediaInspectorContext* pointer given to
+  // InspectorMediaEventHandler might no longer be valid.
+  // |parent_media_log_| should not be used directly. Use |media_log_| instead.
+  std::unique_ptr<media::MediaLog> parent_media_log_;
+
+  // We might destroy |parent_media_log_| at any point, so keep a clone which
+  // can be safely accessed, and whose raw pointer can be given callbacks.
+  std::unique_ptr<media::MediaLog> media_log_;
 
   V8CodecState state_;
 
