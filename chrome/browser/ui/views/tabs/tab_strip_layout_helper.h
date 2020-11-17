@@ -171,6 +171,9 @@ class TabStripLayoutHelper {
   // Returns true if any width constraint is currently being enforced.
   bool WidthsConstrainedForClosingMode();
 
+  // True iff the slot at index |i| is a tab that is in a collapsed group.
+  bool SlotIsCollapsedTab(int i) const;
+
   // The owning tabstrip's controller.
   const TabStripController* const controller_;
 

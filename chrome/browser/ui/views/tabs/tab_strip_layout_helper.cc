@@ -313,17 +313,8 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     auto pinned = i <= last_pinned_tab_slot_index ? TabPinned::kPinned
                                                   : TabPinned::kUnpinned;
 
-    // The slot can only be collapsed if it is a tab and in a collapsed group.
-    // If the slot is indeed a tab and in a group, check the collapsed state of
-    // the group to determine if it is collapsed.
     // A collapsed tab animates close like a closed tab.
-    base::Optional<tab_groups::TabGroupId> id = slots_[i].view->group();
-    bool slot_is_collapsed_tab =
-        (slots_[i].type == ViewType::kTab && id.has_value())
-            ? controller_->IsGroupCollapsed(id.value())
-            : false;
-
-    auto open = (slots_[i].animation->IsClosing() || slot_is_collapsed_tab)
+    auto open = (slots_[i].animation->IsClosing() || SlotIsCollapsedTab(i))
                     ? TabOpen::kClosed
                     : TabOpen::kOpen;
     TabAnimationState ideal_animation_state =
@@ -448,6 +439,10 @@ TabStripLayoutHelper::GetCurrentTabWidthConstraints() const {
 void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
                                                 int tab_width,
                                                 bool active) {
+  // If the slot is collapsed, its width should never be reported as the
+  // current active or inactive tab width - it's not even visible.
+  if (SlotIsCollapsedTab(tab_index))
+    return;
   if (active)
     active_tab_width_ = tab_width;
   else
@@ -457,4 +452,14 @@ void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
 bool TabStripLayoutHelper::WidthsConstrainedForClosingMode() {
   return tab_width_override_.has_value() ||
          tabstrip_width_override_.has_value();
+}
+
+bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
+  // The slot can only be collapsed if it is a tab and in a collapsed group.
+  // If the slot is indeed a tab and in a group, check the collapsed state of
+  // the group to determine if it is collapsed.
+  const base::Optional<tab_groups::TabGroupId> id = slots_[i].view->group();
+  return (slots_[i].type == ViewType::kTab && id.has_value())
+             ? controller_->IsGroupCollapsed(id.value())
+             : false;
 }
