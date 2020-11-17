@@ -43,11 +43,16 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
 
   list_marker->UpdateMarkerContentIfNeeded(*marker);
 
-  if (old_style && (old_style->ListStyleType() != StyleRef().ListStyleType() ||
-                    (StyleRef().ListStyleType() == EListStyleType::kString &&
-                     old_style->ListStyleStringValue() !=
-                         StyleRef().ListStyleStringValue())))
-    list_marker->ListStyleTypeChanged(*marker);
+  if (old_style) {
+    const ListStyleTypeData* old_list_style_type =
+        old_style->GetListStyleType();
+    const ListStyleTypeData* new_list_style_type =
+        StyleRef().GetListStyleType();
+    if (old_list_style_type != new_list_style_type &&
+        (!old_list_style_type || !new_list_style_type ||
+         *old_list_style_type != *new_list_style_type))
+      list_marker->ListStyleTypeChanged(*marker);
+  }
 }
 
 void LayoutNGListItem::OrdinalValueChanged() {

@@ -51,7 +51,7 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   StyleImage* current_image = StyleRef().ListStyleImage();
-  if (StyleRef().ListStyleType() != EListStyleType::kNone ||
+  if (StyleRef().GetListStyleType() ||
       (current_image && !current_image->ErrorOccurred())) {
     NotifyOfSubtreeChange();
   }
@@ -69,14 +69,19 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   else
     list_marker->UpdateMarkerContentIfNeeded(*marker);
 
-  if (old_style && (old_style->ListStyleType() != StyleRef().ListStyleType() ||
-                    (StyleRef().ListStyleType() == EListStyleType::kString &&
-                     old_style->ListStyleStringValue() !=
-                         StyleRef().ListStyleStringValue()))) {
-    if (legacy_marker)
-      legacy_marker->ListStyleTypeChanged();
-    else
-      list_marker->ListStyleTypeChanged(*marker);
+  if (old_style) {
+    const ListStyleTypeData* old_list_style_type =
+        old_style->GetListStyleType();
+    const ListStyleTypeData* new_list_style_type =
+        StyleRef().GetListStyleType();
+    if (old_list_style_type != new_list_style_type &&
+        (!old_list_style_type || !new_list_style_type ||
+         *old_list_style_type != *new_list_style_type)) {
+      if (legacy_marker)
+        legacy_marker->ListStyleTypeChanged();
+      else
+        list_marker->ListStyleTypeChanged(*marker);
+    }
   }
 }
 

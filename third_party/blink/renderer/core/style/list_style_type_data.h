@@ -36,6 +36,9 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
            name_or_string_value_ == other.name_or_string_value_ &&
            tree_scope_ == other.tree_scope_;
   }
+  bool operator!=(const ListStyleTypeData& other) const {
+    return !operator==(other);
+  }
 
   bool IsCounterStyle() const { return type_ == Type::kCounterStyle; }
   bool IsString() const { return type_ == Type::kString; }

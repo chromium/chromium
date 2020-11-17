@@ -1095,8 +1095,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
                      kPopDirectionalFormattingCharacter);
   }
 
-  if (style->Display() == EDisplay::kListItem &&
-      style->ListStyleType() != EListStyleType::kNone) {
+  if (style->Display() == EDisplay::kListItem && style->GetListStyleType()) {
     is_empty_inline_ = false;
     is_block_level_ = false;
   }
