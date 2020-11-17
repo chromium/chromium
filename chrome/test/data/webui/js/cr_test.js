@@ -9,11 +9,13 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 const CHROME_SEND_NAME = 'echoMessage';
 
 suite('CrModuleSendWithPromiseTest', function() {
+  const originalChromeSend = chrome.send;
   let rejectPromises = false;
 
   function whenChromeSendCalled(name) {
+    assertEquals(originalChromeSend, chrome.send);
     return new Promise(function(resolve, reject) {
-      registerMessageCallback(name, null, resolve);
+      chrome.send = (_, args) => resolve(args);
     });
   }
 
@@ -31,6 +33,10 @@ suite('CrModuleSendWithPromiseTest', function() {
   /** @override */
   teardown(function() {
     rejectPromises = false;
+
+    // Restore original chrome.send(), as it is necessary for the testing
+    // framework to signal test completion.
+    chrome.send = originalChromeSend;
   });
 
   test('ResponseObject', function() {

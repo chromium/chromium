@@ -403,45 +403,6 @@ TestCase.prototype = {
 };
 
 /**
- * Registry of javascript-defined callbacks for {@code chrome.send}.
- * @type {Object}
- */
-var sendCallbacks = {};
-
-/**
- * Registers the message, object and callback for {@code chrome.send}
- * @param {string} name The name of the message to route to this |callback|.
- * @param {Object} messageHandler Pass as |this| when calling the |callback|.
- * @param {function(...)} callback Called by {@code chrome.send}.
- * @see sendCallbacks
- */
-function registerMessageCallback(name, messageHandler, callback) {
-  sendCallbacks[name] = [messageHandler, callback];
-}
-
-/**
- * When preloading JavaScript libraries, this is true until the
- * DOMContentLoaded event has been received as globals cannot be overridden
- * until the page has loaded its JavaScript.
- * @type {boolean}
- */
-var deferGlobalOverrides = false;
-
-/**
- * Overrides {@code chrome.send} for routing messages to javascript
- * functions. Also falls back to sending with the original chrome object.
- * @param {string} messageName The message to route.
- */
-function send(messageName) {
-  var callback = sendCallbacks[messageName];
-  if (callback !== undefined) {
-    callback[1].apply(callback[0], Array.prototype.slice.call(arguments, 1));
-  } else {
-    this.__proto__.send.apply(this.__proto__, arguments);
-  }
-}
-
-/**
  * true when testDone has been called.
  * @type {boolean}
  */
@@ -829,49 +790,15 @@ function createTestCase(testFixture, testName) {
 }
 
 /**
- * Overrides the |chrome| object to enable mocking calls to chrome.send().
- */
-function overrideChrome() {
-  if (originalChrome) {
-    console.error('chrome object already overridden');
-    return;
-  }
-
-  originalChrome = chrome;
-  /** @suppress {const|checkTypes} */
-  chrome = {
-    __proto__: originalChrome,
-    send: send,
-  };
-}
-
-/**
  * Used by WebUIBrowserTest to preload the javascript libraries at the
  * appropriate time for javascript injection into the current page. This
  * creates a test case and calls its preLoad for any early initialization such
  * as registering handlers before the page's javascript runs it's OnLoad
- * method. This is called before the page is loaded, so the |chrome| object is
- * not yet bound and this DOMContentLoaded listener will be called first to
- * override |chrome| in order to route messages registered in |sendCallbacks|.
+ * method. This is called before the page is loaded.
  * @param {string} testFixture The test fixture name.
  * @param {string} testName The test name.
- * @see sendCallbacks
  */
 function preloadJavascriptLibraries(testFixture, testName) {
-  deferGlobalOverrides = true;
-
-  // The document seems to change from the point of preloading to the point of
-  // events (and doesn't fire), whereas the window does not. Listening to the
-  // capture phase allows this event to fire first.
-  window.addEventListener('DOMContentLoaded', function() {
-    if (chrome.send) {
-      overrideChrome();
-    }
-
-    // Override globals at load time so they will be defined.
-    assertTrue(deferGlobalOverrides);
-    deferGlobalOverrides = false;
-  }, true);
   currentTestCase = createTestCase(testFixture, testName);
   currentTestCase.preLoad();
 }
@@ -1334,7 +1261,6 @@ exportExpects();
 exportMock4JsHelpers();
 exports.preloadJavascriptLibraries = preloadJavascriptLibraries;
 exports.setWaitUser = setWaitUser;
-exports.registerMessageCallback = registerMessageCallback;
 exports.resetTestState = resetTestState;
 exports.runAllActions = runAllActions;
 exports.runAllActionsAsync = runAllActionsAsync;
