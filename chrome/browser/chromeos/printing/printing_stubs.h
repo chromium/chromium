@@ -33,9 +33,6 @@ class StubCupsPrintersManager : public CupsPrintersManager {
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {}
   void RecordNearbyNetworkPrinterCounts() const override {}
-  bool ChoosePrintServer(
-      const base::Optional<std::string>& selected_print_server_id) override;
-  ServerPrintersFetchingMode GetServerPrintersFetchingMode() const override;
 };
 
 class StubPrinterConfigurer : public PrinterConfigurer {
