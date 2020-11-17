@@ -45,6 +45,8 @@
         <structure name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML" file="resources/chromeos/login/components/hd_iron_icon/hd_iron_icon.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS" file="resources/chromeos/login/components/hd_iron_icon/hd_iron_icon.js" type="chrome_html" />
 
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.js" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML" file="resources/chromeos/login/components/oobe_carousel/oobe_carousel.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_JS" file="resources/chromeos/login/components/oobe_carousel/oobe_carousel.js" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_SLIDE_HTML" file="resources/chromeos/login/components/oobe_slide/oobe_slide.html" type="chrome_html" />

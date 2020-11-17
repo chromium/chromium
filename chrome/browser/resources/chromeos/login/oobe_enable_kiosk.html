@@ -8,6 +8,7 @@
 <link rel="import" href="chrome://oobe/custom_elements.html">
 
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog.html">
 
 <dom-module id="kiosk-enable-element">
   <template>
@@ -30,7 +31,7 @@
       </div>
       <div slot="footer" class="flex layout center-justified vertical">
         <img src="chrome://theme/IDR_RESET_WARNING" class="oobe-illustration">
-      </div>  
+      </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-text-button id="enable" hidden="[[!eq_(state_, 'confirm')]]"
             inverse on-click="onEnableButton_" text-key="kioskEnableButton">

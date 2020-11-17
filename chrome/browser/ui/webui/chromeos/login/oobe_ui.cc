@@ -150,6 +150,8 @@ constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
+constexpr char kOobeDialogHTML[] = "components/oobe_dialog.html";
+constexpr char kOobeDialogJS[] = "components/oobe_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel.html";
 constexpr char kOobeCarouselJS[] = "components/oobe_carousel.js";
 constexpr char kOobeSlideHTML[] = "components/oobe_slide.html";
@@ -633,6 +635,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath(kHDIronIconHTML,
                           IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);
   source->AddResourcePath(kHDIronIconJS, IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS);
+
+  source->AddResourcePath(kOobeDialogHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML);
+  source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
 
   source->AddResourcePath(kOobeCarouselHTML,
                           IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML);
