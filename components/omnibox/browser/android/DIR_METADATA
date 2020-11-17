@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Omnibox"
+}
+team_email: "chrome-android-omnibox-team@google.com"
