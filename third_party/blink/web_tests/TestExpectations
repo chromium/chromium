@@ -6007,3 +6007,6 @@ crbug.com/1149987 external/wpt/websockets/Create-blocked-port.any.worker.html [ 
 
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-periods.html [ Pass Timeout ]
+crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
+crbug.com/867532 [ Linux ] http/tests/workers/worker-usecounter.html [ Pass Timeout ]
+crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Timeout ]
