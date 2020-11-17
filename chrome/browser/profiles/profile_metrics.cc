@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -63,6 +64,37 @@ ProfileType GetProfileType(const base::FilePath& profile_path) {
     metric = ProfileType::ORIGINAL;
   }
   return metric;
+}
+
+profile_metrics::ProfileColorsUniqueness GetProfileColorsUniqueness(
+    ProfileAttributesStorage* storage) {
+#if defined(OS_ANDROID)
+  return profile_metrics::ProfileColorsUniqueness::kSingleProfile;
+#else
+  std::vector<ProfileAttributesEntry*> entries =
+      storage->GetAllProfilesAttributes();
+  DCHECK(!entries.empty());
+  if (entries.size() == 1u)
+    return profile_metrics::ProfileColorsUniqueness::kSingleProfile;
+
+  size_t default_colors_count = 0;
+  std::set<ProfileThemeColors> used_colors;
+  for (ProfileAttributesEntry* entry : entries) {
+    base::Optional<ProfileThemeColors> profile_colors =
+        entry->GetProfileThemeColorsIfSet();
+    if (!profile_colors) {
+      default_colors_count++;
+    } else if (!base::Contains(used_colors, *profile_colors)) {
+      used_colors.insert(*profile_colors);
+    } else {
+      return profile_metrics::ProfileColorsUniqueness::kRepeated;
+    }
+  }
+  return default_colors_count > 1u
+             ? profile_metrics::ProfileColorsUniqueness::
+                   kUniqueExceptForRepeatedDefault
+             : profile_metrics::ProfileColorsUniqueness::kUnique;
+#endif
 }
 
 }  // namespace
@@ -143,6 +175,7 @@ bool ProfileMetrics::IsProfileActive(const ProfileAttributesEntry* entry) {
   return true;
 }
 
+// static
 void ProfileMetrics::CountProfileInformation(ProfileAttributesStorage* storage,
                                              profile_metrics::Counts* counts) {
   size_t number_of_profiles = storage->GetNumberOfProfiles();
@@ -172,6 +205,7 @@ void ProfileMetrics::CountProfileInformation(ProfileAttributesStorage* storage,
       }
     }
   }
+  counts->colors_uniqueness = GetProfileColorsUniqueness(storage);
 }
 
 profile_metrics::BrowserProfileType ProfileMetrics::GetBrowserProfileType(

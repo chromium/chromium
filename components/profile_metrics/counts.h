@@ -9,25 +9,27 @@
 
 namespace profile_metrics {
 
-struct Counts {
-  base::HistogramBase::Sample total;
-  base::HistogramBase::Sample signedin;
-  base::HistogramBase::Sample supervised;
-  base::HistogramBase::Sample active;
-  base::HistogramBase::Sample named;
-  base::HistogramBase::Sample unused;
-  base::HistogramBase::Sample gaia_icon;
-  base::HistogramBase::Sample auth_errors;
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProfileColorsUniqueness {
+  kSingleProfile = 0,
+  kUnique = 1,
+  kUniqueExceptForRepeatedDefault = 2,
+  kRepeated = 3,
+  kMaxValue = kRepeated,
+};
 
-  Counts()
-      : total(0),
-        signedin(0),
-        supervised(0),
-        active(0),
-        named(0),
-        unused(0),
-        gaia_icon(0),
-        auth_errors(0) {}
+struct Counts {
+  base::HistogramBase::Sample total = 0;
+  base::HistogramBase::Sample signedin = 0;
+  base::HistogramBase::Sample supervised = 0;
+  base::HistogramBase::Sample active = 0;
+  base::HistogramBase::Sample named = 0;
+  base::HistogramBase::Sample unused = 0;
+  base::HistogramBase::Sample gaia_icon = 0;
+  base::HistogramBase::Sample auth_errors = 0;
+  ProfileColorsUniqueness colors_uniqueness =
+      ProfileColorsUniqueness::kRepeated;
 };
 
 // Logs metrics related to |counts|.
