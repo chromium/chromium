@@ -263,20 +263,11 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   cont.LoadURL(GURL(url::kAboutBlankURL), Referrer(), ui::PAGE_TRANSITION_TYPED,
                std::string());
 
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->nav_entry_id = 0;
-  params->url = GURL(url::kAboutBlankURL);
-  params->origin = url::Origin::Create(params->url);
-  params->referrer = blink::mojom::Referrer::New();
-  params->transition = ui::PAGE_TRANSITION_TYPED;
-  params->redirects = std::vector<GURL>();
-  params->should_update_history = false;
-  params->did_create_new_entry = true;
-  params->gesture = NavigationGestureUser;
-  params->method = "GET";
-  params->page_state = blink::PageState::CreateFromURL(params->url);
+  FrameHostMsg_DidCommitProvisionalLoad_Params params;
+  InitNavigateParams(&params, 0, true, GURL(url::kAboutBlankURL),
+                     ui::PAGE_TRANSITION_TYPED);
 
-  main_test_rfh()->SendNavigateWithParams(std::move(params),
+  main_test_rfh()->SendNavigateWithParams(&params,
                                           false /* was_within_same_document */);
 
   contents()->UpdateTitle(main_test_rfh(),

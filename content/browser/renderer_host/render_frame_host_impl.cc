@@ -140,7 +140,6 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/inter_process_time_ticks_converter.h"
-#include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
@@ -332,7 +331,7 @@ base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
 // Returns true if |validated_params| represents a WebView loadDataWithBaseUrl
 // navigation.
 bool IsLoadDataWithBaseURL(
-    const mojom::DidCommitProvisionalLoadParams& validated_params) {
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& validated_params) {
   return NavigationRequest::IsLoadDataWithBaseURL(validated_params.url,
                                                   validated_params.base_url);
 }
@@ -1356,7 +1355,7 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
           service_worker_container_hosts_));
 }
 
-mojom::DidCommitProvisionalLoadParamsPtr
+std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
 RenderFrameHostImpl::TakeLastCommitParams() {
   return std::move(last_commit_params_);
 }
@@ -2639,7 +2638,7 @@ void RenderFrameHostImpl::CreateChildFrame(
 }
 
 void RenderFrameHostImpl::DidNavigate(
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     NavigationRequest* navigation_request,
     bool did_create_new_document) {
   // Keep track of the last committed URL and origin in the RenderFrameHost
@@ -3005,10 +3004,9 @@ bool RenderFrameHostImpl::IsFrozen() {
 }
 
 void RenderFrameHostImpl::DidCommitProvisionalLoad(
-    mojom::DidCommitProvisionalLoadParamsPtr params,
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
-  if (MaybeInterceptCommitCallback(nullptr, &params, &interface_params)) {
-    DCHECK(params);
+  if (MaybeInterceptCommitCallback(nullptr, params.get(), &interface_params)) {
     DidCommitNavigation(std::move(navigation_request_), std::move(params),
                         std::move(interface_params));
   }
@@ -3016,7 +3014,7 @@ void RenderFrameHostImpl::DidCommitProvisionalLoad(
 
 void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
     NavigationRequest* committing_navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr params) {
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params) {
   auto request = navigation_requests_.find(committing_navigation_request);
   CHECK(request != navigation_requests_.end());
 
@@ -3043,15 +3041,14 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
 
 void RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation(
     NavigationRequest* committing_navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr params,
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
   DCHECK(committing_navigation_request);
   committing_navigation_request->IgnoreCommitInterfaceDisconnection();
-  if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,
+  if (!MaybeInterceptCommitCallback(committing_navigation_request, params.get(),
                                     &interface_params)) {
     return;
   }
-  DCHECK(params);
 
   auto request = navigation_requests_.find(committing_navigation_request);
 
@@ -3066,7 +3063,7 @@ void RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation(
 }
 
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
-    mojom::DidCommitProvisionalLoadParamsPtr params) {
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params) {
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
   ScopedCommitStateResetter commit_state_resetter(this);
@@ -8186,7 +8183,7 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 
 std::unique_ptr<NavigationRequest>
 RenderFrameHostImpl::CreateNavigationRequestForCommit(
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     bool is_same_document) {
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create
@@ -8405,9 +8402,8 @@ bool RenderFrameHostImpl::IsNavigationSameSite(
 
 bool RenderFrameHostImpl::ValidateDidCommitParams(
     NavigationRequest* navigation_request,
-    mojom::DidCommitProvisionalLoadParams* params,
+    FrameHostMsg_DidCommitProvisionalLoad_Params* params,
     bool is_same_document_navigation) {
-  DCHECK(params);
   RenderProcessHost* process = GetProcess();
 
   // Error pages may sometimes commit a URL in the wrong process, which requires
@@ -8510,7 +8506,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // the URL.  To prevent this attack, we block the renderer from inserting
   // banned URLs into the navigation controller in the first place.
   process->FilterURL(false, &params->url);
-  process->FilterURL(true, &params->referrer->url);
+  process->FilterURL(true, &params->referrer.url);
   for (auto& redirect : params->redirects) {
     process->FilterURL(false, &redirect);
   }
@@ -8555,7 +8551,7 @@ void RenderFrameHostImpl::UpdateSiteURL(const GURL& url,
 
 bool RenderFrameHostImpl::DidCommitNavigationInternal(
     std::unique_ptr<NavigationRequest> navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr params,
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
     bool is_same_document_navigation) {
   // Sanity-check the page transition for frame type.
   DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition), !GetParent());
@@ -8762,7 +8758,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 // TODO(arthursonzogni): Investigate what must be done when
 // navigation_request->IsWaitingToCommit() is false here.
 void RenderFrameHostImpl::DidCommitNewDocument(
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     NavigationRequest* navigation_request) {
   // BackForwardCache navigations restore existing document, but never create
   // new ones.
@@ -8787,12 +8783,12 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
-  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
+  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoad_Params. Use
   // the NavigationRequest instead. The browser process doesn't need to rely on
   // the renderer process.
   last_http_status_code_ = params.http_status_code;
 
-  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
+  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoad_Params. Use
   // the NavigationRequest instead. The browser process doesn't need to rely on
   // the renderer process.
   last_http_method_ = params.method;
@@ -8918,7 +8914,7 @@ void RenderFrameHostImpl::OnCrossDocumentCommitProcessed(
 
 std::unique_ptr<base::trace_event::TracedValue>
 RenderFrameHostImpl::CommitAsTracedValue(
-    const mojom::DidCommitProvisionalLoadParams& params) const {
+    FrameHostMsg_DidCommitProvisionalLoad_Params* params) const {
   auto value = std::make_unique<base::trace_event::TracedValue>();
 
   // TODO(nasko): Move the process lock into RenderProcessHost.
@@ -8928,42 +8924,42 @@ RenderFrameHostImpl::CommitAsTracedValue(
           ->GetProcessLock(agent_scheduling_group_.GetProcess()->GetID())
           .ToString());
 
-  value->SetInteger("nav_entry_id", params.nav_entry_id);
-  value->SetInteger("item_sequence_number", params.item_sequence_number);
+  value->SetInteger("nav_entry_id", params->nav_entry_id);
+  value->SetInteger("item_sequence_number", params->item_sequence_number);
   value->SetInteger("document_sequence_number",
-                    params.document_sequence_number);
-  value->SetString("url", params.url.spec());
-  if (!params.base_url.is_empty()) {
-    value->SetString("base_url", params.base_url.possibly_invalid_spec());
+                    params->document_sequence_number);
+  value->SetString("url", params->url.spec());
+  if (!params->base_url.is_empty()) {
+    value->SetString("base_url", params->base_url.possibly_invalid_spec());
   }
-  value->SetInteger("transition", params.transition);
+  value->SetInteger("transition", params->transition);
   value->BeginDictionary("referrer");
-  value->SetString("url", params.referrer->url.spec());
-  value->SetInteger("policy", static_cast<int>(params.referrer->policy));
+  value->SetString("url", params->referrer.url.spec());
+  value->SetInteger("policy", static_cast<int>(params->referrer.policy));
   value->EndDictionary();
-  value->SetBoolean("should_update_history", params.should_update_history);
-  value->SetString("contents_mime_type", params.contents_mime_type);
+  value->SetBoolean("should_update_history", params->should_update_history);
+  value->SetString("contents_mime_type", params->contents_mime_type);
 
-  value->SetBoolean("intended_as_new_entry", params.intended_as_new_entry);
-  value->SetBoolean("did_create_new_entry", params.did_create_new_entry);
+  value->SetBoolean("intended_as_new_entry", params->intended_as_new_entry);
+  value->SetBoolean("did_create_new_entry", params->did_create_new_entry);
   value->SetBoolean("should_replace_current_entry",
-                    params.should_replace_current_entry);
-  value->SetString("method", params.method);
-  value->SetInteger("post_id", params.post_id);
-  value->SetInteger("http_status_code", params.http_status_code);
-  value->SetBoolean("url_is_unreachable", params.url_is_unreachable);
-  value->SetString("original_request_url", params.original_request_url.spec());
+                    params->should_replace_current_entry);
+  value->SetString("method", params->method);
+  value->SetInteger("post_id", params->post_id);
+  value->SetInteger("http_status_code", params->http_status_code);
+  value->SetBoolean("url_is_unreachable", params->url_is_unreachable);
+  value->SetString("original_request_url", params->original_request_url.spec());
   value->SetBoolean("is_overriding_user_agent",
-                    params.is_overriding_user_agent);
+                    params->is_overriding_user_agent);
   value->SetBoolean("history_list_was_cleared",
-                    params.history_list_was_cleared);
-  value->SetString("origin", params.origin.GetDebugString());
+                    params->history_list_was_cleared);
+  value->SetString("origin", params->origin.GetDebugString());
   value->SetBoolean("has_potentially_trustworthy_unique_origin",
-                    params.has_potentially_trustworthy_unique_origin);
-  value->SetInteger("request_id", params.request_id);
-  value->SetString("navigation_token", params.navigation_token.ToString());
-  if (params.embedding_token)
-    value->SetString("embedding_token", params.embedding_token->ToString());
+                    params->has_potentially_trustworthy_unique_origin);
+  value->SetInteger("request_id", params->request_id);
+  value->SetString("navigation_token", params->navigation_token.ToString());
+  if (params->embedding_token)
+    value->SetString("embedding_token", params->embedding_token->ToString());
 
   return value;
 }
@@ -9071,7 +9067,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
 // notification containing parameters identifying the navigation.
 void RenderFrameHostImpl::DidCommitNavigation(
     std::unique_ptr<NavigationRequest> request,
-    mojom::DidCommitProvisionalLoadParamsPtr params,
+    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
   // BackForwardCacheImpl::CanStoreRenderFrameHost prevents placing the pages
   // with in-flight navigation requests in the back-forward cache and it's not
@@ -9099,7 +9095,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
 
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::DidCommitProvisionalLoad",
                "rfh", base::trace_event::ToTracedValue(this), "params",
-               CommitAsTracedValue(*params));
+               CommitAsTracedValue(params.get()));
 
   // If we're waiting for a cross-site beforeunload completion callback from
   // this renderer and we receive a Navigate message from the main frame, then
@@ -9271,7 +9267,7 @@ RenderFrameHostImpl::GetLastCommittedServiceWorkerHost() {
 
 bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
     NavigationRequest* navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr* params,
+    FrameHostMsg_DidCommitProvisionalLoad_Params* params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
   if (commit_callback_interceptor_) {
     return commit_callback_interceptor_->WillProcessDidCommitNavigation(

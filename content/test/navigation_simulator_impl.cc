@@ -1292,14 +1292,15 @@ void NavigationSimulatorImpl::set_history_list_was_cleared(
   history_list_was_cleared_ = history_cleared;
 }
 
-mojom::DidCommitProvisionalLoadParamsPtr
+std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
 NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     bool same_document,
     bool failed_navigation) {
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
+      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
   params->url = navigation_url_;
   params->original_request_url = original_url_;
-  params->referrer = mojo::Clone(referrer_);
+  params->referrer = Referrer(*referrer_);
   params->contents_mime_type = contents_mime_type_;
   params->transition = transition_;
   params->gesture =

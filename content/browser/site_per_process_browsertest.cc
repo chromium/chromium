@@ -12032,14 +12032,14 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     // The DidCommitProvisionalLoad message is dispatched once this method
     // returns, so to defer committing the the navigation to |deferred_url_|,
     // run a nested message loop until the subsequent other commit message is
     // dispatched.
-    if ((**params).url == deferred_url_) {
+    if (params->url == deferred_url_) {
       std::move(deferred_url_triggered_action_).Run(render_frame_host);
 
       base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
@@ -13170,7 +13170,7 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     RenderViewHostImpl* rvh = static_cast<RenderViewHostImpl*>(
@@ -15184,11 +15184,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Create commit params with the same URL as the start one, so URL checks
   // pass, but use a different origin than the origin lock of the process.
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
+      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
   params->nav_entry_id = 0;
   params->did_create_new_entry = false;
   params->url = start_url;
-  params->referrer = blink::mojom::Referrer::New();
   params->transition = ui::PAGE_TRANSITION_LINK;
   params->should_update_history = false;
   params->gesture = NavigationGestureAuto;

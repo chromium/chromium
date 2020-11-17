@@ -46,6 +46,24 @@
 
 namespace content {
 
+void InitNavigateParams(FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+                        int nav_entry_id,
+                        bool did_create_new_entry,
+                        const GURL& url,
+                        ui::PageTransition transition) {
+  params->nav_entry_id = nav_entry_id;
+  params->url = url;
+  params->origin = url::Origin::Create(url);
+  params->referrer = Referrer();
+  params->transition = transition;
+  params->redirects = std::vector<GURL>();
+  params->should_update_history = false;
+  params->did_create_new_entry = did_create_new_entry;
+  params->gesture = NavigationGestureUser;
+  params->method = "GET";
+  params->page_state = blink::PageState::CreateFromURL(url);
+}
+
 TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
     : RenderWidgetHostViewBase(rwh), is_showing_(false), is_occluded_(false) {
 #if defined(OS_ANDROID)

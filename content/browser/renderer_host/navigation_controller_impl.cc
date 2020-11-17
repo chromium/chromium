@@ -233,7 +233,7 @@ bool DoesURLMatchOriginForNavigation(
 }
 
 base::Optional<url::Origin> GetCommittedOriginForFrameEntry(
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
   // Error pages commit in an opaque origin, yet have the real URL that resulted
   // in an error as the |params.url|. Since successful reload of an error page
   // should commit in the correct origin, setting the opaque origin on the
@@ -999,7 +999,7 @@ bool NavigationControllerImpl::PendingEntryMatchesRequest(
 
 bool NavigationControllerImpl::RendererDidNavigate(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     LoadCommittedDetails* details,
     bool is_same_document_navigation,
     bool previous_document_was_activated,
@@ -1242,7 +1242,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
 NavigationType NavigationControllerImpl::ClassifyNavigation(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
   TraceReturnReason<tracing_category::kNavigation> trace_return(
       "ClassifyNavigation");
 
@@ -1390,7 +1390,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
 
 void NavigationControllerImpl::RendererDidNavigateToNewPage(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     bool is_same_document,
     bool replace_entry,
     bool previous_document_was_activated,
@@ -1409,9 +1409,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
         params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
         params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
-        Referrer(*params.referrer), initiator_origin, params.redirects,
-        params.page_state, params.method, params.post_id,
-        nullptr /* blob_url_loader_factory */,
+        params.referrer, initiator_origin, params.redirects, params.page_state,
+        params.method, params.post_id, nullptr /* blob_url_loader_factory */,
         nullptr /* web_bundle_navigation_info */);
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
@@ -1476,8 +1475,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
   // For non-in-page commits with no matching pending entry, create a new entry.
   if (!new_entry) {
     new_entry = std::make_unique<NavigationEntryImpl>(
-        rfh->GetSiteInstance(), params.url, Referrer(*params.referrer),
-        initiator_origin,
+        rfh->GetSiteInstance(), params.url, params.referrer, initiator_origin,
         base::string16(),  // title
         params.transition, request->IsRendererInitiated(),
         nullptr);  // blob_url_loader_factory
@@ -1515,7 +1513,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
   new_entry->SetURL(params.url);
   if (update_virtual_url)
     UpdateVirtualURLToURL(new_entry.get(), params.url);
-  new_entry->SetReferrer(Referrer(*params.referrer));
+  new_entry->SetReferrer(params.referrer);
   new_entry->SetTransitionType(params.transition);
   new_entry->set_site_instance(
       static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
@@ -1576,7 +1574,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
 
 void NavigationControllerImpl::RendererDidNavigateToExistingPage(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     bool is_same_document,
     bool was_restored,
     NavigationRequest* request,
@@ -1708,7 +1706,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
   entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
                                                  : PAGE_TYPE_NORMAL);
   entry->SetURL(params.url);
-  entry->SetReferrer(Referrer(*params.referrer));
+  entry->SetReferrer(params.referrer);
   if (entry->update_virtual_url_with_url())
     UpdateVirtualURLToURL(entry, params.url);
 
@@ -1725,10 +1723,9 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
   entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
+      params.url, GetCommittedOriginForFrameEntry(params), params.referrer,
+      initiator_origin, params.redirects, params.page_state, params.method,
+      params.post_id, nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr);
@@ -1755,7 +1752,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
 
 void NavigationControllerImpl::RendererDidNavigateToSamePage(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     bool is_same_document,
     NavigationRequest* request) {
   // This classification says that we have a pending entry that's the same as
@@ -1805,10 +1802,9 @@ void NavigationControllerImpl::RendererDidNavigateToSamePage(
   existing_entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
+      params.url, GetCommittedOriginForFrameEntry(params), params.referrer,
+      initiator_origin, params.redirects, params.page_state, params.method,
+      params.post_id, nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr);
@@ -1818,7 +1814,7 @@ void NavigationControllerImpl::RendererDidNavigateToSamePage(
 
 void NavigationControllerImpl::RendererDidNavigateNewSubframe(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     bool is_same_document,
     bool replace_entry,
     bool previous_document_was_activated,
@@ -1847,9 +1843,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
       params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
-      Referrer(*params.referrer), initiator_origin, params.redirects,
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
+      params.referrer, initiator_origin, params.redirects, params.page_state,
+      params.method, params.post_id, nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr);
@@ -1873,7 +1868,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
 
 bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
     RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
     NavigationRequest* request) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME));
@@ -1928,10 +1923,9 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   last_committed->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
+      params.url, GetCommittedOriginForFrameEntry(params), params.referrer,
+      initiator_origin, params.redirects, params.page_state, params.method,
+      params.post_id, nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr);

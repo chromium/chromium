@@ -39,7 +39,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 namespace content {
@@ -103,15 +102,6 @@ class MockPendingSharedURLLoaderFactory final
   DISALLOW_COPY_AND_ASSIGN(MockPendingSharedURLLoaderFactory);
 };
 
-// The minimal DidCommitProvisionalLoadParams passing mojom validation.
-mojom::DidCommitProvisionalLoadParamsPtr
-MinimalDidCommitNavigationLoadParams() {
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->referrer = blink::mojom::Referrer::New();
-  params->navigation_token = base::UnguessableToken::Create();
-  return params;
-}
-
 class FakeNavigationClient : public mojom::NavigationClient {
  public:
   using ReceivedProviderInfoCallback = base::OnceCallback<void(
@@ -143,7 +133,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       blink::mojom::PolicyContainerPtr policy_container,
       CommitNavigationCallback callback) override {
     std::move(on_received_callback_).Run(std::move(container_info));
-    std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
+    std::move(callback).Run(nullptr, nullptr);
   }
   void CommitFailedNavigation(
       mojom::CommonNavigationParamsPtr common_params,
@@ -154,7 +144,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       CommitFailedNavigationCallback callback) override {
-    std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
+    std::move(callback).Run(nullptr, nullptr);
   }
 
   ReceivedProviderInfoCallback on_received_callback_;
@@ -299,7 +289,8 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       nullptr, std::move(info), mojo::NullRemote(),
       base::UnguessableToken::Create(), CreateStubPolicyContainer(),
       base::BindOnce(
-          [](mojom::DidCommitProvisionalLoadParamsPtr validated_params,
+          [](std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+                 validated_params,
              mojom::DidCommitProvisionalLoadInterfaceParamsPtr
                  interface_params) {}));
   loop.Run();

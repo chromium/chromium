@@ -56,7 +56,6 @@
 #include "content/common/frame_delete_intention.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/input/input_injector.mojom-forward.h"
-#include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/browser_thread.h"
@@ -544,7 +543,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // midst of a DidCommitProvisionalLoad call. If |did_create_new_document| is
   // true the navigation was not same-document and was not served from the
   // back-forward cache.
-  void DidNavigate(const mojom::DidCommitProvisionalLoadParams& params,
+  void DidNavigate(const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
                    NavigationRequest* navigation_request,
                    bool did_create_new_document);
 
@@ -1143,10 +1142,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // occurs immediately before a restored document is committed.
   void WillLeaveBackForwardCache();
 
-  // Take ownership over the DidCommitProvisionalLoadParams that were last used
-  // to commit this navigation. This is used by the BackForwardCache to
-  // re-commit when navigating to a restored page.
-  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
+  // Take ownership over the DidCommitProvisionalLoad_Params that
+  // were last used to commit this navigation.
+  // This is used by the BackForwardCache to re-commit when navigating to a
+  // restored page.
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+  TakeLastCommitParams();
 
   // Start a timer that will evict this RenderFrameHost from the
   // BackForwardCache after time to live.
@@ -1251,7 +1252,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
     virtual bool WillProcessDidCommitNavigation(
         NavigationRequest* navigation_request,
-        mojom::DidCommitProvisionalLoadParamsPtr* params,
+        ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
         mojom::DidCommitProvisionalLoadInterfaceParamsPtr*
             interface_params) = 0;
   };
@@ -1508,7 +1509,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the back-forward cache.
   void DidCommitBackForwardCacheNavigation(
       NavigationRequest* committing_navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr params);
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params);
 
   // Whether there's any "unload" event handlers registered on this
   // RenderFrameHost or subframes that share the same SiteInstance as this
@@ -1821,7 +1822,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // committing a same-document navigation.
   //
   // The optional |should_commit_unreachable_url| will be set to |true| if the
-  // caller should verify that DidCommitProvisionalLoadParams'
+  // caller should verify that FrameHostMsg_DidCommitProvisionalLoad_Params'
   // url_is_unreachable is |true|.
   bool ShouldBypassSecurityChecksForErrorPage(
       NavigationRequest* navigation_request,
@@ -2045,7 +2046,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) override;
   void DidCommitProvisionalLoad(
-      mojom::DidCommitProvisionalLoadParamsPtr params,
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
       override;
   void CreateChildFrame(
@@ -2068,11 +2069,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // replace DidCommitProvisionalLoad in the long run.
   void DidCommitPerNavigationMojoInterfaceNavigation(
       NavigationRequest* committing_navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr params,
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
   void DidCommitSameDocumentNavigation(
-      mojom::DidCommitProvisionalLoadParamsPtr params) override;
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params)
+      override;
   void BeginNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_params,
@@ -2281,7 +2283,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Creates a NavigationRequest to use for commit. This should only be used
   // when no appropriate NavigationRequest has been found.
   std::unique_ptr<NavigationRequest> CreateNavigationRequestForCommit(
-      const mojom::DidCommitProvisionalLoadParams& params,
+      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
       bool is_same_document);
 
   // Helper to process the beforeunload completion callback. |proceed| indicates
@@ -2385,9 +2387,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Utility function used to validate potentially harmful parameters sent by
   // the renderer during the commit notification.
   // A return value of true means that the commit should proceed.
-  bool ValidateDidCommitParams(NavigationRequest* navigation_request,
-                               mojom::DidCommitProvisionalLoadParams* params,
-                               bool is_same_document_navigation);
+  bool ValidateDidCommitParams(
+      NavigationRequest* navigation_request,
+      FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      bool is_same_document_navigation);
 
   // Updates the site url if the navigation was successful and the page is not
   // an interstitial.
@@ -2397,7 +2400,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // DidCommitPerNavigationMojoInterfaceNavigation.
   void DidCommitNavigation(
       std::unique_ptr<NavigationRequest> committing_navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr params,
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
   // Called when we receive the confirmation that a navigation committed in the
@@ -2407,13 +2410,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // state should be restored to its pre-commit value.
   bool DidCommitNavigationInternal(
       std::unique_ptr<NavigationRequest> navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr params,
+      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       bool is_same_document_navigation);
 
   // Called when we received the confirmation a new document committed in the
   // renderer. It was created from the |navigation|.
-  void DidCommitNewDocument(const mojom::DidCommitProvisionalLoadParams& params,
-                            NavigationRequest* navigation);
+  void DidCommitNewDocument(
+      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      NavigationRequest* navigation);
 
   // Called by the renderer process when it is done processing a same-document
   // commit request.
@@ -2431,7 +2435,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Creates a TracedValue object containing the details of a committed
   // navigation, so it can be logged with the tracing system.
   std::unique_ptr<base::trace_event::TracedValue> CommitAsTracedValue(
-      const mojom::DidCommitProvisionalLoadParams& params) const;
+      FrameHostMsg_DidCommitProvisionalLoad_Params* params) const;
 
   // Creates URLLoaderFactory objects for |isolated_world_origins|.
   //
@@ -2478,7 +2482,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if we should proceed to the Commit callback, false otherwise.
   bool MaybeInterceptCommitCallback(
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params);
 
   // If this RenderFrameHost is a local root (i.e., either the main frame or a
@@ -3087,7 +3091,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This used to re-commit when restoring from the BackForwardCache, with the
   // same params as the original navigation.
   // Note: If BackForwardCache is not enabled, this field is not set.
-  mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+      last_commit_params_;
 
   blink::mojom::FrameVisibility visibility_ =
       blink::mojom::FrameVisibility::kRenderedInViewport;

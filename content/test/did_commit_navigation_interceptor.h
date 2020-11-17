@@ -32,14 +32,13 @@ class DidCommitNavigationInterceptor : public WebContentsObserver {
   ~DidCommitNavigationInterceptor() override;
 
   // Called just before DidCommitNavigation with |navigation_request|, |params|
-  // and |interface_provider_request| would be processed by |render_frame_host|.
+  // and |interface_provider_request| would be processed by
+  // |render_frame_host|.
   // Return false to cancel the processing of this call by |render_frame_host|.
-  // |params| and |interface_params| can be modified. When returning false, they
-  // can also be consumed, they won't be used anymore by the caller.
   virtual bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) = 0;
 
  private:
@@ -76,7 +75,7 @@ class CommitMessageDelayer : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override;
 

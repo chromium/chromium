@@ -289,7 +289,7 @@ class ClosureExecutorBeforeNavigationCommit
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     if (closure_)

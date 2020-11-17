@@ -210,6 +210,127 @@ IPC_STRUCT_TRAITS_BEGIN(blink::ScreenInfo)
   IPC_STRUCT_TRAITS_MEMBER(orientation_angle)
 IPC_STRUCT_TRAITS_END()
 
+// Parameters structure for mojom::FrameHost::DidCommitProvisionalLoad.
+// TODO(https://crbug.com/729021, https://crbug.com/1145888):
+// Convert this to a Mojo struct.
+IPC_STRUCT_BEGIN(FrameHostMsg_DidCommitProvisionalLoad_Params)
+  // The unique ID of the NavigationEntry for browser-initiated navigations.
+  // This value was given to the render process in the HistoryNavigationParams
+  // and is being returned by the renderer without it having any idea what it
+  // means. If the navigation was renderer-initiated, this value is 0.
+  IPC_STRUCT_MEMBER(int, nav_entry_id, 0)
+
+  // The item sequence number identifies each stop in the session history.  It
+  // is unique within the renderer process and makes a best effort to be unique
+  // across browser sessions (using a renderer process timestamp).
+  IPC_STRUCT_MEMBER(int64_t, item_sequence_number, -1)
+
+  // The document sequence number is used to identify cross-document navigations
+  // in session history.  It increments for each new document and is unique in
+  // the same way as |item_sequence_number|.  In-page navigations get a new item
+  // sequence number but the same document sequence number.
+  IPC_STRUCT_MEMBER(int64_t, document_sequence_number, -1)
+
+  // URL of the page being loaded.
+  IPC_STRUCT_MEMBER(GURL, url)
+
+  // The base URL for the page's document when the frame was committed. Empty if
+  // similar to 'url' above. Note that any base element in the page has not been
+  // parsed yet and is therefore not reflected.
+  // This is of interest when a MHTML file is loaded, as the base URL has been
+  // set to original URL of the site the MHTML represents.
+  IPC_STRUCT_MEMBER(GURL, base_url)
+
+  // URL of the referrer of this load. WebKit generates this based on the
+  // source of the event that caused the load.
+  IPC_STRUCT_MEMBER(content::Referrer, referrer)
+
+  // The type of transition.
+  IPC_STRUCT_MEMBER(ui::PageTransition, transition, ui::PAGE_TRANSITION_LINK)
+
+  // Lists the redirects that occurred on the way to the current page. This
+  // vector has the same format as reported by the WebDataSource in the glue,
+  // with the current page being the last one in the list (so even when
+  // there's no redirect, there will be one entry in the list.
+  IPC_STRUCT_MEMBER(std::vector<GURL>, redirects)
+
+  // Set to false if we want to update the session history but not update
+  // the browser history.  E.g., on unreachable urls.
+  IPC_STRUCT_MEMBER(bool, should_update_history, false)
+
+  // Contents MIME type of main frame.
+  IPC_STRUCT_MEMBER(std::string, contents_mime_type)
+
+  // This is the value from the browser (copied from the navigation request)
+  // indicating whether it intended to make a new entry. TODO(avi): Remove this
+  // when the pending entry situation is made sane and the browser keeps them
+  // around long enough to match them via nav_entry_id.
+  IPC_STRUCT_MEMBER(bool, intended_as_new_entry)
+
+  // Whether this commit created a new entry.
+  IPC_STRUCT_MEMBER(bool, did_create_new_entry)
+
+  // Whether this commit should replace the current entry.
+  IPC_STRUCT_MEMBER(bool, should_replace_current_entry)
+
+  // The gesture that initiated this navigation.
+  IPC_STRUCT_MEMBER(content::NavigationGesture, gesture)
+
+  // The HTTP method used by the navigation.
+  IPC_STRUCT_MEMBER(std::string, method)
+
+  // The POST body identifier. -1 if it doesn't exist.
+  IPC_STRUCT_MEMBER(int64_t, post_id)
+
+  // The status code of the HTTP request.
+  IPC_STRUCT_MEMBER(int, http_status_code)
+
+  // This flag is used to warn if the renderer is displaying an error page,
+  // so that we can set the appropriate page type.
+  IPC_STRUCT_MEMBER(bool, url_is_unreachable)
+
+  // Serialized history item state to store in the navigation entry.
+  IPC_STRUCT_MEMBER(blink::PageState, page_state)
+
+  // Original request's URL.
+  IPC_STRUCT_MEMBER(GURL, original_request_url)
+
+  // User agent override used to navigate.
+  IPC_STRUCT_MEMBER(bool, is_overriding_user_agent)
+
+  // Notifies the browser that for this navigation, the session history was
+  // successfully cleared.
+  IPC_STRUCT_MEMBER(bool, history_list_was_cleared)
+
+  // Origin of the frame.  This will be replicated to any associated
+  // RenderFrameProxies.
+  IPC_STRUCT_MEMBER(url::Origin, origin)
+
+  // The insecure request policy the document for the load is enforcing.
+  IPC_STRUCT_MEMBER(blink::mojom::InsecureRequestPolicy,
+                    insecure_request_policy)
+
+  // The upgrade insecure navigations set the document for the load is
+  // enforcing.
+  IPC_STRUCT_MEMBER(std::vector<uint32_t>, insecure_navigations_set)
+
+  // True if the document for the load is a unique origin that should be
+  // considered potentially trustworthy.
+  IPC_STRUCT_MEMBER(bool, has_potentially_trustworthy_unique_origin)
+
+  // Request ID generated by the renderer.
+  IPC_STRUCT_MEMBER(int, request_id)
+
+  // A token that has been passed by the browser process when it asked the
+  // renderer process to commit the navigation.
+  IPC_STRUCT_MEMBER(base::UnguessableToken, navigation_token)
+
+  // An embedding token used to signify the relationship between a document and
+  // its parent. This is populated for cross-document navigations including
+  // sub-documents and the main document.
+  IPC_STRUCT_MEMBER(base::Optional<base::UnguessableToken>, embedding_token)
+IPC_STRUCT_END()
+
 IPC_STRUCT_TRAITS_BEGIN(blink::ParsedFeaturePolicyDeclaration)
   IPC_STRUCT_TRAITS_MEMBER(feature)
   IPC_STRUCT_TRAITS_MEMBER(allowed_origins)

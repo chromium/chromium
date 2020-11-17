@@ -7207,10 +7207,10 @@ class HistoryNavigationBeforeCommitInjector
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    if (!render_frame_host->GetParent() && (**params).url == url_) {
+    if (!render_frame_host->GetParent() && params->url == url_) {
       did_trigger_history_navigation_ = true;
       web_contents()->GetController().GoBack();
     }
@@ -8708,11 +8708,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Try to fake an error page navigation by doing a DidCommitProvisionalLoad
   // call. The browser doesn't know about the navigation at all previously.
   GURL bad_url(embedded_test_server()->GetURL("/title2.html"));
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
+      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
   params->nav_entry_id = 0;
   params->did_create_new_entry = true;
   params->url = bad_url;
-  params->referrer = blink::mojom::Referrer::New();
   params->transition = ui::PAGE_TRANSITION_LINK;
   params->gesture = NavigationGestureUser;
   params->page_state = blink::PageState::CreateFromURL(bad_url);
@@ -10657,7 +10657,7 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     std::move(callback_).Run();

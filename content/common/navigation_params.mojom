@@ -340,7 +340,7 @@ struct CommitNavigationParams {
   // For browser-initiated navigations, this is the unique id of the
   // NavigationEntry being navigated to. (For renderer-initiated navigations it
   // is 0.) If the load succeeds, then this nav_entry_id will be reflected in
-  // the resulting DidCommitProvisionalLoadParams.
+  // the resulting FrameHostMsg_DidCommitProvisionalLoad_Params.
   int32 nav_entry_id = 0;
 
   // If this is a history navigation, this contains a map of frame unique names

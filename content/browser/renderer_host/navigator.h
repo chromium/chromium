@@ -23,6 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class GURL;
+struct FrameHostMsg_DidCommitProvisionalLoad_Params;
 
 namespace base {
 class TimeTicks;
@@ -95,7 +96,7 @@ class CONTENT_EXPORT Navigator {
   // Navigator should use the NavigationRequest provided by this method and not
   // attempt to access the RenderFrameHost's NavigationsRequests.
   void DidNavigate(RenderFrameHostImpl* render_frame_host,
-                   const mojom::DidCommitProvisionalLoadParams& params,
+                   const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
                    std::unique_ptr<NavigationRequest> navigation_request,
                    bool was_within_same_document);
 
@@ -209,7 +210,7 @@ class CONTENT_EXPORT Navigator {
 
   void RecordNavigationMetrics(
       const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params,
+      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
       SiteInstance* site_instance);
 
   // Called when a renderer initiated navigation has started. Returns the

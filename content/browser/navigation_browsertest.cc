@@ -24,7 +24,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
-#include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -101,7 +100,7 @@ class InterceptAndCancelDidCommitProvisionalLoad
     return intercepted_navigations_;
   }
 
-  const std::vector<mojom::DidCommitProvisionalLoadParamsPtr>&
+  const std::vector<::FrameHostMsg_DidCommitProvisionalLoad_Params>&
   intercepted_messages() const {
     return intercepted_messages_;
   }
@@ -116,11 +115,11 @@ class InterceptAndCancelDidCommitProvisionalLoad
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     intercepted_navigations_.push_back(navigation_request);
-    intercepted_messages_.push_back(std::move(*params));
+    intercepted_messages_.push_back(*params);
     intercepted_receivers_.push_back(
         *interface_params
             ? std::move((*interface_params)->interface_provider_receiver)
@@ -134,7 +133,8 @@ class InterceptAndCancelDidCommitProvisionalLoad
   // Note: Do not dereference the intercepted_navigations_, they are used as
   // indices in the RenderFrameHostImpl and not for themselves.
   std::vector<NavigationRequest*> intercepted_navigations_;
-  std::vector<mojom::DidCommitProvisionalLoadParamsPtr> intercepted_messages_;
+  std::vector<::FrameHostMsg_DidCommitProvisionalLoad_Params>
+      intercepted_messages_;
   std::vector<
       mojo::PendingReceiver<::service_manager::mojom::InterfaceProvider>>
       intercepted_receivers_;

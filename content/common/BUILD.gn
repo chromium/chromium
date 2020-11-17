@@ -80,6 +80,7 @@ source_set("common") {
     "font_list_fontconfig.cc",
     "frame_delete_intention.h",
     "frame_messages.h",
+    "frame_messages_forward.h",
     "frame_replication_state.cc",
     "frame_replication_state.h",
     "gin_java_bridge_messages.h",
@@ -477,6 +478,18 @@ mojom("mojo_bindings") {
     {
       types = [
         {
+          mojom = "content.mojom.DidCommitProvisionalLoadParams"
+          cpp = "::std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//content/common/frame_messages_forward.h" ]
+      traits_private_headers = [ "//content/common/frame_messages.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "content.mojom.ContentSecurityPolicy"
           cpp = "::content::ContentSecurityPolicy"
         },
@@ -487,10 +500,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content.mojom.NavigationDownloadPolicy"
           cpp = "::content::NavigationDownloadPolicy"
-        },
-        {
-          mojom = "content.mojom.NavigationGesture"
-          cpp = "::content::NavigationGesture"
         },
         {
           mojom = "content.mojom.NetworkConnectionType"
