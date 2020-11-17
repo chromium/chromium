@@ -16,12 +16,11 @@
 namespace device {
 namespace cablev2 {
 
-Discovery::Discovery(
-    network::mojom::NetworkContext* network_context,
-    base::span<const uint8_t, kQRKeySize> qr_generator_key,
-    std::vector<std::unique_ptr<Pairing>> pairings,
-    base::Optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
-        pairing_callback)
+Discovery::Discovery(network::mojom::NetworkContext* network_context,
+                     base::span<const uint8_t, kQRKeySize> qr_generator_key,
+                     std::vector<std::unique_ptr<Pairing>> pairings,
+                     base::Optional<base::RepeatingCallback<void(PairingEvent)>>
+                         pairing_callback)
     : FidoDeviceDiscovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
       network_context_(network_context),
@@ -46,8 +45,12 @@ void Discovery::StartInternal() {
   DCHECK(!started_);
 
   for (auto& pairing : pairings_) {
+    std::array<uint8_t, kP256X962Length> peer_public_key_x962 =
+        pairing->peer_public_key_x962;
     tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
-        network_context_, std::move(pairing)));
+        network_context_, std::move(pairing),
+        base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
+                       peer_public_key_x962)));
   }
   pairings_.clear();
 
@@ -109,6 +112,15 @@ void Discovery::AddPairing(std::unique_ptr<Pairing> pairing) {
   }
 
   pairing_callback_->Run(std::move(pairing));
+}
+
+void Discovery::PairingIsInvalid(
+    std::array<uint8_t, kP256X962Length> peer_public_key_x962) {
+  if (!pairing_callback_) {
+    return;
+  }
+
+  pairing_callback_->Run(std::move(peer_public_key_x962));
 }
 
 }  // namespace cablev2

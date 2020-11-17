@@ -118,8 +118,7 @@ void FidoDiscoveryFactory::set_network_context(
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(
-    base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
-        pairing_callback) {
+    base::RepeatingCallback<void(cablev2::PairingEvent)> pairing_callback) {
   cable_pairing_callback_.emplace(std::move(pairing_callback));
 }
 

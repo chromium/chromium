@@ -322,11 +322,12 @@ class TunnelTransport : public Transport {
   };
 
   void OnTunnelReady(
-      bool ok,
+      WebSocketAdapter::Result result,
       base::Optional<std::array<uint8_t, device::cablev2::kRoutingIdSize>>
           routing_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(state_ == State::kConnecting || state_ == State::kConnectingPaired);
+    bool ok = (result == WebSocketAdapter::Result::OK);
 
     if (ok && state_ == State::kConnecting && !routing_id) {
       FIDO_LOG(ERROR) << "Tunnel server did not specify routing ID";

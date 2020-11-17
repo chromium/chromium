@@ -6182,9 +6182,9 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
   }
 
-  base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+  base::RepeatingCallback<void(device::cablev2::PairingEvent)>
   GetPairingCallback() {
-    return base::BindRepeating(&CableV2AuthenticatorImplTest::OnPairing,
+    return base::BindRepeating(&CableV2AuthenticatorImplTest::OnPairingEvent,
                                base::Unretained(this));
   }
 
@@ -6218,8 +6218,26 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
     std::move(contact_callback_).Run(tunnel_id, pairing_id, client_nonce);
   }
 
-  void OnPairing(std::unique_ptr<device::cablev2::Pairing> pairing) {
-    pairings_.emplace_back(std::move(pairing));
+  void OnPairingEvent(device::cablev2::PairingEvent event) {
+    if (auto* disabled_public_key =
+            absl::get_if<std::array<uint8_t, device::kP256X962Length>>(
+                &event)) {
+      bool found = false;
+      for (auto it = pairings_.begin(); it != pairings_.end(); it++) {
+        if ((*it)->peer_public_key_x962 == *disabled_public_key) {
+          found = true;
+          pairings_.erase(it);
+          return;
+        }
+      }
+      CHECK(found);
+    } else if (auto* pairing =
+                   absl::get_if<std::unique_ptr<device::cablev2::Pairing>>(
+                       &event)) {
+      pairings_.emplace_back(std::move(*pairing));
+    } else {
+      CHECK(false);
+    }
   }
 
   const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {
@@ -6322,6 +6340,44 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(contact_callback_was_called);
+}
+
+static std::unique_ptr<device::cablev2::Pairing> DummyPairing() {
+  auto ret = std::make_unique<device::cablev2::Pairing>();
+  ret->tunnel_server_domain = "example.com";
+  ret->contact_id = {1, 2, 3, 4, 5};
+  ret->id = {6, 7, 8, 9};
+  ret->secret = {10, 11, 12, 13};
+  std::fill(ret->peer_public_key_x962.begin(), ret->peer_public_key_x962.end(),
+            22);
+  ret->name = __func__;
+
+  return ret;
+}
+
+TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
+  pairings.emplace_back(DummyPairing());
+  // Passing |nullopt| as the callback here causes all contact IDs to be
+  // rejected.
+  auto network_context = device::cablev2::NewMockTunnelServer(base::nullopt);
+  auto discovery = std::make_unique<device::cablev2::Discovery>(
+      network_context.get(), qr_generator_key_, std::move(pairings),
+      GetPairingCallback());
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  pairings_.emplace_back(DummyPairing());
+  ASSERT_EQ(pairings_.size(), 1u);
+  EXPECT_EQ(AuthenticatorMakeCredentialAndWaitForTimeout(
+                GetTestPublicKeyCredentialCreationOptions())
+                .status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  // The pairing should be been erased because of the signal from the tunnel
+  // server.
+  ASSERT_EQ(pairings_.size(), 0u);
 }
 
 }  // namespace content

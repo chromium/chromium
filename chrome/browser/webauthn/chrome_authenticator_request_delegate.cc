@@ -145,6 +145,20 @@ const char kPairingPrefSecret[] = "secret";
 const char kPairingPrefPublicKey[] = "pub_key";
 const char kPairingPrefTime[] = "time";
 
+// DeleteCablePairingByPublicKey erases any pairing with the given public key
+// from |list|.
+void DeleteCablePairingByPublicKey(base::ListValue* list,
+                                   const std::string& public_key_base64) {
+  list->EraseListValueIf([&public_key_base64](const auto& value) {
+    if (!value.is_dict()) {
+      return false;
+    }
+    const base::Value* pref_public_key = value.FindKey(kPairingPrefPublicKey);
+    return pref_public_key && pref_public_key->is_string() &&
+           pref_public_key->GetString() == public_key_base64;
+  });
+}
+
 }  // namespace
 
 // static
@@ -392,7 +406,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
                                     std::move(paired_phones));
 
   discovery_factory->set_cable_pairing_callback(base::BindRepeating(
-      &ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs,
+      &ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent,
       weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -692,8 +706,8 @@ ChromeAuthenticatorRequestDelegate::GetCablePairings() {
   return ret;
 }
 
-void ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs(
-    std::unique_ptr<device::cablev2::Pairing> pairing) {
+void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(
+    device::cablev2::PairingEvent event) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
@@ -709,18 +723,21 @@ void ChromeAuthenticatorRequestDelegate::StoreNewCablePairingInPrefs(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
       kWebAuthnCablePairingsPrefName);
 
+  if (auto* disabled_public_key =
+          absl::get_if<std::array<uint8_t, device::kP256X962Length>>(&event)) {
+    // A pairing was reported to be invalid. Delete it.
+    DeleteCablePairingByPublicKey(update.Get(), Base64(*disabled_public_key));
+    return;
+  }
+
+  // Otherwise the event is a new pairing.
+  auto& pairing =
+      *absl::get_if<std::unique_ptr<device::cablev2::Pairing>>(&event);
   // Find any existing entries with the same public key and replace them. The
   // handshake protocol requires the phone to prove possession of the public key
   // so it's not possible for an evil phone to displace another's pairing.
-  const std::string public_key_base64 = Base64(pairing->peer_public_key_x962);
-  update->EraseListValueIf([&public_key_base64](const auto& value) {
-    if (!value.is_dict()) {
-      return false;
-    }
-    const base::Value* pref_public_key = value.FindKey(kPairingPrefPublicKey);
-    return pref_public_key && pref_public_key->is_string() &&
-           pref_public_key->GetString() == public_key_base64;
-  });
+  std::string public_key_base64 = Base64(pairing->peer_public_key_x962);
+  DeleteCablePairingByPublicKey(update.Get(), public_key_base64);
 
   auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   dict->SetKey(kPairingPrefPublicKey,

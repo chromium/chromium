@@ -113,7 +113,8 @@ FidoTunnelDevice::FidoTunnelDevice(
 
 FidoTunnelDevice::FidoTunnelDevice(
     network::mojom::NetworkContext* network_context,
-    std::unique_ptr<Pairing> pairing)
+    std::unique_ptr<Pairing> pairing,
+    base::OnceClosure pairing_is_invalid)
     : info_(absl::in_place_type<PairedInfo>), id_(RandomId()) {
   uint8_t client_nonce[kClientNonceSize];
   crypto::RandBytes(client_nonce);
@@ -131,6 +132,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       pairing->secret, client_nonce, DerivedValueType::kEIDKey);
   info.peer_identity = pairing->peer_public_key_x962;
   info.secret = pairing->secret;
+  info.pairing_is_invalid = std::move(pairing_is_invalid);
 
   const GURL url = tunnelserver::GetContactURL(pairing->tunnel_server_domain,
                                                pairing->contact_id);
@@ -228,18 +230,33 @@ base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {
 }
 
 void FidoTunnelDevice::OnTunnelReady(
-    bool ok,
+    WebSocketAdapter::Result result,
     base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::kConnecting, state_);
 
-  if (!ok) {
-    FIDO_LOG(DEBUG) << GetId() << ": tunnel failed to connect";
-    OnError();
-    return;
-  }
+  switch (result) {
+    case WebSocketAdapter::Result::OK:
+      state_ = State::kConnected;
+      break;
 
-  state_ = State::kConnected;
+    case WebSocketAdapter::Result::GONE:
+      if (auto* info = absl::get_if<PairedInfo>(&info_)) {
+        std::move(info->pairing_is_invalid).Run();
+        FIDO_LOG(DEBUG) << GetId()
+                        << ": tunnel server reports that contact ID is invalid";
+      } else {
+        FIDO_LOG(ERROR) << GetId()
+                        << ": server reported an invalid contact ID for an "
+                           "unpaired connection";
+      }
+      [[fallthrough]];
+
+    case WebSocketAdapter::Result::FAILED:
+      FIDO_LOG(DEBUG) << GetId() << ": tunnel failed to connect";
+      OnError();
+      break;
+  }
 }
 
 void FidoTunnelDevice::OnTunnelData(

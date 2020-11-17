@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // called when a QR handshake results in a phone wishing to pair with this
   // browser.
   void set_cable_pairing_callback(
-      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>);
+      base::RepeatingCallback<void(cablev2::PairingEvent)>);
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
@@ -112,8 +112,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
-  base::Optional<
-      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>>
+  base::Optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
       cable_pairing_callback_;
 #if defined(OS_WIN)
   WinWebAuthnApi* win_webauthn_api_ = nullptr;

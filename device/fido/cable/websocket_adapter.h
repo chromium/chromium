@@ -25,8 +25,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
     : public network::mojom::WebSocketHandshakeClient,
       network::mojom::WebSocketClient {
  public:
+  // Result enumerates the possible results of attempting to connect a tunnel.
+  enum class Result {
+    OK,
+    FAILED,
+    // GONE indicates that the tunnel failed and that the contact ID used is
+    // permanently inactive and should be forgotten.
+    GONE,
+  };
+
   using TunnelReadyCallback = base::OnceCallback<
-      void(bool, base::Optional<std::array<uint8_t, kRoutingIdSize>>)>;
+      void(Result, base::Optional<std::array<uint8_t, kRoutingIdSize>>)>;
   using TunnelDataCallback =
       base::RepeatingCallback<void(base::Optional<base::span<const uint8_t>>)>;
   WebSocketAdapter(

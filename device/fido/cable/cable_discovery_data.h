@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cbor {
 class Value;
@@ -118,6 +119,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // authenticator. (For example "Pixel 3".)
   std::string name;
 };
+
+// A PairingEvent is either a new |Pairing|, learnt from a device, or else the
+// public key of a pairing that has been discovered to be invalid.
+using PairingEvent = absl::variant<std::unique_ptr<Pairing>,
+                                   std::array<uint8_t, kP256X962Length>>;
 
 }  // namespace cablev2
 

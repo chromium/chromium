@@ -147,8 +147,7 @@ class ChromeAuthenticatorRequestDelegate
   virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
   GetCablePairings();
 
-  void StoreNewCablePairingInPrefs(
-      std::unique_ptr<device::cablev2::Pairing> pairing);
+  void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
 
   content::RenderFrameHost* const render_frame_host_;
   // Holds ownership of AuthenticatorRequestDialogModel until

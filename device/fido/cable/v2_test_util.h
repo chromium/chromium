@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "device/fido/cable/v2_constants.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
@@ -29,9 +30,11 @@ using ContactCallback = base::RepeatingCallback<void(
     base::span<const uint8_t, kClientNonceSize> client_nonce)>;
 
 // NewMockTunnelServer returns a |NetworkContext| that implements WebSocket
-// requests and simulates a tunnel server.
+// requests and simulates a tunnel server. If the given |contact_callback| is
+// |nullopt| then all contact requests will be rejected with an HTTP 410 status
+// to indicate that the contact ID is disabled.
 std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
-    ContactCallback contact_callback);
+    base::Optional<ContactCallback> contact_callback);
 
 namespace authenticator {
 
