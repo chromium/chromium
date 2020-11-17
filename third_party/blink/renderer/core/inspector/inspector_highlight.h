@@ -207,6 +207,10 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
     Node*,
     const InspectorGridHighlightConfig& config);
 
+std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
+    Node* node,
+    const InspectorFlexContainerHighlightConfig& config);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HIGHLIGHT_H_

@@ -1762,6 +1762,29 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
   return grid_info;
 }
 
+std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
+    Node* node,
+    const InspectorFlexContainerHighlightConfig& config) {
+  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+    // Skip if node is part of display locked tree.
+    return nullptr;
+  }
+
+  LocalFrameView* frame_view = node->GetDocument().View();
+  if (!frame_view)
+    return nullptr;
+
+  float scale = 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
+                          &frame_view->GetFrame(), 1.f);
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object || !(layout_object->StyleRef().IsDisplayFlexibleBox() &&
+                          layout_object->IsFlexibleBoxIncludingNG())) {
+    return nullptr;
+  }
+
+  return BuildFlexInfo(node, config, scale);
+}
+
 // static
 InspectorHighlightConfig InspectorHighlight::DefaultConfig() {
   InspectorHighlightConfig config;

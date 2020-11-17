@@ -5701,6 +5701,13 @@ experimental domain Overlay
       # Identifier of the node to highlight.
       DOM.NodeId nodeId
 
+  type FlexNodeHighlightConfig extends object
+    properties
+      # A descriptor for the highlight appearance of flex containers.
+      FlexContainerHighlightConfig flexContainerHighlightConfig
+      # Identifier of the node to highlight.
+      DOM.NodeId nodeId
+
   # Configuration for dual screen hinge
   type HingeConfig extends object
     properties
@@ -5865,6 +5872,11 @@ experimental domain Overlay
     parameters
       # An array of node identifiers and descriptors for the highlight appearance.
       array of GridNodeHighlightConfig gridNodeHighlightConfigs
+
+  command setShowFlexOverlays
+    parameters
+      # An array of node identifiers and descriptors for the highlight appearance.
+      array of FlexNodeHighlightConfig flexNodeHighlightConfigs
 
   # Requests that backend shows paint rectangles
   command setShowPaintRects

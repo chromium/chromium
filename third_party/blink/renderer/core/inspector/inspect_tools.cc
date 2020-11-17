@@ -403,11 +403,21 @@ String PersistentTool::GetOverlayName() {
   return OverlayNames::OVERLAY_PERSISTENT;
 }
 
-void PersistentTool::AddGridConfig(
-    Node* node,
-    std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config) {
-  grid_node_highlights_.emplace_back(
-      std::make_pair(node, std::move(grid_highlight_config)));
+bool PersistentTool::IsEmpty() {
+  return !grid_node_highlights_.size() && !flex_container_configs_.size();
+}
+
+void PersistentTool::SetGridConfigs(
+    Vector<std::pair<Member<Node>,
+                     std::unique_ptr<InspectorGridHighlightConfig>>> configs) {
+  grid_node_highlights_ = std::move(configs);
+}
+
+void PersistentTool::SetFlexContainerConfigs(
+    Vector<std::pair<Member<Node>,
+                     std::unique_ptr<InspectorFlexContainerHighlightConfig>>>
+        configs) {
+  flex_container_configs_ = std::move(configs);
 }
 
 bool PersistentTool::ForwardEventsToOverlay() {
@@ -429,6 +439,14 @@ void PersistentTool::Draw(float scale) {
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawGridHighlight", std::move(highlight));
+  }
+  for (auto& entry : flex_container_configs_) {
+    std::unique_ptr<protocol::Value> highlight =
+        InspectorFlexContainerHighlight(entry.first.Get(), *(entry.second));
+    if (!highlight)
+      continue;
+    overlay_->EvaluateInOverlay("drawFlexContainerHighlight",
+                                std::move(highlight));
   }
 }
 

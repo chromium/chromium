@@ -220,6 +220,10 @@ class CORE_EXPORT InspectorOverlayAgent final
       std::unique_ptr<
           protocol::Array<protocol::Overlay::GridNodeHighlightConfig>>
           grid_node_highlight_configs) override;
+  protocol::Response setShowFlexOverlays(
+      std::unique_ptr<
+          protocol::Array<protocol::Overlay::FlexNodeHighlightConfig>>
+          flex_node_highlight_configs) override;
 
   // InspectorBaseAgent overrides.
   void Restore() override;

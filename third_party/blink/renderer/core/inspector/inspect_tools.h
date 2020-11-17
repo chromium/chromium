@@ -133,14 +133,19 @@ class SourceOrderTool : public InspectTool {
 
 // -----------------------------------------------------------------------------
 
+using GirdConfigs = Vector<
+    std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>;
+using FlexContainerConfigs =
+    Vector<std::pair<Member<Node>,
+                     std::unique_ptr<InspectorFlexContainerHighlightConfig>>>;
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
 
  public:
   void Draw(float scale) override;
-  void AddGridConfig(
-      Node* node,
-      std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config);
+  bool IsEmpty();
+  void SetGridConfigs(GirdConfigs);
+  void SetFlexContainerConfigs(FlexContainerConfigs);
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
@@ -151,8 +156,8 @@ class PersistentTool : public InspectTool {
   bool HideOnHideHighlight() override;
   String GetOverlayName() override;
 
-  Vector<std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>
-      grid_node_highlights_;
+  GirdConfigs grid_node_highlights_;
+  FlexContainerConfigs flex_container_configs_;
   DISALLOW_COPY_AND_ASSIGN(PersistentTool);
 };
 

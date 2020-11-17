@@ -706,23 +706,55 @@ Response InspectorOverlayAgent::highlightNode(
 Response InspectorOverlayAgent::setShowGridOverlays(
     std::unique_ptr<protocol::Array<protocol::Overlay::GridNodeHighlightConfig>>
         grid_node_highlight_configs) {
-  persistent_tool_ = nullptr;
-
-  if (grid_node_highlight_configs->size()) {
-    PersistentTool* grid_tool =
+  if (!persistent_tool_) {
+    persistent_tool_ =
         MakeGarbageCollected<PersistentTool>(this, GetFrontend());
-    for (std::unique_ptr<protocol::Overlay::GridNodeHighlightConfig>& config :
-         *grid_node_highlight_configs) {
-      Node* node = nullptr;
-      Response response = dom_agent_->AssertNode(config->getNodeId(), node);
-      if (!response.IsSuccess())
-        return response;
-      grid_tool->AddGridConfig(node,
-                               InspectorOverlayAgent::ToGridHighlightConfig(
-                                   config->getGridHighlightConfig()));
-    }
-    persistent_tool_ = grid_tool;
   }
+
+  Vector<std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>
+      configs;
+  for (std::unique_ptr<protocol::Overlay::GridNodeHighlightConfig>& config :
+       *grid_node_highlight_configs) {
+    Node* node = nullptr;
+    Response response = dom_agent_->AssertNode(config->getNodeId(), node);
+    if (!response.IsSuccess())
+      return response;
+    configs.push_back(
+        std::make_pair(node, InspectorOverlayAgent::ToGridHighlightConfig(
+                                 config->getGridHighlightConfig())));
+  }
+
+  persistent_tool_->SetGridConfigs(std::move(configs));
+
+  PickTheRightTool();
+
+  return Response::Success();
+}
+
+Response InspectorOverlayAgent::setShowFlexOverlays(
+    std::unique_ptr<protocol::Array<protocol::Overlay::FlexNodeHighlightConfig>>
+        flex_node_highlight_configs) {
+  if (!persistent_tool_) {
+    persistent_tool_ =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
+  }
+
+  Vector<std::pair<Member<Node>,
+                   std::unique_ptr<InspectorFlexContainerHighlightConfig>>>
+      configs;
+
+  for (std::unique_ptr<protocol::Overlay::FlexNodeHighlightConfig>& config :
+       *flex_node_highlight_configs) {
+    Node* node = nullptr;
+    Response response = dom_agent_->AssertNode(config->getNodeId(), node);
+    if (!response.IsSuccess())
+      return response;
+    configs.push_back(std::make_pair(
+        node, InspectorOverlayAgent::ToFlexContainerHighlightConfig(
+                  config->getFlexContainerHighlightConfig())));
+  }
+
+  persistent_tool_->SetFlexContainerConfigs(std::move(configs));
 
   PickTheRightTool();
 
@@ -820,17 +852,20 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
 Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
-  PersistentTool grid_highlight_tool(this, GetFrontend());
+  PersistentTool persistent_tool(this, GetFrontend());
+  Vector<std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>
+      configs;
   for (const int node_id : *node_ids) {
     Node* node = nullptr;
     Response response = dom_agent_->AssertNode(node_id, node);
     if (!response.IsSuccess())
       return response;
-    grid_highlight_tool.AddGridConfig(
-        node, std::make_unique<InspectorGridHighlightConfig>(
-                  InspectorHighlight::DefaultGridConfig()));
+    configs.push_back(
+        std::make_pair(node, std::make_unique<InspectorGridHighlightConfig>(
+                                 InspectorHighlight::DefaultGridConfig())));
   }
-  *highlights = grid_highlight_tool.GetGridInspectorHighlightsAsJson();
+  persistent_tool.SetGridConfigs(std::move(configs));
+  *highlights = persistent_tool.GetGridInspectorHighlightsAsJson();
   return Response::Success();
 }
 
@@ -1299,6 +1334,9 @@ Response InspectorOverlayAgent::setInspectMode(
 
 void InspectorOverlayAgent::PickTheRightTool() {
   InspectTool* inspect_tool = nullptr;
+
+  if (persistent_tool_ && persistent_tool_->IsEmpty())
+    persistent_tool_ = nullptr;
 
   String inspect_mode = inspect_mode_.Get();
   if (inspect_mode == protocol::Overlay::InspectModeEnum::SearchForNode ||
