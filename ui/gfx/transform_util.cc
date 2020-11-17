@@ -596,4 +596,41 @@ std::string DecomposedTransform::ToString() const {
       quaternion.w());
 }
 
+Transform OrthoProjectionMatrix(float left,
+                                float right,
+                                float bottom,
+                                float top) {
+  // Use the standard formula to map the clipping frustum to the cube from
+  // [-1, -1, -1] to [1, 1, 1].
+  float delta_x = right - left;
+  float delta_y = top - bottom;
+  Transform proj;
+  if (!delta_x || !delta_y)
+    return proj;
+  proj.matrix().set(0, 0, 2.0f / delta_x);
+  proj.matrix().set(0, 3, -(right + left) / delta_x);
+  proj.matrix().set(1, 1, 2.0f / delta_y);
+  proj.matrix().set(1, 3, -(top + bottom) / delta_y);
+
+  // Z component of vertices is always set to zero as we don't use the depth
+  // buffer while drawing.
+  proj.matrix().set(2, 2, 0);
+
+  return proj;
+}
+
+Transform WindowMatrix(int x, int y, int width, int height) {
+  Transform canvas;
+
+  // Map to window position and scale up to pixel coordinates.
+  canvas.Translate3d(x, y, 0);
+  canvas.Scale3d(width, height, 0);
+
+  // Map from ([-1, -1] to [1, 1]) -> ([0, 0] to [1, 1])
+  canvas.Translate3d(0.5, 0.5, 0.5);
+  canvas.Scale3d(0.5, 0.5, 0.5);
+
+  return canvas;
+}
+
 }  // namespace gfx

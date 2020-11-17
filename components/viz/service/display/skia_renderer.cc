@@ -69,6 +69,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_util.h"
 
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
@@ -2630,18 +2631,50 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   DCHECK(batched_quads_.empty());
   DCHECK(overlay->rpdq);
 
-  // The |current_render_pass| could be used for caculating destination
+  auto* const quad = overlay->rpdq;
+
+  // The overlay will be sent to GPU the thread, so set rpdq to nullptr to avoid
+  // being accessed on the GPU thread.
+  overlay->rpdq = nullptr;
+
+  // The |current_render_pass| could be used for calculating destination
   // color space or clipping rect for backdrop filters. However
   // the |current_render_pass| is nullptr during ScheduleOverlays(), since all
   // overlay quads should be in the |root_render_pass|, before they are promoted
   // to overlays, so set the |root_render_pass| to the |current_render_pass|.
-  base::AutoReset<const AggregatedRenderPass*> auto_reset(
+  base::AutoReset<const AggregatedRenderPass*> auto_reset_current_render_pass(
       &current_frame()->current_render_pass, current_frame()->root_render_pass);
 
-  auto* const quad = overlay->rpdq;
-  overlay->rpdq = nullptr;
-  gfx::Transform target_to_device =
-      current_frame()->window_matrix * current_frame()->projection_matrix;
+  auto* shared_quad_state =
+      const_cast<SharedQuadState*>(quad->shared_quad_state);
+
+  // The |clip_rect| is in the device coordinate and with all transforms
+  // (translation, scaling, rotation, etc), so remove them.
+  base::Optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
+  if (shared_quad_state->is_clipped) {
+    gfx::RectF clip_rect(shared_quad_state->clip_rect);
+    shared_quad_state->quad_to_target_transform.TransformRectReverse(
+        &clip_rect);
+    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
+                                 gfx::ToEnclosedRect(clip_rect));
+  }
+
+  // Reset |quad_to_target_transform|, so the quad will be rendered at the
+  // origin (0,0) without all transforms (translation, scaling, rotation, etc)
+  // and then we will use OS compositor to do those transforms.
+  base::AutoReset<gfx::Transform> auto_reset_transform(
+      &shared_quad_state->quad_to_target_transform, gfx::Transform());
+
+  const auto& viewport_size = current_frame()->device_viewport_size;
+  auto projection_matrix = gfx::OrthoProjectionMatrix(
+      /*left=*/0, /*right=*/viewport_size.width(), /*bottom=*/0,
+      /*top=*/viewport_size.height());
+  auto window_matrix =
+      gfx::WindowMatrix(/*x=*/0, /*y=*/0, /*width=*/viewport_size.width(),
+                        /*height=*/viewport_size.height());
+
+  gfx::Transform target_to_device = window_matrix * projection_matrix;
+
   // Use nullptr scissor, so we can always render the whole render pass in an
   // overlay backing.
   // TODO(penghuang): reusing overlay backing from previous frame to avoid
@@ -2656,7 +2689,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   if (rpdq_params.filter_bounds.IsEmpty())
     return;
 
-  ResourceFormat buffer_format;
+  ResourceFormat buffer_format{};
   gfx::ColorSpace color_space;
 
   RenderPassBacking* backing = nullptr;
@@ -2682,16 +2715,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
     color_space = backing->color_space;
   }
 
-  auto dst_filter_bounds = gfx::RectF(rpdq_params.filter_bounds);
-  params.content_device_transform.TransformRect(&dst_filter_bounds);
+  const auto filter_bounds = rpdq_params.filter_bounds;
 
-  gfx::Size buffer_size = gfx::ToCeiledSize(dst_filter_bounds.size());
   // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
   // increases buffer reusing possibilities.
   constexpr int kBufferMultiple = 64;
-  buffer_size.SetSize(
-      cc::MathUtil::CheckedRoundUp(buffer_size.width(), kBufferMultiple),
-      cc::MathUtil::CheckedRoundUp(buffer_size.height(), kBufferMultiple));
+  gfx::Size buffer_size(
+      cc::MathUtil::CheckedRoundUp(filter_bounds.width(), kBufferMultiple),
+      cc::MathUtil::CheckedRoundUp(filter_bounds.height(), kBufferMultiple));
 
   current_canvas_ = skia_output_surface_->BeginPaintRenderPassOverlay(
       buffer_size, buffer_format, /*mipmap=*/false,
@@ -2701,7 +2732,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
     return;
   }
 
-  current_canvas_->clear(overlay->background_color);
+  // Clear the backing to ARGB(0,0,0,0).
+  current_canvas_->clear(SkColorSetARGB(0, 0, 0, 0));
 
   // Calculate visible_rect's origin in output device coordinates.
   auto dst_visible_rect_origin = params.visible_rect.origin();
@@ -2709,8 +2741,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
 
   // Adjust the content_device_transform to make sure filter extends are drawn
   // inside of the buffer.
-  params.content_device_transform.Translate(-dst_filter_bounds.x(),
-                                            -dst_filter_bounds.y());
+  params.content_device_transform.Translate(-filter_bounds.x(),
+                                            -filter_bounds.y());
 
   // When Render Pass has a single quad inside we would draw that directly.
   if (bypass != render_pass_bypass_quads_.end()) {
@@ -2755,16 +2787,11 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   // Put overlay related information in CALayerOverlay,
   // so SkiaOutputSurfaceImplOnGpu can use the DDL to create overlay buffer and
   // play the DDL back to it accordingly.
-  overlay->bounds_rect = gfx::RectF(gfx::SizeF(buffer_size));
   overlay->ddl = std::move(ddl);
 
-  // Since the overlay may be in different size comparing to the render pass's
-  // visible rect due to filter effect extends and buffer size round up, so we
-  // have to adjust the overlay transform to put overlay at the right position.
-  overlay->transform = overlay->shared_state->transform;
-  overlay->transform->preTranslate(
-      -dst_visible_rect_origin.x() + dst_filter_bounds.x(),
-      -dst_visible_rect_origin.y() + dst_filter_bounds.y(), 0);
+  // Adjust |bounds_rect| to contain the whole buffer and at the right location.
+  overlay->bounds_rect.set_origin(gfx::PointF(filter_bounds.origin()));
+  overlay->bounds_rect.set_size(gfx::SizeF(buffer_size));
 }
 #endif
 
