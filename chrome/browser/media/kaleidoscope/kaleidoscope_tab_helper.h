@@ -12,6 +12,15 @@ class KaleidoscopeTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<KaleidoscopeTabHelper> {
  public:
+  static const char kKaleidoscopeNavigationHistogramName[];
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class KaleidoscopeNavigation {
+    kNormal = 0,
+    kMaxValue = kNormal,
+  };
+
   ~KaleidoscopeTabHelper() override;
   KaleidoscopeTabHelper(const KaleidoscopeTabHelper&) = delete;
   KaleidoscopeTabHelper& operator=(const KaleidoscopeTabHelper&) = delete;
@@ -23,6 +32,9 @@ class KaleidoscopeTabHelper
   friend class content::WebContentsUserData<KaleidoscopeTabHelper>;
 
   explicit KaleidoscopeTabHelper(content::WebContents* web_contents);
+
+  void RecordMetricsOnNavigation(content::NavigationHandle* handle);
+  void SetAutoplayOnNavigation(content::NavigationHandle* handle);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

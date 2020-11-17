@@ -1071,6 +1071,7 @@ if (!is_android) {
       "../browser/media/encrypted_media_supported_types_browsertest.cc",
       "../browser/media/feeds/media_feeds_browsertest.cc",
       "../browser/media/history/media_history_browsertest.cc",
+      "../browser/media/kaleidoscope/kaleidoscope_tab_helper_browsertest.cc",
       "../browser/media/media_browsertest.cc",
       "../browser/media/media_browsertest.h",
       "../browser/media/media_engagement_autoplay_browsertest.cc",
