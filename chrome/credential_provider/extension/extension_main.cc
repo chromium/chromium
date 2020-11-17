@@ -24,9 +24,11 @@ using credential_provider::kRegEnableVerboseLogging;
 // Register all tasks for ESA with the TaskManager.
 void RegisterAllTasks() {
   // Task to fetch Cloud policies for all GCPW users.
-  credential_provider::extension::TaskManager::Get()->RegisterTask(
-      "FetchCloudPolicies",
-      credential_provider::UserPoliciesManager::GetFetchPoliciesTaskCreator());
+  if (credential_provider::UserPoliciesManager::Get()->CloudPoliciesEnabled()) {
+    credential_provider::extension::TaskManager::Get()->RegisterTask(
+        "FetchCloudPolicies", credential_provider::UserPoliciesManager::
+                                  GetFetchPoliciesTaskCreator());
+  }
 }
 
 int APIENTRY wWinMain(HINSTANCE hInstance,
