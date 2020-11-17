@@ -479,7 +479,7 @@
   {
     "name": "chrome-share-highlights-android",
     "owners": [ "gayane" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "chrome-share-long-screenshot",
