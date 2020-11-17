@@ -5588,6 +5588,9 @@
   <message name="IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE" desc="" translateable="false">
     <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph> isn't allowed on this device. Contact your administrator. Error code: <ph name="ERROR_CODE">$2<ex>7</ex></ph>.
   </message>
+  <message name="IDS_BOREALIS_INSTALLER_OFFLINE_MESSAGE" desc="" translateable="false">
+    Your device is offline, please connect to the internet and try again.
+  </message>
   <message name="IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE" desc="" translateable="false">
     Your device needs to be updated before you can use <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>.
   </message>

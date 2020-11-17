@@ -296,6 +296,9 @@ base::string16 BorealisInstallerView::GetSecondaryMessage() const {
               IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE, app_name_,
               base::NumberToString16(
                   static_cast<std::underlying_type_t<ResultEnum>>(*result_)));
+        case ResultEnum::kOffline:
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_INSTALLER_OFFLINE_MESSAGE);
         // DLC Failures.
         case ResultEnum::kDlcInternalError:
           return l10n_util::GetStringFUTF16(

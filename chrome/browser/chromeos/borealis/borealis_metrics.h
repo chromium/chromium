@@ -29,7 +29,8 @@ enum class BorealisInstallResult {
   kDlcNeedRebootError = 7,
   kDlcNeedSpaceError = 8,
   kDlcUnknownError = 9,
-  kMaxValue = kDlcUnknownError,
+  kOffline = 10,
+  kMaxValue = kOffline,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

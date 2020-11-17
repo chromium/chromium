@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 
 namespace borealis {
 
@@ -41,6 +42,12 @@ void BorealisInstallerImpl::Start() {
     InstallationEnded(BorealisInstallResult::kBorealisInstallInProgress);
     return;
   }
+
+  if (content::GetNetworkConnectionTracker()->IsOffline()) {
+    InstallationEnded(BorealisInstallResult::kOffline);
+    return;
+  }
+
   installation_start_tick_ = base::TimeTicks::Now();
 
   progress_ = 0;
