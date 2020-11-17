@@ -166,10 +166,6 @@ class ExtensionAction {
   // - The default badge text, if set, otherwise: an empty string.
   std::string GetDisplayBadgeText(int tab_id) const;
 
-  // Returns whether this extension action is using the DNR action count as its
-  // badge text.
-  bool UseDNRActionCountAsBadgeText(int tab_id) const;
-
   // Set this action's badge visibility on a specific tab.  Returns true if
   // the visibility has changed.
   bool SetIsVisible(int tab_id, bool value);

@@ -31,6 +31,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
@@ -513,18 +514,24 @@ ExtensionActionGetPopupFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
-  // Return a placeholder value if the extension has enabled using
-  // declarativeNetRequest action count as badge text and the badge count shown
-  // for this tab is the number of actions matched.
-  std::string badge_text =
-      extension_action_->UseDNRActionCountAsBadgeText(tab_id_)
-          ? declarative_net_request::kActionCountPlaceholderBadgeText
-          : extension_action_->GetExplicitlySetBadgeText(tab_id_);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  bool is_dnr_action_count_active =
+      prefs->GetDNRUseActionCountAsBadgeText(extension_id()) &&
+      !extension_action_->HasBadgeText(tab_id_);
 
-  // TODO(crbug.com/990224): Document this behavior once
-  // chrome.declarativeNetRequest.setExtensionActionOptions is promoted to beta
-  // from trunk.
-  return RespondNow(OneArgument(base::Value(std::move(badge_text))));
+  // Ensure that the placeholder string is returned if this extension is
+  // displaying action counts for the badge labels and the extension doesn't
+  // have permission to view the action count for this tab. Note that
+  // tab-specific badge text takes priority over the action count.
+  if (is_dnr_action_count_active &&
+      !declarative_net_request::HasDNRFeedbackPermission(extension(),
+                                                         tab_id_)) {
+    return RespondNow(OneArgument(base::Value(
+        std::move(declarative_net_request::kActionCountPlaceholderBadgeText))));
+  }
+
+  return RespondNow(OneArgument(
+      base::Value(extension_action_->GetDisplayBadgeText(tab_id_))));
 }
 
 ExtensionFunction::ResponseAction

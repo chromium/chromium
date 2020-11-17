@@ -27,6 +27,8 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
+#include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace extensions {
@@ -357,6 +359,16 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
   }
 
   return enabled_static_rule_count;
+}
+
+bool HasDNRFeedbackPermission(const Extension* extension,
+                              const base::Optional<int>& tab_id) {
+  const PermissionsData* permissions_data = extension->permissions_data();
+  return tab_id.has_value()
+             ? permissions_data->HasAPIPermissionForTab(
+                   *tab_id, APIPermission::kDeclarativeNetRequestFeedback)
+             : permissions_data->HasAPIPermission(
+                   APIPermission::kDeclarativeNetRequestFeedback);
 }
 
 }  // namespace declarative_net_request

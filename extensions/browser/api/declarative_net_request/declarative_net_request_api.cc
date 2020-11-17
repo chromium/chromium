@@ -50,16 +50,8 @@ bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
                             const Extension* extension,
                             base::Optional<int> tab_id,
                             std::string* error) {
-  const PermissionsData* permissions_data = extension->permissions_data();
-
-  const auto kFeedbackPermission =
-      APIPermission::kDeclarativeNetRequestFeedback;
-
-  bool can_call = tab_id.has_value()
-                      ? permissions_data->HasAPIPermissionForTab(
-                            *tab_id, kFeedbackPermission)
-                      : permissions_data->HasAPIPermission(kFeedbackPermission);
-
+  bool can_call =
+      declarative_net_request::HasDNRFeedbackPermission(extension, tab_id);
   if (!can_call)
     *error = declarative_net_request::kErrorGetMatchedRulesMissingPermissions;
 

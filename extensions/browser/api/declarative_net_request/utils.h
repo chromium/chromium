@@ -143,6 +143,12 @@ T CreateString(const flatbuffers::String& str) {
 // |composite_matcher|.
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 
+// Returns true if |extension| has the declarativeNetRequestFeedback permission
+// for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
+// permissions are checked.
+bool HasDNRFeedbackPermission(const Extension* extension,
+                              const base::Optional<int>& tab_id);
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

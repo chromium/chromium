@@ -3083,11 +3083,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestPriority) {
 }
 
 // Test that the extension cannot retrieve the number of actions matched
-// from the badge text by calling chrome.browserAction.getBadgeText.
+// from the badge text by calling chrome.browserAction.getBadgeText, unless
+// it has the declarativeNetRequestFeedback permission or activeTab is granted
+// for the tab.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        GetBadgeTextForActionsMatched) {
-  auto query_badge_text_from_ext = [this](const ExtensionId& extension_id,
-                                          int tab_id) {
+  auto query_badge_text = [this](const ExtensionId& extension_id, int tab_id) {
     static constexpr char kBadgeTextQueryScript[] = R"(
         chrome.browserAction.getBadgeText({tabId: %d}, badgeText => {
           window.domAutomationController.send(badgeText);
@@ -3098,69 +3099,142 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         extension_id, base::StringPrintf(kBadgeTextQueryScript, tab_id));
   };
 
-  // Load the extension with a background script so scripts can be run from its
-  // generated background page.
-  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
-
   TestRule rule = CreateGenericRule();
-  rule.condition->url_filter = "abc.com";
+  rule.condition->url_filter = "def.com";
   rule.id = kMinValidID;
-  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+  rule.condition->resource_types = std::vector<std::string>({"sub_frame"});
   rule.action->type = "block";
 
-  std::vector<TestRule> rules({rule});
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasActiveTab);
+
+  // Create the first extension.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
-      {rules}, "test_extension", {URLPattern::kAllUrlsPattern}));
-
-  const ExtensionId& extension_id = last_loaded_extension_id();
-  const Extension* dnr_extension = last_loaded_extension();
-
-  ExtensionAction* action =
+      {rule}, "test_extension", {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_1 = last_loaded_extension();
+  ExtensionAction* action_1 =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
-          ->GetExtensionAction(*dnr_extension);
+          ->GetExtensionAction(*extension_1);
+
+  TestRule rule_2 = CreateGenericRule();
+  rule_2.condition->url_filter = "ghi.com";
+  rule_2.id = kMinValidID;
+  rule_2.condition->resource_types = std::vector<std::string>({"sub_frame"});
+  rule_2.action->type = "block";
+
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  // Create the second extension with the feedback permission.
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {rule_2}, "test_extension_2", {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_2 = last_loaded_extension();
+  ExtensionAction* action_2 =
+      ExtensionActionManager::Get(web_contents()->GetBrowserContext())
+          ->GetExtensionAction(*extension_2);
 
   const std::string default_badge_text = "asdf";
-  action->SetBadgeText(ExtensionAction::kDefaultTabId, default_badge_text);
+  action_1->SetBadgeText(ExtensionAction::kDefaultTabId, default_badge_text);
+  action_2->SetBadgeText(ExtensionAction::kDefaultTabId, default_badge_text);
 
-  const GURL page_url = embedded_test_server()->GetURL(
-      "abc.com", "/pages_with_script/index.html");
+  // Navigate to a page with two frames, no requests should be blocked
+  // initially.
+  const GURL page_url =
+      embedded_test_server()->GetURL("abc.com", "/page_with_two_frames.html");
   ui_test_utils::NavigateToURL(browser(), page_url);
+
+  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents());
+  ActiveTabPermissionGranter* active_tab_granter =
+      tab_helper->active_tab_permission_granter();
+  ASSERT_TRUE(active_tab_granter);
 
   // The preference is initially turned off. Both the visible badge text and the
   // badge text queried by the extension using getBadgeText() should return the
   // default badge text.
   int first_tab_id = ExtensionTabUtil::GetTabId(web_contents());
-  EXPECT_EQ(default_badge_text, action->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ(default_badge_text, action_1->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ(default_badge_text, action_2->GetDisplayBadgeText(first_tab_id));
 
-  std::string queried_badge_text =
-      query_badge_text_from_ext(extension_id, first_tab_id);
-  EXPECT_EQ(default_badge_text, queried_badge_text);
+  EXPECT_EQ(default_badge_text,
+            query_badge_text(extension_1->id(), first_tab_id));
+  EXPECT_EQ(default_badge_text,
+            query_badge_text(extension_2->id(), first_tab_id));
 
-  SetActionsAsBadgeText(extension_id, true);
+  SetActionsAsBadgeText(extension_1->id(), true);
+  SetActionsAsBadgeText(extension_2->id(), true);
+
+  // After enabling the preference the visible badge text should remain as the
+  // default initially, as the action count for the tab is still 0 for both
+  // extensions.
+  EXPECT_EQ(default_badge_text, action_1->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ(default_badge_text, action_2->GetDisplayBadgeText(first_tab_id));
+
   // Since the preference is on for the current tab, attempting to query the
-  // badge text from the extension should return the placeholder text instead of
-  // the matched action count.
-  queried_badge_text = query_badge_text_from_ext(extension_id, first_tab_id);
+  // badge text should return the placeholder text instead of the matched action
+  // count for |extension_1|.
   EXPECT_EQ(declarative_net_request::kActionCountPlaceholderBadgeText,
-            queried_badge_text);
+            query_badge_text(extension_1->id(), first_tab_id));
+
+  // The placeholder should not be returned if the declarativeNetRequestFeedback
+  // permission is enabled.
+  EXPECT_EQ(default_badge_text,
+            query_badge_text(extension_2->id(), first_tab_id));
+
+  // |extension_1| should block this frame navigation.
+  NavigateFrame("frame1", embedded_test_server()->GetURL("def.com", "/"));
+  // |extension_2| should block this frame navigation.
+  NavigateFrame("frame2", embedded_test_server()->GetURL("ghi.com", "/"));
 
   // One action was matched, and this should be reflected in the badge text.
-  EXPECT_EQ("1", action->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ("1", action_1->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ("1", action_2->GetDisplayBadgeText(first_tab_id));
 
-  SetActionsAsBadgeText(extension_id, false);
+  // The placeholder should still be returned for the first extension, but the
+  // second extension with permission should now return the action count.
+  EXPECT_EQ(declarative_net_request::kActionCountPlaceholderBadgeText,
+            query_badge_text(extension_1->id(), first_tab_id));
+  EXPECT_EQ("1", query_badge_text(extension_2->id(), first_tab_id));
+
+  // Tab-specific badge text should take priority over the action count and
+  // placeholder text.
+  action_1->SetBadgeText(first_tab_id, "text_1");
+  action_2->SetBadgeText(first_tab_id, "text_2");
+  EXPECT_EQ("text_1", query_badge_text(extension_1->id(), first_tab_id));
+  EXPECT_EQ("text_2", query_badge_text(extension_2->id(), first_tab_id));
+
+  action_1->ClearBadgeText(first_tab_id);
+  action_2->ClearBadgeText(first_tab_id);
+
+  // Querying the badge text with the activeTab access for the current tab
+  // should provide the matched action count.
+  active_tab_granter->GrantIfRequested(extension_1);
+  EXPECT_EQ("1", query_badge_text(extension_1->id(), first_tab_id));
+  // Revoking activeTab should cause the placeholder text to be returned again
+  // since we don't have the declarativeNetRequestFeedback permission.
+  active_tab_granter->RevokeForTesting();
+  EXPECT_EQ(declarative_net_request::kActionCountPlaceholderBadgeText,
+            query_badge_text(extension_1->id(), first_tab_id));
+
+  SetActionsAsBadgeText(extension_1->id(), false);
+  SetActionsAsBadgeText(extension_2->id(), false);
+
   // Switching the preference off should cause the extension queried badge text
   // to be the explicitly set badge text for this tab if it exists. In this
   // case, the queried badge text should be the default badge text.
-  queried_badge_text = query_badge_text_from_ext(extension_id, first_tab_id);
-  EXPECT_EQ(default_badge_text, queried_badge_text);
+  EXPECT_EQ(default_badge_text,
+            query_badge_text(extension_1->id(), first_tab_id));
+  EXPECT_EQ(default_badge_text,
+            query_badge_text(extension_2->id(), first_tab_id));
 
   // The displayed badge text should be the default badge text now that the
   // preference is off.
-  EXPECT_EQ(default_badge_text, action->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ(default_badge_text, action_1->GetDisplayBadgeText(first_tab_id));
+  EXPECT_EQ(default_badge_text, action_2->GetDisplayBadgeText(first_tab_id));
 
   // Verify that turning off the preference deletes the DNR action count within
   // the extension action.
-  EXPECT_FALSE(action->HasDNRActionCount(first_tab_id));
+  EXPECT_FALSE(action_1->HasDNRActionCount(first_tab_id));
+  EXPECT_FALSE(action_2->HasDNRActionCount(first_tab_id));
 }
 
 // Test that enabling the "displayActionCountAsBadgeText" preference using

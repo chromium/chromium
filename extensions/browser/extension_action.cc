@@ -260,16 +260,13 @@ gfx::Image ExtensionAction::GetPlaceholderIconImage() const {
 }
 
 std::string ExtensionAction::GetDisplayBadgeText(int tab_id) const {
-  return UseDNRActionCountAsBadgeText(tab_id)
-             ? base::NumberToString(GetDNRActionCount(tab_id))
-             : GetExplicitlySetBadgeText(tab_id);
-}
-
-bool ExtensionAction::UseDNRActionCountAsBadgeText(int tab_id) const {
   // Tab specific badge text set by an extension overrides the automatically set
   // action count. Action count should only be shown if at least one action is
   // matched.
-  return !HasBadgeText(tab_id) && GetDNRActionCount(tab_id) > 0;
+  bool use_dnr_action_count =
+      !HasBadgeText(tab_id) && GetDNRActionCount(tab_id) > 0;
+  return use_dnr_action_count ? base::NumberToString(GetDNRActionCount(tab_id))
+                              : GetExplicitlySetBadgeText(tab_id);
 }
 
 bool ExtensionAction::HasPopupUrl(int tab_id) const {
