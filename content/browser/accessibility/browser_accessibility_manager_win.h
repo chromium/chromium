@@ -112,8 +112,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
       FirePlatformSelectionEventsCallback fire_platform_events_callback);
 
   void HandleAriaPropertiesChangedEvent(BrowserAccessibility& node);
-  void HandleTextChangedEvent(BrowserAccessibility& node);
-  void HandleTextSelectionChangedEvent(BrowserAccessibility& node);
+  void EnqueueTextChangedEvent(BrowserAccessibility& node);
+  void EnqueueSelectionChangedEvent(BrowserAccessibility& node);
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
@@ -130,18 +130,17 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // so we only fire the event once for every node.
   std::set<BrowserAccessibility*> aria_properties_events_;
 
-  // Since there could be duplicate text selection changed events on a node
-  // raised from both FireBlinkEvent and FireGeneratedEvent, we use the set here
-  // to keep track of the unique nodes that had
-  // UIA_Text_TextSelectionChangedEventId, so we only fire the event once for
-  // every node.
-  std::set<BrowserAccessibility*> text_selection_changed_events_;
+  // Since there could be duplicate selection changed events on a node raised
+  // from both EventType::DOCUMENT_SELECTION_CHANGED and
+  // EventType::SELECTION_IN_TEXT_FIELD_CHANGED, we keep track of the unique
+  // nodes so we only fire the event once for every node.
+  std::set<BrowserAccessibility*> selection_changed_nodes_;
 
   // Since there could be duplicate text changed events on a node raised from
   // both FireBlinkEvent and FireGeneratedEvent, we use the set here to keep
   // track of the unique nodes that had UIA_Text_TextChangedEventId, so we only
   // fire the event once for every node.
-  std::set<BrowserAccessibility*> text_changed_events_;
+  std::set<BrowserAccessibility*> text_changed_nodes_;
 
   // When the ignored state changes for a node, we only want to fire the
   // events relevant to the ignored state change (e.g. show / hide).

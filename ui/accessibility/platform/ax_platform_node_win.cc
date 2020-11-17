@@ -7923,8 +7923,7 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
 
     case UIA_TextEditPatternId:
     case UIA_TextPatternId:
-      if (IsText() || IsDocument() ||
-          HasBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot)) {
+      if (IsDocument() || IsTextField() || IsText()) {
         return &AXPlatformNodeTextProviderWin::CreateIUnknown;
       }
       break;

@@ -138,10 +138,7 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(
       // TODO(crbug.com/1049261) Remove when Views are exposed in the AXTree
       // which will fire generated text-changed events.
       if (!node->IsWebContent())
-        HandleTextChangedEvent(*node);
-      break;
-    case ax::mojom::Event::kTextSelectionChanged:
-      HandleTextSelectionChangedEvent(*node);
+        EnqueueTextChangedEvent(*node);
       break;
     default:
       break;
@@ -228,13 +225,25 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireUiaPropertyChangedEvent(UIA_FullDescriptionPropertyId, node);
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
-      // Fire the event on the object where the focus of the selection is.
+      // Fire the event on the object where the focus of the selection is. This
+      // is because the focus is the only endpoint that can move, and because
+      // the caret (if present) is at the focus.
       ui::AXNode::AXID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
-      if (focus_object && focus_object->HasVisibleCaretOrSelection())
-        FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
-      HandleTextSelectionChangedEvent(*node);
+      if (focus_object) {
+        EnqueueSelectionChangedEvent(*focus_object);
+        if (BrowserAccessibility* text_field =
+                focus_object->GetTextFieldAncestor()) {
+          EnqueueSelectionChangedEvent(*text_field);
+        } else {
+          // Fire the event on the root object, which in the absence of a text
+          // field ancestor is the closest UIA text provider (other than the
+          // focused object) in which the selection has changed.
+          DCHECK(node->IsDocument());
+          EnqueueSelectionChangedEvent(*node);
+        }
+      }
       break;
     }
     // aria-dropeffect is deprecated in WAI-ARIA 1.1.
@@ -242,7 +251,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-      HandleTextChangedEvent(*node);
+      EnqueueTextChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::ENABLED_CHANGED:
       FireUiaPropertyChangedEvent(UIA_IsEnabledPropertyId, node);
@@ -337,8 +346,8 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::NAME_CHANGED:
-      if (ui::IsText(node->GetRole())) {
-        HandleTextChangedEvent(*node);
+      if (node->IsText()) {
+        EnqueueTextChangedEvent(*node);
       } else {
         FireUiaPropertyChangedEvent(UIA_NamePropertyId, node);
       }
@@ -420,7 +429,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
       // By changing the value of a combo box, the document's text contents will
       // also have changed.
-      HandleTextChangedEvent(*node);
+      EnqueueTextChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
       FireUiaPropertyChangedEvent(UIA_SizeOfSetPropertyId, node);
@@ -440,13 +449,13 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, node);
-      HandleTextChangedEvent(*node);
+      EnqueueTextChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       DCHECK(node->IsTextField());
       FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, node);
       FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
-      HandleTextChangedEvent(*node);
+      EnqueueTextChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       FireWinAccessibilityEvent(EVENT_OBJECT_STATECHANGE, node);
@@ -844,26 +853,25 @@ void BrowserAccessibilityManagerWin::HandleAriaPropertiesChangedEvent(
   aria_properties_events_.insert(&node);
 }
 
-void BrowserAccessibilityManagerWin::HandleTextChangedEvent(
+void BrowserAccessibilityManagerWin::EnqueueTextChangedEvent(
     BrowserAccessibility& node) {
   DCHECK_IN_ON_ACCESSIBILITY_EVENTS();
   if (BrowserAccessibility* text_provider = GetUiaTextPatternProvider(node))
-    text_changed_events_.insert(text_provider);
+    text_changed_nodes_.insert(text_provider);
 }
 
-void BrowserAccessibilityManagerWin::HandleTextSelectionChangedEvent(
+void BrowserAccessibilityManagerWin::EnqueueSelectionChangedEvent(
     BrowserAccessibility& node) {
   DCHECK_IN_ON_ACCESSIBILITY_EVENTS();
-  if (BrowserAccessibility* text_provider = GetUiaTextPatternProvider(node))
-    text_selection_changed_events_.insert(text_provider);
+  selection_changed_nodes_.insert(&node);
 }
 
 void BrowserAccessibilityManagerWin::BeforeAccessibilityEvents() {
   BrowserAccessibilityManager::BeforeAccessibilityEvents();
 
   DCHECK(aria_properties_events_.empty());
-  DCHECK(text_changed_events_.empty());
-  DCHECK(text_selection_changed_events_.empty());
+  DCHECK(text_changed_nodes_.empty());
+  DCHECK(selection_changed_nodes_.empty());
   DCHECK(ignored_changed_nodes_.empty());
 
   for (const auto& targeted_event : event_generator()) {
@@ -890,15 +898,28 @@ void BrowserAccessibilityManagerWin::FinalizeAccessibilityEvents() {
     FireUiaPropertyChangedEvent(UIA_AriaPropertiesPropertyId, event_node);
   aria_properties_events_.clear();
 
-  // Finalize text selection events.
-  for (BrowserAccessibility* event_node : text_selection_changed_events_)
-    FireUiaAccessibilityEvent(UIA_Text_TextSelectionChangedEventId, event_node);
-  text_selection_changed_events_.clear();
+  // Finalize selection changed events.
+  for (BrowserAccessibility* event_node : selection_changed_nodes_) {
+    DCHECK(event_node);
+    // IA2_EVENT_TEXT_CARET_MOVED events should not be fired on the document
+    // object, just because a selection has been made within it, because they
+    // would be both unnecessary and noisy.
+    if (!event_node->IsDocument() && event_node->HasVisibleCaretOrSelection()) {
+      FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, event_node);
+    }
+    if (ToBrowserAccessibilityWin(event_node)
+            ->GetCOM()
+            ->IsPatternProviderSupported(UIA_TextPatternId)) {
+      FireUiaAccessibilityEvent(UIA_Text_TextSelectionChangedEventId,
+                                event_node);
+    }
+  }
+  selection_changed_nodes_.clear();
 
   // Finalize text changed events.
-  for (BrowserAccessibility* event_node : text_changed_events_)
+  for (BrowserAccessibility* event_node : text_changed_nodes_)
     FireUiaAccessibilityEvent(UIA_Text_TextChangedEventId, event_node);
-  text_changed_events_.clear();
+  text_changed_nodes_.clear();
 
   // Finalize selection item events.
   FinalizeSelectionEvents(

@@ -5644,6 +5644,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                grid_with_header_id};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
+  update.nodes[1].AddState(ax::mojom::State::kEditable);
+  update.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
+                                   true);
   update.nodes[2].id = meter_id;
   update.nodes[2].role = ax::mojom::Role::kMeter;
   update.nodes[3].id = group_with_scroll_id;
@@ -5704,7 +5707,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
             GetSupportedPatternsFromNodeId(root_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_ExpandCollapsePatternId, UIA_TextChildPatternId}),
+                        UIA_ExpandCollapsePatternId, UIA_TextChildPatternId,
+                        UIA_TextEditPatternId, UIA_TextPatternId}),
             GetSupportedPatternsFromNodeId(text_field_with_combo_box_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
