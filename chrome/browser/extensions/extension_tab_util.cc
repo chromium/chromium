@@ -768,6 +768,14 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
 }
 
 bool ExtensionTabUtil::IsKillURL(const GURL& url) {
+#if DCHECK_IS_ON()
+  // Caller should ensure that |url| is already "fixed up" by
+  // url_formatter::FixupURL, which (among many other things) takes care
+  // of rewriting about:kill into chrome://kill/.
+  if (url.SchemeIs(url::kAboutScheme))
+    DCHECK(url.IsAboutBlank() || url.IsAboutSrcdoc());
+#endif
+
   static const char* const kill_hosts[] = {
       chrome::kChromeUICrashHost,         chrome::kChromeUIDelayedHangUIHost,
       chrome::kChromeUIHangUIHost,        chrome::kChromeUIKillHost,
@@ -775,19 +783,10 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
       content::kChromeUIBrowserCrashHost, content::kChromeUIMemoryExhaustHost,
   };
 
-  // Check a fixed-up URL, to normalize the scheme and parse hosts correctly.
-  GURL fixed_url =
-      url_formatter::FixupURL(url.possibly_invalid_spec(), std::string());
-  if (!fixed_url.SchemeIs(content::kChromeUIScheme))
+  if (!url.SchemeIs(content::kChromeUIScheme))
     return false;
 
-  base::StringPiece fixed_host = fixed_url.host_piece();
-  for (size_t i = 0; i < base::size(kill_hosts); ++i) {
-    if (fixed_host == kill_hosts[i])
-      return true;
-  }
-
-  return false;
+  return base::Contains(kill_hosts, url.host_piece());
 }
 
 bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
@@ -797,6 +796,13 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
   GURL url =
       ExtensionTabUtil::ResolvePossiblyRelativeURL(url_string, extension);
 
+  // Ideally, the URL would only be "fixed" for user input (e.g. for URLs
+  // entered into the Omnibox), but some extensions rely on the legacy behavior
+  // where all navigations were subject to the "fixing".  See also
+  // https://crbug.com/1145381.
+  url = url_formatter::FixupURL(url.spec(), "" /* = desired_tld */);
+
+  // Reject invalid URLs.
   if (!url.is_valid()) {
     *error = ErrorUtils::FormatErrorMessage(tabs_constants::kInvalidUrlError,
                                             url_string);

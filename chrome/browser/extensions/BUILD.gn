@@ -861,6 +861,7 @@ static_library("extensions") {
     "//components/unified_consent",
     "//components/update_client",
     "//components/update_client:common_impl",
+    "//components/url_formatter",
     "//components/url_matcher",
     "//components/user_prefs",
     "//components/vector_icons",

@@ -206,6 +206,9 @@ class ExtensionTabUtil {
   // Returns true if navigating to |url| would kill a page or the browser
   // itself, whether by simulating a crash, browser quit, thread hang, or
   // equivalent. Extensions should be prevented from navigating to such URLs.
+  //
+  // The caller should ensure that |url| has already been "fixed up" by calling
+  // url_formatter::FixupURL.
   static bool IsKillURL(const GURL& url);
 
   // Resolves the URL and ensures the extension is allowed to navigate to it.
