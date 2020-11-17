@@ -24,8 +24,6 @@ component("tpm") {
   sources = [
     "install_attributes.cc",
     "install_attributes.h",
-    "tpm_password_fetcher.cc",
-    "tpm_password_fetcher.h",
     "tpm_token_info_getter.cc",
     "tpm_token_info_getter.h",
     "tpm_token_loader.cc",
