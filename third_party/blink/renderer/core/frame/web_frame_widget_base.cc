@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -1411,14 +1413,19 @@ void WebFrameWidgetBase::BeginCommitCompositorFrame() {
 void WebFrameWidgetBase::EndCommitCompositorFrame(
     base::TimeTicks commit_start_time) {
   DCHECK(commit_compositor_frame_start_time_.has_value());
-  CHECK(LocalRootImpl());
-  CHECK(LocalRootImpl()->GetFrame());
-  CHECK(LocalRootImpl()->GetFrame()->View());
-
   if (ForMainFrame()) {
     View()->Client()->DidCommitCompositorFrameForLocalMainFrame(
         commit_start_time);
     View()->UpdatePreferredSize();
+    if (!View()->MainFrameImpl()) {
+      // Trying to track down why the view's idea of the main frame varies
+      // from LocalRootImpl's.
+      // TODO(https://crbug.com/1139104): Remove this.
+      std::string reason = View()->GetNullFrameReasonForBug1139104();
+      DCHECK(false) << reason;
+      SCOPED_CRASH_KEY_STRING32(Crbug1139104, NullFrameReason, reason);
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   LocalRootImpl()

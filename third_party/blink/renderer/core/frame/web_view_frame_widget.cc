@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 
+#include "base/debug/crash_logging.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/platform.h"

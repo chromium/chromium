@@ -290,6 +290,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // outside this class.
   WebLocalFrameImpl* MainFrameImpl() const;
 
+  // TODO(https://crbug.com/1139104): Remove this.
+  std::string GetNullFrameReasonForBug1139104() const;
+
   // Changes the zoom and scroll for zooming into an editable element
   // with bounds |element_bounds_in_document| and caret bounds
   // |caret_bounds_in_document|.

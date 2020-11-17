@@ -408,6 +408,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   // So note that FromFrame may return nullptr even for non-null frames.
   static WebLocalFrameImpl* FromFrame(LocalFrame*);
   static WebLocalFrameImpl* FromFrame(LocalFrame&);
+  // TODO(https://crbug.com/1139104): Remove this.
+  static std::string GetNullFrameReasonForBug1139104(LocalFrame* frame);
 
   WebViewImpl* ViewImpl() const;
 

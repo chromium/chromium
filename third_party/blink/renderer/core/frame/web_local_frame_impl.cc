@@ -2151,6 +2151,19 @@ WebLocalFrameImpl* WebLocalFrameImpl::FromFrame(LocalFrame* frame) {
   return FromFrame(*frame);
 }
 
+std::string WebLocalFrameImpl::GetNullFrameReasonForBug1139104(
+    LocalFrame* frame) {
+  LocalFrameClient* client = frame->Client();
+  if (!client)
+    return "WebLocalFrameImpl::client";
+  if (!client->IsLocalFrameClientImpl())
+    return "WebLocalFrameImpl::client-not-local";
+  WebLocalFrame* web_frame = client->GetWebFrame();
+  if (!web_frame)
+    return "WebLocalFrameImpl::web_frame";
+  return "not-null";
+}
+
 WebLocalFrameImpl* WebLocalFrameImpl::FromFrame(LocalFrame& frame) {
   LocalFrameClient* client = frame.Client();
   if (!client || !client->IsLocalFrameClientImpl())

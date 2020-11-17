@@ -1947,6 +1947,18 @@ WebLocalFrameImpl* WebViewImpl::MainFrameImpl() const {
   return WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page->MainFrame()));
 }
 
+std::string WebViewImpl::GetNullFrameReasonForBug1139104() const {
+  Page* page = page_.Get();
+  if (!page)
+    return "WebViewImpl::page";
+  if (!page->MainFrame())
+    return "WebViewImpl::page->MainFrame";
+  LocalFrame* local_frame = DynamicTo<LocalFrame>(page->MainFrame());
+  if (!local_frame)
+    return "WebViewImpl::local_frame";
+  return WebLocalFrameImpl::GetNullFrameReasonForBug1139104(local_frame);
+}
+
 void WebViewImpl::DidAttachLocalMainFrame() {
   DCHECK(MainFrameImpl());
 
