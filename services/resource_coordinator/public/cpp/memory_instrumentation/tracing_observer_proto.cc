@@ -120,6 +120,7 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
     smaps_packet->set_timestamp_clock_id(tracing::kTraceClockId);
     perfetto::protos::pbzero::SmapsPacket* smaps =
         smaps_packet->set_smaps_packet();
+    smaps->set_pid(static_cast<uint32_t>(pid));
 
     MemoryMapsAsProtoInto(memory_maps, smaps, false);
 
