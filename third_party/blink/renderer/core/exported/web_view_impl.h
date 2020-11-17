@@ -479,8 +479,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when keyboard focus switches to an anchor with the given URL.
   void SetKeyboardFocusURL(const KURL&);
 
-  void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
-
   // Asks the browser process to activate this web view.
   void Focus();
 
@@ -495,6 +493,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
             bool opened_by_user_gesture);
 
   void SetWindowRect(const gfx::Rect& bounds);
+
+  // TODO(crbug.com/1149992): This is called from the associated widget and this
+  // code should eventually move out of WebView into somewhere else.
+  void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
 
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
@@ -527,8 +529,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
   void ThemeChanged();
-  void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
-  void RecordManipulationTypeCounts(cc::ManipulationInfo info);
   void MouseCaptureLost();
   void SetFocus(bool enable) override;
 

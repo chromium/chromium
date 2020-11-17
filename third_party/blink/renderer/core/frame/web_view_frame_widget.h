@@ -89,11 +89,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   bool ShouldHandleImeEvents() override;
 
   // WidgetBaseClient overrides:
-  void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
-  void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void FocusChanged(bool enabled) override;
-  void RunPaintBenchmark(int repeat_count,
-                         cc::PaintBenchmarkResult& result) override;
 
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);

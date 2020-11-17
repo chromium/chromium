@@ -92,16 +92,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::ApplyViewportChanges(
-    const ApplyViewportChangesArgs& args) {
-  web_view_->ApplyViewportChanges(args);
-}
-
-void WebViewFrameWidget::RecordManipulationTypeCounts(
-    cc::ManipulationInfo info) {
-  web_view_->RecordManipulationTypeCounts(info);
-}
-
 void WebViewFrameWidget::MouseCaptureLost() {
   mouse_capture_element_ = nullptr;
   web_view_->MouseCaptureLost();
@@ -407,11 +397,6 @@ void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
   blink::ScreenInfo info = widget_base_->GetScreenInfo();
   info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
   widget_base_->UpdateScreenInfo(info);
-}
-
-void WebViewFrameWidget::RunPaintBenchmark(int repeat_count,
-                                           cc::PaintBenchmarkResult& result) {
-  web_view_->RunPaintBenchmark(repeat_count, result);
 }
 
 void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(

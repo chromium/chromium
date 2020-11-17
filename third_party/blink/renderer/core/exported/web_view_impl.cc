@@ -3496,29 +3496,6 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
     MainFrameImpl()->GetFrame()->GetEventHandler().MarkHoverStateDirty();
 }
 
-void WebViewImpl::RecordManipulationTypeCounts(cc::ManipulationInfo info) {
-  if (!MainFrameImpl())
-    return;
-
-  if ((info & cc::kManipulationInfoWheel) == cc::kManipulationInfoWheel) {
-    UseCounter::Count(MainFrameImpl()->GetDocument(),
-                      WebFeature::kScrollByWheel);
-  }
-  if ((info & cc::kManipulationInfoTouch) == cc::kManipulationInfoTouch) {
-    UseCounter::Count(MainFrameImpl()->GetDocument(),
-                      WebFeature::kScrollByTouch);
-  }
-  if ((info & cc::kManipulationInfoPinchZoom) ==
-      cc::kManipulationInfoPinchZoom) {
-    UseCounter::Count(MainFrameImpl()->GetDocument(), WebFeature::kPinchZoom);
-  }
-  if ((info & cc::kManipulationInfoPrecisionTouchPad) ==
-      cc::kManipulationInfoPrecisionTouchPad) {
-    UseCounter::Count(MainFrameImpl()->GetDocument(),
-                      WebFeature::kScrollByPrecisionTouchPad);
-  }
-}
-
 Node* WebViewImpl::FindNodeFromScrollableCompositorElementId(
     cc::ElementId element_id) const {
   if (!GetPage())
@@ -3636,13 +3613,6 @@ void WebViewImpl::StopDeferringMainFrameUpdate() {
 void WebViewImpl::SetDeviceColorSpaceForTesting(
     const gfx::ColorSpace& color_space) {
   web_widget_->SetDeviceColorSpaceForTesting(color_space);
-}
-
-void WebViewImpl::RunPaintBenchmark(int repeat_count,
-                                    cc::PaintBenchmarkResult& result) {
-  DCHECK(MainFrameImpl());
-  if (auto* frame_view = MainFrameImpl()->GetFrameView())
-    frame_view->RunPaintBenchmark(repeat_count, result);
 }
 
 }  // namespace blink

@@ -364,6 +364,8 @@ class CORE_EXPORT WebFrameWidgetBase
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
+  void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
+  void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) override;
@@ -415,6 +417,8 @@ class CORE_EXPORT WebFrameWidgetBase
       override;
   void WasHidden() override;
   void WasShown(bool was_evicted) override;
+  void RunPaintBenchmark(int repeat_count,
+                         cc::PaintBenchmarkResult& result) override;
   KURL GetURLForDebugTrace() override;
   float GetTestingDeviceScaleFactorOverride() override;
 

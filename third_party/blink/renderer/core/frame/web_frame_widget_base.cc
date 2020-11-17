@@ -1518,6 +1518,38 @@ void WebFrameWidgetBase::EndCommitCompositorFrame(
   commit_compositor_frame_start_time_.reset();
 }
 
+void WebFrameWidgetBase::ApplyViewportChanges(
+    const ApplyViewportChangesArgs& args) {
+  // Viewport changes only change the main frame.
+  if (!ForMainFrame())
+    return;
+  View()->ApplyViewportChanges(args);
+}
+
+void WebFrameWidgetBase::RecordManipulationTypeCounts(
+    cc::ManipulationInfo info) {
+  // Manipulation counts are only recorded for the main frame.
+  if (!ForMainFrame())
+    return;
+  if ((info & cc::kManipulationInfoWheel) == cc::kManipulationInfoWheel) {
+    UseCounter::Count(LocalRootImpl()->GetDocument(),
+                      WebFeature::kScrollByWheel);
+  }
+  if ((info & cc::kManipulationInfoTouch) == cc::kManipulationInfoTouch) {
+    UseCounter::Count(LocalRootImpl()->GetDocument(),
+                      WebFeature::kScrollByTouch);
+  }
+  if ((info & cc::kManipulationInfoPinchZoom) ==
+      cc::kManipulationInfoPinchZoom) {
+    UseCounter::Count(LocalRootImpl()->GetDocument(), WebFeature::kPinchZoom);
+  }
+  if ((info & cc::kManipulationInfoPrecisionTouchPad) ==
+      cc::kManipulationInfoPrecisionTouchPad) {
+    UseCounter::Count(LocalRootImpl()->GetDocument(),
+                      WebFeature::kScrollByPrecisionTouchPad);
+  }
+}
+
 void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(
     base::TimeTicks raf_aligned_input_start_time) {
   if (LocalRootImpl()) {
@@ -3127,6 +3159,14 @@ void WebFrameWidgetBase::WasShown(bool was_evicted) {
           remote_frame->Client()->WasEvicted();
         }));
   }
+}
+
+void WebFrameWidgetBase::RunPaintBenchmark(int repeat_count,
+                                           cc::PaintBenchmarkResult& result) {
+  if (!ForMainFrame())
+    return;
+  if (auto* frame_view = LocalRootImpl()->GetFrameView())
+    frame_view->RunPaintBenchmark(repeat_count, result);
 }
 
 void WebFrameWidgetBase::NotifyInputObservers(
