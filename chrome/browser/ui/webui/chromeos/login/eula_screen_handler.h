@@ -34,9 +34,9 @@ class EulaView {
   virtual void Hide() = 0;
   virtual void Bind(EulaScreen* screen) = 0;
   virtual void Unbind() = 0;
-  virtual void OnPasswordFetched(const std::string& tpm_password) = 0;
   virtual void ShowStatsUsageLearnMore() = 0;
   virtual void ShowAdditionalTosDialog() = 0;
+  virtual void ShowSecuritySettingsDialog() = 0;
 };
 
 // WebUI implementation of EulaScreenView. It is used to interact
@@ -54,9 +54,9 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   void Hide() override;
   void Bind(EulaScreen* screen) override;
   void Unbind() override;
-  void OnPasswordFetched(const std::string& tpm_password) override;
   void ShowStatsUsageLearnMore() override;
   void ShowAdditionalTosDialog() override;
+  void ShowSecuritySettingsDialog() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(

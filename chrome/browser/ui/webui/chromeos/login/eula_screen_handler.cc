@@ -139,10 +139,6 @@ void EulaScreenHandler::Initialize() {
   }
 }
 
-void EulaScreenHandler::OnPasswordFetched(const std::string& tpm_password) {
-  CallJS("login.EulaScreen.showSecuritySettingsDialog");
-}
-
 void EulaScreenHandler::ShowStatsUsageLearnMore() {
   if (!help_app_.get())
     help_app_ = new HelpAppLauncher(
@@ -152,6 +148,10 @@ void EulaScreenHandler::ShowStatsUsageLearnMore() {
 
 void EulaScreenHandler::ShowAdditionalTosDialog() {
   CallJS("login.EulaScreen.showAdditionalTosDialog");
+}
+
+void EulaScreenHandler::ShowSecuritySettingsDialog() {
+  CallJS("login.EulaScreen.showSecuritySettingsDialog");
 }
 
 void EulaScreenHandler::UpdateLocalizedValues(

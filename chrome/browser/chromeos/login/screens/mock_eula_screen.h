@@ -35,9 +35,9 @@ class MockEulaView : public EulaView {
 
   MOCK_METHOD(void, MockBind, (EulaScreen * screen));
   MOCK_METHOD(void, MockUnbind, ());
-  MOCK_METHOD(void, OnPasswordFetched, (const std::string& tpm_password));
   MOCK_METHOD(void, ShowStatsUsageLearnMore, ());
   MOCK_METHOD(void, ShowAdditionalTosDialog, ());
+  MOCK_METHOD(void, ShowSecuritySettingsDialog, ());
 
  private:
   EulaScreen* screen_ = nullptr;

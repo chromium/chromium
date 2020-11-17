@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chromeos/tpm/tpm_password_fetcher.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -20,10 +19,7 @@ class EulaView;
 
 // Representation independent class that controls OOBE screen showing EULA
 // to users.
-//
-// TODO(b/168852740): Clean up the password-related logic with the removal of
-// `TpmGetPassword` D-Bus method.
-class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
+class EulaScreen : public BaseScreen {
  public:
   enum class Result {
     // The user accepted EULA, and enabled usage stats reporting.
@@ -59,10 +55,6 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   // locale and manifest. Returns empty URL otherwise.
   GURL GetOemEulaUrl() const;
 
-  // Initiate TPM password fetch. Will call view's OnPasswordFetched() when
-  // done.
-  void InitiatePasswordFetch();
-
   void SetUsageStatsEnabled(bool enabled);
 
   // Returns true if usage statistics reporting is enabled.
@@ -82,10 +74,10 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   void OnUserAction(const std::string& action_id) override;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
 
-  // TpmPasswordFetcherDelegate implementation:
-  void OnPasswordFetched(const std::string& tpm_password) override;
+  // EulaView:
   void ShowStatsUsageLearnMore();
   void ShowAdditionalTosDialog();
+  void ShowSecuritySettingsDialog();
 
   // URL of the OEM EULA page (on disk).
   GURL oem_eula_page_;
@@ -100,8 +92,6 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   EulaView* view_;
 
   ScreenExitCallback exit_callback_;
-
-  TpmPasswordFetcher password_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(EulaScreen);
 };
