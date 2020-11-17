@@ -101,10 +101,6 @@ StyleResolverState::~StyleResolverState() {
   animation_update_.Clear();
 }
 
-TreeScope& StyleResolverState::GetTreeScope() const {
-  return GetElement().GetTreeScope();
-}
-
 void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
   // FIXME: Improve RAII of StyleResolverState to remove this function.
   style_ = std::move(style);

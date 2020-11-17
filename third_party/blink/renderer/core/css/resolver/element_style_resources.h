@@ -44,7 +44,6 @@ class PseudoElement;
 class SVGResource;
 class StyleImage;
 class StylePendingImage;
-class TreeScope;
 
 namespace cssvalue {
 
@@ -70,7 +69,6 @@ class ElementStyleResources {
 
   enum AllowExternal { kDontAllowExternalResource, kAllowExternalResource };
   SVGResource* GetSVGResourceFromValue(
-      TreeScope&,
       const cssvalue::CSSURIValue&,
       AllowExternal = kDontAllowExternalResource) const;
 
@@ -89,7 +87,7 @@ class ElementStyleResources {
       FetchParameters::ImageRequestBehavior,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
-  Element* element_;
+  Element& element_;
   HashSet<CSSPropertyID> pending_image_properties_;
   float device_scale_factor_;
   PseudoElement* pseudo_element_;

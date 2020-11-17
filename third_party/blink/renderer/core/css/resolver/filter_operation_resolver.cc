@@ -174,8 +174,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
 
       SVGResource* resource =
           state.GetElementStyleResources().GetSVGResourceFromValue(
-              state.GetTreeScope(), *url_value,
-              ElementStyleResources::kAllowExternalResource);
+              *url_value, ElementStyleResources::kAllowExternalResource);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
               url_value->ValueForSerialization(), resource));

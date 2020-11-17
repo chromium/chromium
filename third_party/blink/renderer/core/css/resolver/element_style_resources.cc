@@ -55,7 +55,7 @@ namespace blink {
 ElementStyleResources::ElementStyleResources(Element& element,
                                              float device_scale_factor,
                                              PseudoElement* pseudo_element)
-    : element_(&element),
+    : element_(element),
       device_scale_factor_(device_scale_factor),
       pseudo_element_(pseudo_element) {}
 
@@ -100,17 +100,16 @@ StyleImage* ElementStyleResources::CachedOrPendingFromValue(
     pending_image_properties_.insert(property);
     return MakeGarbageCollected<StylePendingImage>(value);
   }
-  value.RestoreCachedResourceIfNeeded(element_->GetDocument());
+  value.RestoreCachedResourceIfNeeded(element_.GetDocument());
   return value.CachedImage();
 }
 
 SVGResource* ElementStyleResources::GetSVGResourceFromValue(
-    TreeScope& tree_scope,
     const cssvalue::CSSURIValue& value,
     AllowExternal allow_external) const {
-  if (value.IsLocal(element_->GetDocument())) {
+  if (value.IsLocal(element_.GetDocument())) {
     SVGTreeScopeResources& tree_scope_resources =
-        tree_scope.EnsureSVGTreeScopedResources();
+        element_.OriginatingTreeScope().EnsureSVGTreeScopedResources();
     AtomicString decoded_fragment(DecodeURLEscapeSequences(
         value.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
     return tree_scope_resources.ResourceForId(decoded_fragment);
@@ -131,7 +130,7 @@ void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
     if (!reference_operation)
       continue;
     if (SVGResource* resource = reference_operation->Resource())
-      resource->Load(element_->GetDocument());
+      resource->Load(element_.GetDocument());
   }
 }
 
@@ -151,7 +150,7 @@ StyleImage* ElementStyleResources::LoadPendingImage(
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) {
   if (CSSImageValue* image_value = pending_image->CssImageValue()) {
-    return image_value->CacheImage(element_->GetDocument(),
+    return image_value->CacheImage(element_.GetDocument(),
                                    image_request_behavior, cross_origin);
   }
 
@@ -163,12 +162,12 @@ StyleImage* ElementStyleResources::LoadPendingImage(
 
   if (CSSImageGeneratorValue* image_generator_value =
           pending_image->CssImageGeneratorValue()) {
-    image_generator_value->LoadSubimages(element_->GetDocument());
+    image_generator_value->LoadSubimages(element_.GetDocument());
     return MakeGarbageCollected<StyleGeneratedImage>(*image_generator_value);
   }
 
   if (CSSImageSetValue* image_set_value = pending_image->CssImageSetValue()) {
-    return image_set_value->CacheImage(element_->GetDocument(),
+    return image_set_value->CacheImage(element_.GetDocument(),
                                        device_scale_factor_,
                                        image_request_behavior, cross_origin);
   }
@@ -206,7 +205,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
             FetchParameters::ImageRequestBehavior image_request_behavior =
                 FetchParameters::kNone;
             if (!BackgroundLayerMayBeSprite(*background_layer)) {
-              if (element_->GetDocument()
+              if (element_.GetDocument()
                       .GetFrame()
                       ->GetLazyLoadImageSetting() ==
                   LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
@@ -218,7 +217,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
                                  image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
               LazyImageHelper::StartMonitoring(pseudo_element_ ? pseudo_element_
-                                                               : element_);
+                                                               : &element_);
             }
             background_layer->SetImage(new_image);
           }

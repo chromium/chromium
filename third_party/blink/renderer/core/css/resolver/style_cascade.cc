@@ -1008,7 +1008,7 @@ CSSVariableData* StyleCascade::GetVariableData(
 CSSVariableData* StyleCascade::GetEnvironmentVariable(
     const AtomicString& name) const {
   // If we are in a User Agent Shadow DOM then we should not record metrics.
-  ContainerNode& scope_root = state_.GetTreeScope().RootNode();
+  ContainerNode& scope_root = state_.GetElement().GetTreeScope().RootNode();
   auto* shadow_root = DynamicTo<ShadowRoot>(&scope_root);
   bool is_ua_scope = shadow_root && shadow_root->IsUserAgent();
 
