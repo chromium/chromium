@@ -70,7 +70,6 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
                             LaunchType launch_type,
                             bool enable_experimental_tabbed_window,
                             bool is_locally_installed,
-                            bool is_system_app,
                             InstallFinalizedCallback callback,
                             scoped_refptr<CrxInstaller> crx_installer,
                             const base::Optional<CrxInstallError>& error);

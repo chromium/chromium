@@ -19449,9 +19449,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SigninOrLockScreen" label="Sign in or lockscreen"/>
   <affected-histogram name="Webapp.InstallResult.System.Profiles"/>
   <affected-histogram
-      name="Webapp.InstallResultExtensionDisabledReason.System.Profiles"/>
-  <affected-histogram
-      name="Webapp.InstallResultExtensionError.System.Profiles"/>
+      name="Webapp.InstallResultExtensionDisabledReason.System.Profiles">
+    <obsolete>
+      Deprecated 11/2020. The affected histogram is deprecated.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Webapp.InstallResultExtensionError.System.Profiles">
+    <obsolete>
+      Deprecated 11/2020. The affected histogram is deprecated.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebappType" separator=".">

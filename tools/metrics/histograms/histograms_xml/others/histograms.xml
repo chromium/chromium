@@ -16451,8 +16451,10 @@ regressions. -->
 <histogram base="true"
     name="Webapp.InstallResultExtensionDisabledReason.System.Profiles"
     enum="ExtensionDisableReason" expires_after="2020-12-31">
-<!-- Name completed by histogram_suffixes name="WebAppSystemProfileCategory" -->
-
+  <obsolete>
+    Removed 11/2020, as the relevant code path is no longer executed after BMO
+    launch.
+  </obsolete>
   <owner>calamity@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <summary>
@@ -16467,8 +16469,10 @@ regressions. -->
 <histogram base="true"
     name="Webapp.InstallResultExtensionError.System.Profiles"
     enum="ExtensionInstallationCrxInstallError" expires_after="2020-12-31">
-<!-- Name completed by histogram_suffixes name="WebAppSystemProfileCategory" -->
-
+  <obsolete>
+    Removed 11/2020, as the relevant code path is no longer executed after BMO
+    launch.
+  </obsolete>
   <owner>calamity@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <summary>

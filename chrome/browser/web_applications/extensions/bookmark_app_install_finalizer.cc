@@ -41,11 +41,6 @@
 
 namespace extensions {
 
-static constexpr char kInstallResultExtensionErrorHistogramName[] =
-    "Webapp.InstallResultExtensionError.System.Profiles";
-static constexpr char kInstallResultExtensionDisabledReasonHistogramName[] =
-    "Webapp.InstallResultExtensionDisabledReason.System.Profiles";
-
 BookmarkAppInstallFinalizer::BookmarkAppInstallFinalizer(Profile* profile)
     : externally_installed_app_prefs_(profile->GetPrefs()), profile_(profile) {
   crx_installer_factory_ = base::BindRepeating([](Profile* profile) {
@@ -72,7 +67,6 @@ void BookmarkAppInstallFinalizer::FinalizeInstall(
       &BookmarkAppInstallFinalizer::OnExtensionInstalled,
       weak_ptr_factory_.GetWeakPtr(), web_app_info.start_url, launch_type,
       web_app_info.enable_experimental_tabbed_window, options.locally_installed,
-      options.install_source == WebappInstallSource::SYSTEM_DEFAULT,
       std::move(callback), crx_installer));
 
   switch (options.install_source) {
@@ -240,18 +234,10 @@ void BookmarkAppInstallFinalizer::OnExtensionInstalled(
     LaunchType launch_type,
     bool enable_experimental_tabbed_window,
     bool is_locally_installed,
-    bool is_system_app,
     InstallFinalizedCallback callback,
     scoped_refptr<CrxInstaller> crx_installer,
     const base::Optional<CrxInstallError>& error) {
   if (error) {
-    if (is_system_app) {
-      std::string extension_install_error_histogram_name =
-          std::string(kInstallResultExtensionErrorHistogramName) + "." +
-          web_app::GetProfileCategoryForLogging(profile_);
-      base::UmaHistogramEnumeration(extension_install_error_histogram_name,
-                                    error.value().detail());
-    }
     std::move(callback).Run(
         web_app::AppId(),
         web_app::InstallResultCode::kBookmarkExtensionInstallError);
@@ -266,13 +252,6 @@ void BookmarkAppInstallFinalizer::OnExtensionInstalled(
         ExtensionPrefs::Get(profile_)->GetDisableReasons(extension->id());
     LOG(ERROR) << "Installed extension was disabled: "
                << extension_disabled_reasons;
-    if (is_system_app) {
-      std::string extension_disabled_reason_histogram_name =
-          std::string(kInstallResultExtensionDisabledReasonHistogramName) +
-          "." + web_app::GetProfileCategoryForLogging(profile_);
-      base::UmaHistogramSparse(extension_disabled_reason_histogram_name,
-                               extension_disabled_reasons);
-    }
     std::move(callback).Run(web_app::AppId(),
                             web_app::InstallResultCode::kWebAppDisabled);
     return;
