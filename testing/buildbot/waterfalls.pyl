@@ -5798,6 +5798,18 @@
           ],
         },
       },
+      'chromeos-betty-pi-arc-chrome-dchecks': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-betty',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_vm_gtests',
+          'isolated_scripts': 'chromeos_isolated_scripts',
+        },
+      },
       'chromeos-eve-arc-r-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',

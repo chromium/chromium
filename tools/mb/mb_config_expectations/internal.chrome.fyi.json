@@ -27,6 +27,19 @@
       "use_vaapi": false
     }
   },
+  "chromeos-betty-pi-arc-chrome-dchecks": {
+    "args_file": "//build/args/chromeos/betty-pi-arc.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    }
+  },
   "linux-autofill-captured-sites-rel": {
     "gn_args": {
       "is_component_build": false,
