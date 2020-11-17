@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
  * This class is a helper class for the C++ layer. It responds whether the
@@ -28,8 +27,6 @@ public class AppBannerManagerHelper {
      * @return true if add to home screen is supported, false otherwise.
      */
     public static boolean isSupported() {
-        // TODO(mthiesse, https://crbug.com/840811): Support the app banner dialog in VR.
-        if (VrModuleProvider.getDelegate().isInVr()) return false;
         if (sIsSupported == null) {
             sIsSupported = ShortcutHelper.isAddToHomeIntentSupported();
         }
