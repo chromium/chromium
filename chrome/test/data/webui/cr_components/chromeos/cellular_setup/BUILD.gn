@@ -19,12 +19,14 @@ js_modulizer("modulize") {
     "setup_loading_page_test.js",
     "fake_cellular_setup_delegate.js",
     "fake_cellular_setup_remote.js",
+    "fake_esim_manager_remote.js",
     "fake_media_devices.js",
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites + [
                          "cellular_setup.FakeCellularSetupDelegate|FakeCellularSetupDelegate",
                          "cellular_setup.FakeCarrierPortalHandlerRemote|FakeCarrierPortalHandlerRemote",
                          "cellular_setup.FakeCellularSetupRemote|FakeCellularSetupRemote",
+                         "cellular_setup.FakeESimManagerRemote|FakeESimManagerRemote",
                          "cellular_setup.FakeMediaDevices|FakeMediaDevices",
                        ]
 }

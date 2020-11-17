@@ -70,6 +70,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ]],
   ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js',[
     './cellular_setup/fake_cellular_setup_delegate.js',
+    './cellular_setup/fake_esim_manager_remote.js',
   ]],
   ['FinalPage', 'cellular_setup/final_page_test.js', [
     './cellular_setup/fake_cellular_setup_delegate.js',

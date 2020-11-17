@@ -109,6 +109,7 @@ js_library("esim_flow_ui") {
   deps = [
     ":activation_code_page",
     ":cellular_setup_delegate",
+    ":mojo_interface_provider",
     ":profile_discovery_list_item",
     ":profile_discovery_list_page",
     ":subflow_behavior",
@@ -324,6 +325,7 @@ js_library("esim_flow_ui.m") {
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":final_page.m",
+    ":mojo_interface_provider.m",
     ":profile_discovery_list_item.m",
     ":profile_discovery_list_page.m",
     ":subflow_behavior.m",

@@ -46,6 +46,7 @@ if (optimize_webui) {
       # TODO(calamity): Update optimize_webui to handle generated files.
       "chrome://resources/chromeos/colors/cros_colors.generated.css",
       "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.html",
+      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.html",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html",
       "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
       "chrome://os-settings/app-management/app_management.mojom-lite.js",
@@ -93,8 +94,11 @@ if (optimize_webui) {
     ]
     excludes = [
       "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-lite.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
       "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
       "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/os_settings_resources_map.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/cellular_setup/cellular_setup_impl.h"
+#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -103,6 +105,11 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<cellular_setup::mojom::CellularSetup> receiver) {
   cellular_setup::CellularSetupImpl::CreateAndBindToReciever(
       std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+  ash::GetESimManager(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

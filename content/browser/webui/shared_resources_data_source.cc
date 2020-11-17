@@ -114,6 +114,12 @@ const std::map<int, std::string> CreateChromeosMojoResourceIdToAliasMap() {
       {IDR_CELLULAR_SETUP_MOJOM_LITE_JS,
        "mojo/chromeos/services/cellular_setup/public/mojom/"
        "cellular_setup.mojom-lite.js"},
+      {IDR_ESIM_MANAGER_MOJOM_HTML,
+       "mojo/chromeos/services/cellular_setup/public/mojom/"
+       "esim_manager.mojom.html"},
+      {IDR_ESIM_MANAGER_MOJOM_LITE_JS,
+       "mojo/chromeos/services/cellular_setup/public/mojom/"
+       "esim_manager.mojom-lite.js"},
       {IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
        "mojo/chromeos/services/device_sync/public/mojom/"
        "device_sync.mojom.html"},
