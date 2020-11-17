@@ -503,6 +503,20 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
+
+    // If text is being composed with an IME inline autocompletion is prevented.
+    realbox.$.input.value = 'hello 간';
+    const inputEvent = new CustomEvent('input');
+    inputEvent.isComposing = true;
+    realbox.$.input.dispatchEvent(inputEvent);
+
+    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+      assertEquals(decodeString16(args.input), realbox.$.input.value);
+      assertTrue(args.preventInlineAutocomplete);
+    });
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    testProxy.handler.reset();
   });
 
   //============================================================================

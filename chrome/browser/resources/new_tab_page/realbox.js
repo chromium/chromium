@@ -267,8 +267,11 @@ class RealboxElement extends PolymerElement {
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
-      this.updateInput_(
-          {inline: decodeString16(firstMatch.inlineAutocompletion)});
+      const inlineAutocompletion =
+          decodeString16(firstMatch.inlineAutocompletion);
+      if (inlineAutocompletion) {
+        this.updateInput_({inline: inlineAutocompletion});
+      }
 
       // Navigate to the default up-to-date match if the user typed and pressed
       // 'Enter' too fast.
@@ -355,9 +358,11 @@ class RealboxElement extends PolymerElement {
   }
 
   /**
+   * @param {!InputEvent} e
+   * @suppress {missingProperties} 'isComposing' is not defined on InputEvent.
    * @private
    */
-  onInputInput_() {
+  onInputInput_(e) {
     const inputValue = this.$.input.value;
     this.updateInput_({text: inputValue, inline: ''});
 
@@ -370,7 +375,10 @@ class RealboxElement extends PolymerElement {
         charTyped ? this.charTypedTime_ || window.performance.now() : 0;
 
     if (inputValue.trim()) {
-      this.queryAutocomplete_(inputValue);
+      // TODO(crbug.com/1149769): Rather than disabling inline autocompletion
+      // when the input event is fired within a composition session, change the
+      // mechanism via which inline autocompletion is shown in the realbox.
+      this.queryAutocomplete_(inputValue, e.isComposing);
     } else {
       this.matchesAreVisible = false;
       this.clearAutocompleteMatches_();
@@ -687,13 +695,14 @@ class RealboxElement extends PolymerElement {
 
   /**
    * @param {string} input
+   * @param {boolean} preventInlineAutocomplete
    * @private
    */
-  queryAutocomplete_(input) {
+  queryAutocomplete_(input, preventInlineAutocomplete = false) {
     this.lastQueriedInput_ = input;
 
     const caretNotAtEnd = this.$.input.selectionStart !== input.length;
-    const preventInlineAutocomplete =
+    preventInlineAutocomplete = preventInlineAutocomplete ||
         this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
     this.pageHandler_.queryAutocomplete(
         mojoString16(input), preventInlineAutocomplete);
