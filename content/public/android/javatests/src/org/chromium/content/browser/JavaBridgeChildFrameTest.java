@@ -75,6 +75,7 @@ public class JavaBridgeChildFrameTest {
         mActivityTestRule.injectObjectAndReload(mTestController, "testController");
     }
 
+    // TODO(crbug.com/1116744): Fix flakiness when using MojoTestParams.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
@@ -118,6 +119,7 @@ public class JavaBridgeChildFrameTest {
 
     // Verify that parent page and child frame each has own JS wrapper object.
     // Failing to do so exposes parent's context to the child.
+    // TODO(crbug.com/1116744): Fix flakiness when using MojoTestParams.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})

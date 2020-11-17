@@ -63,6 +63,9 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env,
       jint render_process_id,
       jint render_frame_id) const;
+  base::android::ScopedJavaLocalRef<jobjectArray> GetAllRenderFrameHosts(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj) const;
   base::android::ScopedJavaLocalRef<jstring> GetTitle(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) const;

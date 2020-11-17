@@ -6,6 +6,7 @@ package org.chromium.content.browser.remoteobjects;
 
 import org.chromium.blink.mojom.RemoteObjectGateway;
 import org.chromium.blink.mojom.RemoteObjectGatewayFactory;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -16,6 +17,7 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,7 +87,7 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
     public void addInterface(
             Object object, String name, Class<? extends Annotation> requiredAnnotation) {
-        WebContents webContents = mWebContents.get();
+        WebContentsImpl webContents = (WebContentsImpl) mWebContents.get();
         if (webContents == null) return;
 
         Pair<Object, Class<? extends Annotation>> value = mInjectedObjects.get(name);
@@ -100,32 +102,35 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
         mInjectedObjects.put(name, new Pair<>(object, requiredAnnotation));
 
-        // TODO(crbug.com/1105935): the objects need to be injected into all frames, not just the
-        // main one.
-        addInterfaceForFrame(webContents.getMainFrame(), name, object, requiredAnnotation);
+        List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+        for (RenderFrameHost frame : frames) {
+            addInterfaceForFrame(frame, name, object, requiredAnnotation);
+        }
     }
 
     public void removeInterface(String name) {
-        WebContents webContents = mWebContents.get();
+        WebContentsImpl webContents = (WebContentsImpl) mWebContents.get();
         if (webContents == null) return;
 
         Pair<Object, Class<? extends Annotation>> value = mInjectedObjects.remove(name);
         if (value == null) return;
 
-        // TODO(crbug.com/1105935): the objects need to be removed from all frames, not just the
-        // main one.
-        removeInterfaceForFrame(webContents.getMainFrame(), name, value.first);
+        List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+        for (RenderFrameHost frame : frames) {
+            removeInterfaceForFrame(frame, name, value.first);
+        }
     }
 
     public void setAllowInspection(boolean allow) {
-        WebContents webContents = mWebContents.get();
+        WebContentsImpl webContents = (WebContentsImpl) mWebContents.get();
         if (webContents == null) return;
 
         mAllowInspection = allow;
 
-        // TODO(crbug.com/1105935): the objects host needs to update the allow status from all
-        // frames, not just the main one.
-        setAllowInspectionForFrame(webContents.getMainFrame());
+        List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+        for (RenderFrameHost frame : frames) {
+            setAllowInspectionForFrame(frame);
+        }
     }
 
     private void addInterfaceForFrame(RenderFrameHost frameHost, String name, Object object,
