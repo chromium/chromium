@@ -142,7 +142,7 @@ void AddressPoolManager::Pool::Reset() {
 uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
   base::AutoLock scoped_lock(lock_);
 
-  PA_CHECK(!(requested_size & kSuperPageOffsetMask));
+  PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
   const size_t need_bits = requested_size >> kSuperPageShift;
 
   // Use first-fit policy to find an available chunk from free chunks. Start
@@ -196,10 +196,10 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
   base::AutoLock scoped_lock(lock_);
 
-  PA_CHECK(!(address & kSuperPageOffsetMask));
-  PA_CHECK(!(free_size & kSuperPageOffsetMask));
+  PA_DCHECK(!(address & kSuperPageOffsetMask));
+  PA_DCHECK(!(free_size & kSuperPageOffsetMask));
 
-  DCHECK_LE(address_begin_, address);
+  PA_DCHECK(address_begin_ <= address);
 #if DCHECK_IS_ON()
   PA_DCHECK(address + free_size <= address_end_);
 #endif
