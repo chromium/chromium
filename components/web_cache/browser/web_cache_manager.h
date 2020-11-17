@@ -19,7 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "components/web_cache/public/mojom/web_cache.mojom.h"
 #include "content/public/browser/render_process_host.h"
@@ -247,8 +247,9 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // mojo::Remote<mojom::WebCache>.
   WebCacheServicesMap web_cache_services_;
 
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
-      rph_observers_{this};
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      rph_observations_{this};
 
   base::WeakPtrFactory<WebCacheManager> weak_factory_{this};
 

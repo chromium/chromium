@@ -157,7 +157,7 @@ void WebCacheManager::ClearCacheOnNavigation() {
 void WebCacheManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
   Add(process_host->GetID());
-  rph_observers_.Add(process_host);
+  rph_observations_.AddObservation(process_host);
 }
 
 void WebCacheManager::RenderProcessExited(
@@ -168,7 +168,7 @@ void WebCacheManager::RenderProcessExited(
 
 void WebCacheManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* process_host) {
-  rph_observers_.Remove(process_host);
+  rph_observations_.RemoveObservation(process_host);
   Remove(process_host->GetID());
 }
 
