@@ -41,8 +41,7 @@ class MockFrameHost : public mojom::FrameHost {
   MockFrameHost() {}
   ~MockFrameHost() override = default;
 
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-  TakeLastCommitParams() {
+  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams() {
     return std::move(last_commit_params_);
   }
 
@@ -83,7 +82,7 @@ class MockFrameHost : public mojom::FrameHost {
   }
 
   void DidCommitProvisionalLoad(
-      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+      mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
       override {
     last_commit_params_ = std::move(params);
@@ -169,8 +168,7 @@ class MockFrameHost : public mojom::FrameHost {
   }
 
   void DidCommitSameDocumentNavigation(
-      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params)
-      override {
+      mojom::DidCommitProvisionalLoadParamsPtr params) override {
     last_commit_params_ = std::move(params);
   }
 
@@ -226,8 +224,7 @@ class MockFrameHost : public mojom::FrameHost {
 #endif
 
  private:
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-      last_commit_params_;
+  mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
   mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
       last_interface_provider_receiver_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
@@ -371,7 +368,7 @@ void TestRenderFrame::BeginNavigation(
   RenderFrameImpl::BeginNavigation(std::move(info));
 }
 
-std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+mojom::DidCommitProvisionalLoadParamsPtr
 TestRenderFrame::TakeLastCommitParams() {
   return mock_frame_host_->TakeLastCommitParams();
 }

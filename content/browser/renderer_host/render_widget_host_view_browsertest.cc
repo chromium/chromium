@@ -163,7 +163,7 @@ class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     frame_observer_->WaitForAnyFrameSubmission();

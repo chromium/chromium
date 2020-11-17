@@ -895,7 +895,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     FrameTreeNode* frame_tree_node,
     RenderFrameHostImpl* render_frame_host,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    const mojom::DidCommitProvisionalLoadParams& params,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     bool is_same_document,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info) {
@@ -907,8 +907,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           // TODO(nasko): Investigate better value to pass for
           // |initiator_origin|.
           params.origin,
-          blink::mojom::Referrer::New(params.referrer.url,
-                                      params.referrer.policy),
+          blink::mojom::Referrer::New(params.referrer->url,
+                                      params.referrer->policy),
           params.transition,
           is_same_document ? mojom::NavigationType::SAME_DOCUMENT
                            : mojom::NavigationType::DIFFERENT_DOCUMENT,
@@ -4175,7 +4175,7 @@ bool NavigationRequest::IsSelfReferentialURL() {
 }
 
 void NavigationRequest::DidCommitNavigation(
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    const mojom::DidCommitProvisionalLoadParams& params,
     bool navigation_entry_committed,
     bool did_replace_entry,
     const GURL& previous_url,
@@ -4615,11 +4615,11 @@ const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
   return response_head_.get() ? response_head_->headers.get() : nullptr;
 }
 
-std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+mojom::DidCommitProvisionalLoadParamsPtr
 NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCache() {
-  // Use the DidCommitProvisionalLoad_Params last used to commit the frame
-  // being restored as a starting point.
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
+  // Use the DidCommitProvisionalLoadParams last used to commit the frame being
+  // restored as a starting point.
+  mojom::DidCommitProvisionalLoadParamsPtr params =
       render_frame_host_->TakeLastCommitParams();
 
   // Params must have been set when the RFH being restored from the cache last

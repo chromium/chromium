@@ -1500,7 +1500,7 @@ class InjectIsolationRequestingNavigation
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      mojom::DidCommitProvisionalLoadParamsPtr*,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     was_called_ = true;

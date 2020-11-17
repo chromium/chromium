@@ -549,12 +549,12 @@ class CommitOriginInterceptor : public DidCommitNavigationInterceptor {
   bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
       NavigationRequest* navigation_request,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    if (params->url == target_url_) {
-      params->url = new_url_;
-      params->origin = new_origin_;
+    if ((**params).url == target_url_) {
+      (**params).url = new_url_;
+      (**params).origin = new_origin_;
     }
     return true;
   }

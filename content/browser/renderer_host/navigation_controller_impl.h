@@ -25,12 +25,11 @@
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/ssl/ssl_manager.h"
+#include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
 
 namespace content {
 class FrameTreeNode;
@@ -236,13 +235,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // interaction. This is used for a new renderer-initiated navigation to decide
   // if the page that initiated the navigation should be skipped on
   // back/forward button.
-  bool RendererDidNavigate(
-      RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
-      LoadCommittedDetails* details,
-      bool is_same_document_navigation,
-      bool previous_document_was_activated,
-      NavigationRequest* navigation_request);
+  bool RendererDidNavigate(RenderFrameHostImpl* rfh,
+                           const mojom::DidCommitProvisionalLoadParams& params,
+                           LoadCommittedDetails* details,
+                           bool is_same_document_navigation,
+                           bool previous_document_was_activated,
+                           NavigationRequest* navigation_request);
 
   // Notifies us that we just became active. This is used by the WebContentsImpl
   // so that we know to load URLs that were pending as "lazy" loads.
@@ -478,7 +476,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Classifies the given renderer navigation (see the NavigationType enum).
   NavigationType ClassifyNavigation(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params);
+      const mojom::DidCommitProvisionalLoadParams& params);
 
   // Handlers for the different types of navigation types. They will actually
   // handle the navigations corresponding to the different NavClasses above.
@@ -496,33 +494,33 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // (e.g., for history.replaceState).
   void RendererDidNavigateToNewPage(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
       NavigationRequest* request);
   void RendererDidNavigateToExistingPage(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_restored,
       NavigationRequest* request,
       bool keep_pending_entry);
   void RendererDidNavigateToSamePage(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       NavigationRequest* request);
   void RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
       NavigationRequest* request);
   bool RendererDidNavigateAutoSubframe(
       RenderFrameHostImpl* rfh,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       NavigationRequest* request);
 
   // Allows the derived class to issue notifications that a load has been
