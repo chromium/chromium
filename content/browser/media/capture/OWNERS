@@ -8,5 +8,3 @@ per-file desktop*=braveyao@chromium.org
 per-file screen_capture*=braveyao@chromium.org
 
 per-file image_capture*=mcasas@chromium.org
-
-# COMPONENT: Internals>Media>ScreenCapture

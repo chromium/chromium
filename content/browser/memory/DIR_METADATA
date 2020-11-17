@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>ResourceCoordinator"
+}
+team_email: "chrome-catan@chromium.org"
