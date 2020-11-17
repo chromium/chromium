@@ -214,6 +214,37 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests the Open in New Window action on a recent tab's context menu.
+- (void)testRecentTabsContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
+  }
+
+  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
+
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Select "Open in New Window" and confirm that new tab is opened with
+  // selected URL in the new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInNewWindowButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                          _URL1.GetContent())]
+      assertWithMatcher:grey_notNil()];
+
+  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
+                      [self appConfigurationForTestCase]];
+}
+
 // Tests the Share action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuShare {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
