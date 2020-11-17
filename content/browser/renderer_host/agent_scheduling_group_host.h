@@ -14,17 +14,16 @@
 #include "content/common/renderer.mojom-forward.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
 namespace IPC {
 class ChannelProxy;
-class Listener;
 class Message;
 }  // namespace IPC
 
@@ -43,6 +42,7 @@ class SiteInstance;
 // RenderProcessHost.
 class CONTENT_EXPORT AgentSchedulingGroupHost
     : public RenderProcessHostObserver,
+      public IPC::Listener,
       public mojom::AgentSchedulingGroupHost,
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
@@ -54,7 +54,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   static AgentSchedulingGroupHost* Get(const SiteInstance& instance,
                                        RenderProcessHost& process);
 
-  // Utility ctor, forwarding to the main ctor below.
   // Should not be called explicitly. Use `Get()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
@@ -106,41 +105,12 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   friend StateTransitions<LifecycleState>;
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 
-  // `MaybeAssociatedRemote` is a temporary helper class that allows us to
-  // switch between using an associated and non-associated remote. This behavior
-  // is controlled by the `kMbiDetachAgentSchedulingGroupFromChannel` feature
-  // flag. Associated remotes are associated with the IPC channel (transitively,
-  // via the `Renderer` interface), thus preserving cross-agent scheduling group
-  // message order. Non-associated interfaces are independent from each other
-  // and do not preserve message order between agent scheduling groups.
-  // TODO(crbug.com/1111231): Remove this once we can remove the flag.
-  class MaybeAssociatedRemote {
-   public:
-    explicit MaybeAssociatedRemote(bool should_associate);
-    ~MaybeAssociatedRemote();
-
-    mojo::PendingReceiver<mojom::AgentSchedulingGroup>
-    BindNewPipeAndPassReceiver() WARN_UNUSED_RESULT;
-    mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-    BindNewEndpointAndPassReceiver() WARN_UNUSED_RESULT;
-
-    void reset();
-    bool is_bound();
-    mojom::AgentSchedulingGroup* get();
-
-   private:
-    absl::variant<mojo::Remote<mojom::AgentSchedulingGroup>,
-                  mojo::AssociatedRemote<mojom::AgentSchedulingGroup>>
-        remote_;
-  };
-
-  // Main constructor.
-  // |should_associate| determines whether the `AgentSchedulingGroupHost` and
-  // `AgentSchedulingGroup` mojos should be associated with the `Renderer` or
-  // not. If they are, message order will be preserved across the entire
-  // process. If not, ordering will only be preserved inside an
-  // `AgentSchedulingGroup`.
-  AgentSchedulingGroupHost(RenderProcessHost& process, bool should_associate);
+  // IPC::Listener
+  bool OnMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // mojom::RouteProvider
   void GetRoute(
@@ -159,8 +129,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  void ResetMojo();
-  void SetUpMojo();
+  void ResetIPC();
+  void SetUpIPC();
 
   void SetState(LifecycleState state);
 
@@ -169,18 +139,33 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
-  const bool should_associate_;
+  enum class IPCAssociationMode {
+    // In this mode, the AgentSchedulingGroup will use the process-wide legacy
+    // IPC channel for communication with the renderer process and to associate
+    // its interfaces with.
+    kAssociatedWithProcess = 0,
+
+    // In this mode, each AgentSchedulingGroup will have its own legacy IPC
+    // channel for communication with the renderer process and to associate its
+    // interfaces with.
+    kUnassociated = 1,
+  };
+  const IPCAssociationMode association_mode_;
+
+  // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
+  // `kUnassociated` mode.
+  std::unique_ptr<IPC::ChannelProxy> channel_;
 
   // Map of registered IPC listeners.
   base::IDMap<IPC::Listener*> listener_map_;
 
+  // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
+  // (renderer-side) `AgentSchedulingGroup`.
+  mojo::AssociatedRemote<mojom::AgentSchedulingGroup> mojo_remote_;
+
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.
   mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost> receiver_;
-
-  // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
-  // (renderer-side) `AgentSchedulingGroup`.
-  MaybeAssociatedRemote mojo_remote_;
 
   // The `mojom::RouteProvider` mojo pair to setup
   // `blink::AssociatedInterfaceProvider` routes between this and the

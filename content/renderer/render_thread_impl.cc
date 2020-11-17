@@ -1642,9 +1642,9 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
 }
 
 void RenderThreadImpl::CreateAgentSchedulingGroup(
-    mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group) {
-  agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      *this, std::move(agent_scheduling_group)));
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap) {
+  agent_scheduling_groups_.emplace(
+      std::make_unique<AgentSchedulingGroup>(*this, std::move(bootstrap)));
 }
 
 void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(

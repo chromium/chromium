@@ -9,18 +9,21 @@
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
+#include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
 
 namespace content {
 
 namespace {
 
+using ::IPC::ChannelMojo;
 using ::IPC::ChannelProxy;
 using ::IPC::Listener;
 using ::mojo::AssociatedReceiver;
@@ -52,47 +55,6 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
 
 }  // namespace
 
-// MaybeAssociatedRemote:
-AgentSchedulingGroupHost::MaybeAssociatedRemote::MaybeAssociatedRemote(
-    bool should_associate) {
-  if (should_associate) {
-    remote_ = AssociatedRemote<mojom::AgentSchedulingGroup>();
-  } else {
-    remote_ = Remote<mojom::AgentSchedulingGroup>();
-  }
-}
-
-AgentSchedulingGroupHost::MaybeAssociatedRemote::~MaybeAssociatedRemote() =
-    default;
-
-PendingReceiver<mojom::AgentSchedulingGroup>
-AgentSchedulingGroupHost::MaybeAssociatedRemote::BindNewPipeAndPassReceiver() {
-  return absl::get<Remote<mojom::AgentSchedulingGroup>>(remote_)
-      .BindNewPipeAndPassReceiver();
-}
-
-PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-AgentSchedulingGroupHost::MaybeAssociatedRemote::
-    BindNewEndpointAndPassReceiver() {
-  return absl::get<AssociatedRemote<mojom::AgentSchedulingGroup>>(remote_)
-      .BindNewEndpointAndPassReceiver();
-}
-
-void AgentSchedulingGroupHost::MaybeAssociatedRemote::reset() {
-  absl::visit([](auto& remote) { remote.reset(); }, remote_);
-}
-
-bool AgentSchedulingGroupHost::MaybeAssociatedRemote::is_bound() {
-  return absl::visit([](auto& remote) { return remote.is_bound(); }, remote_);
-}
-
-mojom::AgentSchedulingGroup*
-AgentSchedulingGroupHost::MaybeAssociatedRemote::get() {
-  return absl::visit([](auto& r) { return r.get(); }, remote_);
-}
-
-// AgentSchedulingGroupHost:
-
 // static
 AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
     const SiteInstance& instance,
@@ -111,26 +73,21 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
 }
 
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
-    : AgentSchedulingGroupHost(
-          process,
-          !base::FeatureList::IsEnabled(
-              features::kMbiDetachAgentSchedulingGroupFromChannel)) {}
-
-AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process,
-                                                   bool should_associate)
     : process_(process),
-      should_associate_(should_associate),
-      receiver_(this),
-      mojo_remote_(should_associate) {
+      association_mode_(base::FeatureList::IsEnabled(
+                            features::kMbiDetachAgentSchedulingGroupFromChannel)
+                            ? IPCAssociationMode::kUnassociated
+                            : IPCAssociationMode::kAssociatedWithProcess),
+      receiver_(this) {
   process_.AddObserver(this);
 
   // The RenderProcessHost's channel and other mojo interfaces are bound by the
-  // time this class is constructed, so we eagerly initialize this class's mojos
+  // time this class is constructed, so we eagerly initialize this class's IPC
   // so they have the same bind lifetime as those of the RenderProcessHost.
   // Furthermore, when the RenderProcessHost's channel and mojo interfaces get
   // reset and reinitialized, we'll be notified so that we can reset and
   // reinitialize ours as well.
-  SetUpMojo();
+  SetUpIPC();
 }
 
 // DO NOT USE |process_| HERE! At this point it (or at least parts of it) is no
@@ -148,17 +105,17 @@ void AgentSchedulingGroupHost::RenderProcessExited(
   // We mirror the RenderProcessHost flow here by resetting our mojos, and
   // reinitializing them once the process's IPC::ChannelProxy and renderer
   // interface are reinitialized.
-  ResetMojo();
+  ResetIPC();
 
   // RenderProcessHostImpl will attempt to call this method later if it has not
-  // already been called. We call it now since `SetUpMojo()` relies on it being
-  // called, thus setting up the IPC ChannelProxy and mojom::Renderer interface.
+  // already been called. We call it now since `SetUpIPC()` relies on it being
+  // called, thus setting up the IPC channel and mojom::Renderer interface.
   process_.EnableSendQueue();
 
   // We call this so that we can immediately queue IPC and mojo messages on the
   // new channel/interfaces that are bound for the next renderer process, should
   // one eventually be spun up.
-  SetUpMojo();
+  SetUpIPC();
 }
 
 void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
@@ -174,6 +131,37 @@ void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
   DCHECK_EQ(host, &process_);
   process_.RemoveObserver(this);
   SetState(LifecycleState::kRenderProcessHostDestroyed);
+}
+
+bool AgentSchedulingGroupHost::OnMessageReceived(const IPC::Message& message) {
+  if (message.routing_id() == MSG_ROUTING_CONTROL) {
+    bad_message::ReceivedBadMessage(&process_,
+                                    bad_message::ASGH_RECEIVED_CONTROL_MESSAGE);
+    return false;
+  }
+
+  auto* listener = GetListener(message.routing_id());
+  if (!listener)
+    return false;
+
+  return listener->OnMessageReceived(message);
+}
+
+void AgentSchedulingGroupHost::OnBadMessageReceived(
+    const IPC::Message& message) {
+  // If a bad message is received, it should be treated the same as a bad
+  // message on the renderer-wide channel (i.e., kill the renderer).
+  return process_.OnBadMessageReceived(message);
+}
+
+void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  // There shouldn't be any interfaces requested this way - process-wide
+  // interfaces should be requested via the process-wide channel, and
+  // ASG-related interfaces should go through `RouteProvider`.
+  bad_message::ReceivedBadMessage(
+      &process_, bad_message::ASGH_ASSOCIATED_INTERFACE_REQUEST);
 }
 
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {
@@ -202,12 +190,30 @@ bool AgentSchedulingGroupHost::Init() {
 
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  return process_.GetChannel();
+
+  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+    return process_.GetChannel();
+
+  DCHECK(channel_);
+  return channel_.get();
 }
 
 bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  return process_.Send(message);
+
+  std::unique_ptr<IPC::Message> msg(message);
+
+  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+    return process_.Send(msg.release());
+
+  // This DCHECK is too idealistic for now - messages that are handled by
+  // filters are sent as control messages since they are intercepted before
+  // routing. It is put here as documentation for now, since this code would not
+  // be reached until we activate `kUnassociated`.
+  DCHECK_NE(message->routing_id(), MSG_ROUTING_CONTROL);
+
+  DCHECK(channel_);
+  return channel_->Send(msg.release());
 }
 
 void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
@@ -246,10 +252,11 @@ void AgentSchedulingGroupHost::DestroyView(
     int32_t routing_id,
     mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  if (mojo_remote_.is_bound())
+  if (mojo_remote_.is_bound()) {
     mojo_remote_.get()->DestroyView(routing_id, std::move(callback));
-  else
+  } else {
     std::move(callback).Run();
+  }
 }
 
 void AgentSchedulingGroupHost::CreateFrameProxy(
@@ -288,35 +295,84 @@ void AgentSchedulingGroupHost::GetAssociatedInterface(
     listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
 }
 
-void AgentSchedulingGroupHost::ResetMojo() {
+void AgentSchedulingGroupHost::ResetIPC() {
   DCHECK_EQ(state_, LifecycleState::kRenderProcessExited);
   receiver_.reset();
   mojo_remote_.reset();
   remote_route_provider_.reset();
   route_provider_receiver_.reset();
   associated_interface_provider_receivers_.Clear();
+  channel_ = nullptr;
 }
 
-void AgentSchedulingGroupHost::SetUpMojo() {
+void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The RenderProcessHostImpl's renderer interface must be initialized at this
-  // at this point. We don't DCHECK |process_.IsInitializedAndNotDead()| here
-  // because we may end up here after the render process has died but before
-  // RenderProcessHostImpl::Init() is called. Therefore, the process can
-  // accept IPCs that will be queued for the next render process if one is spun
-  // up.
-  DCHECK(process_.GetRendererInterface());
-
   DCHECK(state_ == LifecycleState::kNewborn ||
          state_ == LifecycleState::kRenderProcessExited);
 
-  if (should_associate_) {
+  // The RenderProcessHostImpl's renderer interface must be initialized at this
+  // point. We don't DCHECK |process_.IsInitializedAndNotDead()| here because
+  // we may end up here after the renderer process has died but before
+  // RenderProcessHostImpl::Init() is called. Therefore, the process can accept
+  // IPCs that will be queued for the next renderer process if one is spun up.
+  DCHECK(process_.GetRendererInterface());
+
+  DCHECK(!channel_);
+  DCHECK(!mojo_remote_.is_bound());
+  DCHECK(!receiver_.is_bound());
+  DCHECK(!remote_route_provider_.is_bound());
+  DCHECK(!route_provider_receiver_.is_bound());
+
+  // After this function returns, all of `this`'s associated mojo interfaces
+  // need to be bound, and associated "properly" - in `kUnassociated` mode that
+  // means they are associated with the ASG's channel, and in
+  // `kAssociatedWithProcess` mode with the process-global channel. This
+  // initialization is done in a number of steps:
+  // 1. If we're in `kUnassociated` mode, create an IPC Channel (i.e.,
+  //    initialize `channel_`). After this, regardless of which mode we're in,
+  //    the ASGH would have a channel.
+  // 2. Initialize `mojo_remote_`. In `kAssociatedWithProcess` mode, this can be
+  //    done via the `mojom::Renderer` interface, but in `kUnassociated` mode
+  //    this *has* to be done via the just-created channel (so the interface is
+  //    associated with the correct pipe).
+  // 3. All the ASGH's other associated interfaces can now be initialized via
+  //    `mojo_remote_`, and will be transitively associated with the appropriate
+  //    IPC channel/pipe.
+  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess) {
     process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
         mojo_remote_.BindNewEndpointAndPassReceiver());
   } else {
+    auto io_task_runner = GetIOThreadTaskRunner({});
+
+    // Empty interface endpoint to pass pipes more easily.
+    PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
+
     process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-        mojo_remote_.BindNewPipeAndPassReceiver());
+        bootstrap.InitWithNewPipeAndPassReceiver());
+
+    auto channel_factory = ChannelMojo::CreateServerFactory(
+        bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,
+        /*proxy_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+
+    // TODO(crbug.com/1111231): Android WebViews (that support synchronous
+    // compositing) send sync messages from the browser to the renderer, and
+    // therefore need a `SyncChannel`. However, we don't plan to support
+    // WebViews at this stage, so a plain `ChannelProxy` is fine for now.
+    channel_ = ChannelProxy::Create(
+        std::move(channel_factory), /*listener=*/this,
+        /*ipc_task_runner=*/io_task_runner,
+        /*listener_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+
+    // TODO(crbug.com/1111231): Add necessary filters.
+    // Most of the filters currently installed on the process-wide channel are:
+    // 1. "Process-bound", that is, they do not handle messages sent using ASG,
+    // 2. Pepper/NaCl-related, that are going away, and are not supported, or
+    // 3. Related to Android WebViews, which are not currently supported.
+
+    channel_->GetRemoteAssociatedInterface(&mojo_remote_);
   }
+
+  DCHECK(mojo_remote_.is_bound());
 
   mojo_remote_.get()->BindAssociatedInterfaces(
       receiver_.BindNewEndpointAndPassRemote(),

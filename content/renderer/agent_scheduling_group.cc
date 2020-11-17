@@ -6,16 +6,22 @@
 
 #include "base/feature_list.h"
 #include "base/util/type_safety/pass_key.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
+#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_listener.h"
+#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 
 namespace content {
 
+using ::IPC::ChannelMojo;
 using ::IPC::Listener;
+using ::IPC::SyncChannel;
 using ::mojo::AssociatedReceiver;
 using ::mojo::AssociatedRemote;
 using ::mojo::PendingAssociatedReceiver;
@@ -35,53 +41,49 @@ RenderThreadImpl& ToImpl(RenderThread& render_thread) {
 
 }  // namespace
 
-// MaybeAssociatedReceiver:
-AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
-    AgentSchedulingGroup& impl,
-    PendingReceiver<mojom::AgentSchedulingGroup> receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : receiver_(absl::in_place_type<Receiver<mojom::AgentSchedulingGroup>>,
-                &impl,
-                std::move(receiver),
-                task_runner) {}
-
-AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
-    AgentSchedulingGroup& impl,
-    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : receiver_(
-          absl::in_place_type<AssociatedReceiver<mojom::AgentSchedulingGroup>>,
-          &impl,
-          std::move(receiver),
-          task_runner) {}
-
-AgentSchedulingGroup::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
-    default;
-
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    PendingReceiver<mojom::AgentSchedulingGroup> receiver)
-    : agent_group_scheduler_(
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap)
+    : association_mode_(IPCAssociationMode::kUnassociated),
+      agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
       render_thread_(render_thread),
-      receiver_(*this,
-                std::move(receiver),
-                agent_group_scheduler_->DefaultTaskRunner()) {
+      // `receiver_` will be bound by `OnAssociatedInterfaceRequest()`.
+      receiver_(this) {
   DCHECK(agent_group_scheduler_);
   DCHECK(base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
+
+  channel_ = SyncChannel::Create(
+      /*listener=*/this, /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
+      /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
+      render_thread_.GetShutdownEvent());
+
+  // TODO(crbug.com/1111231): Add necessary filters.
+  // Currently, the renderer process has these filters:
+  // 1. `UnfreezableMessageFilter` - in the process of being removed,
+  // 2. `PnaclTranslationResourceHost` - NaCl is going away, and
+  // 3. `AutomationMessageFilter` - needs to be handled somehow.
+
+  channel_->Init(
+      ChannelMojo::CreateClientFactory(
+          bootstrap.PassPipe(),
+          /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
+          /*proxy_task_runner=*/agent_group_scheduler_->DefaultTaskRunner()),
+      /*create_pipe_now=*/true);
 }
 
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
-    : agent_group_scheduler_(
+    : association_mode_(IPCAssociationMode::kAssociatedWithProcess),
+      agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
       render_thread_(render_thread),
-      receiver_(*this,
+      receiver_(this,
                 std::move(receiver),
                 agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
@@ -91,12 +93,49 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 
-// IPC messages to be forwarded to the `RenderThread`, for now. In the future
-// they will be handled directly by the `AgentSchedulingGroup`.
+bool AgentSchedulingGroup::OnMessageReceived(const IPC::Message& message) {
+  DCHECK_NE(message.routing_id(), MSG_ROUTING_CONTROL);
+
+  auto* listener = GetListener(message.routing_id());
+  if (!listener)
+    return false;
+
+  return listener->OnMessageReceived(message);
+}
+
+void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
+  // Not strictly required, since we don't currently do anything with bad
+  // messages in the renderer, but if we ever do then this will "just work".
+  return ToImpl(render_thread_).OnBadMessageReceived(message);
+}
+
+void AgentSchedulingGroup::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  // The ASG's channel should only be used to bootstrap the ASG mojo interface.
+  DCHECK_EQ(interface_name, mojom::AgentSchedulingGroup::Name_);
+  DCHECK(!receiver_.is_bound());
+
+  PendingAssociatedReceiver<mojom::AgentSchedulingGroup> pending_receiver(
+      std::move(handle));
+  receiver_.Bind(std::move(pending_receiver),
+                 agent_group_scheduler_->DefaultTaskRunner());
+}
+
 bool AgentSchedulingGroup::Send(IPC::Message* message) {
-  // TODO(crbug.com/1111231): For some reason, changing this to use
-  // render_thread_ causes trybots to time out (not specific tests).
-  return RenderThread::Get()->Send(message);
+  std::unique_ptr<IPC::Message> msg(message);
+
+  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+    return render_thread_.Send(msg.release());
+
+  // This DCHECK is too idealistic for now - messages that are handled by
+  // filters are sent control messages since they are intercepted before
+  // routing. It is put here as documentation for now, since this code would not
+  // be reached until we activate `kUnassociated`.
+  DCHECK_NE(message->routing_id(), MSG_ROUTING_CONTROL);
+
+  DCHECK(channel_);
+  return channel_->Send(msg.release());
 }
 
 void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {

@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
+import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -58,22 +59,24 @@ enum RenderProcessVisibleState {
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to legacy IPC messages.
 interface Renderer {
-  // Tells the renderer to create a new AgentSchedulingGroup, that will
-  // listen to messages sent by the host via the pending
-  // |agent_scheduling_group|. This will create "independent" agent scheduling
-  // groups that are not associated with the IPC channel, which will not
-  // guarantee any order across agent scheduling groups.
+  // Tells the renderer to create a new AgentSchedulingGroup, and initialize its
+  // legacy IPC Channel using the pipe provided by `bootstrap`. The channel will
+  // later be used to bind the mojom::AgentSchedulingGroup receiver, that
+  // listens to messages sent by the host.
+  // This will create an "independent" agent scheduling group that is not
+  // associated with the process-wide or other groups' IPC channels, meaning
+  // there is no guaranteed ordering between them.
   CreateAgentSchedulingGroup(
-    pending_receiver<AgentSchedulingGroup> agent_scheduling_group
-  );
+    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap);
 
   // Tells the renderer to create a new AgentSchedulingGroup, that will
   // listen to messages sent by the host via the pending
-  // |agent_scheduling_group|. This will create a channel-associated interface
-  // that will preserve message ordering across agent scheduling groups.
+  // |agent_scheduling_group|.
+  // This will create an agent scheduling group that is associated with the
+  // process-wide IPC channel, preserving message ordering across different
+  // agent scheduling groups.
   CreateAssociatedAgentSchedulingGroup(
-    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group
-  );
+    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.

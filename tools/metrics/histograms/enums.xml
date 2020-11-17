@@ -6625,6 +6625,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="233" label="RWH_CLOSE_PORTAL"/>
   <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
   <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
+  <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
+  <int value="237" label="ASGH_RECEIVED_CONTROL_MESSAGE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

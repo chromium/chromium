@@ -439,8 +439,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(
-      mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group)
-      override;
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap) override;
   void CreateAssociatedAgentSchedulingGroup(
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
           agent_scheduling_group) override;

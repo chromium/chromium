@@ -9,18 +9,19 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
+#include "ipc/ipc.mojom.h"
+#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
-class Listener;
 class Message;
+class SyncChannel;
 }  // namespace IPC
 
 namespace content {
@@ -33,22 +34,21 @@ class RenderThread;
 // to obtain ordering guarantees between different Mojo (associated) interfaces
 // and legacy IPC messages.
 class CONTENT_EXPORT AgentSchedulingGroup
-    : public mojom::AgentSchedulingGroup,
+    : public IPC::Listener,
+      public mojom::AgentSchedulingGroup,
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver);
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap);
   AgentSchedulingGroup(
       RenderThread& render_thread,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
   ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
-  AgentSchedulingGroup(const AgentSchedulingGroup&&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&) = delete;
-  AgentSchedulingGroup& operator=(const AgentSchedulingGroup&&) = delete;
 
   bool Send(IPC::Message* message);
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
@@ -62,32 +62,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
   }
 
  private:
-  // `MaybeAssociatedReceiver` is a temporary helper class that allows us to
-  // switch between using an associated and non-associated receiver. This
-  // behavior is controlled by the `kMbiDetachAgentSchedulingGroupFromChannel`
-  // feature flag. Associated receivers are associated with the IPC channel
-  // (transitively, via the `Renderer` interface), thus preserving cross-agent
-  // scheduling group message order. Non-associated receivers are independent
-  // from each other and do not preserve message order between agent scheduling
-  // groups.
-  // TODO(crbug.com/1111231): Remove these once we can remove the flag.
-  class MaybeAssociatedReceiver {
-   public:
-    MaybeAssociatedReceiver(
-        AgentSchedulingGroup& impl,
-        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-    MaybeAssociatedReceiver(
-        AgentSchedulingGroup& impl,
-        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-    ~MaybeAssociatedReceiver();
-
-   private:
-    absl::variant<mojo::Receiver<mojom::AgentSchedulingGroup>,
-                  mojo::AssociatedReceiver<mojom::AgentSchedulingGroup>>
-        receiver_;
-  };
+  // IPC::Listener:
+  bool OnMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // mojom::AgentSchedulingGroup:
   void CreateView(mojom::CreateViewParamsPtr params) override;
@@ -122,6 +102,23 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   IPC::Listener* GetListener(int32_t routing_id);
 
+  enum class IPCAssociationMode {
+    // In this mode, the AgentSchedulingGroup will use the process-wide legacy
+    // IPC channel for communication with the renderer process and to associate
+    // its interfaces with.
+    kAssociatedWithProcess = 0,
+
+    // In this mode, each AgentSchedulingGroup will have its own legacy IPC
+    // channel for communication with the renderer process and to associate its
+    // interfaces with.
+    kUnassociated = 1,
+  };
+  const IPCAssociationMode association_mode_;
+
+  // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
+  // `kUnassociated` mode.
+  std::unique_ptr<IPC::SyncChannel> channel_;
+
   // Map of registered IPC listeners.
   base::IDMap<IPC::Listener*> listener_map_;
 
@@ -133,7 +130,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.
-  MaybeAssociatedReceiver receiver_;
+  mojo::AssociatedReceiver<mojom::AgentSchedulingGroup> receiver_;
 
   // Remote stub of mojom::AgentSchedulingGroupHost, used for sending calls to
   // the (browser-side) AgentSchedulingGroupHost.
