@@ -27,7 +27,7 @@ void FakeBluetoothDebugManagerClient::SetLogLevels(
     return;
   }
 
-  dispatcher_level_ = dispatcher_level;
+  bluez_level_ = bluez_level;
   std::move(callback).Run();
 }
 

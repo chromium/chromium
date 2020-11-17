@@ -87,8 +87,8 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
   bluez::BluezDBusManager::Get()
       ->GetBluetoothDebugManagerClient()
       ->SetLogLevels(
-          level /* dispatcher */, level /* newblue */, level /* bluez */,
-          level /* kernel */,
+          0 /* dispatcher */, 0 /* newblue */, level /* bluez */,
+          0 /* kernel */,
           base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableSuccess,
                          weak_ptr_factory_.GetWeakPtr(), enable),
           base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableError,
