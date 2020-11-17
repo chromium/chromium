@@ -1603,10 +1603,12 @@
             ]
         }
     ],
-    "ClickPointerEvent": [
+    "ClickAsPointerEvent": [
         {
             "platforms": [
                 "android",
+                "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -1614,7 +1616,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20201116",
                     "enable_features": [
                         "ClickPointerEvent"
                     ]
