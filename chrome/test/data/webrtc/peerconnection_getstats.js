@@ -306,13 +306,9 @@ let kRTCCodecStats = new RTCStats(null, {
   transportId: 'string',
   payloadType: 'number',
   mimeType: 'string',
-  // TODO(hbos): As soon as |codec| has been renamed |mimeType| in the webrtc
-  // repo, remove this line. https://bugs.webrtc.org/7061
-  codec: 'string',
   clockRate: 'number',
   channels: 'number',
   sdpFmtpLine: 'string',
-  implementation: 'string',
 });
 addRTCStatsToWhitelist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 
