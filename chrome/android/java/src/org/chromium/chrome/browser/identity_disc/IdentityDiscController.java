@@ -324,6 +324,14 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         } else {
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
             mIdentityManager.addObserver(this);
+            /**
+             * This isn't the correct solution, but we have to call {@link notifyObservers(false)}.
+             * This is because if we call {@link notifyObservers(true)} here, the
+             * ObservableSupplierImpl doesn't propagate the call when
+             * {@link onProfileDataUpdated()} calls {@link notifyObservers(true)} again.
+             * See https://cubug.com/1137535.
+             */
+            notifyObservers(false);
         }
     }
 }
