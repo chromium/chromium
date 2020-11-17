@@ -3711,8 +3711,8 @@
   },
   {
     "name": "PasswordImport",
-    "owners": [ "vasilii" ],
-    "expiry_milestone": 88
+    "owners": [ "jdoerrie", "vasilii" ],
+    "expiry_milestone": 92
   },
   {
     "name": "passwords-account-storage",
