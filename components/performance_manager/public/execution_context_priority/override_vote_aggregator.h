@@ -47,7 +47,13 @@ class OverrideVoteAggregator : public VoteObserver {
 
  private:
   // This is move-only because all of its members are move-only.
-  struct VoteData {
+  class VoteData {
+   public:
+    enum class VoterType {
+      kDefault,
+      kOverride,
+    };
+
     VoteData();
     VoteData(const VoteData& rhs) = delete;
     VoteData(VoteData&& rhs);
@@ -55,14 +61,19 @@ class OverrideVoteAggregator : public VoteObserver {
     VoteData& operator=(VoteData&& rhs) = default;
     ~VoteData();
 
-    // Each of these is not null if a vote has been emitted for this execution
-    // context. At least one of the votes must exist, otherwise the entire map
-    // entry will be destroyed.
-    base::Optional<Vote> override_vote;
-    base::Optional<Vote> default_vote;
+    void AddVote(VoterType voter_type, const Vote& vote);
+    void ChangeVote(VoterType voter_type, const Vote& new_vote);
+    void RemoveVote(VoterType voter_type);
 
-    // The receipt for the vote we've upstreamed.
-    VoteReceipt receipt;
+    bool HasChosenVote() const;
+
+    const Vote& GetChosenVote() const;
+
+   private:
+    // At least one of these is not null if a vote has been emitted for this
+    // execution context.
+    base::Optional<Vote> default_vote_;
+    base::Optional<Vote> override_vote_;
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
@@ -71,11 +82,8 @@ class OverrideVoteAggregator : public VoteObserver {
   // expected to already exist (enforced by a DCHECK).
   VoteDataMap::iterator GetVoteData(const ExecutionContext* execution_context);
 
-  // Rebrands |vote| as belonging to this voter, and then sends it along to our
-  // |consumer_|. Stores the resulting receipt in |vote_data|.
-  void UpstreamVote(const ExecutionContext* execution_context,
-                    const Vote& vote,
-                    VoteData* vote_data);
+  // Returns the VoterType associated with |voter_id|.
+  VoteData::VoterType GetVoterType(VoterId voter_id) const;
 
   // Our two input voters. We'll only accept votes from these voters otherwise
   // we'll DCHECK.
@@ -83,7 +91,7 @@ class OverrideVoteAggregator : public VoteObserver {
   VoterId default_voter_id_ = voting::kInvalidVoterId<Vote>;
 
   // Our channel for upstreaming our votes.
-  VotingChannel channel_;
+  VotingChannelWrapper channel_;
 
   // Provides VotingChannels to our input voters.
   VoteConsumerDefaultImpl vote_consumer_default_impl_;
