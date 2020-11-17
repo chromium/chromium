@@ -651,10 +651,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kListStylePosition:
       return value_id == CSSValueID::kInside ||
              value_id == CSSValueID::kOutside;
-    case CSSPropertyID::kListStyleType:
-      return (value_id >= CSSValueID::kDisc &&
-              value_id <= CSSValueID::kKatakanaIroha) ||
-             value_id == CSSValueID::kNone;
     case CSSPropertyID::kMaskType:
       return value_id == CSSValueID::kLuminance ||
              value_id == CSSValueID::kAlpha;
@@ -1035,7 +1031,6 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kHyphens:
     case CSSPropertyID::kImageRendering:
     case CSSPropertyID::kListStylePosition:
-    case CSSPropertyID::kListStyleType:
     case CSSPropertyID::kMaskType:
     case CSSPropertyID::kMathShift:
     case CSSPropertyID::kMathStyle:
@@ -1117,15 +1112,6 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kScrollbarWidth:
     case CSSPropertyID::kScrollSnapStop:
     case CSSPropertyID::kOriginTrialTestProperty:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool CSSParserFastPaths::IsPartialKeywordPropertyID(CSSPropertyID property_id) {
-  switch (property_id) {
-    case CSSPropertyID::kListStyleType:
       return true;
     default:
       return false;

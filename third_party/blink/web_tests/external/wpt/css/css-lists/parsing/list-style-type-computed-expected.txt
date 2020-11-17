@@ -16,8 +16,8 @@ PASS Property list-style-type value 'lower-alpha'
 PASS Property list-style-type value 'upper-alpha'
 PASS Property list-style-type value '"marker string"'
 PASS Property list-style-type value '"Note: "'
-FAIL Property list-style-type value 'counter-Style-Name' assert_true: 'counter-Style-Name' is a supported value for list-style-type. expected true got false
-FAIL Property list-style-type value 'CounterStyleName' assert_true: 'CounterStyleName' is a supported value for list-style-type. expected true got false
+PASS Property list-style-type value 'counter-Style-Name'
+PASS Property list-style-type value 'CounterStyleName'
 FAIL Property list-style-type value 'symbols(cyclic "string")' assert_true: 'symbols(cyclic "string")' is a supported value for list-style-type. expected true got false
 FAIL Property list-style-type value 'symbols(cyclic "○" "●")' assert_true: 'symbols(cyclic "○" "●")' is a supported value for list-style-type. expected true got false
 FAIL Property list-style-type value 'symbols(fixed "1")' assert_true: 'symbols(fixed "1")' is a supported value for list-style-type. expected true got false

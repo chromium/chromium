@@ -103,7 +103,7 @@ struct SameSizeAsComputedStyleBase {
 
  private:
   void* data_refs[8];
-  unsigned bitfields[6];
+  unsigned bitfields[5];
 };
 
 struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
@@ -2367,6 +2367,24 @@ bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
                      [](const ShadowData& shadow) {
                        return shadow.GetColor().IsCurrentColor();
                      });
+}
+
+ListStyleTypeData* ComputedStyle::GetListStyleType() const {
+  return ListStyleTypeInternal();
+}
+
+EListStyleType ComputedStyle::ListStyleType() const {
+  if (!GetListStyleType())
+    return EListStyleType::kNone;
+  if (GetListStyleType()->IsString())
+    return EListStyleType::kString;
+  return GetListStyleType()->ToDeprecatedListStyleTypeEnum();
+}
+
+AtomicString ComputedStyle::ListStyleStringValue() const {
+  if (!GetListStyleType() || !GetListStyleType()->IsString())
+    return g_null_atom;
+  return GetListStyleType()->GetStringValue();
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,

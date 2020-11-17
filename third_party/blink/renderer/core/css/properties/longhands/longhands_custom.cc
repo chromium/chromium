@@ -3944,8 +3944,23 @@ const CSSValue* ListStyleType::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  // NOTE: All the keyword values for the list-style-type property are handled
-  // by the CSSParserFastPaths.
+  if (auto* none = css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range))
+    return none;
+
+  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    if (auto* ident = css_parsing_utils::ConsumeIdent(range)) {
+      CSSValueID value_id = ident->GetValueID();
+      if (value_id < CSSValueID::kDisc || value_id > CSSValueID::kKatakanaIroha)
+        return nullptr;
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          AtomicString(getValueName(value_id)));
+    }
+  } else {
+    if (auto* counter_style_name =
+            css_parsing_utils::ConsumeCustomIdent(range, context))
+      return counter_style_name;
+  }
+
   return css_parsing_utils::ConsumeString(range);
 }
 
@@ -3954,37 +3969,50 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
     const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.ListStyleType() == EListStyleType::kString)
-    return MakeGarbageCollected<CSSStringValue>(style.ListStyleStringValue());
-  return CSSIdentifierValue::Create(style.ListStyleType());
+  if (!style.GetListStyleType())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  if (style.GetListStyleType()->IsString()) {
+    return MakeGarbageCollected<CSSStringValue>(
+        style.GetListStyleType()->GetStringValue());
+  }
+  // TODO(crbug.com/687225): Return a scoped CSSValue?
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.GetListStyleType()->GetCounterStyleName());
 }
 
 void ListStyleType::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetListStyleType(
       ComputedStyleInitialValues::InitialListStyleType());
-  state.Style()->SetListStyleStringValue(
-      ComputedStyleInitialValues::InitialListStyleStringValue());
 }
 
 void ListStyleType::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetListStyleType(state.ParentStyle()->ListStyleType());
-  state.Style()->SetListStyleStringValue(
-      state.ParentStyle()->ListStyleStringValue());
+  state.Style()->SetListStyleType(state.ParentStyle()->GetListStyleType());
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    state.Style()->SetListStyleType(
-        identifier_value->ConvertTo<EListStyleType>());
-    state.Style()->SetListStyleStringValue(
-        ComputedStyleInitialValues::InitialListStyleStringValue());
+  ApplyValue(state, ScopedCSSValue(value, nullptr));
+}
+
+void ListStyleType::ApplyValue(StyleResolverState& state,
+                               const ScopedCSSValue& scoped_value) const {
+  const CSSValue& value = scoped_value.GetCSSValue();
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(CSSValueID::kNone, identifier_value->GetValueID());
+    state.Style()->SetListStyleType(nullptr);
     return;
   }
 
-  state.Style()->SetListStyleType(EListStyleType::kString);
-  state.Style()->SetListStyleStringValue(
-      AtomicString(To<CSSStringValue>(value).Value()));
+  if (const auto* string_value = DynamicTo<CSSStringValue>(value)) {
+    state.Style()->SetListStyleType(
+        ListStyleTypeData::CreateString(AtomicString(string_value->Value())));
+    return;
+  }
+
+  DCHECK(value.IsCustomIdentValue());
+  const auto& custom_ident_value = To<CSSCustomIdentValue>(value);
+  state.Style()->SetListStyleType(ListStyleTypeData::CreateCounterStyle(
+      custom_ident_value.Value(), scoped_value.GetTreeScope()));
 }
 
 bool MarginBlockEnd::IsLayoutDependent(const ComputedStyle* style,

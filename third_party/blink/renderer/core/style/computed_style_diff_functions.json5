@@ -203,11 +203,11 @@
         methods_to_diff: [
           {
             method: "ListStyleType()",
-            field_dependencies: ["ListStyleType"]
+            field_dependencies: ["list-style-type"]
           },
           {
             method: "ListStyleStringValue()",
-            field_dependencies: ["ListStyleStringValue"]
+            field_dependencies: ["list-style-type"]
           },
           {
             method: "ListStylePosition()",

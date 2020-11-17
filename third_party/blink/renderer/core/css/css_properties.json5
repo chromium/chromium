@@ -2414,6 +2414,12 @@
       name: "list-style-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/list_style_type_data.h"],
+      wrapper_pointer_name: "Persistent",
+      default_value: "ListStyleTypeData::CreateCounterStyle(\"disc\", nullptr)",
+      type_name: "ListStyleTypeData",
       keywords: [
         "disc", "circle", "square", "decimal", "decimal-leading-zero",
         "arabic-indic", "bengali", "cambodian", "khmer", "devanagari",
@@ -2429,7 +2435,9 @@
         "simp-chinese-informal", "trad-chinese-formal", "trad-chinese-informal",
         "hiragana", "katakana", "hiragana-iroha", "katakana-iroha", "none"
       ],
+      computed_style_custom_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
+      tree_scoped_value: true,
     },
     {
       name: "margin-bottom",

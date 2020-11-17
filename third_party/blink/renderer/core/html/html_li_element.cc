@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/html/html_li_element.h"
 
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -41,26 +42,24 @@ bool HTMLLIElement::IsPresentationAttribute(const QualifiedName& name) const {
   return HTMLElement::IsPresentationAttribute(name);
 }
 
-CSSValueID ListTypeToCSSValueID(const AtomicString& value) {
+AtomicString ListTypeAttributeToStyleName(const AtomicString& value) {
   if (value == "a")
-    return CSSValueID::kLowerAlpha;
+    return "lower-alpha";
   if (value == "A")
-    return CSSValueID::kUpperAlpha;
+    return "upper-alpha";
   if (value == "i")
-    return CSSValueID::kLowerRoman;
+    return "lower-roman";
   if (value == "I")
-    return CSSValueID::kUpperRoman;
+    return "upper-roman";
   if (value == "1")
-    return CSSValueID::kDecimal;
+    return "decimal";
   if (EqualIgnoringASCIICase(value, "disc"))
-    return CSSValueID::kDisc;
+    return "disc";
   if (EqualIgnoringASCIICase(value, "circle"))
-    return CSSValueID::kCircle;
+    return "circle";
   if (EqualIgnoringASCIICase(value, "square"))
-    return CSSValueID::kSquare;
-  if (EqualIgnoringASCIICase(value, "none"))
-    return CSSValueID::kNone;
-  return CSSValueID::kInvalid;
+    return "square";
+  return g_null_atom;
 }
 
 void HTMLLIElement::CollectStyleForPresentationAttribute(
@@ -68,10 +67,16 @@ void HTMLLIElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kTypeAttr) {
-    CSSValueID type_value = ListTypeToCSSValueID(value);
-    if (IsValidCSSValueID(type_value)) {
+    if (EqualIgnoringASCIICase(value, "none")) {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, type_value);
+          style, CSSPropertyID::kListStyleType, CSSValueID::kNone);
+    } else {
+      AtomicString list_style_type_name = ListTypeAttributeToStyleName(value);
+      if (!list_style_type_name.IsNull()) {
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kListStyleType,
+            *MakeGarbageCollected<CSSCustomIdentValue>(list_style_type_name));
+      }
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

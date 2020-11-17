@@ -41,6 +41,8 @@ blink_core_sources_style = [
   "grid_track_list.cc",
   "grid_track_list.h",
   "grid_track_size.h",
+  "list_style_type_data.cc",
+  "list_style_type_data.h",
   "member_copy.h",
   "named_grid_lines_map.h",
   "nine_piece_image.cc",

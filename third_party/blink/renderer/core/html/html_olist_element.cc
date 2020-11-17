@@ -22,8 +22,8 @@
 
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -54,19 +54,24 @@ void HTMLOListElement::CollectStyleForPresentationAttribute(
   if (name == html_names::kTypeAttr) {
     if (value == "a") {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, CSSValueID::kLowerAlpha);
+          style, CSSPropertyID::kListStyleType,
+          *MakeGarbageCollected<CSSCustomIdentValue>("lower-alpha"));
     } else if (value == "A") {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, CSSValueID::kUpperAlpha);
+          style, CSSPropertyID::kListStyleType,
+          *MakeGarbageCollected<CSSCustomIdentValue>("upper-alpha"));
     } else if (value == "i") {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, CSSValueID::kLowerRoman);
+          style, CSSPropertyID::kListStyleType,
+          *MakeGarbageCollected<CSSCustomIdentValue>("lower-roman"));
     } else if (value == "I") {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, CSSValueID::kUpperRoman);
+          style, CSSPropertyID::kListStyleType,
+          *MakeGarbageCollected<CSSCustomIdentValue>("upper-roman"));
     } else if (value == "1") {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kListStyleType, CSSValueID::kDecimal);
+          style, CSSPropertyID::kListStyleType,
+          *MakeGarbageCollected<CSSCustomIdentValue>("decimal"));
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

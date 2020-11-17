@@ -2417,9 +2417,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
       return ConsumeIdent(range);
     }
 
-    // Some properties need to fallback onto the regular parser.
-    if (!CSSParserFastPaths::IsPartialKeywordPropertyID(property_id))
-      return nullptr;
+    return nullptr;
   }
 
   const auto local_context =

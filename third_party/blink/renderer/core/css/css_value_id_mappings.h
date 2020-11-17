@@ -292,12 +292,10 @@ inline EListStyleType CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kNone:
       return EListStyleType::kNone;
     default:
-      NOTREACHED();
       break;
   }
 
-  NOTREACHED();
-  return EListStyleType::kDisc;
+  return EListStyleType::kNone;
 }
 
 template <>
