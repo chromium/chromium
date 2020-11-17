@@ -19,11 +19,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/browser/content_settings_constraints.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
@@ -41,8 +41,8 @@ namespace content_settings {
 class ObservableProvider;
 class ProviderInterface;
 class PrefProvider;
-class RuleIterator;
 class TestUtils;
+class RuleIterator;
 }
 
 namespace user_prefs {
@@ -255,10 +255,12 @@ class HostContentSettingsMap : public content_settings::Observer,
   // are scoped to origin scope. There is no scope more narrow than origin
   // scope, so we can just blindly set the value of the origin scope when that
   // happens.
-  void SetNarrowestContentSetting(const GURL& primary_url,
-                                  const GURL& secondary_url,
-                                  ContentSettingsType type,
-                                  ContentSetting setting);
+  void SetNarrowestContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type,
+      ContentSetting setting,
+      const content_settings::ContentSettingConstraints& constraints = {});
 
   // Clears all host-specific settings for one content type.
   //
@@ -397,14 +399,16 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       bool include_incognito,
       ContentSettingsPattern* primary_pattern,
-      ContentSettingsPattern* secondary_pattern);
+      ContentSettingsPattern* secondary_pattern,
+      content_settings::SessionModel* session_model);
 
   static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
       content_settings::RuleIterator* rule_iterator,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsPattern* primary_pattern,
-      ContentSettingsPattern* secondary_pattern);
+      ContentSettingsPattern* secondary_pattern,
+      content_settings::SessionModel* session_model);
 
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for

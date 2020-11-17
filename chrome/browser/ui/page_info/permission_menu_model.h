@@ -28,9 +28,9 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
   ~PermissionMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
-  bool IsCommandIdChecked(int command_id) const override;
-  bool IsCommandIdEnabled(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdChecked(int encoded_command_id) const override;
+  bool IsCommandIdEnabled(int encoded_command_id) const override;
+  void ExecuteCommand(int encoded_command_id, int event_flags) override;
 
  private:
   bool ShouldShowAllow(const GURL& url);

@@ -9,6 +9,7 @@ static_library("common") {
   sources = [
     "content_settings.cc",
     "content_settings.h",
+    "content_settings_constraints.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",
     "content_settings_pattern.cc",

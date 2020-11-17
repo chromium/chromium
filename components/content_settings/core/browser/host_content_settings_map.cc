@@ -520,14 +520,16 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    ContentSetting setting) {
+    ContentSetting setting,
+    const content_settings::ContentSettingConstraints& constraints) {
   content_settings::PatternPair patterns =
       GetNarrowestPatterns(primary_url, secondary_url, type);
 
   if (!patterns.first.IsValid() || !patterns.second.IsValid())
     return;
 
-  SetContentSettingCustomScope(patterns.first, patterns.second, type, setting);
+  SetContentSettingCustomScope(patterns.first, patterns.second, type, setting,
+                               constraints);
 }
 
 content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns (
@@ -909,9 +911,11 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
   UsedContentSettingsProviders();
   ContentSettingsPattern* primary_pattern = nullptr;
   ContentSettingsPattern* secondary_pattern = nullptr;
+  content_settings::SessionModel* session_model = nullptr;
   if (info) {
     primary_pattern = &info->primary_pattern;
     secondary_pattern = &info->secondary_pattern;
+    session_model = &info->session_model;
   }
 
   // The list of |content_settings_providers_| is ordered according to their
@@ -920,7 +924,7 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
   for (; it != content_settings_providers_.end(); ++it) {
     std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
         it->second.get(), primary_url, secondary_url, content_type,
-        is_off_the_record_, primary_pattern, secondary_pattern);
+        is_off_the_record_, primary_pattern, secondary_pattern, session_model);
     if (value) {
       if (info)
         info->source = kProviderNamesSourceMap[it->first].provider_source;
@@ -945,7 +949,8 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
     ContentSettingsType content_type,
     bool include_incognito,
     ContentSettingsPattern* primary_pattern,
-    ContentSettingsPattern* secondary_pattern) {
+    ContentSettingsPattern* secondary_pattern,
+    content_settings::SessionModel* session_model) {
   if (include_incognito) {
     // Check incognito-only specific settings. It's essential that the
     // |RuleIterator| gets out of scope before we get a rule iterator for the
@@ -954,7 +959,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
         provider->GetRuleIterator(content_type, true /* incognito */));
     std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
         incognito_rule_iterator.get(), primary_url, secondary_url,
-        primary_pattern, secondary_pattern);
+        primary_pattern, secondary_pattern, session_model);
     if (value)
       return value;
   }
@@ -963,7 +968,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
       provider->GetRuleIterator(content_type, false /* incognito */));
   std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
-      secondary_pattern);
+      secondary_pattern, session_model);
   if (value && include_incognito)
     value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
   return value;
@@ -976,7 +981,8 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsPattern* primary_pattern,
-    ContentSettingsPattern* secondary_pattern) {
+    ContentSettingsPattern* secondary_pattern,
+    content_settings::SessionModel* session_model) {
   if (rule_iterator) {
     while (rule_iterator->HasNext()) {
       const content_settings::Rule& rule = rule_iterator->Next();
@@ -988,6 +994,8 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
           *primary_pattern = rule.primary_pattern;
         if (secondary_pattern)
           *secondary_pattern = rule.secondary_pattern;
+        if (session_model)
+          *session_model = rule.session_model;
         return rule.value.CreateDeepCopy();
       }
     }

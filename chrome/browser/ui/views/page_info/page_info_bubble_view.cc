@@ -562,7 +562,8 @@ void PageInfoBubbleView::WebContentsDestroyed() {
 
 void PageInfoBubbleView::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission) {
-  presenter_->OnSitePermissionChanged(permission.type, permission.setting);
+  presenter_->OnSitePermissionChanged(permission.type, permission.setting,
+                                      permission.is_one_time);
   // The menu buttons for the permissions might have longer strings now, so we
   // need to layout and size the whole bubble.
   Layout();

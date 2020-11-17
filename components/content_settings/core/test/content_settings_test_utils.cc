@@ -20,7 +20,7 @@ base::Value* TestUtils::GetContentSettingValue(
     bool include_incognito) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
              provider, primary_url, secondary_url, content_type,
-             include_incognito, nullptr, nullptr)
+             include_incognito, nullptr, nullptr, nullptr)
       .release();
 }
 
@@ -45,7 +45,7 @@ std::unique_ptr<base::Value> TestUtils::GetContentSettingValueAndPatterns(
     ContentSettingsPattern* secondary_pattern) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       rule_iterator, primary_url, secondary_url, primary_pattern,
-      secondary_pattern);
+      secondary_pattern, nullptr);
 }
 
 // static

@@ -7,7 +7,6 @@ import("//ppapi/buildflags/buildflags.gni")
 
 static_library("browser") {
   sources = [
-    "content_settings_constraints.h",
     "content_settings_default_provider.cc",
     "content_settings_default_provider.h",
     "content_settings_details.cc",

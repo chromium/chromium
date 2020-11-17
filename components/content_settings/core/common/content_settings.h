@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -103,6 +104,7 @@ struct SettingInfo {
   SettingSource source;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
+  SessionModel session_model;
 };
 
 }  // namespace content_settings

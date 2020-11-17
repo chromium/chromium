@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "components/content_settings/core/browser/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 

@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -202,6 +203,14 @@ bool PrefProvider::SetWebsiteSetting(
 
   base::Time modified_time =
       store_last_modified_ ? clock_->Now() : base::Time();
+
+  // If SessionModel is OneTime, we know for sure that a one time permission
+  // has been set by the One Time Provider, therefore we reset a potentially
+  // existing Allow Always setting.
+  if (constraints.session_model == SessionModel::OneTime) {
+    DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
+    in_value = nullptr;
+  }
 
   return GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern, modified_time,

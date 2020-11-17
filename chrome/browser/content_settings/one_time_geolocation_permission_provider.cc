@@ -71,13 +71,25 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
     ContentSettingsType content_settings_type,
     std::unique_ptr<base::Value>&& value,
     const content_settings::ContentSettingConstraints& constraints) {
-  if (constraints.session_model != content_settings::SessionModel::OneTime)
+  if (content_settings_type != ContentSettingsType::GEOLOCATION)
     return false;
+  // This block handles transitions from Allow Once to Ask/Block by clearing
+  // the one time grant and letting the pref provider handle the permission as
+  // usual.
+  if (constraints.session_model != content_settings::SessionModel::OneTime) {
+    auto matching_iterator = grants_with_open_tabs_.find(primary_pattern);
+    if (matching_iterator != grants_with_open_tabs_.end())
+      grants_with_open_tabs_.erase(matching_iterator);
+    return false;
+  }
   DCHECK_EQ(content_settings::ValueToContentSetting(value.get()),
             CONTENT_SETTING_ALLOW);
-  DCHECK_EQ(content_settings_type, ContentSettingsType::GEOLOCATION);
   grants_with_open_tabs_[primary_pattern] = base::Time::Now();
-  return true;
+  // We need to handle transitions from Allow to Allow Once gracefully.
+  // In that case we add the Allow Once setting in this provider, but also
+  // have to clear the Allow setting in the pref provider. By returning false
+  // here, we let the control flow trickle down to the pref provider.
+  return false;
 }
 
 base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(

@@ -9140,6 +9140,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GEOLOCATION" desc="Description text next to the location icon inside the pop-up bubble which describes that the location permission is blocked on an OS level.">
           Location
       </message>
+      <message name="IDS_GEOLOCATION_WILL_ASK_AGAIN" desc="Info message that tells user that the website will prompt for geolocation permission again next time">
+          This site will ask again next time.
+      </message>
       <if expr="is_macosx">
         <message name="IDS_GEOLOCATION_TURNED_OFF_IN_MACOS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in macOS.">
           Location is turned off in Mac System Preferences

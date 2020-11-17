@@ -11,9 +11,9 @@
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/browser/content_settings_constraints.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "url/gurl.h"
 
