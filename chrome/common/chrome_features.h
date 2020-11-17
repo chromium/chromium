@@ -119,7 +119,7 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kContentSettingsRedesign;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kCookiesPageRedesign;
+extern const base::Feature kPrivacySandboxSettings;
 
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)

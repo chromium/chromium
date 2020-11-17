@@ -141,10 +141,6 @@ const base::Feature kClientStorageAccessContextAuditing{
 const base::Feature kContentSettingsRedesign{"ContentSettingsRedesign",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a redesign of the cookies page.
-const base::Feature kCookiesPageRedesign{"CookiesPageRedesign",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // Restricts all of Chrome's threads to use only LITTLE cores on big.LITTLE
 // architectures.
@@ -676,6 +672,10 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
 const base::Feature kPrivacyReorderedAndroid{"PrivacyReorderedAndroid",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
+
+// Enables the privacy sandbox settings page.
+const base::Feature kPrivacySandboxSettings{"PrivacySandboxSettings",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Whether to display redesign of the chrome privacy settings page
 // to the user.

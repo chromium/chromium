@@ -338,9 +338,6 @@ const char kContextMenuSearchAndShopWithGoogleLensDescription[] =
     "Display an additional menu item for a Shopping intent to Google Lens "
     "below Search with Google Lens when Lens shopping feature is enabled";
 
-const char kCookiesPageRedesignName[] = "Cookies Page Redesign";
-const char kCookiesPageRedesignDescription[] = "Enables cookies page redesign";
-
 const char kClickToOpenPDFName[] = "Click to open embedded PDFs";
 const char kClickToOpenPDFDescription[] =
     "When the PDF plugin is unavailable, show a click-to-open placeholder for "
@@ -1851,6 +1848,10 @@ const char kPrivacyReorderedAndroidName[] =
     "Reorder settings in Privacy on Android";
 const char kPrivacyReorderedAndroidDescription[] =
     "Reorder settings in the Privacy settings page for better user experience.";
+
+const char kPrivacySandboxSettingsName[] = "Privacy Sandbox Settings";
+const char kPrivacySandboxSettingsDescription[] =
+    "Enables privacy sandbox settings";
 
 const char kPrivacySettingsRedesignName[] = "Privacy Settings Redesign";
 const char kPrivacySettingsRedesignDescription[] =
