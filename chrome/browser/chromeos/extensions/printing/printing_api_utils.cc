@@ -89,7 +89,7 @@ idl::Printer PrinterToIdl(
   idl_printer.id = printer.id();
   idl_printer.name = printer.display_name();
   idl_printer.description = printer.description();
-  idl_printer.uri = printer.uri().GetNormalized();
+  idl_printer.uri = printer.uri().GetNormalized(true /*always_print_port*/);
   idl_printer.source = PrinterSourceToIdl(printer.source());
   idl_printer.is_default =
       DoesPrinterMatchDefaultPrinterRules(printer, default_printer_rules);
