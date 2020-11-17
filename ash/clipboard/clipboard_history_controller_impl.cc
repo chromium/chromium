@@ -297,6 +297,9 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
     case Action::kDelete:
       DeleteItemWithCommandId(command_id);
       return;
+    case Action::kSelect:
+      context_menu_->SelectMenuItemWithCommandId(command_id);
+      return;
     case Action::kEmpty:
       NOTREACHED();
       return;

@@ -41,7 +41,10 @@ enum class Action {
   kPaste,
 
   // Deletes the activated item.
-  kDelete
+  kDelete,
+
+  // Selects the activated item.
+  kSelect
 };
 
 // Used in histograms, each value corresponds with an underlying format

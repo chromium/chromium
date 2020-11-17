@@ -43,6 +43,10 @@ class ClipboardHistoryItemView : public views::View {
 
   ClipboardHistoryUtil::Action action() const { return action_; }
 
+  views::View* delete_button_for_test() {
+    return contents_view_->delete_button();
+  }
+
   const views::View* delete_button_for_test() const {
     return contents_view_->delete_button();
   }
@@ -159,6 +163,9 @@ class ClipboardHistoryItemView : public views::View {
   // Updates `pseudo_focus_` and children visibility.
   void SetPseudoFocus(PseudoFocus new_pseudo_focus);
 
+  // Attempts to handle the gesture event redirected from `main_button_`.
+  void MaybeHandleGestureEventFromMainButton(ui::GestureEvent* event);
+
   // Owned by ClipboardHistoryMenuModelAdapter.
   const ClipboardHistoryItem* const clipboard_history_item_;
 
@@ -169,6 +176,9 @@ class ClipboardHistoryItemView : public views::View {
   MainButton* main_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
+
+  // Indicates whether the menu item is under the gesture long press.
+  bool under_gesture_long_press_ = false;
 
   // Indicates the action to take. It is set when the menu item is activated
   // through `main_button_` or the delete button.

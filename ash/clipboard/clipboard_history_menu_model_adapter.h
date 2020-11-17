@@ -88,6 +88,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
   const views::MenuItemView* GetMenuItemViewAtForTest(int index) const;
+  views::MenuItemView* GetMenuItemViewAtForTest(int index);
 
   void set_item_removal_callback_for_test(base::RepeatingClosure new_callback) {
     item_removal_callback_for_test_ = std::move(new_callback);
