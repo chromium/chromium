@@ -233,6 +233,24 @@ class RemoteTest(object):
       with open(self._test_launcher_summary_output, 'w') as f:
         json.dump(json_results.GenerateResultsDict([run_results]), f)
 
+  @staticmethod
+  def get_artifacts(path):
+    """Crawls a given directory for file artifacts to attach to a test.
+
+    Args:
+      path: Path to a directory to search for artifacts.
+    Returns:
+      A dict mapping name of the artifact to its absolute filepath.
+    """
+    artifacts = {}
+    for dirpath, _, filenames in os.walk(path):
+      for f in filenames:
+        artifact_path = os.path.join(dirpath, f)
+        artifacts[os.path.relpath(artifact_path, path)] = {
+            'filePath': artifact_path,
+        }
+    return artifacts
+
 
 class TastTest(RemoteTest):
 
@@ -378,16 +396,16 @@ class TastTest(RemoteTest):
         # Walk the contents of the test's "outDir" and atttach any file found
         # inside as an RDB 'artifact'. (This could include system logs, screen
         # shots, etc.)
-        artifacts = {}
-        artifacts_dir = test['outDir']
-        for dirpath, _, filenames in os.walk(artifacts_dir):
-          for f in filenames:
-            artifact_path = os.path.join(dirpath, f)
-            artifacts[os.path.relpath(artifact_path, artifacts_dir)] = {
-                'filePath': artifact_path,
-            }
-
+        artifacts = self.get_artifacts(test['outDir'])
         self._rdb_client.Post(test['name'], result, error_log, artifacts)
+
+    if self._rdb_client and self._logs_dir:
+      # Attach artifacts from the device that don't apply to a single test.
+      artifacts = self.get_artifacts(
+          os.path.join(self._logs_dir, 'system_logs'))
+      artifacts.update(
+          self.get_artifacts(os.path.join(self._logs_dir, 'crashes')))
+      self._rdb_client.ReportInvocationLevelArtifacts(artifacts)
 
     if self._test_launcher_summary_output:
       with open(self._test_launcher_summary_output, 'w') as f:
