@@ -227,8 +227,7 @@
           addObject:
               [actionFactory
                   actionToOpenInNewWindowWithURL:item.URL
-                                  activityOrigin:WindowActivityHistoryOrigin
-                                      completion:nil]];
+                                  activityOrigin:WindowActivityHistoryOrigin]];
     }
 
     [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];

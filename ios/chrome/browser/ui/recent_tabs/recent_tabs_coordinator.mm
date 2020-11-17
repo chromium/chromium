@@ -181,14 +181,10 @@
   [self showActiveRegularTabFromRecentTabs];
 }
 
-- (void)dismissRecentTabs {
+- (void)showActiveRegularTabFromRecentTabs {
   // Stopping this coordinator reveals the tab UI underneath.
   self.completion = nil;
   [self stop];
-}
-
-- (void)showActiveRegularTabFromRecentTabs {
-  [self dismissRecentTabs];
 }
 
 - (void)showHistoryFromRecentTabs {

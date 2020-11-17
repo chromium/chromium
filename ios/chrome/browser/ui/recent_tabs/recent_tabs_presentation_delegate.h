@@ -14,9 +14,6 @@ class DistantSession;
 // Presentation commands that depend on the context from which they are
 // presented.
 @protocol RecentTabsPresentationDelegate
-// Tells the receiver to dismiss recent tabs. This may be used by a keyboard
-// escape shortcut. Receiver may choose to ignore this message.
-- (void)dismissRecentTabs;
 // Tells the receiver to show the tab UI for regular tabs. NO-OP if the correct
 // tab UI is already visible. Receiver may also dismiss recent tabs.
 - (void)showActiveRegularTabFromRecentTabs;

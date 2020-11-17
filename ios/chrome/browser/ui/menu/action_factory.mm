@@ -138,8 +138,8 @@
 }
 
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
-                             activityOrigin:(WindowActivityOrigin)activityOrigin
-                                 completion:(ProceduralBlock)completion {
+                             activityOrigin:
+                                 (WindowActivityOrigin)activityOrigin {
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   NSUserActivity* activity = ActivityToLoadURL(activityOrigin, URL);
@@ -149,9 +149,6 @@
                           type:MenuActionType::OpenInNewWindow
                          block:^{
                            [windowOpener openNewWindowWithActivity:activity];
-                           if (completion) {
-                             completion();
-                           }
                          }];
 }
 

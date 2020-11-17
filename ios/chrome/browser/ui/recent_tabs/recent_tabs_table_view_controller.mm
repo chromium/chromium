@@ -1427,8 +1427,7 @@ API_AVAILABLE(ios(13.0))
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   base::RecordAction(base::UserMetricsAction("IOSRecentTabsCloseWithSwipe"));
-  // Call dismissRecentTabs so the Coordinator cleans up any state it needs to.
-  [self.presentationDelegate dismissRecentTabs];
+  [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
 #pragma mark - Accessibility

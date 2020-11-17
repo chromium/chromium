@@ -79,30 +79,24 @@
             [actionFactory
                 actionToOpenInNewTabWithURL:item.URL
                                  completion:^{
-                                   [strongSelf.recentTabsPresentationDelegate
+                                   [weakSelf.recentTabsPresentationDelegate
                                            showActiveRegularTabFromRecentTabs];
                                  }]];
 
     if (IsMultipleScenesSupported()) {
       [menuElements
-          addObject:
-              [actionFactory
-                  actionToOpenInNewWindowWithURL:item.URL
-                                  activityOrigin:WindowActivityRecentTabsOrigin
-                                      completion:^{
-                                        [strongSelf
-                                                .recentTabsPresentationDelegate
-                                                    dismissRecentTabs];
-                                      }]];
+          addObject:[actionFactory
+                        actionToOpenInNewWindowWithURL:item.URL
+                                        activityOrigin:
+                                            WindowActivityRecentTabsOrigin]];
     }
 
     [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                    [strongSelf.recentTabsContextMenuDelegate
-                        shareURL:item.URL
-                           title:item.title
-                        fromView:view];
+                    [weakSelf.recentTabsContextMenuDelegate shareURL:item.URL
+                                                               title:item.title
+                                                            fromView:view];
                   }]];
 
     return [UIMenu menuWithTitle:@"" children:menuElements];

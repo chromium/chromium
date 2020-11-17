@@ -485,11 +485,11 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
         if (IsMultipleScenesSupported()) {
           [menuElements
-              addObject:[actionFactory
-                            actionToOpenInNewWindowWithURL:item.entryURL
-                                            activityOrigin:
-                                                WindowActivityReadingListOrigin
-                                                completion:nil]];
+              addObject:
+                  [actionFactory
+                      actionToOpenInNewWindowWithURL:item.entryURL
+                                      activityOrigin:
+                                          WindowActivityReadingListOrigin]];
         }
 
         if ([accessibilityDelegate isItemRead:item]) {

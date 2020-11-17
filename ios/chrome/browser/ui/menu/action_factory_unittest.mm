@@ -213,8 +213,7 @@ TEST_F(ActionFactoryTest, OpenInNewWindowAction) {
 
     UIAction* action =
         [factory actionToOpenInNewWindowWithURL:testURL
-                                 activityOrigin:WindowActivityToolsOrigin
-                                     completion:nil];
+                                 activityOrigin:WindowActivityToolsOrigin];
 
     EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
     EXPECT_EQ(expectedImage, action.image);

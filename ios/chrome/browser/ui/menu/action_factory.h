@@ -72,11 +72,10 @@ API_AVAILABLE(ios(13.0))
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for opening the |URL| in a new window
-// from |activityOrigin|, and which will invoke the given |completion| block
-// after execution.
+// from |activityOrigin|.
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
-                             activityOrigin:(WindowActivityOrigin)activityOrigin
-                                 completion:(ProceduralBlock)completion;
+                             activityOrigin:
+                                 (WindowActivityOrigin)activityOrigin;
 
 // Creates a UIAction instance configured for suppression which will invoke
 // the given delete |block| when executed.

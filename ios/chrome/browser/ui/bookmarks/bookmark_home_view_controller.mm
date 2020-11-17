@@ -2292,11 +2292,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       if (IsMultipleScenesSupported()) {
         [menuElements
-            addObject:
-                [actionFactory
-                    actionToOpenInNewWindowWithURL:node->url()
-                                    activityOrigin:WindowActivityBookmarksOrigin
-                                        completion:nil]];
+            addObject:[actionFactory
+                          actionToOpenInNewWindowWithURL:node->url()
+                                          activityOrigin:
+                                              WindowActivityBookmarksOrigin]];
       }
 
       [menuElements addObject:[actionFactory actionToCopyURL:node->url()]];

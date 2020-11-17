@@ -501,11 +501,6 @@
 
 #pragma mark - RecentTabsPresentationDelegate
 
-- (void)dismissRecentTabs {
-  // It is valid for tab grid to ignore this since recent tabs is embedded and
-  // will not be dismissed.
-}
-
 - (void)showHistoryFromRecentTabs {
   // A history coordinator from main_controller won't work properly from the
   // tab grid. Using a local coordinator works better and we need to set

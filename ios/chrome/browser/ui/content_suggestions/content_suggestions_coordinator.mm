@@ -623,13 +623,11 @@
             }]];
 
         if (IsMultipleScenesSupported()) {
-          [menuElements
-              addObject:
-                  [actionFactory
-                      actionToOpenInNewWindowWithURL:item.URL
-                                      activityOrigin:
-                                          WindowActivityContentSuggestionsOrigin
-                                          completion:nil]];
+          UIAction* newWindowAction = [actionFactory
+              actionToOpenInNewWindowWithURL:item.URL
+                              activityOrigin:
+                                  WindowActivityContentSuggestionsOrigin];
+          [menuElements addObject:newWindowAction];
         }
 
         [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
