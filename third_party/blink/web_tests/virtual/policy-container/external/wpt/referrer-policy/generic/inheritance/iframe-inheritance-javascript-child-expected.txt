@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 PASS Referrer Policy: iframes with javascript url reuse referrer policy
 PASS Referrer Policy: iframes with javascript url reuse referrer policy 1
-PASS Referrer Policy: iframes with javascript url reuse referrer policy 2
+FAIL Referrer Policy: iframes with javascript url reuse referrer policy 2 assert_equals: expected (undefined) undefined but got (string) "http://web-platform.test:8001/referrer-policy/generic/inheritance/iframe-inheritance-javascript-child.html"
 PASS Referrer Policy: iframes with javascript url reuse referrer policy 3
 Harness: the test ran to completion.
 

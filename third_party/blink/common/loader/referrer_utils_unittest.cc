@@ -12,7 +12,7 @@ namespace blink {
 
 TEST(DefaultNetReferrerPolicyTest, Unconfigured) {
   EXPECT_EQ(blink::ReferrerUtils::GetDefaultNetReferrerPolicy(),
-            net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
+            net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN);
 }
 
 TEST(DefaultNetReferrerPolicyTest, FeatureOnly) {

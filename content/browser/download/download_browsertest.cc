@@ -3485,10 +3485,10 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ReferrerForPartialResumption) {
 
   ASSERT_GE(2u, requests.size());
   net::test_server::HttpRequest last_request = requests.back()->http_request;
-  EXPECT_TRUE(last_request.headers.find(net::HttpRequestHeaders::kReferer) !=
-              last_request.headers.end());
-  EXPECT_EQ(document_url.spec(),
-            last_request.headers.at(net::HttpRequestHeaders::kReferer));
+  ASSERT_TRUE(
+      base::Contains(last_request.headers, net::HttpRequestHeaders::kReferer));
+  EXPECT_EQ(last_request.headers.at(net::HttpRequestHeaders::kReferer),
+            document_url.GetOrigin().spec());
 }
 
 // Test that the referrer header is dropped for HTTP downloads from HTTPS.

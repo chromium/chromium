@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Check that the referrer is set correctly.
   std::string expected_referrer =
-      embedded_test_server()->GetURL("/click-noreferrer-links.html").spec();
+      embedded_test_server()->GetURL("/").GetOrigin().spec();
   success = false;
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
       new_shell,

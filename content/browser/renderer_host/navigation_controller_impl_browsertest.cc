@@ -7443,9 +7443,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Verify the Origin and Referer headers.
   EXPECT_THAT(headers, ::testing::HasSubstr("Origin: null"));
-  EXPECT_THAT(headers,
-              ::testing::ContainsRegex(
-                  "Referer: http://a.com:.*/form_that_posts_cross_site.html"));
+  EXPECT_THAT(headers, ::testing::ContainsRegex("Referer: http://a.com:.*/"));
 }
 
 // Test that verifies that Content-Type http header is correctly sent
@@ -11611,8 +11609,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   NavigationRequest* navigation_1 =
       main_frame->child_at(0)->navigation_request();
   ASSERT_TRUE(navigation_1);
-  EXPECT_EQ(main_url, navigation_1->GetReferrer().url);
-  EXPECT_EQ(network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+  EXPECT_EQ(main_url.GetOrigin(), navigation_1->GetReferrer().url);
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             navigation_1->GetReferrer().policy);
   EXPECT_TRUE(navigation_1->IsRendererInitiated());
   EXPECT_TRUE(navigation_1->IsPost());
@@ -11629,8 +11627,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_1->initiator_origin().value());
   content::Referrer referrer_1 = frame_entry_1->referrer();
-  EXPECT_EQ(main_url, frame_entry_1->referrer().url);
-  EXPECT_EQ(network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+  EXPECT_EQ(main_url.GetOrigin(), frame_entry_1->referrer().url);
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             frame_entry_1->referrer().policy);
   int item_sequence_number_1 = frame_entry_1->item_sequence_number();
   int document_sequence_number_1 = frame_entry_1->document_sequence_number();
@@ -11644,8 +11642,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   NavigationRequest* navigation_2 =
       main_frame->child_at(0)->navigation_request();
   ASSERT_TRUE(navigation_2);
-  EXPECT_EQ(main_url, navigation_2->GetReferrer().url);
-  EXPECT_EQ(network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+  EXPECT_EQ(main_url.GetOrigin(), navigation_2->GetReferrer().url);
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             navigation_2->GetReferrer().policy);
   EXPECT_FALSE(navigation_2->IsRendererInitiated());
   EXPECT_TRUE(navigation_2->IsPost());
@@ -11662,8 +11660,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_2->initiator_origin().value());
   content::Referrer referrer_2 = frame_entry_1->referrer();
-  EXPECT_EQ(main_url, frame_entry_2->referrer().url);
-  EXPECT_EQ(network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+  EXPECT_EQ(main_url.GetOrigin(), frame_entry_2->referrer().url);
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             frame_entry_2->referrer().policy);
 
   // TODO(http://crbug.com/1068965): Remove this when test passes.

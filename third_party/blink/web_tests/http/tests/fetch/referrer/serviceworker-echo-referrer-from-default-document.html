@@ -16,7 +16,7 @@ const REFERRER_SOURCE = BASE_ORIGIN + SCOPE;
 
 const TESTS = [
   [URL, 'about:client',
-    '', REFERRER_SOURCE, 'no-referrer-when-downgrade'],
+    '', REFERRER_SOURCE, 'strict-origin-when-cross-origin'],
   [URL, 'about:client', 'no-referrer',
     '', 'no-referrer'],
   [URL, 'about:client', 'no-referrer-when-downgrade',

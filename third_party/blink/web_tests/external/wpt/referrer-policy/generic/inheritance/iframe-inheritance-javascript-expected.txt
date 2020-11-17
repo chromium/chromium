@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 PASS Referrer Policy: iframes with javascript url reuse referrer policy
-FAIL Referrer Policy: iframes with javascript url reuse referrer policy 1 assert_equals: expected "http://web-platform.test:8001/" but got "http://web-platform.test:8001/custom"
+FAIL Referrer Policy: iframes with javascript url reuse referrer policy 1 assert_equals: expected "http://web-platform.test:8001/custom" but got "http://web-platform.test:8001/"
 Harness: the test ran to completion.
 

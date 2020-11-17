@@ -739,7 +739,7 @@ const base::Feature kCompositingOptimizations{
 // Reduce the amount of information in the default 'referer' header for
 // cross-origin requests.
 const base::Feature kReducedReferrerGranularity{
-    "ReducedReferrerGranularity", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ReducedReferrerGranularity", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the constant streaming in the ContentCapture task.
 const base::Feature kContentCaptureConstantStreaming = {

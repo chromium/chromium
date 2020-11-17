@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL History navigation reuses original policy. assert_equals: History navigation reuses original policy. expected "http://web-platform.test:8001/" but got "http://web-platform.test:8001/custom"
+FAIL History navigation reuses original policy. assert_equals: History navigation reuses original policy. expected (undefined) undefined but got (string) "http://web-platform.test:8001/custom"
 PASS New srcdoc iframe uses new policy.
 Harness: the test ran to completion.
 

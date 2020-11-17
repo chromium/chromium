@@ -13,7 +13,7 @@ Http headers:
 
 HTTP_CONNECTION = keep-alive
 HTTP_HOST = localhost:8080
-HTTP_REFERER = http://127.0.0.1:8000/navigation/form-targets-cross-site-frame-get.html
+HTTP_REFERER = http://127.0.0.1:8000/
 HTTP_SEC_CH_UA = "content_shell";v="999"
 HTTP_SEC_CH_UA_MOBILE = ?0
 HTTP_SEC_FETCH_DEST = iframe
