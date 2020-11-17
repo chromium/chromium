@@ -8,6 +8,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -1192,6 +1193,88 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
             new_display_id);
   EXPECT_EQ(secondary_id, old_display_id);
+}
+
+TEST_F(ShellSurfaceTest, PropertyResolverTest) {
+  class TestPropertyResolver : public exo::WMHelper::AppPropertyResolver {
+   public:
+    TestPropertyResolver() = default;
+    ~TestPropertyResolver() override = default;
+    void PopulateProperties(
+        const std::string& app_id,
+        const std::string& startup_id,
+        bool for_creation,
+        ui::PropertyHandler& out_properties_container) override {
+      if (expected_app_id == app_id) {
+        out_properties_container.AcquireAllPropertiesFrom(
+            std::move(for_creation ? properties_for_creation
+                                   : properties_after_creation));
+      }
+    }
+    std::string expected_app_id;
+    ui::PropertyHandler properties_for_creation;
+    ui::PropertyHandler properties_after_creation;
+  };
+  std::unique_ptr<TestPropertyResolver> resolver_holder =
+      std::make_unique<TestPropertyResolver>();
+  auto* resolver = resolver_holder.get();
+  WMHelper::GetInstance()->RegisterAppPropertyResolver(
+      std::move(resolver_holder));
+
+  resolver->properties_for_creation.SetProperty(ash::kShelfItemTypeKey, 1);
+  resolver->properties_after_creation.SetProperty(ash::kShelfItemTypeKey, 2);
+  resolver->expected_app_id = "test";
+
+  // Make sure that properties are properly populated for both
+  // "before widget creation", and "after widget creation".
+  {
+    // TODO(oshima): create a test API to create a shell surface.
+    gfx::Size buffer_size(256, 256);
+    auto buffer = std::make_unique<Buffer>(
+        exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+    auto surface = std::make_unique<Surface>();
+    auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+    surface->SetApplicationId("test");
+    surface->Attach(buffer.get());
+    surface->Commit();
+    EXPECT_EQ(1, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+    surface->SetApplicationId("test");
+    EXPECT_EQ(2, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+  }
+
+  // Make sure that properties are will not be popluated when the app ids
+  // mismatch "before" and "after" widget is created.
+  resolver->properties_for_creation.SetProperty(ash::kShelfItemTypeKey, 1);
+  resolver->properties_after_creation.SetProperty(ash::kShelfItemTypeKey, 2);
+  {
+    gfx::Size buffer_size(256, 256);
+    auto buffer = std::make_unique<Buffer>(
+        exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+    auto surface = std::make_unique<Surface>();
+    auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+    surface->SetApplicationId("testx");
+    surface->Attach(buffer.get());
+    surface->Commit();
+    EXPECT_NE(1, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+
+    surface->SetApplicationId("testy");
+    surface->Attach(buffer.get());
+    surface->Commit();
+    EXPECT_NE(1, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+    EXPECT_NE(2, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+
+    // Updating to the matching |app_id| should set the window property.
+    surface->SetApplicationId("test");
+    EXPECT_EQ(2, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                     ash::kShelfItemTypeKey));
+  }
 }
 
 }  // namespace exo

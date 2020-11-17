@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -60,6 +61,8 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
         browser()->profile());
 
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_->RegisterAppPropertyResolver(
+        std::make_unique<ExoAppTypeResolver>());
   }
 
   void TearDownOnMainThread() override {
@@ -78,6 +81,7 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
   ArcTestWindow MakeTestWindow(std::string name) {
     ArcTestWindow ret;
     exo::test::ExoTestHelper helper;
+
     ret.surface = std::make_unique<exo::Surface>();
     ret.buffer = std::make_unique<exo::Buffer>(
         helper.CreateGpuMemoryBuffer(gfx::Size(640, 480)));
@@ -87,8 +91,7 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
     ret.surface->Commit();
 
     // Forcefully set task_id for each window.
-    exo::SetShellApplicationId(
-        ret.shell_surface->GetWidget()->GetNativeWindow(), std::move(name));
+    ret.surface->SetApplicationId(name.c_str());
     return ret;
   }
 

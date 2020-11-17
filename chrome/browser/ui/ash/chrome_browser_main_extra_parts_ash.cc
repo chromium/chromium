@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/ime_controller_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
+#include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -179,6 +180,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();
+  if (exo_parts_) {
+    exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
+        std::make_unique<ExoAppTypeResolver>());
+  }
 #endif
 
   night_light_client_ = std::make_unique<NightLightClient>(

@@ -68,11 +68,6 @@ void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window) {
     SetSkipImeProcessingToDescendentSurfaces(child);
 }
 
-// Returns true, if the given ID represents Lacros.
-bool IsLacrosAppId(base::StringPiece app_id) {
-  return base::StartsWith(app_id, crosapi::kLacrosAppIdPrefix);
-}
-
 // The accelerator keys used to close ShellSurfaces.
 const struct {
   ui::KeyboardCode keycode;
@@ -421,8 +416,11 @@ void ShellSurfaceBase::SetApplicationId(const char* application_id) {
 
   if (widget_ && widget_->GetNativeWindow()) {
     SetShellApplicationId(widget_->GetNativeWindow(), application_id_);
-    if (application_id_.has_value() && IsLacrosAppId(*application_id_))
-      SetLacrosAppType(widget_->GetNativeWindow());
+    ui::PropertyHandler& property_handler = *widget_->GetNativeWindow();
+    WMHelper::GetInstance()->PopulateAppProperties(
+        application_id_ ? *application_id_ : std::string(),
+        startup_id_ ? *startup_id_ : std::string(),
+        /*for_creation=*/false, property_handler);
   }
 }
 
@@ -887,6 +885,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     activatable_ = false;
     DisableMovement();
   }
+
   views::Widget::InitParams params;
   params.type = emulate_x11_override_redirect
                     ? views::Widget::InitParams::TYPE_MENU
@@ -906,6 +905,12 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
         WMHelper::GetInstance()->GetRootWindowForNewWindows(), container_);
   }
   params.bounds = gfx::Rect(origin_, gfx::Size());
+
+  WMHelper::GetInstance()->PopulateAppProperties(
+      application_id_ ? *application_id_ : std::string(),
+      startup_id_ ? *startup_id_ : std::string(),
+      /*for_creation=*/true, params.init_properties_container);
+
   bool activatable = activatable_;
   if (container_ == ash::kShellWindowId_SystemModalContainer)
     activatable &= HasHitTestRegion();
@@ -932,8 +937,6 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   InstallCustomWindowTargeter();
   SetShellApplicationId(window, application_id_);
-  if (application_id_.has_value() && IsLacrosAppId(*application_id_))
-    SetLacrosAppType(window);
   SetShellStartupId(window, startup_id_);
   SetShellMainSurface(window, root_surface());
 

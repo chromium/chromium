@@ -22,7 +22,6 @@ NotificationSurface::NotificationSurface(NotificationSurfaceManager* manager,
       notification_key_(notification_key) {
   surface->AddSurfaceObserver(this);
   SetRootSurface(surface);
-  SetArcAppType(host_window());
   host_window()->Show();
   host_window()->AddObserver(this);
 }
