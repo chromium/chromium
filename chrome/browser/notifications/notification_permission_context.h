@@ -94,6 +94,10 @@ class NotificationPermissionContext
       content::BrowserContext* browser_context);
   ~NotificationPermissionContext() override;
 
+  static void SetBlockNewNotificationRequests(
+      content::WebContents* web_contents,
+      bool value);
+
   // PermissionContextBase implementation.
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
