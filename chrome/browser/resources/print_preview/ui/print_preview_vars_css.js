@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const $_documentContainer = document.createElement('template');
 $_documentContainer.innerHTML = `{__html_template__}`;
