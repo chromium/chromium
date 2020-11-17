@@ -1,0 +1,78 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.proto";
+option java_multiple_files = true;
+
+package autofill_assistant;
+
+import "action_value.proto";
+
+message ClientIdProto {
+  optional string identifier = 1;
+}
+
+message ScrollIntoViewProto {
+  optional ClientIdProto client_id = 1;
+}
+
+message WaitForDocumentToBecomeInteractiveProto {
+  optional ClientIdProto client_id = 1;
+  optional int32 timeout_in_ms = 2;
+}
+
+message WaitForDocumentToBecomeCompleteProto {
+  optional ClientIdProto client_id = 1;
+  optional int32 timeout_in_ms = 2;
+}
+
+message WaitForElementToBecomeStable {
+  optional ClientIdProto client_id = 1;
+  optional int32 stable_check_max_rounds = 2 [default = 50];
+  optional int32 stable_check_interval_ms = 3 [default = 200];
+}
+
+message CheckElementIsOnTop {
+  optional ClientIdProto client_id = 1;
+}
+
+message SendClickEventProto {
+  optional ClientIdProto client_id = 1;
+}
+
+message SendTapEventProto {
+  optional ClientIdProto client_id = 1;
+}
+
+message JsClickProto {
+  optional ClientIdProto client_id = 1;
+}
+
+message SendKeystrokeEventsProto {
+  optional ClientIdProto client_id = 1;
+  optional TextValue value = 2;
+  optional int32 delay_in_ms = 3;
+}
+
+message SetFieldValueProto {
+  optional ClientIdProto client_id = 1;
+  optional TextValue value = 2;
+}
+
+message SetElementAttributeProto {
+  optional ClientIdProto client_id = 1;
+  repeated string attribute = 2;
+  optional TextValue value = 3;
+}
+
+message SelectFieldValueProto {
+  optional ClientIdProto client_id = 1;
+}
+
+message FocusFieldProto {
+  optional ClientIdProto client_id = 1;
+}

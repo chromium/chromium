@@ -10,6 +10,9 @@ if (is_android) {
 
 proto_library("proto") {
   sources = [
+    "action_strategy.proto",
+    "action_value.proto",
+    "dom_action.proto",
     "generic_ui.proto",
     "model.proto",
     "service.proto",
@@ -419,6 +422,9 @@ if (is_android) {
   proto_java_library("proto_java") {
     proto_path = "//components/autofill_assistant/browser/"
     sources = [
+      "$proto_path/action_strategy.proto",
+      "$proto_path/action_value.proto",
+      "$proto_path/dom_action.proto",
       "$proto_path/generic_ui.proto",
       "$proto_path/model.proto",
       "$proto_path/service.proto",

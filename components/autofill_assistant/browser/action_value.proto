@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.proto";
+option java_multiple_files = true;
+
+package autofill_assistant;
+
+message AutofillValue {
+  message Profile { optional string identifier = 1; }
+
+  // The profile to be used. This has to be requested with a
+  // |CollectUserDataAction| first.
+  optional Profile profile = 1;
+
+  // A string containing any number of "${key}" placeholders, where the key is
+  // an integer corresponding to entries from field_types.h or
+  // |AutofillFormatProto::AutofillAssistantCustomField|.
+  // Note that the set of actually available fields are outside of our
+  // control and are retrieved automatically from the provided profile.
+  optional string value_expression = 2;
+}
+
+message TextValue {
+  oneof value {
+    string text = 1;
+    AutofillValue autofill_value = 2;
+  }
+}
