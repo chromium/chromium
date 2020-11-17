@@ -315,5 +315,11 @@ bool IsModelDownloadingEnabled() {
   return base::FeatureList::IsEnabled(kOptimizationGuideModelDownloading);
 }
 
+bool IsUnrestrictedModelDownloadingEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kOptimizationGuideModelDownloading, "unrestricted_model_downloading",
+      false);
+}
+
 }  // namespace features
 }  // namespace optimization_guide

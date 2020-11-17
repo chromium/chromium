@@ -162,6 +162,10 @@ bool ShouldUseMLServiceForPrediction();
 // Whether the ability to download models is enabled.
 bool IsModelDownloadingEnabled();
 
+// Returns whether unrestricted model downloading is enabled. If true, the
+// client should download models using highest priority.
+bool IsUnrestrictedModelDownloadingEnabled();
+
 }  // namespace features
 }  // namespace optimization_guide
 

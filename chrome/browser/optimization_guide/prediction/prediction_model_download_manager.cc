@@ -107,13 +107,23 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
   download_params.request_params.method = "GET";
   download_params.request_params.request_headers.SetHeader(kGoogApiKey,
                                                            api_key_);
-  // TODO(crbug/1146151): Add feature params to control the scheduling params.
-  download_params.scheduling_params.priority =
-      download::SchedulingParams::Priority::NORMAL;
-  download_params.scheduling_params.battery_requirements =
-      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
-  download_params.scheduling_params.network_requirements =
-      download::SchedulingParams::NetworkRequirements::OPTIMISTIC;
+  if (features::IsUnrestrictedModelDownloadingEnabled()) {
+    // This feature param should really only be used for testing, so it is ok
+    // to have this be a high priority download with no network restrictions.
+    download_params.scheduling_params.priority =
+        download::SchedulingParams::Priority::HIGH;
+    download_params.scheduling_params.battery_requirements =
+        download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+    download_params.scheduling_params.network_requirements =
+        download::SchedulingParams::NetworkRequirements::NONE;
+  } else {
+    download_params.scheduling_params.priority =
+        download::SchedulingParams::Priority::NORMAL;
+    download_params.scheduling_params.battery_requirements =
+        download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+    download_params.scheduling_params.network_requirements =
+        download::SchedulingParams::NetworkRequirements::OPTIMISTIC;
+  }
 
   download_service_->StartDownload(download_params);
 }

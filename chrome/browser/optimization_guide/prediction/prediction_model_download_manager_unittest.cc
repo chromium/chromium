@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
@@ -15,6 +16,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
+#include "components/optimization_guide/optimization_guide_features.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -219,7 +221,15 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
   download_manager()->CancelAllPendingDownloads();
 }
 
-TEST_F(PredictionModelDownloadManagerTest, StartDownload) {
+TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {optimization_guide::features::kOptimizationGuideModelDownloading,
+           {{"unrestricted_model_downloading", "false"}}},
+      },
+      /*disabled_features=*/{});
+
   download::DownloadParams download_params;
   EXPECT_CALL(*download_service(), StartDownload(_))
       .WillOnce(SaveArg<0>(&download_params));
@@ -233,6 +243,53 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownload) {
   EXPECT_EQ(download_params.request_params.method, "GET");
   EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
       "X-Goog-Api-Key"));
+  EXPECT_EQ(download_params.scheduling_params.priority,
+            download::SchedulingParams::Priority::NORMAL);
+  EXPECT_EQ(
+      download_params.scheduling_params.battery_requirements,
+      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE);
+  EXPECT_EQ(download_params.scheduling_params.network_requirements,
+            download::SchedulingParams::NetworkRequirements::OPTIMISTIC);
+
+  // Now invoke start callback.
+  std::move(download_params.callback)
+      .Run("someguid", download::DownloadParams::StartResult::ACCEPTED);
+
+  // Now cancel all downloads to ensure that callback persisted pending GUID.
+  EXPECT_CALL(*download_service(), CancelDownload(Eq("someguid")));
+  download_manager()->CancelAllPendingDownloads();
+}
+
+TEST_F(PredictionModelDownloadManagerTest,
+       StartDownloadUnrestrictedDownloading) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {optimization_guide::features::kOptimizationGuideModelDownloading,
+           {{"unrestricted_model_downloading", "true"}}},
+      },
+      /*disabled_features=*/{});
+
+  download::DownloadParams download_params;
+  EXPECT_CALL(*download_service(), StartDownload(_))
+      .WillOnce(SaveArg<0>(&download_params));
+  download_manager()->StartDownload(GURL("someurl"));
+
+  // Validate parameters - basically that we attach the correct client, just do
+  // a passthrough of the URL, and attach the API key.
+  EXPECT_EQ(download_params.client,
+            download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS);
+  EXPECT_EQ(download_params.request_params.url, GURL("someurl"));
+  EXPECT_EQ(download_params.request_params.method, "GET");
+  EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
+      "X-Goog-Api-Key"));
+  EXPECT_EQ(download_params.scheduling_params.priority,
+            download::SchedulingParams::Priority::HIGH);
+  EXPECT_EQ(
+      download_params.scheduling_params.battery_requirements,
+      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE);
+  EXPECT_EQ(download_params.scheduling_params.network_requirements,
+            download::SchedulingParams::NetworkRequirements::NONE);
 
   // Now invoke start callback.
   std::move(download_params.callback)
