@@ -5,6 +5,7 @@
 #ifndef UI_GFX_X_XLIB_SUPPORT_H_
 #define UI_GFX_X_XLIB_SUPPORT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/component_export.h"
