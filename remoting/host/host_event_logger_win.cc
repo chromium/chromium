@@ -20,6 +20,7 @@
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/win/remoting_host_messages.h"
+#include "remoting/host/win/windows_event_logger.h"
 #include "remoting/protocol/transport.h"
 
 namespace remoting {
@@ -51,8 +52,7 @@ class HostEventLoggerWin : public HostEventLogger, public HostStatusObserver {
 
   scoped_refptr<HostStatusMonitor> monitor_;
 
-  // The handle of the application event log.
-  HANDLE event_log_ = nullptr;
+  WindowsEventLogger event_logger_;
 
   DISALLOW_COPY_AND_ASSIGN(HostEventLoggerWin);
 };
@@ -61,10 +61,8 @@ class HostEventLoggerWin : public HostEventLogger, public HostStatusObserver {
 
 HostEventLoggerWin::HostEventLoggerWin(scoped_refptr<HostStatusMonitor> monitor,
                                        const std::string& application_name)
-    : monitor_(monitor) {
-  event_log_ = RegisterEventSourceW(
-      nullptr, base::UTF8ToUTF16(application_name).c_str());
-  if (event_log_ != nullptr) {
+    : monitor_(monitor), event_logger_(application_name) {
+  if (event_logger_.IsRegistered()) {
     monitor_->AddStatusObserver(this);
   } else {
     PLOG(ERROR) << "Failed to register the event source: " << application_name;
@@ -72,9 +70,8 @@ HostEventLoggerWin::HostEventLoggerWin(scoped_refptr<HostStatusMonitor> monitor,
 }
 
 HostEventLoggerWin::~HostEventLoggerWin() {
-  if (event_log_ != nullptr) {
+  if (event_logger_.IsRegistered()) {
     monitor_->RemoveStatusObserver(this);
-    DeregisterEventSource(event_log_);
   }
 }
 
@@ -118,21 +115,7 @@ void HostEventLoggerWin::OnStart(const std::string& xmpp_login) {
 void HostEventLoggerWin::Log(WORD type,
                              DWORD event_id,
                              const std::vector<std::string>& strings) {
-  if (event_log_ == nullptr)
-    return;
-
-  // ReportEventW() takes an array of raw string pointers. They should stay
-  // valid for the duration of the call.
-  std::vector<const WCHAR*> raw_strings(strings.size());
-  std::vector<base::string16> utf16_strings(strings.size());
-  for (size_t i = 0; i < strings.size(); ++i) {
-    utf16_strings[i] = base::UTF8ToUTF16(strings[i]);
-    raw_strings[i] = utf16_strings[i].c_str();
-  }
-
-  if (!ReportEventW(event_log_, type, HOST_CATEGORY, event_id, nullptr,
-                    static_cast<WORD>(raw_strings.size()), 0, &raw_strings[0],
-                    nullptr)) {
+  if (!event_logger_.Log(type, event_id, strings)) {
     PLOG(ERROR) << "Failed to write an event to the event log";
   }
 }
