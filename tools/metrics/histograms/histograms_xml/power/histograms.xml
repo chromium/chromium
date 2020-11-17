@@ -905,7 +905,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
-    expires_after="2020-12-31">
+    expires_after="2021-11-15">
   <owner>thanhdng@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
