@@ -22,6 +22,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/virtual_fido_device.h"
 
 namespace device {
@@ -257,7 +258,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       base::span<const uint8_t> key_handle,
       std::unique_ptr<PublicKey> public_key);
 
-  size_t remaining_resident_credentials();
+  size_t remaining_resident_credentials() const;
+  bool SupportsAtLeast(Ctap2Version ctap2_version) const;
 
   std::unique_ptr<VirtualU2fDevice> u2f_device_;
 

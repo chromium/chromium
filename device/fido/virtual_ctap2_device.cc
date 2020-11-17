@@ -517,7 +517,7 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   options.supports_pin_uv_auth_token = config.pin_uv_auth_token_support;
   DCHECK(!options.supports_pin_uv_auth_token ||
-         base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1));
+         SupportsAtLeast(Ctap2Version::kCtap2_1));
 
   if (config.resident_key_support) {
     options_updated = true;
@@ -576,7 +576,7 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.large_blob_support) {
     DCHECK(config.resident_key_support);
-    DCHECK(base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1));
+    DCHECK(SupportsAtLeast(Ctap2Version::kCtap2_1));
     DCHECK((!config.pin_support && !config.internal_uv_support) ||
            config.pin_uv_auth_token_support)
         << "PinUvAuthToken support is required to write large blobs for "
@@ -636,8 +636,7 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
         base::flat_set<PINUVAuthProtocol>{config.pin_protocol};
   }
 
-  if (config.resident_key_support &&
-      base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1)) {
+  if (config.resident_key_support && SupportsAtLeast(Ctap2Version::kCtap2_1)) {
     device_info_->remaining_discoverable_credentials =
         remaining_resident_credentials();
   }
@@ -696,7 +695,8 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
   }
 
   const auto request_bytes = base::make_span(command).subspan(1);
-  CtapDeviceResponseCode response_code = CtapDeviceResponseCode::kCtap2ErrOther;
+  CtapDeviceResponseCode response_code =
+      CtapDeviceResponseCode::kCtap1ErrInvalidCommand;
   std::vector<uint8_t> response_data;
 
   switch (static_cast<CtapRequestCommand>(cmd_type)) {
@@ -746,6 +746,14 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
     case CtapRequestCommand::kAuthenticatorBioEnrollment:
     case CtapRequestCommand::kAuthenticatorBioEnrollmentPreview:
       response_code = OnBioEnrollment(request_bytes, &response_data);
+      break;
+    case CtapRequestCommand::kAuthenticatorSelection:
+      DCHECK(SupportsAtLeast(Ctap2Version::kCtap2_1));
+      if (!SimulatePress()) {
+        // Simulate timeout due to unresponded User Presence check.
+        return 0;
+      }
+      response_code = CtapDeviceResponseCode::kSuccess;
       break;
     case CtapRequestCommand::kAuthenticatorLargeBlobs:
       response_code = OnLargeBlobs(request_bytes, &response_data);
@@ -2580,7 +2588,7 @@ AttestedCredentialData VirtualCtap2Device::ConstructAttestedCredentialData(
                                 std::move(public_key));
 }
 
-size_t VirtualCtap2Device::remaining_resident_credentials() {
+size_t VirtualCtap2Device::remaining_resident_credentials() const {
   size_t num_resident_keys = 0;
   for (const auto& registration : mutable_state()->registrations) {
     if (registration.second.is_resident) {
@@ -2590,6 +2598,13 @@ size_t VirtualCtap2Device::remaining_resident_credentials() {
 
   DCHECK_LE(num_resident_keys, config_.resident_credential_storage);
   return config_.resident_credential_storage - num_resident_keys;
+}
+
+bool VirtualCtap2Device::SupportsAtLeast(Ctap2Version ctap2_version) const {
+  return base::ranges::any_of(config_.ctap2_versions,
+                              [ctap2_version](const Ctap2Version& version) {
+                                return version >= ctap2_version;
+                              });
 }
 
 }  // namespace device

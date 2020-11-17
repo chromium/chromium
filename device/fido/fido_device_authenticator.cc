@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/credential_management.h"
+#include "device/fido/ctap_authenticator_selection_request.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/features.h"
@@ -175,7 +176,26 @@ void FidoDeviceAuthenticator::GetNextAssertion(GetAssertionCallback callback) {
       GetAssertionTask::StringFixupPredicate);
 }
 
-void FidoDeviceAuthenticator::GetTouch(base::OnceCallback<void()> callback) {
+void FidoDeviceAuthenticator::GetTouch(base::OnceClosure callback) {
+  if (device()->device_info() &&
+      device()->device_info()->SupportsAtLeast(Ctap2Version::kCtap2_1)) {
+    RunOperation<CtapAuthenticatorSelectionRequest, pin::EmptyResponse>(
+        CtapAuthenticatorSelectionRequest(),
+        base::BindOnce(
+            [](std::string authenticator_id, base::OnceClosure callback,
+               CtapDeviceResponseCode status,
+               base::Optional<pin::EmptyResponse> _) {
+              if (status == CtapDeviceResponseCode::kSuccess) {
+                std::move(callback).Run();
+                return;
+              }
+              FIDO_LOG(DEBUG) << "Ignoring status " << static_cast<int>(status)
+                              << " from " << authenticator_id;
+            },
+            GetId(), std::move(callback)),
+        base::BindOnce(&pin::EmptyResponse::Parse));
+    return;
+  }
   MakeCredential(
       MakeCredentialTask::GetTouchRequest(device()),
       base::BindOnce(

@@ -8,9 +8,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/test_callback_receiver.h"
@@ -31,6 +33,7 @@ using ReadCallback = device::test::StatusAndValueCallbackReceiver<
 using PinCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
     base::Optional<pin::TokenResponse>>;
+using TouchCallback = device::test::TestCallbackReceiver<>;
 
 constexpr LargeBlobKey kDummyKey1 = {{0x01}};
 constexpr LargeBlobKey kDummyKey2 = {{0x02}};
@@ -41,7 +44,7 @@ constexpr size_t kMaxStorageSize = 4096;
 constexpr char kPin[] = "1234";
 
 class FidoDeviceAuthenticatorTest : public testing::Test {
- public:
+ protected:
   void SetUp() override {
     VirtualCtap2Device::Config config;
     config.pin_support = true;
@@ -50,7 +53,11 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     config.available_large_blob_storage = kMaxStorageSize;
     config.pin_uv_auth_token_support = true;
     config.ctap2_versions = {Ctap2Version::kCtap2_1};
+    SetUpAuthenticator(std::move(config));
+  }
 
+ protected:
+  void SetUpAuthenticator(VirtualCtap2Device::Config config) {
     authenticator_state_ = base::MakeRefCounted<VirtualFidoDevice::State>();
     auto virtual_device =
         std::make_unique<VirtualCtap2Device>(authenticator_state_, config);
@@ -63,7 +70,6 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     callback.WaitForCallback();
   }
 
- protected:
   scoped_refptr<VirtualFidoDevice::State> authenticator_state_;
   std::unique_ptr<FidoDeviceAuthenticator> authenticator_;
   VirtualCtap2Device* virtual_device_;
@@ -211,6 +217,29 @@ TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
   EXPECT_THAT(*large_blob_array, testing::UnorderedElementsAre(
                                      std::make_pair(kDummyKey1, small_blob3),
                                      std::make_pair(kDummyKey2, small_blob2)));
+}
+
+// Tests getting a touch.
+TEST_F(FidoDeviceAuthenticatorTest, TestGetTouch) {
+  for (Ctap2Version version :
+       {Ctap2Version::kCtap2_0, Ctap2Version::kCtap2_1}) {
+    SCOPED_TRACE(std::string("CTAP ") +
+                 (version == Ctap2Version::kCtap2_0 ? "2.0" : "2.1"));
+    VirtualCtap2Device::Config config;
+    config.ctap2_versions = {version};
+    SetUpAuthenticator(std::move(config));
+
+    TouchCallback callback;
+    bool touch_pressed = false;
+    authenticator_state_->simulate_press_callback =
+        base::BindLambdaForTesting([&](VirtualFidoDevice* device) {
+          touch_pressed = true;
+          return true;
+        });
+    authenticator_->GetTouch(callback.callback());
+    callback.WaitForCallback();
+    EXPECT_TRUE(touch_pressed);
+  }
 }
 
 }  // namespace
