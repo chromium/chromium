@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './shared_style.js';
 import './strings.m.js';
@@ -97,6 +98,15 @@ Polymer({
     });
 
     this.updateFromStore();
+  },
+
+  /**
+   * @param {boolean} isSelectedFolder
+   * @return {string}
+   * @private
+   */
+  getContainerClass_(isSelectedFolder) {
+    return isSelectedFolder ? 'selected' : '';
   },
 
   /** @return {!HTMLElement} */

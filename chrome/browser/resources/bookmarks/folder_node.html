@@ -1,18 +1,25 @@
-<style include="shared-style">
+<style include="cr-shared-style shared-style">
   :host {
     display: block;
+    --cr-vertical-tab-height: 33px;
   }
 
   #container {
+    /* Add enough space at the end for the focus outline to not be cropped. */
+    margin-inline-end: 3px;
+  }
+
+  #inner-container {
     align-items: center;
     cursor: pointer;
     display: grid;
+    flex: 1;
     grid-template-areas: 'arrow folder label';
     grid-template-columns: 24px 24px auto;
     min-height: 40px;
     min-width: fit-content;
     overflow: hidden;
-    padding-inline-start: calc(var(--node-depth, 0) * 15px);
+    padding-inline-start: calc(var(--node-depth, 0) * 15px + 14px);
   }
 
   #arrow {
@@ -63,25 +70,28 @@
 </style>
 
 <div id="container"
-    on-click="selectFolder_"
-    on-dblclick="toggleFolder_"
-    on-contextmenu="onContextMenu_"
-    tabindex$="[[getTabIndex_(selectedFolder_, itemId)]]"
+    class$="cr-vertical-tab [[getContainerClass_(isSelectedFolder_)]]"
     hidden="[[isRootFolder_(depth)]]"
     role="treeitem"
-    aria-owns="descendants">
-  <template is="dom-if" if="[[hasChildFolder_]]">
-    <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
-        on-click="toggleFolder_" on-mousedown="preventDefault_"
-        tabindex="-1" is-open$="[[isOpen]]" noink aria-hidden="true">
-    </cr-icon-button>
-  </template>
-  <div class="folder-icon"
-      open$="[[isSelectedFolder_]]"
-      no-children$="[[!hasChildFolder_]]">
-  </div>
-  <div class="menu-label" title="[[item_.title]]">
-    [[item_.title]]
+    aria-owns="descendants"
+    tabindex$="[[getTabIndex_(selectedFolder_, itemId)]]"
+    on-click="selectFolder_"
+    on-dblclick="toggleFolder_"
+    on-contextmenu="onContextMenu_">
+  <div id="inner-container">
+    <template is="dom-if" if="[[hasChildFolder_]]">
+      <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
+          on-click="toggleFolder_" on-mousedown="preventDefault_"
+          tabindex="-1" is-open$="[[isOpen]]" noink aria-hidden="true">
+      </cr-icon-button>
+    </template>
+    <div class="folder-icon"
+        open$="[[isSelectedFolder_]]"
+        no-children$="[[!hasChildFolder_]]">
+    </div>
+    <div class="menu-label" title="[[item_.title]]">
+      [[item_.title]]
+    </div>
   </div>
 </div>
 <div id="descendants" role="group">

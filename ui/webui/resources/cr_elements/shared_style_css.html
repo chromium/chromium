@@ -158,6 +158,28 @@
         line-height: var(--cr-form-field-label-line-height);
         margin-bottom: 8px;
       }
+
+      .cr-vertical-tab {
+        align-items: center;
+        display: flex;
+      }
+
+      .cr-vertical-tab::before {
+        border-radius: 0 3px 3px 0;
+        content: '';
+        display: block;
+        height: var(--cr-vertical-tab-height, 100%);
+        width: 4px;
+      }
+
+      .cr-vertical-tab.selected::before {
+        background: var(--cr-vertical-tab-selected-color, var(--cr-checked-color));
+      }
+
+      :host-context([dir=rtl]) .cr-vertical-tab::before {
+        /* Border-radius based on block/inline is not yet supported. */
+        transform: scaleX(-1);
+      }
     </style>
   </template>
 </dom-module>

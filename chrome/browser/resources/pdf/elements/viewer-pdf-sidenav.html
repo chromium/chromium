@@ -1,4 +1,4 @@
-<style include="pdf-shared cr-hidden-style">
+<style include="pdf-shared cr-hidden-style cr-shared-style">
   :host {
     --sidenav-selected-tab-color: var(--google-blue-refresh-300);
     background-color: var(--viewer-pdf-toolbar-background-color);
@@ -42,28 +42,21 @@
     width: 100%;
   }
 
-  .button-wrapper::before {
-    border-radius: 0 3px 3px 0;
-    content: '';
-    display: block;
-    height: 100%;
-    transform: translateY(var(--button-wrapper-total-height));
-    transition: transform 250ms cubic-bezier(.4, 0, .2, 1);
-    width: 4px;
+  .cr-vertical-tab {
+    --cr-vertical-tab-selected-color: var(--sidenav-selected-tab-color);
   }
 
-  .button-wrapper.selected + .button-wrapper::before {
+  .cr-vertical-tab::before {
+    transform: translateY(var(--button-wrapper-total-height));
+    transition: transform 250ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .cr-vertical-tab.selected + .cr-vertical-tab::before {
     transform: translateY(calc(-1 * var(--button-wrapper-total-height)));
   }
 
-  .button-wrapper.selected::before {
-    background: var(--sidenav-selected-tab-color);
+  .cr-vertical-tab.selected::before {
     transform: translateY(0);
-  }
-
-  :host-context([dir=rtl]) .button-wrapper::before {
-    /* Border-radius based on block/inline is not yet supported. */
-    transform: scaleX(-1);
   }
 
   cr-icon-button {
@@ -71,14 +64,16 @@
   }
 </style>
 <div id="icons" hidden$="[[!bookmarks.length]]">
-  <div class$="button-wrapper [[thumbnailButtonClass_(thumbnailView_)]]">
+  <div class$="
+      button-wrapper cr-vertical-tab [[thumbnailButtonClass_(thumbnailView_)]]">
     <cr-icon-button iron-icon="pdf:thumbnails" role="tab"
         title="$i18n{tooltipThumbnails}" aria-label="$i18n{tooltipThumbnails}"
         aria-selected$="[[getAriaSelectedThumbnails_(thumbnailView_)]]"
         on-click="onThumbnailClick_">
     </cr-icon-button>
   </div>
-  <div class$="button-wrapper [[outlineButtonClass_(thumbnailView_)]]">
+  <div class$="
+      button-wrapper cr-vertical-tab [[outlineButtonClass_(thumbnailView_)]]">
     <cr-icon-button iron-icon="pdf:doc-outline" role="tab"
         title="$i18n{tooltipDocumentOutline}"
         aria-label="$i18n{tooltipDocumentOutline}"
