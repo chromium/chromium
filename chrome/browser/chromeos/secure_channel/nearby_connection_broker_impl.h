@@ -76,7 +76,6 @@ class NearbyConnectionBrokerImpl
     kUninitialized,
     kDiscoveringEndpoint,
     kRequestingConnection,
-    kWaitingForConnectionInitiation,
     kAcceptingConnection,
     kWaitingForConnectionToBeAcceptedByRemoteDevice,
     kConnected,

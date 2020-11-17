@@ -124,11 +124,10 @@ void NearbyConnectionBrokerImpl::OnDiscoveryFailure() {
 }
 
 void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
-  if (status == Status::kSuccess) {
-    DCHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_);
-    TransitionToStatus(ConnectionStatus::kWaitingForConnectionInitiation);
+  // In the success case, OnConnectionInitiated() is expected to be called to
+  // continue the flow, so nothing else needs to be done in this callback.
+  if (status == Status::kSuccess)
     return;
-  }
 
   PA_LOG(WARNING) << "RequestConnection() failed: " << status;
   TransitionToDisconnected();
@@ -183,8 +182,7 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
     return;
   }
 
-  DCHECK_EQ(ConnectionStatus::kWaitingForConnectionInitiation,
-            connection_status_);
+  DCHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
 
   nearby_connections_->AcceptConnection(
@@ -281,10 +279,6 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case NearbyConnectionBrokerImpl::ConnectionStatus::kRequestingConnection:
       stream << "[Requesting connection]";
-      break;
-    case NearbyConnectionBrokerImpl::ConnectionStatus::
-        kWaitingForConnectionInitiation:
-      stream << "[Waiting for connection initiation]";
       break;
     case NearbyConnectionBrokerImpl::ConnectionStatus::kAcceptingConnection:
       stream << "[Accepting connection]";
