@@ -71,6 +71,12 @@ suite(destination_select_test.suiteName, function() {
           'ID3', DestinationType.GOOGLE, cookieOrigin, 'Three',
           DestinationConnectionStatus.ONLINE,
           {account: account, isOwned: true}),
+      new Destination(
+          'ID4', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Four',
+          DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true}),
+      new Destination(
+          'ID5', DestinationType.MOBILE, cookieOrigin, 'Five',
+          DestinationConnectionStatus.ONLINE),
     ];
   }
 
@@ -129,6 +135,30 @@ suite(destination_select_test.suiteName, function() {
           // Update destination.
           destinationSelect.destination = recentDestinationList[2];
           compareIcon(selectEl, 'print');
+
+          // Select a destination with the enterprise printer icon.
+          return selectOption(destinationSelect, `ID4/local/`);
+        })
+        .then(() => {
+          const enterpriseIcon = 'business';
+
+          compareIcon(selectEl, enterpriseIcon);
+
+          // Update destination.
+          destinationSelect.destination = recentDestinationList[3];
+          compareIcon(selectEl, enterpriseIcon);
+
+          // Select a destination with the mobile printer icon.
+          return selectOption(destinationSelect, `ID5/${cookieOrigin}/`);
+        })
+        .then(() => {
+          const mobileIcon = 'smartphone';
+
+          compareIcon(selectEl, mobileIcon);
+
+          // Update destination.
+          destinationSelect.destination = recentDestinationList[4];
+          compareIcon(selectEl, mobileIcon);
         });
   }
 

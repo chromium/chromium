@@ -761,9 +761,6 @@ export class Destination {
     if (this.isLocal) {
       return 'print-preview:print';
     }
-    if (this.type_ === DestinationType.MOBILE && this.isOwned_) {
-      return 'print-preview:smartphone';
-    }
     if (this.type_ === DestinationType.MOBILE) {
       return 'print-preview:smartphone';
     }
