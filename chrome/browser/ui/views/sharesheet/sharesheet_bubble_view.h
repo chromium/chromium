@@ -57,7 +57,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  void OnWidgetDestroyed(views::Widget* widget) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   void CreateBubble();
   std::unique_ptr<views::View> MakeScrollableTargetView(
@@ -69,6 +69,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void TargetButtonPressed(TargetInfo target);
   void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();
+  void ShowWidgetWithAnimateFadeIn();
+  void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
+  void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   // Owns this class.
   sharesheet::SharesheetServiceDelegate* delegate_;
@@ -78,8 +81,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   int width_ = 0;
   int height_ = 0;
-  bool user_cancelled_ = true;
   bool show_expanded_view_ = false;
+  bool is_bubble_closing_ = false;
+  bool user_selection_made_ = false;
 
   size_t keyboard_highlighted_target_ = 0;
 
