@@ -292,7 +292,6 @@ void FetchResponseData::InitFromResourceResponse(
     const Vector<KURL>& request_url_list,
     const AtomicString& request_method,
     network::mojom::CredentialsMode request_credentials,
-    FetchRequestData::Tainting tainting,
     const ResourceResponse& response) {
   SetStatus(response.HttpStatusCode());
   if (response.CurrentRequestUrl().ProtocolIsAbout() ||
@@ -339,12 +338,13 @@ void FetchResponseData::InitFromResourceResponse(
 
   SetWasFetchedViaSpdy(response.WasFetchedViaSPDY());
 
-  // TODO(wanderview): Remove |tainting| and use |response.GetType()|
-  // instead once the OOR-CORS disabled path is removed.
   SetLoadedWithCredentials(
       request_credentials == network::mojom::CredentialsMode::kInclude ||
       (request_credentials == network::mojom::CredentialsMode::kSameOrigin &&
-       tainting == FetchRequestData::kBasicTainting));
+       (response.GetType() ==
+            network::mojom::blink::FetchResponseType::kBasic ||
+        response.GetType() ==
+            network::mojom::blink::FetchResponseType::kDefault)));
 
   SetHasRangeRequested(response.HasRangeRequested());
 }

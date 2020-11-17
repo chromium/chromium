@@ -466,78 +466,6 @@ void FetchManager::Loader::DidReceiveResponse(
   ScriptState::Scope scope(script_state);
 
   response_http_status_code_ = response.HttpStatusCode();
-  FetchRequestData::Tainting tainting = fetch_request_data_->ResponseTainting();
-
-  if (response.CurrentRequestUrl().ProtocolIsData()) {
-    if (fetch_request_data_->Url() == response.CurrentRequestUrl()) {
-      // A direct request to data.
-      tainting = FetchRequestData::kBasicTainting;
-    } else {
-      // A redirect to data: scheme occured.
-      // Redirects to data URLs are rejected by the spec because
-      // same-origin data-URL flag is unset, except for no-cors mode.
-      // TODO(hiroshige): currently redirects to data URLs in no-cors
-      // mode is also rejected by Chromium side.
-      switch (fetch_request_data_->Mode()) {
-        case RequestMode::kNoCors:
-          tainting = FetchRequestData::kOpaqueTainting;
-          break;
-        case RequestMode::kSameOrigin:
-        case RequestMode::kCors:
-        case RequestMode::kCorsWithForcedPreflight:
-        case RequestMode::kNavigate:
-          PerformNetworkError(
-              "Fetch API cannot load " +
-                  fetch_request_data_->Url().GetString() +
-                  ". Redirects to data: URL are allowed only when "
-                  "mode is \"no-cors\".",
-              FailedReason::kRedirectToDataUrlWithImpermissibleFetchMode);
-          return;
-      }
-    }
-  } else if (!fetch_request_data_->Origin()->CanReadContent(
-                 response.CurrentRequestUrl())) {
-    // Recompute the tainting if the request was redirected to a different
-    // origin.
-    switch (fetch_request_data_->Mode()) {
-      case RequestMode::kSameOrigin:
-        NOTREACHED();
-        break;
-      case RequestMode::kNoCors:
-        tainting = FetchRequestData::kOpaqueTainting;
-        break;
-      case RequestMode::kCors:
-      case RequestMode::kCorsWithForcedPreflight:
-        tainting = FetchRequestData::kCorsTainting;
-        break;
-      case RequestMode::kNavigate:
-        LOG(FATAL);
-        break;
-    }
-  }
-  if (response.WasFetchedViaServiceWorker()) {
-    switch (response.GetType()) {
-      case FetchResponseType::kBasic:
-      case FetchResponseType::kDefault:
-        tainting = FetchRequestData::kBasicTainting;
-        break;
-      case FetchResponseType::kCors:
-        tainting = FetchRequestData::kCorsTainting;
-        break;
-      case FetchResponseType::kOpaque:
-        tainting = FetchRequestData::kOpaqueTainting;
-        break;
-      case FetchResponseType::kOpaqueRedirect:
-        DCHECK(
-            network_utils::IsRedirectResponseCode(response_http_status_code_));
-        break;  // The code below creates an opaque-redirect filtered response.
-      case FetchResponseType::kError:
-        LOG(FATAL) << "When ServiceWorker respond to the request from fetch() "
-                      "with an error response, FetchManager::Loader::didFail() "
-                      "must be called instead.";
-        break;
-    }
-  }
 
   if (response.MimeType() == "application/wasm" &&
       response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
@@ -557,7 +485,7 @@ void FetchManager::Loader::DidReceiveResponse(
 
   response_data->InitFromResourceResponse(
       url_list_, fetch_request_data_->Method(),
-      fetch_request_data_->Credentials(), tainting, response);
+      fetch_request_data_->Credentials(), response);
 
   FetchResponseData* tainted_response = nullptr;
 
@@ -569,19 +497,24 @@ void FetchManager::Loader::DidReceiveResponse(
       fetch_request_data_->Redirect() == RedirectMode::kManual) {
     tainted_response = response_data->CreateOpaqueRedirectFilteredResponse();
   } else {
-    switch (tainting) {
-      case FetchRequestData::kBasicTainting:
+    switch (response.GetType()) {
+      case FetchResponseType::kBasic:
+      case FetchResponseType::kDefault:
         tainted_response = response_data->CreateBasicFilteredResponse();
         break;
-      case FetchRequestData::kCorsTainting: {
+      case FetchResponseType::kCors: {
         HTTPHeaderSet header_names = cors::ExtractCorsExposedHeaderNamesList(
             fetch_request_data_->Credentials(), response);
         tainted_response =
             response_data->CreateCorsFilteredResponse(header_names);
         break;
       }
-      case FetchRequestData::kOpaqueTainting:
+      case FetchResponseType::kOpaque:
         tainted_response = response_data->CreateOpaqueFilteredResponse();
+        break;
+      case FetchResponseType::kOpaqueRedirect:
+      case FetchResponseType::kError:
+        NOTREACHED();
         break;
     }
   }
@@ -752,7 +685,9 @@ void FetchManager::Loader::Start() {
     }
 
     // "Set |request|'s response tainting to |opaque|."
-    fetch_request_data_->SetResponseTainting(FetchRequestData::kOpaqueTainting);
+    // Response tainting is calculated in the CORS module in the network
+    // service.
+    //
     // "The result of performing a scheme fetch using |request|."
     PerformSchemeFetch();
     return;
@@ -772,7 +707,8 @@ void FetchManager::Loader::Start() {
   }
 
   // "Set |request|'s response tainting to |CORS|."
-  fetch_request_data_->SetResponseTainting(FetchRequestData::kCorsTainting);
+  // Response tainting is calculated in the CORS module in the network
+  // service.
 
   // "The result of performing an HTTP fetch using |request| with the
   // |CORS flag| set."

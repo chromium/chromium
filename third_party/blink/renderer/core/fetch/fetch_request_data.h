@@ -36,7 +36,6 @@ class ScriptState;
 class CORE_EXPORT FetchRequestData final
     : public GarbageCollected<FetchRequestData> {
  public:
-  enum Tainting { kBasicTainting, kCorsTainting, kOpaqueTainting };
   enum class ForServiceWorkerFetchEvent { kFalse, kTrue };
 
   static FetchRequestData* Create(ScriptState*,
@@ -95,8 +94,6 @@ class CORE_EXPORT FetchRequestData final
     importance_ = importance;
   }
   mojom::FetchImportanceMode Importance() const { return importance_; }
-  void SetResponseTainting(Tainting tainting) { response_tainting_ = tainting; }
-  Tainting ResponseTainting() const { return response_tainting_; }
   FetchHeaderList* HeaderList() const { return header_list_.Get(); }
   void SetHeaderList(FetchHeaderList* header_list) {
     header_list_ = header_list;
@@ -171,7 +168,6 @@ class CORE_EXPORT FetchRequestData final
   base::Optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
   // FIXME: Support m_useURLCredentialsFlag;
   // FIXME: Support m_redirectCount;
-  Tainting response_tainting_;
   Member<BodyStreamBuffer> buffer_;
   String mime_type_;
   String integrity_;

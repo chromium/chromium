@@ -199,7 +199,6 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->credentials_ = credentials_;
   request->cache_mode_ = cache_mode_;
   request->redirect_ = redirect_;
-  request->response_tainting_ = response_tainting_;
   request->mime_type_ = mime_type_;
   request->integrity_ = integrity_;
   request->priority_ = priority_;
@@ -260,7 +259,6 @@ FetchRequestData::FetchRequestData(ExecutionContext* execution_context)
       cache_mode_(mojom::FetchCacheMode::kDefault),
       redirect_(network::mojom::RedirectMode::kFollow),
       importance_(mojom::FetchImportanceMode::kImportanceAuto),
-      response_tainting_(kBasicTainting),
       priority_(ResourceLoadPriority::kUnresolved),
       keepalive_(false),
       url_loader_factory_(execution_context),

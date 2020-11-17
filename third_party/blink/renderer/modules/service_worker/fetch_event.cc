@@ -161,7 +161,6 @@ void FetchEvent::OnNavigationPreloadResponse(
 
   response_data->InitFromResourceResponse(
       url_list, http_names::kGET, network::mojom::CredentialsMode::kInclude,
-      FetchRequestData::kBasicTainting,
       preload_response_->ToResourceResponse());
 
   FetchResponseData* tainted_response =

@@ -141,7 +141,6 @@ class CORE_EXPORT FetchResponseData final
       const Vector<KURL>& request_url_list,
       const AtomicString& request_method,
       network::mojom::CredentialsMode request_credentials,
-      FetchRequestData::Tainting tainting,
       const ResourceResponse& response);
 
   void Trace(Visitor*) const;
