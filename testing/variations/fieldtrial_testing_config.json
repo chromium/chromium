@@ -1256,6 +1256,25 @@
             ]
         }
     ],
+    "CBCMRemoteCommandsStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CBCMPolicyInvalidations",
+                        "CBCMRemoteCommands"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSMatchedPropertiesCacheDependencies": [
         {
             "platforms": [
