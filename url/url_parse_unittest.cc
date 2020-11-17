@@ -492,21 +492,21 @@ TEST(URLParser, ExtractFileName) {
     const char* input;
     const char* expected;
   } file_cases[] = {
-    {"http://www.google.com", NULL},
-    {"http://www.google.com/", ""},
-    {"http://www.google.com/search", "search"},
-    {"http://www.google.com/search/", ""},
-    {"http://www.google.com/foo/bar.html?baz=22", "bar.html"},
-    {"http://www.google.com/foo/bar.html#ref", "bar.html"},
-    {"http://www.google.com/search/;param", ""},
-    {"http://www.google.com/foo/bar.html;param#ref", "bar.html"},
-    {"http://www.google.com/foo/bar.html;foo;param#ref", "bar.html"},
-    {"http://www.google.com/foo/bar.html?query#ref", "bar.html"},
-    {"http://www.google.com/foo;/bar.html", "bar.html"},
-    {"http://www.google.com/foo;/", ""},
-    {"http://www.google.com/foo;", "foo"},
-    {"http://www.google.com/;", ""},
-    {"http://www.google.com/foo;bar;html", "foo"},
+      {"http://www.google.com", nullptr},
+      {"http://www.google.com/", ""},
+      {"http://www.google.com/search", "search"},
+      {"http://www.google.com/search/", ""},
+      {"http://www.google.com/foo/bar.html?baz=22", "bar.html"},
+      {"http://www.google.com/foo/bar.html#ref", "bar.html"},
+      {"http://www.google.com/search/;param", ""},
+      {"http://www.google.com/foo/bar.html;param#ref", "bar.html"},
+      {"http://www.google.com/foo/bar.html;foo;param#ref", "bar.html"},
+      {"http://www.google.com/foo/bar.html?query#ref", "bar.html"},
+      {"http://www.google.com/foo;/bar.html", "bar.html"},
+      {"http://www.google.com/foo;/", ""},
+      {"http://www.google.com/foo;", "foo"},
+      {"http://www.google.com/;", ""},
+      {"http://www.google.com/foo;bar;html", "foo"},
   };
 
   for (size_t i = 0; i < base::size(file_cases); i++) {

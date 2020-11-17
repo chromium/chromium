@@ -480,22 +480,24 @@ TEST(GURLTest, Replacements) {
     const char* ref;
     const char* expected;
   } replace_cases[] = {
-      {"http://www.google.com/foo/bar.html?foo#bar", NULL, NULL, NULL, NULL,
-       NULL, "/", "", "", "http://www.google.com/"},
+      {"http://www.google.com/foo/bar.html?foo#bar", nullptr, nullptr, nullptr,
+       nullptr, nullptr, "/", "", "", "http://www.google.com/"},
       {"http://www.google.com/foo/bar.html?foo#bar", "javascript", "", "", "",
        "", "window.open('foo');", "", "", "javascript:window.open('foo');"},
-      {"file:///C:/foo/bar.txt", "http", NULL, NULL, "www.google.com", "99",
-       "/foo", "search", "ref", "http://www.google.com:99/foo?search#ref"},
+      {"file:///C:/foo/bar.txt", "http", nullptr, nullptr, "www.google.com",
+       "99", "/foo", "search", "ref",
+       "http://www.google.com:99/foo?search#ref"},
 #ifdef WIN32
       {"http://www.google.com/foo/bar.html?foo#bar", "file", "", "", "", "",
        "c:\\", "", "", "file:///C:/"},
 #endif
-      {"filesystem:http://www.google.com/foo/bar.html?foo#bar", NULL, NULL,
-       NULL, NULL, NULL, "/", "", "", "filesystem:http://www.google.com/foo/"},
+      {"filesystem:http://www.google.com/foo/bar.html?foo#bar", nullptr,
+       nullptr, nullptr, nullptr, nullptr, "/", "", "",
+       "filesystem:http://www.google.com/foo/"},
       // Lengthen the URL instead of shortening it, to test creation of
       // inner_url.
-      {"filesystem:http://www.google.com/foo/", NULL, NULL, NULL, NULL, NULL,
-       "bar.html", "foo", "bar",
+      {"filesystem:http://www.google.com/foo/", nullptr, nullptr, nullptr,
+       nullptr, nullptr, "bar.html", "foo", "bar",
        "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
   };
 
@@ -554,13 +556,17 @@ TEST(GURLTest, PathForRequest) {
     const char* expected;
     const char* inner_expected;
   } cases[] = {
-    {"http://www.google.com", "/", NULL},
-    {"http://www.google.com/", "/", NULL},
-    {"http://www.google.com/foo/bar.html?baz=22", "/foo/bar.html?baz=22", NULL},
-    {"http://www.google.com/foo/bar.html#ref", "/foo/bar.html", NULL},
-    {"http://www.google.com/foo/bar.html?query#ref", "/foo/bar.html?query", NULL},
-    {"filesystem:http://www.google.com/temporary/foo/bar.html?query#ref", "/foo/bar.html?query", "/temporary"},
-    {"filesystem:http://www.google.com/temporary/foo/bar.html?query", "/foo/bar.html?query", "/temporary"},
+      {"http://www.google.com", "/", nullptr},
+      {"http://www.google.com/", "/", nullptr},
+      {"http://www.google.com/foo/bar.html?baz=22", "/foo/bar.html?baz=22",
+       nullptr},
+      {"http://www.google.com/foo/bar.html#ref", "/foo/bar.html", nullptr},
+      {"http://www.google.com/foo/bar.html?query#ref", "/foo/bar.html?query",
+       nullptr},
+      {"filesystem:http://www.google.com/temporary/foo/bar.html?query#ref",
+       "/foo/bar.html?query", "/temporary"},
+      {"filesystem:http://www.google.com/temporary/foo/bar.html?query",
+       "/foo/bar.html?query", "/temporary"},
   };
 
   for (size_t i = 0; i < base::size(cases); i++) {

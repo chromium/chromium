@@ -144,26 +144,26 @@ TEST(URLCanonTest, UTF) {
     const char* output;
   } utf_cases[] = {
       // Valid canonical input should get passed through & escaped.
-    {"\xe4\xbd\xa0\xe5\xa5\xbd", L"\x4f60\x597d", true, "%E4%BD%A0%E5%A5%BD"},
+      {"\xe4\xbd\xa0\xe5\xa5\xbd", L"\x4f60\x597d", true, "%E4%BD%A0%E5%A5%BD"},
       // Test a character that takes > 16 bits (U+10300 = old italic letter A)
-    {"\xF0\x90\x8C\x80", L"\xd800\xdf00", true, "%F0%90%8C%80"},
+      {"\xF0\x90\x8C\x80", L"\xd800\xdf00", true, "%F0%90%8C%80"},
       // Non-shortest-form UTF-8 characters are invalid. The bad bytes should
       // each be replaced with the invalid character (EF BF DB in UTF-8).
-    {"\xf0\x84\xbd\xa0\xe5\xa5\xbd", NULL, false,
-     "%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%E5%A5%BD"},
+      {"\xf0\x84\xbd\xa0\xe5\xa5\xbd", nullptr, false,
+       "%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%E5%A5%BD"},
       // Invalid UTF-8 sequences should be marked as invalid (the first
       // sequence is truncated).
-    {"\xe4\xa0\xe5\xa5\xbd", L"\xd800\x597d", false, "%EF%BF%BD%E5%A5%BD"},
+      {"\xe4\xa0\xe5\xa5\xbd", L"\xd800\x597d", false, "%EF%BF%BD%E5%A5%BD"},
       // Character going off the end.
-    {"\xe4\xbd\xa0\xe5\xa5", L"\x4f60\xd800", false, "%E4%BD%A0%EF%BF%BD"},
+      {"\xe4\xbd\xa0\xe5\xa5", L"\x4f60\xd800", false, "%E4%BD%A0%EF%BF%BD"},
       // ...same with low surrogates with no high surrogate.
-    {nullptr, L"\xdc00", false, "%EF%BF%BD"},
+      {nullptr, L"\xdc00", false, "%EF%BF%BD"},
       // Test a UTF-8 encoded surrogate value is marked as invalid.
       // ED A0 80 = U+D800
-    {"\xed\xa0\x80", NULL, false, "%EF%BF%BD%EF%BF%BD%EF%BF%BD"},
+      {"\xed\xa0\x80", nullptr, false, "%EF%BF%BD%EF%BF%BD%EF%BF%BD"},
       // ...even when paired.
-    {"\xed\xa0\x80\xed\xb0\x80", nullptr, false,
-     "%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD"},
+      {"\xed\xa0\x80\xed\xb0\x80", nullptr, false,
+       "%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD"},
   };
 
   std::string out_str;
@@ -1068,89 +1068,100 @@ TEST(URLCanonTest, Port) {
 
 TEST(URLCanonTest, Path) {
   DualComponentCase path_cases[] = {
-    // ----- path collapsing tests -----
-    {"/././foo", L"/././foo", "/foo", Component(0, 4), true},
-    {"/./.foo", L"/./.foo", "/.foo", Component(0, 5), true},
-    {"/foo/.", L"/foo/.", "/foo/", Component(0, 5), true},
-    {"/foo/./", L"/foo/./", "/foo/", Component(0, 5), true},
+      // ----- path collapsing tests -----
+      {"/././foo", L"/././foo", "/foo", Component(0, 4), true},
+      {"/./.foo", L"/./.foo", "/.foo", Component(0, 5), true},
+      {"/foo/.", L"/foo/.", "/foo/", Component(0, 5), true},
+      {"/foo/./", L"/foo/./", "/foo/", Component(0, 5), true},
       // double dots followed by a slash or the end of the string count
-    {"/foo/bar/..", L"/foo/bar/..", "/foo/", Component(0, 5), true},
-    {"/foo/bar/../", L"/foo/bar/../", "/foo/", Component(0, 5), true},
+      {"/foo/bar/..", L"/foo/bar/..", "/foo/", Component(0, 5), true},
+      {"/foo/bar/../", L"/foo/bar/../", "/foo/", Component(0, 5), true},
       // don't count double dots when they aren't followed by a slash
-    {"/foo/..bar", L"/foo/..bar", "/foo/..bar", Component(0, 10), true},
+      {"/foo/..bar", L"/foo/..bar", "/foo/..bar", Component(0, 10), true},
       // some in the middle
-    {"/foo/bar/../ton", L"/foo/bar/../ton", "/foo/ton", Component(0, 8), true},
-    {"/foo/bar/../ton/../../a", L"/foo/bar/../ton/../../a", "/a", Component(0, 2), true},
+      {"/foo/bar/../ton", L"/foo/bar/../ton", "/foo/ton", Component(0, 8),
+       true},
+      {"/foo/bar/../ton/../../a", L"/foo/bar/../ton/../../a", "/a",
+       Component(0, 2), true},
       // we should not be able to go above the root
-    {"/foo/../../..", L"/foo/../../..", "/", Component(0, 1), true},
-    {"/foo/../../../ton", L"/foo/../../../ton", "/ton", Component(0, 4), true},
+      {"/foo/../../..", L"/foo/../../..", "/", Component(0, 1), true},
+      {"/foo/../../../ton", L"/foo/../../../ton", "/ton", Component(0, 4),
+       true},
       // escaped dots should be unescaped and treated the same as dots
-    {"/foo/%2e", L"/foo/%2e", "/foo/", Component(0, 5), true},
-    {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
-    {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar", "/..bar", Component(0, 6), true},
+      {"/foo/%2e", L"/foo/%2e", "/foo/", Component(0, 5), true},
+      {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
+      {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar",
+       "/..bar", Component(0, 6), true},
       // Multiple slashes in a row should be preserved and treated like empty
       // directory names.
-    {"////../..", L"////../..", "//", Component(0, 2), true},
+      {"////../..", L"////../..", "//", Component(0, 2), true},
 
-    // ----- escaping tests -----
-    {"/foo", L"/foo", "/foo", Component(0, 4), true},
+      // ----- escaping tests -----
+      {"/foo", L"/foo", "/foo", Component(0, 4), true},
       // Valid escape sequence
-    {"/%20foo", L"/%20foo", "/%20foo", Component(0, 7), true},
+      {"/%20foo", L"/%20foo", "/%20foo", Component(0, 7), true},
       // Invalid escape sequence we should pass through unchanged.
-    {"/foo%", L"/foo%", "/foo%", Component(0, 5), true},
-    {"/foo%2", L"/foo%2", "/foo%2", Component(0, 6), true},
+      {"/foo%", L"/foo%", "/foo%", Component(0, 5), true},
+      {"/foo%2", L"/foo%2", "/foo%2", Component(0, 6), true},
       // Invalid escape sequence: bad characters should be treated the same as
       // the sourrounding text, not as escaped (in this case, UTF-8).
-    {"/foo%2zbar", L"/foo%2zbar", "/foo%2zbar", Component(0, 10), true},
-    {"/foo%2\xc2\xa9zbar", NULL, "/foo%2%C2%A9zbar", Component(0, 16), true},
-    {NULL, L"/foo%2\xc2\xa9zbar", "/foo%2%C3%82%C2%A9zbar", Component(0, 22), true},
+      {"/foo%2zbar", L"/foo%2zbar", "/foo%2zbar", Component(0, 10), true},
+      {"/foo%2\xc2\xa9zbar", nullptr, "/foo%2%C2%A9zbar", Component(0, 16),
+       true},
+      {nullptr, L"/foo%2\xc2\xa9zbar", "/foo%2%C3%82%C2%A9zbar",
+       Component(0, 22), true},
       // Regular characters that are escaped should be unescaped
-    {"/foo%41%7a", L"/foo%41%7a", "/fooAz", Component(0, 6), true},
+      {"/foo%41%7a", L"/foo%41%7a", "/fooAz", Component(0, 6), true},
       // Funny characters that are unescaped should be escaped
-    {"/foo\x09\x91%91", NULL, "/foo%09%91%91", Component(0, 13), true},
-    {NULL, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
+      {"/foo\x09\x91%91", nullptr, "/foo%09%91%91", Component(0, 13), true},
+      {nullptr, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
       // Invalid characters that are escaped should cause a failure.
-    {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), false},
+      {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), false},
       // Some characters should be passed through unchanged regardless of esc.
-    {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13), true},
+      {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13),
+       true},
       // Characters that are properly escaped should not have the case changed
       // of hex letters.
-    {"/%3A%3a%3C%3c", L"/%3A%3a%3C%3c", "/%3A%3a%3C%3c", Component(0, 13), true},
+      {"/%3A%3a%3C%3c", L"/%3A%3a%3C%3c", "/%3A%3a%3C%3c", Component(0, 13),
+       true},
       // Funny characters that are unescaped should be escaped
-    {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
+      {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
       // Backslashes should get converted to forward slashes
-    {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
+      {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
       // Hashes found in paths (possibly only when the caller explicitly sets
       // the path on an already-parsed URL) should be escaped.
-    {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
+      {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
       // %7f should be allowed and %3D should not be unescaped (these were wrong
       // in a previous version).
-    {"/%7Ffp3%3Eju%3Dduvgw%3Dd", L"/%7Ffp3%3Eju%3Dduvgw%3Dd", "/%7Ffp3%3Eju%3Dduvgw%3Dd", Component(0, 24), true},
+      {"/%7Ffp3%3Eju%3Dduvgw%3Dd", L"/%7Ffp3%3Eju%3Dduvgw%3Dd",
+       "/%7Ffp3%3Eju%3Dduvgw%3Dd", Component(0, 24), true},
       // @ should be passed through unchanged (escaped or unescaped).
-    {"/@asdf%40", L"/@asdf%40", "/@asdf%40", Component(0, 9), true},
+      {"/@asdf%40", L"/@asdf%40", "/@asdf%40", Component(0, 9), true},
       // Nested escape sequences should result in escaping the leading '%' if
       // unescaping would result in a new escape sequence.
-    {"/%A%42", L"/%A%42", "/%25AB", Component(0, 6), true},
-    {"/%%41B", L"/%%41B", "/%25AB", Component(0, 6), true},
-    {"/%%41%42", L"/%%41%42", "/%25AB", Component(0, 6), true},
+      {"/%A%42", L"/%A%42", "/%25AB", Component(0, 6), true},
+      {"/%%41B", L"/%%41B", "/%25AB", Component(0, 6), true},
+      {"/%%41%42", L"/%%41%42", "/%25AB", Component(0, 6), true},
       // Make sure truncated "nested" escapes don't result in reading off the
       // string end.
-    {"/%%41", L"/%%41", "/%A", Component(0, 3), true},
+      {"/%%41", L"/%%41", "/%A", Component(0, 3), true},
       // Don't unescape the leading '%' if unescaping doesn't result in a valid
       // new escape sequence.
-    {"/%%470", L"/%%470", "/%G0", Component(0, 4), true},
-    {"/%%2D%41", L"/%%2D%41", "/%-A", Component(0, 4), true},
+      {"/%%470", L"/%%470", "/%G0", Component(0, 4), true},
+      {"/%%2D%41", L"/%%2D%41", "/%-A", Component(0, 4), true},
       // Don't erroneously downcast a UTF-16 charater in a way that makes it
       // look like part of an escape sequence.
-    {NULL, L"/%%41\x0130", "/%A%C4%B0", Component(0, 9), true},
+      {nullptr, L"/%%41\x0130", "/%A%C4%B0", Component(0, 9), true},
 
-    // ----- encoding tests -----
+      // ----- encoding tests -----
       // Basic conversions
-    {"/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd", L"/\x4f60\x597d\x4f60\x597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD", Component(0, 37), true},
+      {"/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd",
+       L"/\x4f60\x597d\x4f60\x597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD",
+       Component(0, 37), true},
       // Invalid unicode characters should fail. We only do validation on
       // UTF-16 input, so this doesn't happen on 8-bit.
-    {"/\xef\xb7\x90zyx", NULL, "/%EF%B7%90zyx", Component(0, 13), true},
-    {NULL, L"/\xfdd0zyx", "/%EF%BF%BDzyx", Component(0, 13), false},
+      {"/\xef\xb7\x90zyx", nullptr, "/%EF%B7%90zyx", Component(0, 13), true},
+      {nullptr, L"/\xfdd0zyx", "/%EF%BF%BDzyx", Component(0, 13), false},
   };
 
   for (size_t i = 0; i < base::size(path_cases); i++) {
@@ -1293,8 +1304,8 @@ TEST(URLCanonTest, Ref) {
       // Escaping should be preserved unchanged, even invalid ones
       {"%41%a", L"%41%a", "#%41%a", Component(1, 5), true},
       // Invalid UTF-8/16 input should be flagged and the input made valid
-      {"\xc2", NULL, "#%EF%BF%BD", Component(1, 9), true},
-      {NULL, L"\xd800\x597d", "#%EF%BF%BD%E5%A5%BD", Component(1, 18), true},
+      {"\xc2", nullptr, "#%EF%BF%BD", Component(1, 9), true},
+      {nullptr, L"\xd800\x597d", "#%EF%BF%BD%E5%A5%BD", Component(1, 18), true},
       // Test a Unicode invalid character.
       {"a\xef\xb7\x90", L"a\xfdd0", "#a%EF%BF%BD", Component(1, 10), true},
       // Refs can have # signs and we should preserve them.
@@ -1437,14 +1448,22 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
 TEST(URLCanonTest, ReplaceStandardURL) {
   ReplaceCase replace_cases[] = {
       // Common case of truncating the path.
-    {"http://www.google.com/foo?bar=baz#ref", NULL, NULL, NULL, NULL, NULL, "/", kDeleteComp, kDeleteComp, "http://www.google.com/"},
+      {"http://www.google.com/foo?bar=baz#ref", nullptr, nullptr, nullptr,
+       nullptr, nullptr, "/", kDeleteComp, kDeleteComp,
+       "http://www.google.com/"},
       // Replace everything
-    {"http://a:b@google.com:22/foo;bar?baz@cat", "https", "me", "pw", "host.com", "99", "/path", "query", "ref", "https://me:pw@host.com:99/path?query#ref"},
+      {"http://a:b@google.com:22/foo;bar?baz@cat", "https", "me", "pw",
+       "host.com", "99", "/path", "query", "ref",
+       "https://me:pw@host.com:99/path?query#ref"},
       // Replace nothing
-    {"http://a:b@google.com:22/foo?baz@cat", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "http://a:b@google.com:22/foo?baz@cat"},
+      {"http://a:b@google.com:22/foo?baz@cat", nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, nullptr, nullptr,
+       "http://a:b@google.com:22/foo?baz@cat"},
       // Replace scheme with filesystem. The result is garbage, but you asked
       // for it.
-    {"http://a:b@google.com:22/foo?baz@cat", "filesystem", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "filesystem://a:b@google.com:22/foo?baz@cat"},
+      {"http://a:b@google.com:22/foo?baz@cat", "filesystem", nullptr, nullptr,
+       nullptr, nullptr, nullptr, nullptr, nullptr,
+       "filesystem://a:b@google.com:22/foo?baz@cat"},
   };
 
   for (size_t i = 0; i < base::size(replace_cases); i++) {
@@ -1514,24 +1533,37 @@ TEST(URLCanonTest, ReplaceStandardURL) {
 TEST(URLCanonTest, ReplaceFileURL) {
   ReplaceCase replace_cases[] = {
       // Replace everything
-    {"file:///C:/gaba?query#ref", NULL, NULL, NULL, "filer", NULL, "/foo", "b", "c", "file://filer/foo?b#c"},
+      {"file:///C:/gaba?query#ref", nullptr, nullptr, nullptr, "filer", nullptr,
+       "/foo", "b", "c", "file://filer/foo?b#c"},
       // Replace nothing
-    {"file:///C:/gaba?query#ref", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///C:/gaba?query#ref"},
-    {"file:///Y:", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///Y:"},
-    {"file:///Y:/", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///Y:/"},
-    {"file:///./Y", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///Y"},
-    {"file:///./Y:", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///Y:"},
+      {"file:///C:/gaba?query#ref", nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, "file:///C:/gaba?query#ref"},
+      {"file:///Y:", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "file:///Y:"},
+      {"file:///Y:/", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "file:///Y:/"},
+      {"file:///./Y", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "file:///Y"},
+      {"file:///./Y:", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "file:///Y:"},
       // Clear non-path components (common)
-    {"file:///C:/gaba?query#ref", NULL, NULL, NULL, NULL, NULL, NULL, kDeleteComp, kDeleteComp, "file:///C:/gaba"},
+      {"file:///C:/gaba?query#ref", nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, kDeleteComp, kDeleteComp, "file:///C:/gaba"},
       // Replace path with something that doesn't begin with a slash and make
       // sure it gets added properly.
-    {"file:///C:/gaba", NULL, NULL, NULL, NULL, NULL, "interesting/", NULL, NULL, "file:///interesting/"},
-    {"file:///home/gaba?query#ref", NULL, NULL, NULL, "filer", NULL, "/foo", "b", "c", "file://filer/foo?b#c"},
-    {"file:///home/gaba?query#ref", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///home/gaba?query#ref"},
-    {"file:///home/gaba?query#ref", NULL, NULL, NULL, NULL, NULL, NULL, kDeleteComp, kDeleteComp, "file:///home/gaba"},
-    {"file:///home/gaba", NULL, NULL, NULL, NULL, NULL, "interesting/", NULL, NULL, "file:///interesting/"},
+      {"file:///C:/gaba", nullptr, nullptr, nullptr, nullptr, nullptr,
+       "interesting/", nullptr, nullptr, "file:///interesting/"},
+      {"file:///home/gaba?query#ref", nullptr, nullptr, nullptr, "filer",
+       nullptr, "/foo", "b", "c", "file://filer/foo?b#c"},
+      {"file:///home/gaba?query#ref", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, nullptr, "file:///home/gaba?query#ref"},
+      {"file:///home/gaba?query#ref", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, kDeleteComp, kDeleteComp, "file:///home/gaba"},
+      {"file:///home/gaba", nullptr, nullptr, nullptr, nullptr, nullptr,
+       "interesting/", nullptr, nullptr, "file:///interesting/"},
       // Replace scheme -- shouldn't do anything.
-    {"file:///C:/gaba?query#ref", "http", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "file:///C:/gaba?query#ref"},
+      {"file:///C:/gaba?query#ref", "http", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, "file:///C:/gaba?query#ref"},
   };
 
   for (size_t i = 0; i < base::size(replace_cases); i++) {
@@ -1565,38 +1597,41 @@ TEST(URLCanonTest, ReplaceFileURL) {
 TEST(URLCanonTest, ReplaceFileSystemURL) {
   ReplaceCase replace_cases[] = {
       // Replace everything in the outer URL.
-      {"filesystem:file:///temporary/gaba?query#ref", NULL, NULL, NULL, NULL,
-       NULL, "/foo", "b", "c", "filesystem:file:///temporary/foo?b#c"},
+      {"filesystem:file:///temporary/gaba?query#ref", nullptr, nullptr, nullptr,
+       nullptr, nullptr, "/foo", "b", "c",
+       "filesystem:file:///temporary/foo?b#c"},
       // Replace nothing
-      {"filesystem:file:///temporary/gaba?query#ref", NULL, NULL, NULL, NULL,
-       NULL, NULL, NULL, NULL, "filesystem:file:///temporary/gaba?query#ref"},
+      {"filesystem:file:///temporary/gaba?query#ref", nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, nullptr, nullptr,
+       "filesystem:file:///temporary/gaba?query#ref"},
       // Clear non-path components (common)
-      {"filesystem:file:///temporary/gaba?query#ref", NULL, NULL, NULL, NULL,
-       NULL, NULL, kDeleteComp, kDeleteComp,
+      {"filesystem:file:///temporary/gaba?query#ref", nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, kDeleteComp, kDeleteComp,
        "filesystem:file:///temporary/gaba"},
       // Replace path with something that doesn't begin with a slash and make
       // sure it gets added properly.
-      {"filesystem:file:///temporary/gaba?query#ref", NULL, NULL, NULL, NULL,
-       NULL, "interesting/", NULL, NULL,
+      {"filesystem:file:///temporary/gaba?query#ref", nullptr, nullptr, nullptr,
+       nullptr, nullptr, "interesting/", nullptr, nullptr,
        "filesystem:file:///temporary/interesting/?query#ref"},
       // Replace scheme -- shouldn't do anything except canonicalize.
-      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", "http", NULL, NULL,
-       NULL, NULL, NULL, NULL, NULL,
+      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", "http", nullptr,
+       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
        "filesystem:http://bar.com/t/gaba?query#ref"},
       // Replace username -- shouldn't do anything except canonicalize.
-      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", NULL, "u2", NULL, NULL,
-       NULL, NULL, NULL, NULL, "filesystem:http://bar.com/t/gaba?query#ref"},
+      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", nullptr, "u2", nullptr,
+       nullptr, nullptr, nullptr, nullptr, nullptr,
+       "filesystem:http://bar.com/t/gaba?query#ref"},
       // Replace password -- shouldn't do anything except canonicalize.
-      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", NULL, NULL, "pw2",
-       NULL, NULL, NULL, NULL, NULL,
+      {"filesystem:http://u:p@bar.com/t/gaba?query#ref", nullptr, nullptr,
+       "pw2", nullptr, nullptr, nullptr, nullptr, nullptr,
        "filesystem:http://bar.com/t/gaba?query#ref"},
       // Replace host -- shouldn't do anything except canonicalize.
-      {"filesystem:http://u:p@bar.com:80/t/gaba?query#ref", NULL, NULL, NULL,
-       "foo.com", NULL, NULL, NULL, NULL,
+      {"filesystem:http://u:p@bar.com:80/t/gaba?query#ref", nullptr, nullptr,
+       nullptr, "foo.com", nullptr, nullptr, nullptr, nullptr,
        "filesystem:http://bar.com/t/gaba?query#ref"},
       // Replace port -- shouldn't do anything except canonicalize.
-      {"filesystem:http://u:p@bar.com:40/t/gaba?query#ref", NULL, NULL, NULL,
-       NULL, "41", NULL, NULL, NULL,
+      {"filesystem:http://u:p@bar.com:40/t/gaba?query#ref", nullptr, nullptr,
+       nullptr, nullptr, "41", nullptr, nullptr, nullptr,
        "filesystem:http://bar.com:40/t/gaba?query#ref"},
   };
 
@@ -1630,13 +1665,18 @@ TEST(URLCanonTest, ReplaceFileSystemURL) {
 TEST(URLCanonTest, ReplacePathURL) {
   ReplaceCase replace_cases[] = {
       // Replace everything
-    {"data:foo", "javascript", NULL, NULL, NULL, NULL, "alert('foo?');", NULL, NULL, "javascript:alert('foo?');"},
+      {"data:foo", "javascript", nullptr, nullptr, nullptr, nullptr,
+       "alert('foo?');", nullptr, nullptr, "javascript:alert('foo?');"},
       // Replace nothing
-    {"data:foo", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "data:foo"},
+      {"data:foo", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "data:foo"},
       // Replace one or the other
-    {"data:foo", "javascript", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "javascript:foo"},
-    {"data:foo", NULL, NULL, NULL, NULL, NULL, "bar", NULL, NULL, "data:bar"},
-    {"data:foo", NULL, NULL, NULL, NULL, NULL, kDeleteComp, NULL, NULL, "data:"},
+      {"data:foo", "javascript", nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "javascript:foo"},
+      {"data:foo", nullptr, nullptr, nullptr, nullptr, nullptr, "bar", nullptr,
+       nullptr, "data:bar"},
+      {"data:foo", nullptr, nullptr, nullptr, nullptr, nullptr, kDeleteComp,
+       nullptr, nullptr, "data:"},
   };
 
   for (size_t i = 0; i < base::size(replace_cases); i++) {
