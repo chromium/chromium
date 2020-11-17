@@ -28,6 +28,8 @@
 
 using safe_browsing::FileTypePolicies;
 
+namespace {
+
 TEST(DownloadPrefsTest, Prerequisites) {
   // Most of the tests below are based on the assumption that .swf files are not
   // allowed to open automatically, and that .txt files are allowed. If this
@@ -362,7 +364,7 @@ TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
             download_prefs.GetDefaultDownloadDirectory());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ExpectValidDownloadDir(Profile* profile,
                             DownloadPrefs* prefs,
                             base::FilePath path) {
@@ -373,7 +375,7 @@ void ExpectValidDownloadDir(Profile* profile,
 }
 
 TEST(DownloadPrefsTest, DownloadDirSanitization) {
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment;
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   DownloadPrefs prefs(&profile);
   const base::FilePath default_dir =
@@ -382,6 +384,20 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   // Test a valid path.
   ExpectValidDownloadDir(&profile, &prefs, default_dir.AppendASCII("testdir"));
 
+  // Test with an invalid path outside the download directory.
+  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
+                                "/home/chronos");
+  EXPECT_EQ(prefs.DownloadPath(), default_dir);
+
+  // Test with an invalid path containing parent references.
+  base::FilePath parent_reference = default_dir.AppendASCII("..");
+  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
+                                parent_reference.value());
+  EXPECT_EQ(prefs.DownloadPath(), default_dir);
+
+  // TODO(https://crbug.com/1148848): Sort out path sanitization for Lacros.
+  // Once the ash-only code can be shared the tests below can be enabled.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Test a valid path for Android files.
   ExpectValidDownloadDir(
       &profile, &prefs,
@@ -396,17 +412,6 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
       &profile, &prefs,
       base::FilePath(
           "/media/fuse/crostini_0123456789abcdef_termina_penguin/testdir"));
-
-  // Test with an invalid path outside the download directory.
-  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                "/home/chronos");
-  EXPECT_EQ(prefs.DownloadPath(), default_dir);
-
-  // Test with an invalid path containing parent references.
-  base::FilePath parent_reference = default_dir.AppendASCII("..");
-  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                parent_reference.value());
-  EXPECT_EQ(prefs.DownloadPath(), default_dir);
 
   // DriveFS
   {
@@ -447,8 +452,9 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                    "/media/fuse/drivefs-something-else/root");
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #ifdef OS_ANDROID
 TEST(DownloadPrefsTest, DownloadLaterPrefs) {
@@ -476,3 +482,5 @@ TEST(DownloadPrefsTest, DownloadLaterPrefs) {
 }
 
 #endif  // OS_ANDROID
+
+}  // namespace

@@ -550,11 +550,28 @@ void DownloadPrefs::SaveAutoOpenState() {
 
 base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     const base::FilePath& path) const {
-  // TODO(https://crbug.com/1148848): Sort out path sanitization for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (skip_sanitize_download_target_path_for_testing_)
     return path;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1148848): Sort out path sanitization for Lacros.
+  // This will require refactoring the ash-only code below so it can be shared.
+  // For now, only allow downloads into the Downloads directory and children.
+  const base::FilePath default_downloads_path =
+      GetDefaultDownloadDirectoryForProfile();
+  // Relative paths might be unsafe, so use the default path.
+  if (!path.IsAbsolute() || path.ReferencesParent())
+    return default_downloads_path;
+
+  // Allow downloads directory and subdirectories. Subdirectories may not seem
+  // useful, but many tests assume they can download files into a subdirectory,
+  // and allowing subdirectories doesn't hurt.
+  if (default_downloads_path == path || default_downloads_path.IsParent(path))
+    return path;
+
+  // Otherwise, return the safe default.
+  return default_downloads_path;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath migrated_drive_path;
   // Managed prefs may force a legacy Drive path as the download path. Ensure
   // the path is valid when DriveFS is enabled.
