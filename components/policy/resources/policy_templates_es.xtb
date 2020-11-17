@@ -3714,7 +3714,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="631183702829488873">Si se habilita, esta función muestra un botón en las pantallas de inicio de sesión y bloqueo que permite mostrar la contraseña.
           Se representa con un icono de ojo en el campo de texto de la contraseña. No aparece ningún botón si la función está desactivada.
       </translation>
-<translation id="6319198883324703402">Define el tiempo transcurrido desde la primera notificación para que el usuario reinicie</translation>
+<translation id="6319198883324703402">Define cuándo se envía la primera notificación para que el usuario reinicie</translation>
 <translation id="6330882599388782338">Permitir a los sitios web acceder a los sensores</translation>
 <translation id="6331167725613770725">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 

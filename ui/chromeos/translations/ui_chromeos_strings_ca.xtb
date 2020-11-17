@@ -5,7 +5,7 @@
 <translation id="1023220960495960452">Transliteració (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Visualització de diapositives</translation>
 <translation id="1045157690796831147">Transliteració (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Introducció de japonès (per a teclat nord-americà)</translation>
+<translation id="1046068652463704410">Introducció de japonès (per a teclat dels EUA)</translation>
 <translation id="1047956942837015229">S'estan suprimint <ph name="COUNT" /> elements...</translation>
 <translation id="1049926623896334335">Document de Word</translation>
 <translation id="1060368002126861100">Per obrir fitxers amb <ph name="APP_NAME" />, primer mou-los a la carpeta de fitxers de Windows.</translation>
@@ -141,7 +141,7 @@
 <translation id="247772113373397749">Teclat multilingüe canadenc</translation>
 <translation id="2494837236724268445">Teclat gujarati (fonètic)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Teclat nord-americà</translation>
+<translation id="2529133382850673012">Teclat dels EUA</translation>
 <translation id="2542049655219295786">Taula de Google</translation>
 <translation id="2547921442987553570">Afegeix a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
@@ -647,7 +647,7 @@
 <translation id="7873831373602885875">No es pot desar a <ph name="FOLDER_NAME" />. Tots els canvis es desaran a <ph name="DOWNLOADS_FOLDER" />, a la carpeta Baixades.</translation>
 <translation id="7881969471599061635">Desactiva els subtítols</translation>
 <translation id="78946041517601018">Unitats compartides</translation>
-<translation id="7896906914454843592">Teclat nord-americà ampliat</translation>
+<translation id="7896906914454843592">Teclat dels EUA ampliat</translation>
 <translation id="7898607018410277265">Teclat gujarati (fonètic nou)</translation>
 <translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7917972308273378936">Teclat lituà</translation>

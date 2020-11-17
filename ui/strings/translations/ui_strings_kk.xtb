@@ -138,7 +138,7 @@
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5329858601952122676">&amp;Жою</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> қолданбасын <ph name="IN_PLACE_APP" /> үстіне сүйреп әкеліп қойсаңыз, қалта жасалады.</translation>
-<translation id="5463830097259460683">Эмодзи және таңбалар</translation>
+<translation id="5463830097259460683">Эмоджи және таңбалар</translation>
 <translation id="5476505524087279545">құсбелгіні алу</translation>
 <translation id="547979256943495781">Оң жақтағы сөре</translation>
 <translation id="5528053674512161860">Бет жүктелмеді, себебі әзірлеуші интерфейсінің модулі (dev_ui) орнатылмаған</translation>
@@ -207,7 +207,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 минут қалды}other{# минут қалды}}</translation>
 <translation id="7430878839542012341">Бұл іздеу шартын тарихтан өшіру керек пе?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
-<translation id="7507604095951736240">Эмодзи</translation>
+<translation id="7507604095951736240">Эмоджи</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7781829728241885113">Кеше</translation>
 <translation id="7814458197256864873">&amp;Көшіру</translation>

@@ -840,7 +840,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1938351510777341717">Vanjska komanda</translation>
 <translation id="1940546824932169984">Povezani uređaji</translation>
 <translation id="1942600407708803723">Isključi kada se zatvori poklopac</translation>
-<translation id="1944528062465413897">Kôd za Bluetooth uparivanje:</translation>
+<translation id="1944528062465413897">Kôd za uparivanje putem Bluetootha:</translation>
 <translation id="1944921356641260203">Ažuriranje je dostupno.</translation>
 <translation id="1946577776959096882">Prikaži račune</translation>
 <translation id="1949584741547056205">Brzi odgovori</translation>
@@ -1957,7 +1957,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3282568296779691940">Prijava na Chrome</translation>
 <translation id="3285322247471302225">Nova kartica</translation>
 <translation id="328571385944182268">Sačuvati vaše lozinke?</translation>
-<translation id="3286538390144397061">Ponovo pokreni sad</translation>
+<translation id="3286538390144397061">Ponovo pokreni sada</translation>
 <translation id="3288047731229977326">Ekstenzije u načinu rada za programere mogu nanijeti štetu vašem računaru. Ako niste programer, radi sigurnosti onemogućite rad ovih ekstenzija u načinu rada za programere.</translation>
 <translation id="3289668031376215426">Automatsko veliko slovo</translation>
 <translation id="3289856944988573801">Da provjerite ima li ažuriranja, koristite Ethernet ili WiFi.</translation>
@@ -6583,7 +6583,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>
 <translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; želi s vama dijeliti štampač &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
-<translation id="8783834180813871000">Upišite kôd za Bluetooth uparivanje, a zatim pritisnite Return ili Enter.</translation>
+<translation id="8783834180813871000">Upišite kôd za uparivanje putem Bluetootha, a zatim pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Zbirni prosjek</translation>
 <translation id="8785622406424941542">Digitalna olovka</translation>
 <translation id="8786697630358316925">Ova opcija neće biti podržana nakon decembra. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -4069,7 +4069,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5814126672212206791">Туташуу түрү</translation>
 <translation id="5815645614496570556">X.400 Дарек</translation>
 <translation id="5816434091619127343">Принтердин конфигурациясы сиз каалагандай өзгөртүлсө, ал иштебей калат.</translation>
-<translation id="5817918615728894473">Жупташтыруу</translation>
+<translation id="5817918615728894473">Байланыштыруу</translation>
 <translation id="5821565227679781414">Кыска жол түзүү</translation>
 <translation id="5825412242012995131">Күйүк (сунушталат)</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> түзмөгүңүздү телефонго туташтырыңыз. <ph name="LINK_BEGIN" />Көбүрөөк билүү<ph name="LINK_END" /></translation>
@@ -5993,7 +5993,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8076835018653442223">Түзмөгүңүздөгү файлдарды пайдалануу мүмкүнчүлүгүн администраторуңуз өчүрүп койгон</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">ADB аркылуу мүчүлүштүктөрдү аныктоо өчүрүлсүнбү?</translation>
-<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" менен жупташтырылсынбы?</translation>
+<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" менен байланыштырасызбы?</translation>
 <translation id="8082390128630131497">ADB аркылуу мүчүлүштүктөрдү оңдоону өчүрүү менен, <ph name="DEVICE_TYPE" /> түзмөгү баштапкы абалга келтирилет. Колдонуучунун бардык аккаунттары жана жергиликтүү дайындар тазаланат.</translation>
 <translation id="8083058154738359867">Жөндөөлөрдөн Ыкчам коштомо жазууларды иштетүү менен, медиаңыз үчүн коштомо жазууларды алып туруңуз</translation>
 <translation id="8084114998886531721">Сакталган сырсөз</translation>
