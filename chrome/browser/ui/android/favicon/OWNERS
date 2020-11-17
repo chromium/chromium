@@ -2,6 +2,3 @@ file://chrome/android/OWNERS
 
 twellington@chromium.org
 wylieb@chromium.org
-
-# COMPONENT: UI>Browser>Mobile
-# OS: Android
