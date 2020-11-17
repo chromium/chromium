@@ -194,7 +194,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
                 new LoadUrlParams(VideoPlayerURLBuilder.buildFromTutorial(tutorial));
         loadUrlParams.setHasUserGesture(true);
         mWebContents.getNavigationController().loadUrl(loadUrlParams);
-        mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, true);
+        mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, false);
     }
 
