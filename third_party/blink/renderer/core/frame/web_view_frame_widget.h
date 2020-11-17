@@ -72,7 +72,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WebFrameWidgetBase overrides:
   bool ForSubframe() const override { return false; }
   bool ForTopLevelFrame() const override { return !is_for_nested_main_frame_; }
-  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   void SetAutoResizeMode(bool auto_resize,
                          const gfx::Size& min_size_before_dsf,
                          const gfx::Size& max_size_before_dsf,

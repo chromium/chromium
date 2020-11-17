@@ -244,6 +244,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
   void ScrollFocusedEditableNodeIntoRect(
       const gfx::Rect& rect_in_dips) override;
+  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
 #if defined(OS_ANDROID)
   void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;

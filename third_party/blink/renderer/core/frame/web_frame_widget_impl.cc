@@ -491,12 +491,6 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   widget_base_->LayerTreeHost()->SetRootLayer(layer);
 }
 
-void WebFrameWidgetImpl::ZoomToFindInPageRect(
-    const WebRect& rect_in_root_frame) {
-  GetAssociatedFrameWidgetHost()->ZoomToFindInPageRectInMainFrame(
-      gfx::Rect(rect_in_root_frame));
-}
-
 void WebFrameWidgetImpl::SetAutoResizeMode(bool auto_resize,
                                            const gfx::Size& min_size_before_dsf,
                                            const gfx::Size& max_size_before_dsf,

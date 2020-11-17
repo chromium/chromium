@@ -2931,6 +2931,16 @@ void WebFrameWidgetBase::ScrollFocusedEditableNodeIntoRect(
   local_frame->Client()->ScrollFocusedEditableElementIntoRect(rect_in_dips);
 }
 
+void WebFrameWidgetBase::ZoomToFindInPageRect(
+    const WebRect& rect_in_root_frame) {
+  if (ForMainFrame()) {
+    View()->ZoomToFindInPageRect(rect_in_root_frame);
+  } else {
+    GetAssociatedFrameWidgetHost()->ZoomToFindInPageRectInMainFrame(
+        gfx::Rect(rect_in_root_frame));
+  }
+}
+
 void WebFrameWidgetBase::MoveCaret(const gfx::Point& point_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)

@@ -129,11 +129,6 @@ void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
   web_view_->DidChangeRootLayer(!!root_layer);
 }
 
-void WebViewFrameWidget::ZoomToFindInPageRect(
-    const WebRect& rect_in_root_frame) {
-  web_view_->ZoomToFindInPageRect(rect_in_root_frame);
-}
-
 void WebViewFrameWidget::HandleMouseLeave(LocalFrame& main_frame,
                                           const WebMouseEvent& event) {
   web_view_->SetMouseOverURL(WebURL());
