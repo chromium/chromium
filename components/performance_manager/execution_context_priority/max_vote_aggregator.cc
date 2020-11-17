@@ -20,10 +20,7 @@ VotingChannel MaxVoteAggregator::GetVotingChannel() {
 }
 
 void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
-  DCHECK(channel.IsValid());
-  DCHECK(vote_data_map_.empty());
-  DCHECK(!channel_.IsValid());
-  channel_ = std::move(channel);
+  channel_.SetVotingChannel(std::move(channel));
 }
 
 void MaxVoteAggregator::OnVoteSubmitted(
@@ -32,35 +29,75 @@ void MaxVoteAggregator::OnVoteSubmitted(
     const Vote& vote) {
   DCHECK(channel_.IsValid());
 
-  // Add the new vote.
+  // Create the VoteData for this execution context, if necessary.
   VoteData& vote_data = vote_data_map_[execution_context];
-  if (vote_data.AddVote(voter_id, vote, next_vote_id_++))
-    vote_data.UpstreamVote(execution_context, &channel_);
+
+  // Remember the previous top vote before adding the new vote. There could be
+  // none if this is the first vote submitted for |execution_context|.
+  base::Optional<Vote> old_top_vote;
+  if (!vote_data.IsEmpty())
+    old_top_vote = vote_data.GetTopVote();
+
+  vote_data.AddVote(voter_id, vote, next_vote_id_++);
+
+  // If there was no previous top vote, the vote must be submitted.
+  if (!old_top_vote) {
+    channel_.SubmitVote(execution_context, vote);
+    return;
+  }
+
+  // Since there is a previous top vote, it must be modified if the top vote
+  // changed.
+  const Vote new_top_vote = vote_data.GetTopVote();
+  if (old_top_vote.value() != new_top_vote)
+    channel_.ChangeVote(execution_context, new_top_vote);
 }
 
 void MaxVoteAggregator::OnVoteChanged(VoterId voter_id,
                                       const ExecutionContext* execution_context,
                                       const Vote& new_vote) {
+  // The VoteData for this execution context is guaranteed to exist.
   VoteData& vote_data = GetVoteData(execution_context)->second;
 
-  if (vote_data.UpdateVote(voter_id, new_vote))
-    vote_data.UpstreamVote(execution_context, &channel_);
+  // Remember the previous top vote before updating the vote for this
+  // |voter_id|.
+  const Vote old_top_vote = vote_data.GetTopVote();
+
+  vote_data.UpdateVote(voter_id, new_vote);
+
+  // If the top vote changed, the upstream vote must also be changed.
+  const Vote new_top_vote = vote_data.GetTopVote();
+  if (old_top_vote != new_top_vote)
+    channel_.ChangeVote(execution_context, new_top_vote);
 }
 
 void MaxVoteAggregator::OnVoteInvalidated(
     VoterId voter_id,
     const ExecutionContext* execution_context) {
+  // The VoteData for this execution context is guaranteed to exist.
   auto it = GetVoteData(execution_context);
   VoteData& vote_data = it->second;
 
-  // Remove the vote, and upstream if necessary.
-  if (vote_data.RemoveVote(voter_id))
-    vote_data.UpstreamVote(execution_context, &channel_);
+  // Remember the previous top vote before removing the vote for this
+  // |voter_id|.
+  const Vote old_top_vote = vote_data.GetTopVote();
 
-  // If all the votes for this execution context have disappeared then remove
-  // the entry entirely. This will automatically cancel our upstream vote.
-  if (vote_data.IsEmpty())
+  vote_data.RemoveVote(voter_id);
+
+  // In case the last vote for |execution_context| was invalidated, the upstream
+  // vote must also be invalidated.
+  if (vote_data.IsEmpty()) {
+    channel_.InvalidateVote(execution_context);
+
+    // Clean up the VoteData for |execution_context| since it is empty.
     vote_data_map_.erase(it);
+    return;
+  }
+
+  // If the top vote changed, the upstream vote must also be changed.
+  const Vote new_top_vote = vote_data.GetTopVote();
+  if (old_top_vote != new_top_vote)
+    channel_.ChangeVote(execution_context, new_top_vote);
 }
 
 MaxVoteAggregator::StampedVote::StampedVote() = default;
@@ -85,33 +122,17 @@ MaxVoteAggregator::VoteData& MaxVoteAggregator::VoteData::operator=(
 
 MaxVoteAggregator::VoteData::~VoteData() = default;
 
-bool MaxVoteAggregator::VoteData::AddVote(VoterId voter_id,
+void MaxVoteAggregator::VoteData::AddVote(VoterId voter_id,
                                           const Vote& vote,
                                           uint32_t vote_id) {
-  // Remember the upstream vote as it may change. There could be none.
-  base::Optional<Vote> old_root;
-  if (!votes_.empty())
-    old_root = votes_.top().vote();
-
   auto it = votes_.emplace(vote, vote_id);
 
   bool inserted = heap_handles_.emplace(voter_id, it->handle()).second;
   DCHECK(inserted);
-
-  // There was no previous root. This vote must be upstreamed.
-  if (!old_root)
-    return true;
-
-  // The vote always needs to be upstreamed if the root vote changed.
-  const Vote& new_root = votes_.top().vote();
-  return old_root.value() != new_root;
 }
 
-bool MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
+void MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
                                              const Vote& new_vote) {
-  // Remember the upstream vote as it may change.
-  const Vote old_root = votes_.top().vote();
-
   auto it = heap_handles_.find(voter_id);
   DCHECK(it != heap_handles_.end());
   base::HeapHandle* heap_handle = it->second;
@@ -119,44 +140,19 @@ bool MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
   votes_.Modify(*heap_handle, [&new_vote](StampedVote& element) {
     element.SetVote(new_vote);
   });
-
-  // The vote always needs to be upstreamed if the root vote changed.
-  const Vote& new_root = votes_.top().vote();
-  return old_root != new_root;
 }
 
-bool MaxVoteAggregator::VoteData::RemoveVote(VoterId voter_id) {
-  // Remember the upstream vote as it may change.
-  const Vote old_root = votes_.top().vote();
-
+void MaxVoteAggregator::VoteData::RemoveVote(VoterId voter_id) {
   auto it = heap_handles_.find(voter_id);
   DCHECK(it != heap_handles_.end());
   base::HeapHandle* heap_handle = it->second;
   heap_handles_.erase(it);
 
   votes_.erase(*heap_handle);
-
-  // If |votes_| is now empty, the upstream vote needs to be invalidated instead
-  // of upstreaming a new vote.
-  if (votes_.empty())
-    return false;
-
-  const Vote& new_root = votes_.top().vote();
-  return old_root != new_root;
 }
 
-void MaxVoteAggregator::VoteData::UpstreamVote(
-    const ExecutionContext* execution_context,
-    VotingChannel* channel) {
-  DCHECK(!votes_.empty());
-  const Vote& vote = votes_.top().vote();
-
-  // Change our existing vote, or create a new one as necessary.
-  if (receipt_.HasVote()) {
-    receipt_.ChangeVote(vote.value(), vote.reason());
-  } else {
-    receipt_ = channel->SubmitVote(execution_context, vote);
-  }
+const Vote& MaxVoteAggregator::VoteData::GetTopVote() const {
+  return votes_.top().vote();
 }
 
 }  // namespace execution_context_priority

@@ -481,6 +481,9 @@ class VotingChannelWrapper {
   // was invoked.
   void InvalidateVote(const ContextType* context);
 
+  // Returns true if the underlying VotingChannel is valid.
+  bool IsValid() const;
+
  private:
   VotingChannel<VoteImpl> voting_channel_;
 
@@ -1009,6 +1012,11 @@ void VotingChannelWrapper<VoteImpl>::InvalidateVote(
     const ContextType* context) {
   size_t removed = vote_receipts_.erase(context);
   DCHECK_EQ(removed, 1u);
+}
+
+template <class VoteImpl>
+bool VotingChannelWrapper<VoteImpl>::IsValid() const {
+  return voting_channel_.IsValid();
 }
 
 }  // namespace voting

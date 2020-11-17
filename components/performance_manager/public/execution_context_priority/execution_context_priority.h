@@ -63,6 +63,7 @@ using VoteConsumer = voting::VoteConsumer<Vote>;
 using AcceptedVote = voting::AcceptedVote<Vote>;
 using VoteObserver = voting::VoteObserver<Vote>;
 using VoteConsumerDefaultImpl = voting::VoteConsumerDefaultImpl<Vote>;
+using VotingChannelWrapper = voting::VotingChannelWrapper<Vote>;
 
 }  // namespace execution_context_priority
 }  // namespace performance_manager

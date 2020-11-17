@@ -76,8 +76,8 @@ class MaxVoteAggregator : public VoteObserver {
 
   // The collection of votes for a single execution context. This is move-only
   // because all of its members are move-only. Internally it houses the
-  // collection of all votes associated with a execution context as max-heap,
-  // and a receipt for the vote that has been upstreamed.
+  // collection of all votes associated with an execution context as max-heap,
+  // and a map of HeapHandles to access existing votes.
   class VoteData {
    public:
     VoteData();
@@ -87,26 +87,20 @@ class MaxVoteAggregator : public VoteObserver {
     VoteData& operator=(VoteData&& rhs);
     ~VoteData();
 
-    // Adds a vote. Returns true if a new upstream vote is needed.
-    bool AddVote(VoterId voter_id, const Vote& vote, uint32_t vote_id);
+    // Adds a vote.
+    void AddVote(VoterId voter_id, const Vote& vote, uint32_t vote_id);
 
-    // Updates the vote from its given index to a new index. Returns true if the
-    // root was disturbed and a new upstream vote is needed.
-    bool UpdateVote(VoterId voter_id, const Vote& new_vote);
+    // Updates an existing vote casted by |voter_id|.
+    void UpdateVote(VoterId voter_id, const Vote& new_vote);
 
-    // Removes the vote at the provided index. Returns true if the root was
-    // disturbed and a new upstream vote is needed.
-    bool RemoveVote(VoterId voter_id);
-
-    // Upstreams the vote for this vote data, using the given voting |channel|.
-    void UpstreamVote(const ExecutionContext* execution_context,
-                      VotingChannel* channel);
-
-    // Returns the number of votes in this structure.
-    size_t GetSize() const { return votes_.size(); }
+    // Removes an existing vote casted by |voter_id|.
+    void RemoveVote(VoterId voter_id);
 
     // Returns true if this VoteData is empty.
     bool IsEmpty() const { return votes_.empty(); }
+
+    // Returns the top vote. Invalid to call if IsEmpty() returns true.
+    const Vote& GetTopVote() const;
 
    private:
     base::IntrusiveHeap<StampedVote> votes_;
@@ -114,9 +108,6 @@ class MaxVoteAggregator : public VoteObserver {
     // Maps each voting channel to the HeapHandle to their associated vote in
     // |votes_|.
     std::map<VoterId, base::HeapHandle*> heap_handles_;
-
-    // The receipt for the vote we've upstreamed.
-    VoteReceipt receipt_;
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
@@ -126,7 +117,7 @@ class MaxVoteAggregator : public VoteObserver {
   VoteDataMap::iterator GetVoteData(const ExecutionContext* execution_context);
 
   // Our channel for upstreaming our votes.
-  VotingChannel channel_;
+  VotingChannelWrapper channel_;
 
   // Provides VotingChannels to our input voters.
   VoteConsumerDefaultImpl vote_consumer_default_impl_;
