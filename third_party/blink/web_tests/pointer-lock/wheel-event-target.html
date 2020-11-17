@@ -36,8 +36,8 @@
       testObject.unreached_func("wheel event should not fire on element with id = text!"));
 
    let rect = textDiv.getBoundingClientRect();
-   let x = rect.left;
-   let y = rect.top;
+   let x = rect.left + 5;
+   let y = rect.top + 5;
    await mouseMoveTo(x, y);
    await smoothScrollWithXY(5, 5, x, y, GestureSourceType.MOUSE_INPUT, SPEED_INSTANT);
 
