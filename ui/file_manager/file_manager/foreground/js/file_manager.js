@@ -847,12 +847,17 @@ class FileManager extends cr.EventTarget {
   async startInitBackgroundPage_() {
     metrics.startInterval('Load.InitBackgroundPage');
 
-    /** @type {!Window} */
-    const backgroundPage =
-        await new Promise(resolve => chrome.runtime.getBackgroundPage(resolve));
-    assert(backgroundPage);
-    this.backgroundPage_ =
-        /** @type {!BackgroundWindow} */ (backgroundPage);
+    /** @type {!BackgroundWindow} */
+    this.backgroundPage_ = await new Promise(resolve => {
+      if (window.isSWA) {
+        const backgroundWindowSWA = window.BackgroundWindowSWA || null;
+        resolve(new backgroundWindowSWA());
+      } else {
+        chrome.runtime.getBackgroundPage(resolve);
+      }
+    });
+
+    assert(this.backgroundPage_);
     this.fileBrowserBackground_ =
         /** @type {!FileBrowserBackgroundFull} */ (
             this.backgroundPage_.background);
@@ -868,6 +873,7 @@ class FileManager extends cr.EventTarget {
     this.mediaScanner_ = this.fileBrowserBackground_.mediaScanner;
     this.historyLoader_ = this.fileBrowserBackground_.historyLoader;
     this.crostini_ = this.fileBrowserBackground_.crostini;
+
     metrics.recordInterval('Load.InitBackgroundPage');
   }
 
