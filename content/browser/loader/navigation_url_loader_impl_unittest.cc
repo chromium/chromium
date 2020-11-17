@@ -26,7 +26,6 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/system_connector.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -141,14 +140,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::IO)),
         network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {
-    // Because the network service is enabled we need a system Connector or
-    // BrowserContext::GetDefaultStoragePartition will segfault when
-    // ContentBrowserClient::CreateNetworkContext tries to call
-    // GetNetworkService.
-    mojo::PendingReceiver<service_manager::mojom::Connector> connector_receiver;
-    SetSystemConnectorForTesting(
-        service_manager::Connector::Create(&connector_receiver));
-
     browser_context_.reset(new TestBrowserContext);
     http_test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -160,7 +151,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
   ~NavigationURLLoaderImplTest() override {
     browser_context_.reset();
-    SetSystemConnectorForTesting(nullptr);
     // Reset the BrowserTaskEnvironment to force destruction of the local
     // NetworkService, which is held in SequenceLocalStorage. This must happen
     // before destruction of |network_change_notifier_|, to allow observers to

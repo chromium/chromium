@@ -19,12 +19,6 @@ namespace content {
 // different on each thread and is NEVER safe to retain or pass across threads.
 CONTENT_EXPORT service_manager::Connector* GetSystemConnector();
 
-// Overrides the system Connector for test environments where Content's regular
-// Service Manager environment is not set up. Must be called from the main
-// thread.
-CONTENT_EXPORT void SetSystemConnectorForTesting(
-    std::unique_ptr<service_manager::Connector> connector);
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_SYSTEM_CONNECTOR_H_

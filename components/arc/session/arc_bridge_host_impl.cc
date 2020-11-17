@@ -66,7 +66,6 @@
 #include "components/arc/mojom/wallpaper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/mojo_channel.h"
-#include "content/public/browser/system_connector.h"
 
 namespace arc {
 

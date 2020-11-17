@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/system_connector.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test.h"

@@ -66,9 +66,4 @@ void SetSystemConnector(std::unique_ptr<service_manager::Connector> connector) {
   GetConnectorStorage().emplace(std::move(remote));
 }
 
-void SetSystemConnectorForTesting(
-    std::unique_ptr<service_manager::Connector> connector) {
-  SetSystemConnector(std::move(connector));
-}
-
 }  // namespace content

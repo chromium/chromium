@@ -166,7 +166,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/notification_helper/notification_helper_constants.h"
-#include "content/public/browser/system_connector.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
