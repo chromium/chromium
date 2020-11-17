@@ -466,9 +466,9 @@ ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
 
   auto type_int = value->FindIntKey(kLastPickedDirectoryTypeKey)
                       .value_or(static_cast<int>(PathType::kLocal));
-  path_info.type = type_int == static_cast<int>(PathType::kLocal)
-                       ? PathType::kLocal
-                       : PathType::kExternal;
+  path_info.type = type_int == static_cast<int>(PathType::kExternal)
+                       ? PathType::kExternal
+                       : PathType::kLocal;
   path_info.path =
       util::ValueToFilePath(value->FindKey(kLastPickedDirectoryKey))
           .value_or(base::FilePath());
