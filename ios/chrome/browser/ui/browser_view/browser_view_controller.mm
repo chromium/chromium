@@ -1570,8 +1570,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.typingShield = nil;
     if (_voiceSearchController)
       _voiceSearchController->SetDispatcher(nil);
+    [self.primaryToolbarCoordinator stop];
     self.primaryToolbarCoordinator = nil;
+    [self.secondaryToolbarContainerCoordinator stop];
     self.secondaryToolbarContainerCoordinator = nil;
+    [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
     self.toolbarInterface = nil;
     [_toolbarUIUpdater stopUpdating];
