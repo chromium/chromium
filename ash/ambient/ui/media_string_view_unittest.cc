@@ -269,7 +269,8 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
       media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
-  container_view()->Layout();
+  for (auto* view : GetContainerViews())
+    view->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -288,7 +289,8 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
       media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
-  container_view()->Layout();
+  for (auto* view : GetContainerViews())
+    view->Layout();
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -307,7 +309,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
       media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
-  container_view()->Layout();
+  for (auto* view : GetContainerViews())
+    view->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -319,7 +322,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
-  container_view()->Layout();
+  for (auto* view : GetContainerViews())
+    view->Layout();
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -331,7 +335,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
-  container_view()->Layout();
+  for (auto* view : GetContainerViews())
+    view->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
