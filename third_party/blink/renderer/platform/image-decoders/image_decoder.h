@@ -313,9 +313,12 @@ class PLATFORM_EXPORT ImageDecoder {
     return true;
   }
 
-  // Calls DecodeFrameCount() to get the frame count (if possible), without
-  // decoding the individual frames.  Resizes |frame_buffer_cache_| to the
-  // correct size and returns its size.
+  // Calls DecodeFrameCount() to get the current frame count (if possible),
+  // without decoding the individual frames.  Resizes |frame_buffer_cache_| to
+  // the new size and returns that size.
+  //
+  // Note: FrameCount() returns the return value of DecodeFrameCount(). For more
+  // information on the return value, see the comment for DecodeFrameCount().
   size_t FrameCount();
 
   virtual int RepetitionCount() const { return kAnimationNone; }
@@ -466,6 +469,18 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Decodes the image sufficiently to determine the number of frames and
   // returns that number.
+  //
+  // If an image format supports images with multiple frames, the decoder must
+  // override this method. FrameCount() calls this method and resizes
+  // |frame_buffer_cache_| to the return value of this method. Therefore, on
+  // failure this method should return |frame_buffer_cache_.size()| (the
+  // existing number of frames) instead of 0 to leave |frame_buffer_cache_|
+  // unchanged.
+  //
+  // This method may return an increasing frame count as frames are received and
+  // parsed. Alternatively, if the total frame count is available in the image
+  // header, this method may return the total frame count without checking how
+  // many frames are received.
   virtual size_t DecodeFrameCount() { return 1; }
 
   // Called to initialize the frame buffer with the given index, based on the
