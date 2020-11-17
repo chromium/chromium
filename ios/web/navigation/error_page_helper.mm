@@ -78,7 +78,7 @@ NSString* InjectedErrorPageFilePath() {
   if (!_errorPageFileURL) {
     NSURLQueryItem* itemURL = [NSURLQueryItem
         queryItemWithName:base::SysUTF8ToNSString(kOriginalUrlKey)
-                    value:self.failedNavigationURLString];
+                    value:EscapeHTMLCharacters(self.failedNavigationURLString)];
     NSURLQueryItem* itemDontLoad = [NSURLQueryItem queryItemWithName:@"dontLoad"
                                                                value:@"true"];
     NSURLComponents* URL = [[NSURLComponents alloc] initWithString:@"file:///"];

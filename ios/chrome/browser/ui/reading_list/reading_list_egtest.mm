@@ -29,6 +29,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
 #include "net/base/network_change_notifier.h"
@@ -434,6 +435,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kPageInfoRefactoring);
+
+  // Error page Workflow Feature is enabled by test name. This is done because
+  // it is inefficient to use ensureAppLaunchedWithConfiguration for each test.
+  // This should be removed once test config is modified.
+  if ([self isRunningTest:@selector(testNavigateBackToDistilledPage)]) {
+    config.features_enabled.push_back(web::features::kUseJSForErrorPage);
+  }
   return config;
 }
 
@@ -467,6 +475,60 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   TapToolbarButtonWithID(kReadingListToolbarCancelButtonID);
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+}
+
+// Tests that navigating back to an offline page is still displaying the error
+// page and don't mess the navigation stack.
+- (void)testNavigateBackToDistilledPage {
+  [ReadingListAppInterface forceConnectionToWifi];
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
+  // Open http://potato
+  [ChromeEarlGrey loadURL:distillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  AddCurrentPageToReadingList();
+
+  // Verify that an entry with the correct title is present in the reading list.
+  OpenReadingList();
+  AssertEntryVisible(kDistillableTitle);
+
+  WaitForDistillation();
+
+  // Long press the entry, and open it offline.
+  LongPressEntry(kDistillableTitle);
+
+  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
+  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
+    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
+  }
+
+  TapContextMenuButtonWithA11yLabelID(offlineStringId);
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  AssertIsShowingDistillablePage(false, distillablePageURL);
+
+  // Navigate to http://beans
+  [ChromeEarlGrey loadURL:nonDistillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [ChromeEarlGrey goBack];
+
+  // Check that the offline version is still displayed.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  AssertIsShowingDistillablePage(false, distillablePageURL);
+
+  // Check that a new navigation wasn't created.
+  GREYAssertEqual(0, [ChromeEarlGrey navigationBackListItemsCount],
+                  @"The offline page should be the first committed URL.");
+
+  // Check that navigating forward navigates to the correct page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                          nonDistillablePageURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that sharing a web page to the Reading List results in a snackbar

@@ -3,7 +3,7 @@
   <head>
     <script type="text/javascript">
       let params = new URLSearchParams(window.location.search.substring(1));
-      let failedUrl = decodeURIComponent(params.get('url'));
+      let failedUrl = params.get('url');
       let load = () => {
         window.location.replace(failedUrl);
       };

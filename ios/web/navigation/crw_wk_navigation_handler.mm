@@ -1415,6 +1415,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     return YES;
   }
 
+  // Allow navigation to WebUI pages from error pages.
+  if ([ErrorPageHelper isErrorPageFileURL:self.documentURL]) {
+    return YES;
+  }
+
   GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
   if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL) &&
       !action.sourceFrame.mainFrame) {
