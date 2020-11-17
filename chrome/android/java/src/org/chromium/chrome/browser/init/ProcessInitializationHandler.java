@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
+import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerProvider;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
@@ -216,7 +217,8 @@ public class ProcessInitializationHandler {
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
         AppBannerManager.setAppDetailsDelegate(AppHooks.get().createAppDetailsDelegate());
-        AppBannerManager.setTrackerFromProfileFactory(TrackerFactory::getTrackerForProfile);
+        AppBannerInProductHelpControllerProvider.setTrackerFromProfileFactory(
+                TrackerFactory::getTrackerForProfile);
         ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
+#include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
@@ -488,8 +489,8 @@ bool AppBannerManagerAndroid::MaybeShowInProductHelp() const {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   std::string error_message = base::android::ConvertJavaStringToUTF8(
-      Java_AppBannerManager_showInProductHelp(
-          env, java_banner_manager_, web_contents()->GetJavaWebContents()));
+      Java_AppBannerInProductHelpControllerProvider_showInProductHelp(
+          env, web_contents()->GetJavaWebContents()));
   if (!error_message.empty()) {
     DVLOG(2) << "IPH for PWA showing aborted. " << error_message;
     return false;

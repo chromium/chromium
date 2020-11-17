@@ -2,6 +2,7 @@ include_rules = [
   "-chrome/android/features/keyboard_accessory/internal",
 
   "+chrome/browser/android/lifecycle",
+  "+chrome/browser/banners/android/java",
   "+chrome/browser/device",
   "+chrome/browser/privacy",
   "+chrome/browser/profiles/android/java",
@@ -69,5 +70,5 @@ specific_include_rules = {
   "SplitMonochromeApplication\.java": [
     "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
     "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
-  ]
+  ],
 }

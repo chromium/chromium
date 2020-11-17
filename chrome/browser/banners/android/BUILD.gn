@@ -41,8 +41,10 @@ android_resources("java_resources") {
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java",
+    "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java",
+  ]
 }
 
 android_library("javatests") {
