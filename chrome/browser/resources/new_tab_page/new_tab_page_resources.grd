@@ -73,8 +73,6 @@
       <include name="IDR_NEW_TAB_PAGE_REALBOX_MATCH_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/realbox_match.js"
           use_base_dir="false" type="BINDATA" compress="false" />
-      <include name="IDR_NEW_TAB_PAGE_ICONS_GOOGLE_LOGO_SVG"
-          file="icons/google_logo.svg" type="BINDATA" />
       <include name="IDR_NEW_TAB_PAGE_IMG_JS"
           file="img.js" type="BINDATA" compress="false" />
       <include name="IDR_NEW_TAB_PAGE_BROWSER_PROXY_JS"

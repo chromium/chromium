@@ -22,6 +22,8 @@
       file="icons/chevron.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_GENERIC_GLOBE_SVG"
       file="icons/generic_globe.svg" type="BINDATA" />
+  <include name="IDR_NEW_TAB_PAGE_GOOGLE_LOGO_SVG"
+      file="icons/google_logo.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_PENCIL_ICON_SVG"
       file="icons/icon_pencil.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_LINK_ICON_SVG"
