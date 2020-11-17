@@ -87,7 +87,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   IntSize BitmapSourceSize() const override;
-  bool preferAcceleratedImageBitmap() const;
   ScriptPromise CreateImageBitmap(ScriptState*,
                                   base::Optional<IntRect> crop_rect,
                                   const ImageBitmapOptions*,

@@ -379,12 +379,6 @@ IntSize VideoFrame::BitmapSourceSize() const {
   return IntSize(cropWidth(), cropHeight());
 }
 
-bool VideoFrame::preferAcceleratedImageBitmap() const {
-  auto local_frame = frame();
-  return BitmapSourceSize().Area() > kCpuEfficientFrameSize ||
-         (local_frame && local_frame->HasTextures());
-}
-
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                             base::Optional<IntRect> crop_rect,
                                             const ImageBitmapOptions* options,
@@ -399,7 +393,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
   }
 
   if ((local_frame->IsMappable() &&
-       (local_frame->format() == media::PIXEL_FORMAT_I420)) ||
+       (local_frame->format() == media::PIXEL_FORMAT_I420 ||
+        local_frame->format() == media::PIXEL_FORMAT_I420A)) ||
       (local_frame->HasTextures() &&
        (local_frame->format() == media::PIXEL_FORMAT_I420 ||
         local_frame->format() == media::PIXEL_FORMAT_NV12 ||
@@ -414,7 +409,12 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       sk_color_space = SkColorSpace::MakeSRGB();
     }
 
-    if (!preferAcceleratedImageBitmap()) {
+    const bool prefer_accelerated_image_bitmap =
+        local_frame->format() != media::PIXEL_FORMAT_I420A &&
+        (BitmapSourceSize().Area() > kCpuEfficientFrameSize ||
+         local_frame->HasTextures());
+
+    if (!prefer_accelerated_image_bitmap) {
       size_t bytes_per_row = sizeof(SkColor) * cropWidth();
       size_t image_pixels_size = bytes_per_row * cropHeight();
 
