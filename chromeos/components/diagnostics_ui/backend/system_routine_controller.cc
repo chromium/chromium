@@ -17,11 +17,10 @@ namespace {
 
 namespace healthd = cros_healthd::mojom;
 
-constexpr uint32_t kCpuCacheDurationInSeconds = 10;
-constexpr uint32_t kCpuFloatingPointDurationInSeconds = 10;
-constexpr uint32_t kCpuPrimeDurationInSeconds = 10;
-constexpr uint64_t kCpuPrimeMaxNumber = 1000000;
-constexpr uint32_t kCpuStressDurationInSeconds = 10;
+constexpr uint32_t kCpuCacheDurationInSeconds = 60;
+constexpr uint32_t kCpuFloatingPointDurationInSeconds = 60;
+constexpr uint32_t kCpuPrimeDurationInSeconds = 60;
+constexpr uint32_t kCpuStressDurationInSeconds = 60;
 constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
@@ -106,25 +105,25 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
   switch (routine_type) {
     case mojom::RoutineType::kCpuCache:
       diagnostics_service_->RunCpuCacheRoutine(
-          kCpuCacheDurationInSeconds,
+          healthd::NullableUint32::New(kCpuCacheDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
-          kCpuFloatingPointDurationInSeconds,
+          healthd::NullableUint32::New(kCpuFloatingPointDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;
     case mojom::RoutineType::kCpuPrime:
       diagnostics_service_->RunPrimeSearchRoutine(
-          kCpuPrimeDurationInSeconds, kCpuPrimeMaxNumber,
+          healthd::NullableUint32::New(kCpuPrimeDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
-          kCpuStressDurationInSeconds,
+          healthd::NullableUint32::New(kCpuStressDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;

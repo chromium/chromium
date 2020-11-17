@@ -57,10 +57,6 @@ constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
 constexpr char kTypeFieldName[] = "type";
 constexpr char kFileSizeMbFieldName[] = "fileSizeMb";
 
-// String constants identifying the parameter fields for the prime search
-// routine
-constexpr char kMaxNumFieldName[] = "maxNum";
-
 // String constants identifying the parameter field for the battery discharge
 // routine.
 constexpr char kMaximumDischargePercentAllowedFieldName[] =
@@ -480,18 +476,22 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunCpuCacheRoutineSuccess) {
              })));
 }
 
-// Test that leaving out the lengthSeconds parameter causes the CPU cache
-// routine to fail.
+// Test that the CPU cache routine handles the optional length_seconds parameter
+// being missing.
 TEST_F(DeviceCommandRunRoutineJobTest, RunCpuCacheRoutineMissingLengthSeconds) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
              std::move(params_dict),
              base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
              })));
 }
 
@@ -529,19 +529,23 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunCpuStressRoutineSuccess) {
              })));
 }
 
-// Test that leaving out the lengthSeconds parameter causes the CPU stress
-// routine to fail.
+// Test that the CPU stress routine handles the optional length_seconds
+// parameter being missing.
 TEST_F(DeviceCommandRunRoutineJobTest,
        RunCpuStressRoutineMissingLengthSeconds) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
              std::move(params_dict),
              base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
              })));
 }
 
@@ -581,21 +585,25 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunFloatingPointAccuracyRoutineSuccess) {
                      })));
 }
 
-// Test that leaving out the lengthSeconds parameter causes the floating point
-// accuracy routine to fail.
+// Test that the floating point accuracy routine handles the optional
+// length_seconds parameter being missing.
 TEST_F(DeviceCommandRunRoutineJobTest,
        RunFloatingPointAccuracyRoutineMissingLengthSeconds) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
-  EXPECT_TRUE(
-      RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-                 kFloatingPointAccuracy,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
-             })));
+  EXPECT_TRUE(RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+                         kFloatingPointAccuracy,
+                     std::move(params_dict),
+                     base::BindLambdaForTesting([](RemoteCommandJob* job) {
+                       EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+                       std::unique_ptr<std::string> payload =
+                           job->GetResultPayload();
+                       EXPECT_TRUE(payload);
+                       EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+                     })));
 }
 
 // Test that a negative lengthSeconds parameter causes the floating point
@@ -871,7 +879,6 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunPrimeSearchRoutineSuccess) {
       ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
   params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
-  params_dict.SetIntKey(kMaxNumFieldName, kPositiveInt);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
              std::move(params_dict),
@@ -883,36 +890,23 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunPrimeSearchRoutineSuccess) {
              })));
 }
 
-// Test that leaving out the lengthSeconds parameter causes the prime search
-// routine to fail.
+// Test that the prime search routine handles the optional length_seconds
+// parameter being missing.
 TEST_F(DeviceCommandRunRoutineJobTest,
        RunPrimeSearchRoutineMissingLengthSeconds) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
-  params_dict.SetIntKey(kMaxNumFieldName, kPositiveInt);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
              std::move(params_dict),
              base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
-             })));
-}
-
-// Test that leaving out the maxNum parameter causes the prime search routine to
-// fail.
-TEST_F(DeviceCommandRunRoutineJobTest, RunPrimeSearchRoutineMissingMaxNum) {
-  base::Value params_dict(base::Value::Type::DICTIONARY);
-  params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
-  EXPECT_TRUE(
-      RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
              })));
 }
 
@@ -922,24 +916,6 @@ TEST_F(DeviceCommandRunRoutineJobTest,
        RunPrimeSearchRoutineInvalidLengthSeconds) {
   base::Value params_dict(base::Value::Type::DICTIONARY);
   params_dict.SetIntKey(kLengthSecondsFieldName, kNegativeInt);
-  params_dict.SetIntKey(kMaxNumFieldName, kPositiveInt);
-  EXPECT_TRUE(
-      RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
-             })));
-}
-
-// Test that an invalid value for the maxNum parameter causes the prime search
-// routine to fail.
-TEST_F(DeviceCommandRunRoutineJobTest, RunPrimeSearchRoutineInvalidMaxNum) {
-  base::Value params_dict(base::Value::Type::DICTIONARY);
-  params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
-  params_dict.SetIntKey(kMaxNumFieldName, kNegativeInt);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
              std::move(params_dict),

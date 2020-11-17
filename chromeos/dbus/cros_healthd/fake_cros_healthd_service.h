@@ -66,12 +66,12 @@ class FakeCrosHealthdService final
   void RunAcPowerRoutine(mojom::AcPowerStatusEnum expected_status,
                          const base::Optional<std::string>& expected_power_type,
                          RunAcPowerRoutineCallback callback) override;
-  void RunCpuCacheRoutine(uint32_t length_seconds,
+  void RunCpuCacheRoutine(mojom::NullableUint32Ptr length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
-  void RunCpuStressRoutine(uint32_t length_seconds,
+  void RunCpuStressRoutine(mojom::NullableUint32Ptr length_seconds,
                            RunCpuStressRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(
-      uint32_t length_seconds,
+      mojom::NullableUint32Ptr length_seconds,
       RunFloatingPointAccuracyRoutineCallback callback) override;
   void RunNvmeWearLevelRoutine(
       uint32_t wear_level_threshold,
@@ -82,8 +82,7 @@ class FakeCrosHealthdService final
                           uint32_t length_seconds,
                           uint32_t file_size_mb,
                           RunDiskReadRoutineCallback callback) override;
-  void RunPrimeSearchRoutine(uint32_t length_seconds,
-                             uint64_t max_num,
+  void RunPrimeSearchRoutine(mojom::NullableUint32Ptr length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunBatteryDischargeRoutine(
       uint32_t length_seconds,

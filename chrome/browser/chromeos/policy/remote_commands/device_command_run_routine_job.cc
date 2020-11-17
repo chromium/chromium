@@ -224,18 +224,23 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       base::Optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      // The CPU cache routine expects one integer >= 0.
-      if (!length_seconds.has_value() || length_seconds.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for CPU cache routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
+      base::Optional<base::TimeDelta> routine_duration;
+      if (length_seconds.has_value()) {
+        // If the optional integer parameter is specified, it must be >= 0.
+        int value = length_seconds.value();
+        if (value < 0) {
+          SYSLOG(ERROR) << "Invalid parameters for CPU cache routine.";
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                        std::make_unique<Payload>(
+                                            MakeInvalidParametersResponse())));
+          break;
+        }
+        routine_duration = base::TimeDelta::FromSeconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuCacheRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              routine_duration,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -246,18 +251,23 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       base::Optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      // The CPU stress routine expects one integer >= 0.
-      if (!length_seconds.has_value() || length_seconds.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for CPU stress routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
+      base::Optional<base::TimeDelta> routine_duration;
+      if (length_seconds.has_value()) {
+        // If the optional integer parameter is specified, it must be >= 0.
+        int value = length_seconds.value();
+        if (value < 0) {
+          SYSLOG(ERROR) << "Invalid parameters for CPU stress routine.";
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                        std::make_unique<Payload>(
+                                            MakeInvalidParametersResponse())));
+          break;
+        }
+        routine_duration = base::TimeDelta::FromSeconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuStressRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              routine_duration,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -269,19 +279,24 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       base::Optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      // The floating point accuracy routine expects one integer >= 0.
-      if (!length_seconds.has_value() || length_seconds.value() < 0) {
-        SYSLOG(ERROR)
-            << "Invalid parameters for Floating Point Accuracy routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
+      base::Optional<base::TimeDelta> routine_duration;
+      if (length_seconds.has_value()) {
+        // If the optional integer parameter is specified, it must be >= 0.
+        int value = length_seconds.value();
+        if (value < 0) {
+          SYSLOG(ERROR)
+              << "Invalid parameters for floating point accuracy routine.";
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                        std::make_unique<Payload>(
+                                            MakeInvalidParametersResponse())));
+          break;
+        }
+        routine_duration = base::TimeDelta::FromSeconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunFloatingPointAccuracyRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              routine_duration,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -370,23 +385,25 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      constexpr char kMaxNumFieldName[] = "maxNum";
       base::Optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<int> max_num = params_dict_.FindIntKey(kMaxNumFieldName);
-      if (!length_seconds.has_value() || length_seconds.value() < 0 ||
-          !max_num.has_value() || max_num.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for prime search routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
+      base::Optional<base::TimeDelta> routine_duration;
+      if (length_seconds.has_value()) {
+        // If the optional integer parameter is specified, it must be >= 0.
+        int value = length_seconds.value();
+        if (value < 0) {
+          SYSLOG(ERROR) << "Invalid parameters for prime search routine.";
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                        std::make_unique<Payload>(
+                                            MakeInvalidParametersResponse())));
+          break;
+        }
+        routine_duration = base::TimeDelta::FromSeconds(value);
       }
-      auto exec_duration = base::TimeDelta::FromSeconds(length_seconds.value());
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunPrimeSearchRoutine(
-              exec_duration, max_num.value(),
+              routine_duration,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),

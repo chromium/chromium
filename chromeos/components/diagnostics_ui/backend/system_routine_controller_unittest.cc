@@ -156,7 +156,7 @@ TEST_F(SystemRoutineControllerTest, CpuStressSuccess) {
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed);
 
   // Before the update interval, the routine status is not processed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
   EXPECT_TRUE(routine_runner.result.is_null());
 
   // After the update interval, the update is fetched and processed.
@@ -184,7 +184,7 @@ TEST_F(SystemRoutineControllerTest, CpuStressFailure) {
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kFailed);
 
   // Before the update interval, the routine status is not processed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
   EXPECT_TRUE(routine_runner.result.is_null());
 
   // After the update interval, the update is fetched and processed.
@@ -212,7 +212,7 @@ TEST_F(SystemRoutineControllerTest, CpuStressStillRunning) {
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kRunning);
 
   // Before the update interval, the routine status is not processed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
   EXPECT_TRUE(routine_runner.result.is_null());
 
   // After the update interval, the results from the routine are still not
@@ -249,7 +249,7 @@ TEST_F(SystemRoutineControllerTest, CpuStressStillRunningMultipleIntervals) {
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kRunning);
 
   // Before the update interval, the routine status is not processed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
   EXPECT_TRUE(routine_runner.result.is_null());
 
   // After the update interval, the results from the routine are still not
@@ -291,7 +291,7 @@ TEST_F(SystemRoutineControllerTest, TwoConsecutiveRoutines) {
   // Update the status on cros_healthd.
   SetNonInteractiveRoutineUpdateResponse(
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
   EXPECT_FALSE(routine_runner_1.result.is_null());
   VerifyRoutineResult(*routine_runner_1.result, mojom::RoutineType::kCpuStress,
                       mojom::StandardRoutineResult::kTestPassed);
@@ -312,7 +312,7 @@ TEST_F(SystemRoutineControllerTest, TwoConsecutiveRoutines) {
   // Update the status on cros_healthd.
   SetNonInteractiveRoutineUpdateResponse(
       /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kFailed);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
   EXPECT_FALSE(routine_runner_2.result.is_null());
   VerifyRoutineResult(*routine_runner_2.result, mojom::RoutineType::kCpuStress,
                       mojom::StandardRoutineResult::kTestFailed);

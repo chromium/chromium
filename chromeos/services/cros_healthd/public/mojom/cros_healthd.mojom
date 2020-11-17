@@ -144,12 +144,13 @@ interface CrosHealthdDiagnosticsService {
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the CPU cache
   //                      routine. This parameter needs to be strictly greater
-  //                      than zero.
+  //                      than zero. If not specified, the routine will default
+  //                      to 1 minute.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunCpuCacheRoutine(uint32 length_seconds)
+  RunCpuCacheRoutine(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the CPU stress routine is created and started on the
@@ -160,12 +161,13 @@ interface CrosHealthdDiagnosticsService {
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the CPU stress
   //                      routine. This parameter needs to be strictly greater
-  //                      than zero.
+  //                      than zero. If not specified, the routine will default
+  //                      to 1 minute.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunCpuStressRoutine(uint32 length_seconds)
+  RunCpuStressRoutine(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the FloatingPointAccuracy routine is created and started
@@ -180,11 +182,13 @@ interface CrosHealthdDiagnosticsService {
   //                      floating-point operations in length seconds and get
   //                      the result to compare with known accurate results.
   //                      This parameter needs to be strictly greater than zero.
+  //                      If not specified, the routine will default to
+  //                      1 minute.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunFloatingPointAccuracyRoutine(uint32 length_seconds)
+  RunFloatingPointAccuracyRoutine(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the NvmeWearLevel routine is created and started on the
@@ -240,21 +244,20 @@ interface CrosHealthdDiagnosticsService {
       => (RunRoutineResponse response);
 
   // Requests that the PrimeSearch routine is created and started on the
-  // platform. Calculate prime numbers between 3 to max_num and verify the
-  // calculation repeatedly in a duration. This routine is only available
-  // if GetAvailableRoutines returned kPrimeSearch.
+  // platform. Calculate prime numbers and verifies the calculation repeatedly
+  // in a duration. This routine is only available if GetAvailableRoutines
+  // returned kPrimeSearch.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the PrimeSearch
   //                      routine for. This parameter needs to be strictly
-  //                      greater than zero.
-  // * |max_num| - largest number that routine will calculate prime numbers up
-  //               to.
+  //                      greater than zero. If not specified, the routine will
+  //                      default to 1 minute.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunPrimeSearchRoutine(uint32 length_seconds, uint64 max_num)
+  RunPrimeSearchRoutine(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the BatteryDischarge routine is created and started on the

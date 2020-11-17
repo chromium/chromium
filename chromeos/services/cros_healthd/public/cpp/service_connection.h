@@ -96,7 +96,7 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunCpuCacheRoutine(
-      const base::TimeDelta& exec_duration,
+      const base::Optional<base::TimeDelta>& exec_duration,
       mojom::CrosHealthdDiagnosticsService::RunCpuCacheRoutineCallback
           callback) = 0;
 
@@ -104,7 +104,7 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunCpuStressRoutine(
-      const base::TimeDelta& exec_duration,
+      const base::Optional<base::TimeDelta>& exec_duration,
       mojom::CrosHealthdDiagnosticsService::RunCpuStressRoutineCallback
           callback) = 0;
 
@@ -112,7 +112,7 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunFloatingPointAccuracyRoutine(
-      const base::TimeDelta& exec_duration,
+      const base::Optional<base::TimeDelta>& exec_duration,
       mojom::CrosHealthdDiagnosticsService::
           RunFloatingPointAccuracyRoutineCallback callback) = 0;
 
@@ -146,8 +146,7 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunPrimeSearchRoutine(
-      base::TimeDelta& exec_duration,
-      uint64_t max_num,
+      const base::Optional<base::TimeDelta>& exec_duration,
       mojom::CrosHealthdDiagnosticsService::RunPrimeSearchRoutineCallback
           callback) = 0;
 

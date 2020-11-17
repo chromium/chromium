@@ -110,7 +110,7 @@ void FakeCrosHealthdService::RunAcPowerRoutine(
 }
 
 void FakeCrosHealthdService::RunCpuCacheRoutine(
-    uint32_t length_seconds,
+    mojom::NullableUint32Ptr length_seconds,
     RunCpuCacheRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -119,7 +119,7 @@ void FakeCrosHealthdService::RunCpuCacheRoutine(
 }
 
 void FakeCrosHealthdService::RunCpuStressRoutine(
-    uint32_t length_seconds,
+    mojom::NullableUint32Ptr length_seconds,
     RunCpuStressRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -128,7 +128,7 @@ void FakeCrosHealthdService::RunCpuStressRoutine(
 }
 
 void FakeCrosHealthdService::RunFloatingPointAccuracyRoutine(
-    uint32_t length_seconds,
+    mojom::NullableUint32Ptr length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -166,8 +166,7 @@ void FakeCrosHealthdService::RunDiskReadRoutine(
 }
 
 void FakeCrosHealthdService::RunPrimeSearchRoutine(
-    uint32_t length_seconds,
-    uint64_t max_num,
+    mojom::NullableUint32Ptr length_seconds,
     RunPrimeSearchRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
