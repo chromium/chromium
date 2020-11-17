@@ -28,7 +28,7 @@ namespace blink {
 
 namespace {  // anonymous namespace for ClipboardWriter's derived classes.
 
-// Writes a blob with image/png content to the System Clipboard.
+// Writes a Blob with image/png content to the System Clipboard.
 class ClipboardImageWriter final : public ClipboardWriter {
  public:
   ClipboardImageWriter(SystemClipboard* system_clipboard,
@@ -59,7 +59,7 @@ class ClipboardImageWriter final : public ClipboardWriter {
         true, ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
         ColorBehavior::Tag());
     sk_sp<SkImage> image = nullptr;
-    // |decoder| is nullptr if |png_data| doesn't begin with the PNG signature.
+    // `decoder` is nullptr if `png_data` doesn't begin with the PNG signature.
     if (decoder)
       image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
 
@@ -81,7 +81,7 @@ class ClipboardImageWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a blob with text/plain content to the System Clipboard.
+// Writes a Blob with text/plain content to the System Clipboard.
 class ClipboardTextWriter final : public ClipboardWriter {
  public:
   ClipboardTextWriter(SystemClipboard* system_clipboard,
@@ -173,8 +173,6 @@ class ClipboardSvgWriter final : public ClipboardWriter {
   ~ClipboardSvgWriter() override = default;
 
  private:
-  // This must be called on the main thread because XML DOM nodes can
-  // only be used on the main thread
   void StartWrite(
       DOMArrayBuffer* svg_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
@@ -184,7 +182,8 @@ class ClipboardSvgWriter final : public ClipboardWriter {
         String::FromUTF8(reinterpret_cast<const LChar*>(svg_data->Data()),
                          svg_data->ByteLength());
 
-    // Now sanitize the SVG string.
+    // Sanitizing on the main thread because SVG/XML DOM nodes can only be used
+    // on the main thread.
     KURL url;
     unsigned fragment_start = 0;
     unsigned fragment_end = svg_string.length();
@@ -204,7 +203,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
   }
 };
 
-// Writes a blob with arbitrary, unsanitized content to the System Clipboard.
+// Writes a Blob with arbitrary, unsanitized content to the System Clipboard.
 class ClipboardRawDataWriter final : public ClipboardWriter {
  public:
   ClipboardRawDataWriter(RawSystemClipboard* raw_system_clipboard,

@@ -20,8 +20,10 @@ class ClipboardPromise;
 // Reading a type from the system clipboard to a Blob is accomplished by:
 // (1) Reading - the format from the system clipboard.
 // (2) Encoding - the system clipboard's contents for a format. Encoding may be
-//     time-consuming, and so is done on a background thread whenever possible.
-// (3) Writing - the decoded contents to a Blob.
+//     time-consuming, so it is done on a background thread whenever possible.
+//     An example where encoding is done on the main thread is HTML, where
+//     Blink's HTML encoder can only be used on the main thread.
+// (3) Writing - the encoded contents to a Blob.
 //
 // ClipboardReader takes as input a ClipboardPromise, from which it expects
 // a clipboard format, and to which it provides a Blob containing an encoded
@@ -59,9 +61,12 @@ class ClipboardReader : public GarbageCollected<ClipboardReader> {
   virtual void NextRead(Vector<uint8_t> utf8_bytes) = 0;
 
   SystemClipboard* system_clipboard() { return system_clipboard_; }
-  // This ClipboardPromise owns this ClipboardReader.
+  // This ClipboardPromise owns this ClipboardReader. Subclasses use `promise_`
+  // to report the Blob output, or to obtain the execution context.
   Member<ClipboardPromise> promise_;
 
+  // Every subclass method that runs on the main thread should
+  // DCHECK_CALLED_ON_VALID_SEQUENCE with this checker.
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
