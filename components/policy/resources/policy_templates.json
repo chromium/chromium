@@ -7112,7 +7112,7 @@
         'com.native.messaging.host.name2',
       ],
       'id': 744,
-      'caption': '''Configure native messaging blacklist''',
+      'caption': '''Configure native messaging blocklist''',
       'tags': [],
       'desc': '''Setting the policy specifies which native messaging hosts shouldn't be loaded. A deny list value of <ph name="WILDCARD_VALUE">*</ph> means all native messaging hosts are denied, unless they're explicitly allowed.
 
