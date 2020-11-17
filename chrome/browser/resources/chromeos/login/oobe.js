@@ -107,3 +107,5 @@ cr.define('cr.ui.Oobe', function() {
     },
   };
 });
+
+// <include src="oobe_initialization.js">
