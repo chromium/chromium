@@ -10,21 +10,24 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome/installer/setup/uninstall_metrics.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chrome/installer/util/install_util.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
 #include "third_party/crashpad/crashpad/util/misc/uuid.h"
@@ -77,6 +80,27 @@ void NavigateToUrlWithIExplore(const base::string16& url) {
   // are processes running, the shell will not close the uninstall applet. WMI
   // allows us to escape from the Job object so the applet will close.
   base::win::WmiLaunchProcess(command, &pid);
+}
+
+// Returns true if the prefs dictionary located at |local_data_path| contains
+// an enabled metrics pref.
+// Note: Due to crbug.com/1052816, it is possible a subset of users may return
+// false here even though they send UMA, as UMA can also check the registry.
+bool IsMetricsEnabled(const base::FilePath& file_path) {
+  JSONFileValueDeserializer json_deserializer(file_path);
+
+  std::unique_ptr<base::Value> root =
+      json_deserializer.Deserialize(nullptr, nullptr);
+  // Preferences should always have a dictionary root.
+  if (!root || !root->is_dict())
+    return false;
+
+  auto path =
+      base::SplitStringPiece(metrics::prefs::kMetricsReportingEnabled, ".",
+                             base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const auto* value = root->FindPathOfType(path, base::Value::Type::BOOLEAN);
+
+  return value && value->GetBool();
 }
 
 }  // namespace
@@ -161,8 +185,7 @@ base::string16 GetDistributionData() {
 // - crversion: the version of Chrome being uninstalled
 // - os: Major.Minor.Build of the OS version
 // If the user is sending crash reports and usage statistics to Google, the
-// uninstall metrics read from |local_data_path| and the query params in
-// |distribution_data| are included in the URL.
+// query params in |distribution_data| are included in the URL.
 void DoPostUninstallOperations(const base::Version& version,
                                const base::FilePath& local_data_path,
                                const base::string16& distribution_data) {
@@ -190,18 +213,9 @@ void DoPostUninstallOperations(const base::Version& version,
                                 base::ASCIIToUTF16(version.GetString()).c_str(),
                                 os_version.c_str());
 
-  base::string16 uninstall_metrics;
-  if (ExtractUninstallMetricsFromFile(local_data_path, &uninstall_metrics)) {
-    DCHECK_EQ(uninstall_metrics.front(), L'&');
-    DCHECK_NE(uninstall_metrics.back(), L'&');
-    DCHECK_EQ(uninstall_metrics.find(L'?'), base::string16::npos);
-    // The user has opted into anonymous usage data collection, so append
-    // metrics and distribution data.
-    url += uninstall_metrics;
-    if (!distribution_data.empty()) {
-      url += L"&";
-      url += distribution_data;
-    }
+  if (!distribution_data.empty() && IsMetricsEnabled(local_data_path)) {
+    url += L"&";
+    url += distribution_data;
   }
 
   if (os_info->version() < base::win::Version::WIN10 ||

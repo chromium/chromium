@@ -9,6 +9,7 @@ namespace prefs {
 
 // Set once, to the current epoch time, on the first run of chrome on this
 // machine. Attached to metrics reports forever thereafter.
+// Note: the 'uninstall_metrics' name is a legacy name and doesn't mean much.
 const char kInstallDate[] = "uninstall_metrics.installation_date2";
 
 // The metrics client GUID.
@@ -222,14 +223,6 @@ const char kStabilityStatsVersion[] =
 // Windows only.
 const char kStabilitySystemCrashCount[] =
     "user_experience_metrics.stability.system_crash_count";
-
-// The keys below are strictly increasing counters over the lifetime of
-// a chrome installation. They are (optionally) sent up to the uninstall
-// survey in the event of uninstallation.
-const char kUninstallLaunchCount[] = "uninstall_metrics.launch_count";
-const char kUninstallMetricsPageLoadCount[] =
-    "uninstall_metrics.page_load_count";
-const char kUninstallMetricsUptimeSec[] = "uninstall_metrics.uptime_sec";
 
 // Dictionary for measuring cellular data used by UKM service during last 7
 // days.
