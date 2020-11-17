@@ -83,6 +83,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 
 using bookmarks::BookmarkNode;
+using l10n_util::GetNSString;
 
 // Used to store a pair of NSIntegers when storing a NSIndexPath in C++
 // collections.
@@ -562,7 +563,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)refreshContents {
   if (self.sharedState.currentlyShowingSearchResults) {
-    NSString* noResults = l10n_util::GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
+    NSString* noResults = GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
     [self.mediator computeBookmarkTableViewDataMatching:self.searchTerm
                              orShowMessageWhenNoResults:noResults];
   } else {
@@ -1106,12 +1107,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (UIBarButtonItem*)customizedDoneButton {
   UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
+      initWithTitle:GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
               style:UIBarButtonItemStyleDone
              target:self
              action:@selector(navigationBarCancel:)];
   doneButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON);
+      GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON);
   doneButton.accessibilityIdentifier =
       kBookmarkHomeNavigationBarDoneButtonIdentifier;
   return doneButton;
@@ -1158,8 +1159,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
   self.sharedState.addingNewFolder = YES;
-  base::string16 folderTitle = base::SysNSStringToUTF16(
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME));
+  base::string16 folderTitle =
+      l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME);
   self.sharedState.editingFolderNode =
       self.sharedState.bookmarkModel->AddFolder(
           self.sharedState.tableViewDisplayedRootNode,
@@ -1494,8 +1495,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       self.emptyViewBackground = [[TableViewIllustratedEmptyView alloc]
           initWithFrame:self.sharedState.tableView.bounds
                   image:[UIImage imageNamed:@"bookmark_empty"]
-                  title:l10n_util::GetNSString(IDS_IOS_BOOKMARK_EMPTY_TITLE)
-               subtitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_EMPTY_MESSAGE)];
+                  title:GetNSString(IDS_IOS_BOOKMARK_EMPTY_TITLE)
+               subtitle:GetNSString(IDS_IOS_BOOKMARK_EMPTY_MESSAGE)];
     }
     // If the Signin promo is visible on the root view, we have to shift the
     // empty TableView background to make it fully visible on all devices.
@@ -1530,7 +1531,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       self.emptyTableBackgroundView.autoresizingMask =
           UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
       self.emptyTableBackgroundView.text =
-          l10n_util::GetNSString(IDS_IOS_BOOKMARK_NO_BOOKMARKS_LABEL);
+          GetNSString(IDS_IOS_BOOKMARK_NO_BOOKMARKS_LABEL);
       self.emptyTableBackgroundView.frame = self.sharedState.tableView.bounds;
     }
     self.sharedState.tableView.backgroundView = self.emptyTableBackgroundView;
@@ -1676,8 +1677,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)setBookmarksContextBarButtonsDefaultState {
   // Set New Folder button
-  NSString* titleString =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER);
+  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER);
   UIBarButtonItem* newFolderButton =
       [[UIBarButtonItem alloc] initWithTitle:titleString
                                        style:UIBarButtonItemStylePlain
@@ -1694,7 +1694,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            action:nil];
 
   // Set Edit button.
-  titleString = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT);
+  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT);
   UIBarButtonItem* editButton =
       [[UIBarButtonItem alloc] initWithTitle:titleString
                                        style:UIBarButtonItemStylePlain
@@ -1715,8 +1715,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)setBookmarksContextBarSelectionStartState {
   // Disabled Delete button.
-  NSString* titleString =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE);
+  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE);
   self.deleteButton =
       [[UIBarButtonItem alloc] initWithTitle:titleString
                                        style:UIBarButtonItemStylePlain
@@ -1728,7 +1727,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       kBookmarkHomeLeadingButtonIdentifier;
 
   // Disabled More button.
-  titleString = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE);
+  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE);
   self.moreButton =
       [[UIBarButtonItem alloc] initWithTitle:titleString
                                        style:UIBarButtonItemStylePlain
@@ -1738,7 +1737,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.moreButton.accessibilityIdentifier = kBookmarkHomeCenterButtonIdentifier;
 
   // Enabled Cancel button.
-  titleString = l10n_util::GetNSString(IDS_CANCEL);
+  titleString = GetNSString(IDS_CANCEL);
   UIBarButtonItem* cancelButton =
       [[UIBarButtonItem alloc] initWithTitle:titleString
                                        style:UIBarButtonItemStylePlain
@@ -1766,8 +1765,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarkHomeContextMenuIdentifier;
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)
+  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
                            if (!strongSelf)
@@ -1780,21 +1779,22 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                          }
                           style:UIAlertActionStyleDefault];
 
-  [coordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO)
-                action:^{
-                  BookmarkHomeViewController* strongSelf = weakSelf;
-                  if (!strongSelf)
-                    return;
-                  std::vector<const BookmarkNode*> nodes =
-                      [strongSelf editNodes];
-                  [strongSelf openAllNodes:nodes inIncognito:YES newTab:NO];
-                }
-                 style:UIAlertActionStyleDefault];
+  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO);
+  [coordinator addItemWithTitle:titleString
+                         action:^{
+                           BookmarkHomeViewController* strongSelf = weakSelf;
+                           if (!strongSelf)
+                             return;
+                           std::vector<const BookmarkNode*> nodes =
+                               [strongSelf editNodes];
+                           [strongSelf openAllNodes:nodes
+                                        inIncognito:YES
+                                             newTab:NO];
+                         }
+                          style:UIAlertActionStyleDefault];
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
+  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf moveNodes:nodes];
                          }
@@ -1808,8 +1808,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarkHomeContextMenuIdentifier;
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)
+  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf editNode:node];
                          }
@@ -1822,8 +1822,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     coordinator.alertController.actions[0].enabled = NO;
   }
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
+  titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            std::vector<const BookmarkNode*> nodes = {node};
                            [weakSelf openAllNodes:nodes
@@ -1833,8 +1833,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                           style:UIAlertActionStyleDefault];
 
   if (IsMultipleScenesSupported()) {
-    NSString* title =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
+    titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     id<ApplicationCommands> windowOpener = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     auto action = ^{
@@ -1842,22 +1841,24 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                                   WindowActivityBookmarksOrigin,
                                                   node->url())];
     };
-    [coordinator addItemWithTitle:title
+    [coordinator addItemWithTitle:titleString
                            action:action
                             style:UIAlertActionStyleDefault];
   }
 
-  [coordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
-                action:^{
-                  std::vector<const BookmarkNode*> nodes = {node};
-                  [weakSelf openAllNodes:nodes inIncognito:YES newTab:YES];
-                }
-                 style:UIAlertActionStyleDefault];
+  titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
+  [coordinator addItemWithTitle:titleString
+                         action:^{
+                           std::vector<const BookmarkNode*> nodes = {node};
+                           [weakSelf openAllNodes:nodes
+                                      inIncognito:YES
+                                           newTab:YES];
+                         }
+                          style:UIAlertActionStyleDefault];
 
+  titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY);
   [coordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY)
+      addItemWithTitle:titleString
                 action:^{
                   // Use strongSelf even though the object is only used once
                   // because we do not want to change the global pasteboard
@@ -1878,15 +1879,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarkHomeContextMenuIdentifier;
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)
+  NSString* titleString =
+      GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf editNode:node];
                          }
                           style:UIAlertActionStyleDefault];
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
+  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            std::set<const BookmarkNode*> nodes{node};
                            [weakSelf moveNodes:nodes];
@@ -1909,8 +1911,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarkHomeContextMenuIdentifier;
 
-  [coordinator addItemWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
+  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
+  [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf moveNodes:nodes];
                          }
@@ -2016,7 +2018,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     // Replace current list with search result, but doesn't change
     // the 'regular' model for this page, which we can restore when search
     // is terminated.
-    NSString* noResults = l10n_util::GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
+    NSString* noResults = GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
     [self.mediator computeBookmarkTableViewDataMatching:text
                              orShowMessageWhenNoResults:noResults];
     [self.sharedState.tableView reloadData];
