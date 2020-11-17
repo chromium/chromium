@@ -37,7 +37,7 @@ java_group("espresso_java") {
 }
 
 java_group("guava_android_java") {
-  deps = [ ":com_google_guava_guava_android_java" ]
+  deps = [ guava_android_target ]
 }
 
 java_group("robolectric_all_java") {
