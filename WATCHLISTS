@@ -1619,11 +1619,6 @@
                   '|chrome/browser/renderer_context_menu/quick_answers.*'\
                   '|chromeos/components/quick_answers/'
     },
-    'reading_list': {
-      'filepath': 'components/reading_list|'\
-                  'ios/chrome/browser/reading_list|'\
-                  'ios/chrome/browser/ui/reading_list',
-    },
     'relaunch_notification': {
       'filepath': 'chrome/browser/ui/views/relaunch_notification'
     },
@@ -2730,7 +2725,6 @@
     'print_preview': ['print-reviews+preview@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
-    'reading_list': ['stkhapugin@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
     'remoteplayback': ['mfoltz+watch@chromium.org'],
     'remoting': ['chromoting-reviews@chromium.org'],
