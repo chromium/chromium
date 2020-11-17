@@ -80,7 +80,10 @@ using ServiceWeakPtr = base::WeakPtr<PlatformKeysServiceImpl>;
 // Keeps track of the originating task runner.
 class NSSOperationState {
  public:
-  explicit NSSOperationState(ServiceWeakPtr weak_ptr);
+  explicit NSSOperationState(ServiceWeakPtr weak_ptr)
+      : service_weak_ptr_(weak_ptr),
+        origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
   virtual ~NSSOperationState() = default;
 
   // Called if an error occurred during the execution of the NSS operation
@@ -164,7 +167,11 @@ class GenerateRSAKeyState : public NSSOperationState {
  public:
   GenerateRSAKeyState(ServiceWeakPtr weak_ptr,
                       unsigned int modulus_length_bits,
-                      GenerateKeyCallback callback);
+                      GenerateKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        modulus_length_bits_(modulus_length_bits),
+        callback_(std::move(callback)) {}
+
   ~GenerateRSAKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -199,7 +206,11 @@ class GenerateECKeyState : public NSSOperationState {
  public:
   GenerateECKeyState(ServiceWeakPtr weak_ptr,
                      const std::string& named_curve,
-                     GenerateKeyCallback callback);
+                     GenerateKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        named_curve_(named_curve),
+        callback_(std::move(callback)) {}
+
   ~GenerateECKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -238,7 +249,15 @@ class SignState : public NSSOperationState {
             bool raw_pkcs1,
             HashAlgorithm hash_algorithm,
             const KeyType key_type,
-            SignCallback callback);
+            SignCallback callback)
+      : NSSOperationState(weak_ptr),
+        data_(data),
+        public_key_spki_der_(public_key_spki_der),
+        raw_pkcs1_(raw_pkcs1),
+        hash_algorithm_(hash_algorithm),
+        key_type_(key_type),
+        callback_(std::move(callback)) {}
+
   ~SignState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -301,10 +320,14 @@ class SignState : public NSSOperationState {
 
 class SelectCertificatesState : public NSSOperationState {
  public:
-  explicit SelectCertificatesState(
+  SelectCertificatesState(
       ServiceWeakPtr weak_ptr,
-      const scoped_refptr<net::SSLCertRequestInfo>& request,
-      SelectCertificatesCallback callback);
+      const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
+      SelectCertificatesCallback callback)
+      : NSSOperationState(weak_ptr),
+        cert_request_info_(cert_request_info),
+        callback_(std::move(callback)) {}
+
   ~SelectCertificatesState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -337,8 +360,10 @@ class SelectCertificatesState : public NSSOperationState {
 
 class GetCertificatesState : public NSSOperationState {
  public:
-  explicit GetCertificatesState(ServiceWeakPtr weak_ptr,
-                                GetCertificatesCallback callback);
+  GetCertificatesState(ServiceWeakPtr weak_ptr,
+                       GetCertificatesCallback callback)
+      : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
+
   ~GetCertificatesState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -371,8 +396,9 @@ class GetCertificatesState : public NSSOperationState {
 
 class GetAllKeysState : public NSSOperationState {
  public:
-  explicit GetAllKeysState(ServiceWeakPtr weak_ptr,
-                           GetAllKeysCallback callback);
+  GetAllKeysState(ServiceWeakPtr weak_ptr, GetAllKeysCallback callback)
+      : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
+
   ~GetAllKeysState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -404,7 +430,11 @@ class ImportCertificateState : public NSSOperationState {
  public:
   ImportCertificateState(ServiceWeakPtr weak_ptr,
                          const scoped_refptr<net::X509Certificate>& certificate,
-                         ImportCertificateCallback callback);
+                         ImportCertificateCallback callback)
+      : NSSOperationState(weak_ptr),
+        certificate_(certificate),
+        callback_(std::move(callback)) {}
+
   ~ImportCertificateState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -433,7 +463,11 @@ class RemoveCertificateState : public NSSOperationState {
  public:
   RemoveCertificateState(ServiceWeakPtr weak_ptr,
                          const scoped_refptr<net::X509Certificate>& certificate,
-                         RemoveCertificateCallback callback);
+                         RemoveCertificateCallback callback)
+      : NSSOperationState(weak_ptr),
+        certificate_(certificate),
+        callback_(std::move(callback)) {}
+
   ~RemoveCertificateState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -462,7 +496,11 @@ class RemoveKeyState : public NSSOperationState {
  public:
   RemoveKeyState(ServiceWeakPtr weak_ptr,
                  const std::string& public_key_spki_der,
-                 RemoveKeyCallback callback);
+                 RemoveKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        public_key_spki_der_(public_key_spki_der),
+        callback_(std::move(callback)) {}
+
   ~RemoveKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -490,7 +528,9 @@ class RemoveKeyState : public NSSOperationState {
 
 class GetTokensState : public NSSOperationState {
  public:
-  explicit GetTokensState(ServiceWeakPtr weak_ptr, GetTokensCallback callback);
+  GetTokensState(ServiceWeakPtr weak_ptr, GetTokensCallback callback)
+      : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
+
   ~GetTokensState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -522,7 +562,11 @@ class GetKeyLocationsState : public NSSOperationState {
  public:
   GetKeyLocationsState(ServiceWeakPtr weak_ptr,
                        const std::string& public_key_spki_der,
-                       GetKeyLocationsCallback callback);
+                       GetKeyLocationsCallback callback)
+      : NSSOperationState(weak_ptr),
+        public_key_spki_der_(public_key_spki_der),
+        callback_(std::move(callback)) {}
+
   ~GetKeyLocationsState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -558,7 +602,13 @@ class SetAttributeForKeyState : public NSSOperationState {
                           const std::string& public_key_spki_der,
                           CK_ATTRIBUTE_TYPE attribute_type,
                           const std::string& attribute_value,
-                          SetAttributeForKeyCallback callback);
+                          SetAttributeForKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        public_key_spki_der_(public_key_spki_der),
+        attribute_type_(attribute_type),
+        attribute_value_(attribute_value),
+        callback_(std::move(callback)) {}
+
   ~SetAttributeForKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -591,7 +641,12 @@ class GetAttributeForKeyState : public NSSOperationState {
   GetAttributeForKeyState(ServiceWeakPtr weak_ptr,
                           const std::string& public_key_spki_der,
                           CK_ATTRIBUTE_TYPE attribute_type,
-                          GetAttributeForKeyCallback callback);
+                          GetAttributeForKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        public_key_spki_der_(public_key_spki_der),
+        attribute_type_(attribute_type),
+        callback_(std::move(callback)) {}
+
   ~GetAttributeForKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -626,7 +681,11 @@ class IsKeyOnTokenState : public NSSOperationState {
  public:
   IsKeyOnTokenState(ServiceWeakPtr weak_ptr,
                     const std::string& public_key_spki_der,
-                    IsKeyOnTokenCallback callback);
+                    IsKeyOnTokenCallback callback)
+      : NSSOperationState(weak_ptr),
+        public_key_spki_der_(public_key_spki_der),
+        callback_(std::move(callback)) {}
+
   ~IsKeyOnTokenState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -654,119 +713,6 @@ class IsKeyOnTokenState : public NSSOperationState {
   // Must be called on origin thread, therefore use CallBack().
   IsKeyOnTokenCallback callback_;
 };
-
-NSSOperationState::NSSOperationState(ServiceWeakPtr weak_ptr)
-    : service_weak_ptr_(weak_ptr),
-      origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
-
-GenerateRSAKeyState::GenerateRSAKeyState(ServiceWeakPtr weak_ptr,
-                                         unsigned int modulus_length_bits,
-                                         GenerateKeyCallback callback)
-    : NSSOperationState(weak_ptr),
-      modulus_length_bits_(modulus_length_bits),
-      callback_(std::move(callback)) {}
-
-GenerateECKeyState::GenerateECKeyState(ServiceWeakPtr weak_ptr,
-                                       const std::string& named_curve,
-                                       GenerateKeyCallback callback)
-    : NSSOperationState(weak_ptr),
-      named_curve_(named_curve),
-      callback_(std::move(callback)) {}
-
-SignState::SignState(ServiceWeakPtr weak_ptr,
-                     const std::string& data,
-                     const std::string& public_key_spki_der,
-                     bool raw_pkcs1,
-                     HashAlgorithm hash_algorithm,
-                     const KeyType key_type,
-                     SignCallback callback)
-    : NSSOperationState(weak_ptr),
-      data_(data),
-      public_key_spki_der_(public_key_spki_der),
-      raw_pkcs1_(raw_pkcs1),
-      hash_algorithm_(hash_algorithm),
-      key_type_(key_type),
-      callback_(std::move(callback)) {}
-
-SelectCertificatesState::SelectCertificatesState(
-    ServiceWeakPtr weak_ptr,
-    const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
-    SelectCertificatesCallback callback)
-    : NSSOperationState(weak_ptr),
-      cert_request_info_(cert_request_info),
-      callback_(std::move(callback)) {}
-
-GetCertificatesState::GetCertificatesState(ServiceWeakPtr weak_ptr,
-                                           GetCertificatesCallback callback)
-    : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
-
-GetAllKeysState::GetAllKeysState(ServiceWeakPtr weak_ptr,
-                                 GetAllKeysCallback callback)
-    : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
-
-ImportCertificateState::ImportCertificateState(
-    ServiceWeakPtr weak_ptr,
-    const scoped_refptr<net::X509Certificate>& certificate,
-    ImportCertificateCallback callback)
-    : NSSOperationState(weak_ptr),
-      certificate_(certificate),
-      callback_(std::move(callback)) {}
-
-RemoveCertificateState::RemoveCertificateState(
-    ServiceWeakPtr weak_ptr,
-    const scoped_refptr<net::X509Certificate>& certificate,
-    RemoveCertificateCallback callback)
-    : NSSOperationState(weak_ptr),
-      certificate_(certificate),
-      callback_(std::move(callback)) {}
-
-RemoveKeyState::RemoveKeyState(ServiceWeakPtr weak_ptr,
-                               const std::string& public_key_spki_der,
-                               RemoveKeyCallback callback)
-    : NSSOperationState(weak_ptr),
-      public_key_spki_der_(public_key_spki_der),
-      callback_(std::move(callback)) {}
-
-GetTokensState::GetTokensState(ServiceWeakPtr weak_ptr,
-                               GetTokensCallback callback)
-    : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
-
-GetKeyLocationsState::GetKeyLocationsState(
-    ServiceWeakPtr weak_ptr,
-    const std::string& public_key_spki_der,
-    GetKeyLocationsCallback callback)
-    : NSSOperationState(weak_ptr),
-      public_key_spki_der_(public_key_spki_der),
-      callback_(std::move(callback)) {}
-
-SetAttributeForKeyState::SetAttributeForKeyState(
-    ServiceWeakPtr weak_ptr,
-    const std::string& public_key_spki_der,
-    CK_ATTRIBUTE_TYPE attribute_type,
-    const std::string& attribute_value,
-    SetAttributeForKeyCallback callback)
-    : NSSOperationState(weak_ptr),
-      public_key_spki_der_(public_key_spki_der),
-      attribute_type_(attribute_type),
-      attribute_value_(attribute_value),
-      callback_(std::move(callback)) {}
-
-GetAttributeForKeyState::GetAttributeForKeyState(
-    ServiceWeakPtr weak_ptr,
-    const std::string& public_key_spki_der,
-    CK_ATTRIBUTE_TYPE attribute_type,
-    GetAttributeForKeyCallback callback)
-    : NSSOperationState(weak_ptr),
-      public_key_spki_der_(public_key_spki_der),
-      attribute_type_(attribute_type),
-      callback_(std::move(callback)) {}
-
-IsKeyOnTokenState::IsKeyOnTokenState(ServiceWeakPtr weak_ptr,
-                                     const std::string& public_key_spki_der,
-                                     IsKeyOnTokenCallback callback)
-    : NSSOperationState(weak_ptr),
-      public_key_spki_der_(public_key_spki_der),
-      callback_(std::move(callback)) {}
 
 // Returns the private key corresponding to the der-encoded
 // |public_key_spki_der| if found in |slot|. If |slot| is nullptr, the
