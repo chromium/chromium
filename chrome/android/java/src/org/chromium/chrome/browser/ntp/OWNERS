@@ -4,6 +4,3 @@ twellington@chromium.org
 # For changes related to the feed.
 per-file *SectionHeader.java=file://chrome/browser/android/feed/OWNERS
 per-file *SectionHeaderView.java=file://chrome/browser/android/feed/OWNERS
-
-# TEAM: ntp-dev@chromium.org
-# COMPONENT: UI>Browser>NewTabPage
