@@ -115,6 +115,8 @@
             eventSenderKeys = "ArrowRight";
           } else if (charCode == 0xE015) {
             eventSenderKeys = "ArrowDown";
+          } else if (charCode == 0xE00C) {
+            eventSenderKeys = "Escape";
           } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
             reject(new Error("No support for this code: U+" + charCode.toString(16)));
             return;
