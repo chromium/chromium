@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
@@ -40,8 +39,6 @@ suite('SiteDetailsPermission', function() {
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.CAMERA,
             [createRawSiteException('https://www.example.com')])]);
-
-    loadTimeData.overrideValues({enableAutoplayWhitelistContentSetting: true});
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;

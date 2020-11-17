@@ -136,9 +136,6 @@ function renderConfigTable(config) {
       'Autoplay disable settings',
       formatFeatureFlag(config.featureAutoplayDisableSettings)));
   configTableBody.appendChild(createConfigRow(
-      'Autoplay whitelist settings',
-      formatFeatureFlag(config.featureAutoplayWhitelistSettings)));
-  configTableBody.appendChild(createConfigRow(
       'Unified autoplay (preference)',
       formatFeatureFlag(config.prefDisableUnifiedAutoplay)));
   configTableBody.appendChild(createConfigRow(

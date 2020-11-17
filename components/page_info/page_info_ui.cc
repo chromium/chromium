@@ -30,7 +30,6 @@
 #if defined(OS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #else
-#include "media/base/media_switches.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -421,8 +420,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
     case content_settings::SETTING_SOURCE_USER:
       if (setting == CONTENT_SETTING_DEFAULT) {
 #if !defined(OS_ANDROID)
-        if (type == ContentSettingsType::SOUND &&
-            base::FeatureList::IsEnabled(media::kAutoplayWhitelistSettings)) {
+        if (type == ContentSettingsType::SOUND) {
           // If the block autoplay enabled preference is enabled and the
           // sound default setting is ALLOW, we will return a custom string
           // indicating that Chrome is controlling autoplay and sound
@@ -444,8 +442,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
     case content_settings::SETTING_SOURCE_POLICY:
     case content_settings::SETTING_SOURCE_EXTENSION:
 #if !defined(OS_ANDROID)
-      if (type == ContentSettingsType::SOUND &&
-          base::FeatureList::IsEnabled(media::kAutoplayWhitelistSettings)) {
+      if (type == ContentSettingsType::SOUND) {
         button_text_ids = kSoundPermissionButtonTextIDUserManaged;
         break;
       }

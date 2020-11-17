@@ -132,8 +132,7 @@ Polymer({
    * @private
    */
   useCustomSoundLabels_(category) {
-    return category === ContentSettingsTypes.SOUND &&
-        loadTimeData.getBoolean('enableAutoplayWhitelistContentSetting');
+    return category === ContentSettingsTypes.SOUND;
   },
 
   /**

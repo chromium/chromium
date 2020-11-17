@@ -424,9 +424,8 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
 class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
  public:
   UnifiedAutoplaySettingBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings},
-        {});
+    scoped_feature_list_.InitWithFeatures({media::kAutoplayDisableSettings},
+                                          {});
   }
 
   ~UnifiedAutoplaySettingBrowserTest() override = default;
