@@ -107,10 +107,23 @@ class PCScan<thread_safe>::PCScanTask final {
   using SlotSpan = SlotSpanMetadata<thread_safe>;
 
   struct ScanArea {
-    uintptr_t* begin = nullptr;
-    uintptr_t* end = nullptr;
+    ScanArea(uintptr_t* begin, uintptr_t* end) : begin(begin), end(end) {}
+
+    uintptr_t* begin;
+    uintptr_t* end;
   };
   using ScanAreas = std::vector<ScanArea, MetadataAllocator<ScanArea>>;
+
+  // Large scan areas have their slot size recorded which allows to iterate
+  // based on objects, potentially skipping over objects if possible.
+  struct LargeScanArea : public ScanArea {
+    LargeScanArea(uintptr_t* begin, uintptr_t* end, size_t slot_size)
+        : ScanArea(begin, end), slot_size(slot_size) {}
+
+    size_t slot_size = 0;
+  };
+  using LargeScanAreas =
+      std::vector<LargeScanArea, MetadataAllocator<LargeScanArea>>;
 
   // Super pages only correspond to normal buckets.
   // TODO(bikineev): Consider flat containers since the number of elements is
@@ -118,7 +131,7 @@ class PCScan<thread_safe>::PCScanTask final {
   using SuperPages =
       std::set<uintptr_t, std::less<>, MetadataAllocator<uintptr_t>>;
 
-  QuarantineBitmap* FindScannerBitmapForPointer(uintptr_t maybe_ptr) const;
+  QuarantineBitmap* TryFindScannerBitmapForPointer(uintptr_t maybe_ptr) const;
 
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
@@ -128,9 +141,13 @@ class PCScan<thread_safe>::PCScanTask final {
   void ClearQuarantinedObjects() const;
 
   // Scans the partition and marks reachable quarantined objects. Returns the
-  // size of marked objects. The function race-fully reads the heap and
-  // therefore tsan is disabled for it.
-  size_t ScanPartition() NO_SANITIZE("thread");
+  // size of marked objects.
+  size_t ScanPartition();
+
+  // Scans a range of addresses and marks reachable quarantined objects. Returns
+  // the size of marked objects. The function race-fully reads the heap and
+  // therefore TSAN is disabled for it.
+  size_t ScanRange(uintptr_t* begin, uintptr_t* end) NO_SANITIZE("thread");
 
   // Sweeps (frees) unreachable quarantined entries. Returns the size of swept
   // objects.
@@ -140,11 +157,13 @@ class PCScan<thread_safe>::PCScanTask final {
   PartitionRoot<thread_safe>& root_;
 
   ScanAreas scan_areas_;
+  LargeScanAreas large_scan_areas_;
   SuperPages super_pages_;
 };
 
 template <bool thread_safe>
-QuarantineBitmap* PCScan<thread_safe>::PCScanTask::FindScannerBitmapForPointer(
+QuarantineBitmap*
+PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
   // TODO(bikineev): Consider using the bitset in AddressPoolManager::Pool to
   // quickly find a super page.
@@ -178,7 +197,7 @@ template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
     uintptr_t maybe_ptr) {
   // Check if maybe_ptr points somewhere to the heap.
-  auto* bitmap = FindScannerBitmapForPointer(maybe_ptr);
+  auto* bitmap = TryFindScannerBitmapForPointer(maybe_ptr);
   if (!bitmap)
     return 0;
 
@@ -231,44 +250,78 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
 }
 
 template <bool thread_safe>
-size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanPartition() {
+size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
+    uintptr_t* begin,
+    uintptr_t* end) {
   static_assert(alignof(uintptr_t) % alignof(void*) == 0,
                 "Alignment of uintptr_t must be at least as strict as "
                 "alignment of a pointer type.");
   size_t new_quarantine_size = 0;
 
-  for (auto scan_area : scan_areas_) {
-    for (uintptr_t* payload = scan_area.begin; payload < scan_area.end;
-         ++payload) {
-      PA_DCHECK(reinterpret_cast<uintptr_t>(payload) % alignof(void*) == 0);
-      auto maybe_ptr = *payload;
-      if (!maybe_ptr)
-        continue;
-      size_t slot_size = 0;
+  for (uintptr_t* payload = begin; payload < end; ++payload) {
+    PA_DCHECK(reinterpret_cast<uintptr_t>(payload) % alignof(void*) == 0);
+    auto maybe_ptr = *payload;
+    if (!maybe_ptr)
+      continue;
+    size_t slot_size = 0;
 // TODO(bikineev): Remove the preprocessor condition after 32bit GigaCage is
 // implemented.
 #if defined(PA_HAS_64_BITS_POINTERS)
-      // On partitions without extras (partitions with aligned allocations),
-      // memory is not allocated from the GigaCage.
-      if (root_.UsesGigaCage()) {
-        // With GigaCage, we first do a fast bitmask check to see if the pointer
-        // points to the normal bucket pool.
-        if (!PartitionAddressSpace::IsInNormalBucketPool(
-                reinterpret_cast<void*>(maybe_ptr)))
-          continue;
-        // Otherwise, search in the list of super pages.
-        slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
-        // TODO(bikineev): Check IsInDirectBucketPool.
-      } else
+    // On partitions without extras (partitions with aligned allocations),
+    // memory is not allocated from the GigaCage.
+    if (root_.UsesGigaCage()) {
+      // With GigaCage, we first do a fast bitmask check to see if the
+      // pointer points to the normal bucket pool.
+      if (!PartitionAddressSpace::IsInNormalBucketPool(
+              reinterpret_cast<void*>(maybe_ptr)))
+        continue;
+      // Otherwise, search in the list of super pages.
+      slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
+      // TODO(bikineev): Check IsInDirectBucketPool.
+    } else
 #endif
-      {
-        slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
-      }
-
-      new_quarantine_size += slot_size;
+    {
+      slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
     }
+
+    new_quarantine_size += slot_size;
   }
 
+  return new_quarantine_size;
+}
+
+template <bool thread_safe>
+size_t PCScan<thread_safe>::PCScanTask::ScanPartition() {
+  size_t new_quarantine_size = 0;
+
+  // For scanning large areas, it's worthwhile checking whether the range that
+  // is scanned contains quarantined objects.
+  for (auto scan_area : large_scan_areas_) {
+    // The bitmap is (a) always guaranteed to exist and (b) the same for all
+    // objects in a given slot span.
+    // TODO(chromium:1129751): Check mutator bitmap as well if performance
+    // allows.
+    auto* bitmap = QuarantineBitmapFromPointer(
+        QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
+        reinterpret_cast<char*>(scan_area.begin));
+    for (uintptr_t current_slot = reinterpret_cast<uintptr_t>(scan_area.begin);
+         current_slot < reinterpret_cast<uintptr_t>(scan_area.end);
+         current_slot += scan_area.slot_size) {
+      // It is okay to skip objects as their payload has been zapped at this
+      // point which means that the pointers no longer retain other objects.
+      if (bitmap->CheckBit(current_slot)) {
+        continue;
+      }
+      uintptr_t* payload_end =
+          reinterpret_cast<uintptr_t*>(current_slot + scan_area.slot_size);
+      PA_DCHECK(payload_end <= scan_area.end);
+      new_quarantine_size +=
+          ScanRange(reinterpret_cast<uintptr_t*>(current_slot), payload_end);
+    }
+  }
+  for (auto scan_area : scan_areas_) {
+    new_quarantine_size += ScanRange(scan_area.begin, scan_area.end);
+  }
   return new_quarantine_size;
 }
 
@@ -295,6 +348,9 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
 template <bool thread_safe>
 PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
     : pcscan_(pcscan), root_(root) {
+  // Threshold for which bucket size it is worthwhile in checking whether the
+  // object is a quarantined object and can be skipped.
+  static constexpr size_t kLargeScanAreaThreshold = 8192;
   // Take a snapshot of all allocated non-empty slot spans.
   static constexpr size_t kScanAreasReservationSlack = 10;
   const size_t kScanAreasReservationSize =
@@ -319,7 +375,12 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
             auto* payload_end =
                 payload_begin +
                 (slot_span->bucket->get_bytes_per_span() / sizeof(uintptr_t));
-            scan_areas_.push_back({payload_begin, payload_end});
+            if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
+              large_scan_areas_.push_back(
+                  {payload_begin, payload_end, slot_span->bucket->slot_size});
+            } else {
+              scan_areas_.push_back({payload_begin, payload_end});
+            }
           });
       super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
     }
