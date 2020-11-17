@@ -37,7 +37,7 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
 TEST_F(PaintRecordBuilderTest, LastingPaintController) {
   InitRootChunk();
 
-  PaintRecordBuilder builder(nullptr, nullptr, &GetPaintController());
+  PaintRecordBuilder builder(GetPaintController());
   auto& context = builder.Context();
   EXPECT_EQ(&context.GetPaintController(), &GetPaintController());
 

@@ -31,7 +31,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   context.SetInDrawingRecorder(true);
   context.BeginRecording(FloatRect());
 
-  if (context.Printing()) {
+  if (context.NeedsDOMNodeId()) {
     DOMNodeId dom_node_id = display_item_client.OwnerNodeId();
     if (dom_node_id != kInvalidDOMNodeId) {
       dom_node_id_to_restore_ = context.GetDOMNodeId();
@@ -41,7 +41,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
 }
 
 DrawingRecorder::~DrawingRecorder() {
-  if (context_.Printing() && dom_node_id_to_restore_)
+  if (dom_node_id_to_restore_)
     context_.SetDOMNodeId(dom_node_id_to_restore_.value());
 
   context_.SetInDrawingRecorder(false);

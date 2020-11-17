@@ -102,9 +102,11 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   // The background rect always includes at least the visible content size.
   PhysicalRect background_rect(layout_view_.BackgroundRect());
 
+  const Document& document = layout_view_.GetDocument();
+
   // When printing or painting a preview, paint the entire unclipped scrolling
   // content area.
-  if (paint_info.IsPrinting() ||
+  if (document.IsPrintingOrPaintingPreview() ||
       !layout_view_.GetFrameView()->GetFrame().ClipsContent()) {
     background_rect.Unite(layout_view_.DocumentRect());
   }
@@ -125,8 +127,6 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 
   IntRect pixel_snapped_background_rect(PixelSnappedIntRect(background_rect));
 
-  const Document& document = layout_view_.GetDocument();
-
   auto root_element_background_painting_state =
       layout_view_.FirstFragment().ContentsProperties();
 
@@ -136,17 +136,14 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painted_separate_effect = false;
 
   bool should_apply_root_background_behavior =
-      layout_view_.GetDocument().IsHTMLDocument() ||
-      layout_view_.GetDocument().IsXHTMLDocument();
+      document.IsHTMLDocument() || document.IsXHTMLDocument();
 
   bool should_paint_background = !paint_info.SkipRootBackground() &&
                                  layout_view_.HasBoxDecorationBackground();
 
   LayoutObject* root_object = nullptr;
-  if (layout_view_.GetDocument().documentElement()) {
-    root_object =
-        layout_view_.GetDocument().documentElement()->GetLayoutObject();
-  }
+  if (auto* document_element = document.documentElement())
+    root_object = document_element->GetLayoutObject();
 
   // For HTML and XHTML documents, the root element may paint in a different
   // clip, effect or transform state than the LayoutView. For

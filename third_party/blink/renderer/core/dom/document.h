@@ -800,10 +800,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetPrinting(PrintingState);
 
   bool IsPaintingPreview() const { return is_painting_preview_; }
-  bool IsCapturingLayout() const {
-    return printing_ == kPrinting || is_painting_preview_;
+  bool IsPrintingOrPaintingPreview() const {
+    return Printing() || IsPaintingPreview();
   }
-  void SetIsPaintingPreview(bool);
 
   enum CompatibilityMode { kQuirksMode, kLimitedQuirksMode, kNoQuirksMode };
 
@@ -1670,6 +1669,17 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
+
+  class PaintPreviewScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit PaintPreviewScope(Document& document)
+        : is_painting_preview_(&document.is_painting_preview_, true) {}
+
+   private:
+    base::AutoReset<bool> is_painting_preview_;
+  };
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }

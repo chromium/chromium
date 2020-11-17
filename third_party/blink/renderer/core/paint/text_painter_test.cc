@@ -30,12 +30,14 @@ class TextPainterTest : public RenderingTest {
  protected:
   LineLayoutText GetLineLayoutText() { return LineLayoutText(layout_text_); }
 
-  PaintInfo CreatePaintInfo(bool uses_text_as_clip, bool is_printing) {
-    return PaintInfo(
-        context_, IntRect(),
-        uses_text_as_clip ? PaintPhase::kTextClip
-                          : PaintPhase::kSelfBlockBackgroundOnly,
-        is_printing ? kGlobalPaintPrinting : kGlobalPaintNormalPhase, 0);
+  PaintInfo CreatePaintInfoForBackground() {
+    return PaintInfo(context_, IntRect(), PaintPhase::kSelfBlockBackgroundOnly,
+                     kGlobalPaintNormalPhase, 0);
+  }
+
+  PaintInfo CreatePaintInfoForTextClip() {
+    return PaintInfo(context_, IntRect(), PaintPhase::kTextClip,
+                     kGlobalPaintNormalPhase, 0);
   }
 
  protected:
@@ -63,7 +65,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
-      CreatePaintInfo(false /* usesTextAsClip */, false /* isPrinting */));
+      CreatePaintInfoForBackground());
   EXPECT_EQ(Color(0, 0, 255), text_style.fill_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -87,7 +89,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
-      CreatePaintInfo(false /* usesTextAsClip */, false /* isPrinting */));
+      CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -117,7 +119,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
-      CreatePaintInfo(true /* usesTextAsClip */, false /* isPrinting */));
+      CreatePaintInfoForTextClip());
   EXPECT_EQ(Color::kBlack, text_style.fill_color);
   EXPECT_EQ(Color::kBlack, text_style.stroke_color);
   EXPECT_EQ(Color::kBlack, text_style.emphasis_mark_color);
@@ -145,7 +147,7 @@ TEST_F(TextPainterTest,
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
-      CreatePaintInfo(false /* usesTextAsClip */, true /* isPrinting */));
+      CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -170,7 +172,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
-      CreatePaintInfo(false /* usesTextAsClip */, true /* isPrinting */));
+      CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 220, 220).Dark(), text_style.fill_color);
   EXPECT_EQ(Color(220, 255, 220).Dark(), text_style.stroke_color);
   EXPECT_EQ(Color(220, 220, 255).Dark(), text_style.emphasis_mark_color);

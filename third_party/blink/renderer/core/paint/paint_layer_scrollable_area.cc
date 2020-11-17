@@ -1163,7 +1163,7 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChange() {
   }
 
   const Document& document = GetLayoutBox()->GetDocument();
-  if (document.IsCapturingLayout()) {
+  if (document.IsPrintingOrPaintingPreview()) {
     // Scrollable elements may change size when generating layout for printing,
     // which may require them to change the scroll position in order to keep the
     // same content within view. In vertical-rl writing-mode, even the root

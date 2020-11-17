@@ -86,7 +86,7 @@ void ImagePainter::Paint(const PaintInfo& paint_info) {
 void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   Document& document = layout_image_.GetDocument();
 
-  if (paint_info.IsPrinting() ||
+  if (document.Printing() ||
       !document.GetFrame()->Selection().FrameIsFocusedAndActive())
     return;
 

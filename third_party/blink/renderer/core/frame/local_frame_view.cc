@@ -2582,7 +2582,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
   RunPaintLifecyclePhase();
   DCHECK(ShouldThrottleRendering() ||
-         frame_->GetDocument()->IsCapturingLayout() ||
+         frame_->GetDocument()->IsPrintingOrPaintingPreview() ||
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
 
   ForAllRemoteFrameViews(
@@ -2777,7 +2777,8 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // While printing or capturing a paint preview of a document, the paint walk
   // is done into a special canvas. There is no point doing a normal paint step
   // (or animations update) when in this mode.
-  bool is_capturing_layout = frame_->GetDocument()->IsCapturingLayout();
+  bool is_capturing_layout =
+      frame_->GetDocument()->IsPrintingOrPaintingPreview();
   bool repainted = false;
   if (!is_capturing_layout)
     repainted = PaintTree(benchmark_mode);
@@ -3979,13 +3980,19 @@ void LocalFrameView::Paint(GraphicsContext& context,
                            const GlobalPaintFlags global_paint_flags,
                            const CullRect& cull_rect,
                            const IntSize& paint_offset) const {
-  // When capturing a Paint Preview we want to capture scrollable embedded
-  // content separately. Paint should stop here and ask the browser to
-  // coordinate painting such frames as a separate task.
-  if (context.IsPaintingPreview() && LayoutViewport()->ScrollsOverflow()) {
-    // If capture fails we should fallback to capturing inline if possible.
-    if (CapturePaintPreview(context, paint_offset))
-      return;
+  const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
+  base::Optional<Document::PaintPreviewScope> paint_preview;
+  if (owner_layout_object &&
+      owner_layout_object->GetDocument().IsPaintingPreview()) {
+    paint_preview.emplace(*GetFrame().GetDocument());
+    // When capturing a Paint Preview we want to capture scrollable embedded
+    // content separately. Paint should stop here and ask the browser to
+    // coordinate painting such frames as a separate task.
+    if (LayoutViewport()->ScrollsOverflow()) {
+      // If capture fails we should fallback to capturing inline if possible.
+      if (CapturePaintPreview(context, paint_offset))
+        return;
+    }
   }
 
   // |paint_offset| is not used because paint properties of the contents will

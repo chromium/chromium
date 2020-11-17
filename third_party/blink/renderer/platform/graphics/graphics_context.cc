@@ -117,25 +117,8 @@ class GraphicsContext::DarkModeFlags final {
   base::Optional<PaintFlags> dark_mode_flags_;
 };
 
-GraphicsContext::GraphicsContext(PaintController& paint_controller,
-                                 printing::MetafileSkia* metafile,
-                                 paint_preview::PaintPreviewTracker* tracker)
-    : canvas_(nullptr),
-      paint_controller_(paint_controller),
-      paint_state_stack_(),
-      paint_state_index_(0),
-      metafile_(metafile),
-      tracker_(tracker),
-#if DCHECK_IS_ON()
-      layer_count_(0),
-      disable_destruction_checks_(false),
-#endif
-      device_scale_factor_(1.0f),
-      dark_mode_filter_(nullptr),
-      printing_(false),
-      is_painting_preview_(false),
-      in_drawing_recorder_(false),
-      is_dark_mode_enabled_(false) {
+GraphicsContext::GraphicsContext(PaintController& paint_controller)
+    : paint_controller_(paint_controller) {
   // FIXME: Do some tests to determine how many states are typically used, and
   // allocate several here.
   paint_state_stack_.push_back(std::make_unique<GraphicsContextState>());
@@ -151,6 +134,14 @@ GraphicsContext::~GraphicsContext() {
     DCHECK(!SaveCount());
   }
 #endif
+}
+
+void GraphicsContext::CopyConfigFrom(GraphicsContext& other) {
+  SetPrintingMetafile(other.printing_metafile_);
+  SetPaintPreviewTracker(other.paint_preview_tracker_);
+  SetDarkModeEnabled(other.is_dark_mode_enabled_);
+  SetDeviceScaleFactor(other.device_scale_factor_);
+  SetPrinting(other.printing_);
 }
 
 DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
@@ -221,6 +212,7 @@ void GraphicsContext::SetInDrawingRecorder(bool val) {
 }
 
 void GraphicsContext::SetDOMNodeId(DOMNodeId new_node_id) {
+  DCHECK(NeedsDOMNodeId());
   if (canvas_)
     canvas_->setNodeId(new_node_id);
 
@@ -228,6 +220,7 @@ void GraphicsContext::SetDOMNodeId(DOMNodeId new_node_id) {
 }
 
 DOMNodeId GraphicsContext::GetDOMNodeId() const {
+  DCHECK(NeedsDOMNodeId());
   return dom_node_id_;
 }
 
@@ -315,10 +308,10 @@ void GraphicsContext::EndLayer() {
 void GraphicsContext::BeginRecording(const FloatRect& bounds) {
   DCHECK(!canvas_);
   canvas_ = paint_recorder_.beginRecording(bounds);
-  if (metafile_)
-    canvas_->SetPrintingMetafile(metafile_);
-  if (tracker_)
-    canvas_->SetPaintPreviewTracker(tracker_);
+  if (printing_metafile_)
+    canvas_->SetPrintingMetafile(printing_metafile_);
+  if (paint_preview_tracker_)
+    canvas_->SetPaintPreviewTracker(paint_preview_tracker_);
 }
 
 sk_sp<PaintRecord> GraphicsContext::EndRecording() {
@@ -966,7 +959,7 @@ SkFilterQuality GraphicsContext::ComputeFilterQuality(
     const FloatRect& dest,
     const FloatRect& src) const {
   InterpolationQuality resampling;
-  if (Printing()) {
+  if (printing_) {
     resampling = kInterpolationNone;
   } else if (image->CurrentFrameIsLazyDecoded()) {
     resampling = kInterpolationDefault;
@@ -1292,7 +1285,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
   DCHECK(canvas_);
 
   // Paint previews don't make use of linked destinations.
-  if (tracker_)
+  if (paint_preview_tracker_)
     return;
 
   SkRect rect = SkRect::MakeXYWH(location.X(), location.Y(), 0, 0);

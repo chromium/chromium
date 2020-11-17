@@ -282,7 +282,7 @@ void PaintDocumentMarkers(const PaintInfo& paint_info,
     switch (marker->GetType()) {
       case DocumentMarker::kSpelling:
       case DocumentMarker::kGrammar: {
-        if (paint_info.context.Printing())
+        if (text_fragment.GetNode()->GetDocument().Printing())
           break;
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground)
           continue;
@@ -532,7 +532,7 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
       GetTextFragmentPaintInfo(cursor_);
   const LayoutObject* layout_object = text_item.GetLayoutObject();
   const Document& document = layout_object->GetDocument();
-  const bool is_printing = paint_info.IsPrinting();
+  const bool is_printing = document.Printing();
 
   // Determine whether or not we're selected.
   base::Optional<SelectionPaintState> selection;

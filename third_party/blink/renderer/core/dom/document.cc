@@ -3415,10 +3415,6 @@ void Document::SetPrinting(PrintingState state) {
   }
 }
 
-void Document::SetIsPaintingPreview(bool is_painting_preview) {
-  is_painting_preview_ = is_painting_preview;
-}
-
 // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#document-open-steps
 void Document::open(LocalDOMWindow* entered_window,
                     ExceptionState& exception_state) {

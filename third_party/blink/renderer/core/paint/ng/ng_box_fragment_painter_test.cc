@@ -129,13 +129,13 @@ TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
   // PaintPreviewTracker records URLs via the GraphicsContext under certain
   // flagsets when painting. This is the simplest way to check if URLs were
   // annotated.
-  GetDocument().SetIsPaintingPreview(true);
+  Document::PaintPreviewScope paint_preview(GetDocument());
   UpdateAllLifecyclePhasesForTest();
 
   paint_preview::PaintPreviewTracker tracker(base::UnguessableToken::Create(),
                                              base::nullopt, true);
-  PaintRecordBuilder builder(nullptr, nullptr, nullptr, &tracker);
-  builder.Context().SetIsPaintingPreview(true);
+  PaintRecordBuilder builder;
+  builder.Context().SetPaintPreviewTracker(&tracker);
 
   GetDocument().View()->PaintContentsOutsideOfLifecycle(
       builder.Context(),
