@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace base {
@@ -112,20 +113,7 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
 class NET_EXPORT_PRIVATE DnsResponse {
  public:
   // Possible results from ParseToAddressList.
-  enum Result {
-    DNS_PARSE_OK = 0,
-    DNS_MALFORMED_RESPONSE,    // DnsRecordParser failed before the end of
-                               // packet.
-    DNS_MALFORMED_CNAME,       // Could not parse CNAME out of RRDATA.
-    DNS_NAME_MISMATCH,         // Got an address but no ordered chain of CNAMEs
-                               // leads there.
-    DNS_SIZE_MISMATCH,         // Got an address but size does not match.
-    DNS_CNAME_AFTER_ADDRESS,   // Found CNAME after an address record.
-    DNS_ADDRESS_TTL_MISMATCH,  // OBSOLETE. No longer used.
-    DNS_NO_ADDRESSES,          // OBSOLETE. No longer used.
-    // Only add new values here.
-    DNS_PARSE_RESULT_MAX,      // Bounding value for histograms.
-  };
+  using Result = DnsResponseResultExtractor::ExtractionError;
 
   // Constructs a response buffer large enough to store one byte more than
   // largest possible response, to detect malformed responses.
@@ -207,8 +195,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // This operation is idempotent.
   DnsRecordParser Parser() const;
 
-  // Extracts an AddressList from this response. Returns SUCCESS if succeeded.
-  // Otherwise returns a detailed error number.
+  // Extracts an AddressList from this response.
+  // TODO(crbug.com/1147247): Remove in favor of DnsResponseResultExtractor.
   Result ParseToAddressList(AddressList* out_addr_list,
                             base::Optional<base::TimeDelta>* out_ttl) const;
 

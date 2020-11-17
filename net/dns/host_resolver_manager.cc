@@ -43,8 +43,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/numerics/checked_math.h"
-#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,12 +74,12 @@
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_reloader.h"
 #include "net/dns/dns_response.h"
+#include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_proc.h"
-#include "net/dns/https_record_rdata.h"
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_protocol.h"
@@ -459,36 +457,6 @@ void NetLogHostCacheEntry(const NetLogWithSource& net_log,
                           NetLogEventPhase phase,
                           const HostCache::Entry& results) {
   net_log.AddEntry(type, phase, [&] { return results.NetLogParams(); });
-}
-
-void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
-                                         bool is_unsolicited) {
-  const HttpsRecordRdata* rdata = record.rdata<HttpsRecordRdata>();
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class UnsolicitedHttpsRecordStatus {
-    kMalformed = 0,
-    kAlias = 1,
-    kService = 2,
-    kMaxValue = kService
-  } status;
-
-  if (!rdata || rdata->IsMalformed()) {
-    status = UnsolicitedHttpsRecordStatus::kMalformed;
-  } else if (rdata->IsAlias()) {
-    status = UnsolicitedHttpsRecordStatus::kAlias;
-  } else {
-    status = UnsolicitedHttpsRecordStatus::kService;
-  }
-
-  if (is_unsolicited) {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Unsolicited",
-                              status);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Requested",
-                              status);
-  }
 }
 
 }  // namespace
@@ -1288,50 +1256,37 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
-    if (net_error != OK && !(net_error == ERR_NAME_NOT_RESOLVED && response &&
-                             response->IsValid())) {
-      if (dns_query_type == DnsQueryType::INTEGRITY ||
-          dns_query_type == DnsQueryType::HTTPS) {
-        // Do not allow an experimental query to fail the whole DnsTask.
-        response = nullptr;
+    HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+    // Parse NOERROR results or NXDOMAIN (signified from DnsTransaction by
+    // ERR_NAME_NOT_RESOLVED) results with a valid response to parse.
+    if (net_error == OK || (net_error == ERR_NAME_NOT_RESOLVED && response &&
+                            response->IsValid())) {
+      DnsResponseResultExtractor::ExtractionError extraction_error;
+      if (dns_query_type == DnsQueryType::A ||
+          dns_query_type == DnsQueryType::AAAA) {
+        extraction_error = ParseAddressDnsResponse(response, &results);
       } else {
-        OnFailure(net_error, DnsResponse::DNS_PARSE_OK, base::nullopt);
+        DnsResponseResultExtractor extractor(response);
+        extraction_error =
+            extractor.ExtractDnsResults(dns_query_type, &results);
+      }
+      DCHECK_NE(extraction_error,
+                DnsResponseResultExtractor::ExtractionError::kUnexpected);
+
+      if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
+        OnFailure(results.error(), extraction_error, results.GetOptionalTtl());
         return;
       }
-    }
-
-    DnsResponse::Result parse_result = DnsResponse::DNS_PARSE_RESULT_MAX;
-    HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-    switch (dns_query_type) {
-      case DnsQueryType::UNSPECIFIED:
-        // Should create multiple transactions with specified types.
-        NOTREACHED();
-        break;
-      case DnsQueryType::A:
-      case DnsQueryType::AAAA:
-        parse_result = ParseAddressDnsResponse(response, &results);
-        break;
-      case DnsQueryType::TXT:
-        parse_result = ParseTxtDnsResponse(response, &results);
-        break;
-      case DnsQueryType::PTR:
-        parse_result = ParsePointerDnsResponse(response, &results);
-        break;
-      case DnsQueryType::SRV:
-        parse_result = ParseServiceDnsResponse(response, &results);
-        break;
-      case DnsQueryType::INTEGRITY:
-        // Parse the INTEGRITY records, condensing them into a vector<bool>.
-        parse_result = ParseIntegrityDnsResponse(response, &results);
-        break;
-      case DnsQueryType::HTTPS:
-        parse_result = ParseHttpsDnsResponse(response, &results);
-        break;
-    }
-    DCHECK_LT(parse_result, DnsResponse::DNS_PARSE_RESULT_MAX);
-
-    if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
-      OnFailure(results.error(), parse_result, results.GetOptionalTtl());
+    } else if (dns_query_type == DnsQueryType::INTEGRITY ||
+               dns_query_type == DnsQueryType::HTTPS) {
+      // Do not allow an experimental query to fail the whole DnsTask. Instead
+      // pretend an empty result that can be cleanly merged with address
+      // results.
+      results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
+    } else {
+      // Fail completely on network failure.
+      OnFailure(net_error, DnsResponseResultExtractor::ExtractionError::kOk,
+                base::nullopt);
       return;
     }
 
@@ -1436,15 +1391,16 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     OnSuccess(results);
   }
 
-  DnsResponse::Result ParseAddressDnsResponse(const DnsResponse* response,
-                                              HostCache::Entry* out_results) {
+  DnsResponseResultExtractor::ExtractionError ParseAddressDnsResponse(
+      const DnsResponse* response,
+      HostCache::Entry* out_results) {
     DCHECK(response);
     AddressList addresses;
     base::Optional<base::TimeDelta> ttl;
-    DnsResponse::Result parse_result =
+    DnsResponseResultExtractor::ExtractionError parse_result =
         response->ParseToAddressList(&addresses, &ttl);
 
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
+    if (parse_result != DnsResponseResultExtractor::ExtractionError::kOk) {
       *out_results = GetMalformedResponseResult();
     } else if (addresses.empty()) {
       *out_results = HostCache::Entry(ERR_NAME_NOT_RESOLVED, AddressList(),
@@ -1457,303 +1413,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     return parse_result;
   }
 
-  DnsResponse::Result ParseTxtDnsResponse(const DnsResponse* response,
-                                          HostCache::Entry* out_results) {
-    DCHECK(response);
-    std::vector<std::unique_ptr<const RecordParsed>> records;
-    base::Optional<base::TimeDelta> response_ttl;
-    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
-        response, dns_protocol::kTypeTXT, &records, &response_ttl);
-
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
-      *out_results = GetMalformedResponseResult();
-      return parse_result;
-    }
-
-    std::vector<std::string> text_records;
-    for (const auto& record : records) {
-      const TxtRecordRdata* rdata = record->rdata<net::TxtRecordRdata>();
-      text_records.insert(text_records.end(), rdata->texts().begin(),
-                          rdata->texts().end());
-    }
-
-    *out_results = HostCache::Entry(
-        text_records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-        std::move(text_records), HostCache::Entry::SOURCE_DNS, response_ttl);
-    return DnsResponse::DNS_PARSE_OK;
-  }
-
-  DnsResponse::Result ParsePointerDnsResponse(const DnsResponse* response,
-                                              HostCache::Entry* out_results) {
-    DCHECK(response);
-    std::vector<std::unique_ptr<const RecordParsed>> records;
-    base::Optional<base::TimeDelta> response_ttl;
-    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
-        response, dns_protocol::kTypePTR, &records, &response_ttl);
-
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
-      *out_results = GetMalformedResponseResult();
-      return parse_result;
-    }
-
-    std::vector<HostPortPair> pointers;
-    for (const auto& record : records) {
-      const PtrRecordRdata* rdata = record->rdata<net::PtrRecordRdata>();
-      std::string pointer = rdata->ptrdomain();
-
-      // Skip pointers to the root domain.
-      if (!pointer.empty())
-        pointers.emplace_back(std::move(pointer), 0);
-    }
-
-    *out_results = HostCache::Entry(
-        pointers.empty() ? ERR_NAME_NOT_RESOLVED : OK, std::move(pointers),
-        HostCache::Entry::SOURCE_DNS, response_ttl);
-    return DnsResponse::DNS_PARSE_OK;
-  }
-
-  DnsResponse::Result ParseServiceDnsResponse(const DnsResponse* response,
-                                              HostCache::Entry* out_results) {
-    DCHECK(response);
-    std::vector<std::unique_ptr<const RecordParsed>> records;
-    base::Optional<base::TimeDelta> response_ttl;
-    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
-        response, dns_protocol::kTypeSRV, &records, &response_ttl);
-
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
-      *out_results = GetMalformedResponseResult();
-      return parse_result;
-    }
-
-    std::vector<const SrvRecordRdata*> fitered_rdatas;
-    for (const auto& record : records) {
-      const SrvRecordRdata* rdata = record->rdata<net::SrvRecordRdata>();
-
-      // Skip pointers to the root domain.
-      if (!rdata->target().empty())
-        fitered_rdatas.push_back(rdata);
-    }
-
-    std::vector<HostPortPair> ordered_service_targets =
-        SortServiceTargets(fitered_rdatas);
-
-    *out_results = HostCache::Entry(
-        ordered_service_targets.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-        std::move(ordered_service_targets), HostCache::Entry::SOURCE_DNS,
-        response_ttl);
-    return DnsResponse::DNS_PARSE_OK;
-  }
-
-  DnsResponse::Result ParseIntegrityDnsResponse(const DnsResponse* response,
-                                                HostCache::Entry* out_results) {
-    base::Optional<base::TimeDelta> response_ttl;
-    const HostCache::Entry default_entry(
-        ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
-        HostCache::Entry::SOURCE_DNS, response_ttl);
-
-    if (response == nullptr) {
-      *out_results = default_entry;
-      return DnsResponse::Result::DNS_PARSE_OK;
-    }
-
-    std::vector<std::unique_ptr<const RecordParsed>> records;
-    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
-        response, dns_protocol::kExperimentalTypeIntegrity, &records,
-        &response_ttl);
-
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
-      *out_results = default_entry;
-      return DnsResponse::Result::DNS_PARSE_OK;
-    }
-
-    // Condense results into a list of booleans. We do not cache the results,
-    // but this enables us to write some unit tests.
-    std::vector<bool> condensed_results;
-    for (const auto& record : records) {
-      const IntegrityRecordRdata& rdata =
-          *record->rdata<IntegrityRecordRdata>();
-      condensed_results.push_back(rdata.IsIntact());
-    }
-
-    *out_results =
-        HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
-                         HostCache::Entry::SOURCE_DNS, response_ttl);
-    DCHECK_EQ(parse_result, DnsResponse::DNS_PARSE_OK);
-    return parse_result;
-  }
-
-  DnsResponse::Result ParseHttpsDnsResponse(const DnsResponse* response,
-                                            HostCache::Entry* out_results) {
-    base::Optional<base::TimeDelta> response_ttl;
-    HostCache::Entry default_entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
-                                   HostCache::Entry::SOURCE_DNS, response_ttl);
-
-    // As HTTPS is currently only used for experimental queries, request
-    // failures are not treated as critical, and flow may reach here without a
-    // response.
-    //
-    // TODO(crbug.com/1138620): As HTTPS becomes less experimental, reevaluate
-    // request failures and consider making having a response required to call
-    // this method.
-    if (response == nullptr) {
-      *out_results = std::move(default_entry);
-      return DnsResponse::Result::DNS_PARSE_OK;
-    }
-
-    std::vector<std::unique_ptr<const RecordParsed>> records;
-    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
-        response, dns_protocol::kTypeHttps, &records, &response_ttl);
-
-    // If the response couldn't be parsed, assume no HTTPS records.
-    if (parse_result != DnsResponse::DNS_PARSE_OK) {
-      *out_results = std::move(default_entry);
-      return DnsResponse::Result::DNS_PARSE_OK;
-    }
-
-    // Condense results into a list of booleans. We do not cache the results,
-    // but this enables us to write some unit tests.
-    std::vector<bool> condensed_results;
-    for (const auto& record : records) {
-      const HttpsRecordRdata& rdata = *record->rdata<HttpsRecordRdata>();
-      condensed_results.push_back(!rdata.IsMalformed());
-    }
-
-    *out_results =
-        HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
-                         HostCache::Entry::SOURCE_DNS, response_ttl);
-    DCHECK_EQ(parse_result, DnsResponse::DNS_PARSE_OK);
-    return parse_result;
-  }
-
-  // Sort service targets per RFC2782.  In summary, sort first by |priority|,
-  // lowest first.  For targets with the same priority, secondary sort randomly
-  // using |weight| with higher weighted objects more likely to go first.
-  std::vector<HostPortPair> SortServiceTargets(
-      const std::vector<const SrvRecordRdata*>& rdatas) {
-    std::map<uint16_t, std::unordered_set<const SrvRecordRdata*>>
-        ordered_by_priority;
-    for (const SrvRecordRdata* rdata : rdatas)
-      ordered_by_priority[rdata->priority()].insert(rdata);
-
-    std::vector<HostPortPair> sorted_targets;
-    for (auto& priority : ordered_by_priority) {
-      // With (num results) <= UINT16_MAX (and in practice, much less) and
-      // (weight per result) <= UINT16_MAX, then it should be the case that
-      // (total weight) <= UINT32_MAX, but use CheckedNumeric for extra safety.
-      auto total_weight = base::MakeCheckedNum<uint32_t>(0);
-      for (const SrvRecordRdata* rdata : priority.second)
-        total_weight += rdata->weight();
-
-      // Add 1 to total weight because, to deal with 0-weight targets, we want
-      // our random selection to be inclusive [0, total].
-      total_weight++;
-
-      // Order by weighted random. Make such random selections, removing from
-      // |priority.second| until |priority.second| only contains 1 rdata.
-      while (priority.second.size() >= 2) {
-        uint32_t random_selection =
-            base::RandGenerator(total_weight.ValueOrDie());
-        const SrvRecordRdata* selected_rdata = nullptr;
-        for (const SrvRecordRdata* rdata : priority.second) {
-          // >= to always select the first target on |random_selection| == 0,
-          // even if its weight is 0.
-          if (rdata->weight() >= random_selection) {
-            selected_rdata = rdata;
-            break;
-          }
-          random_selection -= rdata->weight();
-        }
-
-        DCHECK(selected_rdata);
-        sorted_targets.emplace_back(selected_rdata->target(),
-                                    selected_rdata->port());
-        total_weight -= selected_rdata->weight();
-        size_t removed = priority.second.erase(selected_rdata);
-        DCHECK_EQ(1u, removed);
-      }
-
-      DCHECK_EQ(1u, priority.second.size());
-      DCHECK_EQ((total_weight - 1).ValueOrDie(),
-                (*priority.second.begin())->weight());
-      const SrvRecordRdata* rdata = *priority.second.begin();
-      sorted_targets.emplace_back(rdata->target(), rdata->port());
-    }
-
-    return sorted_targets;
-  }
-
-  DnsResponse::Result ParseAndFilterResponseRecords(
-      const DnsResponse* response,
-      uint16_t filter_dns_type,
-      std::vector<std::unique_ptr<const RecordParsed>>* out_records,
-      base::Optional<base::TimeDelta>* out_response_ttl) {
-    out_records->clear();
-    out_response_ttl->reset();
-
-    DnsRecordParser parser = response->Parser();
-
-    // Expected to be validated by DnsTransaction.
-    DCHECK_EQ(filter_dns_type, response->qtype());
-
-    for (unsigned i = 0; i < response->answer_count(); ++i) {
-      std::unique_ptr<const RecordParsed> record =
-          RecordParsed::CreateFrom(&parser, base::Time::Now());
-
-      if (!record)
-        return DnsResponse::DNS_MALFORMED_RESPONSE;
-      if (!base::EqualsCaseInsensitiveASCII(record->name(),
-                                            response->GetDottedName())) {
-        return DnsResponse::DNS_NAME_MISMATCH;
-      }
-
-      // Ignore any records that are not class Internet and type
-      // |filter_dns_type|.
-      if (record->klass() == dns_protocol::kClassIN &&
-          record->type() == filter_dns_type) {
-        base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
-        *out_response_ttl =
-            std::min(out_response_ttl->value_or(base::TimeDelta::Max()), ttl);
-
-        out_records->push_back(std::move(record));
-      }
-    }
-
-    // For NXDOMAIN or NODATA (NOERROR with 0 answers), attempt to find a TTL
-    // via an SOA record.
-    if (response->rcode() == dns_protocol::kRcodeNXDOMAIN ||
-        (response->answer_count() == 0 &&
-         response->rcode() == dns_protocol::kRcodeNOERROR)) {
-      bool soa_found = false;
-      for (unsigned i = 0; i < response->authority_count(); ++i) {
-        DnsResourceRecord record;
-        if (parser.ReadRecord(&record) &&
-            record.type == dns_protocol::kTypeSOA) {
-          soa_found = true;
-          base::TimeDelta ttl = base::TimeDelta::FromSeconds(record.ttl);
-          *out_response_ttl =
-              std::min(out_response_ttl->value_or(base::TimeDelta::Max()), ttl);
-        }
-      }
-
-      // Per RFC2308, section 5, never cache negative results unless an SOA
-      // record is found.
-      if (!soa_found)
-        out_response_ttl->reset();
-    }
-
-    for (unsigned i = 0; i < response->additional_answer_count(); ++i) {
-      std::unique_ptr<const RecordParsed> record =
-          RecordParsed::CreateFrom(&parser, base::Time::Now());
-      if (record && record->klass() == dns_protocol::kClassIN &&
-          record->type() == dns_protocol::kTypeHttps) {
-        bool is_unsolicited = filter_dns_type != dns_protocol::kTypeHttps;
-        SaveMetricsForAdditionalHttpsRecord(*record, is_unsolicited);
-      }
-    }
-
-    return DnsResponse::DNS_PARSE_OK;
-  }
-
   void OnSortComplete(base::TimeTicks sort_start_time,
                       HostCache::Entry results,
                       bool secure,
@@ -1762,7 +1421,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     results.set_addresses(addr_list);
 
     if (!success) {
-      OnFailure(ERR_DNS_SORT_ERROR, DnsResponse::DNS_PARSE_OK,
+      OnFailure(ERR_DNS_SORT_ERROR,
+                DnsResponseResultExtractor::ExtractionError::kOk,
                 results.GetOptionalTtl());
       return;
     }
@@ -1772,7 +1432,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
-      OnFailure(ERR_NAME_NOT_RESOLVED, DnsResponse::DNS_PARSE_OK,
+      OnFailure(ERR_NAME_NOT_RESOLVED,
+                DnsResponseResultExtractor::ExtractionError::kOk,
                 results.GetOptionalTtl());
       return;
     }
@@ -1781,7 +1442,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
   void OnFailure(int net_error,
-                 DnsResponse::Result parse_result,
+                 DnsResponseResultExtractor::ExtractionError extraction_error,
                  base::Optional<base::TimeDelta> ttl) {
     if (httpssvc_metrics_)
       httpssvc_metrics_->SaveAddressQueryFailure();
@@ -1790,7 +1451,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
 
     net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK, [&] {
-      return NetLogDnsTaskFailedParams(results, parse_result);
+      return NetLogDnsTaskFailedParams(results,
+                                       static_cast<int>(extraction_error));
     });
 
     delegate_->OnDnsTaskComplete(task_start_time_, results, secure_);

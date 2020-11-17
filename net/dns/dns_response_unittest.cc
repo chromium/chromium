@@ -683,7 +683,7 @@ TEST(DnsResponseTest, ParseToAddressList) {
     DnsResponse response(t.response_data, t.response_size, t.answers_offset);
     AddressList addr_list;
     base::Optional<base::TimeDelta> ttl;
-    EXPECT_EQ(DnsResponse::DNS_PARSE_OK,
+    EXPECT_EQ(DnsResponse::Result::kOk,
               response.ParseToAddressList(&addr_list, &ttl));
     std::vector<const char*> expected_addresses(
         t.expected_addresses,
@@ -781,23 +781,23 @@ TEST(DnsResponseTest, ParseToAddressListFail) {
   const struct TestCase {
     const uint8_t* data;
     size_t size;
-    DnsResponse::Result expected_result;
+    DnsResponseResultExtractor::ExtractionError expected_result;
   } cases[] = {
       {kResponseTruncatedRecord, base::size(kResponseTruncatedRecord),
-       DnsResponse::DNS_MALFORMED_RESPONSE},
+       DnsResponse::Result::kMalformedRecord},
       {kResponseTruncatedCNAME, base::size(kResponseTruncatedCNAME),
-       DnsResponse::DNS_MALFORMED_CNAME},
+       DnsResponse::Result::kMalformedCname},
       {kResponseNameMismatch, base::size(kResponseNameMismatch),
-       DnsResponse::DNS_NAME_MISMATCH},
+       DnsResponse::Result::kNameMismatch},
       {kResponseNameMismatchInChain, base::size(kResponseNameMismatchInChain),
-       DnsResponse::DNS_NAME_MISMATCH},
+       DnsResponse::Result::kNameMismatch},
       {kResponseSizeMismatch, base::size(kResponseSizeMismatch),
-       DnsResponse::DNS_SIZE_MISMATCH},
+       DnsResponse::Result::kMalformedResult},
       {kResponseCNAMEAfterAddress, base::size(kResponseCNAMEAfterAddress),
-       DnsResponse::DNS_CNAME_AFTER_ADDRESS},
+       DnsResponse::Result::kCnameAfterResult},
       // Not actually a failure, just an empty result.
       {kResponseNoAddresses, base::size(kResponseNoAddresses),
-       DnsResponse::DNS_PARSE_OK},
+       DnsResponse::Result::kOk},
   };
 
   const size_t kQuerySize = 12 + 7;

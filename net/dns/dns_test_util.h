@@ -228,7 +228,8 @@ DnsResponse BuildTestDnsResponse(
     uint16_t type,
     const std::vector<DnsResourceRecord>& answers,
     const std::vector<DnsResourceRecord>& authority = {},
-    const std::vector<DnsResourceRecord>& additional = {});
+    const std::vector<DnsResourceRecord>& additional = {},
+    uint8_t rcode = dns_protocol::kRcodeNOERROR);
 
 DnsResponse BuildTestDnsAddressResponse(std::string name,
                                         const IPAddress& ip,

@@ -48,6 +48,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
+#include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_socket_allocator.h"
@@ -979,7 +980,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       base::Optional<base::TimeDelta> ttl;
       if (response &&
           attempt->GetResponse()->ParseToAddressList(&addresses, &ttl) ==
-              DnsResponse::DNS_PARSE_OK &&
+              DnsResponseResultExtractor::ExtractionError::kOk &&
           !addresses.empty()) {
         // The DoH probe queries don't go through the standard DnsAttempt path,
         // so the ServerStats have not been updated yet.

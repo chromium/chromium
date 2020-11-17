@@ -176,7 +176,8 @@ DnsResponse BuildTestDnsResponse(
     uint16_t type,
     const std::vector<DnsResourceRecord>& answers,
     const std::vector<DnsResourceRecord>& authority,
-    const std::vector<DnsResourceRecord>& additional) {
+    const std::vector<DnsResourceRecord>& additional,
+    uint8_t rcode) {
   DCHECK(!name.empty());
 
   std::string dns_name;
@@ -185,8 +186,7 @@ DnsResponse BuildTestDnsResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, std::move(dns_name), type);
   return DnsResponse(0, true /* is_authoritative */, answers,
                      authority /* authority_records */,
-                     additional /* additional_records */, query,
-                     dns_protocol::kRcodeNOERROR /* rcode */,
+                     additional /* additional_records */, query, rcode,
                      false /* validate_answers_match_query */);
 }
 

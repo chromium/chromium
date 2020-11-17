@@ -241,6 +241,12 @@ class NET_EXPORT HostCache {
     // method performs a stable sort to ensure IPv6 addresses precede IPv4
     // addresses. IP versions being equal, addresses from |*this| will precede
     // those from |source|.
+    //
+    // Only non-failure entries (`error_` is OK or ERR_NAME_NOT_RESOLVED) can be
+    // merged. Because an ERR_NAME_NOT_RESOLVED represents success without any
+    // results, merging an OK entry with an ERR_NAME_NOT_RESOLVED entry
+    // represents merging a non-empty entry with an empty entry, resulting in
+    // non-empty and therefore OK.
     void MergeAddressesFrom(const HostCache::Entry& source);
 
     base::Value GetAsValue(bool include_staleness) const;

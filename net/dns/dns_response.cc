@@ -19,6 +19,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_query.h"
+#include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
@@ -520,28 +521,28 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
 
   for (unsigned i = 0; i < ancount; ++i) {
     if (!parser.ReadRecord(&record))
-      return DNS_MALFORMED_RESPONSE;
+      return Result::kMalformedRecord;
 
     base::TimeDelta record_ttl = base::TimeDelta::FromSeconds(record.ttl);
     if (record.type == dns_protocol::kTypeCNAME) {
       // Following the CNAME chain, only if no addresses seen.
       if (!ip_addresses.empty())
-        return DNS_CNAME_AFTER_ADDRESS;
+        return Result::kCnameAfterResult;
 
       if (!base::EqualsCaseInsensitiveASCII(record.name, expected_name))
-        return DNS_NAME_MISMATCH;
+        return Result::kNameMismatch;
 
       if (record.rdata.size() !=
           parser.ReadName(record.rdata.begin(), &expected_name))
-        return DNS_MALFORMED_CNAME;
+        return Result::kMalformedCname;
 
       ttl = std::min(ttl.value_or(base::TimeDelta::Max()), record_ttl);
     } else if (record.type == expected_type) {
       if (record.rdata.size() != expected_size)
-        return DNS_SIZE_MISMATCH;
+        return Result::kMalformedResult;
 
       if (!base::EqualsCaseInsensitiveASCII(record.name, expected_name))
-        return DNS_NAME_MISMATCH;
+        return Result::kNameMismatch;
 
       ttl = std::min(ttl.value_or(base::TimeDelta::Max()), record_ttl);
       ip_addresses.push_back(
@@ -574,7 +575,7 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
   *out_addr_list =
       AddressList::CreateFromIPAddressList(ip_addresses, expected_name);
   *out_ttl = ttl;
-  return DNS_PARSE_OK;
+  return Result::kOk;
 }
 
 bool DnsResponse::WriteHeader(base::BigEndianWriter* writer,
