@@ -8,5 +8,3 @@ per-file inline_login_handler_impl*=file://chrome/credential_provider/OWNERS
 per-file inline_login_handler.*=file://chrome/credential_provider/OWNERS
 
 per-file inline_login_*_chromeos.*=file://chromeos/components/account_manager/OWNERS
-
-# COMPONENT: Services>SignIn

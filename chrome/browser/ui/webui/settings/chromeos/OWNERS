@@ -3,5 +3,3 @@ file://chrome/browser/resources/settings/chromeos/OWNERS
 per-file languages_section*=myy@chromium.org
 per-file multidevice_handler*=file://chromeos/components/multidevice/OWNERS
 per-file account_manager_*=file://chromeos/components/account_manager/OWNERS
-
-# COMPONENT: OS>Systems>Settings

@@ -8,5 +8,3 @@ per-file *site_settings*=sauski@google.com
 per-file safe_browsing_handler*=msramek@chromium.org
 per-file safe_browsing_handler*=sauski@google.com
 per-file safety_check_handler*=andzaytsev@google.com
-
-# COMPONENT: UI>Settings

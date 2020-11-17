@@ -2,6 +2,3 @@ file://components/search/OWNERS
 estade@chromium.org
 
 per-file app_launcher_handler.*=dmurph@chromium.org
-
-# TEAM: ntp-dev@chromium.org
-# COMPONENT: UI>Browser>NewTabPage
