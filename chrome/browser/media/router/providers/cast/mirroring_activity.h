@@ -75,10 +75,15 @@ class MirroringActivity : public CastActivity,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
+
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
 
   void StopMirroring();
+
+  // Scrubs AES related data in messages with type "OFFER".
+  static std::string GetScrubbedLogMessage(const base::Value& message);
 
   mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
 
@@ -89,6 +94,12 @@ class MirroringActivity : public CastActivity,
   // OnSessionSet() to be called.
   mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
       channel_to_service_receiver_;
+
+  // Remote to the logger owned by the Media Router. Used to log WebRTC messages
+  // sent between the mirroring service and mirroring receiver.
+  // |logger_| should be bound before the CastMessageChannel message pipe is
+  // created.
+  mojo::Remote<mojom::Logger> logger_;
 
   mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
 
