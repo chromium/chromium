@@ -26,6 +26,7 @@ import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
@@ -187,7 +188,8 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void addPaymentAppFactories(PaymentAppService service) {
+    public void addPaymentAppFactories(
+            PaymentAppService service, PaymentAppFactoryDelegate delegate) {
         String androidFactoryId = AndroidPaymentAppFactory.class.getName();
         if (!service.containsFactory(androidFactoryId)) {
             service.addUniqueFactory(new AndroidPaymentAppFactory(), androidFactoryId);
@@ -204,7 +206,7 @@ public class ChromePaymentRequestService
         if (AutofillPaymentAppFactory.canMakePayments(mSpec.getMethodData())) {
             mPaymentUiService.setAutofillPaymentAppCreator(
                     AutofillPaymentAppFactory.createAppCreator(
-                            /*delegate=*/mPaymentRequestService));
+                            /*delegate=*/delegate));
         }
     }
 
@@ -216,7 +218,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
-            PaymentOptions paymentOptions) {
+            PaymentOptions paymentOptions, boolean isUserGestureShow) {
         assert mPaymentRequestService
                 != null : "This method is only supposed to be called by mPaymentRequestService.";
         // Send AppListReady signal when all apps are created and request.show() is called.
@@ -226,9 +228,9 @@ public class ChromePaymentRequestService
         }
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
-        mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(
-                mPaymentRequestService.isUserGestureShow(), mDelegate.skipUiForBasicCard(),
-                mSpec.getPaymentOptions(), mSpec.getMethodData().keySet());
+        mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(isUserGestureShow,
+                mDelegate.skipUiForBasicCard(), mSpec.getPaymentOptions(),
+                mSpec.getMethodData().keySet());
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
@@ -260,7 +262,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String triggerPaymentAppUiSkipIfApplicable() {
+    public String triggerPaymentAppUiSkipIfApplicable(boolean isUserGestureShow) {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
@@ -270,7 +272,7 @@ public class ChromePaymentRequestService
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
-            if (isMinimalUiApplicable()) {
+            if (isMinimalUiApplicable(isUserGestureShow)) {
                 ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
                 if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
                 if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
@@ -305,10 +307,12 @@ public class ChromePaymentRequestService
         return null;
     }
 
-    /** @return Whether the minimal UI should be shown. */
-    private boolean isMinimalUiApplicable() {
-        if (!mPaymentRequestService.isUserGestureShow()
-                || mPaymentUiService.getPaymentMethodsSection() == null
+    /**
+     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
+     * @return Whether the minimal UI should be shown.
+     */
+    private boolean isMinimalUiApplicable(boolean isUserGestureShow) {
+        if (!isUserGestureShow || mPaymentUiService.getPaymentMethodsSection() == null
                 || mPaymentUiService.getPaymentMethodsSection().getSize() != 1) {
             return false;
         }
@@ -361,15 +365,11 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     @Nullable
-    public WebContents openPaymentHandlerWindow(GURL url) {
-        if (mPaymentRequestService == null) return null;
-        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
-        assert invokedPaymentApp != null;
-        assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
-
+    public WebContents openPaymentHandlerWindow(
+            GURL url, boolean isOffTheRecord, long ukmSourceId) {
         @Nullable
-        WebContents paymentHandlerWebContents = mPaymentUiService.showPaymentHandlerUI(
-                url, mPaymentRequestService.isOffTheRecord());
+        WebContents paymentHandlerWebContents =
+                mPaymentUiService.showPaymentHandlerUI(url, isOffTheRecord);
         if (paymentHandlerWebContents != null) {
             ServiceWorkerPaymentAppBridge.onOpeningPaymentAppWindow(
                     /*paymentRequestWebContents=*/mWebContents,
@@ -377,7 +377,7 @@ public class ChromePaymentRequestService
 
             // UKM for payment app origin should get recorded only when the origin of the invoked
             // payment app is shown to the user.
-            mJourneyLogger.setPaymentAppUkmSourceId(invokedPaymentApp.getUkmSourceId());
+            mJourneyLogger.setPaymentAppUkmSourceId(ukmSourceId);
         }
         return paymentHandlerWebContents;
     }
@@ -410,7 +410,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String continueShow() {
+    public String continueShow(boolean isFinishedQueryingPaymentApps, boolean isUserGestureShow) {
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
 
@@ -435,10 +435,10 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        String error = triggerPaymentAppUiSkipIfApplicable();
+        String error = triggerPaymentAppUiSkipIfApplicable(isUserGestureShow);
         if (error != null) return error;
 
-        if (mPaymentRequestService.isFinishedQueryingPaymentApps()
+        if (isFinishedQueryingPaymentApps
                 && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
             boolean providedInformationToPaymentRequestUI =
                     mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();

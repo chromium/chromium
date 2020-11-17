@@ -110,8 +110,9 @@ public interface BrowserPaymentRequest {
     /**
      * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
      * @param service The PaymentAppService to be added with the factories.
+     * @param delegate The delegate of payment app factory.
      */
-    void addPaymentAppFactories(PaymentAppService service);
+    void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
 
     default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {}
@@ -130,11 +131,12 @@ public interface BrowserPaymentRequest {
      *        updated details.
      * @param total The total amount specified in the payment request.
      * @param paymentOptions The payment options specified in the payment request.
+     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      * @return The error of the showing if any; null if success.
      */
     @Nullable
     default String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
-            PaymentOptions paymentOptions) {
+            PaymentOptions paymentOptions, boolean isUserGestureShow) {
         return null;
     }
 
@@ -148,9 +150,10 @@ public interface BrowserPaymentRequest {
      * Skips the app selector UI whether it is currently opened or not, and if applicable, invokes a
      * payment app.
      * @return The error if it fails; null otherwise.
+     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String triggerPaymentAppUiSkipIfApplicable() {
+    default String triggerPaymentAppUiSkipIfApplicable(boolean isUserGestureShow) {
         return null;
     }
 
@@ -199,9 +202,12 @@ public interface BrowserPaymentRequest {
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.
      * @param url The url of the page to be opened in the window.
+     * @param isOffTheRecord Whether the profile is off the record.
+     * @param ukmSourceId The ukm source id assigned to the payment app.
      * @return The created WebContents.
      */
-    default WebContents openPaymentHandlerWindow(GURL url) {
+    default WebContents openPaymentHandlerWindow(
+            GURL url, boolean isOffTheRecord, long ukmSourceId) {
         return null;
     }
 
@@ -214,9 +220,12 @@ public interface BrowserPaymentRequest {
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.
      * @return The error if it fails; null otherwise.
+     * @param isFinishedQueryingPaymentApps Whether all payment app factories have been queried for
+     *         their payment apps.
+     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String continueShow() {
+    default String continueShow(boolean isFinishedQueryingPaymentApps, boolean isUserGestureShow) {
         return null;
     }
 
