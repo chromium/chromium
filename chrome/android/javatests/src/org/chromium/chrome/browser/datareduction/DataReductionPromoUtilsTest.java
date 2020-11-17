@@ -20,6 +20,7 @@ import org.chromium.base.FieldTrialList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.about_settings.AboutSettingsBridge;
@@ -31,6 +32,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
  * Unit test suite for DataReductionPromoUtils.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DataReductionPromoUtilsTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
