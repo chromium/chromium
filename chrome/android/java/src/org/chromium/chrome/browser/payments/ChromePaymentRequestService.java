@@ -589,7 +589,14 @@ public class ChromePaymentRequestService
         mPaymentRequestService.close();
         mPaymentRequestService = null;
 
-        closeUIAndDestroyNativeObjects();
+        mPaymentUiService.close();
+        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
+
+        if (mPaymentHandlerHost != null) {
+            mPaymentHandlerHost.destroy();
+            mPaymentHandlerHost = null;
+        }
+        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
     // Implements BrowserPaymentRequest:
@@ -722,28 +729,6 @@ public class ChromePaymentRequestService
             mPaymentUiService.getPaymentRequestUI().onPayButtonProcessingCancelled();
             PaymentDetailsUpdateServiceHelper.getInstance().reset();
         }
-    }
-
-    /**
-     * Closes the UI and destroys native objects. If the client is still connected, then it's
-     * notified of UI hiding. This ChromePaymentRequestService object can't be reused after this
-     * function is called.
-     */
-    private void closeUIAndDestroyNativeObjects() {
-        mPaymentUiService.close();
-        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
-
-        // Destroy native objects.
-        mJourneyLogger.destroy();
-        if (mPaymentHandlerHost != null) {
-            mPaymentHandlerHost.destroy();
-            mPaymentHandlerHost = null;
-        }
-
-        if (mSpec != null) {
-            mSpec.destroy();
-        }
-        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
     // Implement PaymentUiService.Delegate:

@@ -1214,6 +1214,12 @@ public class PaymentRequestService
 
         mOnClosedListener.run();
 
+        mJourneyLogger.destroy();
+
+        if (mSpec != null) {
+            mSpec.destroy();
+        }
+
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onClosed();
         }
