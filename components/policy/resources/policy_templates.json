@@ -3892,6 +3892,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Perform Safe Browsing checks on all downloaded files',
+        },
+        {
+          'value': False,
+          'caption': 'Skip Safe Browsing checks for files download from trusted sources',
+        },
+      ],
       'example_value': False,
       'default': True,
       'id': 375,
@@ -8699,6 +8709,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Perform revocation checks for successfully validated server certificates signed by locally installed CA certificates',
+        },
+        {
+          'value': False,
+          'caption': 'Use existing online revocation-checking settings',
+        },
+      ],
       'example_value': False,
       'default': False,
       'id': 235,
@@ -15210,6 +15230,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Users can customize the New Tab page background',
+        },
+        {
+          'value': False,
+          'caption': 'Users can not customize the New Tab page background',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 653,
@@ -16748,6 +16778,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use the system default printer as the default choice in Print Preview',
+        },
+        {
+          'value': False,
+          'caption': 'Use the most recently used printer as the default choice in Print Preview',
+        },
+      ],
       'example_value': False,
       'default': False,
       'id': 373,
@@ -20572,6 +20612,20 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow SAML users to change their SAML passwords in-session at chrome://password-change',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow in-session SAML password changes at chrome://password-change',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
       'default': None,
       'id': 545,
