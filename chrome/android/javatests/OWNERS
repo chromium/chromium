@@ -3,6 +3,3 @@ file://chrome/android/OWNERS
 bsazonov@chromium.org
 peconn@chromium.org
 skyostil@chromium.org
-
-# COMPONENT: Test>Android
-# OS: Android

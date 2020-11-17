@@ -1,5 +1,2 @@
 per-file *Leakage*=roagarwal@chromium.org
 per-file *IncognitoDataTestUtils*=roagarwal@chromium.org
-
-# TEAM: chrome-privacy-core@google.com
-# COMPONENT: Privacy>Incognito

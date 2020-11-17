@@ -1,5 +1,2 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/signin/OWNERS
 roagarwal@chromium.org
-
-# TEAM: chrome-privacy-core@google.com
-# COMPONENT: Privacy>Incognito
