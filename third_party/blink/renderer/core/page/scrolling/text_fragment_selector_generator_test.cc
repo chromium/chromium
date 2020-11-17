@@ -540,7 +540,7 @@ text text text text text text text text text text and last text",
                       .length());
 
   GenerateAndVerifySelector(second_selected_start, second_selected_end,
-                            "paragraph%20text%20text,and%20last%20text");
+                            "paragraph%20text,last%20text");
 }
 
 // When using all the selected text for the range is not enough for unique
@@ -678,7 +678,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 }
 
 // Check the case when selections starts with an non text node.
-TEST_F(TextFragmentSelectorGeneratorTest, StartswithImage) {
+TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -688,6 +688,27 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartswithImage) {
     <p id='first'>First paragraph text that is longer  than 20 chars</p>
   )HTML");
   Node* img = GetDocument().getElementById("img");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(img, 0);
+  const auto& end = Position(first_paragraph, 5);
+  ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+}
+
+// Check the case when selections starts with an non text node.
+TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <div id="img_div">
+      <img id="img">
+    </div>
+    <p id='first'>First paragraph text that is longer  than 20 chars</p>
+  )HTML");
+  Node* img = GetDocument().getElementById("img_div");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
   const auto& start = Position(img, 0);
   const auto& end = Position(first_paragraph, 5);
@@ -750,6 +771,24 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
   GenerateAndVerifySelector(start, end, "First%20paragraph,-Second");
+}
+
+// Checks that for short selection that have nested block element range selector
+// is used.
+TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <div>block text</div> paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(first_paragraph->nextSibling()->nextSibling(), 10);
+  ASSERT_EQ("First\nblock text\nparagraph",
+            PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "First,paragraph");
 }
 
 // Basic test case for |GetNextTextBlock|.
@@ -1318,6 +1357,70 @@ TEST_F(TextFragmentSelectorGeneratorTest,
                                          .GetFrame()
                                          ->GetTextFragmentSelectorGenerator()
                                          ->GetNextTextBlockForTesting(end));
+}
+
+// Checks that selection in the same text node is considerered uninterrupted.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       IsInSameUninterruptedBlock_OneTextNode) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(first_paragraph, 15);
+  ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
+
+  EXPECT_TRUE(GetDocument()
+                  .GetFrame()
+                  ->GetTextFragmentSelectorGenerator()
+                  ->IsInSameUninterruptedBlockForTesting(start, end));
+}
+
+// Checks that selection in the same text node with nested non-block element is
+// considerered uninterrupted.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       IsInSameUninterruptedBlock_NonBlockInterruption) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <i>styled text</i> paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(first_paragraph->nextSibling()->nextSibling(), 10);
+  ASSERT_EQ("First styled text paragraph",
+            PlainText(EphemeralRange(start, end)));
+
+  EXPECT_TRUE(GetDocument()
+                  .GetFrame()
+                  ->GetTextFragmentSelectorGenerator()
+                  ->IsInSameUninterruptedBlockForTesting(start, end));
+}
+
+// Checks that selection in the same text node with nested block element is
+// considerered interrupted.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       IsInSameUninterruptedBlock_BlockInterruption) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <div>block text</div> paragraph text</div>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(first_paragraph->nextSibling()->nextSibling(), 10);
+  ASSERT_EQ("First\nblock text\nparagraph",
+            PlainText(EphemeralRange(start, end)));
+
+  EXPECT_FALSE(GetDocument()
+                   .GetFrame()
+                   ->GetTextFragmentSelectorGenerator()
+                   ->IsInSameUninterruptedBlockForTesting(start, end));
 }
 
 }  // namespace blink
