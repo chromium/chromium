@@ -16,10 +16,6 @@ namespace service_manager {
 class LocalInterfaceProvider;
 }  // namespace service_manager
 
-namespace subresource_filter {
-class UnverifiedRulesetDealer;
-}
-
 namespace weblayer {
 class WebLayerRenderThreadObserver;
 
@@ -57,9 +53,6 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
       local_interface_provider_;
   std::unique_ptr<SpellCheck> spellcheck_;
 #endif
-
-  std::unique_ptr<subresource_filter::UnverifiedRulesetDealer>
-      subresource_filter_ruleset_dealer_;
 
   std::unique_ptr<WebLayerRenderThreadObserver> weblayer_observer_;
 
