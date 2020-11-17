@@ -20,6 +20,9 @@ struct CrasDevice {
   explicit CrasDevice(const cras_ionode_info* node,
                       const cras_iodev_info* dev,
                       DeviceType type);
+  explicit CrasDevice(const std::vector<cras_ionode_info>& nodes,
+                      const cras_iodev_info* dev,
+                      DeviceType type);
   DeviceType type;
   uint64_t id;
   std::string name;

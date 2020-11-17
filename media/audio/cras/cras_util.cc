@@ -15,6 +15,10 @@ namespace media {
 
 namespace {
 
+const char kInternalInputVirtualDevice[] = "Built-in mic";
+const char kInternalOutputVirtualDevice[] = "Built-in speaker";
+const char kHeadphoneLineOutVirtualDevice[] = "Headphone/Line Out";
+
 // Returns if that an input or output audio device is for simple usage like
 // playback or recording for user. In contrast, audio device such as loopback,
 // always on keyword recognition (HOTWORD), and keyboard mic are not for simple
@@ -69,6 +73,35 @@ CrasDevice::CrasDevice(const cras_ionode_info* node,
     name = dev->name;
 }
 
+// Creates a CrasDevice based on the node list.
+// If there is only one node attached to this device, create it directly.
+// If there are two nodes, create a virtual device instead.
+CrasDevice::CrasDevice(const std::vector<cras_ionode_info>& nodes,
+                       const cras_iodev_info* dev,
+                       DeviceType type)
+    : CrasDevice(&nodes[0], dev, type) {
+  if (nodes.size() == 1)
+    return;
+
+  if (nodes.size() > 2) {
+    LOG(WARNING) << dev->name << " has more than 2 nodes";
+    return;
+  }
+
+  if (nodes[0].type_enum == CRAS_NODE_TYPE_LINEOUT ||
+      nodes[1].type_enum == CRAS_NODE_TYPE_LINEOUT) {
+    name = kHeadphoneLineOutVirtualDevice;
+  } else if (nodes[0].type_enum == CRAS_NODE_TYPE_INTERNAL_SPEAKER ||
+             nodes[1].type_enum == CRAS_NODE_TYPE_INTERNAL_SPEAKER) {
+    name = kInternalOutputVirtualDevice;
+  } else if (nodes[0].type_enum == CRAS_NODE_TYPE_MIC ||
+             nodes[1].type_enum == CRAS_NODE_TYPE_MIC) {
+    name = kInternalInputVirtualDevice;
+  } else {
+    LOG(WARNING) << "Failed to create virtual device for " << dev->name;
+  }
+}
+
 std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
 
@@ -93,15 +126,17 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
     return devices;
   }
 
-  for (size_t i = 0; i < num_nodes; i++) {
-    if (!nodes[i].plugged || !IsForSimpleUsage(nodes[i].type_enum))
-      continue;
-    for (size_t j = 0; j < num_devs; j++) {
-      if (nodes[i].iodev_idx == devs[j].idx) {
-        devices.emplace_back(&nodes[i], &devs[j], type);
-        break;
-      }
+  for (size_t i = 0; i < num_devs; i++) {
+    std::vector<cras_ionode_info> dev_nodes;
+    for (size_t j = 0; j < num_nodes; j++) {
+      if (!nodes[j].plugged || !IsForSimpleUsage(nodes[j].type_enum))
+        continue;
+      if (devs[i].idx == nodes[j].iodev_idx)
+        dev_nodes.emplace_back(nodes[j]);
     }
+    if (dev_nodes.empty())
+      continue;
+    devices.emplace_back(dev_nodes, &devs[i], type);
   }
 
   CrasDisconnect(&client);
