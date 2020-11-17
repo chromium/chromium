@@ -37,8 +37,14 @@ class CONTROLLER_EXPORT RendererResourceCoordinatorImpl final
                             ExecutionContext* execution_context) final;
   void OnScriptStateDetached(ScriptState* script_state) final;
   void OnScriptStateDestroyed(ScriptState* script_state) final;
+  void OnBeforeContentFrameAttached(const Frame& frame,
+                                    const HTMLFrameOwnerElement& owner) final;
+  void OnBeforeContentFrameDetached(const Frame& frame,
+                                    const HTMLFrameOwnerElement& owner) final;
 
  private:
+  friend class RendererResourceCoordinatorImplTest;
+
   explicit RendererResourceCoordinatorImpl(
       mojo::PendingRemote<
           performance_manager::mojom::blink::ProcessCoordinationUnit> remote);

@@ -196,7 +196,7 @@ void V8ContextTracker::OnV8ContextDestroyed(
 }
 
 void V8ContextTracker::OnRemoteIframeAttached(
-    util::PassKey<FrameNodeImpl> key,
+    util::PassKey<ProcessNodeImpl> key,
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
@@ -218,6 +218,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     blink::RemoteFrameToken remote_frame_token;
     mojom::IframeAttributionDataPtr iframe_attribution_data;
     base::WeakPtr<FrameNode> frame_node;
+    base::WeakPtr<FrameNode> parent_frame_node;
   };
   std::unique_ptr<Data> data(
       new Data{mojo::GetBadMessageCallback(), remote_frame_token,
@@ -227,12 +228,32 @@ void V8ContextTracker::OnRemoteIframeAttached(
     DCHECK(data);
     DCHECK(graph);
     DCHECK_ON_GRAPH_SEQUENCE(graph);
-    if (data->frame_node) {
+    // Only dispatch if the frame and its parent still exist after the
+    // round-trip through the UI thread. If the frame still exists but now has
+    // no parent, we don't need to record IframeAttribution data for it since
+    // it's now unreachable.
+    //
+    // An example of this is the custom <webview> element used in Chrome UI
+    // (extensions/renderer/resources/guest_view/web_view/web_view.js). This
+    // element has an inner web contents with an opener relationship to the
+    // webview, but no parent-child relationship. However since it is a custom
+    // element implemented on top of <iframe>, the renderer has no way to
+    // distinguish it from a regular iframe. At the moment the contents is
+    // attached it has a transient parent frame, which is reported through
+    // OnRemoteIframeAttached, but the parent frame disappears shortly
+    // afterward.
+    //
+    // TODO(crbug.com/1085129): Write an end-to-end browsertest that covers
+    // this case once all parts of the measure memory API are hooked up.
+    if (data->frame_node && data->parent_frame_node) {
       auto* frame_node = FrameNodeImpl::FromNode(data->frame_node.get());
+      auto* parent_frame_node =
+          FrameNodeImpl::FromNode(data->parent_frame_node.get());
       if (auto* tracker = V8ContextTracker::GetFromGraph(graph)) {
         tracker->OnRemoteIframeAttachedImpl(
             std::move(data->bad_message_callback), frame_node,
-            data->remote_frame_token, std::move(data->iframe_attribution_data));
+            parent_frame_node, data->remote_frame_token,
+            std::move(data->iframe_attribution_data));
       }
     }
   });
@@ -263,7 +284,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
 }
 
 void V8ContextTracker::OnRemoteIframeDetached(
-    util::PassKey<FrameNodeImpl> key,
+    util::PassKey<ProcessNodeImpl> key,
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token) {
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());
@@ -306,10 +327,11 @@ void V8ContextTracker::OnRemoteIframeDetached(
 
 void V8ContextTracker::OnRemoteIframeAttachedForTesting(
     FrameNodeImpl* frame_node,
+    FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
   OnRemoteIframeAttachedImpl(base::BindOnce(&FakeReportBadMessageForTesting),
-                             frame_node, remote_frame_token,
+                             frame_node, parent_frame_node, remote_frame_token,
                              std::move(iframe_attribution_data));
 }
 
@@ -449,10 +471,17 @@ void V8ContextTracker::OnBeforeProcessNodeRemoved(const ProcessNode* node) {
 void V8ContextTracker::OnRemoteIframeAttachedImpl(
     mojo::ReportBadMessageCallback bad_message_callback,
     FrameNodeImpl* frame_node,
+    FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK(bad_message_callback);
   DCHECK_ON_GRAPH_SEQUENCE(frame_node->graph());
+
+  if (frame_node->parent_frame_node() != parent_frame_node) {
+    std::move(bad_message_callback)
+        .Run("OnRemoteIframeAttached has wrong parent frame");
+    return;
+  }
 
   if (data_store_->Get(remote_frame_token)) {
     std::move(bad_message_callback).Run("repeated OnRemoteIframeAttached");

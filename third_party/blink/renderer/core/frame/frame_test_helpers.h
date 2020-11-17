@@ -161,9 +161,9 @@ WebLocalFrameImpl* CreateLocalChild(WebLocalFrame& parent,
                                     blink::mojom::blink::TreeScopeType,
                                     std::unique_ptr<TestWebFrameClient>);
 
-// Helper for creating a provisional local frame that can replace a remote
-// frame.
-WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
+// Helper for creating a provisional local frame that can replace a local or
+// remote frame.
+WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
                                      TestWebFrameClient* = nullptr);
 
 // Helper for creating a remote frame. Generally used when creating a remote

@@ -7,8 +7,8 @@ module performance_manager.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
-import "components/performance_manager/public/mojom/web_memory.mojom";
 import "components/performance_manager/public/mojom/v8_contexts.mojom";
+import "components/performance_manager/public/mojom/web_memory.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -78,6 +78,8 @@ interface DocumentCoordinationUnit {
       (WebMemoryMeasurement measurement);
 };
 
+// Interface used by the RendererResourceCoordinator singleton to send state
+// associated with resource management of a renderer process to the embedder.
 interface ProcessCoordinationUnit {
   // Property signals.
   SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low);
@@ -113,4 +115,19 @@ interface ProcessCoordinationUnit {
   // is never called for contexts in a renderer processes that crashes or is
   // otherwise terminated.
   OnV8ContextDestroyed(blink.mojom.V8ContextToken v8_context_token);
+
+  // Called when a RemoteFrame is attached as the content of a local iframe.
+  // The browser process will use this to maintain a map from the RemoteFrame's
+  // token to the iframe's attribution information as seen by the renderer
+  // process.
+  OnRemoteIframeAttached(blink.mojom.LocalFrameToken parent_frame_token,
+                        blink.mojom.RemoteFrameToken remote_frame_token,
+                        IframeAttributionData iframe_attribution_data);
+
+  // Called when a RemoteFrame that was the content of a local iframe is
+  // removed from the frame. Only the frame token is needed because the
+  // iframe's attribution information was previously associated with the token
+  // by OnRemoteIframeAttached.
+  OnRemoteIframeDetached(blink.mojom.LocalFrameToken parent_frame_token,
+                         blink.mojom.RemoteFrameToken remote_frame_token);
 };

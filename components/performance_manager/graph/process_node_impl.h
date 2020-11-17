@@ -24,6 +24,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 
@@ -66,6 +67,13 @@ class ProcessNodeImpl
       const blink::V8ContextToken& v8_context_token) override;
   void OnV8ContextDestroyed(
       const blink::V8ContextToken& v8_context_token) override;
+  void OnRemoteIframeAttached(
+      const blink::LocalFrameToken& parent_frame_token,
+      const blink::RemoteFrameToken& remote_frame_token,
+      mojom::IframeAttributionDataPtr iframe_attribution_data) override;
+  void OnRemoteIframeDetached(
+      const blink::LocalFrameToken& parent_frame_token,
+      const blink::RemoteFrameToken& remote_frame_token) override;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcess(base::Process process, base::Time launch_time);

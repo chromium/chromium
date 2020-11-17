@@ -165,7 +165,7 @@ class V8ContextTracker final
   // be called for bookkeeping. This should only be called once for a given
   // |remote_frame_token|.
   void OnRemoteIframeAttached(
-      util::PassKey<FrameNodeImpl> key,
+      util::PassKey<ProcessNodeImpl> key,
       FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
       mojom::IframeAttributionDataPtr iframe_attribution_data);
@@ -180,7 +180,7 @@ class V8ContextTracker final
   // |remote_frame_token|, and only after a matching "OnRemoteIframeAttached"
   // call.
   void OnRemoteIframeDetached(
-      util::PassKey<FrameNodeImpl> key,
+      util::PassKey<ProcessNodeImpl> key,
       FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token);
 
@@ -189,6 +189,7 @@ class V8ContextTracker final
 
   void OnRemoteIframeAttachedForTesting(
       FrameNodeImpl* frame_node,
+      FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
       mojom::IframeAttributionDataPtr iframe_attribution_data);
 
@@ -229,6 +230,7 @@ class V8ContextTracker final
   void OnRemoteIframeAttachedImpl(
       mojo::ReportBadMessageCallback bad_message_callback,
       FrameNodeImpl* frame_node,
+      FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
       mojom::IframeAttributionDataPtr iframe_attribution_data);
 

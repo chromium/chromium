@@ -140,13 +140,20 @@ TEST_F(V8ContextTrackerDeathTest, MissingContextExplodes) {
 }
 
 TEST_F(V8ContextTrackerDeathTest, DoubleRemoteFrameCreatedExplodes) {
-  tracker->OnRemoteIframeAttachedForTesting(mock_graph.child_frame.get(),
-                                            kChildFrameRemoteToken,
-                                            GetFakeIframeAttributionDataPtr());
+  tracker->OnRemoteIframeAttachedForTesting(
+      mock_graph.child_frame.get(), mock_graph.frame.get(),
+      kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
 
   EXPECT_DCHECK_DEATH(tracker->OnRemoteIframeAttachedForTesting(
-      mock_graph.child_frame.get(), kChildFrameRemoteToken,
-      GetFakeIframeAttributionDataPtr()));
+      mock_graph.child_frame.get(), mock_graph.frame.get(),
+      kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr()));
+}
+
+TEST_F(V8ContextTrackerDeathTest, RemoteFrameWithBadParentExplodes) {
+  // child_frame's real parent is frame.
+  EXPECT_DCHECK_DEATH(tracker->OnRemoteIframeAttachedForTesting(
+      mock_graph.child_frame.get(), mock_graph.child_frame.get(),
+      kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr()));
 }
 
 TEST_F(V8ContextTrackerDeathTest, IframeAttributionDataForMainFrameExplodes) {
@@ -170,7 +177,7 @@ TEST_F(V8ContextTrackerDeathTest, IframeAttributionDataForInProcessChildFrame) {
   // notification should explode because |child2_frame| is in the same process
   // as its parent.
   EXPECT_DCHECK_DEATH(tracker->OnRemoteIframeAttachedForTesting(
-      child2_frame.get(), blink::RemoteFrameToken(),
+      child2_frame.get(), mock_graph.frame.get(), blink::RemoteFrameToken(),
       GetFakeIframeAttributionDataPtr()));
 
   // This should succeed because iframe data is provided.
@@ -344,8 +351,8 @@ TEST_F(V8ContextTrackerTest, MultipleV8ContextsForExecutionContext) {
   {
     SCOPED_TRACE("");
     tracker->OnRemoteIframeAttachedForTesting(
-        mock_graph.child_frame.get(), kChildFrameRemoteToken,
-        GetFakeIframeAttributionDataPtr());
+        mock_graph.child_frame.get(), mock_graph.frame.get(),
+        kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
     EXPECT_THAT(tracker, CountsMatch(4, 2));
     EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
   }
@@ -483,8 +490,8 @@ TEST_F(V8ContextTrackerTest, AllEventOrders) {
   auto iframeattach = [self = this]() {
     SCOPED_TRACE("");
     self->tracker->OnRemoteIframeAttachedForTesting(
-        self->mock_graph.child_frame.get(), kChildFrameRemoteToken,
-        GetFakeIframeAttributionDataPtr());
+        self->mock_graph.child_frame.get(), self->mock_graph.frame.get(),
+        kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
   };
 
   // Detaches a child iframe. This message is sent over the interface associated
@@ -757,9 +764,9 @@ TEST_F(V8ContextTrackerTest, PublicApi) {
   // Provide iframe data for the child frame.
 
   ASSERT_FALSE(ec_state->iframe_attribution_data);
-  tracker->OnRemoteIframeAttachedForTesting(mock_graph.child_frame.get(),
-                                            kChildFrameRemoteToken,
-                                            GetFakeIframeAttributionDataPtr());
+  tracker->OnRemoteIframeAttachedForTesting(
+      mock_graph.child_frame.get(), mock_graph.frame.get(),
+      kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
 
   const auto& iad = ec_state->iframe_attribution_data;
   ASSERT_TRUE(iad);

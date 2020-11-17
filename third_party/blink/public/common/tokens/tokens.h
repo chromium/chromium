@@ -28,9 +28,9 @@ namespace blink {
 // counterpart in the browser.
 using LocalFrameToken = util::TokenType<class LocalFrameTokenTypeMarker>;
 
-// Uniquely identifies an blink::RemoteFrame / blink::WebRemoteFrame /
+// Uniquely identifies a blink::RemoteFrame / blink::WebRemoteFrame /
 // content::RenderFrameProxy in a renderer process, and its
-// ontent::RenderFrameProxyHost counterpart in the browser. There can be
+// content::RenderFrameProxyHost counterpart in the browser. There can be
 // multiple RemoteFrames corresponding to a single LocalFrame, and each token
 // will be distinct.
 using RemoteFrameToken = util::TokenType<class RemoteFrameTokenTypeMarker>;

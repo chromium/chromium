@@ -4,13 +4,20 @@
 
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/check.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -18,24 +25,30 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+
+using performance_manager::mojom::blink::IframeAttributionData;
+using performance_manager::mojom::blink::IframeAttributionDataPtr;
+using performance_manager::mojom::blink::ProcessCoordinationUnit;
+using performance_manager::mojom::blink::V8ContextDescription;
+using performance_manager::mojom::blink::V8ContextDescriptionPtr;
+using performance_manager::mojom::blink::V8ContextWorldType;
 
 namespace WTF {
 
 // Copies the data by move.
 template <>
-struct CrossThreadCopier<
-    performance_manager::mojom::blink::V8ContextDescriptionPtr>
-    : public WTF::CrossThreadCopierByValuePassThrough<
-          performance_manager::mojom::blink::V8ContextDescriptionPtr> {};
+struct CrossThreadCopier<V8ContextDescriptionPtr>
+    : public WTF::CrossThreadCopierByValuePassThrough<V8ContextDescriptionPtr> {
+};
 
 // Copies the data by move.
 template <>
-struct CrossThreadCopier<
-    performance_manager::mojom::blink::IframeAttributionDataPtr>
+struct CrossThreadCopier<IframeAttributionDataPtr>
     : public WTF::CrossThreadCopierByValuePassThrough<
-          performance_manager::mojom::blink::IframeAttributionDataPtr> {};
+          IframeAttributionDataPtr> {};
 
 // Copies the data using the copy constructor.
 template <>
@@ -46,9 +59,9 @@ struct CrossThreadCopier<blink::V8ContextToken>
 
 namespace blink {
 
-namespace {
+using mojom::blink::FrameOwnerElementType;
 
-using performance_manager::mojom::blink::V8ContextWorldType;
+namespace {
 
 // Determines if the given stable world ID is an extension world ID.
 // Extensions IDs are 32-character strings containing characters in the range of
@@ -67,6 +80,33 @@ bool IsExtensionStableWorldId(const String& stable_world_id) {
   return true;
 }
 
+// Returns true if |owner| is an iframe, false otherwise.
+// This will also return true for custom elements built on iframe, like
+// <webview> and <guestview>. Since the renderer has no knowledge of these they
+// must be filtered out on the browser side.
+bool ShouldSendIframeNotificationsFor(const HTMLFrameOwnerElement& owner) {
+  return owner.OwnerType() == FrameOwnerElementType::kIframe;
+}
+
+// If |frame| is a RemoteFrame with a local parent, returns the parent.
+// Otherwise returns nullptr.
+LocalFrame* GetLocalParentOfRemoteFrame(const Frame& frame) {
+  if (IsA<RemoteFrame>(frame)) {
+    if (Frame* parent = frame.Tree().Parent()) {
+      return DynamicTo<LocalFrame>(parent);
+    }
+  }
+  return nullptr;
+}
+
+IframeAttributionDataPtr AttributionDataForOwner(
+    const HTMLFrameOwnerElement& owner) {
+  auto attribution_data = IframeAttributionData::New();
+  attribution_data->id = owner.FastGetAttribute(html_names::kIdAttr);
+  attribution_data->src = owner.FastGetAttribute(html_names::kSrcAttr);
+  return attribution_data;
+}
+
 }  // namespace
 
 RendererResourceCoordinatorImpl::~RendererResourceCoordinatorImpl() = default;
@@ -80,9 +120,7 @@ void RendererResourceCoordinatorImpl::MaybeInitialize() {
   DCHECK(IsMainThread());
   DCHECK(platform);
 
-  mojo::PendingRemote<
-      performance_manager::mojom::blink::ProcessCoordinationUnit>
-      remote;
+  mojo::PendingRemote<ProcessCoordinationUnit> remote;
   platform->GetBrowserInterfaceBroker()->GetInterface(
       remote.InitWithNewPipeAndPassReceiver());
   RendererResourceCoordinator::Set(
@@ -91,8 +129,7 @@ void RendererResourceCoordinatorImpl::MaybeInitialize() {
 
 void RendererResourceCoordinatorImpl::SetMainThreadTaskLoadIsLow(
     bool main_thread_task_load_is_low) {
-  if (!service_)
-    return;
+  DCHECK(service_);
   service_->SetMainThreadTaskLoadIsLow(main_thread_task_load_is_low);
 }
 
@@ -100,14 +137,12 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
     ScriptState* script_state,
     ExecutionContext* execution_context) {
   DCHECK(script_state);
-  if (!service_)
-    return;
+  DCHECK(service_);
 
-  auto v8_desc = performance_manager::mojom::blink::V8ContextDescription::New();
+  auto v8_desc = V8ContextDescription::New();
   v8_desc->token = script_state->GetToken();
 
-  performance_manager::mojom::blink::IframeAttributionDataPtr
-      iframe_attribution_data;
+  IframeAttributionDataPtr iframe_attribution_data;
 
   // Default the world name to being empty.
 
@@ -162,12 +197,7 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
           // frame.
           auto* owner = To<HTMLFrameOwnerElement>(local_frame->Owner());
           DCHECK(owner);
-          iframe_attribution_data =
-              performance_manager::mojom::blink::IframeAttributionData::New();
-          iframe_attribution_data->id =
-              owner->FastGetAttribute(html_names::kIdAttr);
-          iframe_attribution_data->src =
-              owner->FastGetAttribute(html_names::kSrcAttr);
+          iframe_attribution_data = AttributionDataForOwner(*owner);
         }
       }
     }
@@ -189,18 +219,42 @@ void RendererResourceCoordinatorImpl::OnScriptStateDestroyed(
   DispatchOnV8ContextDestroyed(script_state->GetToken());
 }
 
+void RendererResourceCoordinatorImpl::OnBeforeContentFrameAttached(
+    const Frame& frame,
+    const HTMLFrameOwnerElement& owner) {
+  DCHECK(service_);
+  if (!ShouldSendIframeNotificationsFor(owner))
+    return;
+  LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
+  if (!parent)
+    return;
+  service_->OnRemoteIframeAttached(LocalFrameToken(parent->GetFrameToken()),
+                                   RemoteFrameToken(frame.GetFrameToken()),
+                                   AttributionDataForOwner(owner));
+}
+
+void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
+    const Frame& frame,
+    const HTMLFrameOwnerElement& owner) {
+  DCHECK(service_);
+  if (!ShouldSendIframeNotificationsFor(owner))
+    return;
+  LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
+  if (!parent)
+    return;
+  service_->OnRemoteIframeDetached(LocalFrameToken(parent->GetFrameToken()),
+                                   RemoteFrameToken(frame.GetFrameToken()));
+}
+
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
-    mojo::PendingRemote<
-        performance_manager::mojom::blink::ProcessCoordinationUnit> remote) {
+    mojo::PendingRemote<ProcessCoordinationUnit> remote) {
   service_.Bind(std::move(remote));
 }
 
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
-    performance_manager::mojom::blink::V8ContextDescriptionPtr v8_desc,
-    performance_manager::mojom::blink::IframeAttributionDataPtr
-        iframe_attribution_data) {
-  if (!service_)
-    return;
+    V8ContextDescriptionPtr v8_desc,
+    IframeAttributionDataPtr iframe_attribution_data) {
+  DCHECK(service_);
   // Calls to this can arrive on any thread (due to workers, etc), but the
   // interface itself is bound to the main thread. In this case, once we've
   // collated the necessary data we bounce over to the main thread. Note that
@@ -221,8 +275,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
 
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
     const blink::V8ContextToken& token) {
-  if (!service_)
-    return;
+  DCHECK(service_);
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
@@ -236,8 +289,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
 }
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
     const blink::V8ContextToken& token) {
-  if (!service_)
-    return;
+  DCHECK(service_);
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(

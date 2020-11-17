@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -197,6 +198,12 @@ void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
   DCHECK(!lazy_load_frame_observer_ ||
          !lazy_load_frame_observer_->IsLazyLoadPending());
 
+  DCHECK_NE(content_frame_, &frame);
+  auto* resource_coordinator = RendererResourceCoordinator::Get();
+  if (content_frame_)
+    resource_coordinator->OnBeforeContentFrameDetached(*content_frame_, *this);
+  resource_coordinator->OnBeforeContentFrameAttached(frame, *this);
+
   content_frame_ = &frame;
 
   // Invalidate compositing inputs, because a remote frame child can cause the
@@ -225,6 +232,9 @@ void HTMLFrameOwnerElement::ClearContentFrame() {
   CancelPendingLazyLoad();
 
   DCHECK_EQ(content_frame_->Owner(), this);
+  RendererResourceCoordinator::Get()->OnBeforeContentFrameDetached(
+      *content_frame_, *this);
+
   content_frame_ = nullptr;
 
   for (ContainerNode* node = this; node; node = node->ParentOrShadowHostNode())

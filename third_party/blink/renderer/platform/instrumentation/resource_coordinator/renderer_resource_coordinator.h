@@ -11,6 +11,8 @@ namespace blink {
 
 // TODO(chrisha): Remove knowledge of ExecutionContext class from this code!
 class ExecutionContext;
+class Frame;
+class HTMLFrameOwnerElement;
 class ScriptState;
 
 class PLATFORM_EXPORT RendererResourceCoordinator {
@@ -48,6 +50,15 @@ class PLATFORM_EXPORT RendererResourceCoordinator {
   virtual void OnScriptStateDetached(ScriptState* script_state) = 0;
   // Called when the |script_state| itself is garbage collected.
   virtual void OnScriptStateDestroyed(ScriptState* script_state) = 0;
+
+  // Called when |frame| is about to be set as the ContentFrame of |owner|.
+  virtual void OnBeforeContentFrameAttached(
+      const Frame& frame,
+      const HTMLFrameOwnerElement& owner) = 0;
+  // Called when |frame| is about to be unset as the ContentFrame of |owner|.
+  virtual void OnBeforeContentFrameDetached(
+      const Frame& frame,
+      const HTMLFrameOwnerElement& owner) = 0;
 };
 
 }  // namespace blink

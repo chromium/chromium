@@ -253,7 +253,7 @@ WebLocalFrameImpl* CreateLocalChild(
   return frame;
 }
 
-WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
+WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
                                      TestWebFrameClient* client) {
   std::unique_ptr<TestWebFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
