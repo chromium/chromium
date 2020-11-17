@@ -775,6 +775,44 @@ const char* LifecycleStateToString(RenderFrameHostImpl::LifecycleState state) {
   }
 }
 
+// Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
+// https://crbug.com/888079.
+void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
+    NavigationRequest* navigation_request,
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
+  DCHECK(navigation_request);
+
+  // Ignore for now cases where the NavigationRequest is in an unexpectedly
+  // early state.  See also the NavigationRequestBrowserTest.VerifySameDocument
+  // test.
+  if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
+    return;
+
+  // Ignore for now opaque |renderer_side_origin| origins.  This effectively
+  // ignores the following scenarios:
+  // - error frames (i.e. navigation_request->GetNetErrorCode() != net::OK;
+  //   see also the NavigationBrowserTest.FailedNavigation test)
+  // - sandboxed frames (see also https://crbug.com/1145139#c5)
+  // - comparison of precursor origins
+  // - TODO(https://crbug.com/1041376): mismatched nonces (even if precursor
+  //   origins would have matched)
+  const url::Origin& renderer_side_origin = params.origin;
+  if (renderer_side_origin.opaque())
+    return;
+
+  // Ignore about:blank navigations, because browser-side calculated the origin
+  // based on the initiator of the navigation, but renderer-side takes the
+  // origin from the frame parent or opener.  Example scenario (exercised by
+  // FrameNavigationEntry_RecreatedSubframeToBlank) starts with a.com(data:) and
+  // has the subframe navigate itself to about:blank.
+  if (navigation_request->GetURL().IsAboutBlank())
+    return;
+
+  url::Origin browser_side_origin =
+      navigation_request->GetOriginForURLLoaderFactory();
+  DCHECK_EQ(browser_side_origin, renderer_side_origin);
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::DroppedInterfaceRequestLogger
@@ -8597,6 +8635,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   DCHECK(navigation_request);
   DCHECK(navigation_request->IsNavigationStarted());
+  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
+      navigation_request.get(), *params);
 
   // Update the page transition. For subframe navigations, the renderer process
   // only gives the correct page transition at commit time.

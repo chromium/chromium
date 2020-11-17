@@ -456,7 +456,6 @@ void NavigationSimulatorImpl::Redirect(const GURL& new_url) {
   }
 
   navigation_url_ = new_url;
-
   int previous_num_will_redirect_request_called =
       num_will_redirect_request_called_;
   int previous_did_redirect_navigation_called =
@@ -997,7 +996,12 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
 
   // The navigation url might have been rewritten by the NavigationController.
   // Update it.
-  navigation_url_ = web_contents_->GetController().GetPendingEntry()->GetURL();
+  NavigationController& controller = web_contents_->GetController();
+  NavigationEntryImpl* pending_entry =
+      static_cast<NavigationEntryImpl*>(controller.GetPendingEntry());
+  FrameNavigationEntry* pending_frame_entry =
+      pending_entry->GetFrameEntry(frame_tree_node_);
+  navigation_url_ = pending_frame_entry->url();
 
   state_ = WAITING_BEFORE_UNLOAD;
 }
