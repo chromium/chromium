@@ -39,6 +39,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/libassistant_v1_api.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/utils.h"
@@ -1380,16 +1381,14 @@ CrosDisplayConnection* AssistantManagerServiceImpl::display_connection() {
 
 assistant_client::AssistantManager*
 AssistantManagerServiceImpl::assistant_manager() {
-  if (!IsServiceStarted())
-    return nullptr;
-  return service_controller().assistant_manager();
+  auto* api = LibassistantV1Api::Get();
+  return api ? api->assistant_manager() : nullptr;
 }
 
 assistant_client::AssistantManagerInternal*
 AssistantManagerServiceImpl::assistant_manager_internal() {
-  if (!IsServiceStarted())
-    return nullptr;
-  return service_controller().assistant_manager_internal();
+  auto* api = LibassistantV1Api::Get();
+  return api ? api->assistant_manager_internal() : nullptr;
 }
 
 ServiceController& AssistantManagerServiceImpl::service_controller() {

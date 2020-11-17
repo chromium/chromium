@@ -36,6 +36,7 @@ namespace assistant {
 class AssistantEventObserver;
 class AssistantManagerServiceDelegate;
 class CrosDisplayConnection;
+class LibassistantV1Api;
 
 class ServiceController {
  public:
@@ -56,18 +57,6 @@ class ServiceController {
   CrosDisplayConnection* display_connection() {
     DCHECK(IsStarted());
     return display_connection_.get();
-  }
-
-  // Can not be invoked before Start() has finished.
-  assistant_client::AssistantManager* assistant_manager() {
-    DCHECK(IsStarted());
-    return assistant_manager_.get();
-  }
-
-  // Can not be invoked before Start() has finished.
-  assistant_client::AssistantManagerInternal* assistant_manager_internal() {
-    DCHECK(IsStarted());
-    return assistant_manager_internal_;
   }
 
   // Initialize the |AssistantManager| and all related objects by creating
@@ -120,6 +109,18 @@ class ServiceController {
     kStopped,
   };
 
+  // Can not be invoked before Start() has finished.
+  assistant_client::AssistantManager* assistant_manager() {
+    DCHECK(IsStarted());
+    return assistant_manager_.get();
+  }
+
+  // Can not be invoked before Start() has finished.
+  assistant_client::AssistantManagerInternal* assistant_manager_internal() {
+    DCHECK(IsStarted());
+    return assistant_manager_internal_;
+  }
+
   void OnAssistantCreated(
       base::OnceClosure done_callback,
       std::unique_ptr<CrosDisplayConnection> display_connection,
@@ -139,6 +140,8 @@ class ServiceController {
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
+
+  std::unique_ptr<LibassistantV1Api> libassistant_v1_api_;
 
   base::WeakPtrFactory<ServiceController> weak_factory_;
 };

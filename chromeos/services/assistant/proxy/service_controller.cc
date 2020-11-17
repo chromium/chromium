@@ -10,6 +10,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/libassistant_v1_api.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 
@@ -223,6 +224,7 @@ void ServiceController::Stop() {
   display_connection_ = nullptr;
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
+  libassistant_v1_api_ = nullptr;
 }
 
 void ServiceController::UpdateInternalOptions(const std::string& locale,
@@ -254,6 +256,10 @@ void ServiceController::OnAssistantCreated(
   display_connection_ = std::move(display_connection);
   assistant_manager_ = std::move(assistant_manager);
   assistant_manager_internal_ = assistant_manager_internal;
+
+  // Expose the Libassistant V1 API to the legacy code.
+  libassistant_v1_api_ = std::make_unique<LibassistantV1Api>(
+      assistant_manager_.get(), assistant_manager_internal_);
 
   std::move(done_callback).Run();
 }

@@ -24,6 +24,8 @@ component("cpp") {
     "device_actions.h",
     "features.cc",
     "features.h",
+    "libassistant_v1_api.cc",
+    "libassistant_v1_api.h",
   ]
 
   public_deps = [
