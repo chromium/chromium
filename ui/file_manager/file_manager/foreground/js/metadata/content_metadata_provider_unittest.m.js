@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://test/chai_assert.js';
+import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+import {ContentMetadataProvider} from './content_metadata_provider.m.js';
+import {MetadataRequest} from './metadata_request.m.js';
+
 function makeFileEntryFromDataURL(name, dataUrl) {
   const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
   const data = atob(dataUrl.split('base64,')[1]);
@@ -59,7 +64,7 @@ const entryA = makeFileEntryFromDataURL(
 
 const entryB = makeFileEntryFromDataURL('empty.jpg', 'data:image/jpeg;base64,');
 
-function testExternalMetadataProviderBasic(callback) {
+export function testExternalMetadataProviderBasic(callback) {
   // Mocking SharedWorker's port.
   const port = /** @type {!MessagePort} */ ({
     postMessage: function(message) {

@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [
   "//ui/file_manager/file_manager/foreground/*",
@@ -15,10 +16,17 @@ group("closure_compile") {
   testonly = true
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
+    ":closure_compile_jsmodules",
     ":closure_compile_module",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
   ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  uses_js_modules = true
+  deps = [ ":thumbnail_loader.m" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -835,11 +843,27 @@ js_library("thumbnail_loader") {
   ]
 }
 
-js_unittest("thumbnail_loader_unittest") {
+js_library("thumbnail_loader.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/thumbnail_loader.m.js" ]
   deps = [
-    ":thumbnail_loader",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
+    "//ui/file_manager/image_loader:image_loader_client.m",
+    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("thumbnail_loader_unittest.m") {
+  deps = [
+    ":thumbnail_loader.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
+    "//ui/file_manager/image_loader:image_loader_client.m",
+    "//ui/file_manager/image_loader:load_image_request.m",
   ]
 }
 
@@ -864,6 +888,19 @@ js_library("webui_command_extender") {
   ]
 }
 
+js_test_gen_html("js_test_gen_html_modules") {
+  deps = [ ":thumbnail_loader_unittest.m" ]
+  js_module = true
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":actions_model_unittest",
@@ -880,7 +917,10 @@ js_test_gen_html("js_test_gen_html") {
     ":providers_model_unittest",
     ":spinner_controller_unittest",
     ":task_controller_unittest",
-    ":thumbnail_loader_unittest",
   ]
   mocks = [ "$externs_path/file_manager_private.js" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "thumbnail_loader.js" ]
 }

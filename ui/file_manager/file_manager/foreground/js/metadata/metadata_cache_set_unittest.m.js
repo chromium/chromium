@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.m.js';
+
 /** @const {!Entry} */
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {
@@ -16,7 +19,7 @@ const entryB = /** @type {!Entry} */ ({
   },
 });
 
-function testMetadataCacheSetBasic() {
+export function testMetadataCacheSetBasic() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   const loadRequested = set.createRequests([entryA, entryB], ['property']);
   assertEquals(2, loadRequested.length);
@@ -37,7 +40,7 @@ function testMetadataCacheSetBasic() {
   assertEquals('valueB', results[1].property);
 }
 
-function testMetadataCacheSetStorePartial() {
+export function testMetadataCacheSetStorePartial() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   set.startRequests(1, set.createRequests([entryA, entryB], ['property']));
 
@@ -54,7 +57,7 @@ function testMetadataCacheSetStorePartial() {
   assertEquals('valueB', results[1].property);
 }
 
-function testMetadataCacheSetCachePartial() {
+export function testMetadataCacheSetCachePartial() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   set.startRequests(1, set.createRequests([entryA], ['property']));
   set.storeProperties(1, [entryA], [{property: 'valueA'}], []);
@@ -67,7 +70,7 @@ function testMetadataCacheSetCachePartial() {
   assertEquals('property', loadRequested[0].names[0]);
 }
 
-function testMetadataCacheSetInvalidatePartial() {
+export function testMetadataCacheSetInvalidatePartial() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   set.startRequests(1, set.createRequests([entryA, entryB], ['property']));
   set.invalidate(2, [entryA]);
@@ -87,7 +90,7 @@ function testMetadataCacheSetInvalidatePartial() {
   assertEquals('property', loadRequested[0].names[0]);
 }
 
-function testMetadataCacheSetCreateSnapshot() {
+export function testMetadataCacheSetCreateSnapshot() {
   const setA = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   setA.startRequests(1, setA.createRequests([entryA, entryB], ['property']));
   const setB = setA.createSnapshot([entryA]);
@@ -112,7 +115,7 @@ function testMetadataCacheSetCreateSnapshot() {
   assertEquals(undefined, results[1].property);
 }
 
-function testMetadataCacheSetHasFreshCache() {
+export function testMetadataCacheSetHasFreshCache() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   assertFalse(set.hasFreshCache([entryA, entryB], ['property']));
 
@@ -127,12 +130,12 @@ function testMetadataCacheSetHasFreshCache() {
   assertTrue(set.hasFreshCache([entryA], ['property']));
 }
 
-function testMetadataCacheSetHasFreshCacheWithEmptyNames() {
+export function testMetadataCacheSetHasFreshCacheWithEmptyNames() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   assertTrue(set.hasFreshCache([entryA, entryB], []));
 }
 
-function testMetadataCacheSetClear() {
+export function testMetadataCacheSetClear() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   set.startRequests(1, set.createRequests([entryA], ['propertyA']));
   set.storeProperties(1, [entryA], [{propertyA: 'value'}], []);
@@ -147,7 +150,7 @@ function testMetadataCacheSetClear() {
   assertFalse(set.hasFreshCache([entryA], ['propertyB']));
 }
 
-function testMetadataCacheSetUpdateEvent() {
+export function testMetadataCacheSetUpdateEvent() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   let event = null;
   set.addEventListener('update', inEvent => {
@@ -162,7 +165,7 @@ function testMetadataCacheSetUpdateEvent() {
   assertFalse(event.names.has('propertyA'));
 }
 
-function testMetadataCacheSetClearAll() {
+export function testMetadataCacheSetClearAll() {
   const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
   set.startRequests(1, set.createRequests([entryA, entryB], ['propertyA']));
   set.storeProperties(

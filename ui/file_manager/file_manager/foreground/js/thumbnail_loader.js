@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ImageTransformParam} from './metadata/image_orientation.m.js';
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
+// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from '../../../image_loader/load_image_request.m.js';
+// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Loads a thumbnail using provided url. In CANVAS mode, loaded images
  * are attached as <canvas> element, while in IMAGE mode as <img>.
  * <canvas> renders faster than <img>, however has bigger memory overhead.
  */
-class ThumbnailLoader {
+/* #export */ class ThumbnailLoader {
   /**
    * @param {!Entry} entry File entry.
    * @param {!ThumbnailLoader.LoaderType=} opt_loaderType Canvas or Image

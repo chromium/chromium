@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
+import {LoadImageRequest} from '../../../image_loader/load_image_request.m.js';
+import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {ThumbnailLoader} from './thumbnail_loader.m.js';
+
 function getLoadTarget(entry, metadata) {
   return new ThumbnailLoader(entry, ThumbnailLoader.LoaderType.CANVAS, metadata)
       .getLoadTarget();
@@ -38,7 +45,7 @@ function installMockLoad(mockLoad) {
   };
 }
 
-function testShouldUseMetadataThumbnail() {
+export function testShouldUseMetadataThumbnail() {
   const mockFileSystem = new MockFileSystem('volumeId');
   const imageEntry = new MockEntry(mockFileSystem, '/test.jpg');
   const pdfEntry = new MockEntry(mockFileSystem, '/test.pdf');
@@ -66,7 +73,7 @@ function testShouldUseMetadataThumbnail() {
           pdfEntry, {external: {thumbnailUrl: 'url', present: true}}));
 }
 
-function testLoadAsDataUrlFromImageClient(callback) {
+export function testLoadAsDataUrlFromImageClient(callback) {
   installMockLoad((request, callback) => {
     callback({status: 'success', data: 'imageDataUrl', width: 32, height: 32});
   });
@@ -82,7 +89,7 @@ function testLoadAsDataUrlFromImageClient(callback) {
       callback);
 }
 
-function testLoadAsDataUrlFromExifThumbnail(callback) {
+export function testLoadAsDataUrlFromExifThumbnail(callback) {
   installMockLoad((request, callback) => {
     // Assert that data url is passed.
     assertTrue(/^data:/i.test(request.url));
@@ -106,7 +113,8 @@ function testLoadAsDataUrlFromExifThumbnail(callback) {
       callback);
 }
 
-function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(callback) {
+export function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(
+    callback) {
   installMockLoad((request, callback) => {
     // Assert that data url and transform info is passed.
     assertTrue(/^data:/i.test(request.url));
@@ -143,7 +151,7 @@ function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(callback) {
       callback);
 }
 
-function testLoadAsDataUrlFromExternal(callback) {
+export function testLoadAsDataUrlFromExternal(callback) {
   const externalThumbnailUrl = 'https://external-thumbnail-url/';
   const externalCroppedThumbnailUrl = 'https://external-cropped-thumbnail-url/';
   const externalThumbnailDataUrl = generateSampleImageDataUrl(32, 32);
@@ -176,7 +184,8 @@ function testLoadAsDataUrlFromExternal(callback) {
       callback);
 }
 
-function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(callback) {
+export function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(
+    callback) {
   installMockLoad((request, callback) => {
     // Assert that data url is passed.
     assertTrue(/^data:/i.test(request.url));

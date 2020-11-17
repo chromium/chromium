@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://test/chai_assert.js';
+import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+import * as wrappedVolumeManagerCommon from '../../../../base/js/volume_manager_types.m.js';
+const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+import {ContentMetadataProvider} from './content_metadata_provider.m.js';
+import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
+import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
+import {MetadataRequest} from './metadata_request.m.js';
+import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
+import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {
     return 'filesystem://A';
@@ -49,7 +60,7 @@ const volumeManager = /** @type {!VolumeManager} */ ({
   }
 });
 
-function testMultiMetadataProviderBasic(callback) {
+export function testMultiMetadataProviderBasic(callback) {
   const model = new MultiMetadataProvider(
       /** @type {!FileSystemMetadataProvider} */ ({
         get: function(requests) {
@@ -111,7 +122,7 @@ function testMultiMetadataProviderBasic(callback) {
       callback);
 }
 
-function testMultiMetadataProviderExternalAndContentProperty(callback) {
+export function testMultiMetadataProviderExternalAndContentProperty(callback) {
   const model = new MultiMetadataProvider(
       /** @type {!FileSystemMetadataProvider} */ ({
         get: function(requests) {
@@ -164,7 +175,7 @@ function testMultiMetadataProviderExternalAndContentProperty(callback) {
 /**
  * Tests that we only use ExternalMetadataProvider for a DocumentsProvider file.
  */
-function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
+export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
   const model = new MultiMetadataProvider(
       /** @type {!FileSystemMetadataProvider} */ ({
         get: function(requests) {

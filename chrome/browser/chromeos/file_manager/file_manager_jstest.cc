@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Breadcrumb) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
   RunTestURL(
-      "foreground/js/metadata/content_metadata_provider_unittest_gen.html");
+      "foreground/js/metadata/content_metadata_provider_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Crostini) {
@@ -193,11 +193,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataCacheItem) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataCacheSet) {
-  RunTestURL("foreground/js/metadata/metadata_cache_set_unittest_gen.html");
+  RunTestURL("foreground/js/metadata/metadata_cache_set_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataModel) {
-  RunTestURL("foreground/js/metadata/metadata_model_unittest_gen.html");
+  RunTestURL("foreground/js/metadata/metadata_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataProxyTest) {
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {
   RunTestURL(
-      "foreground/js/metadata/multi_metadata_provider_unittest_gen.html");
+      "foreground/js/metadata/multi_metadata_provider_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NavigationListModelTest) {
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskQueueTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailLoader) {
-  RunTestURL("foreground/js/thumbnail_loader_unittest_gen.html");
+  RunTestURL("foreground/js/thumbnail_loader_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailModel) {

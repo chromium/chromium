@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ContentMetadataProvider} from './content_metadata_provider.m.js';
+// #import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
+// #import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
+// #import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.m.js';
+// #import {MetadataItem} from './metadata_item.m.js';
+// #import {MetadataProvider} from './metadata_provider.m.js';
+// #import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
+// #import * as wrappedUtil from '../../../common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// clang-format on
+
 /**
  * Stats collected about Metadata handling for tests.
  * @final
  */
-class MetadataStats {
+/* #export */ class MetadataStats {
   constructor() {
     /** @public {number} Total of entries fulfilled from cache. */
     this.fromCache = 0;
@@ -25,7 +37,7 @@ class MetadataStats {
   }
 }
 
-class MetadataModel {
+/* #export */ class MetadataModel {
   /**
    * @param {!MetadataProvider} rawProvider
    */
