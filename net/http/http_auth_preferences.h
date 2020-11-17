@@ -63,6 +63,14 @@ class NET_EXPORT HttpAuthPreferences {
     negotiate_enable_port_ = negotiate_enable_port;
   }
 
+  // Return |true| if the browser should allow attempts to use HTTP Basic auth
+  // on non-secure HTTP connections.
+  bool basic_over_http_enabled() const { return basic_over_http_enabled_; }
+
+  void set_basic_over_http_enabled(bool allow_http) {
+    basic_over_http_enabled_ = allow_http;
+  }
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   void set_ntlm_v2_enabled(bool ntlm_v2_enabled) {
     ntlm_v2_enabled_ = ntlm_v2_enabled;
@@ -92,6 +100,7 @@ class NET_EXPORT HttpAuthPreferences {
   bool delegate_by_kdc_policy_ = false;
   bool negotiate_disable_cname_lookup_ = false;
   bool negotiate_enable_port_ = false;
+  bool basic_over_http_enabled_ = true;
 
   DefaultCredentials allow_default_credentials_ = ALLOW_DEFAULT_CREDENTIALS;
 

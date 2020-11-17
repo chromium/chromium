@@ -14,6 +14,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
+#include "net/http/http_auth_preferences.h"
 #include "net/http/http_auth_scheme.h"
 
 namespace net {
@@ -122,6 +123,11 @@ int HttpAuthHandlerBasic::Factory::CreateAuthHandler(
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
+  if (http_auth_preferences() &&
+      !http_auth_preferences()->basic_over_http_enabled() &&
+      origin.SchemeIs(url::kHttpScheme)) {
+    return ERR_UNSUPPORTED_AUTH_SCHEME;
+  }
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
   std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerBasic());

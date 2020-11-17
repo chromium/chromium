@@ -152,6 +152,10 @@ struct HttpAuthDynamicParams {
   // Indicates whether the GSSAPI library should be loaded. Only supported on
   // Chrome OS.
   bool allow_gssapi_library_load = true;
+
+  // True if Basic authentication challenges should be allowed for non-secure
+  // HTTP responses.
+  bool basic_over_http_enabled = true;
 };
 
 // Values for configuring OSCrypt.

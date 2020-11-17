@@ -2037,6 +2037,10 @@ const char kGloballyScopeHTTPAuthCacheEnabled[] =
 const char kAmbientAuthenticationInPrivateModesEnabled[] =
     "auth.ambient_auth_in_private_modes";
 
+// Boolean that specifies whether HTTP Basic authentication is allowed for HTTP
+// requests.
+const char kBasicAuthOverHttpEnabled[] = "auth.basic_over_http_enabled";
+
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
 // Boolean that specifies whether OK-AS-DELEGATE flag from KDC is respected
 // along with kAuthNegotiateDelegateAllowlist.

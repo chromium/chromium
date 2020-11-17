@@ -139,6 +139,8 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
       local_state->GetBoolean(prefs::kDisableAuthNegotiateCnameLookup);
   auth_dynamic_params->enable_negotiate_port =
       local_state->GetBoolean(prefs::kEnableAuthNegotiatePort);
+  auth_dynamic_params->basic_over_http_enabled =
+      local_state->GetBoolean(prefs::kBasicAuthOverHttpEnabled);
 
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
   auth_dynamic_params->delegate_by_kdc_policy =
@@ -355,6 +357,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
                              auth_pref_callback);
   pref_change_registrar_.Add(prefs::kEnableAuthNegotiatePort,
                              auth_pref_callback);
+  pref_change_registrar_.Add(prefs::kBasicAuthOverHttpEnabled,
+                             auth_pref_callback);
 
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateByKdcPolicy,
@@ -403,6 +407,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // Dynamic auth params.
   registry->RegisterBooleanPref(prefs::kDisableAuthNegotiateCnameLookup, false);
   registry->RegisterBooleanPref(prefs::kEnableAuthNegotiatePort, false);
+  registry->RegisterBooleanPref(prefs::kBasicAuthOverHttpEnabled, true);
   registry->RegisterStringPref(prefs::kAuthServerAllowlist, std::string());
   registry->RegisterStringPref(prefs::kAuthNegotiateDelegateAllowlist,
                                std::string());
