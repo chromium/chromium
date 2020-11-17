@@ -23,6 +23,7 @@
       # Don't include unwind tables for the remaining three builders since
       # they monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_goma',
+      'linux64-trunk': 'official_goma',
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
@@ -36,22 +37,6 @@
       'win64-chrome-beta': 'official_goma_x64',
       'win64-chrome-stable': 'official_goma_x64',
     },
-
-    'chromeos.continuous': {
-      'chromeos-betty-pi-arc-chrome-beta': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-ltc': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-lts': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-stable': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-eve-chrome-beta': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-ltc': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-lts': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-stable': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-kevin-chrome-beta': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-ltc': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-lts': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-stable': 'chromeos_kevin_include_unwind_tables_official',
-    },
-
     'chrome.pgo': {
       'linux-pgo-beta': 'official_goma_linux_pgo',
       'linux-pgo-stable': 'official_goma_linux_pgo',
@@ -66,10 +51,35 @@
       'win64-pgo-stable': 'official_goma_x64_pgo',
       'win64-pgo-trunk': 'official_goma_x64_pgo',
     },
-
+    'chromeos.continuous': {
+      'chromeos-arm-generic-beta': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-ltc': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-lts': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-stable': 'official_chromeos_arm-generic',
+      'chromeos-betty-pi-arc-chrome-beta': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-ltc': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-lts': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-stable': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-eve-chrome-beta': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-ltc': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-lts': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-stable': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-kevin-chrome-beta': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-ltc': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-lts': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-stable': 'chromeos_kevin_include_unwind_tables_official',
+      'linux64-beta': 'official_goma',
+      'linux64-ltc': 'official_goma',
+      'linux64-lts': 'official_goma',
+      'linux64-stable': 'official_goma',
+      'linux-chromeos-beta': 'official_goma_chromeos',
+      'linux-chromeos-ltc': 'official_goma_chromeos',
+      'linux-chromeos-lts': 'official_goma_chromeos',
+      'linux-chromeos-stable': 'official_goma_chromeos',
+    },
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
-    # generated publicly advertised non-Official builds which are not allowed
+    # generate publicly advertised non-Official builds which are not allowed
     # to have proprietary codecs enabled.
     'chromium': {
       'android-archive-rel': 'android_without_codecs_release_bot_minimal_symbols',
@@ -2220,12 +2230,20 @@
       'msan', 'release_bot_blink',
     ],
 
+    'official_chromeos_arm-generic': [
+      'chromeos_device', 'arm-generic', 'goma', 'official_optimize',
+    ],
+
     'official_celab_release_bot': [
       'official', 'release_bot', 'minimal_symbols',
     ],
 
     'official_goma': [
       'official', 'goma',
+    ],
+
+    'official_goma_chromeos': [
+      'official', 'goma', 'chromeos','minimal_symbols',
     ],
 
     'official_goma_mac': [

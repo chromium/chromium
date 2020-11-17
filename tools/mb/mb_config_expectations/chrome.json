@@ -121,6 +121,13 @@
       "use_goma": true
     }
   },
+  "linux64-trunk": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
   "mac-chrome": {
     "gn_args": {
       "ignore_missing_widevine_signing_cert": true,
