@@ -430,10 +430,10 @@ TEST_F(AssistantPageViewTest,
   }
 }
 
-TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTest, ShouldNotFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
-  EXPECT_HAS_FOCUS(mic_view());
+  EXPECT_NOT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
@@ -628,12 +628,13 @@ TEST_F(AssistantPageViewTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_F(AssistantPageViewTest, ShouldFocusMicViewWhenPressingVoiceInputToggle) {
+TEST_F(AssistantPageViewTest,
+       ShouldNotFocusMicViewWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
   ClickOnAndWait(voice_input_toggle());
 
-  EXPECT_HAS_FOCUS(mic_view());
+  EXPECT_NOT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTest,
@@ -934,16 +935,17 @@ class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
 };
 
 TEST_F(AssistantPageViewTabletModeTest,
-       ShouldFocusMicWhenOpeningWithLongPressLauncher) {
+       ShouldNotFocusMicWhenOpeningWithLongPressLauncher) {
   ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
 
-  EXPECT_HAS_FOCUS(mic_view());
+  EXPECT_NOT_HAS_FOCUS(mic_view());
 }
 
-TEST_F(AssistantPageViewTabletModeTest, ShouldFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTabletModeTest,
+       ShouldNotFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
-  EXPECT_HAS_FOCUS(mic_view());
+  EXPECT_NOT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTabletModeTest, ShouldFocusTextFieldAfterSendingQuery) {
