@@ -26,3 +26,5 @@ GuideName* const kTranslateInfobarOptionsGuide =
     @"kTranslateInfobarOptionsGuide";
 GuideName* const kVoiceSearchButtonGuide = @"kVoiceSearchButtonGuide";
 GuideName* const kDiscoverFeedHeaderMenuGuide = @"kDiscoverFeedHeaderMenuGuide";
+GuideName* const kPrimaryToolbarLocationViewGuide =
+    @"kPrimaryToolbarLocationViewGuide";

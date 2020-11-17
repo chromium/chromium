@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
+#import "ios/chrome/browser/ui/browser_view/hider/browser_view_hider_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
@@ -609,6 +610,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // The coordinator that shows the Send Tab To Self UI.
 @property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
+
+// Coordinator for the view that hides the web content when using the
+// ViewRevealingVerticalPanHandler.
+@property(nonatomic, strong)
+    BrowserViewHiderCoordinator* browserViewHiderCoordinator;
 
 // BVC initialization
 // ------------------
@@ -1337,6 +1343,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.legacyTabStripCoordinator = nil;
     self.tabStripView = nil;
   }
+  [self.browserViewHiderCoordinator stop];
+  self.browserViewHiderCoordinator = nil;
 
   [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
   self.bubblePresenter = nil;
@@ -1464,6 +1472,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [tapRecognizer setDelegate:self];
   [tapRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:tapRecognizer];
+
+  // When using the thumb strip, the web content needs to be hidden when the
+  // thumb strip is opened.
+  if (IsThumbStripEnabled()) {
+    self.browserViewHiderCoordinator = [[BrowserViewHiderCoordinator alloc]
+        initWithBaseViewController:self
+                           browser:self.browser];
+    self.browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
+    [self.browserViewHiderCoordinator start];
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1576,6 +1594,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.secondaryToolbarContainerCoordinator = nil;
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
+    [self.browserViewHiderCoordinator stop];
+    self.browserViewHiderCoordinator = nil;
     self.toolbarInterface = nil;
     [_toolbarUIUpdater stopUpdating];
     _toolbarUIUpdater = nil;
@@ -2326,6 +2346,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       kSecondaryToolbarGuide,
       kVoiceSearchButtonGuide,
       kDiscoverFeedHeaderMenuGuide,
+      kPrimaryToolbarLocationViewGuide,
     ];
     AddNamedGuidesToView(guideNames, self.view);
 
@@ -2831,6 +2852,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)setUpThumbStrip {
   [self.thumbStripPanHandler
       addAnimatee:self.primaryToolbarCoordinator.animatee];
+  [self.thumbStripPanHandler
+      addAnimatee:self.browserViewHiderCoordinator.animatee];
   [self.thumbStripPanHandler addAnimatee:self];
 
   self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
@@ -2838,6 +2861,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.legacyTabStripCoordinator.panGestureHandler =
         self.thumbStripPanHandler;
   }
+  self.browserViewHiderCoordinator.panGestureHandler =
+      self.thumbStripPanHandler;
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
