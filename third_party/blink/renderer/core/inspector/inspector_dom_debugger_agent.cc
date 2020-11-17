@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
-
 using crdtp::SpanFrom;
 using crdtp::json::ConvertCBORToJSON;
 
@@ -209,7 +209,8 @@ InspectorDOMDebuggerAgent::InspectorDOMDebuggerAgent(
       enabled_(&agent_state_, /*default_value=*/false),
       pause_on_all_xhrs_(&agent_state_, /*default_value=*/false),
       xhr_breakpoints_(&agent_state_, /*default_value=*/false),
-      event_listener_breakpoints_(&agent_state_, /*default_value*/ false) {}
+      event_listener_breakpoints_(&agent_state_, /*default_value*/ false),
+      csp_violation_breakpoints_(&agent_state_, /*default_value*/ false) {}
 
 InspectorDOMDebuggerAgent::~InspectorDOMDebuggerAgent() = default;
 
@@ -340,7 +341,39 @@ static String DomTypeName(int type) {
     default:
       break;
   }
-  return "";
+  return WTF::g_empty_string;
+}
+
+bool IsValidViolationType(const String& violationString) {
+  if (violationString ==
+      protocol::DOMDebugger::CSPViolationTypeEnum::TrustedtypeSinkViolation) {
+    return true;
+  }
+  if (violationString ==
+      protocol::DOMDebugger::CSPViolationTypeEnum::TrustedtypePolicyViolation) {
+    return true;
+  }
+  return false;
+}
+
+Response InspectorDOMDebuggerAgent::setBreakOnCSPViolation(
+    std::unique_ptr<protocol::Array<String>> violationTypes) {
+  csp_violation_breakpoints_.Clear();
+  if (violationTypes->empty()) {
+    DidRemoveBreakpoint();
+    return Response::Success();
+  }
+  for (const auto& violationString : *violationTypes) {
+    if (IsValidViolationType(violationString)) {
+      csp_violation_breakpoints_.Set(violationString, true);
+    } else {
+      csp_violation_breakpoints_.Clear();
+      DidRemoveBreakpoint();
+      return Response::InvalidParams("Invalid violation type");
+    }
+  }
+  DidAddBreakpoint();
+  return Response::Success();
 }
 
 Response InspectorDOMDebuggerAgent::setDOMBreakpoint(
@@ -707,7 +740,7 @@ Response InspectorDOMDebuggerAgent::removeXHRBreakpoint(const String& url) {
 // Returns the breakpoint url if a match is found, or WTF::String().
 String InspectorDOMDebuggerAgent::MatchXHRBreakpoints(const String& url) const {
   if (pause_on_all_xhrs_.Get())
-    return "";
+    return WTF::g_empty_string;
   for (const WTF::String& breakpoint : xhr_breakpoints_.Keys()) {
     if (url.Contains(breakpoint))
       return breakpoint;
@@ -747,6 +780,8 @@ void InspectorDOMDebuggerAgent::DidAddBreakpoint() {
 
 void InspectorDOMDebuggerAgent::DidRemoveBreakpoint() {
   if (!dom_breakpoints_.IsEmpty())
+    return;
+  if (!csp_violation_breakpoints_.IsEmpty())
     return;
   if (!event_listener_breakpoints_.IsEmpty())
     return;
@@ -791,6 +826,41 @@ void InspectorDOMDebuggerAgent::DidSuspendAudioContext() {
   PauseOnNativeEventIfNeeded(
       PreparePauseOnNativeEventData(kAudioContextSuspendedEventName, nullptr),
       true);
+}
+
+String ViolationTypeToString(
+    const ContentSecurityPolicy::ContentSecurityPolicyViolationType type) {
+  switch (type) {
+    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
+        kTrustedTypesSinkViolation:
+      return protocol::DOMDebugger::CSPViolationTypeEnum::
+          TrustedtypeSinkViolation;
+    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
+        kTrustedTypesPolicyViolation:
+      return protocol::DOMDebugger::CSPViolationTypeEnum::
+          TrustedtypePolicyViolation;
+    default:
+      return WTF::g_empty_string;
+  }
+}
+
+void InspectorDOMDebuggerAgent::OnContentSecurityPolicyViolation(
+    const ContentSecurityPolicy::ContentSecurityPolicyViolationType
+        violationType) {
+  auto violationString = ViolationTypeToString(violationType);
+  if (!csp_violation_breakpoints_.Get(violationString))
+    return;
+
+  std::unique_ptr<protocol::DictionaryValue> event_data =
+      protocol::DictionaryValue::create();
+  event_data->setString("violationType", violationString);
+  std::vector<uint8_t> json;
+  ConvertCBORToJSON(SpanFrom(event_data->Serialize()), &json);
+  v8_inspector::StringView json_view(json.data(), json.size());
+  auto listener = ToV8InspectorStringView(
+      v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::CSPViolation);
+
+  v8_session_->breakProgram(listener, json_view);
 }
 
 }  // namespace blink

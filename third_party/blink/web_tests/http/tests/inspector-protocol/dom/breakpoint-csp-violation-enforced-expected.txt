@@ -1,0 +1,6 @@
+Breakpoint on Trusted Type violations
+violation type: trustedtype-policy-violation
+paused reason: CSPViolation
+violation type: trustedtype-sink-violation
+paused reason: CSPViolation
+

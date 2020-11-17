@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
@@ -194,6 +195,10 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
             mojom::blink::ConsoleMessageLevel::kInfo,
             kFunctionConstructorFailureConsoleMessage));
   }
+  probe::OnContentSecurityPolicyViolation(
+      const_cast<ExecutionContext*>(execution_context),
+      ContentSecurityPolicy::ContentSecurityPolicyViolationType::
+          kTrustedTypesSinkViolation);
 
   if (!allow) {
     exception_state.ThrowTypeError(GetMessage(kind));

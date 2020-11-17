@@ -186,4 +186,5 @@ interface CoreProbes {
   void LocalFontsEnabled(ExecutionContext*, bool* result);
   void DidUpdateComputedStyle([Keep] Element*, const ComputedStyle* old_style, const ComputedStyle* new_style);
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
+  void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType violationType);
 }

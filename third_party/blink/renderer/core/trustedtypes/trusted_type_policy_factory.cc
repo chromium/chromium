@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -56,6 +57,15 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
                            ->AllowTrustedTypePolicy(
                                policy_name, policy_map_.Contains(policy_name),
                                violation_details);
+    if (violation_details != ContentSecurityPolicy::ContentSecurityPolicy::
+                                 AllowTrustedTypePolicyDetails::kAllowed) {
+      // We may report a violation here even when disallowed is false
+      // in case policy is a report-only one.
+      probe::OnContentSecurityPolicyViolation(
+          GetExecutionContext(),
+          ContentSecurityPolicy::ContentSecurityPolicyViolationType::
+              kTrustedTypesPolicyViolation);
+    }
     if (disallowed) {
       // For a better error message, we'd like to disambiguate between
       // "disallowed" and "disallowed because of a duplicate name".

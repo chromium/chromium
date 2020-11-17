@@ -34,6 +34,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_info.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/DOMDebugger.h"
@@ -69,6 +70,8 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   ~InspectorDOMDebuggerAgent() override;
   void Trace(Visitor*) const override;
 
+  protocol::Response setBreakOnCSPViolation(
+      std::unique_ptr<protocol::Array<String>> violationTypes) override;
   // DOMDebugger API for frontend
   protocol::Response setDOMBreakpoint(int node_id, const String& type) override;
   protocol::Response removeDOMBreakpoint(int node_id,
@@ -114,6 +117,8 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   void DidCloseAudioContext();
   void DidResumeAudioContext();
   void DidSuspendAudioContext();
+  void OnContentSecurityPolicyViolation(
+      const ContentSecurityPolicy::ContentSecurityPolicyViolationType);
 
   protocol::Response disable() override;
   void Restore() override;
@@ -177,6 +182,7 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   InspectorAgentState::Boolean pause_on_all_xhrs_;
   InspectorAgentState::BooleanMap xhr_breakpoints_;
   InspectorAgentState::BooleanMap event_listener_breakpoints_;
+  InspectorAgentState::BooleanMap csp_violation_breakpoints_;
   DISALLOW_COPY_AND_ASSIGN(InspectorDOMDebuggerAgent);
 };
 
