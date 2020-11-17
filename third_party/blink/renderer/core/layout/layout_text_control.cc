@@ -78,7 +78,7 @@ void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
     }
 
     // The inner editor element uses the LayoutTextControl's ::selection style
-    // (see: GetUncachedSelectionStyle in SelectionPaintingUtils.cpp) so ensure
+    // (see: HighlightPseudoStyle in highlight_painting_utils.cc) so ensure
     // the inner editor selection is invalidated anytime style changes and a
     // ::selection style is or was present on LayoutTextControl.
     if (new_style.HasPseudoElementStyle(kPseudoIdSelection) ||
