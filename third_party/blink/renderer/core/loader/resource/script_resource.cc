@@ -256,9 +256,9 @@ void ScriptResource::ResponseBodyReceived(
   CheckStreamingState();
   CHECK(!ErrorOccurred());
 
-  streamer_ = MakeGarbageCollected<ScriptStreamer>(
-      this, std::move(data_pipe), response_body_loader_client,
-      v8::ScriptCompiler::kNoCompileOptions, loader_task_runner);
+  streamer_ = MakeGarbageCollected<ScriptStreamer>(this, std::move(data_pipe),
+                                                   response_body_loader_client,
+                                                   loader_task_runner);
   CHECK_EQ(no_streamer_reason_, ScriptStreamer::NotStreamingReason::kInvalid);
   AdvanceStreamingState(StreamingState::kStreaming);
 }

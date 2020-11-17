@@ -486,10 +486,8 @@ bool ScriptStreamer::TryStartStreamingTask() {
       std::move(stream_ptr), encoding_);
 
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
-      script_streaming_task(
-          base::WrapUnique(v8::ScriptCompiler::StartStreamingScript(
-              V8PerIsolateData::MainThreadIsolate(), source_.get(),
-              compile_options_)));
+      script_streaming_task(base::WrapUnique(v8::ScriptCompiler::StartStreaming(
+          V8PerIsolateData::MainThreadIsolate(), source_.get())));
   if (!script_streaming_task) {
     // V8 cannot stream the script.
     stream_ = nullptr;
@@ -529,12 +527,10 @@ ScriptStreamer::ScriptStreamer(
     ScriptResource* script_resource,
     mojo::ScopedDataPipeConsumerHandle data_pipe,
     ResponseBodyLoaderClient* response_body_loader_client,
-    v8::ScriptCompiler::CompileOptions compile_options,
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
     : script_resource_(script_resource),
       response_body_loader_client_(response_body_loader_client),
       data_pipe_(std::move(data_pipe)),
-      compile_options_(compile_options),
       script_url_string_(script_resource->Url().Copy().GetString()),
       script_resource_identifier_(script_resource->InspectorId()),
       // Unfortunately there's no dummy encoding value in the enum; let's use

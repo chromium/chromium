@@ -69,7 +69,6 @@ class CORE_EXPORT ScriptStreamer final
       ScriptResource* resource,
       mojo::ScopedDataPipeConsumerHandle data_pipe,
       ResponseBodyLoaderClient* response_body_loader_client,
-      v8::ScriptCompiler::CompileOptions compile_options,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
   ~ScriptStreamer();
   void Trace(Visitor*) const;
@@ -200,9 +199,6 @@ class CORE_EXPORT ScriptStreamer final
 
   // The reason that streaming is disabled
   NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
-
-  // What kind of cached data V8 produces during streaming.
-  v8::ScriptCompiler::CompileOptions compile_options_;
 
   // Keep the script URL string for event tracing.
   const String script_url_string_;
