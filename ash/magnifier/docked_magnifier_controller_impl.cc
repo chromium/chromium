@@ -5,6 +5,7 @@
 #include "ash/magnifier/docked_magnifier_controller_impl.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/host/ash_window_tree_host.h"
@@ -46,6 +47,13 @@ constexpr float kScrollScaleFactor = 0.0125f;
 
 constexpr char kDockedMagnifierViewportWindowName[] =
     "DockedMagnifierViewportWindow";
+
+// The duration of time to wait before moving the viewport to the caret.
+// Allows magnifier.js to preempt the viewport moving to the caret with
+// moveMagnifierToRect.
+// TODO(accessibility): Remove once caret updates handled in magnifier.js.
+constexpr base::TimeDelta kMoveMagnifierCaretDelay =
+    base::TimeDelta::FromMilliseconds(5);
 
 // Returns the current cursor location in screen coordinates.
 inline gfx::Point GetCursorScreenPoint() {
@@ -156,6 +164,27 @@ void DockedMagnifierControllerImpl::SetScale(float scale) {
 void DockedMagnifierControllerImpl::StepToNextScaleValue(int delta_index) {
   SetScale(magnifier_utils::GetNextMagnifierScaleValue(
       delta_index, GetScale(), kMinMagnifierScale, kMaxMagnifierScale));
+}
+
+void DockedMagnifierControllerImpl::MoveMagnifierToRect(
+    const gfx::Rect& rect_in_screen) {
+  DCHECK(GetEnabled());
+  last_move_magnifier_to_rect_ = base::TimeTicks::Now();
+
+  gfx::Point point_in_screen = rect_in_screen.CenterPoint();
+
+  // If rect is too wide to fit in viewport, include as much as we can, starting
+  // with the left edge.
+  const int scaled_viewport_width =
+      current_source_root_window_->bounds().width() / GetScale();
+  if (rect_in_screen.width() > scaled_viewport_width) {
+    point_in_screen.set_x(std::max(rect_in_screen.x() +
+                                       scaled_viewport_width / 2 -
+                                       magnifier_utils::kLeftEdgeContextPadding,
+                                   0));
+  }
+
+  CenterOnPoint(point_in_screen);
 }
 
 void DockedMagnifierControllerImpl::CenterOnPoint(
@@ -327,7 +356,13 @@ void DockedMagnifierControllerImpl::OnCaretBoundsChanged(
   if (!caret_screen_bounds.width() && !caret_screen_bounds.height())
     return;
 
-  CenterOnPoint(caret_screen_bounds.CenterPoint());
+  // Wait a few milliseconds to see if any move magnifier to rect activity is
+  // occurring.
+  // TODO(accessibility): Remove once we move caret following to magnifier.js.
+  last_caret_screen_point_ = caret_screen_bounds.CenterPoint();
+  move_magnifier_timer_.Start(
+      FROM_HERE, kMoveMagnifierCaretDelay, this,
+      &DockedMagnifierControllerImpl::OnMoveMagnifierTimer);
 }
 
 void DockedMagnifierControllerImpl::OnWidgetDestroying(views::Widget* widget) {
@@ -402,6 +437,11 @@ DockedMagnifierControllerImpl::GetViewportMagnifierLayerForTesting() const {
 float DockedMagnifierControllerImpl::GetMinimumPointOfInterestHeightForTesting()
     const {
   return minimum_point_of_interest_height_;
+}
+
+gfx::Point DockedMagnifierControllerImpl::GetLastCaretScreenPointForTesting()
+    const {
+  return last_caret_screen_point_;
 }
 
 void DockedMagnifierControllerImpl::SwitchCurrentSourceRootWindowIfNeeded(
@@ -729,6 +769,16 @@ void DockedMagnifierControllerImpl::ConfineMouseCursorOutsideViewport() {
   RootWindowController::ForWindow(current_source_root_window_)
       ->ash_host()
       ->ConfineCursorToBoundsInRoot(confine_bounds);
+}
+
+void DockedMagnifierControllerImpl::OnMoveMagnifierTimer() {
+  // Ignore caret changes while move magnifier to rect activity is occurring.
+  if (base::TimeTicks::Now() - last_move_magnifier_to_rect_ <
+      magnifier_utils::kPauseCaretUpdateDuration) {
+    return;
+  }
+
+  CenterOnPoint(last_caret_screen_point_);
 }
 
 }  // namespace ash

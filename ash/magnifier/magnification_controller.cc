@@ -378,7 +378,6 @@ void MagnificationController::OnCaretBoundsChanged(
   // being moved back and forth with these two OnCaretBoundsChanged events, we
   // defer moving magnifier window until the |move_magnifier_timer_| fires,
   // when the caret settles eventually.
-  move_magnifier_timer_.Stop();
   move_magnifier_timer_.Start(
       FROM_HERE,
       base::TimeDelta::FromMilliseconds(
@@ -982,6 +981,7 @@ void MagnificationController::MoveMagnifierWindowCenterPoint(
 void MagnificationController::MoveMagnifierWindowFollowRect(
     const gfx::Rect& rect) {
   DCHECK(root_window_);
+  last_move_magnifier_to_rect_ = base::TimeTicks::Now();
   bool should_pan = false;
 
   const gfx::Rect viewport_rect = GetViewportRect();
@@ -1006,6 +1006,11 @@ void MagnificationController::MoveMagnifierWindowFollowRect(
     should_pan = true;
   }
 
+  // If rect is too wide to fit in viewport, include as much as we can, starting
+  // with the left edge.
+  if (rect.width() > viewport_rect.width())
+    x = rect.x() - magnifier_utils::kLeftEdgeContextPadding;
+
   if (should_pan) {
     if (is_on_animation_) {
       root_window_->layer()->GetAnimator()->StopAnimating();
@@ -1018,6 +1023,12 @@ void MagnificationController::MoveMagnifierWindowFollowRect(
 }
 
 void MagnificationController::OnMoveMagnifierTimer() {
+  // Ignore caret changes while move magnifier to rect activity is occurring.
+  if (base::TimeTicks::Now() - last_move_magnifier_to_rect_ <
+      magnifier_utils::kPauseCaretUpdateDuration) {
+    return;
+  }
+
   MoveMagnifierWindowCenterPoint(caret_point_);
 }
 

@@ -9,6 +9,7 @@
 
 namespace gfx {
 class Point;
+class Rect;
 }
 
 namespace ash {
@@ -25,6 +26,11 @@ class ASH_EXPORT DockedMagnifierController {
   // observes the focus change events of the text input carets in editable nodes
   // by itself.
   virtual void CenterOnPoint(const gfx::Point& point_in_screen) = 0;
+
+  // Requests that the Docked Magnifier centers its viewport around the center
+  // of this rect OR aligns the left edge of the viewport with the left edge
+  // of the rect, if the rect is wider than the viewport.
+  virtual void MoveMagnifierToRect(const gfx::Rect& rect_in_screen) = 0;
 
   // Returns docked magnifier height.
   virtual int GetMagnifierHeightForTesting() const = 0;

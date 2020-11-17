@@ -125,7 +125,7 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     return;
   }
   if (IsDockedMagnifierEnabled()) {
-    ash::DockedMagnifierController::Get()->CenterOnPoint(rect.CenterPoint());
+    ash::DockedMagnifierController::Get()->MoveMagnifierToRect(rect);
   }
 }
 

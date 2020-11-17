@@ -322,6 +322,10 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   // mode.
   bool disable_move_magnifier_delay_ = false;
 
+  // Last move magnifier to rect time - used for ignoring caret updates for a
+  // few milliseconds after the last move magnifier to rect call.
+  base::TimeTicks last_move_magnifier_to_rect_;
+
   DISALLOW_COPY_AND_ASSIGN(MagnificationController);
 };
 
