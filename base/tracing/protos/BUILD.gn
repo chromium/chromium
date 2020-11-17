@@ -20,6 +20,8 @@ protozero_library("chrome_track_event_zero") {
   perfetto_root_path = "//third_party/perfetto/"
   sources = [ "chrome_track_event.proto" ]
   import_dirs = [ "//third_party/perfetto/" ]
+  generator_plugin_options = "wrapper_namespace=pbzero"
+  omit_protozero_dep = true
 }
 
 grit("chrome_track_event_resources") {

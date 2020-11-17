@@ -2196,6 +2196,7 @@ component("base") {
 
     deps += [
       "//base/tracing/protos:chrome_track_event",
+      "//base/tracing/protos:chrome_track_event_zero",
       "//third_party/perfetto/include/perfetto/protozero",
     ]
 

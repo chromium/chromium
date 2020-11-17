@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-import "protos/perfetto/trace/track_event/track_event.proto";
+import public "protos/perfetto/trace/track_event/track_event.proto";
 
 package perfetto.protos;
 
