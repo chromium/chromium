@@ -24,7 +24,7 @@ declare_args() {
   # dropping support for older macOSes. This should be greater than or equal to
   # the mac_deployment_target version.
   # Must be of the form x.x.x for Info.plist files.
-  mac_min_system_version = "10.11.0"
+  mac_min_system_version = "10.10.0"
 
   # Path to a specific version of the Mac SDK, not including a slash at the end.
   # If empty, the path to the lowest version greater than or equal to
