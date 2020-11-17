@@ -722,6 +722,8 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
                   // NotifyGpuInfoUpdate().
                   manager->UpdateDevicePerfInfo(device_perf_info);
                   manager->TerminateInfoCollectionGpuProcess();
+                  gpu::RecordGpuSupportedDx12VersionHistograms(
+                      d3d12_feature_level);
                 }));
       },
       delta);
