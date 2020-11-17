@@ -467,9 +467,6 @@ class XRSystem final : public EventTargetWithInlineData,
   // the session.
   Member<OverlayFullscreenExitObserver> fullscreen_exit_observer_;
 
-  // In DOM overlay mode, save and restore the FrameView background color.
-  Color original_base_background_color_;
-
   bool is_context_destroyed_ = false;
   bool did_service_ever_disconnect_ = false;
 };
