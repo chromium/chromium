@@ -448,41 +448,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     }
 
     private void populateTopLevelFoldersList() {
-        BookmarkId desktopNodeId = mDelegate.getModel().getDesktopFolderId();
-        BookmarkId mobileNodeId = mDelegate.getModel().getMobileFolderId();
-        BookmarkId othersNodeId = mDelegate.getModel().getOtherFolderId();
-
-        List<BookmarkId> specialFoldersIds =
-                mDelegate.getModel().getTopLevelFolderIDs(/*getSpecial=*/true, /*getNormal=*/false);
-        BookmarkId rootFolder = mDelegate.getModel().getRootFolderId();
-
-        // managed and partner bookmark folders will be put to the bottom.
-        List<BookmarkId> managedAndPartnerFolderIds = new ArrayList<>();
-
-        for (BookmarkId bookmarkId : specialFoldersIds) {
-            // Adds reading list as the first top level folder.
-            if (bookmarkId.getType() == BookmarkType.READING_LIST) {
-                mTopLevelFolders.add(bookmarkId);
-                continue;
-            }
-            BookmarkId parent = mDelegate.getModel().getBookmarkById(bookmarkId).getParentId();
-            if (parent.equals(rootFolder)) managedAndPartnerFolderIds.add(bookmarkId);
-        }
-
-        // Adds normal bookmark top level folders.
-        if (mDelegate.getModel().isFolderVisible(mobileNodeId)) {
-            mTopLevelFolders.add(mobileNodeId);
-        }
-        if (mDelegate.getModel().isFolderVisible(desktopNodeId)) {
-            mTopLevelFolders.add(desktopNodeId);
-        }
-        if (mDelegate.getModel().isFolderVisible(othersNodeId)) {
-            mTopLevelFolders.add(othersNodeId);
-        }
-
-        // Add any top-level managed and partner bookmark folders that are children of the root
-        // folder.
-        mTopLevelFolders.addAll(managedAndPartnerFolderIds);
+        mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mDelegate.getModel()));
     }
 
     @VisibleForTesting

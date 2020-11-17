@@ -37,7 +37,8 @@ import java.util.List;
 /**
  * Common logic for bookmark and folder rows.
  */
-abstract class BookmarkRow extends SelectableItemView<BookmarkId> implements BookmarkUIObserver {
+public abstract class BookmarkRow
+        extends SelectableItemView<BookmarkId> implements BookmarkUIObserver {
     protected ListMenuButton mMoreIcon;
     protected ImageView mDragHandle;
     protected BookmarkDelegate mDelegate;
