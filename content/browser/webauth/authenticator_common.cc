@@ -1386,13 +1386,18 @@ void AuthenticatorCommon::OnRegisterResponse(
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
 
-      auto transport_used = authenticator->AuthenticatorTransport();
+      const base::Optional<device::FidoTransportProtocol> transport_used =
+          authenticator->AuthenticatorTransport();
+      bool is_transport_used_internal = false;
+      bool is_transport_used_cable = false;
       if (transport_used) {
         request_delegate_->UpdateLastTransportUsed(*transport_used);
+        is_transport_used_internal =
+            (*transport_used == device::FidoTransportProtocol::kInternal);
+        is_transport_used_cable =
+            (*transport_used ==
+             device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
       }
-      bool is_transport_used_internal =
-          transport_used &&
-          *transport_used == device::FidoTransportProtocol::kInternal;
 
       const auto attestation =
           ctap_make_credential_request_->attestation_preference;
@@ -1432,6 +1437,11 @@ void AuthenticatorCommon::OnRegisterResponse(
         // not approved by the authenticator, then any attestation is stripped.
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
+      } else if (is_transport_used_cable) {
+        // Attestation is not returned when caBLEv2 is used, but the AAGUID is
+        // maintained.
+        attestation_erasure =
+            AttestationErasureOption::kEraseAttestationButIncludeAaguid;
       } else if (attestation !=
                  device::AttestationConveyancePreference::kNone) {
         UMA_HISTOGRAM_ENUMERATION("WebAuthentication.AttestationPromptResult",
