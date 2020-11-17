@@ -679,12 +679,7 @@ public class PaymentRequestService
             }
         }
 
-        String error =
-                mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
-        if (error != null) {
-            onShowFailed(error);
-            return;
-        }
+        triggerPaymentAppUiSkipIfApplicable();
     }
 
     private void onShowFailed(String error) {
@@ -960,6 +955,14 @@ public class PaymentRequestService
             }
         }
 
+        triggerPaymentAppUiSkipIfApplicable();
+    }
+
+    private void triggerPaymentAppUiSkipIfApplicable() {
+        if (!mIsFinishedQueryingPaymentApps || !mIsCurrentPaymentRequestShowing
+                || mIsShowWaitingForUpdatedDetails) {
+            return;
+        }
         String error =
                 mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
         if (error != null) {

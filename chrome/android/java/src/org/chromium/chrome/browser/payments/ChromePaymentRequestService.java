@@ -265,10 +265,7 @@ public class ChromePaymentRequestService
     public String triggerPaymentAppUiSkipIfApplicable(boolean isUserGestureShow) {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
-        if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
-                && mPaymentRequestService.isFinishedQueryingPaymentApps()
-                && mPaymentRequestService.isCurrentPaymentRequestShowing()
-                && !mPaymentRequestService.isShowWaitingForUpdatedDetails()) {
+        if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)) {
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
