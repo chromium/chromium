@@ -244,6 +244,11 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
       return NGLayoutCacheStatus::kNeedsLayout;
 
+    // Fieldsets stretch their content to the final block-size, which might
+    // affect scrollbars.
+    if (node.IsFieldsetContainer())
+      return NGLayoutCacheStatus::kNeedsLayout;
+
     // Textfields are block-flow, but we can't apply simplified layout due to
     // -internal-align-self-block.
     // TODO(tkent): We could store a bit on the |NGLayoutResult| which
