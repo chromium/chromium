@@ -70,20 +70,17 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  // Restrictions:
-  // - DCHECK_IS_ON(): Memory usage of the thread cache is not optimized yet,
-  //   don't ship this.
-  // - BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC): Only one thread cache at a time
-  //   is supported, in this case it is already claimed by malloc().
-#if DCHECK_IS_ON() && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Only one thread cache at a time is supported, in this case it is already
+  // claimed by malloc().
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   fast_malloc_allocator.init(
       {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::PCScan::kDisabledByDefault});
 #else
   fast_malloc_allocator.init(
       {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::ThreadCache::kEnabled,
        base::PartitionOptions::PCScan::kDisabledByDefault});
 #endif
   array_buffer_allocator.init(
