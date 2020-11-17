@@ -2648,15 +2648,31 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   auto* shared_quad_state =
       const_cast<SharedQuadState*>(quad->shared_quad_state);
 
+  gfx::Transform quad_to_target_transform_inverse(
+      gfx::Transform::kSkipInitialization);
+  if (shared_quad_state->is_clipped ||
+      !shared_quad_state->mask_filter_info.IsEmpty()) {
+    bool result = shared_quad_state->quad_to_target_transform.GetInverse(
+        &quad_to_target_transform_inverse);
+    DCHECK(result) << "quad_to_target_transform.GetInverse() failed";
+  }
+
   // The |clip_rect| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
   base::Optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
   if (shared_quad_state->is_clipped) {
     gfx::RectF clip_rect(shared_quad_state->clip_rect);
-    shared_quad_state->quad_to_target_transform.TransformRectReverse(
-        &clip_rect);
+    quad_to_target_transform_inverse.TransformRect(&clip_rect);
     auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
                                  gfx::ToEnclosedRect(clip_rect));
+  }
+
+  // The |mask_filter_info| is in the device coordinate and with all transforms
+  // (translation, scaling, rotation, etc), so remove them.
+  if (!shared_quad_state->mask_filter_info.IsEmpty()) {
+    auto result = shared_quad_state->mask_filter_info.Transform(
+        quad_to_target_transform_inverse);
+    DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
   // Reset |quad_to_target_transform|, so the quad will be rendered at the
@@ -2684,9 +2700,11 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
       target_to_device, /*scissor=*/nullptr, quad, /*draw_region=*/nullptr);
   DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, &params);
 
+  const auto& filter_bounds = rpdq_params.filter_bounds;
+
   // |filter_bounds| is the content space bounds that includes any filtered
   // extents. If empty, the draw can be skipped.
-  if (rpdq_params.filter_bounds.IsEmpty())
+  if (filter_bounds.IsEmpty())
     return;
 
   ResourceFormat buffer_format{};
@@ -2715,7 +2733,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
     color_space = backing->color_space;
   }
 
-  const auto filter_bounds = rpdq_params.filter_bounds;
 
   // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
   // increases buffer reusing possibilities.
@@ -2735,14 +2752,16 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   // Clear the backing to ARGB(0,0,0,0).
   current_canvas_->clear(SkColorSetARGB(0, 0, 0, 0));
 
-  // Calculate visible_rect's origin in output device coordinates.
-  auto dst_visible_rect_origin = params.visible_rect.origin();
-  params.content_device_transform.TransformPoint(&dst_visible_rect_origin);
-
-  // Adjust the content_device_transform to make sure filter extends are drawn
+  // Adjust the |content_device_transform| to make sure filter extends are drawn
   // inside of the buffer.
   params.content_device_transform.Translate(-filter_bounds.x(),
                                             -filter_bounds.y());
+
+  // Also adjust the |rounded_corner_bounds| to the new location.
+  if (params.rounded_corner_bounds) {
+    params.rounded_corner_bounds->Offset(-filter_bounds.x(),
+                                         -filter_bounds.y());
+  }
 
   // When Render Pass has a single quad inside we would draw that directly.
   if (bypass != render_pass_bypass_quads_.end()) {
