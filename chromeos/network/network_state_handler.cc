@@ -2052,9 +2052,7 @@ void NetworkStateHandler::LogPropertyUpdated(const ManagedState* state,
           : state->path() == default_network_path_ ? "DefaultNetwork"
                                                    : "Network";
   device_event_log::LogLevel log_level = device_event_log::LOG_LEVEL_EVENT;
-  if (key == shill::kErrorProperty || key == shill::kErrorDetailsProperty)
-    log_level = device_event_log::LOG_LEVEL_ERROR;
-  else if (key == shill::kSignalStrengthProperty && !state->IsActive())
+  if (key == shill::kSignalStrengthProperty && !state->IsActive())
     log_level = device_event_log::LOG_LEVEL_DEBUG;
   DEVICE_LOG(::device_event_log::LOG_TYPE_NETWORK, log_level)
       << type_str << "PropertyUpdated: " << GetLogName(state) << ", " << key
