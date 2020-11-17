@@ -22,7 +22,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence_consent_tracker.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/common/pref_names.h"
@@ -280,7 +280,13 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
                      signin_scoped_device_id),
         pref_service_(pref_service),
         web_ui_(web_ui),
-        account_email_(email) {}
+        account_email_(email) {
+    // Account has been authorized i.e. family link user has entered the
+    // correct user name and password for their edu accounts. Account hasn't
+    // been added into account manager yet.
+    EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+        web_ui_, EduCoexistenceStateTracker::FlowResult::kAccountAuthorized);
+  }
 
   EduCoexistenceChildSigninHelper(const EduCoexistenceChildSigninHelper&) =
       delete;
@@ -291,7 +297,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
  protected:
   // GaiaAuthConsumer overrides.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
-    EduCoexistenceConsentTracker::Get()->WaitForEduConsent(
+    EduCoexistenceStateTracker::Get()->SetEduConsentCallback(
         web_ui_, account_email_,
         base::BindOnce(&EduCoexistenceChildSigninHelper::OnConsentLogged,
                        weak_ptr_factory_.GetWeakPtr(), result.refresh_token));

@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence_consent_tracker.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/constants/chromeos_pref_names.h"
@@ -154,11 +154,17 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
 EduCoexistenceLoginHandler::~EduCoexistenceLoginHandler() {
   identity_manager_->RemoveObserver(this);
 
-  EduCoexistenceConsentTracker::Get()->OnDialogClosed(web_ui());
+  EduCoexistenceStateTracker::Get()->OnDialogClosed(web_ui());
   close_dialog_closure_.Run();
 }
 
 void EduCoexistenceLoginHandler::RegisterMessages() {
+  // Notifying |EduCoexistenceStateTracker| here instead of in the constructor
+  // because the WebUI has not yet been set there.
+  EduCoexistenceStateTracker::Get()->OnDialogCreated(
+      web_ui(), /* is_onboarding */ session_manager::SessionManager::Get()
+                    ->IsUserSessionBlocked());
+
   web_ui()->RegisterMessageCallback(
       "initializeEduArgs",
       base::BindRepeating(&EduCoexistenceLoginHandler::InitializeEduArgs,
@@ -196,6 +202,9 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
       profile, edu_coexistence::UserConsentInfo(
                    account_info.gaia, terms_of_service_version_number_));
 
+  EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+      web_ui(), EduCoexistenceStateTracker::FlowResult::kAccountAdded);
+
   // Otherwise, notify the ui that account addition was successful!!
   ResolveJavascriptCallback(base::Value(account_added_callback_),
                             base::Value(true));
@@ -214,6 +223,9 @@ void EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched(
     if (initialize_edu_args_callback_.has_value()) {
       FireWebUIListener(kOnErrorWebUIListener);
     }
+
+    EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+        web_ui(), EduCoexistenceStateTracker::FlowResult::kError);
     in_error_state_ = true;
     return;
   }
@@ -291,7 +303,8 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
 void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue* args) {
   AllowJavascript();
   DCHECK(!in_error_state_);
-  // TODO(yilkal): Have a state enum to record the progress.
+  EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+      web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentValid);
 }
 
 void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
@@ -307,8 +320,11 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
   edu_account_email_ = arguments[0].GetString();
   terms_of_service_version_number_ = arguments[1].GetString();
 
-  EduCoexistenceConsentTracker::Get()->OnConsentLogged(web_ui(),
-                                                       edu_account_email_);
+  EduCoexistenceStateTracker::Get()->OnConsentLogged(web_ui(),
+                                                     edu_account_email_);
+
+  EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+      web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentLogged);
 }
 
 void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
@@ -321,6 +337,9 @@ void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
     DCHECK(message.is_string());
     LOG(ERROR) << message.GetString();
   }
+
+  EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
+      web_ui(), EduCoexistenceStateTracker::FlowResult::kError);
 }
 
 }  // namespace chromeos

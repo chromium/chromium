@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -19,7 +20,7 @@
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence_consent_tracker.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence_state_tracker.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -96,6 +97,21 @@ class EduCoexistenceLoginHandlerBrowserTest
             ""));
   }
 
+  void ExpectEduCoexistenceState(
+      EduCoexistenceStateTracker::FlowResult result) {
+    const EduCoexistenceStateTracker::FlowState* state =
+        EduCoexistenceStateTracker::Get()->GetInfoForWebUIForTest(web_ui());
+    EXPECT_EQ(state->flow_result, result);
+  }
+
+  void ExpectEduCoexistenceStateHistogram(
+      EduCoexistenceStateTracker::FlowResult result) {
+    histograms_.ExpectUniqueSample(
+        EduCoexistenceStateTracker::Get()->GetInSessionHistogramNameForTest(),
+        result,
+        /* expected count */ 1);
+  }
+
  protected:
   content::TestWebUI* web_ui() { return &web_ui_; }
 
@@ -106,6 +122,8 @@ class EduCoexistenceLoginHandlerBrowserTest
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
 
+  base::HistogramTester histograms_;
+
   content::TestWebUI web_ui_;
 };
 
@@ -113,6 +131,9 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        HandleInitializeEduCoexistenceArgs) {
   constexpr char kCallbackId[] = "coexistence-data-init";
   std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
+
+  ExpectEduCoexistenceState(EduCoexistenceStateTracker::FlowResult::kLaunched);
+
   base::ListValue list_args;
   list_args.Append(kCallbackId);
   web_ui()->HandleReceivedMessage("initializeEduArgs", &list_args);
@@ -124,6 +145,12 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   // TODO(yilkal): verify the exact the call arguments.
   VerifyJavascriptCallResolved(second_call, kCallbackId, kResponseCallback);
+
+  handler.reset();
+
+  // The recorded state should be "launched" state.
+  ExpectEduCoexistenceStateHistogram(
+      EduCoexistenceStateTracker::FlowResult::kLaunched);
 }
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
@@ -136,6 +163,10 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   web_ui()->HandleReceivedMessage("error", &call_args);
 
   EXPECT_TRUE(handler->in_error_state());
+
+  handler.reset();
+  ExpectEduCoexistenceStateHistogram(
+      EduCoexistenceStateTracker::FlowResult::kError);
 }
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
@@ -160,6 +191,11 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   constexpr char kWebUICallErrorCallback[] = "show-error-screen";
   EXPECT_EQ(method_call, kWebUICallErrorCallback);
+
+  handler.reset();
+
+  ExpectEduCoexistenceStateHistogram(
+      EduCoexistenceStateTracker::FlowResult::kError);
 }
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
@@ -167,6 +203,8 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
   constexpr char kToSVersion[] = "12345678";
   std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
+
+  SimulateAccessTokenFetched(handler.get());
 
   base::ListValue call_args;
   call_args.Append(FakeGaiaMixin::kFakeUserEmail);
@@ -177,15 +215,16 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   list_args.Append(std::move(call_args));
 
   web_ui()->HandleReceivedMessage("consentLogged", &list_args);
-  SimulateAccessTokenFetched(handler.get());
 
-  const EduCoexistenceConsentTracker::EmailAndCallback* tracker =
-      EduCoexistenceConsentTracker::Get()->GetInfoForWebUIForTest(web_ui());
+  const EduCoexistenceStateTracker::FlowState* tracker =
+      EduCoexistenceStateTracker::Get()->GetInfoForWebUIForTest(web_ui());
 
-  // Ensure that the tracker gets the appropriate update.
+  // Expect that the tracker gets the appropriate update.
   EXPECT_NE(tracker, nullptr);
   EXPECT_TRUE(tracker->received_consent);
   EXPECT_EQ(tracker->email, FakeGaiaMixin::kFakeUserEmail);
+  EXPECT_EQ(tracker->flow_result,
+            EduCoexistenceStateTracker::FlowResult::kConsentLogged);
 
   // Simulate account added.
   CoreAccountInfo account;
@@ -203,6 +242,11 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   // TODO(yilkal): verify the exact the call arguments.
   VerifyJavascriptCallResolved(second_call, kConsentLoggedCallback,
                                kResponseCallback);
+
+  handler.reset();
+
+  ExpectEduCoexistenceStateHistogram(
+      EduCoexistenceStateTracker::FlowResult::kAccountAdded);
 }
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
