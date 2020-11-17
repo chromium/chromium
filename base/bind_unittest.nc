@@ -238,7 +238,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<int>);
 }
 
-#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<\(lambda at (\.\./)+base/bind_unittest.nc:[0-9]+:[0-9]+\), void>'"]
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<\(lambda at (\.\./)+base/bind_unittest.nc:[0-9]+:[0-9]+\)>'"]
 
 void WontCompile() {
   int i = 0, j = 0;
@@ -306,7 +306,7 @@ void WontCompile() {
   BindRepeating(&TakesMoveOnly, std::move(x));
 }
 
-#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<base::NonEmptyFunctor, void>'"]
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<base::NonEmptyFunctor>'"]
 
 void WontCompile() {
   BindRepeating(NonEmptyFunctor());
