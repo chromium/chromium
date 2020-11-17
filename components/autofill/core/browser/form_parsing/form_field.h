@@ -103,6 +103,7 @@ class FormField {
                                   int match_field_input_types,
                                   AutofillField** match,
                                   const RegExLogging& logging = {});
+
   struct MatchFieldBitmasks {
     int restrict_attributes = ~0;
     int augment_types = 0;

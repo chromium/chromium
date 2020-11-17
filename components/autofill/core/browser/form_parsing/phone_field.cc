@@ -420,7 +420,8 @@ const char* PhoneField::GetRegExpName(RegexType regex_id) {
   return "";
 }
 
-//
+// Returns the string representation of |phonetype_id| as it is used to key to
+// identify coressponding patterns.
 std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
   switch (phonetype_id) {
     case REGEX_COUNTRY:
@@ -461,8 +462,9 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
   if (is_country_code_field)
     match_type |= MATCH_SELECT;
 
-  auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(
-      json_field_type, page_language);
+  const std::vector<MatchingPattern>& patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(json_field_type,
+                                                      page_language);
 
   return ParseFieldSpecifics(scanner, base::UTF8ToUTF16(regex), match_type,
                              patterns, field, logging);

@@ -92,17 +92,21 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   size_t saved_cursor = scanner->SaveCursor();
   int nb_unknown_fields = 0;
 
-  auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(
-      "NAME_ON_CARD", page_language);
-  // In JSON : NAME_ON_CARD_CONTEXTUAL
-  auto& patterns_cont = PatternProvider::GetInstance().GetMatchPatterns(
-      "NAME_ON_CARD_CONTEXTUAL", page_language);
-  // In JSON : LAST_NAME
-  auto& patterns_nl = PatternProvider::GetInstance().GetMatchPatterns(
-      "LAST_NAME", page_language);
-  // In JSON : CARD_CVC
-  auto& patterns_cvc = PatternProvider::GetInstance().GetMatchPatterns(
-      CREDIT_CARD_VERIFICATION_CODE, page_language);
+  const std::vector<MatchingPattern>& name_on_card_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("NAME_ON_CARD",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& name_on_card_contextual_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("NAME_ON_CARD_CONTEXTUAL",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& last_name_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("LAST_NAME",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& cvc_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          CREDIT_CARD_VERIFICATION_CODE, page_language);
 
   // Credit card fields can appear in many different orders.
   // We loop until no more credit card related fields are found, see |break| at
@@ -113,8 +117,8 @@ std::unique_ptr<FormField> CreditCardField::Parse(
       break;
 
     if (!credit_card_field->cardholder_) {
-      if (ParseField(scanner, base::UTF8ToUTF16(kNameOnCardRe), patterns,
-                     &credit_card_field->cardholder_,
+      if (ParseField(scanner, base::UTF8ToUTF16(kNameOnCardRe),
+                     name_on_card_patterns, &credit_card_field->cardholder_,
                      {log_manager, "kNameOnCardRe"})) {
         continue;
       }
@@ -128,7 +132,8 @@ std::unique_ptr<FormField> CreditCardField::Parse(
 
       if (fields > 0 && !credit_card_field->expiration_month_ &&
           ParseField(scanner, base::UTF8ToUTF16(kNameOnCardContextualRe),
-                     patterns_cont, &credit_card_field->cardholder_,
+                     name_on_card_contextual_patterns,
+                     &credit_card_field->cardholder_,
                      {log_manager, "kNameOnCardContextualRe"})) {
         continue;
       }
@@ -138,8 +143,8 @@ std::unique_ptr<FormField> CreditCardField::Parse(
       // and haven't yet parsed the expiration date (which usually appears at
       // the end).
       if (!credit_card_field->expiration_month_ &&
-          ParseField(scanner, base::UTF8ToUTF16(kLastNameRe), patterns_nl,
-                     &credit_card_field->cardholder_last_,
+          ParseField(scanner, base::UTF8ToUTF16(kLastNameRe),
+                     last_name_patterns, &credit_card_field->cardholder_last_,
                      {log_manager, "kLastNameRe"})) {
         continue;
       }
@@ -166,7 +171,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
 
     if (!credit_card_field->verification_ &&
         ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kCardCvcRe),
-                            kMatchNumTelAndPwd, patterns_cvc,
+                            kMatchNumTelAndPwd, cvc_patterns,
                             &credit_card_field->verification_,
                             {log_manager, "kCardCvcRe"})) {
       // A couple of sites have multiple verification codes right after another.
@@ -182,7 +187,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
         scanner->RewindTo(scanner->SaveCursor() - 2);
 
         if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kCardCvcRe),
-                                kMatchNumTelAndPwd, patterns_cvc,
+                                kMatchNumTelAndPwd, cvc_patterns,
                                 &credit_card_field->verification_,
                                 {log_manager, "kCardCvcRe"})) {
           // Reset the current cvv (The verification parse overwrote it).
@@ -205,8 +210,9 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // TODO(crbug.com/591816): Make sure parsing cc-numbers of type password
     // doesn't have bad side effects.
     AutofillField* current_number_field;
-    auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(
-        CREDIT_CARD_NUMBER, page_language);
+    const std::vector<MatchingPattern>& patterns =
+        PatternProvider::GetInstance().GetMatchPatterns(CREDIT_CARD_NUMBER,
+                                                        page_language);
     if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kCardNumberRe),
                             kMatchNumTelAndPwd, patterns, &current_number_field,
                             {log_manager, "kCardNumberRe"})) {
@@ -352,11 +358,10 @@ bool CreditCardField::LikelyCardYearSelectField(
   }
 
   // Another way to eliminate days - filter out 'day' fields.
-  // In JSON : DAY (only in JSON)
-  auto& patterns_day =
+  const std::vector<MatchingPattern>& day_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("DAY", page_language);
   if (FormField::ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kDayRe),
-                                     MATCH_DEFAULT | MATCH_SELECT, patterns_day,
+                                     MATCH_DEFAULT | MATCH_SELECT, day_patterns,
                                      nullptr, {log_manager, "kDayRe"})) {
     return false;
   }
@@ -422,31 +427,33 @@ bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
       MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE | MATCH_SEARCH;
   size_t saved_cursor = scanner->SaveCursor();
 
-  // In JSON : DEBIT_CARD (only in JSON)
-  auto& patterns_d = PatternProvider::GetInstance().GetMatchPatterns(
-      "DEBIT_CARD", page_language);
-  // In JSON : DEBIT_GIFT_CARD (only in JSON)
-  auto& patterns_dg = PatternProvider::GetInstance().GetMatchPatterns(
-      "DEBIT_GIFT_CARD", page_language);
-  // In JSON : GIFT_CARD (only in JSON)
-  auto& patterns_g = PatternProvider::GetInstance().GetMatchPatterns(
-      "GIFT_CARD", page_language);
+  const std::vector<MatchingPattern>& debit_cards_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("DEBIT_CARD",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& debit_gift_card_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("DEBIT_GIFT_CARD",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& gift_card_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("GIFT_CARD",
+                                                      page_language);
 
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kDebitCardRe),
-                          kMatchFieldTypes, patterns_d, nullptr,
+                          kMatchFieldTypes, debit_cards_patterns, nullptr,
                           {log_manager, "kDebitCardRe"})) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kDebitGiftCardRe),
-                          kMatchFieldTypes, patterns_dg, nullptr,
+                          kMatchFieldTypes, debit_gift_card_patterns, nullptr,
                           {log_manager, "kDebitGiftCardRe"})) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
 
   return ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kGiftCardRe),
-                             kMatchFieldTypes, patterns_g, nullptr,
+                             kMatchFieldTypes, gift_card_patterns, nullptr,
                              {log_manager, "kGiftCardRe"});
 }
 
@@ -538,22 +545,28 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   const int kMatchCCType = MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE |
                            MATCH_SELECT | MATCH_SEARCH;
 
-  // In JSON : CARD_EXP_MONTH
-  auto& patterns_m = PatternProvider::GetInstance().GetMatchPatterns(
-      CREDIT_CARD_EXP_MONTH, page_language);
-  // In JSON : CARD_EXP_YEAR
-  auto& patterns_y = PatternProvider::GetInstance().GetMatchPatterns(
-      "CREDIT_CARD_EXP_YEAR", page_language);
-  auto& patterns_mm = PatternProvider::GetInstance().GetMatchPatterns(
-      "CREDIT_CARD_EXP_MONTH_BEFORE_YEAR", page_language);
-  auto& patterns_yy = PatternProvider::GetInstance().GetMatchPatterns(
-      "CREDIT_CARD_EXP_YEAR_AFTER_MONTH", page_language);
+  const std::vector<MatchingPattern>& cc_exp_month_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(CREDIT_CARD_EXP_MONTH,
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& cc_exp_year_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("CREDIT_CARD_EXP_YEAR",
+                                                      page_language);
+
+  const std::vector<MatchingPattern>& cc_exp_month_before_year_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          "CREDIT_CARD_EXP_MONTH_BEFORE_YEAR", page_language);
+
+  const std::vector<MatchingPattern>& cc_exp_year_after_month_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          "CREDIT_CARD_EXP_YEAR_AFTER_MONTH", page_language);
 
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kExpirationMonthRe),
-                          kMatchCCType, patterns_m, &expiration_month_,
+                          kMatchCCType, cc_exp_month_patterns,
+                          &expiration_month_,
                           {log_manager_, "kExpirationMonthRe"}) &&
       ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kExpirationYearRe),
-                          kMatchCCType, patterns_y, &expiration_year_,
+                          kMatchCCType, cc_exp_year_patterns, &expiration_year_,
                           {log_manager_, "kExpirationYearRe"})) {
     return true;
   }
@@ -561,11 +574,11 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   // If that fails, look for just MM and/or YY(YY).
   scanner->RewindTo(month_year_saved_cursor);
   if (ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^mm$"), kMatchCCType,
-                          patterns_mm, &expiration_month_,
+                          cc_exp_month_before_year_patterns, &expiration_month_,
                           {log_manager_, "^mm$"}) &&
       ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^(yy|yyyy)$"),
-                          kMatchCCType, patterns_yy, &expiration_year_,
-                          {log_manager_, "^(yy|yyyy)$"})) {
+                          kMatchCCType, cc_exp_year_after_month_patterns,
+                          &expiration_year_, {log_manager_, "^(yy|yyyy)$"})) {
     return true;
   }
 
@@ -580,23 +593,24 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
     return false;
 
   // Try to look for a 2-digit year expiration date.
-  // In JSON : CARD_EXP_DATE_2_DIGIT_YEAR
-  auto& patterns_2dy = PatternProvider::GetInstance().GetMatchPatterns(
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, page_language);
-  if (ParseFieldSpecifics(scanner,
-                          base::UTF8ToUTF16(kExpirationDate2DigitYearRe),
-                          kMatchCCType, patterns_2dy, &expiration_date_,
-                          {log_manager_, "kExpirationDate2DigitYearRe"})) {
+  const std::vector<MatchingPattern>& cc_exp_2digit_year_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, page_language);
+  if (ParseFieldSpecifics(
+          scanner, base::UTF8ToUTF16(kExpirationDate2DigitYearRe), kMatchCCType,
+          cc_exp_2digit_year_patterns, &expiration_date_,
+          {log_manager_, "kExpirationDate2DigitYearRe"})) {
     exp_year_type_ = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
     expiration_month_ = nullptr;
     return true;
   }
 
   // Try to look for a generic expiration date field. (2 or 4 digit year)
-  auto& patterns_exp_d = PatternProvider::GetInstance().GetMatchPatterns(
-      "CREDIT_CARD_EXP_DATE", page_language);
+  const std::vector<MatchingPattern>& cc_exp_date_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("CREDIT_CARD_EXP_DATE",
+                                                      page_language);
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kExpirationDateRe),
-                          kMatchCCType, patterns_exp_d, &expiration_date_,
+                          kMatchCCType, cc_exp_date_patterns, &expiration_date_,
                           {log_manager_, "kExpirationDateRe"})) {
     // If such a field exists, but it cannot fit a 4-digit year expiration
     // date, then the likely possibility is that it is a 2-digit year expiration
@@ -610,14 +624,15 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   }
 
   // Try to look for a 4-digit year expiration date.
-  auto& patterns_4dy = PatternProvider::GetInstance().GetMatchPatterns(
-      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, page_language);
+  const std::vector<MatchingPattern>& cc_exp_date_4_digit_year_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, page_language);
   if (FieldCanFitDataForFieldType(current_field_max_length,
                                   CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) &&
-      ParseFieldSpecifics(scanner,
-                          base::UTF8ToUTF16(kExpirationDate4DigitYearRe),
-                          kMatchCCType, patterns_4dy, &expiration_date_,
-                          {log_manager_, "kExpirationDate4DigitYearRe"})) {
+      ParseFieldSpecifics(
+          scanner, base::UTF8ToUTF16(kExpirationDate4DigitYearRe), kMatchCCType,
+          cc_exp_date_4_digit_year_patterns, &expiration_date_,
+          {log_manager_, "kExpirationDate4DigitYearRe"})) {
     expiration_month_ = nullptr;
     return true;
   }

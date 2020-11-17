@@ -88,15 +88,6 @@ class AddressField : public FormField {
   // RESULT_MATCH_NAME_LABEL, then |scanner| advances and |match| is filled if
   // it is non-NULL. Otherwise |scanner| does not advance and |match| does not
   // change.
-  // ParseNameLabelResult ParseNameAndLabelSeparately(
-  //     AutofillScanner* scanner,
-  //     const base::string16& pattern,
-  //     int match_type,
-  //     AutofillField** match,
-  //     const RegExLogging& logging);
-
-  // New version of function above using new structure MatchingPattern and
-  // PatternProvider.
   ParseNameLabelResult ParseNameAndLabelSeparately(
       AutofillScanner* scanner,
       const base::string16& pattern,
