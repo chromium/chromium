@@ -1576,6 +1576,7 @@
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
+                        "InstantStart",
                         "StartSurfaceAndroid",
                         "TabSwitcherOnReturn"
                     ]
