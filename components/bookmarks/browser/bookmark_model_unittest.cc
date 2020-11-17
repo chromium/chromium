@@ -583,8 +583,7 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const base::GUID guid = base::GUID::GenerateRandomV4();
 
   const BookmarkNode* new_node =
-      model_->AddURL(root, /*index=*/0, title, url, &meta_info, time,
-                     guid.AsLowercaseString());
+      model_->AddURL(root, /*index=*/0, title, url, &meta_info, time, guid);
 
   EXPECT_EQ(guid, new_node->guid());
 }

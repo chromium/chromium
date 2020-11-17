@@ -841,7 +841,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUID) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kLocalTitle),
-      GURL(kUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 
@@ -893,7 +893,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUIDAndReparent) {
       base::UTF8ToUTF16("Folder Title"));
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16(kLocalTitle),
-      GURL(kUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));
@@ -1078,8 +1078,7 @@ TEST(
       base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
-      GURL("http://foo.com/"), nullptr, base::Time::Now(),
-      base::GenerateGUID());
+      GURL("http://foo.com/"));
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));
@@ -1161,8 +1160,7 @@ TEST(BookmarkModelMergerTest,
       base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
-      GURL("http://foo.com/"), nullptr, base::Time::Now(),
-      base::GenerateGUID());
+      GURL("http://foo.com/"));
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));
@@ -1234,7 +1232,7 @@ TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingURLs) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      GURL(kUrl1), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kUrl1), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 
@@ -1282,8 +1280,8 @@ TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingTypes) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      GURL("http://www.foo.com/"), nullptr, base::Time::Now(),
-      kGuid.AsLowercaseString());
+      GURL("http://www.foo.com/"), /*meta_info=*/nullptr, base::Time::Now(),
+      kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 
@@ -1336,8 +1334,7 @@ TEST(BookmarkModelMergerTest,
       base::UTF8ToUTF16("Folder Title"), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Foo's title"),
-      GURL("http://foo.com"), nullptr, base::Time::Now(),
-      kGuid2.AsLowercaseString());
+      GURL("http://foo.com"), /*meta_info=*/nullptr, base::Time::Now(), kGuid2);
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));
@@ -1399,7 +1396,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfOrphanNode) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      GURL(kUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 
@@ -1451,7 +1448,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfInvalidSpecifics) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      GURL(kLocalUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kLocalUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 
@@ -1502,7 +1499,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidGUID) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kLocalTitle),
-      GURL(kUrl), nullptr, base::Time::Now(), kGuid.AsLowercaseString());
+      GURL(kUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(bookmark));
 

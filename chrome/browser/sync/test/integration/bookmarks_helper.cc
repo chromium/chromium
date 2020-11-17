@@ -545,8 +545,7 @@ const BookmarkNode* AddURL(int profile,
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddURL(
         v_parent, index, base::UTF8ToUTF16(title), url,
-        /*meta_info=*/nullptr, result->date_added(),
-        result->guid().AsLowercaseString());
+        /*meta_info=*/nullptr, result->date_added(), result->guid());
     if (!v_node) {
       LOG(ERROR) << "Could not add bookmark " << title << " to the verifier";
       return nullptr;

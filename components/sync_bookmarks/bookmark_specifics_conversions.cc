@@ -284,8 +284,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
         // always used the Windows epoch.
         base::TimeDelta::FromMicroseconds(create_time_us));
     node = model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
-                         GURL(specifics.url()), &metainfo, create_time,
-                         guid.AsLowercaseString());
+                         GURL(specifics.url()), &metainfo, create_time, guid);
   }
   SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
   return node;
@@ -333,10 +332,9 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
         model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
                          node->GetTitle(), node->GetMetaInfoMap(), guid);
   } else {
-    new_node =
-        model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
-                      node->GetTitle(), node->url(), node->GetMetaInfoMap(),
-                      node->date_added(), guid.AsLowercaseString());
+    new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
+                             node->GetTitle(), node->url(),
+                             node->GetMetaInfoMap(), node->date_added(), guid);
   }
   for (size_t i = node->children().size(); i > 0; --i) {
     model->Move(node->children()[i - 1].get(), new_node, 0);
