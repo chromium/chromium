@@ -2208,9 +2208,11 @@ bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
 }
 
 bool ChildProcessSecurityPolicyImpl::HasOriginEverRequestedOptInIsolation(
+    BrowserContext* browser_context,
     const url::Origin& origin) {
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
-  return base::Contains(origin_isolation_opt_ins_, origin);
+  return base::Contains(origin_isolation_opt_ins_, browser_context) &&
+         base::Contains(origin_isolation_opt_ins_[browser_context], origin);
 }
 
 void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
@@ -2223,18 +2225,25 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());
+  // All callers to this function live on the UI thread, so the IsolationContext
+  // should contain a BrowserContext*.
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
+  DCHECK(browser_context);
   CHECK(!browsing_instance_id.is_null());
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 
-  // Commits of origins that have ever requested isolation are tracked in
-  // every BrowsingInstance, to avoid having to do multiple global walks. If
-  // the origin isn't in the list of such origins (i.e., the common case),
-  // return early to avoid unnecessary work, since this is called on every
-  // commit. Skip this during global walks and frame removals, since we do want
-  // to track the non-isolated origin in those cases.
+  // Commits of origins that have ever requested isolation in this
+  // BrowserContext are tracked in every BrowsingInstance in this
+  // BrowserContext, to avoid having to do multiple global walks. If the origin
+  // isn't in the list of such origins (i.e., the common case), return early to
+  // avoid unnecessary work, since this is called on every commit. Skip this
+  // during global walks and frame removals, since we do want to track the
+  // non-isolated origin in those cases.
   if (!is_global_walk_or_frame_removal &&
-      !base::Contains(origin_isolation_opt_ins_, origin)) {
+      !(base::Contains(origin_isolation_opt_ins_, browser_context) &&
+        base::Contains(origin_isolation_opt_ins_[browser_context], origin))) {
     return;
   }
 
@@ -2345,16 +2354,19 @@ void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
 }
 
 bool ChildProcessSecurityPolicyImpl::UpdateOriginIsolationOptInListIfNecessary(
+    BrowserContext* browser_context,
     const url::Origin& origin) {
   if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return false;
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 
-  if (origin_isolation_opt_ins_.contains(origin))
+  if (base::Contains(origin_isolation_opt_ins_, browser_context) &&
+      base::Contains(origin_isolation_opt_ins_[browser_context], origin)) {
     return false;
+  }
 
-  origin_isolation_opt_ins_.insert(origin);
+  origin_isolation_opt_ins_[browser_context].insert(origin);
   return true;
 }
 

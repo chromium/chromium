@@ -1975,7 +1975,10 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin origin = url::Origin::Create(url);
-  if (policy->UpdateOriginIsolationOptInListIfNecessary(origin)) {
+  auto* browser_context =
+      frame_tree_node_->navigator().GetController()->GetBrowserContext();
+  if (policy->UpdateOriginIsolationOptInListIfNecessary(browser_context,
+                                                        origin)) {
     // This is a new request for isolating |origin|. Do a global walk of session
     // history to find any existing instances of |origin|, so that those
     // existing BrowsingInstances can avoid isolating it (which could break

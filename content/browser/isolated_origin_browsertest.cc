@@ -448,10 +448,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyCommandLineTest,
 
   // Make sure the master opt-in list has the base origin isolated and the sub
   // origin not isolated.
+  BrowserContext* browser_context = web_contents()->GetBrowserContext();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(isolated_base_origin_url)));
+      browser_context, url::Origin::Create(isolated_base_origin_url)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(non_isolated_sub_origin)));
+      browser_context, url::Origin::Create(non_isolated_sub_origin)));
 }
 
 // This tests that origin policy opt-in causes the origin to end up in the
@@ -756,6 +757,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   // Make sure the master opt-in list still has the origin tracked.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+      web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 }
 
@@ -804,6 +806,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   // Make sure the master opt-in list has the origin listed.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+      web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 }
 
@@ -853,6 +856,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   // Make sure the master opt-in list has the origin listed.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+      web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
   // Make sure the current browsing instance does *not* isolate the origin.
@@ -1158,12 +1162,13 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
   // Make sure the master opt-in list has the base origin as isolated, but not
   // the sub-origins.
+  BrowserContext* browser_context = web_contents()->GetBrowserContext();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(test_url)));
+      browser_context, url::Origin::Create(test_url)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(non_isolated_sub_origin1)));
+      browser_context, url::Origin::Create(non_isolated_sub_origin1)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(non_isolated_sub_origin2)));
+      browser_context, url::Origin::Create(non_isolated_sub_origin2)));
 }
 
 // This test is the same as OriginIsolationOptInOriginPolicyTest
@@ -1274,26 +1279,35 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure the master opt-in list has the base origin isolated and the sub
   // origins both not isolated.
+  BrowserContext* browser_context = web_contents()->GetBrowserContext();
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(isolated_base_origin_url)));
+      browser_context, url::Origin::Create(isolated_base_origin_url)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(non_isolated_sub_origin_url_a)));
+      browser_context, url::Origin::Create(non_isolated_sub_origin_url_a)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
-      url::Origin::Create(non_isolated_sub_origin_url_b)));
+      browser_context, url::Origin::Create(non_isolated_sub_origin_url_b)));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
-                       SeperateBrowserContextTest) {
+                       SeparateBrowserContextTest) {
   GURL isolated_origin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
-  Shell* shell2 = CreateOffTheRecordBrowser();
+  Shell* shell_otr = CreateOffTheRecordBrowser();
 
   EXPECT_NE(shell()->web_contents()->GetBrowserContext(),
-            shell2->web_contents()->GetBrowserContext());
+            shell_otr->web_contents()->GetBrowserContext());
 
   // The isolation header is not present, so this navigation will result in a
   // site-keyed instance.
-  EXPECT_TRUE(NavigateToURL(shell2, isolated_origin_url));
+  EXPECT_TRUE(NavigateToURL(shell_otr, isolated_origin_url));
+  WebContentsImpl* web_contents_shell_otr =
+      static_cast<WebContentsImpl*>(shell_otr->web_contents());
+  SiteInstanceImpl* site_instance_shell_otr =
+      web_contents_shell_otr->GetFrameTree()
+          ->root()
+          ->current_frame_host()
+          ->GetSiteInstance();
+  EXPECT_FALSE(site_instance_shell_otr->GetSiteInfo().is_origin_keyed());
 
   url::Origin isolated_origin = url::Origin::Create(isolated_origin_url);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1301,7 +1315,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // Now navigate a different BrowserContext to the same origin, but this time
   // requesting isolation. The presence of the site-keyed instance in a
   // different BrowsingInstance shouldn't prevent this navigation from being
-  // isolated.
+  // isolated. The presence of the site-keyed instance in a different
+  // BrowsingInstance (whether in the same BrowserContext or a different one)
+  // shouldn't prevent this navigation from being isolated. We'll test
+  // cross-BrowserContext interactions below.
   SetHeaderValue("?1");
   EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
@@ -1315,18 +1332,61 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure isolating the origin in the main context didn't affect it in the
   // off-the-record context. Specifically, if the opting-in in shell() did leak
-  // to shell2, then |isolated_origin| will be recorded as non-opted in in that
-  // BrowsingInstance, something that would allow shell2 to detect if shell()
-  // had visited (and isolated) |isolated_origin|. The following check makes
-  // sure that |isolated_origin| is not in the non-opt-in list.
+  // to shell_otr, then |isolated_origin| will be recorded as non-opted in in
+  // that BrowsingInstance. The following check makes sure that
+  // |isolated_origin| is not in the non-opt-in list, verifying that the
+  // internal bookkeeping is specific to each BrowserContext. Isolating the
+  // bookkeeping by BrowserContext prevents timing attacks from detecting
+  // whether an origin has been visited in another BrowserContext by detecting
+  // the global walk.
+  // At this stage, |isolated_origin| is not in the non-opt-in list for this
+  // BrowsingInstance, since we haven't yet done a global walk in the OTR
+  // BrowserContext, so ShouldOriginGetOptInIsolation will return true.
+  // However, during the navigation by the OpenPopup call below that global walk
+  // will be triggered before the url's isolation status is set.
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
-      static_cast<WebContentsImpl*>(shell2->web_contents())
+      static_cast<WebContentsImpl*>(shell_otr->web_contents())
           ->GetFrameTree()
           ->root()
           ->current_frame_host()
           ->GetSiteInstance()
           ->GetIsolationContext(),
       isolated_origin, true /* origin_requests_isolation */));
+
+  // Make sure the OTR context does a global (i.e. profile) walk if we attempt
+  // to now opt-in when we didn't before.
+  Shell* popup = OpenPopup(shell_otr, isolated_origin_url, "popup_otr");
+  WebContentsImpl* web_contents_popup =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  SiteInstanceImpl* site_instance_popup = web_contents_popup->GetFrameTree()
+                                              ->root()
+                                              ->current_frame_host()
+                                              ->GetSiteInstance();
+  // This shouldn't be isolated because we already have a non-isolated version
+  // of this origin in shell_otr's main frame, in the same BrowsingInstance.
+  EXPECT_FALSE(site_instance_popup->GetSiteInfo().is_origin_keyed());
+  // Since the OpenPopup navigation triggered a global walk, |isolated_origin|
+  // was added to the non-opt-in list, so now calling
+  // ShouldOriginGetOptInIsolation will return false.
+  EXPECT_FALSE(policy->ShouldOriginGetOptInIsolation(
+      site_instance_popup->GetIsolationContext(), isolated_origin,
+      true /* origin_requests_isolation */));
+
+  // Opening a new tab in the OTR profile, which will create a new
+  // BrowsingInstance, should be allowed to isolate.
+  Shell* shell_otr_tab2 = CreateOffTheRecordBrowser();
+  EXPECT_TRUE(NavigateToURL(shell_otr_tab2, isolated_origin_url));
+  WebContentsImpl* web_contenst_shell_otr_tab2 =
+      static_cast<WebContentsImpl*>(shell_otr_tab2->web_contents());
+  SiteInstanceImpl* site_instance_shell_otr_tab2 =
+      web_contenst_shell_otr_tab2->GetFrameTree()
+          ->root()
+          ->current_frame_host()
+          ->GetSiteInstance();
+  EXPECT_TRUE(site_instance_shell_otr_tab2->GetSiteInfo().is_origin_keyed());
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      site_instance_shell_otr_tab2->GetIsolationContext(), isolated_origin,
+      true /* origin_requests_isolation */));
 }
 
 // This test creates a scenario where we have a frame without a

@@ -393,9 +393,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                      bool origin_requests_isolation);
 
   // This function adds |origin| to the master list of origins that have
-  // ever requested opt-in isolation, either via an OriginPolicy or opt-in
-  // header. Returns true if |origin| is not already in the list.
-  bool UpdateOriginIsolationOptInListIfNecessary(const url::Origin& origin);
+  // ever requested opt-in isolation in the given |browsing_context|, either via
+  // an OriginPolicy or opt-in header. Returns true if |origin| is not already
+  // in the list.
+  bool UpdateOriginIsolationOptInListIfNecessary(
+      BrowserContext* browser_context,
+      const url::Origin& origin);
 
   // A version of GetMatchingIsolatedOrigin that takes in both the |origin| and
   // the |site_url| that |origin| corresponds to.  |site_url| is the key by
@@ -590,9 +593,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // all policy checks.
   Handle CreateHandle(int child_id);
 
-  // Returns true if we have seen an isolation request for this origin before
-  // in any BrowsingInstance.
-  bool HasOriginEverRequestedOptInIsolation(const url::Origin& origin);
+  // Returns true if we have seen an isolation request for this |origin| in the
+  // given |browsing_context| before in any BrowsingInstance.
+  bool HasOriginEverRequestedOptInIsolation(BrowserContext* browser_context,
+                                            const url::Origin& origin);
 
   // Adds |origin| to the non-isolated list for the BrowsingInstance specified
   // by |isolation_context|, if we need to track it and it's not already in the
@@ -886,13 +890,17 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // prevent any record of sites visible in one profile from being visible to
   // another profile.
   base::Lock origins_isolation_opt_in_lock_;
-  // The set of all origins that have ever requested opt-in isolation. This is
-  // tracked so we know which origins need to be tracked when non-isolated in
-  // any given BrowsingInstance. Origins requesting isolation, if successful,
-  // are marked as isolated via ShouldOriginGetOptInIsolation's checking
-  // |origin_requests_isolation|.
-  base::flat_set<url::Origin> origin_isolation_opt_ins_
-      GUARDED_BY(origins_isolation_opt_in_lock_);
+  // The set of all origins that have ever requested opt-in isolation, organized
+  // by BrowsingContext. This is tracked so we know which origins need to be
+  // tracked when non-isolated in any given BrowsingInstance. Origins requesting
+  // isolation, if successful, are marked as isolated via
+  // ShouldOriginGetOptInIsolation's checking |origin_requests_isolation|.
+  // Each BrowserContext's state is tracked separately so that timing attacks do
+  // not reveal whether an origin has been visited in another (e.g., incognito)
+  // BrowserContext. In general, the state of other BrowsingInstances is not
+  // observable outside such timing side channels.
+  base::flat_map<BrowserContext*, base::flat_set<url::Origin>>
+      origin_isolation_opt_ins_ GUARDED_BY(origins_isolation_opt_in_lock_);
   // A map to track origins that have been isolated within a given
   // BrowsingInstance.
   base::flat_map<BrowsingInstanceId, std::vector<url::Origin>>
