@@ -601,7 +601,6 @@ void RenderText::SetMinLineHeight(int line_height) {
 }
 
 void RenderText::SetElideBehavior(ElideBehavior elide_behavior) {
-  // TODO(skanuj) : Add a test for triggering layout change.
   if (elide_behavior_ != elide_behavior) {
     elide_behavior_ = elide_behavior;
     OnDisplayTextAttributeChanged();

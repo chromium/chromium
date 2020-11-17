@@ -2275,6 +2275,41 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   EXPECT_EQ(expected, result);
 }
 
+TEST_F(RenderTextTest, SetElideBehavior) {
+  // This test requires glyphs to be the same width.
+  constexpr int kGlyphWidth = 10;
+  SetGlyphWidth(kGlyphWidth);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(ASCIIToUTF16("abcdef"));
+  render_text->SetCursorEnabled(false);
+  render_text->SetDisplayRect(Rect(0, 0, 3 * kGlyphWidth, 100));
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  EXPECT_EQ(WideToUTF16(L"ab\u2026"), render_text->GetDisplayText());
+
+  // Setting a different eliding behavior must trigger a relayout.
+  render_text->SetElideBehavior(ELIDE_HEAD);
+  EXPECT_EQ(WideToUTF16(L"\u2026ef"), render_text->GetDisplayText());
+}
+
+TEST_F(RenderTextTest, SetWhitespaceElision) {
+  // This test requires glyphs to be the same width.
+  constexpr int kGlyphWidth = 10;
+  SetGlyphWidth(kGlyphWidth);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(ASCIIToUTF16("a b c d"));
+  render_text->SetCursorEnabled(false);
+  render_text->SetDisplayRect(Rect(0, 0, 3 * kGlyphWidth, 100));
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  render_text->SetWhitespaceElision(false);
+  EXPECT_EQ(WideToUTF16(L"a \u2026"), render_text->GetDisplayText());
+
+  // Setting a different whitespace elision must trigger a relayout.
+  render_text->SetWhitespaceElision(true);
+  EXPECT_EQ(WideToUTF16(L"a\u2026"), render_text->GetDisplayText());
+}
+
 TEST_F(RenderTextTest, ElidedObscuredText) {
   auto expected_render_text = std::make_unique<RenderTextHarfBuzz>();
   expected_render_text->SetDisplayRect(Rect(0, 0, 9999, 100));
