@@ -271,13 +271,13 @@ SkBitmap AXImageAnnotator::GetImageData(const blink::WebAXObject& image) {
 void AXImageAnnotator::OnImageAnnotated(
     const blink::WebAXObject& image,
     image_annotation::mojom::AnnotateImageResultPtr result) {
-  if (!base::Contains(image_annotations_, image.AxID()))
-    return;
-
   if (!blink::WebAXObject::MaybeUpdateLayoutAndCheckValidity(
           image.GetDocument())) {
     return;
   }
+
+  if (!base::Contains(image_annotations_, image.AxID()))
+    return;
 
   if (image.IsDetached()) {
     image_annotations_.at(image.AxID())
