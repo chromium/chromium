@@ -1,8 +1,8 @@
 {
   "sandbox": {
     "features": [
-      "isolated-persistent-storage",
-      "deprecated-ambient-replace-as-executable"
+      "deprecated-ambient-replace-as-executable",
+      "isolated-persistent-storage"
     ],
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
@@ -17,7 +17,7 @@
       "fuchsia.mediacodec.CodecFactory",
       "fuchsia.memorypressure.Provider",
       "fuchsia.net.NameLookup",
-      "fuchsia.netstack.Netstack",
+      "fuchsia.net.interfaces.State",
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sys.Launcher",

@@ -5,8 +5,8 @@
     ],
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
-      "fuchsia.device.NameProvider",
       "fuchsia.camera3.DeviceWatcher",
+      "fuchsia.device.NameProvider",
       "fuchsia.fonts.Provider",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
@@ -16,7 +16,7 @@
       "fuchsia.mediacodec.CodecFactory",
       "fuchsia.memorypressure.Provider",
       "fuchsia.net.NameLookup",
-      "fuchsia.netstack.Netstack",
+      "fuchsia.net.interfaces.State",
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sysmem.Allocator",

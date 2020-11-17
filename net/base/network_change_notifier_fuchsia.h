@@ -5,19 +5,21 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_FUCHSIA_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_FUCHSIA_H_
 
-#include <fuchsia/netstack/cpp/fidl.h>
+#include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include <vector>
 
 #include "base/atomicops.h"
 #include "base/callback.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "net/base/network_interfaces_fuchsia.h"
 
 namespace net {
 
@@ -25,9 +27,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierFuchsia
     : public NetworkChangeNotifier {
  public:
   // Registers for asynchronous notifications of changes to network interfaces.
-  // Interfaces are filtered by |required_features|.
-  explicit NetworkChangeNotifierFuchsia(
-      fuchsia::hardware::ethernet::Features required_features);
+  // Only WLAN interfaces are observed if |require_wlan| is requested.
+  explicit NetworkChangeNotifierFuchsia(bool require_wlan);
   NetworkChangeNotifierFuchsia(const NetworkChangeNotifierFuchsia&) = delete;
   NetworkChangeNotifierFuchsia& operator=(const NetworkChangeNotifierFuchsia&) =
       delete;
@@ -37,42 +38,55 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierFuchsia
   ConnectionType GetCurrentConnectionType() const override;
 
  private:
+  using InterfacePropertiesMap =
+      base::flat_map<uint64_t, internal::InterfaceProperties>;
   friend class NetworkChangeNotifierFuchsiaTest;
 
-  // For testing purposes. Receives a |netstack| pointer for easy mocking.
-  // Interfaces are filtered by |required_features|.
   NetworkChangeNotifierFuchsia(
-      fidl::InterfaceHandle<fuchsia::netstack::Netstack> netstack,
-      fuchsia::hardware::ethernet::Features required_features,
+      fidl::InterfaceHandle<fuchsia::net::interfaces::Watcher> watcher,
+      bool require_wlan,
       SystemDnsConfigChangeNotifier* system_dns_config_notifier = nullptr);
 
-  // Forwards the network interface list along with the result of
-  // GetRouteTable() to OnRouteTableReceived().
-  void ProcessInterfaceList(
-      std::vector<fuchsia::netstack::NetInterface> interfaces);
+  // Processes events from the watcher for interface addition, change, or
+  // removal.
+  void OnInterfacesEvent(fuchsia::net::interfaces::Event event);
 
-  // Computes network change notification state change from the list of
-  // interfaces and routing table data, sending observer events if IP or
-  // connection type changes are detected.
-  void OnRouteTableReceived(
-      std::vector<fuchsia::netstack::NetInterface> interfaces,
-      std::vector<fuchsia::netstack::RouteTableEntry> table);
+  // Handlers for the interface change events. Listeners are notified of changes
+  // that affect them. |watcher_| is closed if an event is malformed in some
+  // way.
+  void OnInterfaceAdded(fuchsia::net::interfaces::Properties properties);
+  void OnInterfaceRemoved(uint64_t interface_id);
+  void OnInterfaceChanged(fuchsia::net::interfaces::Properties properties);
 
-  // Required features for an interface to be taken into account.
-  const fuchsia::hardware::ethernet::Features required_features_;
+  // Unbinds the watcher, reset the connection type and logs |error_message|.
+  void OnWatcherError(base::StringPiece error_message);
 
-  fuchsia::netstack::NetstackPtr netstack_;
+  // Updates the connection type from |interface_cache_| and notifies observers
+  // of changes.
+  void UpdateConnectionType();
 
-  // Used to allow the constructor to block until the initial state is received
-  // from |netstack_|.
-  base::OnceClosure on_initial_interfaces_received_;
+  // Resets the connection type to CONNECTION_UNKNOWN.
+  void ResetConnectionType();
+
+  // Returns the ConnectionType converted from |properties|' device_class.
+  // Returns CONNECTION_NONE if the interface is not publicly routable, taking
+  // into account the |requires_wlan_| setting.
+  ConnectionType GetEffectiveConnectionType(
+      const internal::InterfaceProperties& properties);
+
+  // Returns true if the effective connection type is not CONNECTION_NONE.
+  bool CanReachExternalNetwork(const internal::InterfaceProperties& properties);
+
+  // Whether only WLAN interfaces should be taken into account.
+  const bool require_wlan_;
+
+  fuchsia::net::interfaces::WatcherPtr watcher_;
 
   // The ConnectionType of the default network interface, stored as an atomic
   // 32-bit int for safe concurrent access.
   base::subtle::Atomic32 cached_connection_type_ = CONNECTION_UNKNOWN;
 
-  // Set of addresses from the previous query/update for the default interface.
-  base::flat_set<IPAddress> cached_addresses_;
+  InterfacePropertiesMap interface_cache_;
 
   THREAD_CHECKER(thread_checker_);
 };
