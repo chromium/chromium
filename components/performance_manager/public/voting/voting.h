@@ -453,6 +453,40 @@ class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
       accepted_votes_by_voter_id_;
 };
 
+// A wrapper for a VotingChannel that takes care of handling the VoteReceipts.
+// This is a temporary class that exists while existing users of VotingChannel
+// are being migrated. Its functionality will be folded into VotingChannel
+// in the future.
+template <class VoteImpl>
+class VotingChannelWrapper {
+ public:
+  using ContextType = typename VoteImpl::ContextType;
+
+  VotingChannelWrapper();
+  ~VotingChannelWrapper();
+
+  // Sets the underlying VotingChannel. Can only be invoked once, and it must be
+  // done before any calls to the functions to submit/change/invalidate votes.
+  void SetVotingChannel(VotingChannel<VoteImpl> voting_channel);
+
+  // Submits a vote through the underlying voting channel. Can only be called
+  // after SetVotingChannel() was invoked.
+  void SubmitVote(const ContextType* context, const VoteImpl& vote);
+
+  // Modifies an existing vote. Can only be called after SetVotingChannel() was
+  // invoked.
+  void ChangeVote(const ContextType* context, const VoteImpl& new_vote);
+
+  // Invalidates an existing vote. Can only be called after SetVotingChannel()
+  // was invoked.
+  void InvalidateVote(const ContextType* context);
+
+ private:
+  VotingChannel<VoteImpl> voting_channel_;
+
+  std::map<const ContextType*, VoteReceipt<VoteImpl>> vote_receipts_;
+};
+
 /////////////////////////////////////////////////////////////////////
 // Vote
 
@@ -931,6 +965,50 @@ void VoteConsumerDefaultImpl<VoteImpl>::VoteInvalidated(
     size_t removed = accepted_votes_by_voter_id_.erase(voter_id);
     DCHECK_EQ(removed, 1u);
   }
+}
+
+/////////////////////////////////////////////////////////////////////
+// VotingChannelWrapper
+
+template <class VoteImpl>
+VotingChannelWrapper<VoteImpl>::VotingChannelWrapper() = default;
+
+template <class VoteImpl>
+VotingChannelWrapper<VoteImpl>::~VotingChannelWrapper() = default;
+
+template <class VoteImpl>
+void VotingChannelWrapper<VoteImpl>::SetVotingChannel(
+    VotingChannel<VoteImpl> voting_channel) {
+  DCHECK(voting_channel.IsValid());
+  DCHECK(!voting_channel_.IsValid());
+  voting_channel_ = std::move(voting_channel);
+}
+
+template <class VoteImpl>
+void VotingChannelWrapper<VoteImpl>::SubmitVote(const ContextType* context,
+                                                const VoteImpl& vote) {
+  DCHECK(voting_channel_.IsValid());
+
+  VoteReceipt<VoteImpl> vote_receipt =
+      voting_channel_.SubmitVote(context, vote);
+  bool inserted =
+      vote_receipts_.emplace(context, std::move(vote_receipt)).second;
+  DCHECK(inserted);
+}
+
+template <class VoteImpl>
+void VotingChannelWrapper<VoteImpl>::ChangeVote(const ContextType* context,
+                                                const VoteImpl& new_vote) {
+  auto it = vote_receipts_.find(context);
+  DCHECK(it != vote_receipts_.end());
+  it->second.ChangeVote(new_vote.value(), new_vote.reason());
+}
+
+template <class VoteImpl>
+void VotingChannelWrapper<VoteImpl>::InvalidateVote(
+    const ContextType* context) {
+  size_t removed = vote_receipts_.erase(context);
+  DCHECK_EQ(removed, 1u);
 }
 
 }  // namespace voting

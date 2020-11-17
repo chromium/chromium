@@ -102,6 +102,9 @@ class DummyVoteObserver : public VoteObserver<VoteImpl> {
                          const ContextType* context) override;
 
   bool HasVote(voting::VoterId<VoteImpl> voter_id,
+               const typename VoteImpl::ContextType* context);
+
+  bool HasVote(voting::VoterId<VoteImpl> voter_id,
                const typename VoteImpl::ContextType* context,
                typename VoteImpl::VoteType vote_value,
                const char* reason = nullptr);
@@ -253,6 +256,16 @@ void DummyVoteObserver<VoteImpl>::OnVoteInvalidated(
 
   if (votes.empty())
     votes_by_voter_id_.erase(it);
+}
+
+template <class VoteImpl>
+bool DummyVoteObserver<VoteImpl>::HasVote(
+    voting::VoterId<VoteImpl> voter_id,
+    const typename VoteImpl::ContextType* context) {
+  if (!base::Contains(votes_by_voter_id_, voter_id))
+    return false;
+
+  return base::Contains(votes_by_voter_id_[voter_id], context);
 }
 
 template <class VoteImpl>

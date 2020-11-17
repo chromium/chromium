@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/public/voting/voting.h"
 
+#include "base/test/gtest_util.h"
 #include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +22,7 @@ using TestVotingChannel = voting::VotingChannel<TestVote>;
 using TestVotingChannelFactory = voting::VotingChannelFactory<TestVote>;
 using TestVoteConsumer = voting::VoteConsumer<TestVote>;
 using TestAcceptedVote = voting::AcceptedVote<TestVote>;
+using TestVotingChannelWrapper = voting::VotingChannelWrapper<TestVote>;
 
 using DummyVoter = voting::test::DummyVoter<TestVote>;
 using DummyVoteConsumer = voting::test::DummyVoteConsumer<TestVote>;
@@ -196,6 +198,82 @@ TEST(VotingTest, VoteObserver) {
   }
 
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+}
+
+TEST(VotingTest, VotingChannelWrapper) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel =
+      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
+
+  TestVotingChannelWrapper voting_channel_wrapper;
+  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
+
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+
+  voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+
+  voting_channel_wrapper.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 10, kReason));
+
+  voting_channel_wrapper.InvalidateVote(kDummyContext1);
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+}
+
+// Tests that submitting 2 votes for the same context using a
+// VotingChannelWrapper results in a DCHECK.
+TEST(VotingTest, VotingChannelWrapper_SubmitDuplicateVote) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel =
+      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
+
+  TestVotingChannelWrapper voting_channel_wrapper;
+  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
+
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+
+  voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+
+  EXPECT_DCHECK_DEATH(
+      voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(10, kReason)));
+}
+
+// Tests that calling ChangeVote() for a context before a vote was submitted for
+// that context results in a DCHECK.
+TEST(VotingTest, VotingChannelWrapper_ChangeNonExisting) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel =
+      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
+
+  TestVotingChannelWrapper voting_channel_wrapper;
+  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
+
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+  EXPECT_DCHECK_DEATH(
+      voting_channel_wrapper.ChangeVote(kDummyContext1, TestVote(5, kReason)));
+}
+
+// Tests that calling InvalidateVote() for a context before a vote was submitted
+// for that context results in a DCHECK.
+TEST(VotingTest, VotingChannelWrapper_InvalidateNonExisting) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel =
+      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
+
+  TestVotingChannelWrapper voting_channel_wrapper;
+  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
+
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+  EXPECT_DCHECK_DEATH(voting_channel_wrapper.InvalidateVote(kDummyContext1));
 }
 
 }  // namespace performance_manager
