@@ -432,9 +432,6 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        String error = triggerPaymentAppUiSkipIfApplicable(isUserGestureShow);
-        if (error != null) return error;
-
         if (isFinishedQueryingPaymentApps
                 && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
             boolean providedInformationToPaymentRequestUI =
