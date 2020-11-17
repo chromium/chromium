@@ -31,17 +31,16 @@ public class AccountPickerBottomSheetCoordinator {
         @Override
         public void onSheetClosed(@StateChangeReason int reason) {
             super.onSheetClosed(reason);
-            final @AccountConsistencyPromoAction int promoAction;
             if (reason == StateChangeReason.SWIPE) {
-                promoAction = AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN;
+                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                        AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
             } else if (reason == StateChangeReason.BACK_PRESS) {
-                promoAction = AccountConsistencyPromoAction.DISMISSED_BACK;
+                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                        AccountConsistencyPromoAction.DISMISSED_BACK);
             } else if (reason == StateChangeReason.TAP_SCRIM) {
-                promoAction = AccountConsistencyPromoAction.DISMISSED_SCRIM;
-            } else {
-                promoAction = AccountConsistencyPromoAction.DISMISSED_OTHER;
+                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                        AccountConsistencyPromoAction.DISMISSED_SCRIM);
             }
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(promoAction);
         }
 
         @Override
