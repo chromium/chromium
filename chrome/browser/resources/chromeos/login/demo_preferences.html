@@ -9,8 +9,23 @@
 
 <dom-module id="demo-preferences-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="demo_preferences.css">
+    <style include="oobe-dialog-host">
+      :host {
+        --oobe-dialog-list-item-border: 1px solid rgb(235,235,235); /*#EBEBEB*/
+        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+      }
+      #demoPreferencesDialog .language-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 60px;
+      }
+      #demoPreferencesDialog .language-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+      #demoPreferencesDialog .language-selection-title {
+        color: var(--google-grey-900);
+        font-size: 13px;
+      }
+    </style>
     <oobe-dialog id="demoPreferencesDialog" role="dialog" has-buttons
         aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]"
         title-key="demoPreferencesScreenTitle">
