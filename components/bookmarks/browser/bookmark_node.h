@@ -47,6 +47,8 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
   typedef std::map<std::string, std::string> MetaInfoMap;
 
+  // TODO(crbug.com/1026195): Make these constants of type base::GUID once there
+  // exists a constexpr constructor.
   static const char kRootNodeGuid[];
   static const char kBookmarkBarNodeGuid[];
   static const char kOtherBookmarksNodeGuid[];
@@ -73,11 +75,11 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
 
-  // Returns the GUID for this node.
+  // Returns this node's GUID, which is guaranteed to be valid.
   // For bookmark nodes that are managed by the bookmark model, the GUIDs are
   // persisted across sessions and stable throughout the lifetime of the
   // bookmark.
-  const std::string& guid() const { return guid_.AsLowercaseString(); }
+  const base::GUID& guid() const { return guid_; }
 
   const GURL& url() const { return url_; }
   void set_url(const GURL& url) { url_ = url; }

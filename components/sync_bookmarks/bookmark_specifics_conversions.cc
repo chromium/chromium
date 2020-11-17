@@ -214,12 +214,10 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     bm_specifics->set_url(node->url().spec());
   }
 
-  DCHECK(!node->guid().empty());
-  DCHECK(base::IsValidGUIDOutputString(node->guid()))
-      << "Actual: " << node->guid();
+  DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
 
   if (include_guid) {
-    bm_specifics->set_guid(node->guid());
+    bm_specifics->set_guid(node->guid().AsLowercaseString());
   }
 
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
@@ -269,14 +267,16 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(parent);
   DCHECK(model);
   DCHECK(favicon_service);
-  DCHECK(base::IsValidGUIDOutputString(specifics.guid()));
+
+  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  DCHECK(guid.is_valid());
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
   const bookmarks::BookmarkNode* node;
   if (is_folder) {
     node = model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
-                            &metainfo, specifics.guid());
+                            &metainfo, guid.AsLowercaseString());
   } else {
     const int64_t create_time_us = specifics.creation_time_us();
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -285,7 +285,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
         base::TimeDelta::FromMicroseconds(create_time_us));
     node = model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
                          GURL(specifics.url()), &metainfo, create_time,
-                         specifics.guid());
+                         guid.AsLowercaseString());
   }
   SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
   return node;
@@ -302,8 +302,8 @@ void UpdateBookmarkNodeFromSpecifics(
   // We shouldn't try to update the properties of the BookmarkNode before
   // resolving any conflict in GUID. Either GUIDs are the same, or the GUID in
   // specifics is invalid, and hence we can ignore it.
-  DCHECK(specifics.guid() == node->guid() ||
-         !base::IsValidGUIDOutputString(specifics.guid()));
+  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  DCHECK(!guid.is_valid() || guid == node->guid());
 
   if (!node->is_folder()) {
     model->SetURL(node, GURL(specifics.url()));
@@ -318,9 +318,9 @@ void UpdateBookmarkNodeFromSpecifics(
 // parent nodes more efficiently.
 const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const bookmarks::BookmarkNode* node,
-    const std::string& guid,
+    const base::GUID& guid,
     bookmarks::BookmarkModel* model) {
-  DCHECK(base::IsValidGUIDOutputString(guid));
+  DCHECK(guid.is_valid());
 
   if (node->guid() == guid) {
     // Nothing to do.
@@ -329,13 +329,14 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
 
   const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
-    new_node =
-        model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
-                         node->GetTitle(), node->GetMetaInfoMap(), guid);
+    new_node = model->AddFolder(
+        node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
+        node->GetMetaInfoMap(), guid.AsLowercaseString());
   } else {
-    new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
-                             node->GetTitle(), node->url(),
-                             node->GetMetaInfoMap(), node->date_added(), guid);
+    new_node =
+        model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
+                      node->GetTitle(), node->url(), node->GetMetaInfoMap(),
+                      node->date_added(), guid.AsLowercaseString());
   }
   for (size_t i = node->children().size(); i > 0; --i) {
     model->Move(node->children()[i - 1].get(), new_node, 0);
@@ -353,7 +354,8 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;
   }
-  if (!base::IsValidGUIDOutputString(specifics.guid())) {
+  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  if (!guid.is_valid()) {
     DLOG(ERROR) << "Invalid bookmark: invalid GUID in the specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
     is_valid = false;

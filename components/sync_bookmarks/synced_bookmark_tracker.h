@@ -18,14 +18,18 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 
+namespace base {
+class GUID;
+}  // namespace base
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 namespace syncer {
 struct EntityData;
-}
+}  // namespace syncer
 
 namespace sync_bookmarks {
 
@@ -103,12 +107,12 @@ class SyncedBookmarkTracker {
     bool has_final_guid() const;
 
     // Returns true if the final GUID is known and it matches |guid|.
-    bool final_guid_matches(const std::string& guid) const;
+    bool final_guid_matches(const base::GUID& guid) const;
 
     // TODO(crbug.com/1032052): Remove this code once all local sync metadata
     // is required to populate the client tag (and be considered invalid
     // otherwise).
-    void set_final_guid(const std::string& guid);
+    void set_final_guid(const base::GUID& guid);
 
     void PopulateFaviconHashIfUnset(const std::string& favicon_png_bytes);
 
@@ -160,7 +164,7 @@ class SyncedBookmarkTracker {
       const bookmarks::BookmarkNode* node) const;
 
   // Returns null if no tombstone entity is found.
-  const Entity* GetTombstoneEntityForGuid(const std::string& guid) const;
+  const Entity* GetTombstoneEntityForGuid(const base::GUID& guid) const;
 
   // Starts tracking local bookmark |bookmark_node|, which must not be tracked
   // beforehand. The rest of the arguments represent the initial metadata.
@@ -185,7 +189,7 @@ class SyncedBookmarkTracker {
   void UpdateServerVersion(const Entity* entity, int64_t server_version);
 
   // Populates a bookmark's final GUID. |entity| must be owned by this tracker.
-  void PopulateFinalGuid(const Entity* entity, const std::string& guid);
+  void PopulateFinalGuid(const Entity* entity, const base::GUID& guid);
 
   // Populates the metadata field representing the hashed favicon. This method
   // is effectively used to backfill the proto field, which was introduced late.

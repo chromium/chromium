@@ -92,12 +92,11 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
 
   // Assign a temp server id for the entity. Will be overriden by the actual
   // server id upon receiving commit response.
-  DCHECK(base::IsValidGUIDOutputString(node->guid()));
-
   // Local bookmark creations should have used a random GUID so it's safe to
   // use it as originator client item ID, without the risk for collision.
   const sync_pb::UniquePosition unique_position =
-      ComputePosition(*parent, index, node->guid()).ToProto();
+      ComputePosition(*parent, index, node->guid().AsLowercaseString())
+          .ToProto();
 
   sync_pb::EntitySpecifics specifics =
       CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true,
@@ -114,9 +113,9 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
                               creation_time, unique_position, specifics);
   } else {
-    entity =
-        bookmark_tracker_->Add(node, node->guid(), syncer::kUncommittedVersion,
-                               creation_time, unique_position, specifics);
+    entity = bookmark_tracker_->Add(node, node->guid().AsLowercaseString(),
+                                    syncer::kUncommittedVersion, creation_time,
+                                    unique_position, specifics);
   }
 
   // Mark the entity that it needs to be committed.

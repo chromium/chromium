@@ -31,6 +31,10 @@
 class BookmarkUndoService;
 class GURL;
 
+namespace base {
+class GUID;
+}  // namespace base
+
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
@@ -223,8 +227,8 @@ size_t CountFoldersWithTitlesMatching(int profile, const std::string& title)
     WARN_UNUSED_RESULT;
 
 // Returns whether there exists a BookmarkNode in the bookmark model of
-// profile |profile| whose GUID matches the string |guid|.
-bool ContainsBookmarkNodeWithGUID(int profile, const std::string& guid);
+// profile |profile| whose GUID matches |guid|.
+bool ContainsBookmarkNodeWithGUID(int profile, const base::GUID& guid);
 
 // Creates a favicon of |color| with image reps of the platform's supported
 // scale factors (eg MacOS) in addition to 1x.
@@ -491,7 +495,7 @@ class BookmarksUrlChecker : public SingleBookmarkModelStatusChangeChecker {
 // Checker used to block until there exists a bookmark with the given GUID.
 class BookmarksGUIDChecker : public SingleBookmarksModelMatcherChecker {
  public:
-  BookmarksGUIDChecker(int profile, const std::string& guid);
+  BookmarksGUIDChecker(int profile, const base::GUID& guid);
   ~BookmarksGUIDChecker() override;
 };
 

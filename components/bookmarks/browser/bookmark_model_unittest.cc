@@ -500,7 +500,7 @@ TEST_F(BookmarkModelTest, AddURL) {
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
   ASSERT_TRUE(url == new_node->url());
-  ASSERT_TRUE(!new_node->guid().empty());
+  ASSERT_TRUE(new_node->guid().is_valid());
   ASSERT_EQ(BookmarkNode::URL, new_node->type());
   ASSERT_TRUE(new_node == model_->GetMostRecentlyAddedUserNodeForURL(url));
 
@@ -562,7 +562,7 @@ TEST_F(BookmarkModelTest, AddURLWithCreationTimeAndMetaInfo) {
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
   ASSERT_TRUE(url == new_node->url());
-  ASSERT_TRUE(!new_node->guid().empty());
+  ASSERT_TRUE(new_node->guid().is_valid());
   ASSERT_EQ(BookmarkNode::URL, new_node->type());
   ASSERT_EQ(time, new_node->date_added());
   ASSERT_TRUE(new_node->GetMetaInfoMap());
@@ -580,10 +580,11 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const GURL url("http://foo.com");
   const Time time = Time::Now() - TimeDelta::FromDays(1);
   BookmarkNode::MetaInfoMap meta_info;
-  const std::string guid = base::GenerateGUID();
+  const base::GUID guid = base::GUID::GenerateRandomV4();
 
   const BookmarkNode* new_node =
-      model_->AddURL(root, /*index=*/0, title, url, &meta_info, time, guid);
+      model_->AddURL(root, /*index=*/0, title, url, &meta_info, time,
+                     guid.AsLowercaseString());
 
   EXPECT_EQ(guid, new_node->guid());
 }
@@ -618,7 +619,7 @@ TEST_F(BookmarkModelTest, AddFolder) {
 
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
-  ASSERT_TRUE(!new_node->guid().empty());
+  ASSERT_TRUE(new_node->guid().is_valid());
   ASSERT_EQ(BookmarkNode::FOLDER, new_node->type());
 
   EXPECT_TRUE(new_node->id() != root->id() &&
@@ -636,10 +637,10 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const base::string16 title(ASCIIToUTF16("foo"));
   BookmarkNode::MetaInfoMap meta_info;
-  const std::string guid = base::GenerateGUID();
+  const base::GUID guid = base::GUID::GenerateRandomV4();
 
-  const BookmarkNode* new_node =
-      model_->AddFolder(root, /*index=*/0, title, &meta_info, guid);
+  const BookmarkNode* new_node = model_->AddFolder(
+      root, /*index=*/0, title, &meta_info, guid.AsLowercaseString());
 
   EXPECT_EQ(guid, new_node->guid());
 }

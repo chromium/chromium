@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "base/base64.h"
+#include "base/guid.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
@@ -181,16 +182,19 @@ bool SyncedBookmarkTracker::Entity::has_final_guid() const {
 }
 
 bool SyncedBookmarkTracker::Entity::final_guid_matches(
-    const std::string& guid) const {
+    const base::GUID& guid) const {
   return metadata_->has_client_tag_hash() &&
          metadata_->client_tag_hash() ==
-             syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, guid)
+             syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                                 guid.AsLowercaseString())
                  .value();
 }
 
-void SyncedBookmarkTracker::Entity::set_final_guid(const std::string& guid) {
+void SyncedBookmarkTracker::Entity::set_final_guid(const base::GUID& guid) {
   metadata_->set_client_tag_hash(
-      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, guid).value());
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                          guid.AsLowercaseString())
+          .value());
 }
 
 void SyncedBookmarkTracker::Entity::PopulateFaviconHashIfUnset(
@@ -276,10 +280,10 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::GetEntityForSyncId(
 }
 
 const SyncedBookmarkTracker::Entity*
-SyncedBookmarkTracker::GetTombstoneEntityForGuid(
-    const std::string& guid) const {
+SyncedBookmarkTracker::GetTombstoneEntityForGuid(const base::GUID& guid) const {
   const syncer::ClientTagHash client_tag_hash =
-      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, guid);
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                          guid.AsLowercaseString());
 
   for (const Entity* tombstone_entity : ordered_local_tombstones_) {
     if (tombstone_entity->metadata()->client_tag_hash() ==
@@ -329,9 +333,10 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
   metadata->mutable_unique_position()->CopyFrom(unique_position);
   // For any newly added bookmark, be it a local creation or a remote one, the
   // authoritative final GUID is known from start.
-  metadata->set_client_tag_hash(syncer::ClientTagHash::FromUnhashed(
-                                    syncer::BOOKMARKS, bookmark_node->guid())
-                                    .value());
+  metadata->set_client_tag_hash(
+      syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, bookmark_node->guid().AsLowercaseString())
+          .value());
   HashSpecifics(specifics, metadata->mutable_specifics_hash());
   metadata->set_bookmark_favicon_hash(
       base::PersistentHash(specifics.bookmark().favicon()));
@@ -375,7 +380,7 @@ void SyncedBookmarkTracker::UpdateServerVersion(const Entity* entity,
 }
 
 void SyncedBookmarkTracker::PopulateFinalGuid(const Entity* entity,
-                                              const std::string& guid) {
+                                              const base::GUID& guid) {
   DCHECK(entity);
   AsMutableEntity(entity)->set_final_guid(guid);
 }
@@ -638,7 +643,8 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     if (bookmark_metadata.metadata().has_client_tag_hash() &&
         !node->is_permanent_node() &&
         bookmark_metadata.metadata().client_tag_hash() !=
-            syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, node->guid())
+            syncer::ClientTagHash::FromUnhashed(
+                syncer::BOOKMARKS, node->guid().AsLowercaseString())
                 .value()) {
       DLOG(ERROR) << "Bookmark GUID does not match the client tag.";
       client_tag_mismatch_found = true;
@@ -848,7 +854,8 @@ void SyncedBookmarkTracker::UndeleteTombstoneForBookmarkNode(
   DCHECK(node);
   DCHECK(entity->metadata()->is_deleted());
   const syncer::ClientTagHash client_tag_hash =
-      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, node->guid());
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                          node->guid().AsLowercaseString());
   // The same entity must be used only for the same bookmark node.
   DCHECK_EQ(entity->metadata()->client_tag_hash(), client_tag_hash.value());
   DCHECK_EQ(GetTombstoneEntityForGuid(node->guid()), entity);

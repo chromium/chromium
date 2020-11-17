@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -544,7 +545,8 @@ const BookmarkNode* AddURL(int profile,
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddURL(
         v_parent, index, base::UTF8ToUTF16(title), url,
-        /*meta_info=*/nullptr, result->date_added(), result->guid());
+        /*meta_info=*/nullptr, result->date_added(),
+        result->guid().AsLowercaseString());
     if (!v_node) {
       LOG(ERROR) << "Could not add bookmark " << title << " to the verifier";
       return nullptr;
@@ -588,7 +590,7 @@ const BookmarkNode* AddFolder(int profile,
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddFolder(
         v_parent, index, base::UTF8ToUTF16(title),
-        /*meta_info=*/nullptr, result->guid());
+        /*meta_info=*/nullptr, result->guid().AsLowercaseString());
     if (!v_node) {
       LOG(ERROR) << "Could not add folder " << title << " to the verifier";
       return nullptr;
@@ -901,7 +903,7 @@ size_t CountFoldersWithTitlesMatching(int profile, const std::string& title) {
                                       base::UTF8ToUTF16(title));
 }
 
-bool ContainsBookmarkNodeWithGUID(int profile, const std::string& guid) {
+bool ContainsBookmarkNodeWithGUID(int profile, const base::GUID& guid) {
   for (const BookmarkNode* node :
        GetAllBookmarkNodes(GetBookmarkModel(profile))) {
     if (node->guid() == guid) {
@@ -1332,7 +1334,7 @@ bool BookmarksUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
   return expected_count_ == actual_count;
 }
 
-BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const std::string& guid)
+BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const base::GUID& guid)
     : SingleBookmarksModelMatcherChecker(profile,
                                          testing::Contains(HasGuid(guid))) {}
 

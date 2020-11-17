@@ -134,7 +134,7 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeNode(
   value->SetString(kIdKey, id);
   const base::string16& title = node->GetTitle();
   value->SetString(kNameKey, title);
-  const std::string& guid = node->guid();
+  const std::string& guid = node->guid().AsLowercaseString();
   value->SetString(kGuidKey, guid);
   value->SetString(kDateAddedKey,
                    base::NumberToString(node->date_added().ToInternalValue()));

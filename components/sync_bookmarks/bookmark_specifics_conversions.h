@@ -6,7 +6,12 @@
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_SPECIFICS_CONVERSIONS_H_
 
 #include <stddef.h>
+
 #include <string>
+
+namespace base {
+class GUID;
+}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;
@@ -71,7 +76,7 @@ void UpdateBookmarkNodeFromSpecifics(
 // the newly created node, and the original node gets deleted.
 const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const bookmarks::BookmarkNode* node,
-    const std::string& guid,
+    const base::GUID& guid,
     bookmarks::BookmarkModel* model);
 
 // Checks if a bookmark specifics represents a valid bookmark. |is_folder| is
