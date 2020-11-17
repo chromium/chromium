@@ -368,19 +368,32 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
 
 TEST_F(ArcSessionManagerTest, BaseWorkflow) {
   EXPECT_TRUE(arc_session_manager()->sign_in_start_time().is_null());
-  EXPECT_TRUE(arc_session_manager()->arc_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
 
   // By default ARC is not enabled.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  EXPECT_TRUE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
+
+  const base::TimeTicks enabled_time = base::TimeTicks::Now();
 
   // Enables ARC. First time, ToS negotiation should start.
   arc_session_manager()->RequestEnable();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
             arc_session_manager()->state());
+  const base::TimeTicks after_enabled_time = base::TimeTicks::Now();
+
+  const base::TimeTicks pre_start_time =
+      arc_session_manager()->pre_start_time();
+  EXPECT_FALSE(pre_start_time.is_null());
+  EXPECT_GE(pre_start_time, enabled_time);
+  EXPECT_GE(after_enabled_time, pre_start_time);
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
 
   arc_session_manager()->OnTermsOfServiceNegotiatedForTesting(true);
   ASSERT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
@@ -388,12 +401,17 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
   EXPECT_TRUE(arc_session_manager()->sign_in_start_time().is_null());
   arc_session_manager()->StartArcForTesting();
 
+  const base::TimeTicks start_time = arc_session_manager()->start_time();
   EXPECT_FALSE(arc_session_manager()->sign_in_start_time().is_null());
-  EXPECT_FALSE(arc_session_manager()->arc_start_time().is_null());
-
+  EXPECT_EQ(pre_start_time, arc_session_manager()->pre_start_time());
+  EXPECT_FALSE(start_time.is_null());
+  EXPECT_GE(start_time, after_enabled_time);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
   arc_session_manager()->Shutdown();
+
+  EXPECT_TRUE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
 }
 
 // Tests that tying to enable ARC++ with an incompatible file system fails and
@@ -557,7 +575,8 @@ TEST_F(ArcSessionManagerTest, Provisioning_Success) {
   PrefService* const prefs = profile()->GetPrefs();
 
   EXPECT_TRUE(arc_session_manager()->sign_in_start_time().is_null());
-  EXPECT_TRUE(arc_session_manager()->arc_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
   EXPECT_FALSE(arc_session_manager()->IsPlaystoreLaunchRequestedForTesting());
 
   ASSERT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
@@ -579,7 +598,8 @@ TEST_F(ArcSessionManagerTest, Provisioning_Success) {
 
   // Here, provisining is not yet completed, so kArcSignedIn should be false.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
-  EXPECT_FALSE(arc_session_manager()->arc_start_time().is_null());
+  EXPECT_FALSE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_FALSE(arc_session_manager()->start_time().is_null());
   EXPECT_FALSE(arc_session_manager()->IsPlaystoreLaunchRequestedForTesting());
 
   // Emulate successful provisioning.
@@ -1138,7 +1158,8 @@ TEST_P(ProvisioningErrorDisplayTest, ArcStopped) {
 TEST_F(ArcSessionManagerArcAlwaysStartTest, BaseWorkflow) {
   // TODO(victorhsieh): Consider also tracking sign-in activity, which is
   // initiated from the Android side.
-  EXPECT_TRUE(arc_session_manager()->arc_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_TRUE(arc_session_manager()->start_time().is_null());
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -1151,7 +1172,8 @@ TEST_F(ArcSessionManagerArcAlwaysStartTest, BaseWorkflow) {
   arc_session_manager()->RequestEnable();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
-  EXPECT_FALSE(arc_session_manager()->arc_start_time().is_null());
+  EXPECT_FALSE(arc_session_manager()->pre_start_time().is_null());
+  EXPECT_FALSE(arc_session_manager()->start_time().is_null());
 
   arc_session_manager()->Shutdown();
 }

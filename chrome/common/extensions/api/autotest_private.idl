@@ -200,13 +200,17 @@ namespace autotestPrivate {
   };
   callback PrinterArrayCallback = void (Printer[] printers);
 
-  callback ArcStartTimeCallback = void (double startTime);
+  callback ArcStartTimeCallback = void (double startTicks);
 
   dictionary ArcState {
     // Whether the ARC is provisioned.
     boolean provisioned;
     // Whether ARC Terms of Service needs to be shown.
     boolean tosNeeded;
+    // ARC pre-start time (mini-ARC) or 0 if not pre-started.
+    double preStartTime;
+    // ARC start time or 0 if not started.
+    double startTime;
   };
   callback ArcStateCallback = void (ArcState result);
 
@@ -659,7 +663,7 @@ namespace autotestPrivate {
     // Remove all notifications.
     static void removeAllNotifications(VoidCallback callback);
 
-    // Get ARC start time.
+    // Get ARC start time in ticks.
     static void getArcStartTime(ArcStartTimeCallback callback);
 
     // Get state of the ARC session.

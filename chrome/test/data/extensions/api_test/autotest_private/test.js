@@ -184,6 +184,8 @@ var defaultTests = [
         chrome.test.assertTrue(state.allowed);
         chrome.test.assertTrue(state.enabled);
         chrome.test.assertFalse(state.managed);
+        // Revert to disable state as default in this test set.
+        chrome.autotestPrivate.setPlayStoreEnabled(false, function() {});
         chrome.test.succeed();
       });
     });
@@ -315,11 +317,12 @@ var defaultTests = [
   // This test verifies that getArcState returns provisioned False in case ARC
   // is not provisioned by default.
   function arcNotProvisioned() {
-    chrome.autotestPrivate.getArcState(function(state) {
-      chrome.test.assertFalse(state.provisioned);
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+    chrome.autotestPrivate.getArcState(
+        chrome.test.callbackPass(function(state) {
+          chrome.test.assertFalse(state.provisioned);
+          chrome.test.assertEq(0, state.preStartTime);
+          chrome.test.assertEq(0, state.startTime);
+        }));
   },
   // This test verifies that ARC Terms of Service are needed by default.
   function arcTosNeeded() {
@@ -1002,11 +1005,14 @@ var arcEnabledTests = [
   // This test verifies that getArcState returns provisioned True in case ARC
   // provisioning is done.
   function arcProvisioned() {
-    chrome.autotestPrivate.getArcState(function(state) {
-        chrome.test.assertTrue(state.provisioned);
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
+    chrome.autotestPrivate.getArcState(
+        chrome.test.callbackPass(function(state) {
+          chrome.test.assertTrue(state.provisioned);
+          chrome.test.assertTrue(state.preStartTime > 0);
+          chrome.test.assertTrue(state.startTime > 0);
+          chrome.test.assertTrue(state.startTime >= state.preStartTime);
+          chrome.test.assertTrue((new Date()).getTime() >= state.startTime);
+        }));
   },
   // This test verifies that ARC Terms of Service are not needed in case ARC is
   // provisioned and Terms of Service are accepted.

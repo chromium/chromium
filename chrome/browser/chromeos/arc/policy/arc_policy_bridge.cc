@@ -626,8 +626,8 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
     if (!sign_in_start_time.is_null()) {
       UpdateFirstComplianceSinceSignInTiming(now - sign_in_start_time);
     } else {
-      UpdateFirstComplianceSinceStartupTiming(
-          now - session_manager->arc_start_time());
+      UpdateFirstComplianceSinceStartupTiming(now -
+                                              session_manager->start_time());
     }
     first_compliance_timing_reported_ = true;
   }

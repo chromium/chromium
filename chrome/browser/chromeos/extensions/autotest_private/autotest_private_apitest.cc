@@ -89,11 +89,15 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(browser()->profile());
   ASSERT_TRUE(prefs);
 
+  // Having ARC Terms accepted automatically bypasses TOS stage.
+  // Set it before |arc::SetArcPlayStoreEnabledForProfile|
+  browser()->profile()->GetPrefs()->SetBoolean(arc::prefs::kArcTermsAccepted,
+                                               true);
   arc::SetArcPlayStoreEnabledForProfile(profile(), true);
   // Provisioning is completed.
   browser()->profile()->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
-  browser()->profile()->GetPrefs()->SetBoolean(arc::prefs::kArcTermsAccepted,
-                                               true);
+  // Start ARC
+  arc::ArcSessionManager::Get()->StartArcForTesting();
 
   std::unique_ptr<arc::FakeAppInstance> app_instance;
   app_instance.reset(new arc::FakeAppInstance(prefs));

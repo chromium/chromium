@@ -222,13 +222,17 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();
 
+  // Returns the time when ARC was pre-started (mini-ARC start), or a null time
+  // if ARC has not been pre-started yet.
+  base::TimeTicks pre_start_time() const { return pre_start_time_; }
+
+  // Returns the time when ARC was about to start, or a null time if ARC has
+  // not been started yet.
+  base::TimeTicks start_time() const { return start_time_; }
+
   // Returns the time when the sign in process started, or a null time if
   // signing in didn't happen during this session.
   base::TimeTicks sign_in_start_time() const { return sign_in_start_time_; }
-
-  // Returns the time when ARC was about to start, or a null time if ARC has not
-  // been started yet.
-  base::TimeTicks arc_start_time() const { return arc_start_time_; }
 
   // Returns true if ARC requested to start.
   bool enable_requested() const { return enable_requested_; }
@@ -376,6 +380,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // successfully.
   void MaybeStartTimer();
 
+  // Starts mini-ARC and updates related information.
+  void StartMiniArc();
+
   // Requests the support host (if it exists) to show the error, and notifies
   // the observers.
   void ShowArcSupportHostError(ArcSupportHost::Error error,
@@ -423,8 +430,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;
+  // The time when ARC was pre-started (mini-ARC start).
+  base::TimeTicks pre_start_time_;
   // The time when ARC was about to start.
-  base::TimeTicks arc_start_time_;
+  base::TimeTicks start_time_;
+
   base::RepeatingClosure attempt_user_exit_callback_;
 
   ArcAppIdProviderImpl app_id_provider_;

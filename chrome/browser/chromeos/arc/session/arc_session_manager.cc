@@ -901,6 +901,8 @@ void ArcSessionManager::ShutdownSession() {
 }
 
 void ArcSessionManager::ResetArcState() {
+  pre_start_time_ = base::TimeTicks();
+  start_time_ = base::TimeTicks();
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   terms_of_service_negotiator_.reset();
@@ -1050,7 +1052,6 @@ bool ArcSessionManager::RequestEnableImpl() {
   const bool start_arc_directly = signed_in || ShouldArcAlwaysStart() ||
                                   IsRobotOrOfflineDemoAccountMode() ||
                                   IsArcOptInVerificationDisabled();
-
   // When ARC is blocked because of filesystem compatibility, do not proceed
   // to starting ARC nor follow further state transitions.
   if (IsArcBlockedDueToIncompatibleFileSystem(profile_)) {
@@ -1218,6 +1219,10 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
             profile_->GetPrefs(), support_host_.get());
   }
 
+  // Start the mini-container here to save time starting the container if the
+  // user decides to opt-in.
+  StartMiniArc();
+
   if (!terms_of_service_negotiator_) {
     // The only case reached here is when g_ui_enabled is false so
     // 1. ARC support host is not created in SetProfile(), and
@@ -1233,10 +1238,6 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     }
     return;
   }
-
-  // Start the mini-container here to save time starting the container if the
-  // user decides to opt-in.
-  arc_session_runner_->RequestStartMiniInstance();
 
   terms_of_service_negotiator_->StartNegotiation(
       base::BindOnce(&ArcSessionManager::OnTermsOfServiceNegotiated,
@@ -1386,7 +1387,10 @@ void ArcSessionManager::StartArc() {
   for (auto& observer : observer_list_)
     observer.OnArcStarted();
 
-  arc_start_time_ = base::TimeTicks::Now();
+  start_time_ = base::TimeTicks::Now();
+  // In case ARC started without mini-ARC |pre_start_time_| is not set.
+  if (pre_start_time_.is_null())
+    pre_start_time_ = start_time_;
   provisioning_reported_ = false;
 
   std::string locale;
@@ -1515,6 +1519,11 @@ void ArcSessionManager::MaybeStartTimer() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ArcSessionManager::StartMiniArc() {
+  pre_start_time_ = base::TimeTicks::Now();
+  arc_session_runner_->RequestStartMiniInstance();
+}
+
 void ArcSessionManager::OnWindowClosed() {
   CancelAuthCode();
 }
@@ -1599,7 +1608,7 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   if (!IsArcAvailable())
     return;
 
-  arc_session_runner_->RequestStartMiniInstance();
+  StartMiniArc();
 }
 
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {

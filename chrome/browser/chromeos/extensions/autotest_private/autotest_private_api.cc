@@ -1520,10 +1520,9 @@ AutotestPrivateGetArcStartTimeFunction::Run() {
   if (!arc_session_manager)
     return RespondNow(Error("Could not find ARC session manager"));
 
-  double start_time =
-      (arc_session_manager->arc_start_time() - base::TimeTicks())
-          .InMillisecondsF();
-  return RespondNow(OneArgument(base::Value(start_time)));
+  const double start_ticks =
+      (arc_session_manager->start_time() - base::TimeTicks()).InMillisecondsF();
+  return RespondNow(OneArgument(base::Value(start_ticks)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1542,8 +1541,26 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcStateFunction::Run() {
   if (!arc::IsArcAllowedForProfile(profile))
     return RespondNow(Error("ARC is not available for the current user"));
 
+  arc::ArcSessionManager* const arc_session_manager =
+      arc::ArcSessionManager::Get();
+  if (!arc_session_manager)
+    return RespondNow(Error("Could not find ARC session manager"));
+
+  const base::Time now_time = base::Time::Now();
+  const base::TimeTicks now_ticks = base::TimeTicks::Now();
+  const base::TimeTicks pre_start_time = arc_session_manager->pre_start_time();
+  const base::TimeTicks start_time = arc_session_manager->start_time();
+
   arc_state.provisioned = arc::IsArcProvisioned(profile);
   arc_state.tos_needed = arc::IsArcTermsOfServiceNegotiationNeeded(profile);
+  arc_state.pre_start_time =
+      pre_start_time.is_null()
+          ? 0
+          : (now_time - (now_ticks - pre_start_time)).ToJsTime();
+  arc_state.start_time = start_time.is_null()
+                             ? 0
+                             : (now_time - (now_ticks - start_time)).ToJsTime();
+
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(arc_state.ToValue())));
 }
