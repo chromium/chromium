@@ -577,11 +577,6 @@ void ScrollAnchor::Adjust() {
     // This minimizes redundant calls to findAnchor.
     // TODO(skobes): add UMA metric for this.
     ClearSelf();
-
-    DEFINE_STATIC_LOCAL(EnumerationHistogram, suppressed_by_sanaclap_histogram,
-                        ("Layout.ScrollAnchor.SuppressedBySanaclap", 2));
-    suppressed_by_sanaclap_histogram.Count(1);
-
     return;
   }
 
@@ -589,10 +584,6 @@ void ScrollAnchor::Adjust() {
       scroller_->GetScrollOffset() + FloatSize(adjustment),
       mojom::blink::ScrollType::kAnchoring);
 
-  // Update UMA metric.
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, adjusted_offset_histogram,
-                      ("Layout.ScrollAnchor.AdjustedScrollOffset", 2));
-  adjusted_offset_histogram.Count(1);
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
                     WebFeature::kScrollAnchored);
 }
@@ -603,8 +594,6 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
   }
 
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Layout.ScrollAnchor.TimeToRestoreAnchor");
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, restoration_status_histogram,
-                      ("Layout.ScrollAnchor.RestorationStatus", kStatusCount));
 
   if (anchor_object_ && serialized_anchor.selector == saved_selector_) {
     return true;
@@ -629,12 +618,10 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
       AtomicString(serialized_anchor.selector), exception_state);
 
   if (exception_state.HadException()) {
-    restoration_status_histogram.Count(kFailedBadSelector);
     return false;
   }
 
   if (found_elements->length() < 1) {
-    restoration_status_histogram.Count(kFailedNoMatches);
     return false;
   }
 
@@ -679,12 +666,9 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     }
 
     saved_selector_ = serialized_anchor.selector;
-    restoration_status_histogram.Count(kSuccess);
-
     return true;
   }
 
-  restoration_status_histogram.Count(kFailedNoValidMatches);
   return false;
 }
 

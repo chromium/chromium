@@ -7807,6 +7807,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.ScrollAnchor.AdjustedScrollOffset" enum="BooleanHit"
     expires_after="M77">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>skobes@chromium.org</owner>
   <summary>
     Records the number of times ScrollAnchor adjusts the scroll offset.
@@ -7815,6 +7818,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.ScrollAnchor.RestorationStatus"
     enum="ScrollAnchorRestorationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>pnoland@chromium.org</owner>
   <summary>
     Records the status of attempts to restore a serialized scroll anchor.
@@ -7832,6 +7838,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.ScrollAnchor.SuppressedBySanaclap" enum="BooleanHit"
     expires_after="M81">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>ymalik@chromium.org</owner>
   <summary>
     Records the number of times scroll anchoring is suppressed because of the

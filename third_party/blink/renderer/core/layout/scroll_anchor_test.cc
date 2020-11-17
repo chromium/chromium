@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -19,7 +20,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -141,7 +141,7 @@ INSTANTIATE_TEST_SUITE_P(All, ScrollAnchorTest, testing::Bool());
 // TODO(ymalik): Currently, this should be the first test in the file to avoid
 // failure when running with other tests. Dig into this more and fix.
 TEST_P(ScrollAnchorTest, UMAMetricUpdated) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   SetBodyInnerHTML(R"HTML(
     <style> body { height: 1000px } div { height: 100px } </style>
     <div id='block1'>abc</div>
@@ -153,15 +153,10 @@ TEST_P(ScrollAnchorTest, UMAMetricUpdated) {
 
   // Scroll position not adjusted, metric not updated.
   ScrollLayoutViewport(ScrollOffset(0, 150));
-  histogram_tester.ExpectTotalCount("Layout.ScrollAnchor.AdjustedScrollOffset",
-                                    0);
   histogram_tester.ExpectTotalCount(
       "Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector", 0);
 
-  // Height changed, verify metric updated once.
   SetHeight(GetDocument().getElementById("block1"), 200);
-  histogram_tester.ExpectUniqueSample(
-      "Layout.ScrollAnchor.AdjustedScrollOffset", 1, 1);
 
   EXPECT_EQ(250, viewport->ScrollOffsetInt().Height());
   EXPECT_EQ(GetDocument().getElementById("block2")->GetLayoutObject(),
@@ -180,18 +175,10 @@ TEST_P(ScrollAnchorTest, UMAMetricUpdated) {
 
   SerializedAnchor bad_anchor("##foobar", LayoutPoint(0, 0));
   EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor));
-  histogram_tester.ExpectBucketCount("Layout.ScrollAnchor.RestorationStatus",
-                                     ScrollAnchor::kFailedBadSelector, 1);
-
   SerializedAnchor bad_anchor2("#bl", LayoutPoint(0, 0));
   EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor2));
-  histogram_tester.ExpectBucketCount("Layout.ScrollAnchor.RestorationStatus",
-                                     ScrollAnchor::kFailedNoMatches, 1);
-
   SerializedAnchor bad_anchor3("script", LayoutPoint(0, -1000));
   EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor3));
-  histogram_tester.ExpectBucketCount("Layout.ScrollAnchor.RestorationStatus",
-                                     ScrollAnchor::kFailedNoValidMatches, 1);
 
   SerializedAnchor serialized_anchor("#block1", LayoutPoint(0, 0));
   EXPECT_TRUE(
@@ -199,8 +186,6 @@ TEST_P(ScrollAnchorTest, UMAMetricUpdated) {
 
   histogram_tester.ExpectTotalCount("Layout.ScrollAnchor.TimeToRestoreAnchor",
                                     4);
-  histogram_tester.ExpectBucketCount("Layout.ScrollAnchor.RestorationStatus",
-                                     ScrollAnchor::kSuccess, 1);
 }
 
 // TODO(skobes): Convert this to web-platform-tests when visual viewport API is

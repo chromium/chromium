@@ -82,16 +82,6 @@ class CORE_EXPORT ScrollAnchor final {
   // Only meaningful if anchorObject() is non-null.
   Corner GetCorner() const { return corner_; }
 
-  // This enum must remain in sync with the corresponding enum in enums.xml.
-  enum RestorationStatus {
-    kSuccess = 0,
-    kFailedNoMatches,
-    kFailedNoValidMatches,
-    kFailedBadSelector,
-    kStatusCount  // Special value used to count the number of enum values; not
-                  // to be used as an actual status. Add new values above.
-  };
-
   // Attempt to restore |serialized_anchor| by scrolling to the element
   // identified by its selector, adjusting by its relative_offset.
   bool RestoreAnchor(const SerializedAnchor&);
