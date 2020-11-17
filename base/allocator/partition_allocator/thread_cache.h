@@ -162,6 +162,7 @@ class BASE_EXPORT ThreadCache {
 
  private:
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
+  static void Delete(void* thread_cache_ptr);
 
   struct Bucket {
     size_t count;
@@ -184,7 +185,7 @@ class BASE_EXPORT ThreadCache {
   std::atomic<bool> should_purge_;
   Bucket buckets_[kBucketCount];
   ThreadCacheStats stats_;
-  PartitionRoot<ThreadSafe>* root_;
+  PartitionRoot<ThreadSafe>* const root_;
 
   // Intrusive list since ThreadCacheRegistry::RegisterThreadCache() cannot
   // allocate.

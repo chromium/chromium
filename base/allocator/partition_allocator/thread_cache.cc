@@ -23,11 +23,6 @@ ThreadCacheRegistry g_instance;
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 
 namespace {
-void DeleteThreadCache(void* tcache_ptr) {
-  reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
-  PartitionRoot<ThreadSafe>::RawFreeStatic(tcache_ptr);
-}
-
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
 static std::atomic<bool> g_has_instance;
@@ -110,7 +105,7 @@ void ThreadCacheRegistry::PurgeAll() {
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
 
-  bool ok = PartitionTlsCreate(&g_thread_cache_key, DeleteThreadCache);
+  bool ok = PartitionTlsCreate(&g_thread_cache_key, Delete);
   PA_CHECK(ok);
 
   // Make sure that only one PartitionRoot wants a thread cache.
@@ -160,6 +155,14 @@ ThreadCache::~ThreadCache() {
   Purge();
 }
 
+// static
+void ThreadCache::Delete(void* tcache_ptr) {
+  auto* tcache = reinterpret_cast<ThreadCache*>(tcache_ptr);
+  auto* root = tcache->root_;
+  reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
+  root->RawFree(tcache_ptr);
+}
+
 void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->alloc_count += stats_.alloc_count;
   stats->alloc_hits += stats_.alloc_hits;
@@ -190,12 +193,18 @@ void ThreadCache::SetShouldPurge() {
 void ThreadCache::Purge() {
   for (Bucket& bucket : buckets_) {
     size_t count = bucket.count;
+    if (!count)
+      continue;
 
+    // Acquire the lock once per bucket. This avoids acquiring it for too long,
+    // and also allocations from the same bucket are likely to be hitting the
+    // same cache lines in the central allocator.
+    internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
     while (bucket.freelist_head) {
       auto* entry = bucket.freelist_head;
       bucket.freelist_head = entry->GetNext();
 
-      PartitionRoot<ThreadSafe>::RawFreeStatic(entry);
+      root_->RawFreeLocked(entry);
       count--;
     }
     CHECK_EQ(0u, count);

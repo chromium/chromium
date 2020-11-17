@@ -276,8 +276,8 @@ struct BASE_EXPORT PartitionRoot {
   static uint16_t SizeToBucketIndex(size_t size);
 
   // Frees memory, with |ptr| as returned by |RawAlloc()|.
+  ALWAYS_INLINE void RawFree(void* ptr);
   ALWAYS_INLINE void RawFree(void* ptr, SlotSpan* slot_span);
-  static void RawFreeStatic(void* ptr);
 
   internal::ThreadCache* thread_cache_for_testing() const {
     return with_thread_cache ? internal::ThreadCache::Get() : nullptr;
@@ -378,6 +378,7 @@ struct BASE_EXPORT PartitionRoot {
       internal::SlotSpanMetadata<thread_safe>* slot_span,
       size_t requested_size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void DecommitEmptySlotSpans() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void RawFreeLocked(void* ptr) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   friend class internal::ThreadCache;
 };
@@ -694,6 +695,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 }
 
 template <bool thread_safe>
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr) {
+  SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
+  RawFree(ptr, slot_span);
+}
+
+template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr,
                                                        SlotSpan* slot_span) {
   internal::DeferredUnmap deferred_unmap;
@@ -704,12 +711,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr,
   deferred_unmap.Run();
 }
 
-// static
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::RawFreeStatic(void* ptr) {
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(void* ptr) {
   SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
-  auto* root = FromSlotSpan(slot_span);
-  root->RawFree(ptr, slot_span);
+  auto deferred_unmap = slot_span->Free(ptr);
+  PA_DCHECK(!deferred_unmap.ptr);  // Only used with bucketed allocations.
+  deferred_unmap.Run();
 }
 
 // static
