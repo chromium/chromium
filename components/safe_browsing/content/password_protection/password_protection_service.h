@@ -119,7 +119,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
       const std::string& hosted_domain);
 #endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   virtual void MaybeStartProtectedPasswordEntryRequest(
       content::WebContents* web_contents,
       const GURL& main_frame_url,
@@ -128,7 +127,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
       bool password_field_exists);
-#endif
 
 #if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Records a Chrome Sync event that sync password reuse was detected.

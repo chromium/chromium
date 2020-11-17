@@ -113,7 +113,6 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
 }
 #endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,
@@ -168,7 +167,6 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
   }
 #endif  // defined(PASSWORD_REUSE_WARNING_ENABLED)
 }
-#endif  // defined(PASSWORD_REUSE_DETECTION_ENABLED)
 
 #if defined(PASSWORD_REUSE_WARNING_ENABLED)
 bool PasswordProtectionService::ShouldShowModalWarning(
