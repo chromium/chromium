@@ -603,9 +603,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   GURL blockURL(node->url());
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
     BookmarkHomeViewController* strongSelf = weakSelf;
-    if (!strongSelf) {
+    if (!strongSelf)
       return;
-    }
     // Due to search filtering, we also need to validate the indexPath
     // requested versus what is in the table now.
     if (![strongSelf hasItemAtIndexPath:indexPath] ||
@@ -790,8 +789,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           UINavigationItemLargeTitleDisplayModeNever;
     }
 
+    __weak BookmarkHomeViewController* weakSelf = self;
     auto completion = ^{
-      [self.navigationController setViewControllers:stack animated:YES];
+      [weakSelf.navigationController setViewControllers:stack animated:YES];
     };
 
     [self.searchController dismissViewControllerAnimated:YES
@@ -982,22 +982,27 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(self.spinnerView);
   __weak BookmarkHomeViewController* weakSelf = self;
   [self.spinnerView stopWaitingWithCompletion:^{
-    BookmarkHomeViewController* strongSelf = weakSelf;
     // Early return if the controller has been deallocated.
+    BookmarkHomeViewController* strongSelf = weakSelf;
     if (!strongSelf)
       return;
     [UIView animateWithDuration:0.2f
         animations:^{
-          strongSelf.spinnerView.alpha = 0.0;
+          weakSelf.spinnerView.alpha = 0.0;
         }
         completion:^(BOOL finished) {
+          BookmarkHomeViewController* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+
           // By the time completion block is called, the backgroundView could be
           // another view, like the empty view background. Only clear the
           // background if it is still the spinner.
-          if (self.sharedState.tableView.backgroundView == self.spinnerView) {
-            self.sharedState.tableView.backgroundView = nil;
+          if (strongSelf.sharedState.tableView.backgroundView ==
+              strongSelf.spinnerView) {
+            strongSelf.sharedState.tableView.backgroundView = nil;
           }
-          self.spinnerView = nil;
+          strongSelf.spinnerView = nil;
         }];
     [strongSelf loadBookmarkViews];
     [strongSelf.sharedState.tableView reloadData];
@@ -1126,8 +1131,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     // Before passing the URL to the block, make sure the block has a copy of
     // the URL and not just a reference.
     const GURL localUrl(url);
+    __weak BookmarkHomeViewController* weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self loadURL:localUrl];
+      [weakSelf loadURL:localUrl];
     });
   }
 }
@@ -1391,23 +1397,31 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   AddSameConstraints(self.scrimView, self.view.superview);
   self.tableView.accessibilityElementsHidden = YES;
   self.tableView.scrollEnabled = NO;
+  __weak BookmarkHomeViewController* weakSelf = self;
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                    animations:^{
-                     self.scrimView.alpha = 1.0f;
-                     [self.view layoutIfNeeded];
+                     BookmarkHomeViewController* strongSelf = weakSelf;
+                     if (!strongSelf)
+                       return;
+                     strongSelf.scrimView.alpha = 1.0f;
+                     [strongSelf.view layoutIfNeeded];
                    }];
 }
 
 // Hide scrim and restore toolbar.
 - (void)hideScrim {
+  __weak BookmarkHomeViewController* weakSelf = self;
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
       animations:^{
-        self.scrimView.alpha = 0.0f;
+        weakSelf.scrimView.alpha = 0.0f;
       }
       completion:^(BOOL finished) {
-        [self.scrimView removeFromSuperview];
-        self.tableView.accessibilityElementsHidden = NO;
-        self.tableView.scrollEnabled = YES;
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        [strongSelf.scrimView removeFromSuperview];
+        strongSelf.tableView.accessibilityElementsHidden = NO;
+        strongSelf.tableView.scrollEnabled = YES;
       }];
   [self setupContextBar];
 }
@@ -1450,19 +1464,24 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Hide the loading spinner if it is showing.
 - (void)hideLoadingSpinnerBackground {
   if (self.spinnerView) {
+    __weak BookmarkHomeViewController* weakSelf = self;
     [self.spinnerView stopWaitingWithCompletion:^{
       [UIView animateWithDuration:0.2
           animations:^{
-            self.spinnerView.alpha = 0.0;
+            weakSelf.spinnerView.alpha = 0.0;
           }
           completion:^(BOOL finished) {
+            BookmarkHomeViewController* strongSelf = weakSelf;
+            if (!strongSelf)
+              return;
             // By the time completion block is called, the backgroundView could
             // be another view, like the empty view background. Only clear the
             // background if it is still the spinner.
-            if (self.sharedState.tableView.backgroundView == self.spinnerView) {
-              self.sharedState.tableView.backgroundView = nil;
+            if (strongSelf.sharedState.tableView.backgroundView ==
+                strongSelf.spinnerView) {
+              strongSelf.sharedState.tableView.backgroundView = nil;
             }
-            self.spinnerView = nil;
+            strongSelf.spinnerView = nil;
           }];
     }];
   }
@@ -1747,21 +1766,30 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarkHomeContextMenuIdentifier;
 
-  [coordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)
-                action:^{
-                  std::vector<const BookmarkNode*> nodes = [weakSelf editNodes];
-                  [weakSelf openAllNodes:nodes inIncognito:NO newTab:NO];
-                }
-                 style:UIAlertActionStyleDefault];
+  [coordinator addItemWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)
+                         action:^{
+                           BookmarkHomeViewController* strongSelf = weakSelf;
+                           if (!strongSelf)
+                             return;
+                           std::vector<const BookmarkNode*> nodes =
+                               [strongSelf editNodes];
+                           [strongSelf openAllNodes:nodes
+                                        inIncognito:NO
+                                             newTab:NO];
+                         }
+                          style:UIAlertActionStyleDefault];
 
   [coordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO)
                 action:^{
-                  std::vector<const BookmarkNode*> nodes = [weakSelf editNodes];
-                  [weakSelf openAllNodes:nodes inIncognito:YES newTab:NO];
+                  BookmarkHomeViewController* strongSelf = weakSelf;
+                  if (!strongSelf)
+                    return;
+                  std::vector<const BookmarkNode*> nodes =
+                      [strongSelf editNodes];
+                  [strongSelf openAllNodes:nodes inIncognito:YES newTab:NO];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -1794,14 +1822,15 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     coordinator.alertController.actions[0].enabled = NO;
   }
 
-  [coordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
-                action:^{
-                  std::vector<const BookmarkNode*> nodes = {node};
-                  [weakSelf openAllNodes:nodes inIncognito:NO newTab:YES];
-                }
-                 style:UIAlertActionStyleDefault];
+  [coordinator addItemWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
+                         action:^{
+                           std::vector<const BookmarkNode*> nodes = {node};
+                           [weakSelf openAllNodes:nodes
+                                      inIncognito:NO
+                                           newTab:YES];
+                         }
+                          style:UIAlertActionStyleDefault];
 
   if (IsMultipleScenesSupported()) {
     NSString* title =
@@ -1830,9 +1859,15 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY)
                 action:^{
+                  // Use strongSelf even though the object is only used once
+                  // because we do not want to change the global pasteboard
+                  // if the view has been deallocated.
+                  BookmarkHomeViewController* strongSelf = weakSelf;
+                  if (!strongSelf)
+                    return;
                   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
                   pasteboard.string = base::SysUTF8ToNSString(urlString);
-                  [weakSelf setTableViewEditing:NO];
+                  [strongSelf setTableViewEditing:NO];
                 }
                  style:UIAlertActionStyleDefault];
 }
@@ -1853,8 +1888,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator addItemWithTitle:l10n_util::GetNSString(
                                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
                          action:^{
-                           std::set<const BookmarkNode*> nodes;
-                           nodes.insert(node);
+                           std::set<const BookmarkNode*> nodes{node};
                            [weakSelf moveNodes:nodes];
                          }
                           style:UIAlertActionStyleDefault];
@@ -2034,10 +2068,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       // needed when scrolling away and then back into the editingCell,
       // without the delay the cell will resign first responder before its
       // created.
+      __weak BookmarkHomeViewController* weakSelf = self;
       dispatch_async(dispatch_get_main_queue(), ^{
-        self.sharedState.editingFolderCell = tableCell;
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        strongSelf.sharedState.editingFolderCell = tableCell;
         [tableCell startEdit];
-        tableCell.textDelegate = self;
+        tableCell.textDelegate = strongSelf;
       });
     }
 
@@ -2224,13 +2262,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
   UIContextMenuActionProvider actionProvider;
 
+  __weak BookmarkHomeViewController* weakSelf = self;
   if (node->is_url()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
+      BookmarkHomeViewController* strongSelf = weakSelf;
+      if (!strongSelf)
+        return [UIMenu menuWithTitle:@"" children:@[]];
+
       // Record that this context menu was shown to the user.
       RecordMenuShown(MenuScenario::kBookmarkEntry);
 
       ActionFactory* actionFactory =
-          [[ActionFactory alloc] initWithBrowser:self.browser
+          [[ActionFactory alloc] initWithBrowser:strongSelf.browser
                                         scenario:MenuScenario::kBookmarkEntry];
 
       NSMutableArray<UIMenuElement*>* menuElements =
@@ -2238,13 +2281,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
                       std::vector<const BookmarkNode*> nodes = {node};
-                      [self openAllNodes:nodes inIncognito:NO newTab:YES];
+                      [weakSelf openAllNodes:nodes inIncognito:NO newTab:YES];
                     }]];
 
       [menuElements
           addObject:[actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
             std::vector<const BookmarkNode*> nodes = {node};
-            [self openAllNodes:nodes inIncognito:YES newTab:YES];
+            [weakSelf openAllNodes:nodes inIncognito:YES newTab:YES];
           }]];
 
       if (IsMultipleScenesSupported()) {
@@ -2259,31 +2302,36 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [menuElements addObject:[actionFactory actionToCopyURL:node->url()]];
 
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-        if ([self isNodeDeleted:node]) {
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        if ([strongSelf isNodeDeleted:node]) {
           // If the node has been deleted via sync or another window while the
           // context menu was open, ignore the action.
           return;
         }
-        [self editNode:node];
+        [strongSelf editNode:node];
       }];
       [menuElements addObject:editAction];
 
       [menuElements
           addObject:[actionFactory actionToShareWithBlock:^{
-            [self shareURL:node->url()
-                     title:bookmark_utils_ios::TitleForBookmarkNode(node)
-                 indexPath:indexPath];
+            [weakSelf shareURL:node->url()
+                         title:bookmark_utils_ios::TitleForBookmarkNode(node)
+                     indexPath:indexPath];
           }]];
 
       UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
-        if ([self isNodeDeleted:node]) {
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        if ([strongSelf isNodeDeleted:node]) {
           // If the node has been deleted via sync or another window while the
           // context menu was open, ignore the action.
           return;
         }
-        std::set<const BookmarkNode*> nodes;
-        nodes.insert(node);
-        [self handleSelectNodesForDeletion:nodes];
+        std::set<const BookmarkNode*> nodes{node};
+        [strongSelf handleSelectNodesForDeletion:nodes];
         base::RecordAction(
             base::UserMetricsAction("MobileBookmarkManagerEntryDeleted"));
       }];
@@ -2299,32 +2347,42 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     };
   } else if (node->is_folder()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
+      BookmarkHomeViewController* strongSelf = weakSelf;
+      if (!strongSelf)
+        return [UIMenu menuWithTitle:@"" children:@[]];
+
+      // Record that this context menu was shown to the user.
       RecordMenuShown(MenuScenario::kBookmarkFolder);
 
       ActionFactory* actionFactory =
-          [[ActionFactory alloc] initWithBrowser:self.browser
+          [[ActionFactory alloc] initWithBrowser:strongSelf.browser
                                         scenario:MenuScenario::kBookmarkFolder];
 
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];
 
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-        if ([self isNodeDeleted:node]) {
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        if ([strongSelf isNodeDeleted:node]) {
           // If the node has been deleted via sync or another window while the
           // context menu was open, ignore the action.
           return;
         }
-        [self editNode:node];
+        [strongSelf editNode:node];
       }];
       UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
-        if ([self isNodeDeleted:node]) {
+        BookmarkHomeViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        if ([strongSelf isNodeDeleted:node]) {
           // If the node has been deleted via sync or another window while the
           // context menu was open, ignore the action.
           return;
         }
-        std::set<const BookmarkNode*> nodes;
-        nodes.insert(node);
-        [self moveNodes:nodes];
+        std::set<const BookmarkNode*> nodes{node};
+        [strongSelf moveNodes:nodes];
       }];
 
       if (!canEditNode) {
