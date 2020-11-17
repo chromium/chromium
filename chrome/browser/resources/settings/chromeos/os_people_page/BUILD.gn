@@ -518,8 +518,6 @@ js_library("users_page.m") {
   extra_deps = [ ":users_page_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":account_manager_module",

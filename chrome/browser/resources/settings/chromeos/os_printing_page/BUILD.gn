@@ -360,8 +360,6 @@ js_library("os_printing_page.m") {
   extra_deps = [ ":os_printing_page_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":cups_add_print_server_dialog_module",

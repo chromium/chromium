@@ -105,8 +105,6 @@ js_library("settings_subpage.m") {
   extra_deps = [ ":settings_subpage_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":settings_animated_pages_module",
