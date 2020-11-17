@@ -835,6 +835,10 @@ class KioskTest : public OobeBaseTest {
     }
   }
 
+  void WaitForAuthLaunchWarning(bool visibility) {
+    test::OobeJS().CreateVisibilityWaiter(visibility, {"autolaunch"})->Wait();
+  }
+
   MockUserManager* mock_user_manager() { return mock_user_manager_.get(); }
 
   void set_test_app_id(const std::string& test_app_id) {
@@ -1146,18 +1150,12 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
   wizard_controller->SkipToLoginForTesting();
 
   // Wait for the auto launch warning come up.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/true);
   GetLoginUI()->CallJavascriptFunctionUnsafe(
       "login.AutolaunchScreen.confirmAutoLaunchForTesting", base::Value(false));
 
   // Wait for the auto launch warning to go away.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_COMPLETED,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/false);
 
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 }
@@ -1179,18 +1177,13 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningConfirm) {
   wizard_controller->SkipToLoginForTesting();
 
   // Wait for the auto launch warning come up.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/true);
+
   GetLoginUI()->CallJavascriptFunctionUnsafe(
       "login.AutolaunchScreen.confirmAutoLaunchForTesting", base::Value(true));
 
   // Wait for the auto launch warning to go away.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_COMPLETED,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/false);
 
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_TRUE(KioskAppManager::Get()->IsAutoLaunchEnabled());
@@ -1341,10 +1334,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, NoConsumerAutoLaunchWhenUntrusted) {
   wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   ReloadAutolaunchKioskApps();
   wizard_controller->SkipToLoginForTesting();
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/true);
   GetLoginUI()->CallJavascriptFunctionUnsafe(
       "login.AutolaunchScreen.confirmAutoLaunchForTesting", base::Value(true));
 
@@ -2828,10 +2818,7 @@ IN_PROC_BROWSER_TEST_F(KioskHiddenWebUITest, AutolaunchWarning) {
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 
   // Wait for the auto launch warning come up.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
+  WaitForAuthLaunchWarning(/*visibility=*/true);
 
   // Wait for the wallpaper to load.
   WaitForWallpaper();

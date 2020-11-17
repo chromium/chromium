@@ -171,12 +171,6 @@ enum NotificationType {
   //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
   NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
 
-  // Send when kiosk auto-launch warning screen is visible.
-  NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-
-  // Send when kiosk auto-launch warning screen had completed.
-  NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_COMPLETED,
-
   // Send when consumer kiosk has been enabled.
   NOTIFICATION_KIOSK_ENABLED,
 
