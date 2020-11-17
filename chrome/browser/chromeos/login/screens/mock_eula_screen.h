@@ -30,14 +30,14 @@ class MockEulaView : public EulaView {
   void Bind(EulaScreen* screen) override;
   void Unbind() override;
 
-  MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Hide, (), (override));
 
   MOCK_METHOD(void, MockBind, (EulaScreen * screen));
   MOCK_METHOD(void, MockUnbind, ());
-  MOCK_METHOD(void, ShowStatsUsageLearnMore, ());
-  MOCK_METHOD(void, ShowAdditionalTosDialog, ());
-  MOCK_METHOD(void, ShowSecuritySettingsDialog, ());
+  MOCK_METHOD(void, ShowStatsUsageLearnMore, (), (override));
+  MOCK_METHOD(void, ShowAdditionalTosDialog, (), (override));
+  MOCK_METHOD(void, ShowSecuritySettingsDialog, (), (override));
 
  private:
   EulaScreen* screen_ = nullptr;
