@@ -398,28 +398,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
   }
 }
 
-void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {
-  DCHECK(LocalRootImpl()->Parent());
-  DCHECK(LocalRootImpl()->Parent()->IsWebRemoteFrame());
-  LocalRootImpl()->GetFrame()->SetIsInert(inert);
-}
-
-void WebFrameWidgetImpl::SetInheritedEffectiveTouchActionForSubFrame(
-    TouchAction touch_action) {
-  DCHECK(LocalRootImpl()->Parent());
-  DCHECK(LocalRootImpl()->Parent()->IsWebRemoteFrame());
-  LocalRootImpl()->GetFrame()->SetInheritedEffectiveTouchAction(touch_action);
-}
-
-void WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame(
-    bool is_throttled,
-    bool subtree_throttled) {
-  DCHECK(LocalRootImpl()->Parent());
-  DCHECK(LocalRootImpl()->Parent()->IsWebRemoteFrame());
-  LocalRootImpl()->GetFrameView()->UpdateRenderThrottlingStatus(
-      is_throttled, subtree_throttled, true);
-}
-
 void WebFrameWidgetImpl::HandleMouseLeave(LocalFrame& main_frame,
                                           const WebMouseEvent& event) {
   // FIXME: WebWidget doesn't have the method below.

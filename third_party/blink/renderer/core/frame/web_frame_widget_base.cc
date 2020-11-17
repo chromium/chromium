@@ -405,6 +405,20 @@ void WebFrameWidgetBase::SetTextDirection(base::i18n::TextDirection direction) {
     focusedFrame->SetTextDirection(direction);
 }
 
+void WebFrameWidgetBase::SetInheritedEffectiveTouchActionForSubFrame(
+    TouchAction touch_action) {
+  DCHECK(ForSubframe());
+  LocalRootImpl()->GetFrame()->SetInheritedEffectiveTouchAction(touch_action);
+}
+
+void WebFrameWidgetBase::UpdateRenderThrottlingStatusForSubFrame(
+    bool is_throttled,
+    bool subtree_throttled) {
+  DCHECK(ForSubframe());
+  LocalRootImpl()->GetFrameView()->UpdateRenderThrottlingStatus(
+      is_throttled, subtree_throttled, true);
+}
+
 #if defined(OS_MAC)
 void WebFrameWidgetBase::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                           GetStringAtPointCallback callback) {
@@ -1307,6 +1321,11 @@ void WebFrameWidgetBase::DisableDeviceEmulation() {
     return;
   device_emulator_->DisableAndApply();
   device_emulator_ = nullptr;
+}
+
+void WebFrameWidgetBase::SetIsInertForSubFrame(bool inert) {
+  DCHECK(ForSubframe());
+  LocalRootImpl()->GetFrame()->SetIsInert(inert);
 }
 
 base::Optional<gfx::Point>

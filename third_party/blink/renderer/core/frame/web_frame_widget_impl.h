@@ -95,10 +95,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
                        DocumentUpdateReason reason) override;
 
   void MouseCaptureLost() override;
-  void SetIsInertForSubFrame(bool) override;
-  void SetInheritedEffectiveTouchActionForSubFrame(TouchAction) override;
-  void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
-                                               bool subtree_throttled) override;
 
   // WebFrameWidget implementation.
   bool ScrollFocusedEditableElementIntoView() override;

@@ -439,14 +439,13 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetTextDirection(base::i18n::TextDirection direction) override;
   // Sets the inherited effective touch action on an out-of-process iframe.
   void SetInheritedEffectiveTouchActionForSubFrame(
-      WebTouchAction touch_action) override {}
+      WebTouchAction touch_action) override;
   // Toggles render throttling for an out-of-process iframe. Local frames are
   // throttled based on their visibility in the viewport, but remote frames
   // have to have throttling information propagated from parent to child
   // across processes.
-  void UpdateRenderThrottlingStatusForSubFrame(
-      bool is_throttled,
-      bool subtree_throttled) override {}
+  void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
+                                               bool subtree_throttled) override;
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void SetViewportIntersection(
@@ -455,7 +454,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void DisableDeviceEmulation() override;
   // Sets the inert bit on an out-of-process iframe, causing it to ignore
   // input.
-  void SetIsInertForSubFrame(bool inert) override {}
+  void SetIsInertForSubFrame(bool inert) override;
 #if defined(OS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
