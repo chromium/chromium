@@ -238,6 +238,13 @@ class ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunHttpFirewallRoutineCallback
           callback) = 0;
 
+  // Requests that cros_healthd runs the HTTPS firewall routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunHttpsFirewallRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunHttpsFirewallRoutineCallback
+          callback) = 0;
+
   // Subscribes to cros_healthd's Bluetooth-related events. See
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.

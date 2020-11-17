@@ -126,6 +126,9 @@ class ServiceConnectionImpl : public ServiceConnection {
   void RunHttpFirewallRoutine(
       mojom::CrosHealthdDiagnosticsService::RunHttpFirewallRoutineCallback
           callback) override;
+  void RunHttpsFirewallRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunHttpsFirewallRoutineCallback
+          callback) override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -472,6 +475,15 @@ void ServiceConnectionImpl::RunHttpFirewallRoutine(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunHttpFirewallRoutine(
+      std::move(callback));
+}
+
+void ServiceConnectionImpl::RunHttpsFirewallRoutine(
+    mojom::CrosHealthdDiagnosticsService::RunHttpsFirewallRoutineCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunHttpsFirewallRoutine(
       std::move(callback));
 }
 

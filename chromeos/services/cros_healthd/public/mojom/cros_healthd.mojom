@@ -394,6 +394,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunHttpFirewallRoutine() => (RunRoutineResponse response);
+
+  // Requests that the HttpsFirewall routine is created and started on the
+  // platform. This routine checks whether a firewall is blocking HTTPS port
+  // 443. This routine is only available if GetAvailableRoutines returned
+  // kHttpsFirewall.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunHttpsFirewallRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
