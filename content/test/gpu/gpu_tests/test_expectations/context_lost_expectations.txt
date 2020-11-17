@@ -58,7 +58,6 @@
 
 # Win7 bots
 crbug.com/603329 [ win7 ] ContextLost_WebGLContextLostFromGPUProcessExit [ RetryOnFailure ]
-crbug.com/1127541 [ win7 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 
 # Win8 Release and Debug NVIDIA bots.
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
@@ -127,11 +126,8 @@ crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
 crbug.com/1105308 [ fuchsia ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
-# Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
-[ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-[ fuchsia ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-[ android ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-[ chromeos ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+# WebGPU disabled on release branch.
+crbug.com/985142 ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
