@@ -5,7 +5,8 @@
 module chromeos.settings.mojom;
 
 // Enumeration of each setting in the Chrome OS Settings app. Numerical values
-// are used for metrics; do not change or reuse values.
+// are used for metrics; do not change or reuse values. Add new values to the
+// OsSetting enum in tools/metrics/histograms/enums.xml.
 enum Setting {
   // Network section.
   kConfigureEthernet = 0,
