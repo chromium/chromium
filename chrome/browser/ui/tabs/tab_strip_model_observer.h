@@ -43,6 +43,16 @@ class TabStripModelChange {
     virtual ~Delta() = default;
   };
 
+  struct ContentsWithIndexAndWillBeDeleted {
+    content::WebContents* contents;
+    int index;
+
+    // The specified WebContents are being closed (and eventually destroyed).
+    // TODO(https://crbug.com/1149549): Make will_be_deleted into enum to
+    // consider the case for ClosedTabCache feature separtely.
+    bool will_be_deleted;
+  };
+
   struct ContentsWithIndex {
     content::WebContents* contents;
     int index;
@@ -89,8 +99,10 @@ class TabStripModelChange {
     Remove(Remove&& other);
     Remove& operator=(Remove&& other);
 
-    // Contains the list of web contents removed, along with their indexes at
-    // the time of removal. For example, if we removed elements:
+    // Contains the list of web contents removed with their indexes at
+    // the time of removal along with flag |will_be_deleted| that indicates if
+    // the web contents will be deleted or not after removing. For example, if
+    // we removed elements:
     //
     // Before removal:
     // A B C D E F G
@@ -111,11 +123,7 @@ class TabStripModelChange {
     // them in the order the web contents appear in |contents|. Observers should
     // not do index-based queries based on their own internally-stored indices
     // until after processing all of |contents|.
-    std::vector<ContentsWithIndex> contents;
-
-    // The specified WebContents are being closed (and eventually destroyed).
-    // |tab_strip_model| is the TabStripModel that contained the tab.
-    bool will_be_deleted;
+    std::vector<ContentsWithIndexAndWillBeDeleted> contents;
   };
 
   // A WebContents was moved from |from_index| to |to_index|. This implicitly

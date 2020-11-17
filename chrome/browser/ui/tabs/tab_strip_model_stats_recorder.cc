@@ -144,10 +144,11 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kRemoved &&
-      change.GetRemove()->will_be_deleted) {
-    for (const auto& contents : change.GetRemove()->contents)
-      OnTabClosing(contents.contents);
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& contents : change.GetRemove()->contents) {
+      if (contents.will_be_deleted)
+        OnTabClosing(contents.contents);
+    }
   } else if (change.type() == TabStripModelChange::kReplaced) {
     auto* replace = change.GetReplace();
     OnTabReplaced(replace->old_contents, replace->new_contents);

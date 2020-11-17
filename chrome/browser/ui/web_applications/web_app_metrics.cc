@@ -185,16 +185,17 @@ void WebAppMetrics::OnTabStripModelChanged(
 
   UpdateForegroundWebContents(selection.new_contents);
 
-  if (change.type() == TabStripModelChange::kRemoved &&
-      change.GetRemove()->will_be_deleted) {
-    for (const TabStripModelChange::ContentsWithIndex& contents :
-         change.GetRemove()->contents) {
-      auto* tab_helper =
-          WebAppTabHelperBase::FromWebContents(contents.contents);
-      if (tab_helper && !tab_helper->GetAppId().empty())
-        app_last_interacted_time_.erase(tab_helper->GetAppId());
-      // Foreground contents should not be going away.
-      DCHECK_NE(contents.contents, foreground_web_contents_);
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const TabStripModelChange::ContentsWithIndexAndWillBeDeleted&
+             contents : change.GetRemove()->contents) {
+      if (contents.will_be_deleted) {
+        auto* tab_helper =
+            WebAppTabHelperBase::FromWebContents(contents.contents);
+        if (tab_helper && !tab_helper->GetAppId().empty())
+          app_last_interacted_time_.erase(tab_helper->GetAppId());
+        // Foreground contents should not be going away.
+        DCHECK_NE(contents.contents, foreground_web_contents_);
+      }
     }
   }
 

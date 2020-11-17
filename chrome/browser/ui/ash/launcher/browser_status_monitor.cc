@@ -198,8 +198,8 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     UpdateBrowserItemState();
   } else if (change.type() == TabStripModelChange::kRemoved) {
     auto* remove = change.GetRemove();
-    if (remove->will_be_deleted) {
-      for (const auto& contents : remove->contents)
+    for (const auto& contents : remove->contents) {
+      if (contents.will_be_deleted)
         OnTabClosing(contents.contents);
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {

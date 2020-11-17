@@ -1182,9 +1182,8 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       break;
     }
     case TabStripModelChange::kRemoved: {
-      const bool will_be_deleted = change.GetRemove()->will_be_deleted;
       for (const auto& contents : change.GetRemove()->contents) {
-        if (will_be_deleted)
+        if (contents.will_be_deleted)
           OnTabClosing(contents.contents);
         OnTabDetached(contents.contents,
                       contents.contents == selection.old_contents);

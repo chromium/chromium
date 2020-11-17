@@ -197,11 +197,8 @@ class TabClosingObserver : public TabStripModelObserver {
       return;
 
     auto* remove = change.GetRemove();
-    if (!remove->will_be_deleted)
-      return;
-
     for (const auto& contents : remove->contents) {
-      if (contents_ == contents.contents) {
+      if (contents_ == contents.contents && contents.will_be_deleted) {
         if (run_loop_.running())
           run_loop_.Quit();
         contents_ = nullptr;

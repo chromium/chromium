@@ -203,9 +203,8 @@ void TabsEventRouter::OnTabStripModelChanged(
       break;
     }
     case TabStripModelChange::kRemoved: {
-      const bool will_be_deleted = change.GetRemove()->will_be_deleted;
       for (const auto& contents : change.GetRemove()->contents) {
-        if (will_be_deleted) {
+        if (contents.will_be_deleted) {
           DispatchTabClosingAt(tab_strip_model, contents.contents,
                                contents.index);
         }

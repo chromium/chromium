@@ -247,14 +247,17 @@ void TabStripModel::WebContentsData::WebContentsDestroyed() {
   NOTREACHED();
 }
 
-// Holds state for a WebContents that has been detached from the tab strip.
+// Holds state for a WebContents that has been detached from the tab strip. Will
+// also handle WebContents deletion if |will_delete| is true.
 struct TabStripModel::DetachedWebContents {
   DetachedWebContents(int index_before_any_removals,
                       int index_at_time_of_removal,
-                      std::unique_ptr<WebContents> contents)
+                      std::unique_ptr<WebContents> contents,
+                      bool will_delete)
       : contents(std::move(contents)),
         index_before_any_removals(index_before_any_removals),
-        index_at_time_of_removal(index_at_time_of_removal) {}
+        index_at_time_of_removal(index_at_time_of_removal),
+        will_delete(will_delete) {}
   DetachedWebContents(const DetachedWebContents&) = delete;
   DetachedWebContents& operator=(const DetachedWebContents&) = delete;
   ~DetachedWebContents() = default;
@@ -271,17 +274,17 @@ struct TabStripModel::DetachedWebContents {
   // tabs are being simultaneously removed, the index reflects previously
   // removed tabs in this batch.
   const int index_at_time_of_removal;
+
+  // Whether to delete the WebContents after sending notifications.
+  const bool will_delete;
 };
 
-// Holds all state necessary to send notifications for detached tabs. Will
-// also handle WebContents deletion if |will_delete| is true.
+// Holds all state necessary to send notifications for detached tabs.
 struct TabStripModel::DetachNotifications {
   DetachNotifications(WebContents* initially_active_web_contents,
-                      const ui::ListSelectionModel& selection_model,
-                      bool will_delete)
+                      const ui::ListSelectionModel& selection_model)
       : initially_active_web_contents(initially_active_web_contents),
-        selection_model(selection_model),
-        will_delete(will_delete) {}
+        selection_model(selection_model) {}
   DetachNotifications(const DetachNotifications&) = delete;
   DetachNotifications& operator=(const DetachNotifications&) = delete;
   ~DetachNotifications() = default;
@@ -301,9 +304,6 @@ struct TabStripModel::DetachNotifications {
 
   // The selection model prior to any tabs being detached.
   const ui::ListSelectionModel selection_model;
-
-  // Whether to delete the WebContents after sending notifications.
-  const bool will_delete;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,12 +428,12 @@ std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsAt(
       GetWebContentsAtImpl(active_index());
 
   DetachNotifications notifications(initially_active_web_contents,
-                                    selection_model_, /*will_delete=*/false);
+                                    selection_model_);
   std::unique_ptr<DetachedWebContents> dwc =
       std::make_unique<DetachedWebContents>(
           index, index,
-          DetachWebContentsImpl(index, /*create_historical_tab=*/false,
-                                /*will_delete=*/false));
+          DetachWebContentsImpl(index, /*create_historical_tab=*/false),
+          /*will_delete=*/false);
   notifications.detached_web_contents.push_back(std::move(dwc));
   SendDetachWebContentsNotifications(&notifications);
   return std::move(notifications.detached_web_contents[0]->contents);
@@ -441,8 +441,7 @@ std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsAt(
 
 std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsImpl(
     int index,
-    bool create_historical_tab,
-    bool will_delete) {
+    bool create_historical_tab) {
   if (contents_data_.empty())
     return nullptr;
   DCHECK(ContainsIndex(index));
@@ -502,10 +501,10 @@ void TabStripModel::SendDetachWebContentsNotifications(
             });
 
   TabStripModelChange::Remove remove;
-  remove.will_be_deleted = notifications->will_delete;
   for (auto& dwc : notifications->detached_web_contents) {
-    remove.contents.push_back(
-        {dwc->contents.get(), dwc->index_before_any_removals});
+    remove.contents.push_back({dwc->contents.get(),
+                               dwc->index_before_any_removals,
+                               dwc->will_delete});
   }
   TabStripModelChange change(std::move(remove));
 
@@ -530,7 +529,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
   }
 
   for (auto& dwc : notifications->detached_web_contents) {
-    if (notifications->will_delete) {
+    if (dwc->will_delete) {
       // This destroys the WebContents, which will also send
       // WebContentsDestroyed notifications.
       dwc->contents.reset();
@@ -1720,7 +1719,17 @@ bool TabStripModel::InternalCloseTabs(
     for (auto& observer : observers_)
       observer.WillCloseAllTabs(this);
   }
-  const bool closed_all = CloseWebContentses(items, close_types);
+
+  DetachNotifications notifications(GetWebContentsAtImpl(active_index()),
+                                    selection_model_);
+  const bool closed_all =
+      CloseWebContentses(items, close_types, &notifications);
+
+  // When unload handler is triggered for all items, we should wait for the
+  // result.
+  if (!notifications.detached_web_contents.empty())
+    SendDetachWebContentsNotifications(&notifications);
+
   if (!ref)
     return closed_all;
   if (closing_all) {
@@ -1737,7 +1746,8 @@ bool TabStripModel::InternalCloseTabs(
 
 bool TabStripModel::CloseWebContentses(
     base::span<content::WebContents* const> items,
-    uint32_t close_types) {
+    uint32_t close_types,
+    DetachNotifications* notifications) {
   if (items.empty())
     return true;
 
@@ -1760,9 +1770,6 @@ bool TabStripModel::CloseWebContentses(
     for (const auto& pair : processes)
       pair.first->FastShutdownIfPossible(pair.second, false);
   }
-
-  DetachNotifications notifications(GetWebContentsAtImpl(active_index()),
-                                    selection_model_, /*will_delete=*/true);
 
   // We now return to our regularly scheduled shutdown procedure.
   bool closed_all = true;
@@ -1798,15 +1805,10 @@ bool TabStripModel::CloseWebContentses(
         std::make_unique<DetachedWebContents>(
             original_indices[i], current_index,
             DetachWebContentsImpl(current_index,
-                                  close_types & CLOSE_CREATE_HISTORICAL_TAB,
-                                  /*will_delete=*/true));
-    notifications.detached_web_contents.push_back(std::move(dwc));
+                                  close_types & CLOSE_CREATE_HISTORICAL_TAB),
+            /*will_delete=*/true);
+    notifications->detached_web_contents.push_back(std::move(dwc));
   }
-
-  // When unload handler is triggered for all items, we should wait for the
-  // result.
-  if (!notifications.detached_web_contents.empty())
-    SendDetachWebContentsNotifications(&notifications);
 
   return closed_all;
 }

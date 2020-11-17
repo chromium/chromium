@@ -37,9 +37,8 @@ void AudibleContentsTracker::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kRemoved) {
-    auto* remove = change.GetRemove();
-    if (remove->will_be_deleted) {
-      for (const auto& contents : remove->contents)
+    for (const auto& contents : change.GetRemove()->contents) {
+      if (contents.will_be_deleted)
         RemoveAudibleWebContents(contents.contents);
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {
