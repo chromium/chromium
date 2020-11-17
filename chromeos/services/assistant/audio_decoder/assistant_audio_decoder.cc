@@ -23,10 +23,6 @@ namespace {
 // Preferred bytes per sample when get interleaved data from AudioBus.
 constexpr int kBytesPerSample = 2;
 
-void OnError(bool* succeeded) {
-  *succeeded = false;
-}
-
 }  // namespace
 
 AssistantAudioDecoder::AssistantAudioDecoder(
@@ -68,13 +64,18 @@ void AssistantAudioDecoder::CloseDecoder(CloseDecoderCallback callback) {
                      base::Unretained(this)));
 }
 
+void AssistantAudioDecoder::OnDataReadError() {
+  read_error_ = true;
+}
+
 void AssistantAudioDecoder::OpenDecoderOnMediaThread() {
-  bool read_ok = true;
   protocol_ = std::make_unique<media::BlockingUrlProtocol>(
-      data_source_.get(), base::BindRepeating(&OnError, &read_ok));
+      data_source_.get(),
+      base::BindRepeating(&AssistantAudioDecoder::OnDataReadError,
+                          base::Unretained(this)));
   decoder_ = std::make_unique<media::AudioFileReader>(protocol_.get());
 
-  if (closed_ || !decoder_->Open() || !read_ok) {
+  if (closed_ || !decoder_->Open() || read_error_) {
     CloseDecoderOnMediaThread();
     return;
   }

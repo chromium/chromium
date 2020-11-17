@@ -46,6 +46,9 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
       const std::vector<std::unique_ptr<media::AudioBus>>&
           decoded_audio_buffers);
 
+  // Error callback for media::BlockingUrlProtocol. Only run on media thread.
+  void OnDataReadError();
+
   void OnConnectionError();
   void RunCallbacksAsClosed();
 
@@ -55,6 +58,7 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   OpenDecoderCallback open_callback_;
   CloseDecoderCallback close_callback_;
   bool closed_ = false;
+  bool read_error_ = false;
 
   std::unique_ptr<media::DataSource> data_source_;
   std::unique_ptr<media::BlockingUrlProtocol> protocol_;
