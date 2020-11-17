@@ -196,7 +196,7 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
 };
 
 // static
-std::unique_ptr<content::OverlayWindow> OverlayWindowViews::Create(
+std::unique_ptr<OverlayWindowViews> OverlayWindowViews::Create(
     content::PictureInPictureWindowController* controller) {
   // Can't use make_unique(), which doesn't have access to the private
   // constructor. It's important that the constructor be private, because it
@@ -266,7 +266,7 @@ OverlayWindowViews::~OverlayWindowViews() = default;
 gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
   gfx::Rect work_area = GetWorkAreaForWindow();
 
-  UpdateMaxSize(work_area, window_bounds_.size());
+  UpdateMaxSize(work_area);
 
   // Lower bound size of the window is a fixed value to allow for minimal sizes
   // on UI affordances, such as buttons.
@@ -841,7 +841,7 @@ void OverlayWindowViews::OnNativeWidgetMove() {
 
   // Update the maximum size of the widget in case we have moved to another
   // window.
-  UpdateMaxSize(GetWorkAreaForWindow(), window_bounds_.size());
+  UpdateMaxSize(GetWorkAreaForWindow());
 
 #if defined(OS_CHROMEOS)
   // Update the positioning of some icons when the window is moved.
@@ -1052,23 +1052,21 @@ gfx::Rect OverlayWindowViews::GetWorkAreaForWindow() const {
       .work_area();
 }
 
-gfx::Size OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area,
-                                            const gfx::Size& window_size) {
+void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   max_size_ = gfx::Size(work_area.width() / 2, work_area.height() / 2);
 
   if (!native_widget())
-    return window_size;
+    return;
 
   // native_widget() is required for OnSizeConstraintsChanged.
   OnSizeConstraintsChanged();
 
-  if (window_size.width() <= max_size_.width() &&
-      window_size.height() <= max_size_.height()) {
-    return window_size;
+  if (window_bounds_.width() <= max_size_.width() &&
+      window_bounds_.height() <= max_size_.height()) {
+    return;
   }
 
   SetSize(max_size_);
-  return gfx::Size(max_size_);
 }
 
 void OverlayWindowViews::TogglePlayPause() {

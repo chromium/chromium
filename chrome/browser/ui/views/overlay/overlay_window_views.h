@@ -29,7 +29,7 @@ class TrackImageButton;
 class OverlayWindowViews : public content::OverlayWindow,
                            public views::Widget {
  public:
-  static std::unique_ptr<content::OverlayWindow> Create(
+  static std::unique_ptr<OverlayWindowViews> Create(
       content::PictureInPictureWindowController* controller);
 
   ~OverlayWindowViews() override;
@@ -94,12 +94,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   ui::Layer* video_layer_for_testing() const;
   cc::Layer* GetLayerForTesting() override;
 
-  // Update the max size of the widget based on |work_area| and |window_size|.
-  // The return value is the new size of the window if it was resized and is
-  // only used for testing.
-  gfx::Size UpdateMaxSize(const gfx::Rect& work_area,
-                          const gfx::Size& window_size);
-
  private:
   explicit OverlayWindowViews(
       content::PictureInPictureWindowController* controller);
@@ -118,6 +112,9 @@ class OverlayWindowViews : public content::OverlayWindow,
 
   // Finish initialization by performing the steps that require the root View.
   void OnRootViewReady();
+
+  // Update the max size of the widget based on |work_area| and window size.
+  void UpdateMaxSize(const gfx::Rect& work_area);
 
   // Update the bounds of the layers on the window. This may introduce
   // letterboxing.

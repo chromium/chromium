@@ -2851,36 +2851,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ExpectLeavePictureInPicture(active_web_contents);
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       UpdateMaxSize) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(nullptr, active_web_contents);
-
-  OverlayWindowViews* overlay_window = static_cast<OverlayWindowViews*>(
-      window_controller()->GetWindowForTesting());
-  ASSERT_TRUE(overlay_window);
-
-  // Size should be half the work area.
-  gfx::Size window_size(100, 100);
-  window_size = overlay_window->UpdateMaxSize(gfx::Rect(100, 100), window_size);
-  EXPECT_EQ(gfx::Size(50, 50), window_size);
-  EXPECT_EQ(gfx::Size(50, 50), overlay_window->GetMaximumSize());
-
-  // If the max size increases then we should keep the existing window size.
-  window_size = overlay_window->UpdateMaxSize(gfx::Rect(200, 200), window_size);
-  EXPECT_EQ(gfx::Size(50, 50), window_size);
-  EXPECT_EQ(gfx::Size(100, 100), overlay_window->GetMaximumSize());
-
-  // If the max size decreases then we should shrink to fit.
-  window_size = overlay_window->UpdateMaxSize(gfx::Rect(50, 50), window_size);
-  EXPECT_EQ(gfx::Size(25, 25), window_size);
-  EXPECT_EQ(gfx::Size(25, 25), overlay_window->GetMaximumSize());
-}
-
 // Tests that play/pause video playback is toggled if there are no focus
 // afforfances on the Picture-in-Picture window buttons when user hits space
 // keyboard key.
