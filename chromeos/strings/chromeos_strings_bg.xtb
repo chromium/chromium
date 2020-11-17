@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">Забавяне на DNS</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1478594628797167447">Скенер</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Диагностика на свързаността</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
+<translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
-<translation id="4027485274696301677">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="ENROLLMENT_DOMAIN" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Сканираните файлове са запазени!</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
 <translation id="445059817448385655">Стара парола</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Стартиране</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="520299634122159966">Няма налични скенери</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
@@ -122,12 +122,14 @@
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
+<translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
+<translation id="6839141349259399400">Не можете да свържете скенерите?</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7805768142964895445">Състояние</translation>
+<translation id="7855434858642800953">Сканираният файл е запазен!</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
+<translation id="8160445423316272678">За да започнете, поставете документа върху скенера и изберете <ph name="SPAN_BEGIN" />Сканиране<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8294431847097064396">Източник</translation>
@@ -159,5 +163,6 @@
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
 </translationbundle>

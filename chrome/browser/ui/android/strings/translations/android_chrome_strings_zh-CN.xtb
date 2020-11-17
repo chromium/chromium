@@ -857,6 +857,7 @@
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
 <translation id="7027549951530753705">“<ph name="ITEM_TITLE" />”已恢复</translation>
 <translation id="7029809446516969842">密码</translation>
+<translation id="7030675613184250187">您可以将所需网页保存到阅读清单中，以便再次查看或离线阅读</translation>
 <translation id="703523980599857277">更改主页</translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
@@ -1151,7 +1152,6 @@
 <translation id="9155898266292537608">您也可以通过快速点按某个字词进行搜索</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="9191031968346938109">添加到…</translation>
-<translation id="919615279147764192">为了帮助您执行各种操作，Google 将会收到您使用 Google 助理时所在网站的网址和内容，以及您通过 Google 助理提交的信息。这些信息可能会存储在您的 Google 帐号中。您可在 Chrome 的“设置”中停用 Google 助理。</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9206873250291191720">A</translation>

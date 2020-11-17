@@ -13,10 +13,11 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1357932062193643861">Me demander à l'ouverture de Chromium</translation>
 <translation id="1396446129537741364">Tentative d'affichage des mots de passe dans Chromium</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium.</translation>
+<translation id="1414973082589232775">Pour utiliser Rosetta pour lire des contenus multimédias protégés, vous devez redémarrer Chromium.</translation>
 <translation id="151962892725702025">Impossible de synchroniser vos données dans Chromium OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="1524282610922162960">Partager un onglet Chromium</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et créer un plan 3D de votre environnement</translation>
-<translation id="1607715478322902680">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="1607715478322902680">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}many{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1708666629004767631">Une nouvelle version de Chromium encore plus sûre est disponible.</translation>
 <translation id="1774152462503052664">Laisser Chromium s'exécuter en arrière-plan</translation>
 <translation id="1779356040007214683">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
@@ -73,10 +74,10 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3509308970982693815">Veuillez fermer toutes les fenêtres de Chromium, puis réessayer.</translation>
 <translation id="3575459661164320785">Un logiciel malveillant a été détecté sur votre ordinateur. Chromium peut le supprimer, restaurer vos paramètres et désactiver les extensions pour que votre navigateur fonctionne de nouveau normalement.</translation>
 <translation id="3639635944603682591">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
-<translation id="364817392622123556">{COUNT,plural, =0{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="364817392622123556">{COUNT,plural, =0{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}many{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}other{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3651803019964686660">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chromium sur les deux appareils.</translation>
 <translation id="3685209450716071127">Chromium ne parvient pas à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
-<translation id="370962675267501463">{COUNT,plural, =0{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour}=1{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="370962675267501463">{COUNT,plural, =0{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour}=1{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}many{Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}other{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3713809861844741608">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="3728336900324680424">Chromium va accéder à votre Drive pour proposer des suggestions dans la barre d'adresse</translation>
 <translation id="378917192836375108">Avec Chromium, cliquez sur un numéro de téléphone sur le Web et appelez-le dans Skype !</translation>
@@ -125,11 +126,12 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5480860683791598150">Chromium a besoin d'accéder à votre position pour la partager avec ce site</translation>
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour du système.</translation>
 <translation id="5496810170689441661">Chromium tente de modifier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
-<translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
+<translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}many{A Chromium update has been available for # days}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
 <translation id="5631814766731275228">Nom et photo dans Chromium</translation>
 <translation id="5634636535844844681">Vous devez disposer de Windows 7 ou version ultérieure pour utiliser Chromium.</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
+<translation id="5736967399513123100">Pour autoriser Chromium à lire des contenus multimédias protégés, vous devez installer Rosetta. Voulez-vous l'installer maintenant ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -147,7 +149,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6134968993075716475">La navigation sécurisée étant désactivée, Chromium vous recommande de l'activer.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
-<translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
+<translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}many{Chromium will relaunch in # seconds}other{Chromium va être relancé dans # secondes}}</translation>
 <translation id="623836266260425961">Impossible de synchroniser vos données dans Chromium OS.</translation>
 <translation id="6248213926982192922">Définir Chromium en tant que navigateur par défaut</translation>
 <translation id="6266342355635466082">Chromium ne parvient pas à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
@@ -159,7 +161,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium ?</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
 <translation id="6434250628340475518">Système Chromium OS</translation>
-<translation id="6457450909262716557">{SECONDS,plural, =1{Chromium va redémarrer dans 1 seconde}one{Chromium va redémarrer dans # seconde}other{Chromium va redémarrer dans # secondes}}</translation>
+<translation id="6457450909262716557">{SECONDS,plural, =1{Chromium va redémarrer dans 1 seconde}one{Chromium va redémarrer dans # seconde}many{Chromium will restart in # seconds}other{Chromium va redémarrer dans # secondes}}</translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie à Google le texte que vous saisissez dans les champs</translation>
@@ -176,6 +178,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
 <translation id="6893813176749746474">Chromium a été mis à jour, mais vous ne l'avez pas utilisé pendant au moins 30 jours.</translation>
+<translation id="6897548120660295439">Rosetta permet à Chromium de lire les contenus multimédias protégés sur cette page.</translation>
 <translation id="6964305034639999644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6978145336957848883">Les mots de passe peu sécurisés sont faciles à deviner. Laissez Chromium <ph name="BEGIN_LINK" />créer et mémoriser des mots de passe sécurisés à votre place<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
@@ -200,7 +203,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
-<translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}other{Chromium va être relancé dans # minutes}}</translation>
+<translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}many{Chromium will relaunch in # minutes}other{Chromium va être relancé dans # minutes}}</translation>
 <translation id="7549178288319965365">À propos de Chromium OS</translation>
 <translation id="7561906087460245826">Effacer également les données issues de Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Si un paramètre ne s'affiche pas sur cette page, accédez aux <ph name="LINK_BEGIN" />paramètres Chromium OS<ph name="LINK_END" /></translation>
@@ -228,7 +231,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8290862415967981663">Chromium a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
 <translation id="8330519371938183845">Se connecter pour synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chromium précédemment</translation>
-<translation id="8417404458978023919">{0,plural, =1{Relancer Chromium d'ici un jour}one{Relancer Chromium d'ici # jour}other{Relancer Chromium d'ici # jours}}</translation>
+<translation id="8417404458978023919">{0,plural, =1{Relancer Chromium d'ici un jour}one{Relancer Chromium d'ici # jour}many{Relaunch Chromium within # days}other{Relancer Chromium d'ici # jours}}</translation>
 <translation id="8453117565092476964">L'archive du programme d'installation est corrompue ou n'est pas valide. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8493179195440786826">Version de Chromium obsolète</translation>
 <translation id="8558383651099478961">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chromium. Tu ne peux pas ajouter cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
@@ -249,7 +252,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8974095189086268230">Chromium OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
-<translation id="9093206154853821181">{0,plural, =1{Chromium va être relancé dans une heure}one{Chromium va être relancé dans # heure}other{Chromium va être relancé dans # heures}}</translation>
+<translation id="9093206154853821181">{0,plural, =1{Chromium va être relancé dans une heure}one{Chromium va être relancé dans # heure}many{Chromium will relaunch in # hours}other{Chromium va être relancé dans # heures}}</translation>
 <translation id="91086099826398415">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>

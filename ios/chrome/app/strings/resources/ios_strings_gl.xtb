@@ -342,7 +342,6 @@ Os teus datos están encriptados co teu contrasinal de sincronización. Introdú
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
-<translation id="4758977202923349869">Coloca a tarxeta de crédito neste marco</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Utilizar outro contrasinal</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
@@ -604,12 +603,12 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7454057999980797137">Estado/provin.</translation>
 <translation id="7456847797759667638">Abrir localización...</translation>
-<translation id="7460314822154045102">Usar cámara</translation>
 <translation id="7464701184726199289">Esta acción borra os datos sincronizados de todos os dispositivos. As opcións de configuración dos sitios gardados non se eliminarán e quizais se reflictan os teus hábitos de navegación. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecciona Chrome</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7481312909269577407">Adiante</translation>
+<translation id="7483467499335917849">Usar a túa localización actual</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>

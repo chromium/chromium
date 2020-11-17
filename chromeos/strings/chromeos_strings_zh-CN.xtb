@@ -11,7 +11,6 @@
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1478594628797167447">扫描器</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> 管理此设备，并可能监控您的活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1644574205037202324">历史记录</translation>
@@ -59,9 +58,7 @@
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 管理此设备并可查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
-<translation id="4027485274696301677">此 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理。管理员可以远程配置此设备。</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -89,7 +86,6 @@
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">运行</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> 会管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="520299634122159966">无可用的扫描器</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
 请尝试通过点按麦克风图标向我提问。</translation>

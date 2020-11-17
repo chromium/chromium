@@ -857,6 +857,7 @@
 <translation id="702463548815491781">જ્યારે ટૉકબૅક અથવા સ્વિચ ઍક્સેસ ચાલુ હોય ત્યારે આપેલ સુઝાવ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> રિસ્ટોર કર્યું</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
+<translation id="7030675613184250187">તમે પેજને ફરીથી શોધવા અથવા ઑફલાઇન વાંચવા માટે તેને તમારી વાંચન સૂચિમાં સાચવી શકો છો</translation>
 <translation id="703523980599857277">હોમ પેજ બદલો</translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
@@ -1151,7 +1152,6 @@
 <translation id="9155898266292537608">તમે કોઈએક શબ્દ પર ટૅપ કરીને પણ ઝડપથી શોધી શકો છો</translation>
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
 <translation id="9191031968346938109">આમાં ઉમેરો…</translation>
-<translation id="919615279147764192">કાર્ય પૂર્ણ કરવામાં તમારી સહાય કરવા માટે, Googleને તમે જેના પર Assistantનો ઉપયોગ કરો છો તે URLs અને સાઇટના કન્ટેન્ટ તેમજ તમે Assistant મારફતે સબમિટ કરો છો તે માહિતી મળશે. આ માહિતી તમારા Google એકાઉન્ટમાં સ્ટોર કરવામાં આવી શકે છે. તમે Assistantને Chromeના સેટિંગમાં બંધ કરી શકો છો.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં ચેક કર્યું}one{# મિનિટ પહેલાં ચેક કર્યું}other{# મિનિટ પહેલાં ચેક કર્યું}}</translation>
 <translation id="9204836675896933765">1 ફાઇલ બાકી છે</translation>
 <translation id="9206873250291191720">A</translation>

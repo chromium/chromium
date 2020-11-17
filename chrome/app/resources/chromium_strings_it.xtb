@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Chiedi all'apertura di Chromium</translation>
 <translation id="1396446129537741364">Chromium sta cercando di visualizzare le password.</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
+<translation id="1414973082589232775">Per poter usare Rosetta per riprodurre contenuti multimediali protetti, devi riavviare Chromium.</translation>
 <translation id="151962892725702025">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Chromium richiede Windows 7 o versioni successive.</translation>
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
+<translation id="5736967399513123100">Per poter riprodurre contenuti multimediali protetti su Chromium, devi installare Rosetta. Vuoi installare ora?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -175,6 +177,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiata in Chromium)</translation>
 <translation id="6893813176749746474">Chromium è stato aggiornato ma non lo utilizzi da almeno 30 giorni.</translation>
+<translation id="6897548120660295439">Rosetta consente di riprodurre i contenuti multimediali protetti in questa pagina su Chromium.</translation>
 <translation id="6964305034639999644">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="6978145336957848883">Le password inefficaci sono facili da indovinare. Consenti a Chromium di <ph name="BEGIN_LINK" />creare e memorizzare password efficaci per te<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere al microfono</translation>

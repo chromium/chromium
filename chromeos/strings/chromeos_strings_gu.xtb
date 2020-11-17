@@ -11,7 +11,6 @@
 <translation id="1413240736185167732">નિષ્ફળ થયું - ફિલ્ટર નિષ્ફળ થયું</translation>
 <translation id="1468664791493211953">ઑફરો</translation>
 <translation id="1478594628797167447">સ્કૅનર</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> તમારા ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
@@ -59,9 +58,7 @@
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
 <translation id="3941014780699102620">હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="4003384961948020559">નિષ્ફળ થયું - પ્રિન્ટરનું આઉટપુટ ભરાઈ ગયું છે</translation>
-<translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
@@ -89,7 +86,6 @@
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
 <translation id="4932733599132424254">તારીખ</translation>
 <translation id="4985509611418653372">ચલાવો</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
 <translation id="520299634122159966">કોઈ સ્કૅનર ઉપલબ્ધ નથી</translation>
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>

@@ -342,7 +342,6 @@
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4747097190499141774">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">כרטיסייה חדשה לגלישה בסתר</translation>
-<translation id="4758977202923349869">יש למקם את כרטיס האשראי בתוך המסגרת הזו</translation>
 <translation id="4775879719735953715">דפדפן ברירת המחדל</translation>
 <translation id="4778644898150334464">שימוש בסיסמה אחרת</translation>
 <translation id="4802417911091824046">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay
@@ -604,12 +603,12 @@
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
 <translation id="7454057999980797137">מדינה / ארץ</translation>
 <translation id="7456847797759667638">פתיחת מיקום...</translation>
-<translation id="7460314822154045102">שימוש במצלמה</translation>
 <translation id="7464701184726199289">פעולה זו מוחקת נתונים מסונכרנים מכל המכשירים. הגדרות אתרים שנשמרו לא יימחקו ועשויות לשקף את הרגלי הגלישה שלך. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">‏3. בוחרים באפשרות Chrome.</translation>
 <translation id="7472734401283673885">שם החברה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
 <translation id="7481312909269577407">קדימה</translation>
+<translation id="7483467499335917849">שימוש במיקומך הנוכחי</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>

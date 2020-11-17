@@ -305,6 +305,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2102495993840063010">Android-apper</translation>
 <translation id="2107021941795971877">Utskriftsstøtter</translation>
 <translation id="2108755909498034140">Start datamaskinen på nytt.</translation>
+<translation id="2111166930115883695">Trykk på mellomrom for å spille</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kort</translation>
 <translation id="2114841414352855701">Ignorert fordi det ble overstyrt av <ph name="POLICY_NAME" />.</translation>
@@ -488,7 +489,6 @@ brukere av denne nettleseren.</translation>
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="290376772003165898">Er ikke siden på <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">En nettverksendring ble oppdaget.</translation>
-<translation id="2910133103376701357">Enheten og kontoen din administreres av <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Bruker-ID for jobbregnskap</translation>
 <translation id="2915068235268646559">Krasj fra <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Lukk andre programmer</translation>
@@ -522,6 +522,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3010559122411665027">Listeoppføring «<ph name="ENTRY_INDEX" />»: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatisk blokkert</translation>
 <translation id="3016780570757425217">vite hvor du er</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> – trykk på Tab og deretter på Enter for å fjerne forslaget.</translation>
 <translation id="3023071826883856138">You4 (konvolutt)</translation>
 <translation id="3024663005179499861">Feil type enhetsinnstillinger</translation>
 <translation id="3037605927509011580">Æsj!</translation>
@@ -760,10 +761,10 @@ brukere av denne nettleseren.</translation>
     skal gjelde for alle forespørsler som sendes til det, men denne regelen kan ikke tas i bruk akkurat nå.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som inneholder {COUNT} side}other{PDF-dokument som inneholder {COUNT} sider}}</translation>
 <translation id="4030383055268325496">&amp;Angre tilleggingen</translation>
-<translation id="4032320456957708163">Nettleseren din administreres av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Nøkkel – «<ph name="SUBKEY" />»: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (konvolutt)</translation>
+<translation id="4067669230157909013">Skjermopptaket er gjenopptatt.</translation>
 <translation id="4067947977115446013">Du må angi en gyldig adresse</translation>
 <translation id="4072486802667267160">Det oppsto en feil under behandlingen av bestillingen din. Prøv på nytt.</translation>
 <translation id="4075732493274867456">Klienten og tjeneren støtter ingen felles SSL-protokollversjon eller -chifferserie.</translation>
@@ -843,11 +844,11 @@ brukere av denne nettleseren.</translation>
 <translation id="4270541775497538019">Hylle 6</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4277028893293644418">Tilbakestill passordet</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> administreres av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Dette kortet er lagret i Google-kontoen din}other{Disse kortene er lagret i Google-kontoen din}}</translation>
 <translation id="4297502707443874121">Miniatyrbilde for side <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Vis</translation>
 <translation id="4300675098767811073">Flere hull høyre</translation>
+<translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
 <translation id="4302965934281694568">Chou3 (konvolutt)</translation>
 <translation id="4305666528087210886">Kunne ikke åpne filen</translation>
 <translation id="4305817255990598646">Bytt</translation>
@@ -963,7 +964,6 @@ brukere av denne nettleseren.</translation>
 <translation id="4771973620359291008">Det har oppstått en ukjent feil.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Et forgrunnsvindu er blokkert}other{# forgrunnsvinduer er blokkert}}</translation>
 <translation id="4780366598804516005">Postkasse 1</translation>
-<translation id="4780900888022378816">Enheten administreres av <ph name="ENROLLMENT_DOMAIN" />, og kontoen administreres av <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Bytt til denne fanen</translation>
 <translation id="4791134497475588553">Installerte Linux-apper og når de ble brukt sist</translation>
 <translation id="4792686369684665359">Informasjonen du er i ferd med å sende inn, er ikke sikker</translation>
@@ -1176,7 +1176,6 @@ brukere av denne nettleseren.</translation>
 <translation id="560412284261940334">Administrering støttes ikke</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Dette nettstedet kan være falskt eller prøve å svindle deg. Chrome anbefaler at du forlater det nå.</translation>
 <translation id="5610142619324316209">Sjekk tilkoblingen</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Oversett denne siden med Google Oversetter</translation>
@@ -1248,6 +1247,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5905445707201418379">Blokkert i samsvar med opphavsregelen for <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronisert)</translation>
+<translation id="5913377024445952699">Skjermopptaket er satt på pause</translation>
 <translation id="59174027418879706">Aktivert</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">På</translation>
@@ -1260,6 +1260,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5963413905009737549">Del</translation>
 <translation id="5967592137238574583">Endre kontaktinformasjonen</translation>
 <translation id="5967867314010545767">Fjern fra loggen</translation>
+<translation id="5968793460449681917">Hver gang jeg besøker nettstedet</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5979084224081478209">Kontrollér passordene</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1404,7 +1405,6 @@ brukere av denne nettleseren.</translation>
 <translation id="6529602333819889595">&amp;Slett likevel</translation>
 <translation id="6545864417968258051">Bluetooth-skanning</translation>
 <translation id="6547208576736763147">To hull venstre</translation>
-<translation id="6554795675067793129">Kontoen din administreres av <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Gjør om</translation>
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
@@ -1475,6 +1475,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6895330447102777224">Kortet ditt er bekreftet</translation>
 <translation id="6897140037006041989">Brukeragent</translation>
 <translation id="6898699227549475383">Organisasjon (O)</translation>
+<translation id="6907293445143367439">La <ph name="SITE_NAME" /></translation>
 <translation id="6910240653697687763"><ph name="URL" /> ber om full kontroll over MIDI-enhetene dine</translation>
 <translation id="6915804003454593391">Bruker:</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
@@ -1909,6 +1910,7 @@ Mer informasjon:
 <translation id="8574899947864779331">Bruk Touch ID til å bekrefte kort raskere</translation>
 <translation id="858637041960032120">Legg til telefonnummer</translation>
 <translation id="8589998999637048520">Beste kvalitet</translation>
+<translation id="8600271352425265729">Bare denne gangen</translation>
 <translation id="860043288473659153">Kortinnehavers navn</translation>
 <translation id="8606726445206553943">bruke MIDI-enhetene dine</translation>
 <translation id="8612761427948161954">Hei, <ph name="USERNAME" />
@@ -1918,6 +1920,7 @@ Mer informasjon:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
 <translation id="8625384913736129811">Lagre dette kortet på denne enheten</translation>
+<translation id="8627040765059109009">Skjermopptaket er gjenopptatt</translation>
 <translation id="8657078576661269990">Administratoren din har blokkert deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME_1" /> og <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="867224526087042813">Signatur</translation>
@@ -2065,6 +2068,7 @@ Mer informasjon:
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="945855313015696284">Gå gjennom informasjonen nedenfor, og slett eventuelle ugyldige kort</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
+<translation id="951941430552851965">Administratoren din har satt skjermopptaket på pause på grunn av innholdet på skjermen.</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>

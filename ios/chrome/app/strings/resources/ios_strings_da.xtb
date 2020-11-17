@@ -342,7 +342,6 @@ Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4747097190499141774">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay. Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til eller gemmes af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du nulstille synkronisering. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
-<translation id="4758977202923349869">Placer betalingskortet i dette felt</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Brug en anden adgangskode</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
@@ -604,12 +603,12 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7454057999980797137">Delstat/amt</translation>
 <translation id="7456847797759667638">Åbn placering...</translation>
-<translation id="7460314822154045102">Brug Kamera</translation>
 <translation id="7464701184726199289">Dette rydder synkroniserede data fra alle enheder. Gemte websiteindstillinger slettes ikke og kan afspejle dine søgevaner. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Vælg Chrome</translation>
 <translation id="7472734401283673885">Virksomhedsnavn</translation>
 <translation id="7473891865547856676">Nej tak</translation>
 <translation id="7481312909269577407">Frem</translation>
+<translation id="7483467499335917849">Brug din aktuelle placering</translation>
 <translation id="750493650310597496">0 valgt</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>

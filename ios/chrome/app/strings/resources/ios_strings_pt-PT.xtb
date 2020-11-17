@@ -342,7 +342,6 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Novo separador de navegação anónima</translation>
-<translation id="4758977202923349869">Posicione o cartão de crédito nesta moldura</translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4778644898150334464">Utilize outra palavra-passe</translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
@@ -604,12 +603,12 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7454057999980797137">Distrito/concelho</translation>
 <translation id="7456847797759667638">Abrir localização...</translation>
-<translation id="7460314822154045102">Utilizar a Câmara</translation>
 <translation id="7464701184726199289">Esta ação limpa os dados sincronizados de todos os dispositivos. As definições de sites guardadas não são eliminadas e podem refletir os seus hábitos de navegação. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecione o Chrome.</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
+<translation id="7483467499335917849">Utilize a localização atual</translation>
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7537586195939242955">De momento não é possível instalar a sua Palavra-passe no Passbook.</translation>

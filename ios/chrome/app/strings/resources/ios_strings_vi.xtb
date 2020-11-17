@@ -342,7 +342,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4747097190499141774">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần phải đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Thẻ ẩn danh mới</translation>
-<translation id="4758977202923349869">Đặt Thẻ tín dụng vào khung này</translation>
 <translation id="4775879719735953715">Trình duyệt Mặc định</translation>
 <translation id="4778644898150334464">Dùng mật khẩu khác</translation>
 <translation id="4802417911091824046">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
@@ -604,12 +603,12 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7454057999980797137">Tiểu bang/quận</translation>
 <translation id="7456847797759667638">Mở Vị trí...</translation>
-<translation id="7460314822154045102">Sử dụng máy ảnh</translation>
 <translation id="7464701184726199289">Thao tác này sẽ xóa dữ liệu được đồng bộ hóa khỏi tất cả thiết bị. Cài đặt trang web đã lưu sẽ không bị xóa và có thể phản ánh thói quen duyệt web của bạn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chọn Chrome</translation>
 <translation id="7472734401283673885">Tên công ty</translation>
 <translation id="7473891865547856676">Không, cảm ơn</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
+<translation id="7483467499335917849">Sử dụng thông tin vị trí hiện tại của bạn</translation>
 <translation id="750493650310597496">Đã chọn 0</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7537586195939242955">Rất tiếc, không thể cài đặt Pass (Vé xem) của bạn vào Passbook (Ví điện tử) lúc này.</translation>

@@ -482,7 +482,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Foi detectada uma alteração na rede.</translation>
-<translation id="2910133103376701357">Seu dispositivo e sua conta são gerenciados por <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID do usuário de conta de trabalho</translation>
 <translation id="2915068235268646559">Falha a partir de <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Fechar outros programas</translation>
@@ -753,7 +752,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele, mas não é possível aplicá-la no momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
-<translation id="4032320456957708163">Seu navegador é gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -832,7 +830,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4270541775497538019">Empilhador 6</translation>
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4277028893293644418">Redefinir senha</translation>
-<translation id="4279811152705618813">Seu <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esse cartão foi adicionado à sua Conta do Google}one{Esse cartão foi adicionado à sua Conta do Google}other{Esses cartões foram adicionados à sua Conta do Google}}</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -952,7 +949,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de e-mails 1</translation>
-<translation id="4780900888022378816">Seu dispositivo é gerenciado por <ph name="ENROLLMENT_DOMAIN" />, e sua conta é gerenciada por <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Alternar para esta guia</translation>
 <translation id="4791134497475588553">Apps Linux instalados e quando eles foram usados pela última vez</translation>
 <translation id="4792686369684665359">As informações que você está prestes a enviar não estão protegidas</translation>
@@ -1165,7 +1161,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="560412284261940334">Gerenciamento não suportado</translation>
 <translation id="5605670050355397069">Tabloide</translation>
 <translation id="5607240918979444548">Arch C</translation>
-<translation id="5608165884683734521">Este site pode ser falso ou conter fraude. O Chrome recomenda sair imediatamente.</translation>
 <translation id="5610142619324316209">Verificar a conexão</translation>
 <translation id="5610807607761827392">É possível gerenciar cartões e endereços em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1237,6 +1232,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5913377024445952699">Captura de tela pausada</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ativado</translation>
@@ -1393,7 +1389,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6529602333819889595">&amp;Refazer excluir</translation>
 <translation id="6545864417968258051">Verificação de Bluetooth</translation>
 <translation id="6547208576736763147">Perfuração dupla no lado esquerdo</translation>
-<translation id="6554795675067793129">Sua conta é gerenciada por <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
@@ -1909,6 +1904,7 @@ Mais detalhes:
 <translation id="8622948367223941507">Legal extra</translation>
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
+<translation id="8627040765059109009">Captura de tela retomada</translation>
 <translation id="8657078576661269990">O administrador bloqueou o compartilhamento de <ph name="ORIGIN_NAME" /> com <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="867224526087042813">Assinatura</translation>

@@ -186,6 +186,7 @@
 <translation id="6368958679917195344">Chrome OS terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Memperbarui Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Untuk memutar media yang dilindungi menggunakan Rosetta, Anda harus memulai ulang Chrome.</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Jalankan Google Chrome di Background</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
@@ -248,6 +249,7 @@
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Tersedia versi Google Chrome yang baru, dan versi ini lebih cepat dari sebelumnya.</translation>
+<translation id="861359755029082151">Rosetta memungkinkan Chrome memutar media yang dilindungi di halaman ini.</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
@@ -261,6 +263,7 @@
 <translation id="8834965163890861871">Google Chrome mencoba mengedit sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="884296878221830158">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau mengeklik tombol Beranda.</translation>
 <translation id="8862326446509486874">Anda tidak memiliki hak yang diperlukan untuk pemasangan tingkat sistem. Coba jalankan lagi pemasang saat login sebagai Administrator.</translation>
+<translation id="8907709077090383765">Agar Chrome dapat memutar media yang dilindungi, Anda harus menginstal Rosetta. Ingin menginstalnya sekarang?</translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8922193594870374009">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>

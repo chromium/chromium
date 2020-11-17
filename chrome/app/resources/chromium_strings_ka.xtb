@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">შეკითხვა Chromium-ის გახსნისას</translation>
 <translation id="1396446129537741364">Chromium ცდილობს პაროლების ჩვენებას.</translation>
 <translation id="1414495520565016063">თქვენ შესული ხართ Chromium-ში!</translation>
+<translation id="1414973082589232775">დაცული მედიის დასაკრავად Rosetta-ს გამოსაყენებლად საჭიროა Chromium-ის გადატვირთვა.</translation>
 <translation id="151962892725702025">Chromium OS-ის საშუალებით ვერ მოხერხდა თქვენი მონაცემების სინქრონიზაცია, რადგან თქვენს დომენზე სინქრონიზაცია მიუწვდომელია.</translation>
 <translation id="1524282610922162960">Chromium ჩანართის გაზიარება</translation>
 <translation id="1553461853655228091">Chromium საჭიროებს თქვენს კამერაზე წვდომის ნებართვას, თქვენი გარემოს 3-განზომილებიანი რუკის შექმნა რომ შეძლოს</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">Chromium-ის მუშაობისთვის საჭიროა Windows 7 ან უფრო ახალი ვერსია.</translation>
 <translation id="5653831366781983928">გთხოვთ, ახლავე გადატვირთოთ Chromium</translation>
 <translation id="5698481217667032250">Chromium-ის ამ ენაზე ჩვენება</translation>
+<translation id="5736967399513123100">Chromium-მა დაცული მედია რომ დაუკრას, საჭიროა Rosetta-ს ინსტალაცია. გსურთ მისი ახლავე ინსტალაცია?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">მოგესალმებათ Chromium!</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
@@ -177,6 +179,7 @@
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-ში კოპირებული)</translation>
 <translation id="6893813176749746474">Chromium განახლდა, მაგრამ თქვენ მას არ იყენებდით მინიმუმ 30 დღის განმავლობაში.</translation>
+<translation id="6897548120660295439">Rosetta საშუალებას მისცემს Chromium-ს, ამ გვერდზე დაცული მედია დაუკრას.</translation>
 <translation id="6964305034639999644">ბმულის გახსნა Chromium-ის ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="6978145336957848883">სუსტი პაროლები ადვილი გამოსაცნობია, ამიტომ მიეცით საშუალება Chromium-ს, <ph name="BEGIN_LINK" />თქვენთვის შექმნას და დაიმახსოვროს ძლიერი პაროლები<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium საჭიროებს თქვენს მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>

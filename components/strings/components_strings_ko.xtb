@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">주소</translation>
 <translation id="290376772003165898">페이지 언어가 <ph name="LANGUAGE" />가 아닌가요?</translation>
 <translation id="2909946352844186028">네트워크 변경이 감지되었습니다.</translation>
-<translation id="2910133103376701357"><ph name="ENROLLMENT_DOMAIN" />에서 관리하는 기기 및 계정입니다.</translation>
 <translation id="2911973620368911614">작업 계정 사용자 ID</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />에 비정상 종료 발생</translation>
 <translation id="2916038427272391327">다른 프로그램 닫기</translation>
@@ -753,7 +752,6 @@
 <translation id="3996311196211510766">사이트 <ph name="ORIGIN" />에서 모든 요청에 출처 정책을 적용하도록 요청했으나 이 정책은 현재 적용할 수 없습니다.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
 <translation id="4030383055268325496">추가 실행 취소(&amp;U)</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" />에서 관리하는 브라우저입니다</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4058922952496707368">'<ph name="SUBKEY" />' 키: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1(봉투)</translation>
@@ -832,7 +830,6 @@
 <translation id="4270541775497538019">스태커 6</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277028893293644418">비밀번호 재설정</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" />에서 <ph name="DEVICE_TYPE" />을(를) 관리합니다</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{다음 카드가 Google 계정에 저장되었습니다.}other{다음 카드가 Google 계정에 저장되었습니다.}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
 <translation id="42981349822642051">펼치기</translation>
@@ -952,7 +949,6 @@
 <translation id="4771973620359291008">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{팝업 1개 차단됨}other{팝업 #개 차단됨}}</translation>
 <translation id="4780366598804516005">메일박스 1</translation>
-<translation id="4780900888022378816">기기는 <ph name="ENROLLMENT_DOMAIN" />에서, 계정은 <ph name="ACCOUNT_DOMAIN" />에서 관리합니다.</translation>
 <translation id="4785689107224900852">이 탭으로 전환</translation>
 <translation id="4791134497475588553">설치된 Linux 앱과 마지막 사용 시점</translation>
 <translation id="4792686369684665359">안전하지 않은 정보를 제출하려 함</translation>
@@ -1165,7 +1161,6 @@
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">허위 또는 사기성 사이트일 수 있습니다. Chrome에서는 사이트에서 지금 바로 나갈 것을 권장합니다.</translation>
 <translation id="5610142619324316209">연결 확인</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 카드와 주소를 관리할 수 있습니다.</translation>
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
@@ -1237,6 +1232,7 @@
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />의 기존 정책에 따라 차단됨</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />(동기화됨)</translation>
+<translation id="5913377024445952699">화면 캡처가 일시중지됨</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">사용</translation>
@@ -1393,7 +1389,6 @@
 <translation id="6529602333819889595">삭제 다시 실행(&amp;R)</translation>
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
-<translation id="6554795675067793129">사용자의 계정은 <ph name="ENROLLMENT_DOMAIN" />에서 관리합니다.</translation>
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
@@ -1907,6 +1902,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
 <translation id="8625384913736129811">이 기기에 카드 저장</translation>
+<translation id="8627040765059109009">화면 캡처가 다시 시작됨</translation>
 <translation id="8657078576661269990">관리자가 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME_1" /> 및 <ph name="VM_NAME_2" /> 가상 머신으로 공유하는 작업을 차단했습니다.</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="867224526087042813">서명</translation>

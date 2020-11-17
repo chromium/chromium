@@ -65,7 +65,7 @@
 <translation id="121201262018556460">你嘗試前往 <ph name="DOMAIN" />，但伺服器所提供的憑證含有防護力薄弱的金鑰。攻擊者可能已破壞私密金鑰，而該伺服器可能並非你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="1219129156119358924">系統安全性</translation>
 <translation id="1227224963052638717">不明政策。</translation>
-<translation id="1228893227497259893">實體識別碼錯誤</translation>
+<translation id="1228893227497259893">實體 ID 錯誤</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1236081509407217141">要允許 VR 嗎？</translation>
 <translation id="1240347957665416060">你的裝置名稱</translation>
@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">不是<ph name="LANGUAGE" />網頁嗎？</translation>
 <translation id="2909946352844186028">系統偵測到網路變更。</translation>
-<translation id="2910133103376701357">你的裝置和帳戶是由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="2911973620368911614">工作帳戶使用者 ID</translation>
 <translation id="2915068235268646559">當機時間：<ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">關閉其他程式</translation>
@@ -721,7 +720,7 @@
 <translation id="3832522519263485449">多孔 (左側)</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858027520442213535">更新日期和時間</translation>
-<translation id="3884278016824448484">裝置識別碼發生衝突</translation>
+<translation id="3884278016824448484">裝置 ID 發生衝突</translation>
 <translation id="3885155851504623709">教區</translation>
 <translation id="388632593194507180">偵測到你正遭到監控</translation>
 <translation id="3886948180919384617">堆疊出紙器 3</translation>
@@ -753,7 +752,6 @@
 <translation id="3996311196211510766">「<ph name="ORIGIN" />」網站指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件，共 {COUNT} 頁}other{PDF 文件，共 {COUNT} 頁}}</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
-<translation id="4032320456957708163">你的瀏覽器受到 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4058922952496707368">鍵「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
@@ -832,7 +830,6 @@
 <translation id="4270541775497538019">堆疊出紙器 6</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277028893293644418">重設密碼</translation>
-<translation id="4279811152705618813">你的 <ph name="DEVICE_TYPE" /> 是由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{這張卡片已儲存到你的 Google 帳戶}other{這些卡片已儲存到你的 Google 帳戶}}</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
 <translation id="42981349822642051">展開</translation>
@@ -952,7 +949,6 @@
 <translation id="4771973620359291008">發生不明的錯誤。</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已封鎖彈出式視窗}other{已封鎖 # 個彈出式視窗}}</translation>
 <translation id="4780366598804516005">出紙槽 1</translation>
-<translation id="4780900888022378816">你的裝置是由 <ph name="ENROLLMENT_DOMAIN" /> 管理，你的帳戶是由 <ph name="ACCOUNT_DOMAIN" /> 管理。</translation>
 <translation id="4785689107224900852">切換至這個分頁</translation>
 <translation id="4791134497475588553">已安裝的 Linux 應用程式及上次使用時間</translation>
 <translation id="4792686369684665359">你要提交的資訊未受到保護</translation>
@@ -1165,7 +1161,6 @@
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">這可能是偽造的網站或詐騙網站，Chrome 建議你立即離開。</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中管理信用卡和地址資訊。</translation>
 <translation id="561165882404867731">使用 Google 翻譯來翻譯這個頁面</translation>
@@ -1237,6 +1232,7 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5905445707201418379">已根據「<ph name="ORIGIN" />」的來源政策加以封鎖。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
+<translation id="5913377024445952699">已暫停擷取螢幕畫面</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">開啟</translation>
@@ -1393,7 +1389,6 @@
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6545864417968258051">藍牙掃描</translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
-<translation id="6554795675067793129">你的帳戶是由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
@@ -1825,7 +1820,7 @@
 <translation id="8275952078857499577">不要詢問是否要翻譯這個網站</translation>
 <translation id="8277900682056760511">已開啟付款處理常式工作表</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
-<translation id="8282947398454257691">存取您的專屬裝置識別碼</translation>
+<translation id="8282947398454257691">存取您的專屬裝置 ID</translation>
 <translation id="8286036467436129157">登入</translation>
 <translation id="8288807391153049143">顯示憑證</translation>
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>
@@ -1908,6 +1903,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">找不到相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8625384913736129811">將這張信用卡儲存到這個裝置</translation>
+<translation id="8627040765059109009">已繼續擷取螢幕畫面</translation>
 <translation id="8657078576661269990">系統管理員已禁止將資料從 <ph name="ORIGIN_NAME" /> 分享到 <ph name="VM_NAME_1" /> 和 <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">訂單摘要：<ph name="TOTAL_LABEL" />，更多詳細資料</translation>
 <translation id="867224526087042813">簽名</translation>

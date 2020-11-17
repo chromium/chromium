@@ -342,7 +342,6 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。只有知道你通關密語的人，才能讀取加密保護的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
-<translation id="4758977202923349869">請將信用卡置於此方框內</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4778644898150334464">使用其他密碼</translation>
 <translation id="4802417911091824046">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。
@@ -604,12 +603,12 @@
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7454057999980797137">州/縣</translation>
 <translation id="7456847797759667638">開啟位置...</translation>
-<translation id="7460314822154045102">使用相機</translation>
 <translation id="7464701184726199289">系統會將保持同步的資料從所有裝置上刪除。已儲存的網站設定不會遭到刪除，而且可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">往前</translation>
+<translation id="7483467499335917849">使用你目前所在的位置</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>

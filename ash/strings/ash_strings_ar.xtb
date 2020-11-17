@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز). وتم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">لقد تغيّر اختصار فتح إدارة المهام. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">النقرات التلقائية</translation>
-<translation id="1924640696879807758">من الهاتف</translation>
 <translation id="1928739107511554905">‏للحصول على التحديث، استخدم الشاشة التي تعمل باللمس لإعادة تشغيل جهاز Chromebook، مع توصيل لوحة المفاتيح المرفقة.</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1957803754585243749">0 درجة</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">غير متصلة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> هي جلسة مُدارة بواسطة <ph name="DOMAIN" /></translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
 <translation id="4121728057981832179">هناك آلة افتراضية تستخدم الميكروفون حاليًا.</translation>
+<translation id="4126167871198063089">الخروج من وضع "سماع الاختيار"</translation>
 <translation id="4129129681837227511">للاطِّلاع على الإشعارات على شاشة القفل، يمكنك فتح القفل لتغيير الإعداد</translation>
 <translation id="4146833061457621061">تشغيل الموسيقى</translation>
-<translation id="4149156641122542261">إدارة جهاز <ph name="DEVICE_TYPE" /> عن طريق <ph name="DOMAIN" /></translation>
 <translation id="415719264485676252">التقاط الشاشة غير مفعَّل</translation>
 <translation id="4157822100366708405">إعدادات المظهر الداكن</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4570957409596482333">زر "الاختيار والاستماع"</translation>
 <translation id="4577274620589681794">انتهى الوقت · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">عرض المعاينات</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4623167406982293031">يجب إثبات ملكية الحساب</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">إرسال الشاشة</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
+<translation id="5003993274120026347">الجملة التالية</translation>
 <translation id="5019169674188023236">‏يبدو أنه تم إيقاف اتصال شبكة البلوتوث أو شبكة Wi-Fi على الجهاز <ph name="DEVICE_TYPE" />. يُرجى التحقُّق من الاتصال لاستخدام ميزة "مركز التحكم بالهاتف".</translation>
 <translation id="5030687792513154421">انتهى الوقت</translation>
 <translation id="5033299697334913360">انقر في أي مكان لالتقاط صورة لوضع ملء الشاشة.</translation>
 <translation id="5035236842988137213">الجهاز <ph name="DEVICE_NAME" /> متصل بهاتف جديد</translation>
 <translation id="5035389544768382859">تأكيد ضبط شاشة العرض</translation>
+<translation id="504465286040788597">الفقرة السابقة</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">تبديل الإملاء</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5571066253365925590">تم تفعيل البلوتوث</translation>
+<translation id="557563299383177668">الفقرة التالية</translation>
 <translation id="558849140439112033">يُرجى السحب لتحديد منطقة لالتقاط صورة لها.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏اضغط على Ctrl + Alt + Z لإيقاف التعليقات والملاحظات المنطوقة</translation>
@@ -614,7 +616,6 @@
 <translation id="6910714959251846841">‏يتطلَّب هذا التحديث إجراء عملية Powerwash لجهازك. مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="6945221475159498467">تحديد</translation>
-<translation id="6953890208095195458">لقد أوقف المشرف تسجيل الشاشة بسبب ظهور محتوى محظور على شاشتك.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6972754398087986839">البدء</translation>
 <translation id="6981982820502123353">إمكانية الوصول</translation>
@@ -668,7 +669,6 @@
 <translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">حظر المشرف إمكانية التقاط صورة شاشة للمحتوى الظاهر على شاشتك.</translation>
 <translation id="7548434653388805669">وقت النوم</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
@@ -727,6 +727,7 @@
 <translation id="8029247720646289474">تعذّر الاتصال بالإنترنت عبر نقطة الاتصال</translation>
 <translation id="8029629653277878342">يجب إدخال رقم التعريف الشخصي أو كلمة المرور لمزيد من الأمان.</translation>
 <translation id="8030169304546394654">غير متصل</translation>
+<translation id="8036504271468642248">الجملة السابقة</translation>
 <translation id="8042893070933512245">فتح قائمة إعدادات "أدوات تمكين الوصول"</translation>
 <translation id="8048123526339889627">إعدادات البلوتوث</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
@@ -865,6 +866,7 @@
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="923686485342484400">‏للخروج اضغط على Ctrl Shift Q مرتين.</translation>
+<translation id="925832987464884575">إخفاء المعاينات</translation>
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="98515147261107953">أفقي</translation>

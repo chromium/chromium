@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
 <translation id="1113597929977215864">Se enkel visning</translation>
+<translation id="1118561384561215815">Få hjælp til opgaver på nettet</translation>
 <translation id="1123070903960493543">Den måde, du interagerer med Chrome på, de indstillinger, du har valgt, og oplysninger om Chrome-nedbrud</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1129510026454351943">Info: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Synkroniser dine bogmærker</translation>
 <translation id="17513872634828108">Åbne faner</translation>
 <translation id="1754404134430936718">Teksten blev kopieret</translation>
+<translation id="1772137089884020309">Listen over bogmærkemapper er lukket</translation>
 <translation id="1782483593938241562">Slutdato <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792959175193046959">Du kan til enhver tid skifte standardplaceringen for downloads</translation>
@@ -181,6 +183,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2276696007612801991">Log ind på din Google-konto for at tjekke dine adgangskoder</translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="230115972905494466">Der blev ikke fundet nogen kompatible enheder</translation>
+<translation id="230155349749732438"><ph name="BEGIN_LINK" />Gør søgninger og browsing endnu bedre<ph name="END_LINK" /> skal være aktiveret, før du kan bruge denne indstilling</translation>
 <translation id="2318045970523081853">Tryk for at ringe op</translation>
 <translation id="2321086116217818302">Forbereder adgangskoder…</translation>
 <translation id="2321958826496381788">Træk i skyderen, indtil du kan nemt læse dette. Teksten som minimum have denne størrelse, når du har trykket to gange på et afsnit.</translation>
@@ -204,6 +207,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2450907520913474542">Læs om emner på websites uden at forlade siden. Funktionen Tryk for at søge sender et ord og ordets kontekst til Google Søgning og giver dig definitioner, billeder, søgeresultater og andre oplysninger.
 
 Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge flere eller færre ord. Hvis du vil redigere din søgning, skal du åbne panelet, trykke på ikonet Ny fane og så foretage dine ændringer i søgefeltet.</translation>
+<translation id="2459390580524506445">Forbedret stemmesøgning</translation>
 <translation id="246532703174860178">Del</translation>
 <translation id="2478076885740497414">Installer app</translation>
 <translation id="2479148705183875116">Gå til Indstillinger</translation>
@@ -272,6 +276,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-lagerplads</translation>
 <translation id="2942036813789421260">Fanen forhåndsvisning er lukket</translation>
 <translation id="2956410042958133412">Denne konto administreres af <ph name="PARENT_NAME_1" /> og <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
 <translation id="2962095958535813455">Skiftet til inkognitofaner</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
@@ -315,11 +320,13 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3269093882174072735">Indlæs billede</translation>
 <translation id="3269956123044984603">Aktivér "Automatisk synkronisering af data" i kontoindstillingerne for Android for at få adgang til dine faner på dine andre enheder.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
+<translation id="3284510035090979597">Proaktiv hjælp</translation>
 <translation id="3285080554353377245">Videoer om, hvordan du bruger Chrome</translation>
 <translation id="3288003805934695103">Genindlæse siden</translation>
 <translation id="32895400574683172">Notifikationer er tilladt</translation>
 <translation id="3290991969712132877">Føj denne side til din startskærm ved hjælp af knappen Flere valgmuligheder for hurtigt at vende tilbage hertil</translation>
 <translation id="3295530008794733555">Få hurtigere browsing. Brug mindre data.</translation>
+<translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
 <translation id="3315103659806849044">Du tilpasser i øjeblikket dine indstillinger for Synkronisering og Google-tjenester. Afslut aktiveringen af synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
@@ -422,6 +429,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />leveret af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
+<translation id="4095189195365058471">Læs senere <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Vær med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4116038641877404294">Download sider for at bruge dem, når du er offline</translation>
@@ -514,6 +522,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 download er fuldført.}one{# download er fuldført.}other{# downloads er fuldført.}}</translation>
 <translation id="4766678251456904326">Føj konto til enhed</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 planlagt download.}one{# planlagt download.}other{# planlagte downloads.}}</translation>
+<translation id="4791358705705538979">Hjælper dig med at udføre opgaver som f.eks. betaling overalt på nettet</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
@@ -619,6 +628,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5524843473235508879">Omdirigeringen blev blokeret.</translation>
 <translation id="5527082711130173040">Chrome skal have placeringsadgang for at kunne scanne efter enheder. <ph name="BEGIN_LINK1" />Opdater tilladelser<ph name="END_LINK1" />. Placeringsadgang er også <ph name="BEGIN_LINK2" />slået fra på denne enhed<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Luk inkognitofaner</translation>
+<translation id="5530920986376047241">Du kan gemme sider på din læseliste, så du kan finde dem igen</translation>
 <translation id="5534640966246046842">Websitet er kopieret</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5561549206367097665">Venter på netværk…</translation>
@@ -663,6 +673,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5797070761912323120">Google kan bruge din historik til at tilpasse Søgning, annoncer og andre Google-tjenester</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{For 1 time siden}one{For # time siden}other{For # timer siden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
+<translation id="5810864297166300463">Webassistance</translation>
 <translation id="5814131985548525293">Skriv her, eller tryk på mikrofonikonet for at komme i gang</translation>
 <translation id="5817918615728894473">Start parring</translation>
 <translation id="583281660410589416">Ukendt</translation>
@@ -697,6 +708,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5982307838673692400">Åbn en inkognitofane</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> side}one{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> side}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sider}}</translation>
 <translation id="6014293228235665243">Ulæst</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
@@ -857,6 +869,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="702463548815491781">Anbefales, når TalkBack eller Kontaktadgang er aktiveret</translation>
 <translation id="7027549951530753705">Gendannet den <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
+<translation id="7030675613184250187">Du kan gemme sider på din læseliste, så du kan finde dem igen eller læse dem, når du er offline</translation>
 <translation id="703523980599857277">Skift startside</translation>
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
@@ -877,6 +890,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7177466738963138057">Du kan ændre dette senere i Indstillinger</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7187993566681480880">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
+<translation id="718926126787620637">Listen over bogmærkemapper er åbnet i fuld højde</translation>
 <translation id="7189372733857464326">Venter på, at Google Play-tjenester er opdateret</translation>
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
 <translation id="7233236755231902816">Hent den nyeste version af Chrome for at bruge browseren på dit eget sprog</translation>
@@ -929,6 +943,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil blev downloadet}one{<ph name="FILES_DOWNLOADED_MANY" /> fil blev downloadet}other{<ph name="FILES_DOWNLOADED_MANY" /> filer blev downloadet}}</translation>
+<translation id="7583262514280211622">Her finder du din læseliste</translation>
 <translation id="7588219262685291874">Aktivér mørkt tema, når enhedens batterisparefunktion er aktiveret</translation>
 <translation id="7593557518625677601">Åbn Android-indstillinger, og genaktiver synkronisering af Android-systemet for at starte Chrome-synkroniseringen</translation>
 <translation id="7596558890252710462">Operativsystem</translation>
@@ -960,6 +975,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7772375229873196092">Luk <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}}</translation>
 <translation id="7778840695157240389">Vend tilbage senere for at se nye historier</translation>
+<translation id="7786595606756654269">Google Assistent giver en bedre brugeroplevelse med stemmestyring ved søgning på nettet og interaktion med åbne websites. Google Assistent modtager webadressen og indholdet på de websites, hvor du bruger Assistent.</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> faner blev gendannet</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -985,6 +1001,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7961926449547174351">Du har deaktiveret adgangen til lagerplads. Gå til Indstillinger for at aktivere den.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
 <translation id="7967911570373677897">For at scanne en QR-kode skal du ændre dine indstillinger, så Chrome kan bruge dit kamera</translation>
+<translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
@@ -1015,6 +1032,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8137558756159375272">Funktionen "Tryk for at søge" sender det markerede ord og den aktuelle side som kontekst til Google Søgning. Du kan slå den fra under <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Assistenten vises, når den registrerer, at den kan hjælpe dig på understøttede websites</translation>
 <translation id="8156139159503939589">Hvilke sprog læser du?</translation>
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer tilbage</translation>
@@ -1045,6 +1063,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8372925856448695381"><ph name="LANG" /> er klar.</translation>
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8407396331882458341">1. Vælg <ph name="APP_NAME" />\n2. Tryk på "Altid"</translation>
+<translation id="8410695015584479363">Følg prisudvikling</translation>
 <translation id="8413126021676339697">Vis hele historikken</translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8427875596167638501">Fanen forhåndsvisning er åbnet halvt</translation>
@@ -1112,6 +1131,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8920114477895755567">Venter på oplysninger om forældre.</translation>
 <translation id="8922289737868596582">Download sider via knappen Flere valgmuligheder for at bruge dem, når du er offline</translation>
+<translation id="8928626432984354940">Listen over bogmærkemapper er åbnet i halv højde.</translation>
 <translation id="8937772741022875483">Vil du fjerne din Chrome-aktivitet fra Digital balance?</translation>
 <translation id="8942627711005830162">Åbn i et andet vindue</translation>
 <translation id="8951232171465285730">Chrome har sparet dig <ph name="MEGABYTES" /> MB</translation>
@@ -1151,7 +1171,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="9155898266292537608">Du kan også søge med et hurtigt tryk på et ord</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="9191031968346938109">Føj til…</translation>
-<translation id="919615279147764192">For at hjælpe dig med at udføre opgaver modtager Google webadresser for og indhold på websites, hvor du bruger Assistent, samt oplysninger du indsender via Assistent. Disse oplysninger gemmes muligvis på din Google-konto. Du kan deaktivere Assistent i indstillingerne for Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="93753284658583800">Startsiden blev ændret</translation>
 <translation id="938850635132480979">Fejl: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
+<translation id="948039501338975565">Liste over bogmærkemapper</translation>
 <translation id="95817756606698420">Chrome kan bruge <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> til søgninger i Kina. Du kan ændre dette i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Installer denne app</translation>
 <translation id="968900484120156207">De sider, du besøger, vises her</translation>

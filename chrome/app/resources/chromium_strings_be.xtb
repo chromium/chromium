@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">Пытацца пры адкрыцці Chromium</translation>
 <translation id="1396446129537741364">Chromium спрабуе паказаць паролі.</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
+<translation id="1414973082589232775">Каб прайграваць абароненае мультымедыйнае змесціва пры дапамозе праграмы Rosetta, трэба перазапусціць Chromium.</translation>
 <translation id="151962892725702025">Сістэме Chromium OS не ўдалося сінхранізаваць вашы даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="1524282610922162960">Абагульце ўкладку Chromium</translation>
 <translation id="1553461853655228091">Chromium запытвае дазвол на доступ да камеры, каб стварыць 3D-карту асяроддзя</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">Для браўзера Chromium патрабуецца Windows 7 або навейшая версія.</translation>
 <translation id="5653831366781983928">Перазапусціце Chromium</translation>
 <translation id="5698481217667032250">Паказваць інтэрфейс браўзера Chromium на гэтай мове</translation>
+<translation id="5736967399513123100">Каб прайграваць у браўзеры Chomium абароненае мультымедыйнае змесціва, трэба ўсталяваць праграму Rosetta. Зрабіць гэта зараз?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Вас вітае Chromium</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
@@ -177,6 +179,7 @@
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скапіравана ў Chromium)</translation>
 <translation id="6893813176749746474">Chromium быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
+<translation id="6897548120660295439">Дзякуючы праграме Rosetta браўзер Chromium зможа прайграваць абароненае мультымедыйнае змесціва на гэтай старонцы.</translation>
 <translation id="6964305034639999644">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
 <translation id="6978145336957848883">Ненадзейныя паролі лёгка адгадаць. Дазвольце Chromium <ph name="BEGIN_LINK" />ствараць для вас надзейныя паролі і запамінаць іх<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>

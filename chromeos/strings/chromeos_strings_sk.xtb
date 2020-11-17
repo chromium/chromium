@@ -2,17 +2,19 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1018656279737460067">Zrušené</translation>
+<translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1204296502688602597">Latencia DNS</translation>
+<translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prispôsobiť naskenovanej ploche</translation>
 <translation id="1397738625398125236">Je možné testovať dostupnosť (ping) brány</translation>
+<translation id="1398634363027580500">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1468664791493211953">Ponuky</translation>
 <translation id="1478594628797167447">Skener</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
@@ -62,11 +64,10 @@
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
-<translation id="4027485274696301677">Toto zariadenie <ph name="DEVICE_TYPE" /> je spravované doménou <ph name="ENROLLMENT_DOMAIN" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="4034824040120875894">Tlačiareň</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
+<translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
@@ -83,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
 <translation id="467510802200863975">Heslá sa nezhodujú</translation>
+<translation id="467715984478005772">Podozrenie na firewall</translation>
 <translation id="4691278870498629773">Zastavené – chýba zásobník</translation>
 <translation id="469379815867856270">Intenzita signálu</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
@@ -93,7 +95,6 @@
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Spustiť</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
 <translation id="520299634122159966">K dispozícii nie sú žiadne skenery</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
@@ -115,6 +116,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6048107060512778456">Nepodarilo sa – zaseknutý papier</translation>
 <translation id="6050189528197190982">Odtiene sivej</translation>
 <translation id="6058625436358447366">Ak chcete zmenu dokončiť, zadajte staré a nové heslo</translation>
+<translation id="6061772781719867950">Neúspešné požiadavky HTTP</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
@@ -133,6 +135,8 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
+<translation id="6766275201586212568">Neúspešné prevody DNS</translation>
+<translation id="6768237774506518020">Vysoká miera neúspešných prevodov DNS</translation>
 <translation id="6839141349259399400">Nemôžete sa pripojiť k skenerom?</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
 <translation id="7162487448488904999">Galéria</translation>
@@ -140,6 +144,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7805768142964895445">Stav</translation>
@@ -151,6 +156,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8294431847097064396">Zdroj</translation>
+<translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>

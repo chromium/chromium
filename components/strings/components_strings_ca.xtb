@@ -301,6 +301,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2102495993840063010">Aplicacions per a Android</translation>
 <translation id="2107021941795971877">Suports d'impressió</translation>
 <translation id="2108755909498034140">Reinicia l'ordinador</translation>
+<translation id="2111166930115883695">Prem la barra espaiadora per jugar</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Targeta</translation>
 <translation id="2114841414352855701">S'ha ignorat perquè <ph name="POLICY_NAME" /> l'ha substituït.</translation>
@@ -482,7 +483,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="290376772003165898">La pàgina no està en <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">S'ha detectat un canvi a la xarxa.</translation>
-<translation id="2910133103376701357">El dispositiu i el compte estan gestionats per <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Identificador d'usuari del compte de treball</translation>
 <translation id="2915068235268646559">Inici del bloqueig: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Tanca altres programes</translation>
@@ -516,6 +516,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3010559122411665027">Entrada de llista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3016780570757425217">Saber la vostra ubicació</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, prem la tecla de tabulació i després la d'introducció per suprimir el suggeriment.</translation>
 <translation id="3023071826883856138">You4 (sobre)</translation>
 <translation id="3024663005179499861">Tipus de política incorrecte</translation>
 <translation id="3037605927509011580">Vaja!</translation>
@@ -753,10 +754,10 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3996311196211510766">El lloc web <ph name="ORIGIN" /> ha sol·licitat que s'apliqui una política d'origen a totes les sol·licituds que rebi, però en aquest moment aquesta política no es pot aplicar.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
 <translation id="4030383055268325496">&amp;Desfés l'addició</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> gestiona el teu navegador</translation>
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4058922952496707368">Tecla "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
+<translation id="4067669230157909013">La captura de pantalla s'ha reprès.</translation>
 <translation id="4067947977115446013">Afegeix una adreça vàlida</translation>
 <translation id="4072486802667267160">S’ha produït un error en processar la comanda. Torna-ho a provar.</translation>
 <translation id="4075732493274867456">El client i el servidor no admeten cap versió de protocol SSL ni cap sistema de xifratge comuns.</translation>
@@ -832,11 +833,11 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4270541775497538019">Apiladora 6</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
 <translation id="4277028893293644418">Restableix la contrasenya</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> gestiona el dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Aquesta targeta s'ha desat al Compte de Google}other{Aquestes targetes s'han desat al Compte de Google}}</translation>
 <translation id="4297502707443874121">Miniatura de la pàgina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Desplega</translation>
 <translation id="4300675098767811073">Encunyació múltiple a la dreta</translation>
+<translation id="4302514097724775343">Toca el dinosaure per jugar</translation>
 <translation id="4302965934281694568">Chou3 (sobre)</translation>
 <translation id="4305666528087210886">No s'ha pogut accedir al fitxer</translation>
 <translation id="4305817255990598646">Canvia</translation>
@@ -952,7 +953,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4771973620359291008">S'ha produït un error desconegut.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Finestra emergent bloquejada}other{# finestres emergents bloquejades}}</translation>
 <translation id="4780366598804516005">Bústia de correu 1</translation>
-<translation id="4780900888022378816">El dispositiu està gestionat per <ph name="ENROLLMENT_DOMAIN" /> i el compte està gestionat per <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Canvia a aquesta pestanya</translation>
 <translation id="4791134497475588553">Aplicacions per a Linux instal·lades i data en què s'han utilitzat per darrera vegada</translation>
 <translation id="4792686369684665359">La informació que estàs a punt d'enviar no és segura</translation>
@@ -1165,7 +1165,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="560412284261940334">Gestió no compatible</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Aquest lloc web podria ser fals o fraudulent. Chrome recomana que en surtis ara.</translation>
 <translation id="5610142619324316209">Comproveu la connexió</translation>
 <translation id="5610807607761827392">Pots gestionar les targetes i les adreces a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tradueix aquesta pàgina amb el Traductor de Google</translation>
@@ -1237,6 +1236,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5905445707201418379">S'ha bloquejat d'acord amb la política d'origen de: <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (informació sincronitzada)</translation>
+<translation id="5913377024445952699">Captura de pantalla en pausa</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activat</translation>
@@ -1249,6 +1249,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5963413905009737549">Secció</translation>
 <translation id="5967592137238574583">Edita la informació de contacte</translation>
 <translation id="5967867314010545767">Elimina de l'historial</translation>
+<translation id="5968793460449681917">En cada visita</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1393,7 +1394,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
 <translation id="6547208576736763147">Encunyació doble a l'esquerra</translation>
-<translation id="6554795675067793129">El teu compte està gestionat per <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Refés</translation>
 <translation id="6569060085658103619">Estàs consultant la pàgina d'una extensió</translation>
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
@@ -1464,6 +1464,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6895330447102777224">La teva targeta s'ha confirmat</translation>
 <translation id="6897140037006041989">Agent d'usuari</translation>
 <translation id="6898699227549475383">Organització (O)</translation>
+<translation id="6907293445143367439">Permet a <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> vol obtenir un control total dels teus dispositius MIDI</translation>
 <translation id="6915804003454593391">Usuari:</translation>
 <translation id="6934672428414710184">Aquest nom prové del teu Compte de Google</translation>
@@ -1899,6 +1900,7 @@ Detalls addicionals:
 <translation id="8574899947864779331">Fes servir Touch ID per confirmar les targetes més ràpidament</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>
+<translation id="8600271352425265729">Només aquesta vegada</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8606726445206553943">Utilitzar els dispositius MIDI</translation>
 <translation id="8612761427948161954">Hola, <ph name="USERNAME" />,
@@ -1908,6 +1910,7 @@ Detalls addicionals:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No hi ha cap contrasenya que coincideixi. Mostra totes les contrasenyes desades.</translation>
 <translation id="8625384913736129811">Desa aquesta targeta al dispositiu</translation>
+<translation id="8627040765059109009">Captura de pantalla represa</translation>
 <translation id="8657078576661269990">El teu administrador ha bloquejat la compartició de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME_1" /> i <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resum de la comanda, <ph name="TOTAL_LABEL" />, més detalls</translation>
 <translation id="867224526087042813">Signatura</translation>
@@ -2055,6 +2058,7 @@ Detalls addicionals:
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="945855313015696284">Consulta la informació següent i suprimeix les targetes que no siguin vàlides</translation>
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
+<translation id="951941430552851965">L'administrador ha posat en pausa la captura de pantalla a causa del contingut que s'hi mostra.</translation>
 <translation id="961663415146723894">Enquadernació per la part inferior</translation>
 <translation id="962484866189421427">Pot ser que aquest contingut provi d'instal·lar aplicacions enganyoses que es facin passar per d'altres o que recullin dades que podrien utilitzar-se per fer un seguiment de la teva activitat. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Muntatge oficial</translation>

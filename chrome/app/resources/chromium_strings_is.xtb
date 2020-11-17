@@ -14,6 +14,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1357932062193643861">Spyrja þegar Chromium opnast</translation>
 <translation id="1396446129537741364">Chromium er að reyna að birta aðgangsorð.</translation>
 <translation id="1414495520565016063">Þú ert skráð(ur) inn á Chromium!</translation>
+<translation id="1414973082589232775">Þú þarft að endurræsa Chromium til að nota Rosetta til að spila varið efni.</translation>
 <translation id="151962892725702025">Chromium OS gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="1524282610922162960">Deila Chromium flipa</translation>
 <translation id="1553461853655228091">Chromium þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
@@ -131,6 +132,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5634636535844844681">Chromium krefst Windows 7 eða nýrri útgáfu.</translation>
 <translation id="5653831366781983928">Endurræstu Chromium núna</translation>
 <translation id="5698481217667032250">Birta Chromium á þessu tungumáli</translation>
+<translation id="5736967399513123100">Þú þarft að setja Rosetta upp svo að Chromium geti spilað varið efni. Viltu setja það upp núna?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Velkomin(n) í Chromium</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
@@ -177,6 +179,7 @@ Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílam�
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (afritað í Chromium)</translation>
 <translation id="6893813176749746474">Chromium var uppfært en þú hefur ekki notað það í a.m.k. 30 daga.</translation>
+<translation id="6897548120660295439">Rosetta gerir Chromium kleift að spila varið efni á þessari síðu.</translation>
 <translation id="6964305034639999644">Opna tengil í &amp;huliðsglugga í Chromium</translation>
 <translation id="6978145336957848883">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Leyfðu Chromium <ph name="BEGIN_LINK" />að búa til traust aðgangsorð fyrir þig og muna þau<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium þarf leyfi til að nota hljóðnemann á þessu vefsvæði</translation>

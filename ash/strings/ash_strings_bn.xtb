@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />-এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> হার্জ) কাজ করে না। রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1919743966458266018">কার্য পরিচালক খোলার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" /> এর পরিবর্তে দয়া করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
-<translation id="1924640696879807758">ফোন থেকে</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">০°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">কানেক্ট করা নেই</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
-<translation id="2413728805700750528"><ph name="DOMAIN" /> দ্বারা পরিচালিত <ph name="DISPLAY_NAME" /> একটি পরিচালিত সেশন</translation>
 <translation id="2427507373259914951">বাঁদিকের বোতামে ক্লিক করুন</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। স্বীকার করার আগে, এই পাস কীটি ডিভাইসে প্রদর্শিত হয়েছে কিনা নিশ্চিত করুন: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
 <translation id="4121728057981832179">কোনও ভার্চুয়াল মেশিন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
+<translation id="4126167871198063089">'বাছুন ও শুনুন' বিকল্প থেকে বেরিয়ে আসুন</translation>
 <translation id="4129129681837227511">আপনার লক স্ক্রিনে বিজ্ঞপ্তি দেখার জন্য সেটিংস পরিবর্তন করতে আনলক করুন</translation>
 <translation id="4146833061457621061">মিউজিক চালান</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> ম্যানেজ করে</translation>
 <translation id="415719264485676252">স্ক্রিন ক্যাপচার নেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="4157822100366708405">ডার্ক থিম সেটিংস</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4570957409596482333">বাছুন ও শুনুন বোতাম</translation>
 <translation id="4577274620589681794">সময় শেষ হয়ে গেছে · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">প্রিভিউ দেখুন</translation>
 <translation id="4585337515783392668">অজানা ডিভাইসে কাস্ট করা বন্ধ করুন</translation>
 <translation id="4596144739579517758">ডার্ক থিম বন্ধ আছে</translation>
 <translation id="4623167406982293031">অ্যাকাউন্ট যাচাই করুন</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
 <translation id="4975771730019223894">অ্যাপ ব্যাজিং</translation>
+<translation id="5003993274120026347">পরের বাক্য</translation>
 <translation id="5019169674188023236">মনে হচ্ছে আপনার <ph name="DEVICE_TYPE" />-এ ব্লুটুথ বা ওয়াই-ফাই বন্ধ করা আছে। Phone Hub ব্যবহার করার জন্য আপনার ইন্টারনেট কানেকশন চেক করুন।</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
+<translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
+<translation id="557563299383177668">পরবর্তী অনুচ্ছেদ</translation>
 <translation id="558849140439112033">যে জায়গার স্ক্রিন ক্যাপচার করতে চান সেটি ড্র্যাগ করে বেছে নিন</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
@@ -614,7 +616,6 @@
 <translation id="6910714959251846841">এই আপডেটটির জন্য আপনার ডিভাইস পাওয়ারওয়াশ করা প্রয়োজন। সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন।</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
-<translation id="6953890208095195458">আপনার স্ক্রিনে কন্টেন্ট থাকার জন্য আপনার অ্যাডমিনিস্ট্রেটর স্ক্রিন রেকর্ড করা বন্ধ করে দিয়েছেন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
@@ -668,7 +669,6 @@
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">আপনার স্ক্রিনে দেখানো কন্টেন্টের স্ক্রিন ক্যাপচার নেওয়ার সুবিধা অ্যাডমিনিস্ট্রেটর ব্লক করে দিয়েছেন।</translation>
 <translation id="7548434653388805669">শুতে যাওয়ার সময় হয়েছে</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
@@ -727,6 +727,7 @@
 <translation id="8029247720646289474">হটস্পট থেকে কানেক্ট করা যায়নি</translation>
 <translation id="8029629653277878342">আরও নিরাপত্তার জন্য পিন বা পাসওয়ার্ড দিতে হবে</translation>
 <translation id="8030169304546394654">সংযোগ বিচ্ছিন্ন</translation>
+<translation id="8036504271468642248">আগের বাক্য</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
@@ -865,6 +866,7 @@
 <translation id="921989828232331238">আপনার অভিভাবক এই ডিভাইসটি আজকের জন্য লক করে দিয়েছেন</translation>
 <translation id="9220525904950070496">অ্যাকাউন্ট সরান</translation>
 <translation id="923686485342484400">সাইন-আউট করার জন্য দু'বার Control Shift Q টিপুন৷</translation>
+<translation id="925832987464884575">প্রিভিউ লুকান</translation>
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="98515147261107953">ল্যান্ডস্কেপ</translation>

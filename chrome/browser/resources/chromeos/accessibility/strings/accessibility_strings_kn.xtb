@@ -24,8 +24,10 @@
 <translation id="1126928665165112660">ಇಟಾಲಿಕ್ ಅಲ್ಲ</translation>
 <translation id="113582498867142724"><ph name="NUM" /> ಐಟಂಗಳೊಂದಿಗೆ <ph name="TAG" /> ಸಂಗ್ರಹಣೆ</translation>
 <translation id="1161762950103988776">Jump</translation>
+<translation id="1164857107703583584">ವೆಬ್ ಪುಟ ಒಂದರ ಮೂಲಕ ಪರಿಣಾಮಕಾರಿಯಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1175914831232945926">ಅಂಕಿಗಳು</translation>
 <translation id="1188858454923323853">ಪೂರಕವಾಗಿ</translation>
+<translation id="1189258430971676908">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="1195238899008218998">ನಂತರದ</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
@@ -68,11 +70,13 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1396114365388024581">ಟ್ಯಾಬ್ ಪಟ್ಟಿ</translation>
 <translation id="1405567553485452995">ತಿಳಿ ಹಸಿರು</translation>
+<translation id="1411043317877497323">ಅಭ್ಯಾಸ ಪ್ರದೇಶ</translation>
 <translation id="141454040365657399">ಪುಟದ ಶಿರೋಲೇಖ</translation>
 <translation id="1417889266572670458">ಕಡುನೀಲಿ</translation>
 <translation id="1431911867058218151">ಪ್ಲಮ್</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">ಗ್ರಾಫಿಕ್ಸ್ ವಸ್ತು</translation>
+<translation id="1465097259579587977">ತ್ವರಿತ ಓರಿಯಂಟೇಶನ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1480046233931937785">ಕ್ರೆಡಿಟ್‌ಗಳು</translation>
 <translation id="1487494366197411587">Chromebook ನಲ್ಲಿ, ಎಡ Shift ಕೀಯ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಹುಡುಕಾಟ ಕೀ ಇರುತ್ತದೆ.</translation>
 <translation id="1498498210836053409">ಪಠ್ಯವನ್ನು ಎಡಿಟ್ ಮಾಡುವಾಗ ಸ್ಟಿಕಿ ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ (ಸ್ಮಾರ್ಟ್ ಸ್ಟಿಕಿ ಮೋಡ್)</translation>
@@ -83,6 +87,7 @@
 <translation id="1524531499102321782">ಬ್ರೈಲಿ ಮುಂದಿನ ಸಾಲು</translation>
 <translation id="1542513807034338907">ಹಿಂದಿನ ಪುಟಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1546370775711804143">ಸ್ಕ್ರಾಲ್ ಪಟ್ಟಿ</translation>
+<translation id="1551572888042734032">ಬೇಸಿಗೆ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1559739829547075274">ಹಿಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="1565432156062359693">ಯಾವುದೇ ಮುಂದಿನ ಪಟ್ಟಿಯಿಲ್ಲ</translation>
@@ -110,6 +115,7 @@
 <translation id="1714116687360794776">ಮೀಟರ್</translation>
 <translation id="1722567105086139392">ಲಿಂಕ್</translation>
 <translation id="1727806147743597030">ftr</translation>
+<translation id="1730447754326314349">ChromeVox ಟ್ಯುಟೋರಿಯಲ್ ಗೆ ಸುಸ್ವಾಗತ. ಈ ಟ್ಯುಟೋರಿಯಲ್‌ನಿಂದ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ನಿರ್ಗಮಿಸಲು, ಕೀಬೋರ್ಡ್‌ನ ಮೇಲಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿರುವ Escape ಕೀಲಿಯನ್ನು ಒತ್ತಿರಿ. ChromeVox ಅನ್ನು ಆಫ್ ಮಾಡಲು, Control ಮತ್ತು Alt ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದು Z ಅನ್ನು ಒತ್ತಿರಿ. ನೀವು ಸಿದ್ಧರಾದಾಗ, ಮುಂದಿನ ಪಾಠಕ್ಕೆ ತೆರಳಲು ಸ್ಪೇಸ್‌ಬಾರ್ ಬಳಸಿ.</translation>
 <translation id="174268867904053074">ಮುಂದಿನ ಗ್ರಾಫಿಕ್</translation>
 <translation id="1756785467854861272">ಗಾಢ ಮಜೆಂತಾ</translation>
 <translation id="1765245556747822181">ಒಂದು ಬೆರಳಿನಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
@@ -154,9 +160,11 @@
 <translation id="2121067395472282800">ಪ್ರವೇಶ ಕೀ:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">ಈ ಐಟಂಗೆ ಯಾವುದೇ ಪಠ್ಯ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2127747486437921899">ಇಟಾಲಿಕ್</translation>
+<translation id="2152179395627233441">ಅಭ್ಯಾಸ ಪ್ರದೇಶವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="2163782704988363449">ಎರ್ರಾಟಾ</translation>
 <translation id="2169714232367507776">ಪ್ರಸ್ತುತ ಐಟಂ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2179452035581866348">ChromeVox ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಮತ್ತು ಹೆಚ್ಚಿನ ಮಾಹಿತಿಯನ್ನು ನೀಡಲು ಧ್ವನಿಗಳನ್ನು ಬಳಸುತ್ತದೆ. ನೀವು ಪ್ರತಿಯೊಂದು ಧ್ವನಿಯ ಅರ್ಥ ಏನು ಎನ್ನುವುದನ್ನು ಕಲಿಯುವ ಮೂಲಕ ಇನ್ನಷ್ಟು ತ್ವರಿತವಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಈ ಧ್ವನಿಗಳನ್ನು ಬಳಸಬಹುದು. ಒಮ್ಮೆ ನಿಮಗೆ ಒಮ್ಮೆ ಹೆಚ್ಚು ಹಿತವೆನಿಸಿದರೆ, ಪುಟದ ಕುರಿತು ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಗಾಗಿ ಅವುಗಳ ಮಾತಿನಲ್ಲಿರುವ ವರ್ಬೋಸ್ ವಿವರಣೆಗಳು ಮತ್ತು ಅವಲಂಬನೆಗಳನ್ನು ನೀವು ಆಫ್ ಮಾಡಬಹುದು. ಧ್ವನಿಗಳು ಮತ್ತು ಅದು ಏನೆಂಬುದರ ಸಂಪೂರ್ಣ ಪಟ್ಟಿ ಇಲ್ಲಿದೆ.</translation>
+<translation id="2183409941723714159">ಟ್ಯಾಬ್ ನ್ಯಾವಿಗೇಷನ್</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{ಮುಚ್ಚಿದ ಆವರಣ}one{# ಮುಚ್ಚಿದ ಆವರಣಗಳು}other{# ಮುಚ್ಚಿದ ಆವರಣಗಳು}}</translation>
 <translation id="2197863150503783129">ಸ್ಯಾಡಲ್ ಬ್ರೌನ್</translation>
 <translation id="2199994615414171367">ಹಿಂದಿನ ಗಣಿತ</translation>
@@ -176,6 +184,7 @@
 <translation id="2318372665160196757">ಮುಖ್ಯ</translation>
 <translation id="2329324941084714723">ಟ್ಯಾಬ್ ಫಲಕ</translation>
 <translation id="2347456970887948350">ಒಂದು ಲಿಂಕ್</translation>
+<translation id="2365384324219615024">ಐಟಂಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನೀವು Enter ಅನ್ನೂ ಒತ್ತಬಹುದು. ಉದಾಹರಣೆಗೆ, ಫಾರ್ಮ್ ಒಂದರಲ್ಲಿ ಪಠ್ಯವನ್ನು ಸಲ್ಲಿಸಲು Enter ಕೀ ಅನ್ನು ಬಳಸಬಹುದು. ಮುಂದುವರಿಯಲು, ಎಂಟರ್ ಒತ್ತಿರಿ.</translation>
 <translation id="2381733276052567791">ಧ್ವನಿ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2390264819538553347">ಮುಂದುವರಿಯಲು, ಎಂಟರ್ ಒತ್ತಿರಿ; ಹಿಂದಕ್ಕೆ ಮರಳಲು, ಬ್ಯಾಕ್‌ಸ್ಪೇಸ್‌ ಒತ್ತಿ.</translation>
 <translation id="2398579267367951220">ಪುಟವನ್ನು ಹುಡುಕಲು ಟೈಪ್ ಮಾಡಿ. ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು enter, ಫಲಿತಾಂಶಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಮೇಲ್ಮುಖ ಅಥವಾ ಕೆಳಮುಖ ಬಾಣದ ಕೀಗಳನ್ನು ಒತ್ತಿರಿ, ನಿಮ್ಮ ಹುಡುಕಾಟವನ್ನು ಬದಲಾಯಿಸಲು ಟೈಪ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿ ಅಥವಾ ರದ್ದುಗೊಳಿಸಲು ಎಸ್ಕೇಪ್ ಒತ್ತಿರಿ.</translation>
@@ -199,6 +208,8 @@
 <translation id="2523609930580546572">ChromeVox ಟುಟೋರಿಯಲ್</translation>
 <translation id="2525706221823668172">Chromebook ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="2553108862507765288">ವ್ಯಾಕರಣ ದೋಷ</translation>
+<translation id="2556326187583116255">ಯಾವುದೇ ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು 2 ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="2573256689920773241">ಬೇಸಿಕ್ ನ್ಯಾವಿಗೇಶನ್</translation>
 <translation id="257674075312929031">ಗುಂಪು</translation>
 <translation id="2582407057977008361">ಹೊರತಾಗಿ</translation>
 <translation id="2592212930811759050">ಎಡಿಟಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -210,6 +221,7 @@
 <translation id="2638785836053527382">ಡೌನ್‌ಲೋಡ್ ಪುನರಾರಂಭಿಸಲಾಗಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox ಪರಿವರ್ತಕ</translation>
 <translation id="2644542693584024604">ತಪ್ಪು ಕಾಗುಣಿತ</translation>
+<translation id="2651441758640020174">ಪಟ್ಟಿಯಿಂದ ನಿಮ್ಮ ನೆಚ್ಚಿನ ಋತುವನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2654172656519784359">ಒಂದು ಪದ ಮುಂದಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2661530546602071611">ಸೂಚನೆ</translation>
 <translation id="2673280813984708147">ಎಡಿಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -235,6 +247,7 @@
 <translation id="2808001342598757276">ಅನ್‌ಡಾರ್ಕನ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="2811019999044652585">ಪರಿಕರ ಪಟ್ಟಿ ಮತ್ತು ಸಿಸ್ಟಂ ಟ್ರೇನಂತಹ ಪರದೆಯ ಇತರೆ ಭಾಗಗಳಿಗೆ ಹೋಗಲು, Control+ಫಾರ್ವರ್ಡ್ ಒತ್ತಿ. Chromebook ನಲ್ಲಿ, ಸಂಖ್ಯೆ 2 ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಫಾರ್ವರ್ಡ್ ಕೀ ಇರುತ್ತದೆ.</translation>
 <translation id="2811204574343810641">ಸಾಲು</translation>
+<translation id="2816868829355607410">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳು</translation>
 <translation id="2841013758207633010">ಸಮಯ</translation>
 <translation id="2843432675592278677">ಯಾವುದೇ ಹಿಂದಿನ ARIA ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್‌ ಇಲ್ಲ</translation>
 <translation id="2843814945404750166">ಗಾಢ ಆಲಿವ್ ಹಸಿರು</translation>
@@ -270,6 +283,7 @@
 <translation id="3060756054951570867"><ph name="TITLE" /> ಮೆನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3060880924447482063">ಐಟಂ ಮೂಲಕ ಸರಿಸಲು ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="3070245424257836917">ಮೂರು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
+<translation id="307516670110542567">ತ್ವರಿತ ಓರಿಯಂಟೇಶನ್</translation>
 <translation id="3078345202707391975">ಮುಂದಿನ ಹಂತದ 2 ಶಿರೋನಾಮೆ</translation>
 <translation id="3078740164268491126">ಕೋಷ್ಟಕ</translation>
 <translation id="3082249673510793544">ಹಿಂದಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -298,6 +312,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{ಅಂತರ}one{# ಅಂತರಗಳು}other{# ಅಂತರಗಳು}}</translation>
 <translation id="3179119189286472195">ಲಿಂಕ್ ಅಲ್ಲ</translation>
 <translation id="320041337977930740">ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿಯನ್ನು ನಡುಪುಟಕ್ಕೆ ಬದಲಾಯಿಸಿ</translation>
+<translation id="3206698050650195442">ಟುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="3208346789712025453">ಯಾವುದೇ ಮುಂದಿನ ನಿಯಂತ್ರಣವಿಲ್ಲ</translation>
 <translation id="321072937702597574">ಆರ್ಕಿಡ್</translation>
 <translation id="3218691001991391708"><ph name="TEXT" /> ಅನ್ನು ಅಂಟಿಸಿ.</translation>
@@ -326,6 +341,8 @@
 <translation id="335581015389089642">ಧ್ವನಿ</translation>
 <translation id="3356951775008366684">ಪದದ ಫೋನೆಟಿಕ್‌‌ ಉಚ್ಚಾರಣೆಯನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="3359142382821736686">seprtr</translation>
+<translation id="3363015957057974366">ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ಮುಂದಿನ ಸಂವಾದಾತ್ಮಕ ಐಟಂಗೆ ಸರಿಯಲು ನೀವು ಟ್ಯಾಬ್ ಕೀಯನ್ನು ಸಹ ಬಳಸಬಹುದು. ಹುಡುಕಾಟದ ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಇರುವ ಟ್ಯಾಬ್ ಕೀಯನ್ನು ಹುಡುಕಿ. ಮುಂದುವರಿಯಲು, ಟ್ಯಾಬ್ ಕೀ ಒತ್ತಿರಿ.</translation>
+<translation id="3366946046494222386"><ph name="TOPIC" /> ಟುಟೋರಿಯಲ್, <ph name="LESSONS" /> ಪಾಠಗಳು</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{ಸಂಕಲನ}one{# ಸಂಕಲನ ಚಿಹ್ನೆಗಳು}other{# ಸಂಕಲನ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="338583716107319301">ವಿಭಾಜಕ</translation>
 <translation id="3389259863310851658">ಹಿಂದಿನ ಫಾರ್ಮ್ ಕ್ಷೇತ್ರ</translation>
@@ -333,6 +350,7 @@
 <translation id="3406283310380167331">ಫಾರ್ಮ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3414400929511680526">ಅಲೈಸ್ ನೀಲಿ</translation>
 <translation id="3418936350470374046">ಕೆಳಗೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
+<translation id="3435494200763325275">ಟ್ಯಾಬ್ ನ್ಯಾವಿಗೇಷನ್ ಮುಂದುವರೆದಿದೆ</translation>
 <translation id="344800400831402066">ಪೆರು</translation>
 <translation id="3457000393508828486">ಭಾಗಶಃ ಒತ್ತಿದಾಗ</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, ಆಫ್ ಮಾಡಿ</translation>
@@ -348,6 +366,7 @@
 <translation id="3538907380453898475">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
 <translation id="3564729643041517261">ಪ್ರಸ್ತುತ ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿ ಅಕ್ಕ ಪಕ್ಕ ಆಗಿದೆ</translation>
+<translation id="3570904478351465021">ಚಳಿಗಾಲ</translation>
 <translation id="3573145950452451508">ಪುಟದ ಅಡಿಲೇಖ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3589661172894441357">ಪದಕೋಶ</translation>
@@ -355,12 +374,15 @@
 <translation id="3594207934078151302">ಮಧ್ಯಮ ಸಮುದ್ರ ಹಸಿರು</translation>
 <translation id="3599054940393788245">ಮ್ಯಾಥ್ ಒಳಗೆ ಇಲ್ಲ</translation>
 <translation id="360241989769010433">ಅಂಗೀಕಾರಗಳು</translation>
+<translation id="3616016838842055984">ನೀವು ಕ್ಲಿಕ್ ಮಾಡಲು ಬಯಸುವ ಐಟಂಗೆ ನೀವು ತಲುಪಿದರೆ, ಹುಡುಕಾಟ + ಸ್ಪೇಸ್ ಒತ್ತಿರಿ. ಮುಂದುವರಿಯಲು ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3616113530831147358">ಆಡಿಯೋ</translation>
 <translation id="3622350485154495700">ಒಂದು ಬೆರಳಿನಿಂದ ಡಬಲ್ ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{ಬ್ಯಾಕ್‌ಟಿಕ್}one{# ಬ್ಯಾಕ್‌ಟಿಕ್‌ಗಳು}other{# ಬ್ಯಾಕ್‌ಟಿಕ್‌ಗಳು}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ಡಾಲರ್}one{# ಡಾಲರ್ ಚಿಹ್ನೆಗಳು}other{# ಡಾಲರ್ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="3659787053479271466">alrt</translation>
+<translation id="366419593095697301">ಸುಳಿವು: ನೀವು ಈ ಟ್ಯುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಬಯಸಿದರೆ Escape ಒತ್ತಿರಿ.</translation>
+<translation id="3676062394766691318">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೀವು ಹೊಂದಿಸಿದ ನಂತರ, ನೀವು ಹಿಂತಿರುಗಿ ಬಂದು, ಹುಡುಕಾಟ + O, ನಂತರ T ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ಇನ್ನಷ್ಟು ಟ್ಯುಟೋರಿಯಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು.</translation>
 <translation id="3681531118904532409">ಪಪಾಯ ವಿಪ್</translation>
 <translation id="3692274950075847560">S:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">ಸಾಲಿನ ಮೂಲಕ</translation>
@@ -382,6 +404,7 @@
 <translation id="3856075812838139784">ಓದಲು ಮಾತ್ರ</translation>
 <translation id="3857141338659865495">ಮಧ್ಯಮ ವೈಢೂರ್ಯನೀಲಿ</translation>
 <translation id="3870295413168340326">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 3 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
+<translation id="3887399638190992181">ಅಗತ್ಯ ಕೀಗಳು</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3907138069015388678">ಪ.ಗ್ರಿ</translation>
@@ -401,6 +424,7 @@
 <translation id="4004802134384979325">ಗುರುತಿಸಲಾಗಿದೆ</translation>
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
+<translation id="4035381225449278841">ವಸಂತಕಾಲ</translation>
 <translation id="4047216625641135770">ಗುರುತು</translation>
 <translation id="4053520724192563562">ನಿಂಬೆ ಹಸಿರು</translation>
 <translation id="4054936709456751127">sts</translation>
@@ -506,6 +530,7 @@
 <translation id="4846428657345567687">ChromeVox ಗೆ ಸುಸ್ವಾಗತ!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">ಯಾವುದೇ ಹಿಂದಿನ ಮಾಧ್ಯಮ ವಿಜೆಟ್ ಇಲ್ಲ</translation>
+<translation id="4855927945655956315">ಅಗತ್ಯ ಕೀಗಳು: ನಿಯಂತ್ರಣ</translation>
 <translation id="4862744964787595316">ಬೋಲ್ಡ್ ಅಲ್ಲ</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS ಲಾಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -521,6 +546,7 @@
 <translation id="4973717656530883744">ಗರಿಷ್ಟ <ph name="X" /></translation>
 <translation id="4974612477719259470">ಯಾವುದೇ ಹಿಂದಿನ ಬಟನ್ ಇಲ್ಲ</translation>
 <translation id="4979404613699303341">ಹಿಂದಿನ ಬಟನ್</translation>
+<translation id="4982917827052020884">ನೀವು ನಿಯಮಿತವಾಗಿ ಬಳಸುವ ಕೆಲವು ಕೀಗಳೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸೋಣ. ಯಾವುದೇ ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು Control ಕೀಯನ್ನು ಬಳಸಬಹುದು. ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಕೆಳಗಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ Control ಕೀ ಅನ್ನು ಹುಡುಕಿ. ಮುಂದುವರಿಯಲು, Control ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="4983588134362688868">ಪುಟದ ಮೇಲಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ವಿಂಡೊ</translation>
 <translation id="4993152509206108683">ದರ <ph name="PERCENT" /> ಶೇಕಡಾ</translation>
@@ -532,6 +558,7 @@
 <translation id="5041394372352067729">ಬ್ರೈಲ್‌ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಪುಟದ ಮೇಲ್ಭಾಗಕ್ಕೆ ಸರಿಸು</translation>
 <translation id="5042770794184672516">ಧ್ವನಿಯ ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="5042992464904238023">ವೆಬ್ ವಿಷಯ</translation>
+<translation id="5045870649377683106">ಈಗ, ಎಡ Shift ಕೀಯನ್ನು ಹುಡುಕಿ, ಅದು Control ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಇರುತ್ತದೆ. ಮುಂದುವರಿಯಲು, ಎಡ Shift ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="5050015258024679800">ಹಿಂದಿನ ಹಂತದ 4 ಶಿರೋನಾಮೆ</translation>
 <translation id="5054047268577924192">ಹಿಂದಿನ ಪಟ್ಟಿಯ ಐಟಂ</translation>
 <translation id="5085453135206054947">ತಿಳಿ ನೇರಳೆ ಕೆಂಪು</translation>
@@ -542,9 +569,11 @@
 <translation id="5111640677200759579">ಕಾಲಮ್ ಶಿರೋನಾಮೆ</translation>
 <translation id="5115892389597951922">ChromeVox ಲಾಗ್</translation>
 <translation id="5119330972669454698">ಬರ್ಲಿ ವುಡ್</translation>
+<translation id="5130133513489020984">ಹಿಂದಿನ ಅಧ್ಯಾಯ</translation>
 <translation id="513774504516943387">lnk</translation>
 <translation id="5138912041966667164">ಮಧ್ಯಮ ಸ್ಲೇಟ್ ನೀಲಿ</translation>
 <translation id="5140016802771803559">ರೆಬೆಕ್ಕಾ ನೇರಳೆ</translation>
+<translation id="5142101052131610456">ಎಲ್ಲಾ ಪಾಠಗಳು</translation>
 <translation id="5158275234811857234">ಕವರ್</translation>
 <translation id="5170206230005240598">ಬ್ರೈಲಿ ಶೀರ್ಷಿಕೆಗಳು ಸಕ್ರಿಯವಾಗಿವೆ</translation>
 <translation id="5183440668879371625">ಬ್ರೈಲಿ ಹಿಂದಿನ ಸಾಲು</translation>
@@ -553,6 +582,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5302089807023311274">ಗ್ರಂಥಸೂಚಿ ಉಲ್ಲೇಖ</translation>
+<translation id="530391007967514163">ಕೆಳಗಿನ ಪಠ್ಯವನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಶೀರ್ಷಿಕೆಯ ಮೂಲಕ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ಟ್ಯಾಬ್</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5310788376443009632">ತೆಗೆದುಹಾಕಲಾಗಿದೆ:</translation>
@@ -583,10 +613,12 @@
 <translation id="5452267669091857717">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 1 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="5455441614648621694">ಪೂರಕವಾಗಿ</translation>
 <translation id="5462510922370980473">ಪುಟ ಪಟ್ಟಿ</translation>
+<translation id="5495517933067991341">ಅಗತ್ಯ ಕೀಗಳು: Shift</translation>
 <translation id="549602578321198708">ಪದ</translation>
 <translation id="5513242761114685513">ಸಂದರ್ಭದ ಮೆನು</translation>
 <translation id="551361796444814639">ಮಧ್ಯಮ ನೀಲಿ</translation>
 <translation id="552195134157544755">ರೇಡಿಯೊ ಬಟನ್</translation>
+<translation id="5522423213731659107">ತ್ವರಿತ ಓರಿಯಂಟೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">ಗೇನ್ಸ್‌ಬೋರೋ</translation>
 <translation id="5549179427201066174">ಧ್ವನಿ ಪ್ರತಿಕ್ರಿಯೆ (ಇಯರ್‌ಕಾನ್‌‌ಗಳು) ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
@@ -600,6 +632,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="5601172225407283979">ಡಿಫಾಲ್ಟ್ ಕ್ರಮವನ್ನು ಮಾಡಿ</translation>
 <translation id="5608798115546226984">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಯ ಇನ್‌ಲೈನ್</translation>
+<translation id="5616029807486814372">ಮುಂದಿನ ಅಧ್ಯಾಯ</translation>
 <translation id="561939826962581046">ಸಮಯ</translation>
 <translation id="5623778242535476823">rbtn</translation>
 <translation id="5623842676595125836">ಲಾಗ್</translation>
@@ -608,6 +641,7 @@
 <translation id="5653397561111110475">Chromebook ಟಚ್ ಸ್ಕ್ರೀನ್ ಪ್ರವೇಶಿಸುವಿಕೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="5655682562155942719">ಆಜ್ಞೆಗಳಿಗೆ ಹೋಗು</translation>
 <translation id="56637627897541303">ಪಠ್ಯ ಪ್ರದೇಶ</translation>
+<translation id="5669637233317991674">ಈ ಅಧ್ಯಾಯವನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತು, ಅಥವಾ ಹುಡುಕಾಟ + ಎಡ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">ಹೆಗ್ಗುರುತು</translation>
@@ -631,9 +665,11 @@
 <translation id="5850707923114094062">ಹಿಮ್ಮುಖವಾಗಿ ಪ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5851548754964597211">ಟ್ಯಾಬ್ ಪಟ್ಟಿ</translation>
 <translation id="5866042630553435010">ಭಾಗಶಃ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="5866210856231860256">ಈ ವಿಷಯಕ್ಕಾಗಿ ಪಾಠಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತು, ಅಥವಾ ಹುಡುಕಾಟ + ಎಡ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5867591286054666064">ಈ ಟುಟೋರಿಯಲ್ ಸಮಯದಲ್ಲಿ, ಅದರ ಹೆಸರನ್ನು ಆಲಿಸಲು ಯಾವುದೇ ಕೀ ಒತ್ತಿ.</translation>
 <translation id="5869546221129391014">ಗ್ರಿಡ್</translation>
 <translation id="5876817486144482042">ಧ್ವನಿಯ ವಾಲ್ಯೂಮ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
+<translation id="5878206664863390311">ವಿಷಯಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತು, ಅಥವಾ ಹುಡುಕಾಟ + ಎಡ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5878908838135392163">ಪೌಡರ್ ನೀಲಿ</translation>
 <translation id="588108970619830498">ಡೀಫಾಲ್ಟ್ ಮೌಲ್ಯಗಳಿಗೆ ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="5891934789323004067">ಕೋಷ್ಠಕ</translation>
@@ -680,6 +716,7 @@
 <translation id="6254901459154107917">ಮುಂದಿನ ಸಂಪಾದಿಸಬಹುದಾದ ಪಠ್ಯ ಪ್ರದೇಶ</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> ನಿರ್ಗಮಿಸಲಾಗಿದೆ.</translation>
 <translation id="6282062888058716985">nav</translation>
+<translation id="6295699829709583154">ಅಗತ್ಯ ಕೀಗಳು: ಹುಡುಕಾಟ</translation>
 <translation id="6305702903308659374">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗಲೂ ಸಹ ಸಾಮಾನ್ಯ ವಾಲ್ಯೂಮ್‌‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="6307969636681130414">ಒತ್ತಿದ</translation>
 <translation id="6315652249189065725">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಮೆನು ತೆರೆಯಿರಿ</translation>
@@ -698,6 +735,7 @@
 <translation id="6385591741672306837">ಕಾಲಮ್</translation>
 <translation id="6387719785439924554">ಪಕ್ಕದಲ್ಲಿ</translation>
 <translation id="6393014464788431702">ಎಲ್ಲಾ ಈವೆಂಟ್ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="6411569524720229058">ಶರತ್ಕಾಲ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ವಿವರಣೆ ಚಿಹ್ನೆ}one{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}other{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="6444046323172968959">ಎಚ್ಚರಿಕೆ ಸಂವಾದ</translation>
@@ -733,6 +771,7 @@
 <translation id="6730312624811567147">ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಎಡ ಅಥವಾ ಬಲ, ಕಂಟ್ರೋಲ್ ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಕಂಟ್ರೋಲ್ ಎಡ ಅಥವಾ ಬಲ, ಪುಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಮಾಡಲು ಹುಡುಕಾಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಬಳಸಿ</translation>
 <translation id="6736510033526053669">ಟ್ಯಾಬ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="675895815784134693">pgbar</translation>
+<translation id="6759710362319508545">ಮಾಹಿತಿಯ ಮೂಲಗಳು</translation>
 <translation id="67862343314499040">ನೇರಳೆ</translation>
 <translation id="6786800275320335305">ಆರ್ಟಿಕಲ್</translation>
 <translation id="6793101435925451627">lstbx</translation>
@@ -744,6 +783,7 @@
 <translation id="6858047746862060282">ಪೀಠಿಕೆ</translation>
 <translation id="6859876496651143278">ಒಂದು ಬೆರಳಿನಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="6865519907510167493">ತಪ್ಪಾಗಿ ಬರೆದಿರುವ ಪದ</translation>
+<translation id="6873188295213080042">ಸುಳಿವು: ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು "ಹುಡುಕಾಟ" ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದು ಬಾಣದ ಕೀಗಳನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="6894148351896207544">ಪ್ರಸ್ತುತ ಸಮಯ ಮತ್ತು ದಿನಾಂಕವನ್ನು ಹೇಳಿ</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6897341342232909480">ಎಡಕ್ಕೆ ಸೇರಿಸಿ</translation>
@@ -809,14 +849,17 @@
 <translation id="7308519659008003150">ಯಾವುದೇ ಹಿಂದಿನ ಫಾರ್ಮ್ ಫೀಲ್ಡ್ ಇಲ್ಲ</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">ಭಾಗಶಃ ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7344012264516629579">ಹೆಚ್ಚುವರಿ ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳಲ್ಲಿ ಲಿಂಕ್, ಬಟನ್ ಮತ್ತು ಚೆಕ್‌ಬಾಕ್ಸ್ ಮೂಲಕ ಮತ್ತೊಂದಕ್ಕೆ ಹೋಗುವುದನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ. ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳ ಪೂರ್ಣ ಪಟ್ಟಿಯನ್ನು ChromeVox ಮೆನುಗಳಲ್ಲಿ ಕಾಣಬಹುದು, ಇದನ್ನು ಹುಡುಕಾಟ + ಅವಧಿಯನ್ನು ಒತ್ತುವ ಮೂಲಕ ತೆರೆಯಬಹುದಾಗಿದೆ.</translation>
 <translation id="7356165926712028380">8 ಡಾಟ್‌ ಬ್ರೈಲಿಗೆ ಬದಲಿಸಿ</translation>
 <translation id="7356610683936413584">ವಿವರಣೆ ಪಟ್ಟಿ ವಿವರ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ಮತ್ತು}one{# ಮತ್ತು ಚಿಹ್ನೆಗಳು}other{# ಮತ್ತು ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">ಸ್ಲೇಟ್ ನೀಲಿ</translation>
+<translation id="7393979322571982935">ಧ್ವನಿಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="739763518212184081">ಹಿಂದಿನ ಸಾಲು</translation>
 <translation id="7400575256015741911">ಕಾಗುಣಿತ ತಪ್ಪು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7408482676469142474">tbl</translation>
+<translation id="7419264136822406994">ಹಿಂದಿನ ಸಂವಾದಾತ್ಮಕ ಐಟಂಗೆ ಸರಿಸಲು ನೀವು Shift + Tab ಅನ್ನು ಬಳಸಬಹುದು. ಮುಂದುವರಿಯಲು, Shift + ಟ್ಯಾಬ್ ಒತ್ತಿರಿ.</translation>
 <translation id="7425395583360211003">ರಿಟರ್ನ್</translation>
 <translation id="7429415133937917139">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ChromeVox ಫಲಕದಲ್ಲಿರುವ, ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದಾದ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ ಔಟ್‌ಪುಟ್ ಅನ್ನು ಅನುಕರಿಸುತ್ತದೆ</translation>
 <translation id="7434509671034404296">ಡೆವಲಪರ್</translation>
@@ -843,6 +886,7 @@
 <translation id="762020119231868829">ಪ್ರಸ್ತುತ ಪ್ಲೇ ಆಗುತ್ತಿರುವ ಎಲ್ಲಾ ಮಾಧ್ಯಮ ವಿಜೆಟ್‌ಗಳನ್ನು ವಿರಾಮಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="7625690649919402823">ಮುಂದಿನ ಕೋಷ್ಟಕ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ಗ್ರೇಡ್‌ <ph name="GRADE" /></translation>
+<translation id="7637342083105831460">ಅಭ್ಯಾಸ ಪ್ರದೇಶ ಅಥವಾ ಮುಂದಿನ ಪಾಠದ ಬಟನ್ ಹುಡುಕಲು ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ. ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7639968568612851608">ಕಡು ಬೂದು</translation>
 <translation id="7663318257180412551">ಶೀರ್ಷಿಕೆ 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{ಗಂಟೆ}one{ಗಂಟೆಗಳು}other{ಗಂಟೆಗಳು}}</translation>
@@ -882,6 +926,7 @@
 <translation id="794091007957014205">{COUNT,plural, =1{ಅಟ್}one{# ಅಟ್ ಚಿಹ್ನೆಗಳು}other{# ಅಟ್ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7948364528129376623">ಯಾವುದೇ ಮುಂದಿನ ಭೇಟಿ ನೀಡಿದ ಲಿಂಕ್ ಇಲ್ಲ</translation>
+<translation id="7952460583030260752">ಕಮಾಂಡ್ ಉಲ್ಲೇಖಗಳು</translation>
 <translation id="7965147473449754028">ಮೆನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="7968340748835037139">ಗಾಢ ಹಸಿರು</translation>
 <translation id="7972507042926081808">ಚಾಕೊಲೇಟ್</translation>
@@ -911,6 +956,8 @@
 <translation id="812886159861361726">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಗಿತಗೊಂಡಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ಮೇಲೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
 <translation id="8138880386467279117">ಸ್ಪರ್ಶಿಸಿ</translation>
+<translation id="8146613869421949343">ಮುಂದೆ, ನೀವು ಹುಡುಕಾಟದ ಕೀ ಬಗ್ಗೆ ಕಲಿಯುವಿರಿ. ChromeVox ಕಮಾಂಡ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಾಟದ ಕೀಯನ್ನು ಇತರ ಕೀಗಳೊಂದಿಗೆ ಬಳಸಲಾಗುತ್ತದೆ. ಎಡ Shift ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಹುಡುಕಾಟದ ಕೀ ಇರುತ್ತದೆ. ಮುಂದುವರಿಯಲು, ಹುಡುಕಾಟದ ಕೀಯನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="816818801578874684">ಇದು ಮೊದಲ ಶೀರ್ಷಿಕೆ. ಮುಂದಿನ ಶೀರ್ಷಿಕೆಗೆ ಹೋಗಲು ಹುಡುಕಾಟ + H ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8173092779156526980">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ಅಂಡರ್‌ಸ್ಕೋರ್}one{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}other{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -951,6 +998,7 @@
 <translation id="8473540203671727883">ಮೌಸ್ ಕರ್ಸರ್‌ನ ಕೆಳಗಿರುವ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8476408756881832830">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗ ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="8476508772960940536">ವಿಂಡೋ ಸಮಗ್ರ ನೋಟ</translation>
+<translation id="8480873377842220259">ಈಗ ನೀವು ಕೆಲವು ಪ್ರಾಥಮಿಕ ನ್ಯಾವಿಗೇಶನ್ ಅನ್ನು ಕಲಿಯುವಿರಿ. ನೀವು ಸ್ಕ್ರೀನ್‌ನ ಸುತ್ತಲೂ ಚಲಿಸಲು "ಹುಡುಕಾಟ" ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದು ಬಾಣದ ಕೀಗಳನ್ನು ಒತ್ತಬಹುದು. ಮುಂದುವರಿಯಲು, ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8503360654911991865">ನ್ಯಾವಿಗೇಶನ್ ರಚನೆಯನ್ನು ಇಳಿಸಿ</translation>
 <translation id="8520472399088452386">ಸ್ಪಿನ್ ಬಟನ್</translation>
 <translation id="8534394844575788431">ಫಾರ್ಮ್ಯಾಟಿಂಗ್</translation>
@@ -965,6 +1013,7 @@
 <translation id="8603071050456974042">ChromeVox ಫಲಕ</translation>
 <translation id="8606621670302093223">ದಿನಾಂಕ ನಿಯಂತ್ರಣ</translation>
 <translation id="8613709718990529335">ಬಿಸ್ಕ್ಯೂ</translation>
+<translation id="8614129468475308349">ಚೆನ್ನಾಗಿ ಮಾಡಿದ್ದೀರಿ! ನೀವು ChromeVox ಬಗ್ಗೆ ಪ್ರಾಥಮಿಕ ಸಂಗತಿಗಳನ್ನು ಕಲಿತಿದ್ದೀರಿ. ನೀವು ಮತ್ತೆ ಟ್ಯುಟೋರಿಯಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಅಥವಾ ಕೆಳಗಿನ ಬಟನ್ ಒಂದನ್ನು ಹುಡುಕಿ ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ಈ ಟ್ಯುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಬಹುದು.</translation>
 <translation id="8625173877182443267">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 6 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="8628186274519446680">ಟೊಮ್ಯಾಟೊ</translation>
 <translation id="8638532244051952400">ಪ್ರಸ್ತುತ ಕೋಶ ಸಂಘಟನೆಗಳನ್ನು ಪ್ರಕಟಿಸಿ</translation>
@@ -972,15 +1021,19 @@
 <translation id="8651481478098336970">ವಾಲ್ಯೂಮ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="8653646212587894517">ಲಿಂಕ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8656888282555543604">ಬ್ರೈಲ್‌ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="8659501358298941449">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="867187640362843212">ಶೀರ್ಷಿಕೆ 5</translation>
+<translation id="8693391540059827073">ನನ್ನ ನೆಚ್ಚಿನ ಋತು</translation>
 <translation id="8696284982970258155">ಹನಿಡ್ಯೂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ಪೈಪ್}one{# ಲಂಬ ಪೈಪ್‌ಗಳು}other{# ಲಂಬ ಪೈಪ್‌ಗಳು}}</translation>
+<translation id="8741370088760768424">ಸುಳಿವು: ಪ್ರಸ್ತುತ ಐಟಂ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8743786158317878347">ಕೋಷ್ಟಕಗಳಂತಹ, ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿದ ವಿಷಯ ನಮೂದಿಸಿ</translation>
 <translation id="8747966237988593539">ವ್ಯವಸ್ಥಿತವಾದ ಪಟ್ಟಿ</translation>
 <translation id="8749988712346667988">ಬೆಳ್ಳಿ</translation>
 <translation id="875769700429317857">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="8767968232364267681">ಮುಂದಿನ ಹಂತದ 4 ಶಿರೋನಾಮೆ</translation>
 <translation id="8770473310765924354">ಕೋಷ್ಟಕಗಳಂತಹ, ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿದ ವಿಷಯ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="8775203254697638994">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿ ಒಂದರಿಂದ ನೀವು ಐಟಂ ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಬೇಕಾಗುವ ಸಂದರ್ಭಗಳಿರುತ್ತವೆ. ಹಾಗೆ ಮಾಡಲು, ಮೊದಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ಪಟ್ಟಿಯನ್ನು ವಿಸ್ತರಿಸಿ. ನಂತರ ಐಟಂ ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಮೇಲ್ಮುಖ ಮತ್ತು ಕೆಳಮುಖ ಬಾಣದ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ. ಅಂತಿಮವಾಗಿ, ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ಪಟ್ಟಿಯನ್ನು ಕುಗ್ಗಿಸಿ.</translation>
 <translation id="8779057862865475116">ಯಾವುದೇ ಹಿಂದಿನ ಲಿಂಕ್ ಇಲ್ಲ</translation>
 <translation id="8796411681063377102">ಮುಂದಿನ ಹಂತ 3 ಶಿರೋನಾಮೆ</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> ರಲ್ಲಿ <ph name="CURRENTPAGE" /> ನೇ ಪುಟ</translation>
@@ -1002,6 +1055,8 @@
 <translation id="89720367119469899">ಎಸ್ಕೇಪ್</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
+<translation id="8989104346085848538">ಯಾವುದೇ ಪ್ರಸ್ತುತ ChromeVox ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು, Control ಕೀಯನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="9014206344398081366">ChromeVox ಟುಟೋರಿಯಲ್</translation>
 <translation id="9040132695316389094">ಶೀರ್ಷಿಕೆ 1</translation>
 <translation id="9061884144798498064">8-ಡಾಟ್ ಬ್ರೈಲ್ ಕೋಷ್ಠಕವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="9065283790526219006">+ಪಾಪ್‌ಅಪ್‌</translation>

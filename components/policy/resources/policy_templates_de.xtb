@@ -148,6 +148,20 @@
       Wenn diese Richtlinie auf "true" gesetzt ist, wird die Funktion aktiviert und kann vom Nutzer geändert werden.
       Standardmäßig ist diese Richtlinie auf "false" gesetzt. Es werden keine Emojis vorgeschlagen und Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="1243570869342663665">Filterung von Inhalten nur für Erwachsene durch "SafeSites" konfigurieren.</translation>
+<translation id="1244309789361056660">Diese Richtlinie wurde in Version M87 entfernt und Basisverzeichnisse werden bei der Anmeldung automatisch auf ext4 umgestellt.
+      Das Festlegen der Richtlinie gibt an, welche Aktion durchgeführt werden soll, wenn das Basisverzeichnis des Nutzers mit eCryptfs-Verschlüsselung erstellt wurde. Sofern eCryptfs-verschlüsselte Basisverzeichnisse nicht auf die ext4-Verschlüsselung umgestellt werden, wird die Ausführung von Android-Apps möglicherweise beendet.
+
+      Bei der Festlegung der Richtlinie auf
+
+      * „Migrate“ oder eine nicht unterstützte Option wie etwa „AskUser“ oder „AskForEcryptfsArcUsers“ werden Verzeichnisse bei der Anmeldung automatisch auf ext4 umgestellt, ohne die Zustimmung des Nutzers einzuholen.
+
+      * „Wipe“ oder „MinimalMigrate“ werden alte eCryptfs-verschlüsselte Basisverzeichnisse bei der Anmeldung durch neue ext4-verschlüsselte Basisverzeichnisse ersetzt. Damit der Nutzer sich nicht immer wieder neu anmelden muss, versucht „MinimalMigrate“, die Anmeldetoken zu übernehmen.
+
+      * „DisallowArc“, oder wenn keine Einstellung festgelegt ist, erfolgt keine Migration und die Android-Apps des Nutzers werden beendet.
+
+      Diese Richtlinie gilt nicht für Kiosknutzer.
+
+      Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
 <translation id="1247850578871017740">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.</translation>
@@ -436,7 +450,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Ist sie auf "False" gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen oder ändern. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="1715151459541210849">Bedienungshilfe "Spracheingabe" aktivieren</translation>
 <translation id="172374442286684480">Speichern von lokalen Daten für alle Websites zulassen</translation>
-<translation id="1727914891824633693">Verwendung von Lacros erlauben</translation>
 <translation id="1736269219679256369">Fortfahren von SSL-Hinweisseite erlauben</translation>
 <translation id="1750315445671978749">Alle Downloads blockieren</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
@@ -775,13 +788,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn Sie die Richtlinie auf "Fast" setzen, vermeidet <ph name="PRODUCT_NAME" /> das Rastern, wenn möglich. Wenn weniger gerastert wird, können die Größe der Druckaufträge reduziert und die Druckgeschwindigkeit erhöht werden.
 
       Wird sie nicht konfiguriert, befindet sich <ph name="PRODUCT_NAME" /> im Modus "Full".</translation>
-<translation id="2336221492251647548">Wenn Sie die Richtlinie auf "True" setzen, wird die Bildschirmtastatur bei der Anmeldung aktiviert. Wenn Sie die Richtlinie auf "False" setzen, wird die Bildschirmtastatur bei der Anmeldung deaktiviert.
-
-      Wenn Sie diese Richtlinie konfigurieren, können Nutzer vorübergehend die Bildschirmtastatur aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird sie in den Originalzustand zurückversetzt.
-
-      Wird sie nicht konfiguriert, ist die Bildschirmtastatur auf dem Anmeldebildschirm deaktiviert. Sie kann jederzeit von Nutzern aktiviert werden und der Status auf dem Anmeldebildschirm bleibt für alle Nutzer bestehen.
-
-          Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />" diese Richtlinie.</translation>
 <translation id="2345547870894930157">DoH-Modus ohne unsicheres Fallback-Verhalten aktivieren</translation>
 <translation id="2349117476121456297">Wenn Sie die Richtlinie auf "True" setzen, führt die oberste Reihe der Tastatur Funktionstastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur stattdessen wieder Medientastenbefehle aus.
 
@@ -1107,13 +1113,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Chrome 88 entfernt.</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
-<translation id="2759426227259007018">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
-
-      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
-
-      Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
-
-      Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
 <translation id="2765601181281280493">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
 
@@ -1608,10 +1607,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Unabhängig davon, wie diese Richtlinie festgelegt wird, verhindert der Browser nicht, dass Drittanbieter-Software ausführbaren Code in seine Prozesse auf Computern einfügt, die sich in einer <ph name="MS_AD_NAME" />-Domain befinden.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3461279434465463233">Status der Stromversorgung melden</translation>
-<translation id="346731943813722404">Damit legen Sie fest, ob die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet werden soll.
-          Wenn diese Richtlinie auf "true" gesetzt ist, wie die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.
-
-          Ist die Richtlinie auf "false" gesetzt oder nicht definiert, wird der Start der Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.</translation>
 <translation id="3478024346823118645">Nutzerdaten bei Abmeldung löschen</translation>
 <translation id="3480961938508521469">Lädt den Akku mit normaler Geschwindigkeit vollständig auf.</translation>
 <translation id="348110646151632565">Hiermit wird die Bedienungshilfe "Vorlesen" auf dem Anmeldebildschirm aktiviert.
@@ -2004,6 +1999,15 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Ist diese Einstellung nicht konfiguriert oder auf "false" gesetzt, suchen <ph name="PRODUCT_OS_NAME" />-Geräte automatisch nach Updates.
 
       Achtung: Es wird empfohlen, die automatischen Updates aktiviert zu lassen, damit Nutzer Softwareupdates und wichtige Sicherheitspatches erhalten. Bei Deaktivierung der automatischen Updates besteht eventuell ein Risiko für die Nutzer.</translation>
+<translation id="4016367078069682737">Diese Richtlinie wurde in M61 entfernt.
+
+      Damit wird festgelegt, wie sich ein Gerät verhalten soll, das mit eCryptfs geliefert wurde und nun eine ext4-Verschlüsselung benötigt.
+
+      Wenn diese Richtlinie auf „DisallowArc“ gesetzt ist, werden Android-Apps für alle Nutzer des Geräts deaktiviert – einschließlich derer, die die ext4-Verschlüsselung schon haben. Außerdem wird die Migration von eCryptfs- zur ext4-Verschlüsselung keinem Nutzer angeboten.
+
+      Wenn diese Richtlinie auf „AllowMigration“ gesetzt ist, wird Nutzern mit eCryptfs-verschlüsselten Basisverzeichnissen angeboten, diese je nach Bedarf in die ext4-Verschlüsselung zu migrieren (aktuell, wenn Android N für das Gerät zur Verfügung steht).
+
+      Diese Richtlinie gilt nicht für Kiosk-Apps – diese werden automatisch migriert. Sollte die Richtlinie nicht konfiguriert sein, kommt die Vorgehensweise für „DisallowArc“ zum Einsatz.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
@@ -2050,30 +2054,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4121350739760194865">App-Werbung nicht auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="412697421478384751">Nutzern erlauben, schwache PINs als Sperrbildschirm-PIN festzulegen</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
-<translation id="4144164749344898721">Mit dieser Richtlinie können Sie mehrere Einstellungen zur Energieverwaltung bei Inaktivität des Nutzers festlegen.
-
-          Es stehen vier Aktionen zur Verfügung:
-          * Der Bildschirm wird gedimmt, wenn der Nutzer für die unter "|ScreenDim|" angegebene Zeitdauer inaktiv ist.
-          * Der Bildschirm wird ausgeschaltet, wenn der Nutzer für die unter "|ScreenOff|" angegebene Zeitdauer inaktiv ist.
-          * Wenn der Nutzer für die unter "|IdleWarning|" angegebene Zeitdauer inaktiv ist, wird er in einer Warnung darauf hingewiesen, dass als Nächstes die für die Inaktivität festgelegte Aktion ausgeführt wird. Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.
-          * Die unter "|IdleAction|" angegebene Aktion wird ausgeführt, wenn der Nutzer für die unter "|Idle|" angegebene Zeitdauer inaktiv ist.
-
-          Die Verzögerungen müssen in Millisekunden angegeben werden und größer als null sein, um die jeweilige Aktion auszulösen. Falls die Verzögerung auf null gesetzt ist, wird die entsprechende Aktion von <ph name="PRODUCT_OS_NAME" /> nicht ausgeführt.
-
-          Wenn kein Wert für die Verzögerungen angegeben ist, wird ein Standardwert verwendet.
-
-          Hinweis: Der Wert für "|ScreenDim|" muss kleiner oder gleich dem Wert für "|ScreenOff|" sein, während die Werte für "|ScreenOff|" und "|IdleWarning|" nicht größer als der Wert für "|Idle|" sein dürfen.
-
-          Für "|IdleAction|" sind die folgenden vier Aktionen möglich:
-          * |Suspend|
-          * |Logout|
-          * |Shutdown|
-          * |DoNothing|
-
-          Wenn "|IdleAction|" nicht konfiguriert ist, wird die Standardaktion "|Suspend|" ausgeführt.
-
-          Es können außerdem spezifische Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.
-          </translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
@@ -2322,6 +2302,15 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn sie deaktiviert ist, können Seiten nicht im Inkognitomodus geöffnet werden.
 
       Mit dem Wert "Forced" können Seiten ausschließlich im Inkognitomodus geöffnet werden. Der Wert "Forced" funktioniert nicht bei Android Apps, die auf Chrome ausgeführt werden.</translation>
+<translation id="4594467366027975448">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Roaming-Kopie der Profile speichert.
+
+      Wenn Sie diese Richtlinie konfigurieren, nutzt <ph name="PRODUCT_NAME" /> das angegebene Verzeichnis, um die Roaming-Kopie der Profile darin zu speichern, sofern die Richtlinie „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ aktiviert wurde. Ist die Richtlinie „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert, wird der in dieser Richtlinie gespeicherte Wert nicht verwendet.
+
+      Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables finden Sie eine Liste mit Variablen, aus denen Sie wählen können.
+
+      Auf Nicht-Windows-Plattformen muss diese Richtlinie konfiguriert sein, damit Roaming-Profile funktionieren.
+
+      Wenn diese Richtlinie auf Windows nicht konfiguriert ist, wird der Standardpfad für Roaming-Profile verwendet.</translation>
 <translation id="4600786265870346112">Großen Cursor aktivieren</translation>
 <translation id="4604931264910482931">Sperrliste für natives Messaging konfigurieren</translation>
 <translation id="4607416370554533118">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern erstellen, die Websites angeben, für die Chrome automatisch ein Clientzertifikat auswählen kann. Der Wert ist ein Array von String-JSON-Wörterbüchern. Jedes Wörterbuch muss das Format <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> haben, wobei <ph name="URL_PATTERN_PLACEHOLDER" /> ein Muster zum Festlegen der Inhalte ist. <ph name="FILTER_PLACEHOLDER" /> schränkt ein, aus welchen Clientzertifikaten der Browser automatisch auswählt. Unabhängig vom Filter werden nur Zertifikate ausgewählt, die mit der Zertifizierungsanforderung des Servers übereinstimmen.
@@ -2696,9 +2685,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Ist die Richtlinie nicht konfiguriert oder ungültig, gilt dasselbe Verhalten wie für "Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist".</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
-<translation id="5236882091572996759">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird der Nutzer während der Audiowiedergabe als aktiv angesehen. Dadurch wird verhindert, dass das Zeitlimit für die Inaktivität erreicht wird und entsprechende Maßnahmen ergriffen werden. Der Bildschirm wird jedoch unabhängig von den Audioaktivitäten gemäß den konfigurierten Zeitlimits gedimmt, abgeschaltet und gesperrt.
-
-          Ist diese Richtlinie auf "false" gesetzt, wird der Nutzer trotz Audiowiedergabe als inaktiv angesehen.</translation>
 <translation id="52393120393725840">Wenn die Richtlinie aktiviert ist, können Nutzer einstellen, dass <ph name="PRODUCT_NAME" /> Passwörter speichert und sie bei der nächsten Anmeldung auf einer Website bereitstellt.
 
       Ist die Richtlinie deaktiviert, können Nutzer keine neuen Passwörter speichern lassen. Zuvor gespeicherte Passwörter funktionieren aber weiterhin.
@@ -3017,15 +3003,6 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
           Wenn eine Erweiterung nicht in der Liste enthalten ist oder keine Liste festgelegt wurde, schlägt der API-Aufruf fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="5586942249556966598">Nichts tun</translation>
-<translation id="5590494712401018042">Hiermit wird der Prozentsatz angegeben, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn sich das Gerät im Präsentationsmodus befindet.
-
-          Wenn diese Richtlinie konfiguriert ist, wird damit der Prozentsatz für die Skalierung der Verzögerung für die Bildschirmabdunkelung angegeben, wenn sich das Gerät im Präsentationsmodus befindet. Wenn die Verzögerung für die Bildschirmabdunkelung skaliert wird, wird die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, wird ein Standardfaktor für die Skalierung verwendet.
-
-          Diese Richtlinie ist nur dann wirksam, wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist. Andernfalls wird diese Richtlinie ignoriert, da die Verzögerung für die Bildschirmabdunkelung von einem Modell für maschinelles Lernen festgelegt wird.
-
-          Der Skalierungsfaktor muss bei mindestens 100 % liegen. Werte, bei denen die Verzögerung für die Bildschirmabdunkelung im Präsentationsmodus kürzer wäre als normal, sind nicht zulässig.</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" />-Verwaltungseinstellungen</translation>
 <translation id="5614865701790130558">Ereignisse für richtlinienbasierte Erweiterungsinstallationen protokollieren</translation>
 <translation id="5618398258385745432">Die entsprechende Einstellung wurde verwendet, bevor die erneute Authentifizierung bei der Ansicht von Passwörtern aktiviert wurde. Seither haben die Einstellung und folglich auch diese Richtlinie keinen Einfluss auf das Verhalten von Chrome. Aktuell werden Passwörter auf der Einstellungsseite des Passwortmanagers nicht als Klartext angezeigt. Dies bedeutet, dass die Einstellungsseite nur einen Platzhalter enthält und das Passwort in Chrome nur dann angezeigt wird, wenn der Nutzer auf "Anzeigen" klickt und sich gegebenenfalls noch einmal authentifiziert. Die ursprüngliche Beschreibung der Richtlinie finden Sie unten.
@@ -3116,11 +3093,6 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Wenn diese Richtlinie auf "falsch" gesetzt ist, wird erzwungen, dass Systeminformationen ausgeblendet werden.
       Wenn die Richtlinie nicht konfiguriert ist, gilt das Standardverhalten
 (Systeminformationen werden für Canary/Entwicklerversion angezeigt). Nutzer können die Sichtbarkeit auf bestimmte Weise umschalten (z. B. Alt + V).</translation>
-<translation id="5741810844420698449">Ist diese Richtlinie konfiguriert, so gibt sie vor, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer das Gerät zuklappt.
-
-          Wenn die Richtlinie nicht konfiguriert ist, wird das Gerät standardmäßig gesperrt.
-
-          Falls das Gerät gesperrt werden soll, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="5745980816926303222">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen "<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" />".
 
       Wenn diese Richtlinie konfiguriert ist, können in <ph name="PRODUCT_NAME" /> ohne Zustimmung des Nutzers automatisch Videos mit Ton abgespielt werden. Wenn die Richtlinie "<ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />" auf "True" gesetzt ist, hat diese Richtlinie keine Auswirkungen. Ist die Richtlinie "<ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />" auf "False" gesetzt, können alle in dieser Richtlinie festgelegten URL-Muster weiterhin wiedergegeben werden. Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.
@@ -3317,6 +3289,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6070667616071269965">Tastaturlayouts der Anmeldeseite</translation>
 <translation id="6074963268421707432">Anzeige von Desktop-Benachrichtigungen für keine Website zulassen</translation>
 <translation id="6074964551275531965">Zeitraum für Updatebenachrichtigungen festlegen</translation>
+<translation id="6075316301208933536">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang endet. „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />-Akkulademodus verwendet.</translation>
 <translation id="6082161804984853051">Wird die Richtlinie festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das von Ihnen angegebenen Verzeichnis zum Speichern von im Cache gespeicherten Dateien auf dem Laufwerk unabhängig davon, ob der Nutzer das Flag "--disk-cache-dir" angegeben hat.
 
       Wurde die Richtlinie nicht festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das Cachestandardverzeichnis. Diese Einstellung können Nutzer jedoch mit dem Befehlszeilen-Flag "--disk-cache-dir" ändern.
@@ -3334,17 +3309,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
 <translation id="6093156968240188330">Zulassen, dass Remote-Nutzer in Remote-Sitzungen mit geöffneten Fenstern arbeiten können</translation>
 <translation id="6095048925836115505">Bildschirmtastatur auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="6095999036251797924">Gibt die Zeitdauer ohne Nutzeraktivität an, nach der der Bildschirm im Netz- oder Akkubetrieb gesperrt wird.
-
-          Wenn ein Wert über null angegeben wird, steht dieser Wert für die Zeitdauer, für die ein Nutzer inaktiv sein muss, bevor der Bildschirm durch <ph name="PRODUCT_OS_NAME" /> gesperrt wird.
-
-          Wenn der Wert null angegeben wird, wird der Bildschirm bei Inaktivität des Nutzers nicht durch <ph name="PRODUCT_OS_NAME" /> gesperrt.
-
-          Wenn kein Wert angegeben wird, wird ein Standardwert verwendet.
-
-          Wenn der Bildschirm bei Inaktivität gesperrt werden soll, empfehlen wir, die Bildschirmsperre für den Wechsel in den Suspend-Modus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Suspend-Modus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre deutlich früher aktiviert werden soll als der Suspend-Modus oder wenn der Suspend-Modus bei Inaktivität nicht erwünscht ist.
-
-          Der Richtlinienwert muss in Millisekunden angegeben werden und wird automatisch auf einen Wert unter der Inaktivitätsverzögerung reduziert.</translation>
 <translation id="6097601282776163274">Anonymisierte URL-Datenerfassung aktivieren</translation>
 <translation id="6099853574908182288">Standardmäßiger Farbdruckmodus</translation>
 <translation id="6102342563050263313">Scrollen zu in URL-Fragmenten angegebenem Text aktivieren</translation>
@@ -3984,10 +3948,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Quelle für Regeln verwendet, die einen Browserwechsel verhindern.
 
       Hinweis: Diese Richtlinie verweist auf eine XML-Datei im selben Format wie die Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" />. Sie lädt Regeln aus einer XML-Datei, ohne diese Regeln mit <ph name="IE_PRODUCT_NAME" /> zu teilen. Weitere Informationen zur Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="6965859329738616662">Gibt an, ob der Zeitraum bis zum Dimmen des Bildschirms durch ein intelligentes Dimmmodell verlängert werden kann.
-
-      Kurz vor dem Dimmen des Bildschirms prüft das intelligente Dimmmodell, ob der Vorgang verzögert werden sollte. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, wird damit der Zeitraum bis zum Dimmen des Bildschirms effektiv verlängert. In diesem Fall werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
-      Ist die Richtlinie auf "true" festgelegt oder nicht konfiguriert, wird das intelligente Dimmmodell aktiviert und der Zeitraum bis zum Dimmen des Bildschirms kann durch das Modell verlängert werden. Wenn die Richtlinie auf "false" festgelegt ist, wird das Dimmen des Bildschirms durch das intelligente Dimmmodell nicht beeinflusst.</translation>
 <translation id="6972540544240464302">Konfiguration für Aufgabenplaner auswählen</translation>
 <translation id="6973754855639335783">Wenn die Richtlinie konfiguriert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn Sie z. B. https://example.com/ angeben, wird auch https://foo.example.com/ als Teil der Website https://example.com/ isoliert.
 
@@ -4032,6 +3992,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7027785306666625591">Hiermit wird die Energieverwaltung in <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Mit diesen Richtlinien können Sie festlegen, wie <ph name="PRODUCT_OS_NAME" /> sich verhalten soll, wenn der Nutzer für einen bestimmten Zeitraum inaktiv ist.</translation>
+<translation id="7030205756530739128">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang startet. Der Wert muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
 <translation id="7032813174556919004">DoH (DNS over HTTPS) deaktivieren</translation>
 <translation id="7033778618670823541">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für ältere Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als "Nicht sicher" gekennzeichnet wird.
 
@@ -4063,15 +4026,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
 <translation id="7079519252486108041">Pop-ups auf diesen Websites blockieren</translation>
-<translation id="7086677522575756117">Hiermit wird der Prozentsatz angegeben, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird.
-
-          Wenn diese Richtlinie konfiguriert ist, wird damit der Prozentsatz für die Skalierung der Verzögerung für die Bildschirmabdunkelung angegeben, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird. Wenn die Verzögerung für die Abdunkelung skaliert wird, wird die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, wird ein Standardfaktor für die Skalierung verwendet.
-
-          Diese Richtlinie ist nur wirksam, wenn die Richtlinie "<ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" />" deaktiviert ist. Andernfalls wird diese Richtlinie ignoriert, da die Verzögerung für die Bildschirmabdunkelung von einem Modell für maschinelles Lernen festgelegt wird.
-
-          Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
 <translation id="7086720321892395256">Mit dieser Richtlinie werden Nutzer- und Geräterichtlinien für den Datenschutzbildschirm festgelegt.</translation>
 <translation id="7091842872805965910">Funktion zum automatischen Senden von PINs auf dem Sperr- und Anmeldebildschirm aktivieren.</translation>
 <translation id="7093294902558672021">Informationen zum Lüfter eines Geräts melden.
@@ -4079,17 +4033,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zum Lüfter des Geräts ausgegeben.</translation>
 <translation id="710003290625031750">Ausführliche Schemabeschreibung:</translation>
-<translation id="7107148737865880402">Hiermit können Sie die Energieverwaltungsrichtlinie zur gemeinsamen Stromversorgung per USB aktivieren.
-
-          Bestimmte Geräte haben einen speziellen USB-Port, der mit einem Blitz- oder Batteriesymbol gekennzeichnet ist und zum Aufladen von Geräten wie etwa einem Mobiltelefon mithilfe des Systemakkus verwendet werden kann. Diese Richtlinie betrifft das Ladeverhalten dieses Ports, wenn sich das System im Ruhemodus befindet oder heruntergefahren wurde. Diese Richtlinie hat keine Auswirkungen auf die übrigen USB-Ports und das Ladeverhalten, solange das System aktiv ist.
-
-          Ist das System aktiv, dann stellt der USB-Port immer Ladestrom bereit.
-
-          Im Ruhemodus dagegen wird, wenn diese Richtlinie auf "true" gesetzt ist, am USB-Port Ladestrom bereitgestellt, wenn das Gerät mit einer Netzsteckdose verbunden oder der Ladestand des Akkus höher als 50 % ist. Andernfalls liegt kein Ladestrom an.
-
-          Ist das Gerät heruntergefahren, dann wird, wenn diese Richtlinie auf "true" gesetzt ist, Ladestrom am USB-Port bereitgestellt, wenn das Gerät an eine Netzsteckdose angeschlossen ist. Andernfalls liegt kein Ladestrom an.
-
-          Ist diese Richtlinie nicht eingestellt, dann wird sie aktiviert und kann vom Nutzer nicht geändert werden.</translation>
 <translation id="7115494316187648452">Legt fest, ob ein <ph name="PRODUCT_NAME" />-Prozess bei der Anmeldung im Betriebssystem gestartet und nach dem Schließen des letzten Browserfensters weiter ausgeführt wird, sodass Hintergrund-Apps und die aktuelle Browsersitzung einschließlich aller Sitzungscookies aktiv bleiben. Der Hintergrundprozess kann jederzeit über ein entsprechendes Symbol in der Taskleiste geschlossen werden.
 
       Ist diese Richtlinie auf "true" gesetzt, wird der Hintergrundmodus aktiviert und der Prozess kann nicht vom Nutzer über die Browsereinstellungen gesteuert werden.
@@ -4164,17 +4107,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Ist sie auf "False" gesetzt, können Nutzer, Apps und Erweiterungen nicht in den Vollbildmodus wechseln.</translation>
 <translation id="718126088895133062">Mit dieser Richtlinie wird die Nutzer-ID zur <ph name="PLUGIN_VM_NAME" />-Lizenzierung für dieses Gerät angegeben.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
-<translation id="7187447094921703950">Hiermit können Sie die Energieverwaltungsrichtlinie zum Umschalten bei Leistungsspitzen aktivieren.
-
-          Das Umschalten bei Leistungsspitzen ist eine Richtlinie, mit der Energie gespart werden kann. Dazu wird die Nutzung des Netzstroms während der Tageszeiten mit Spitzenlasten minimiert. Für jeden Wochentag kann eine Start- und eine Endzeit für den Modus zum Umschalten bei Leistungsspitzen festgelegt werden. Während dieser Zeiträume wird das System über den Akku mit Strom versorgt, solange der Ladezustand des Akkus einen bestimmten Schwellenwert nicht unterschreitet – auch dann, wenn das System an das Stromnetz angeschlossen ist. Nach der angegebenen Endzeit wird das System wieder über Netzstrom versorgt, der Akku jedoch nicht geladen. Das System wird wieder auf den normalen Betrieb mit Netzstrom umgestellt und der Akku aufgeladen, nachdem die festgelegte Startzeit zum Laden erreicht wurde.
-
-          Wenn diese Richtlinie auf "true" gesetzt ist und "<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_NAME" />" und "<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_NAME" />" festgelegt sind, ist das Umschalten bei Leistungsspitzen immer aktiviert, sofern die Funktion vom Gerät unterstützt wird.
-
-          Wenn die Richtlinie auf "false" festgelegt ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.
-
-          Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
-
-          Wird die Richtlinie nicht festgelegt, ist das Umschalten bei Leistungsspitzen zuerst deaktiviert und kann vom Nutzer nicht aktiviert werden.</translation>
 <translation id="718956142899066210">Für Updates zugelassene Verbindungstypen</translation>
 <translation id="7190286937411178540">Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktivieren</translation>
 <translation id="7193489339723768342">Wenn Sie diese Richtlinie konfigurieren, geben Sie eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
@@ -4384,10 +4316,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
       Ist sie deaktiviert oder nicht konfiguriert, können Nutzer diese Einstellung ändern.
 
       Hinweis: Verwenden Sie für Android stattdessen die Richtlinie "<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />".</translation>
-<translation id="7517845714620372896">Gibt die Displayhelligkeit in % an.
-Wird diese Richtlinie festgelegt, wird die ursprüngliche Displayhelligkeit an den Richtlinienwert angepasst. Der Nutzer kann dies später wieder ändern. Funktionen zur automatischen Anpassung der Displayhelligkeit sind deaktiviert.
-Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Displays durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Displayhelligkeit.
-Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen.</translation>
 <translation id="7517846421386644905">Hiermit kann ein Administrator festlegen, ob Telemetrie- und Fehlerberichte vom Wilco Diagnostics and Telemetry Controller (DTC) erfasst, verarbeitet und gemeldet werden sollen.
 
       Wenn diese Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, wird DTC deaktiviert und kann keine Telemetrie- und Fehlerberichte des Geräts erfassen, verarbeiten und melden.
@@ -4887,9 +4815,6 @@ Diese Richtlinien dienen ausschließlich der Konfiguration von internen <ph name
 Diese Einstellungen müssen nicht manuell konfiguriert werden. Nutzerfreundliche Vorlagen für Windows, Mac und Linux sind unter <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" /> zum Download verfügbar.
 
 Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte zu konfigurieren, die Bereitstellung von Richtlinien über die Registrierung wird jedoch auch weiterhin von Windows-Instanzen unterstützt, die Teil einer <ph name="MS_AD_NAME" />-Domain sind.</translation>
-<translation id="8259592978873597235">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird der Nutzer während der Wiedergabe von Videos als aktiv angesehen. Dadurch wird verhindert, dass der Countdown für Inaktivität sowie zum Dimmen, Abschalten oder Sperren des Bildschirms eingeleitet wird und nach Ablauf der Zeit entsprechende Maßnahmen ergriffen werden.
-
-          Ist diese Richtlinie auf "false" gesetzt, gilt der Nutzer trotz Videowiedergabe als inaktiv.</translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -5367,13 +5292,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8976248126101463034">Gnubby-Authentifizierung für Remotezugriff-Hosts zulassen</translation>
 <translation id="8976531594979650914">Standarddrucker des Betriebssystems als Standardeinstellung verwenden</translation>
 <translation id="8977192934280677167">Zugriff auf die Suche mit dem Standardsuchanbieter über das Kontextmenü erlauben</translation>
-<translation id="8990697325184394573">Diese Einstellung ermöglicht es Nutzern, den Lacros-Browser zu verwenden.
-
-      Wenn diese Richtlinie auf „False“ gesetzt ist, können Nutzer Lacros nicht verwenden.
-
-      Ist diese Richtlinie auf „True“ gesetzt, können Nutzer den Lacros-Browser verwenden.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, können Nutzer den Lacros-Browser nicht verwenden.</translation>
 <translation id="8992176907758534924">Anzeige von Bildern für alle Websites blockieren</translation>
 <translation id="9007632512838819703">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />".
 

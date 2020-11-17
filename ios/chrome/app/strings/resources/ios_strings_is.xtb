@@ -342,7 +342,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það in
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4747097190499141774">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay. Aðeins þeir sem vita aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til Google né geymt. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
-<translation id="4758977202923349869">Settu kreditkortið innan þessa ramma</translation>
 <translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4778644898150334464">Nota annað aðgangsorð</translation>
 <translation id="4802417911091824046">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay.
@@ -604,12 +603,12 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7435356471928173109">Kerfisstjórinn slökkti á þessu</translation>
 <translation id="7454057999980797137">Ríki/sýsla</translation>
 <translation id="7456847797759667638">Opna staðsetningu...</translation>
-<translation id="7460314822154045102">Nota myndavél</translation>
 <translation id="7464701184726199289">Þetta hreinsar samstillt gögn út af öllum tækjum. Vistuðum stillingum vefsvæða verður ekki eytt og þær kunna að endurspegla vefnotkun þína. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Veldu Chrome</translation>
 <translation id="7472734401283673885">Heiti fyrirtækis</translation>
 <translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7481312909269577407">Áfram</translation>
+<translation id="7483467499335917849">Nota núverandi staðsetningu.</translation>
 <translation id="750493650310597496">Ekkert valið</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>

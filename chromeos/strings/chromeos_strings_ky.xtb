@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
 <translation id="1290331692326790741">Начар сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Скандоо аймагы боюнча</translation>
 <translation id="1397738625398125236">Шлюздун байланышын текшерүүгө болот</translation>
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
 <translation id="1468664791493211953">Сунуштар</translation>
 <translation id="1478594628797167447">Сканер</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
+<translation id="1641857168437328880">Документтерди берүүчү түзмөк (бир тараптуу)</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Байланыштагы мүчүлүштүктөрдү аныктоо</translation>
 <translation id="3091839911843451378">Басылып чыгарылган жок - Принтер токтоп калды</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
+<translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
 <translation id="3310640316857623290">DNS күтүү убакыты уруксат берилген босогодон бир кыйла жогору</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Чечилиш</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
-<translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="ENROLLMENT_DOMAIN" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4378373042927530923">Иштетилген жок</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Скандалган файлдар сакталды.</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
 <translation id="4429881212383817840">Kerberos билетинин мөөнөтү өтүп баратат</translation>
 <translation id="445059817448385655">Эски сырсөз</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> алыстан жөндөөлөрдү башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="520299634122159966">Жеткиликтүү сканерлер жок</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
 Мага суроо берүү үчүн микрофонду таптап коюңуз.</translation>
@@ -122,12 +122,14 @@
 <translation id="649050271426829538">Токтоду – Кагаз чайналып калды</translation>
 <translation id="6517239166834772319">Изилдөө</translation>
 <translation id="6527081081771465939">Белгисиз WiFi коопсуздук протоколу</translation>
+<translation id="65587193855025101">Планшет</translation>
 <translation id="6564646048574748301">Басылып чыгарылган жок - Принтер жеткиликсиз</translation>
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
 <translation id="6747215703636344499">Токтоду – Түпкүч толуп калды</translation>
+<translation id="6839141349259399400">Сканерлерге туташуу мүмкүн болбой жатабы?</translation>
 <translation id="714876143603641390">LAN байланышы</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7805768142964895445">Статусу</translation>
+<translation id="7855434858642800953">Скандалган файл сакталды.</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
+<translation id="8160445423316272678">Документиңизди сканерге коюп, <ph name="SPAN_BEGIN" />Скандоо<ph name="SPAN_END" /> баскычын басыңыз</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8294431847097064396">Булак</translation>
@@ -159,5 +163,6 @@
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
+<translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
 </translationbundle>

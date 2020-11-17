@@ -340,7 +340,6 @@ Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, 
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4747097190499141774">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
-<translation id="4758977202923349869">Umieść kartę kredytową w tej ramce</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
@@ -602,12 +601,12 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7454057999980797137">Stan/region</translation>
 <translation id="7456847797759667638">Otwórz lokalizację...</translation>
-<translation id="7460314822154045102">Użyj aparatu</translation>
 <translation id="7464701184726199289">Spowoduje to usunięcie zsynchronizowanych danych ze wszystkich urządzeń. Zapisane ustawienia witryn nie zostaną usunięte i mogą zawierać informacje o Twoim korzystaniu z przeglądarki. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Wybierz Chrome.</translation>
 <translation id="7472734401283673885">Nazwa firmy</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7481312909269577407">Dalej</translation>
+<translation id="7483467499335917849">Użyj bieżącej lokalizacji</translation>
 <translation id="750493650310597496">Nic nie wybrałeś</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>

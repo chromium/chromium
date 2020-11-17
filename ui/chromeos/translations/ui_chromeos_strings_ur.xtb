@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1000498691615767391">کھولنے کیلئے ایک فولڈر منتخب کریں</translation>
+<translation id="1016731229041675999">عربی نقل حرفی</translation>
+<translation id="102325055885714714">تمل نقل حرفی</translation>
 <translation id="1035094536595558507">سلائیڈ منظر</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> آئٹمز حذف کیے جا رہے ہیں…</translation>
 <translation id="1049926623896334335">‏Word دستاویز</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
 <translation id="1062407476771304334">بدلیں</translation>
+<translation id="1082570120854863773">‏چینی (روایتی) Pinyin</translation>
 <translation id="1119069657431255176">‏Bzip2 کمپریسڈ tar آرکائیو</translation>
 <translation id="1120073797882051782">ہنگول روماجا</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> ملیں۔
@@ -41,10 +44,13 @@
 <translation id="1378727793141957596">‏Google Drive میں خوش آمدید!</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1395262318152388157">تلاش کرنے کا سلائیڈر</translation>
+<translation id="1411401459521499147">معیاری کی بورڈ کے ساتھ رومانیائی</translation>
+<translation id="14286271616944851">فارسی</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="1464724975715666883">1 خرابی۔</translation>
+<translation id="1466220122465387403">انگریزی پر مبنی کی بورڈ کے ساتھ سورانی کردش</translation>
 <translation id="1467432559032391204">بائیں</translation>
 <translation id="1472351751615457820">يونانی نقل حرفی</translation>
 <translation id="1474339897586437869">‏"<ph name="FILENAME" />" کو اپ لوڈ نہیں کیا گیا۔ آپ کے Google Drive میں کافی خالی جگہ نہیں ہے۔</translation>
@@ -59,6 +65,7 @@
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1622022025445651011">فرانسیسی (فرانس)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> فائلز کو آف لائن دستیاب بنایا جا رہا ہے</translation>
+<translation id="1649464394998806860">‏فونیٹک AATSEEL کی بورڈ کے ساتھ روسی</translation>
 <translation id="164969095109328410">‏Chrome آلہ</translation>
 <translation id="1665611772925418501">فائل میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="1673103856845176271">سیکیورٹی اسباب کی بنا پر فائل تک رسائی حاصل نہیں کی جا سکی۔</translation>
@@ -89,9 +96,11 @@
 <translation id="1995337122023280937">فائل کے مقام پر جائیں</translation>
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
+<translation id="2016165510591645686">‏چینی Pinyin</translation>
 <translation id="2028997212275086731">‏RAR آرکائیو</translation>
 <translation id="2046702855113914483">رامین</translation>
 <translation id="2060251957438343874">جرمن (جرمنی)</translation>
+<translation id="2060392775416297569">‏چینی Cangjie</translation>
 <translation id="2066433303065022982">عبرانی نقل حرفی</translation>
 <translation id="2070909990982335904">ڈاٹ سے شروع ہونے والے نام سسٹم کیلئے محفوظ ہیں۔ براہ کرم کوئی دوسرا نام منتخب کریں۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -123,11 +132,13 @@
 <translation id="2453576648990281505">فائل پہلے سے موجود ہے</translation>
 <translation id="2464079411014186876">آئس کریم</translation>
 <translation id="2468402215065996499">تاما گوچی</translation>
+<translation id="2484472280211296077">تمل فونیٹک</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو گئے</translation>
 <translation id="2541377937973966830">اس فولڈر کے مواد صرف پڑھنے کے لیے ہیں۔ کچھ سرگرمیاں تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="2542049655219295786">‏Google ٹیبل</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> میں شامل کریں</translation>
+<translation id="255285553751745003">‏ویتنامی Telex</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">مینڈک</translation>
@@ -140,11 +151,13 @@
 <translation id="2664412712123763093">فائل کا مقام</translation>
 <translation id="2672394958563893062">ایک خرابی پیش آگئی۔ ابتدا سے دوبارہ شروع کرنے کیلئے کلک کریں۔</translation>
 <translation id="2676946222714718093">اس پر چل رہا ہے</translation>
+<translation id="2718873684053049373">‏چینی Dayi</translation>
 <translation id="2735623501230989521">‏Parallels ڈیسک ٹاپ کو<ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کے لیے اجازت دیں</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
 <translation id="2787047795752739979">اصل کو اوور رائٹ کریں</translation>
+<translation id="2798201218072736543">پرتگالی (ﺑﺮﺍﺯﻳﻞ)</translation>
 <translation id="2822854841007275488">عربی</translation>
 <translation id="2843806747483486897">ڈیفالٹ کو تبدیل کریں…</translation>
 <translation id="2850124913210091882">بیک اپ لیں</translation>
@@ -167,12 +180,14 @@
 <translation id="3003633581067744647">تھمب نیل منظر پر سوئچ کریں</translation>
 <translation id="3007214526293698309">تناسب درست کریں</translation>
 <translation id="303198083543495566">جغرافیہ</translation>
+<translation id="3040867506619073727">سنہالا</translation>
 <translation id="3057861065630527966">اپنی تصاویر اور ویڈیوز کا بیک اپ لیں</translation>
 <translation id="3067790092342515856">ونڈوز کی فائلز</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> کے ساتھ اشتراک کریں</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ہوگیا</translation>
+<translation id="3171711500892772766">تیلگو فونیٹک</translation>
 <translation id="3182237543071236785">انگریزی (برطانیہ)</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3197563288998582412">‏UK ڈووراک</translation>
@@ -211,6 +226,7 @@
 <translation id="357479282490346887">لتھُواینین</translation>
 <translation id="3603385196401704894">کینیڈین فرانسیسی</translation>
 <translation id="3606220979431771195">‏ترکی F</translation>
+<translation id="3608699648194837100">‏تمل ITRANS</translation>
 <translation id="3609785682760573515">مطابقت پذیری کی جا رہی ہے…</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
@@ -221,6 +237,7 @@
 <translation id="3645531960514756307">فولڈر کا پن ہٹائیں</translation>
 <translation id="3685122418104378273">‏موبائل ڈیٹا استعمال کرتے وقت، Google Drive کی مطابقت پذیری بطور ڈیفالٹ غیر فعال کر دی جاتی ہے۔</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> منسوخ کریں۔</translation>
+<translation id="3717701509378976246">ارمینی</translation>
 <translation id="3726463242007121105">اس آلے کو نہیں کھولا جا سکتا کیونکہ اس کا فائل سسٹم تعاون یافتہ نہیں ہے۔</translation>
 <translation id="3741243925913727067">‏اپنے میڈیا آلہ کی تصاویر اور ویڈیوز کا Google Drive پر بیک اپ لیں۔</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
@@ -259,6 +276,7 @@
 <translation id="4261901459838235729">‏Google پیشکش</translation>
 <translation id="4290535918735525311">‏Linux کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="4299729908419173967">برازیلی</translation>
+<translation id="4305486654020746131">پنجابی</translation>
 <translation id="4309915981827077375">عمومی معلومات</translation>
 <translation id="4315949787858895817">ڈچ (بیلجیم)</translation>
 <translation id="4326192123064055915">کافی</translation>
@@ -266,6 +284,7 @@
 <translation id="4364327530094270451">خربوزہ</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">خارجی لنک</translation>
+<translation id="4406790547322756995">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4470564870223067757">‏Hangul 2 سیٹ</translation>
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
@@ -284,8 +303,10 @@
 <translation id="4603392156942865207">‫<ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں کاپی کیا جا رہا ہے</translation>
 <translation id="4627439232948440198">سنسکرت</translation>
 <translation id="4631887759990505102">فن کار</translation>
+<translation id="463813589602055304">چینی ووبی</translation>
 <translation id="4656293982926141856">اس کمپیوٹر پر</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
+<translation id="4669979276126590335">سربیائی نقل حرفی</translation>
 <translation id="4690246192099372265">سويڈش</translation>
 <translation id="4693155481716051732">سشی</translation>
 <translation id="4694604912444486114">بندر</translation>
@@ -296,8 +317,10 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> تصاویر کا بیک اپ لے لیا گیا</translation>
 <translation id="4725511304875193254">کورگی</translation>
 <translation id="4732760563705710320">معذرت، یہ ویڈیو آپ کے کاسٹ آلہ کی جانب سے تعاون یافتہ نہیں ہے۔</translation>
+<translation id="4733240808404733495">‏TIS 820-2531 کی بورڈ کے ساتھ تھائی</translation>
 <translation id="4734518477988699048">ان پٹ قدر غلط ہے۔</translation>
 <translation id="4737050008115666127">لینڈنگ</translation>
+<translation id="4738570502598323051">‏InScript کی بورڈ کے ساتھ تمل</translation>
 <translation id="4747271164117300400">مقدونيائی</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4763055924467562718">کنّڑ فونیٹک</translation>
@@ -309,6 +332,7 @@
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
 <translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> آئٹمز منتخب کیے گئے</translation>
+<translation id="4842306555839940112">تیلگو نقل حرفی</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">جرمن (بیلجیئم)</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
@@ -383,6 +407,7 @@
 <translation id="5368191757080475556">‏Linux کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="5402367795255837559">بریل</translation>
 <translation id="5418923334382419584">میانمار کی بورڈ</translation>
+<translation id="5427022459704612663">‏ویتنامی VIQR</translation>
 <translation id="5428105026674456456">ہسپانوی</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> کے لیے کوئی نتیجہ نہیں ملا۔</translation>
 <translation id="5449551289610225147">غلط پاس ورڈ</translation>
@@ -398,6 +423,7 @@
 <translation id="5534520101572674276">سائز کو شمار کیا جا رہا ہے</translation>
 <translation id="5551831234974556292">مالٹیز</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
+<translation id="5601917305267643189">ہسپانوی (اسپین)</translation>
 <translation id="5605830556594064952">‏US ڈوراک</translation>
 <translation id="5623849870004487514">فونیٹک کی بورڈ کے ساتھ نیپالی</translation>
 <translation id="5649768706273821470">سنیں</translation>
@@ -422,6 +448,7 @@
 <translation id="5833610766403489739">یہ فائل کہیں چلی گئی ہے۔ براہ کرم اپنے ڈاؤن لوڈ کے مقام کی ترتیب کو چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5838451609423551646">انتخاب سے تمام اندراجات ہٹا دئے گئے۔</translation>
 <translation id="5838825566232597749">‏US Workman بین الاقوامی</translation>
+<translation id="5846013392911797712">کیڈمینی کی بورڈ کے ساتھ تھائی</translation>
 <translation id="5850516540536751549">‏فائل کی یہ قسم تعاون یافتہ نہیں ہے۔ اس قسم کی فائل کو کھول سکنے والی ایپ تلاش کرنے کیلئے براہ کرم <ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> ملاحظہ کریں۔
     <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">یہاں دیکھنے کیلئے کچھ بھی نہیں ہے…</translation>
@@ -439,6 +466,7 @@
 <translation id="60357267506638014">Czech QWERTY</translation>
 <translation id="604001903249547235">کلاؤڈ بیک اپ</translation>
 <translation id="6040143037577758943">بند کریں</translation>
+<translation id="6041767187407754614">‏چینی Quick</translation>
 <translation id="6074825444536523002">‏Google فارم</translation>
 <translation id="6096979789310008754">تلاش کا متن صاف کر دیا گیا، سبھی فائلیں اور فولڈرز دکھائی دے رہے ہیں۔</translation>
 <translation id="610101264611565198">‫<ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں منتقل کیا جا رہا ہے</translation>
@@ -495,6 +523,7 @@
 <translation id="6795884519221689054">پانڈا</translation>
 <translation id="6806699711453372963">‏Linux کے اشتراک کا نظم کریں</translation>
 <translation id="6808193438228982088">لومڑی</translation>
+<translation id="6819938753873901684">تگرینی</translation>
 <translation id="6820687829547641339">‏Gzip کمپریس کردہ tar آرکائیو</translation>
 <translation id="6823166707458800069">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خودکار طور پر آن لائن بیک اپ لیا جاتا ہے۔</translation>
 <translation id="6825883775269213504">روسی</translation>
@@ -503,6 +532,7 @@
 <translation id="6862635236584086457">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خود بخود آن لائن بیک اپ لے لیا جاتا ہے۔</translation>
 <translation id="6876155724392614295">بائیک</translation>
 <translation id="6878261347041253038">دیوناگری کی بورڈ (فونیٹک)</translation>
+<translation id="6878301034829092662">‏YaZHert فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="6885780034956018177">گھونگھا</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6898028766943174120">مزید ذیلی فولڈرز...</translation>
@@ -530,10 +560,14 @@
 <translation id="7106346894903675391">مزید اسٹوریج خریدیں…</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt; Drive تلاش کریں&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="714369685015246514">‏چینی Array</translation>
+<translation id="7169438078134535111">‏F کی بورڈ کے ساتھ ترکی</translation>
 <translation id="7170467426996704624">‏نقل حرفی (salam → ሰላም)</translation>
+<translation id="7173380554947442031">‏ویتنامی VNI</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">فائل محفوظ کریں بطور</translation>
+<translation id="7221999925319694720">‏چینی Zhuyin</translation>
 <translation id="7238097264433196391">ڈرائیو کا نام</translation>
 <translation id="7248671827512403053">اطلاق</translation>
 <translation id="7268659760406822741">دستیاب سروسز</translation>
@@ -600,6 +634,7 @@
 <translation id="7881969471599061635">سب ٹائٹلز کو غیر فعال کریں</translation>
 <translation id="78946041517601018">مشترکہ ڈرائیوز</translation>
 <translation id="7898607018410277265">گجراتی کی بورڈ (نیا فونیٹک)</translation>
+<translation id="7908150161525408421">ہسپانوی (لاطینی امریکی)</translation>
 <translation id="7908793776359722643">پارٹیشن کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا مٹا دیا جائے گا۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
@@ -607,6 +642,7 @@
 <translation id="7953739707111622108">اس آلہ کو نہیں کھولا جا سکتا ہے کیونکہ اس کے فائل سسٹم کی شناخت نہیں ہوئی۔</translation>
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7982283708762922719">اونچائی</translation>
+<translation id="7988940501536183135">فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
 <translation id="8028993641010258682">سائز</translation>
 <translation id="803771048473350947">فائل</translation>
@@ -626,8 +662,10 @@
 <translation id="8154842056504218462">تمام اندراجات منتخب کئے گئے۔</translation>
 <translation id="8157684860301034423">ایپ کی معلومات دوبارہ حاصل کرنے میں ناکام ہو گئے۔</translation>
 <translation id="8157939133946352716">7x5</translation>
+<translation id="8159982522558068586">ٹائپ رائٹر کی بورڈ کے ساتھ تمل</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8193175696669055101">آلے کا ماڈل</translation>
+<translation id="8196481879028929035">پرتگالی (پرتگال)</translation>
 <translation id="8208580316430297579">فنی شاہکار</translation>
 <translation id="8223479393428528563">آف لائن استعمال کیلئے یہ فائلیں محفوظ کرنے کیلئے، پھر سے آن لائن ہو جائیں، فائلوں پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
@@ -660,6 +698,10 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> آئٹمز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
+<translation id="8608272065177710825">بلغاریائی فونیٹک کی بورڈ کے ساتھ</translation>
+<translation id="8619608420536266892">‏Tamil99 کی بورڈ کے ساتھ تمل</translation>
+<translation id="863846969551842412">کینٹونیز</translation>
+<translation id="8669047053197791123">‏تھائی میں Pattachote کی بورڈ</translation>
 <translation id="8669949407341943408">منتقل کی جا رہی ہیں…</translation>
 <translation id="8688649574682805922">جرمن (سوئٹزر لینڈ)</translation>
 <translation id="8694836330346852143">اردو</translation>

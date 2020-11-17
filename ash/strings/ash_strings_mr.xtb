@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ला सपोर्ट करत नाही. रिझोल्युशन बदलून <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="1919743966458266018">टास्क मॅनेजर उघडण्‍याचा शॉर्टकट बदलला आहे. कृपया <ph name="OLD_SHORTCUT" /> ऐवजी <ph name="NEW_SHORTCUT" /> वापरा.</translation>
 <translation id="1923539912171292317">स्वयंचलित क्लिक</translation>
-<translation id="1924640696879807758">फोन वरून</translation>
 <translation id="1928739107511554905">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करण्यासाठी टचस्क्रीन वापरा.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">कनेक्ट केलेले नाही</translation>
 <translation id="2408955596600435184">तुमचा पिन प्रविष्‍ट करा</translation>
 <translation id="2412593942846481727">अपडेट उपलब्ध आहे</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> हे <ph name="DOMAIN" /> द्वारे व्यवस्थापित केलेले एक सेशन आहे</translation>
 <translation id="2427507373259914951">लेफ्ट क्लिक करा</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. स्वीकार करण्यापूर्वी, कृपया त्या डिव्हाइसवर ही पासकी दर्शवली असल्याची पुष्टी करा: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">मागे शोधा</translation>
 <translation id="4114315158543974537">फोन हब सुरू करा</translation>
 <translation id="4121728057981832179">व्हर्च्युअल मशीन तुमचा मायक्रोफोन वापरत आहे</translation>
+<translation id="4126167871198063089">बोलण्यासाठी निवडा मधून बाहेर पडा</translation>
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> हे <ph name="DOMAIN" /> द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="415719264485676252">स्क्रीन कॅप्चर ब्लॉक केले आहे</translation>
 <translation id="4157822100366708405">गडद थीम सेटिंग्ज</translation>
 <translation id="4181841719683918333">भाषा</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4570957409596482333">बोलण्यासाठी निवडा बटण</translation>
 <translation id="4577274620589681794">वेळ संपली · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
 <translation id="4585337515783392668">एखाद्या अज्ञात मिळवणाऱ्यावर कास्ट करणे थांबवा</translation>
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
 <translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
+<translation id="5003993274120026347">पुढील वाक्य</translation>
 <translation id="5019169674188023236">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमचे ब्लूटूथ किंवा वाय-फाय बंद आहे असे दिसते. कृपया फोन हब वापरण्यासाठी तुमचे कनेक्शन तपासा.</translation>
 <translation id="5030687792513154421">वेळ संपली</translation>
 <translation id="5033299697334913360">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
+<translation id="504465286040788597">मागील परिच्छेद</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">डिक्टेशन टॉगल करा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5571066253365925590">ब्लूटूथ सक्षम</translation>
+<translation id="557563299383177668">पुढील परिच्छेद</translation>
 <translation id="558849140439112033">कॅप्चर करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">वाचिक फीडबॅक देणे बंद करण्यासाठी Ctrl + Alt + Z दाबा.</translation>
@@ -613,7 +615,6 @@
 <translation id="6910714959251846841">या अपडेटसाठी तुमचे डिव्हाइस Powerwash करणे आवश्यक आहे. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="6945221475159498467">निवडा</translation>
-<translation id="6953890208095195458">तुमच्या स्क्रीनवरील आशयामुळे तुमच्या अ‍ॅडमिनिस्ट्रेटरने स्क्रीन रेकॉर्डिंग थांबवले आहे.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6972754398087986839">प्रारंभ करा</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
@@ -667,7 +668,6 @@
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">तुमच्या स्क्रीनवरील आशयाचे स्क्रीन कॅप्चर घेता येण्याची क्षमता तुमच्या अ‍ॅडमिनिस्ट्रेटरने ब्लॉक केली आहे.</translation>
 <translation id="7548434653388805669">झोपण्याची वेळ</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
@@ -726,6 +726,7 @@
 <translation id="8029247720646289474">हॉटस्पॉट कनेक्ट करता आले नाही</translation>
 <translation id="8029629653277878342">आणखी सुरक्षिततेसाठी पिन किंवा पासवर्ड आवश्यक आहे</translation>
 <translation id="8030169304546394654">डिस्कनेक्ट केलेले</translation>
+<translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>
@@ -864,6 +865,7 @@
 <translation id="921989828232331238">तुमच्या पालकाने आज दिवसभरासाठी तुमचे डिव्हाइस लॉक केले</translation>
 <translation id="9220525904950070496">खाते काढून टाका</translation>
 <translation id="923686485342484400">साइन आउट करण्यासाठी Control Shift Q दोनदा दाबा.</translation>
+<translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="98515147261107953">लँडस्केप</translation>

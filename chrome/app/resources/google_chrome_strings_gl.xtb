@@ -194,6 +194,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6368958679917195344">Chrome OS está creado con <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Se queres usar Rosetta para reproducir contido multimedia protexido, debes reiniciar Chrome.</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
@@ -256,6 +257,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Hai unha nova versión de Google Chrome dispoñible que é máis rápida que as anteriores.</translation>
+<translation id="861359755029082151">Rosetta permite que Chrome reproduza contido multimedia protexido nesta páxina.</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
@@ -269,6 +271,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8834965163890861871">Google Chrome está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="884296878221830158">Tamén controla que páxina se mostra ao iniciar Chrome ou ao facer clic no botón Inicio.</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
+<translation id="8907709077090383765">Para permitir que Chrome reproduza contido multimedia protexido, debes instalar Rosetta. Queres facelo agora?</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>

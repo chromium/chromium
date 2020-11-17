@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">화면 캡처</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
 <translation id="1113597929977215864">간단히 보기 표시</translation>
+<translation id="1118561384561215815">웹에서의 작업 관련 도움받기</translation>
 <translation id="1123070903960493543">Chrome과 상호작용하는 방식, 선택한 설정, Chrome 비정상 종료 세부정보</translation>
 <translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
 <translation id="1129510026454351943">세부정보: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1754404134430936718">텍스트가 복사됨</translation>
+<translation id="1772137089884020309">북마크 폴더 목록이 닫힘</translation>
 <translation id="1782483593938241562">종료일: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
@@ -181,6 +183,7 @@
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2286841657746966508">결제주소</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
+<translation id="230155349749732438">이 설정을 사용하려면 <ph name="BEGIN_LINK" />검색 및 탐색 기능 개선<ph name="END_LINK" />이 사용 설정되어 있어야 합니다.</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2321958826496381788">편하게 읽을 수 있을 때까지 슬라이더를 드래그하세요. 단락을 두 번 탭하면 텍스트가 이 이상의 크기로 표시됩니다.</translation>
@@ -315,6 +318,7 @@
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3269956123044984603">다른 기기에서 탭을 가져오려면 Android 계정 설정에서 '데이터 자동 동기화'를 사용 설정하세요.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
+<translation id="3284510035090979597">능동적 지원</translation>
 <translation id="3285080554353377245">Chrome 사용 방법에 관한 동영상</translation>
 <translation id="3288003805934695103">페이지 새로고침</translation>
 <translation id="32895400574683172">알림이 허용되었습니다</translation>
@@ -422,6 +426,7 @@
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
+<translation id="4095189195365058471">나중에 읽기 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
@@ -514,6 +519,7 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{다운로드 1개 완료}other{다운로드 #개 완료}}</translation>
 <translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{다운로드 1개가 예약되었습니다.}other{다운로드 #개가 예약되었습니다.}}</translation>
+<translation id="4791358705705538979">웹에서 결제와 같은 작업을 처리하도록 도와줍니다.</translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
@@ -663,6 +669,7 @@
 <translation id="5797070761912323120">Google에서 내 방문 기록을 사용하여 Google 검색, 광고 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="5810864297166300463">웹 어시스턴트</translation>
 <translation id="5814131985548525293">여기에 입력하거나 음성 아이콘을 탭하여 시작</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -857,6 +864,7 @@
 <translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
 <translation id="7029809446516969842">비밀번호</translation>
+<translation id="7030675613184250187">읽기 목록에 페이지를 저장하여 다시 찾아보거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="703523980599857277">홈페이지 변경</translation>
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
@@ -877,6 +885,7 @@
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
+<translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7189372733857464326">Google Play 서비스 업데이트 완료 대기 중</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
@@ -1015,6 +1024,7 @@
 <translation id="8127542551745560481">홈페이지 수정</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8137558756159375272">터치하여 검색에서 선택한 단어와 현재 페이지를 Google 검색에 컨텍스트로 발송하세요. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 이 기능을 사용 중지할 수 있습니다.</translation>
+<translation id="8153351135626613369">지원되는 웹사이트에서 도울 수 있는 작업이 감지되면 어시스턴트가 표시됩니다.</translation>
 <translation id="8156139159503939589">어떤 언어로 읽을 수 있으신가요?</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
@@ -1112,6 +1122,7 @@
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8920114477895755567">부모님의 세부정보를 기다리는 중</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
+<translation id="8928626432984354940">북마크 폴더 목록이 절반 높이로 열림</translation>
 <translation id="8937772741022875483">디지털 웰빙에서 Chrome 활동을 삭제할까요?</translation>
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8951232171465285730">Chrome을 통해 <ph name="MEGABYTES" />MB를 절약했습니다.</translation>
@@ -1151,7 +1162,6 @@
 <translation id="9155898266292537608">단어를 살짝 탭하여 검색할 수도 있습니다</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="9191031968346938109">추가할 위치…</translation>
-<translation id="919615279147764192">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다. 이 정보는 Google 계정에 저장될 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지할 수 있습니다.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1173,7 @@
 <translation id="93753284658583800">홈페이지 변경됨</translation>
 <translation id="938850635132480979">오류: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">암호 입력</translation>
+<translation id="948039501338975565">북마크 폴더 목록</translation>
 <translation id="95817756606698420">중국에서 검색할 때 Chrome에서 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />를 사용할 수 있습니다. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="962979164594783469">앱 설치</translation>
 <translation id="968900484120156207">방문한 페이지가 여기에 표시됩니다.</translation>

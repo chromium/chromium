@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Хц). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Комбинацията за отваряне на диспечера на задачите е променена. Моля, използвайте „<ph name="NEW_SHORTCUT" />“ вместо „<ph name="OLD_SHORTCUT" />“.</translation>
 <translation id="1923539912171292317">Автоматични кликвания</translation>
-<translation id="1924640696879807758">От телефона</translation>
 <translation id="1928739107511554905">За да инсталирате актуализацията, използвайте сензорния екран да рестартирате своя Chromebook, докато клавиатурата е прикачена.</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">Няма връзка</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
-<translation id="2413728805700750528">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="DOMAIN" /></translation>
 <translation id="2427507373259914951">Кликване с левия бутон</translation>
 <translation id="2429753432712299108">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Преди да приемете, моля, уверете се, че на него се показва следният ключ за достъп: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">Придвижване назад</translation>
 <translation id="4114315158543974537">Включване на функцията „Център за телефоните“</translation>
 <translation id="4121728057981832179">Виртуална машина използва микрофона ви</translation>
+<translation id="4126167871198063089">Изход от функцията „Прочитане на глас“</translation>
 <translation id="4129129681837227511">За да виждате известия на заключения екран, отключете устройството и променете настройката</translation>
 <translation id="4146833061457621061">„Play music“ („Пусни музика“)</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> се управлява от <ph name="DOMAIN" /></translation>
 <translation id="415719264485676252">Заснемането на екрана е блокирано</translation>
 <translation id="4157822100366708405">Настройки за тъмната тема</translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4570957409596482333">Бутон за функцията Прочитане на глас</translation>
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Показване на визуализации</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч, <ph name="MINUTES" /> мин и <ph name="SECONDS" /> сек</translation>
 <translation id="4975771730019223894">Значки за приложенията</translation>
+<translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5019169674188023236">Изглежда, че Bluetooth или функцията за Wi-Fi са изключени на устройството ви <ph name="DEVICE_TYPE" />. За да използвате Phone Hub, моля, проверете връзката си.</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
+<translation id="504465286040788597">Предишен абзац</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">Превключване на режима на диктуване</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5571066253365925590">Bluetooth е активиран</translation>
+<translation id="557563299383177668">Следващ абзац</translation>
 <translation id="558849140439112033">С плъзгане изберете областта, която да се заснеме</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Натиснете Ctrl + Alt + Z, за да деактивирате обратната връзка с говор.</translation>
@@ -613,7 +615,6 @@
 <translation id="6910714959251846841">Тази актуализация изисква Powerwash на устройството ви. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6945221475159498467">Избиране</translation>
-<translation id="6953890208095195458">Функцията „Запис на екрана“ бе спряна от администратора ви заради съдържанието, което се показва на екрана.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Първи стъпки</translation>
 <translation id="6981982820502123353">Достъпност</translation>
@@ -667,7 +668,6 @@
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Заснемането на екрана е блокирано от администратора ви.</translation>
 <translation id="7548434653388805669">Време е за сън</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
@@ -726,6 +726,7 @@
 <translation id="8029247720646289474">Не бе установена връзка с точката за достъп</translation>
 <translation id="8029629653277878342">За по-висока сигурност се изисква парола или ПИН</translation>
 <translation id="8030169304546394654">Няма връзка</translation>
+<translation id="8036504271468642248">Предишно изречение</translation>
 <translation id="8042893070933512245">Отваряне на менюто с настройки за достъпност</translation>
 <translation id="8048123526339889627">Настройки за Bluetooth</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
@@ -864,6 +865,7 @@
 <translation id="921989828232331238">Родителят ви заключи устройството ви за деня</translation>
 <translation id="9220525904950070496">Премахване на профила</translation>
 <translation id="923686485342484400">Натиснете два пъти „Control+Shift+Q“ за изход.</translation>
+<translation id="925832987464884575">Скриване на визуализациите</translation>
 <translation id="938963181863597773">„What's on my calendar?“ („Какво има в календара ми?“)</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="98515147261107953">Хоризонтално</translation>

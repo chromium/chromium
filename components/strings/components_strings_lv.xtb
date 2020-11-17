@@ -305,6 +305,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2102495993840063010">Android lietotnes</translation>
 <translation id="2107021941795971877">Balsta struktūras drukāšana</translation>
 <translation id="2108755909498034140">Restartējiet datoru</translation>
+<translation id="2111166930115883695">Lai spēlētu, nospiediet atstarpes taustiņu</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Karte</translation>
 <translation id="2114841414352855701">Ignorēta, jo to atcēla politika <ph name="POLICY_NAME" />.</translation>
@@ -486,7 +487,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2903493209154104877">Adreses</translation>
 <translation id="290376772003165898">Vai lapa nav šajā valodā: <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Konstatētas tīkla izmaiņas.</translation>
-<translation id="2910133103376701357">Jūsu ierīci un kontu pārvalda <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Uzdevuma konta lietotāja ID</translation>
 <translation id="2915068235268646559">Avārija no: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Aizveriet citas programmas</translation>
@@ -520,6 +520,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3010559122411665027">Saraksta ieraksts “<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automātiski bloķēta</translation>
 <translation id="3016780570757425217">uzzināt jūsu atrašanās vietu</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, lai noņemtu ieteikumu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3023071826883856138">You4 (aploksne)</translation>
 <translation id="3024663005179499861">Politikas tips nav pareizs.</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
@@ -757,10 +758,10 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     tās pieprasījumu, taču šobrīd šo politiku nevar piemērot.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumentā ir {COUNT} lapa}zero{PDF dokumentā ir {COUNT} lapas}one{PDF dokumentā ir {COUNT} lapa}other{PDF dokumentā ir {COUNT} lapas}}</translation>
 <translation id="4030383055268325496">&amp;Atsaukt pievienošanu</translation>
-<translation id="4032320456957708163">Jūsu pārlūku pārvalda <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4058922952496707368">Atslēga <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (aploksne)</translation>
+<translation id="4067669230157909013">Ekrāna tveršana ir atsākta.</translation>
 <translation id="4067947977115446013">Derīgas adreses pievienošana</translation>
 <translation id="4072486802667267160">Apstrādājot pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4075732493274867456">Klients un serveris neatbalsta bieži lietoto SSL protokola versiju vai šifra komplektu.</translation>
@@ -840,11 +841,11 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4270541775497538019">6. izvades vieta</translation>
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
-<translation id="4279811152705618813">Jūsu ierīci (veids: <ph name="DEVICE_TYPE" />) pārvalda <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4300675098767811073">Vairāki caurumi labajā pusē</translation>
+<translation id="4302514097724775343">Lai spēlētu, pieskarieties dinozauram</translation>
 <translation id="4302965934281694568">Chou3 (aploksne)</translation>
 <translation id="4305666528087210886">Jūsu failam nevarēja piekļūt</translation>
 <translation id="4305817255990598646">Pāriet</translation>
@@ -960,7 +961,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4771973620359291008">Radās nezināma kļūda.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Uznirstošais logs ir bloķēts}zero{# uznirstošie logi ir bloķēti}one{# uznirstošais logs ir bloķēts}other{# uznirstošie logi ir bloķēti}}</translation>
 <translation id="4780366598804516005">1. pastkaste</translation>
-<translation id="4780900888022378816">Jūsu ierīci pārvalda <ph name="ENROLLMENT_DOMAIN" />, un jūsu kontu pārvalda <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Pāriet uz šo cilni</translation>
 <translation id="4791134497475588553">Instalētās Linux lietotnes un to iepriekšējās lietošanas laiks</translation>
 <translation id="4792686369684665359">Informācija, ko jūs gatavojaties iesniegt, netiek aizsargāta</translation>
@@ -1173,7 +1173,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Šī vietne varētu būt viltota vai krāpnieciska. Chrome iesaka pamest vietni tūlīt.</translation>
 <translation id="5610142619324316209">Pārbaudiet savienojumu.</translation>
 <translation id="5610807607761827392">Varat pārvaldīt karšu un adrešu informāciju sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tulkojiet šīs lapas saturu, izmantojot Google tulkotāju.</translation>
@@ -1245,6 +1244,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5905445707201418379">Bloķēts, pamatojoties uz <ph name="ORIGIN" /> izcelsmes politiku.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (veikta sinhronizācija)</translation>
+<translation id="5913377024445952699">Ekrānuzņēmumu izveide ir pārtraukta</translation>
 <translation id="59174027418879706">Iespējots</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Iesl.</translation>
@@ -1257,6 +1257,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5963413905009737549">Sadaļa</translation>
 <translation id="5967592137238574583">Kontaktinformācijas rediģēšana</translation>
 <translation id="5967867314010545767">Noņemt no vēstures</translation>
+<translation id="5968793460449681917">Katrā apmeklējuma reizē</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1401,7 +1402,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6529602333819889595">&amp;Dzēšanas atsaukuma atcelšana</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
 <translation id="6547208576736763147">Divi caurumi kreisajā pusē</translation>
-<translation id="6554795675067793129">Jūsu kontu pārvalda <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Atcelt atsaukšanu</translation>
 <translation id="6569060085658103619">Jūs skatāt paplašinājumu lapu.</translation>
 <translation id="6573200754375280815">Divi caurumi labajā pusē</translation>
@@ -1472,6 +1472,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6895330447102777224">Karte ir apstiprināta</translation>
 <translation id="6897140037006041989">Lietotāja aģents</translation>
 <translation id="6898699227549475383">Organizācija (O)</translation>
+<translation id="6907293445143367439">Vai atļaujat vietnei <ph name="SITE_NAME" /> veikt tālāk norādītās darbības?</translation>
 <translation id="6910240653697687763">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pilnībā pārvaldīt jūsu MIDI ierīces.</translation>
 <translation id="6915804003454593391">Lietotājs:</translation>
 <translation id="6934672428414710184">Šis vārds ir no jūsu Google konta</translation>
@@ -1908,6 +1909,7 @@ Papildu informācija:
 <translation id="858637041960032120">Piev. tālr. nr.
 </translation>
 <translation id="8589998999637048520">Optimālā kvalitāte</translation>
+<translation id="8600271352425265729">Tikai šoreiz</translation>
 <translation id="860043288473659153">Bankas kartes īpašnieka vārds</translation>
 <translation id="8606726445206553943">izmantot jūsu MIDI ierīces</translation>
 <translation id="8612761427948161954">Labdien, <ph name="USERNAME" />!
@@ -1917,6 +1919,7 @@ Papildu informācija:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nav atbilstošu paroļu. Rādīt visas saglabātās paroles.</translation>
 <translation id="8625384913736129811">Saglabāt šo karti šajā ierīcē</translation>
+<translation id="8627040765059109009">Ekrānuzņēmumu izveide atsākta</translation>
 <translation id="8657078576661269990">Jūsu administrators bloķēja <ph name="ORIGIN_NAME" /> satura kopīgošanu ar <ph name="VM_NAME_1" /> un <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
 <translation id="867224526087042813">Iespiedloksne</translation>
@@ -2064,6 +2067,7 @@ Papildu informācija:
 <translation id="939736085109172342">Jauna mape</translation>
 <translation id="945855313015696284">Pārbaudiet tālāk sniegto informāciju un dzēsiet visas nederīgās kartītes.</translation>
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
+<translation id="951941430552851965">Jūsu administrators pārtrauca ekrāna tveršanu jūsu ekrānā redzamā satura dēļ.</translation>
 <translation id="961663415146723894">Iesējums apakšdaļā</translation>
 <translation id="962484866189421427">Šis saturs jūsu ierīcē var mēģināt instalēt maldinošas lietotnes, kas tiek uzdodas par cita veida saturu, vai vākt datus, kas var tikt izmantoti jūsu izsekošanai. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>

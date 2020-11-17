@@ -185,6 +185,7 @@
 <translation id="6368958679917195344">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari addicional de codi obert<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">S'està actualitzant Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Perquè Rosetta pugui reproduir contingut multimèdia protegit, has de reiniciar Chrome.</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
 <translation id="6679975945624592337">Permet que Google Chrome s'executi en segon pla</translation>
 <translation id="6750954913813541382">Per corregir els errors d'ortografia, Chrome envia a Google el text que escrius al navegador</translation>
@@ -247,6 +248,7 @@
 <translation id="8521348052903287641">Regla d'entrada de Google Chrome Dev per permetre el trànsit d'mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Hi ha disponible una nova versió de Google Chrome, i és més ràpida que mai.</translation>
+<translation id="861359755029082151">Rosetta permet que Chrome reprodueixi el contingut multimèdia protegit d'aquesta pàgina.</translation>
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="861702415419836452">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 minut}other{Chrome es reiniciarà d'aquí a # minuts}}</translation>
@@ -260,6 +262,7 @@
 <translation id="8834965163890861871">Google Chrome està provant d'editar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="884296878221830158">També controla la pàgina que es mostra quan inicieu Chrome o quan feu clic al botó Pàgina d'inici.</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
+<translation id="8907709077090383765">Per permetre que Chrome reprodueixi contingut multimèdia protegit, has d'instal·lar Rosetta. Vols instal·lar-lo ara?</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8922193594870374009">Per enviar un número del dispositiu <ph name="ORIGIN" /> al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>

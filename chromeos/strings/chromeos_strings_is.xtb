@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">DNS-biðtími</translation>
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1478594628797167447">Skanni</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> stjórnar þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
 <translation id="150962533380566081">Ógilt PUK-númer.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
+<translation id="1641857168437328880">Skjalamatari (einhliða)</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
 <translation id="1703835215927279855">Bréf</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Greining á tengigetu</translation>
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
+<translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> stjórnar þessu tæki og hefur aðgang að öllum aðgerðum, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
-<translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> er stjórnað af <ph name="ENROLLMENT_DOMAIN" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="4034824040120875894">Prentari</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4378373042927530923">Ekki keyra</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Skannaðar skrár vistaðar!</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
 <translation id="4429881212383817840">Kerberos-miði rennur út fljótlega</translation>
 <translation id="445059817448385655">Eldra aðgangsorð</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4985509611418653372">Keyra</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
 <translation id="520299634122159966">Engir skannar tiltækir</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>
@@ -122,12 +122,14 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
+<translation id="65587193855025101">Flatur skanni</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
+<translation id="6839141349259399400">Er ekki hægt að tengjast skönnum?</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7805768142964895445">Staða</translation>
+<translation id="7855434858642800953">Skönnuð skrá vistuð!</translation>
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
+<translation id="8160445423316272678">Komdu skjalinu fyrir í skannanum og veldu <ph name="SPAN_BEGIN" />Skanna<ph name="SPAN_END" /> til að hefjast handa</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8294431847097064396">Uppruni</translation>
@@ -159,5 +163,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>
 </translationbundle>

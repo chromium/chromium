@@ -2,18 +2,22 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
+<translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
+<translation id="1238612778414822719">Latència d'HTTPS</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
+<translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1478594628797167447">Escàners</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i és possible que pugui supervisar la teva activitat.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
+<translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -34,7 +38,7 @@
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
-<translation id="2517472476991765520">Cerca</translation>
+<translation id="2517472476991765520">Escaneja</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
@@ -42,6 +46,7 @@
 <translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
+<translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
@@ -59,16 +64,16 @@
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
-<translation id="4027485274696301677">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="ENROLLMENT_DOMAIN" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
+<translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Els fitxers escanejats s'han desat.</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
@@ -79,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
+<translation id="467715984478005772">Possible tallafoc</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
 <translation id="469379815867856270">Intensitat del senyal</translation>
 <translation id="4731797938093519117">Accés parental</translation>
@@ -89,7 +95,6 @@
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executa</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
@@ -111,6 +116,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
+<translation id="6061772781719867950">Algunes sol·licituds HTTP han fallat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
@@ -122,27 +128,35 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
+<translation id="65587193855025101">Finestra plana</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
+<translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
+<translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
+<translation id="6839141349259399400">No et pots connectar als escàners?</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7855434858642800953">El fitxer escanejat s'ha desat.</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
+<translation id="8160445423316272678">Col·loca el document a l'escàner i selecciona <ph name="SPAN_BEGIN" />Escaneja<ph name="SPAN_END" /> per començar</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8294431847097064396">Font</translation>
+<translation id="8302368968391049045">Tallafoc HTTPS</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>
@@ -159,5 +173,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 </translationbundle>

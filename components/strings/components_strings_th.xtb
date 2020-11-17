@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">ที่อยู่</translation>
 <translation id="290376772003165898">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" />ใช่ไหม</translation>
 <translation id="2909946352844186028">ตรวจพบการเปลี่ยนแปลงเครือข่าย</translation>
-<translation id="2910133103376701357">อุปกรณ์และบัญชีของคุณจัดการโดย <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="2911973620368911614">รหัสผู้ใช้บัญชีงาน</translation>
 <translation id="2915068235268646559">การขัดข้องเมื่อ<ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">ปิดโปรแกรมอื่นๆ</translation>
@@ -752,7 +751,6 @@
 <translation id="3996311196211510766">เว็บไซต์ <ph name="ORIGIN" /> ขอให้บังคับใช้นโยบายดั้งเดิมกับคำขอทั้งหมดที่ส่งถึงเว็บไซต์ แต่ขณะนี้ใช้นโยบายนี้ไม่ได้</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{เอกสาร PDF ที่มี {COUNT} หน้า}other{เอกสาร PDF ที่มี {COUNT} หน้า}}</translation>
 <translation id="4030383055268325496">&amp;เลิกทำการเพิ่ม</translation>
-<translation id="4032320456957708163">เบราว์เซอร์ของคุณจัดการโดย <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">ซีเปีย</translation>
 <translation id="4058922952496707368">คีย์ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ซองจดหมาย)</translation>
@@ -831,7 +829,6 @@
 <translation id="4270541775497538019">สแต็กเกอร์ 6</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4277028893293644418">รีเซ็ตรหัสผ่าน</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> ของคุณจัดการโดย <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ลงในบัญชี Google ของคุณแล้ว}other{บันทึกบัตรเหล่านี้ลงในบัญชี Google ของคุณแล้ว}}</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">ขยาย</translation>
@@ -951,7 +948,6 @@
 <translation id="4771973620359291008">มีข้อผิดพลาดที่ไม่ทราบเกิดขึ้น</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ป๊อปอัปถูกบล็อก}other{# ป๊อปอัปถูกบล็อก}}</translation>
 <translation id="4780366598804516005">กล่องจดหมาย 1</translation>
-<translation id="4780900888022378816">อุปกรณ์ของคุณจัดการโดย <ph name="ENROLLMENT_DOMAIN" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_DOMAIN" /></translation>
 <translation id="4785689107224900852">เปลี่ยนเป็นแท็บนี้</translation>
 <translation id="4791134497475588553">แอป Linux ที่ติดตั้งไว้และเวลาที่ใช้งานครั้งล่าสุด</translation>
 <translation id="4792686369684665359">ข้อมูลที่คุณกำลังจะส่งไม่ปลอดภัย</translation>
@@ -1164,7 +1160,6 @@
 <translation id="560412284261940334">ไม่สนับสนุนการจัดการ</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">เว็บไซต์นี้อาจเป็นเว็บไซต์ปลอมหรือฉ้อโกง Chrome แนะนำให้คุณออกจากเว็บไซต์เดี๋ยวนี้</translation>
 <translation id="5610142619324316209">ตรวจสอบการเชื่อมต่อ</translation>
 <translation id="5610807607761827392">คุณสามารถจัดการบัตรและที่อยู่ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="561165882404867731">แปลหน้านี้โดยใช้ Google แปลภาษา</translation>
@@ -1236,6 +1231,7 @@
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5905445707201418379">ถูกบล็อกตามนโยบายดั้งเดิมของ <ph name="ORIGIN" /></translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ซิงค์แล้ว)</translation>
+<translation id="5913377024445952699">การจับภาพหน้าจอหยุดอยู่ชั่วคราว</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">เปิด</translation>
@@ -1392,7 +1388,6 @@
 <translation id="6529602333819889595">&amp;ทำซ้ำการนำออก</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
-<translation id="6554795675067793129">บัญชีของคุณจัดการโดย <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
@@ -1908,6 +1903,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ไม่มีรหัสผ่านที่ตรงกัน แสดงรหัสผ่านที่บันทึกไว้ทั้งหมด</translation>
 <translation id="8625384913736129811">บันทึกบัตรนี้ลงในอุปกรณ์นี้</translation>
+<translation id="8627040765059109009">การจับภาพหน้าจอกลับมาทำงานอีกครั้งแล้ว</translation>
 <translation id="8657078576661269990">ผู้ดูแลระบบบล็อกการแชร์จาก <ph name="ORIGIN_NAME" /> ไปยัง <ph name="VM_NAME_1" /> และ <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">สรุปคำสั่งซื้อ <ph name="TOTAL_LABEL" /> รายละเอียดเพิ่มเติม</translation>
 <translation id="867224526087042813">ลายเซ็น</translation>

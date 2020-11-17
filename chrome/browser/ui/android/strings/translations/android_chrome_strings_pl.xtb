@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Zrzut ekranu</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
+<translation id="1118561384561215815">Pomoc dotycząca zadań w sieci</translation>
 <translation id="1123070903960493543">Sposób interakcji z Chrome, wybrane ustawienia, szczegóły awarii przeglądarki Chrome</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1129510026454351943">Szczegóły: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1754404134430936718">Tekst został skopiowany</translation>
+<translation id="1772137089884020309">Lista folderów zakładek jest zamknięta</translation>
 <translation id="1782483593938241562">Data zakończenia: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792959175193046959">W dowolnej chwili możesz zmienić domyślną lokalizację pobierania</translation>
@@ -181,6 +183,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2286841657746966508">Adres rozliczeniowy</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
+<translation id="230155349749732438">Aby można było używać tego ustawienia, musi być włączona opcja <ph name="BEGIN_LINK" />Ulepsz wyszukiwanie i przeglądanie<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
@@ -204,6 +207,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2450907520913474542">Poznaj tematy omawiane w witrynach, nie opuszczając strony. Funkcja „Dotknij, by wyszukać” wysyła słowo i najbliższy kontekst do wyszukiwarki Google, a następnie zwraca definicje, zdjęcia, wyniki wyszukiwania i inne informacje.
 
 Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować wyszukiwanie, wybierz więcej lub mniej słów. Aby edytować wyszukiwanie, otwórz panel i kliknij ikonę, by przejść do nowej karty, i wprowadź zmiany w polu wyszukiwania.</translation>
+<translation id="2459390580524506445">Ulepszone wyszukiwanie głosowe</translation>
 <translation id="246532703174860178">Udostępnij</translation>
 <translation id="2478076885740497414">Zainstaluj aplikację</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
@@ -272,6 +276,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2932150158123903946">Dane aplikacji Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Karta podglądu jest zamknięta</translation>
 <translation id="2956410042958133412">Tym kontem zarządzają <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nieprzeczytana strona}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytane strony}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanych stron}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanej strony}}</translation>
 <translation id="2962095958535813455">Przełączono na karty incognito</translation>
 <translation id="2979025552038692506">Wybrana karta incognito</translation>
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
@@ -315,11 +320,13 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="3269956123044984603">Aby korzystać z kart ze swoich pozostałych urządzeń, włącz opcję „Autosynchronizacja danych” w ustawieniach konta na urządzeniu z Androidem.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
+<translation id="3284510035090979597">Aktywna pomoc</translation>
 <translation id="3285080554353377245">Filmy na temat korzystania z Chrome</translation>
 <translation id="3288003805934695103">Odśwież stronę</translation>
 <translation id="32895400574683172">Powiadomienia są włączone</translation>
 <translation id="3290991969712132877">Aby móc szybciej otwierać tę stronę, dodaj ją do ekranu głównego, używając przycisku Więcej opcji.</translation>
 <translation id="3295530008794733555">Szybsze przeglądanie. Mniejsze zużycie danych.</translation>
+<translation id="3297344142967351106">Pomoc głosowa</translation>
 <translation id="3298243779924642547">Lżejsza</translation>
 <translation id="3303414029551471755">Przejść do pobrania treści?</translation>
 <translation id="3315103659806849044">Teraz dostosowujesz ustawienia synchronizacji i usług Google. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
@@ -422,6 +429,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4084682180776658562">Dodaj do zakładek</translation>
 <translation id="4084712963632273211">Opublikowane na <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />wyświetlone przez Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
+<translation id="4095189195365058471">Przeczytaj później <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4116038641877404294">Pobierz strony, by przeglądać je w trybie offline</translation>
@@ -514,6 +522,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Ukończono pobieranie 1 pliku.}few{Ukończono pobieranie # plików.}many{Ukończono pobieranie # plików.}other{Ukończono pobieranie # pliku.}}</translation>
 <translation id="4766678251456904326">Dodaj konto do urządzenia</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zaplanowano pobranie 1 pliku.}few{Zaplanowano pobranie # plików.}many{Zaplanowano pobranie # plików.}other{Zaplanowano pobranie # pliku.}}</translation>
+<translation id="4791358705705538979">Pomaga wykonywać różne czynności w internecie (np. dokonywać płatności)</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
@@ -619,6 +628,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
 <translation id="5527082711130173040">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. <ph name="BEGIN_LINK1" />Zwiększ uprawnienia<ph name="END_LINK1" />. Dostęp do lokalizacji jest <ph name="BEGIN_LINK2" />wyłączony na tym urządzeniu<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zamknij karty incognito</translation>
+<translation id="5530920986376047241">Na liście Do przeczytania możesz zapisywać strony, do których chcesz wrócić później</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
@@ -663,6 +673,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5797070761912323120">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania, reklamy i działanie innych usług</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
+<translation id="5810864297166300463">Pomoc dotycząca sieci</translation>
 <translation id="5814131985548525293">Wpisz coś tutaj lub kliknij ikonę mikrofonu, by wyszukiwać głosem</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -697,6 +708,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5982307838673692400">Otwórz kartę w trybie incognito</translation>
 <translation id="6000066717592683814">Zachowaj Google</translation>
 <translation id="6005538289190791541">Proponowane hasło</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stronę}few{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}many{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stron}other{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}}</translation>
 <translation id="6014293228235665243">Nieprzeczytane</translation>
 <translation id="6036057147555329831">Dodatkowy moduł ICU</translation>
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
@@ -857,6 +869,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7030675613184250187">Na liście Do przeczytania możesz zapisywać strony, które chcesz przeczytać ponownie lub do których chcesz mieć dostęp offline</translation>
 <translation id="703523980599857277">Zmień stronę główną</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
@@ -877,6 +890,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
+<translation id="718926126787620637">Lista folderów zakładek otwarta na całą wysokość</translation>
 <translation id="7189372733857464326">Czekam na zakończenie aktualizacji Usług Google Play</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7233236755231902816">Aby wyświetlać strony internetowe w swoim języku, pobierz najnowszą wersję Chrome</translation>
@@ -929,6 +943,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="756809126120519699">Wyczyszczono dane Chrome</translation>
 <translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Pobrano <ph name="FILES_DOWNLOADED_ONE" /> plik}few{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliki}many{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> plików}other{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliku}}</translation>
+<translation id="7583262514280211622">Tu znajdziesz swoją listę Do przeczytania</translation>
 <translation id="7588219262685291874">Włącz tryb ciemny, gdy na urządzeniu jest aktywne oszczędzanie baterii</translation>
 <translation id="7593557518625677601">Otwórz ustawienia Androida i ponownie włącz jego synchronizację, by uruchomić Synchronizację Chrome</translation>
 <translation id="7596558890252710462">System operacyjny</translation>
@@ -960,6 +975,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7772375229873196092">Zamknij aplikację <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Sprawdź później, czy pojawiły się nowe</translation>
+<translation id="7786595606756654269">Podczas wyszukiwania w internecie i korzystania ze stron, na które wchodzisz, Asystent Google oferuje bardziej zaawansowane funkcje głosowe. Ma on dostęp do adresów URL i zawartości stron, na których go używasz.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Liczba przywróconych kart: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
@@ -985,6 +1001,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia i włącz go.</translation>
 <translation id="7963646190083259054">Dostawca:</translation>
 <translation id="7967911570373677897">Aby zeskanować kod QR, otwórz ustawienia i zezwól Chrome na używanie aparatu</translation>
+<translation id="7968014550143838305">Dodano do listy Do przeczytania</translation>
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
@@ -1015,6 +1032,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8127542551745560481">Edytuj stronę główną</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8137558756159375272">Funkcja „Dotknij, by wyszukać” wysyła zaznaczone słowo i bieżącą stronę jako kontekst do wyszukiwarki Google. Możesz ją wyłączyć w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Asystent pojawi się, gdy wykryje, że może Ci pomóc (na obsługiwanych stronach)</translation>
 <translation id="8156139159503939589">W jakich językach umiesz czytać?</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
@@ -1045,6 +1063,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8372925856448695381">Język <ph name="LANG" /> jest gotowy.</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8407396331882458341">1. Wybierz aplikację <ph name="APP_NAME" />\n2. Kliknij „Zawsze”</translation>
+<translation id="8410695015584479363">Monitoruj ceny</translation>
 <translation id="8413126021676339697">Wyświetl całą historię</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8427875596167638501">Karta podglądu jest otwarta w połowie</translation>
@@ -1112,6 +1131,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8912362522468806198">Konta Google</translation>
 <translation id="8920114477895755567">Oczekiwanie na informacje o rodzicach.</translation>
 <translation id="8922289737868596582">Pobierz strony, używając przycisku Więcej opcji, by korzystać z nich w trybie offline</translation>
+<translation id="8928626432984354940">Lista folderów zakładek otwarta do połowy wysokości</translation>
 <translation id="8937772741022875483">Usunąć Twoją aktywność w Chrome z Cyfrowej równowagi?</translation>
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
 <translation id="8951232171465285730">Chrome pozwolił Ci zaoszczędzić <ph name="MEGABYTES" /> MB</translation>
@@ -1151,7 +1171,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="9155898266292537608">Możesz też wyszukiwać szybkim kliknięciem słowa</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="9191031968346938109">Dodaj do…</translation>
-<translation id="919615279147764192">Aby pomóc Ci w wykonywaniu zadań, Google będzie otrzymywać adresy URL i zawartość stron, na których używasz Asystenta, a także informacje, które przekazujesz przy pomocy Asystenta. Te informacje mogą być przechowywane na Twoim koncie Google. Możesz wyłączyć Asystenta w ustawieniach Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204836675896933765">Pozostał jeden plik</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="93753284658583800">Strona główna została zmieniona</translation>
 <translation id="938850635132480979">Błąd: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Wpisz hasło</translation>
+<translation id="948039501338975565">Lista folderów zakładek</translation>
 <translation id="95817756606698420">Chrome może używać <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> do wyszukiwania w Chinach. Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Zainstaluj tę aplikację</translation>
 <translation id="968900484120156207">Tutaj pojawią się strony, które odwiedzisz</translation>

@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">ແອັບ Android</translation>
 <translation id="2107021941795971877">ການຮອງຮັບການພິມ</translation>
 <translation id="2108755909498034140">ປິດເປີດຄອມພິວເຕີຂອງທ່ານຄືນໃໝ່</translation>
+<translation id="2111166930115883695">ກົດຍະຫວ່າງເພື່ອຫຼິ້ນ</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">ບັດ</translation>
 <translation id="2114841414352855701">ຖືກລະເລີຍ ເພາະວ່າມັນຖືກລົບລ້າງໂດຍ <ph name="POLICY_NAME" />.</translation>
@@ -488,7 +489,6 @@
 <translation id="2903493209154104877">ທີ່​ຢູ່</translation>
 <translation id="290376772003165898">ໜ້າບໍ່ຢູ່ໃນ <ph name="LANGUAGE" /> ບໍ?</translation>
 <translation id="2909946352844186028">ກວດພົບການ​ປ່ຽນ​ແປງ​ເຄືອ​ຂ່າຍ​ແລ້ວ.</translation>
-<translation id="2910133103376701357">ອຸປະກອນ ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID ຜູ້ໃຊ້ບັນຊີວຽກ</translation>
 <translation id="2915068235268646559">ການຂັດຂ້ອງເມື່ອ <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">ປິດໂປຣແກຣມອື່ນ</translation>
@@ -522,6 +522,7 @@
 <translation id="3010559122411665027">ການປ້ອນເຂົ້າລາຍຊື່ "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">ບລັອກອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="3016780570757425217">ຮູ້​ຈັກ​ສະ​ຖານ​ທີ່​ຂອງ​ທ່ານ</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ກົດແຖບ ຈາກນັ້ນ Enter ເພື່ອລຶບການແນະນຳອອກ.</translation>
 <translation id="3023071826883856138">You4 (ຊອງຈົດໝາຍ)</translation>
 <translation id="3024663005179499861">ປະເພດນະໂຍບາຍຜິດພາດ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
@@ -760,10 +761,10 @@
     ຕົ້ນທາງກັບຄຳຂໍຂອງມັນທັງໝົດ, ແຕ່ລະບົບບໍ່ສາມາດນຳໃຊ້ນະໂຍບາຍນີ້ໄດ້ໃນປັດຈຸບັນນີ້.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}other{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}}</translation>
 <translation id="4030383055268325496">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງເພີ່ມ</translation>
-<translation id="4032320456957708163">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດໂດຍ <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
 <translation id="4058922952496707368">ປຸ່ມ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ຊອງຈົດໝາຍ)</translation>
+<translation id="4067669230157909013">ສືບຕໍ່ການຖ່າຍຮູບໜ້າຈໍແລ້ວ.</translation>
 <translation id="4067947977115446013">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
 <translation id="4072486802667267160">ມີຄວາມຜິດພາດໃນການດຳເນີນຄຳສັ່ງຊື້ຂອງທ່ານ, ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="4075732493274867456">ລູກຂ່າຍ ແລະ ເຊີບເວີບໍ່ຮອງຮັບເວີຊັນໂປຣໂຕຄໍ ຫຼື ຊຸດລະຫັດລັບ SSL ທົ່ວໄປ.</translation>
@@ -843,11 +844,11 @@
 <translation id="4270541775497538019">ສະແຕັກເກີ້ 6</translation>
 <translation id="4275830172053184480">ເລີ່ມຕົ້ນອຸປະກອນຂອງທ່ານໃໝ່</translation>
 <translation id="4277028893293644418">ຣີເຊັດລະຫັດຜ່ານ</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ບັນທຶກບັດນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ}other{ບັນທຶກບັດເຫຼົ່ານີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ}}</translation>
 <translation id="4297502707443874121">ຮູບຕົວຢ່າງສຳລັບໜ້າ <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
 <translation id="4300675098767811073">ເຈາະຮູເບື້ອງຂວາຫຼາຍຮູ</translation>
+<translation id="4302514097724775343">ແຕະ dino ເພື່ອຫຼິ້ນ</translation>
 <translation id="4302965934281694568">Chou3 (ຊອງຈົດໝາຍ)</translation>
 <translation id="4305666528087210886">ບໍ່ສາມາດເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໄດ້</translation>
 <translation id="4305817255990598646">ປ່ຽນ</translation>
@@ -963,7 +964,6 @@
 <translation id="4771973620359291008">ເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ບລັອກປັອບອັບແລ້ວ}other{ບລັອກ # ປັອບອັບແລ້ວ}}</translation>
 <translation id="4780366598804516005">ກ່ອງຈົດໝາຍ 1</translation>
-<translation id="4780900888022378816">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" /> ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">ປ່ຽນເປັນແຖບນີ້</translation>
 <translation id="4791134497475588553">ແອັບ Linux ທີ່ຕິດຕັ້ງແລ້ວ ແລະ ມີການນຳໃຊ້ພວກມັນຄັ້ງສຸດທ້າຍເມື່ອໃດ</translation>
 <translation id="4792686369684665359">ຂໍມູນທີ່ທ່ານຈະສົ່ງບໍ່ປອດໄພ</translation>
@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">ການຈັດການບໍ່ໄດ້ຮັບການຮອງຮັບ</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ເວັບໄຊນີ້ອາດເປັນເວັບໄຊປອມ ຫຼື ສໍ້ໂກງ. Chrome ແນະນຳໃຫ້ອອກດຽວນີ້.</translation>
 <translation id="5610142619324316209">ກຳລັງກວດເບິ່ງການເຊື່ອມຕໍ່</translation>
 <translation id="5610807607761827392">ທ່ານສາມາດຈັດການບັດ ແລະ ທີ່ຢູ່ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">ແປໜ້ານີ້ດ້ວຍ Google ແປພາສາ</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5905445707201418379">ບລັອກໄວ້ຕາມນະໂຍບາຍຕົ້ນທາງຂອງ <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
+<translation id="5913377024445952699">ຢຸດການຖ່າຍຮູບໜ້າຈໍໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ເປີດ</translation>
@@ -1260,6 +1260,7 @@
 <translation id="5963413905009737549">ຕອນ</translation>
 <translation id="5967592137238574583">ແກ້ໄຂຂໍ້ມູນຕິດຕໍ່</translation>
 <translation id="5967867314010545767">ເອົາ​ອອກຈາກ​ປະ​ຫວັດ</translation>
+<translation id="5968793460449681917">ໃນແຕ່ລະຄັ້ງທີ່ເຂົ້າເບິ່ງ</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5979084224081478209">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1404,7 +1405,6 @@
 <translation id="6529602333819889595">ເຮັດຄືນຄໍາສັ່ງລຶບ</translation>
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
 <translation id="6547208576736763147">ເຈາະຮູເບື້ອງຊ້າຍສອງຮູ</translation>
-<translation id="6554795675067793129">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">ເຮັດຄືນ</translation>
 <translation id="6569060085658103619">ທ່ານກຳລັງເບິ່ງໜ້າສ່ວນຂະຫຍາຍ</translation>
 <translation id="6573200754375280815">ເຈາະຮູຢູ່ເບື້ອງຂວາສອງຮູ</translation>
@@ -1475,6 +1475,7 @@
 <translation id="6895330447102777224">ຢືນຢັນບັດຂອງທ່ານແລ້ວ</translation>
 <translation id="6897140037006041989">ຕົວແທນຜູ້ໃຊ້</translation>
 <translation id="6898699227549475383">ອົງການຈັດຕັ້ງ (O)</translation>
+<translation id="6907293445143367439">ອະນຸຍາດໃຫ້ <ph name="SITE_NAME" /> ສາມາດ:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ຕ້ອງການໄດ້ຮັບການຄວບຄຸມເຕັມຕໍ່ກັບອຸປະກອນ MIDI ຂອງທ່ານ</translation>
 <translation id="6915804003454593391">ຜູ້​ໃຊ້​:</translation>
 <translation id="6934672428414710184">ຊື່ນີ້ມາຈາກບັນຊີ Google ຂອງທ່ານ</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8574899947864779331">ໃຊ້ Touch ID ເພື່ອຢືນຢັນບັດໄດ້ໄວຂຶ້ນ</translation>
 <translation id="858637041960032120">ເພີ່ມ​ເບີໂທລະ​ສັບ</translation>
 <translation id="8589998999637048520">ຄຸນນະພາບດີສຸດ</translation>
+<translation id="8600271352425265729">ອະນຸຍາດສະເພາະເທື່ອນີ້</translation>
 <translation id="860043288473659153">ຊື່ຜູ້ຖືບັດ</translation>
 <translation id="8606726445206553943">ໃຊ້​ອຸ​ປະ​ກອນ​ MIDI ຂອງ​ທ່ານ</translation>
 <translation id="8612761427948161954">ສະບາຍດີ <ph name="USERNAME" />,
@@ -1919,6 +1921,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ບໍ່ມີລະຫັດຜ່ານທີ່ກົງກັນ. ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ.</translation>
 <translation id="8625384913736129811">ບັນທຶກບັດນີ້ໃສ່ອຸປະກອນນີ້</translation>
+<translation id="8627040765059109009">ສືບຕໍ່ການຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="8657078576661269990">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກການແບ່ງປັນຈາກ <ph name="ORIGIN_NAME" /> ຫາ <ph name="VM_NAME_1" /> ແລະ <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">ສັງຮວມຄຳສັ່ງຊື້, <ph name="TOTAL_LABEL" />, ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="867224526087042813">ລາຍເຊັນ</translation>
@@ -2066,6 +2069,7 @@
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
 <translation id="945855313015696284">ກວດເບິ່ງຂໍ້ມູນຂ້າງລຸ່ມ ແລະ ລຶບບັດທີ່ໃຊ້ບໍ່ໄດ້ຕ່າງໆ</translation>
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>
+<translation id="951941430552851965">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຢຸດການຖ່າຍຮູບໜ້າຈໍໄວ້ຊົ່ວຄາວເນື່ອງຈາກເນື້ອຫາໃນໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="961663415146723894">ຫຍິບເຫຼັ້ມລຸ່ມສຸດ</translation>
 <translation id="962484866189421427">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງແອັບຫຼອກລວງທີ່ປອມເປັນສິ່ງອື່ນ ຫຼື ເກັບກຳຂໍ້ມູນທີ່ອາດຈະຖືກໃຊ້ເພື່ອຕິດຕາມທ່ານ. <ph name="BEGIN_LINK" />ຢືນຢັນການສະແດງ<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">ສ້າງເປັນທາງການ</translation>

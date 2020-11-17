@@ -488,7 +488,6 @@
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="290376772003165898">Səhifə <ph name="LANGUAGE" /> dilində deyil?</translation>
 <translation id="2909946352844186028">Şəbəkə dəyişikliyi aşkarlandı.</translation>
-<translation id="2910133103376701357">Cihaz və hesabınızı <ph name="ENROLLMENT_DOMAIN" /> idarə edir.</translation>
 <translation id="2911973620368911614">İş hesabının istifadəçi ID'si</translation>
 <translation id="2915068235268646559">Xəta tarixi: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Digər proqramları bağlayın</translation>
@@ -756,7 +755,6 @@
     bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edib, lakin bu siyasət hazırda tətbiq edilə bilmir.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} səhifədən ibarət PDF sənədi}other{{COUNT} səhifədən ibarət PDF sənədi}}</translation>
 <translation id="4030383055268325496">Əlavəni geri qaytarın</translation>
-<translation id="4032320456957708163">Brauzer <ph name="ENROLLMENT_DOMAIN" /> tərəfindən idarə edilir</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Açar "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zərf)</translation>
@@ -838,7 +836,6 @@
 <translation id="4270541775497538019">Yığıcı 6</translation>
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277028893293644418">Parolu sıfırlayın</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> tərəfindən idarə edilir</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabında yadda saxlanılıb}other{Bu kartlar Google Hesabında yadda saxlanılıb}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
@@ -958,7 +955,6 @@
 <translation id="4771973620359291008">Naməlum xəta baş verdi.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popap bloklandı}other{# popap bloklandı}}</translation>
 <translation id="4780366598804516005">Poçt qutusu 1</translation>
-<translation id="4780900888022378816">Cihazı <ph name="ENROLLMENT_DOMAIN" />, hesabı isə<ph name="ACCOUNT_DOMAIN" /> idarə edir.</translation>
 <translation id="4785689107224900852">Bu taba keçin</translation>
 <translation id="4791134497475588553">Quraşdırılan Linux tətbiqləri və ən son istifadə edildikləri vaxtlar</translation>
 <translation id="4792686369684665359">Təqdim etmək üzrə olduğunuz məlumat güvənli deyil</translation>
@@ -1171,7 +1167,6 @@
 <translation id="560412284261940334">İdarəetmə dəstəklənmir</translation>
 <translation id="5605670050355397069">Qeyd Kitabçası</translation>
 <translation id="5607240918979444548">Arxitektura-C</translation>
-<translation id="5608165884683734521">Bu sayt saxta və ya aldadıcı ola bilər. Chrome indi çıxmağınızı tövsiyə edir.</translation>
 <translation id="5610142619324316209">Bağlantınız yoxlanılır</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən kart və ünvanları idarə edə bilərsiniz.</translation>
 <translation id="561165882404867731">Bu səhifəni Google Tərcümə ilə tərcümə edin</translation>
@@ -1243,6 +1238,7 @@
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> təhlükəsizlik siyasətinə əsasən blok edildi.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinxronlaşdırıldı)</translation>
+<translation id="5913377024445952699">Ekranın çəkilməsinə pauza verildi</translation>
 <translation id="59174027418879706">Aktiv edilib</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Aktiv</translation>
@@ -1399,7 +1395,6 @@
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
 <translation id="6545864417968258051">Bluetooth skanı</translation>
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
-<translation id="6554795675067793129">Hesabınızı <ph name="ENROLLMENT_DOMAIN" /> idarə edir.</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
 <translation id="6569060085658103619">Artırma səhifəsinə baxırsınız</translation>
 <translation id="6573200754375280815">Sağdan qoşa deşik açın</translation>
@@ -1914,6 +1909,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8625384913736129811">Bu Kartı Bu Cihazda yadda saxlayın</translation>
+<translation id="8627040765059109009">Ekranın çəkilməsi davam etdirildi</translation>
 <translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME_1" /> və <ph name="VM_NAME_2" /> ilə paylaşma administratorunuz tərəfindən bloklanıb</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
 <translation id="867224526087042813">İmza</translation>

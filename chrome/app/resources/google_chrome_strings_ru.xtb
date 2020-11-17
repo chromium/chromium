@@ -185,6 +185,7 @@
 <translation id="6368958679917195344">Своим появлением Chrome OS обязана дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome для разработчиков</translation>
 <translation id="6566149418543181476">Обновление Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
+<translation id="6650333065969705433">Для запуска приложения Rosetta необходимо перезапустить Chrome.</translation>
 <translation id="6676384891291319759">Доступ в Интернет</translation>
 <translation id="6679975945624592337">Разрешить Google Chrome работать в фоновом режиме</translation>
 <translation id="6750954913813541382">Для проверки правописания Chrome отправляет в Google текст, который вы вводите в браузере.</translation>
@@ -247,6 +248,7 @@
 <translation id="8521348052903287641">Разрешить в Google Chrome для разработчиков передачу входящего трафика по протоколу mDNS</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Доступна новая версия Google Chrome, которая стала еще быстрее.</translation>
+<translation id="861359755029082151">Благодаря приложению Rosetta браузер Chrome сможет воспроизводить защищенный контент на этой странице.</translation>
 <translation id="8614913330719544658">Google Chrome не отвечает. Перезапустить сейчас?</translation>
 <translation id="861702415419836452">Chrome запрашивает доступ к камере, чтобы создать 3D-карту места, в котором вы находитесь.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапустится через 1 минуту}one{Chrome перезапустится через # минуту}few{Chrome перезапустится через # минуты}many{Chrome перезапустится через # минут}other{Chrome перезапустится через # минуты}}</translation>
@@ -260,6 +262,7 @@
 <translation id="8834965163890861871">Google Chrome пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="884296878221830158">Кроме того, расширение изменило стартовую страницу Chrome и страницу, отображаемую при нажатии кнопки "Главная страница".</translation>
 <translation id="8862326446509486874">У вас нет прав, необходимых для установки на системном уровне. Запустите программу установки еще раз в качестве администратора.</translation>
+<translation id="8907709077090383765">Чтобы воспроизводить в браузере Chrome защищенный контент, требуется установить приложение Rosetta. Сделать это сейчас?</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8922193594870374009">Чтобы отправить номер с сайта <ph name="ORIGIN" /> на свой телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступно обновление Chrome}=1{Доступно обновление Chrome}one{Обновление Chrome доступно # день}few{Обновление Chrome доступно # дня}many{Обновление Chrome доступно # дней}other{Обновление Chrome доступно # дня}}</translation>

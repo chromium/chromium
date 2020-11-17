@@ -486,7 +486,6 @@
 <translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="290376772003165898">صفحه به زبان <ph name="LANGUAGE" /> وجود ندارد؟</translation>
 <translation id="2909946352844186028">تغییر شبکه تشخیص داده شد.</translation>
-<translation id="2910133103376701357">دستگاه و حسابتان توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود.</translation>
 <translation id="2911973620368911614">شناسه کاربر حسابداری کار</translation>
 <translation id="2915068235268646559">خرابی از <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">برنامه‌های دیگر را ببندید</translation>
@@ -758,7 +757,6 @@
     برای همه درخواست‌هایی به سمت آن می‌رود اعمال شود، اما این خط‌مشی درحال‌حاضر نمی‌تواند اعمال شود.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏سند PDF {COUNT} صفحه دارد}one{‏سند PDF {COUNT} صفحه دارد}other{‏سند PDF {COUNT} صفحه دارد}}</translation>
 <translation id="4030383055268325496">&amp;واگرد افزودن</translation>
-<translation id="4032320456957708163">مرورگرتان توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="4056223980640387499">سپیا</translation>
 <translation id="4058922952496707368">کلید "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -841,7 +839,6 @@
 <translation id="4270541775497538019">پشته‌ساز ۶</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4277028893293644418">بازنشانی گذرواژه</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود.</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏این کارت در حساب Google ذخیره شده است}one{‏این کارت‌ها در حساب Google ذخیره شده‌اند}other{‏این کارت‌ها در حساب Google ذخیره شده‌اند}}</translation>
 <translation id="4297502707443874121">تصویر کوچک صفحه <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
@@ -961,7 +958,6 @@
 <translation id="4771973620359291008">خطای ناشناخته‌ای رخ داد.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{پنجره بازشو مسدود شد}one{# پنجره بازشو مسدود شد}other{# پنجره بازشو مسدود شد}}</translation>
 <translation id="4780366598804516005">صندوق پست ۱</translation>
-<translation id="4780900888022378816">دستگاهتان توسط <ph name="ENROLLMENT_DOMAIN" />، و حسابتان توسط <ph name="ACCOUNT_DOMAIN" /> مدیریت می‌شود.</translation>
 <translation id="4785689107224900852">جابجا شدن به این برگه</translation>
 <translation id="4791134497475588553">‏اینکه برنامه‌های Linux نصب شدند و زمانی‌که آخرین بار استفاده شدند</translation>
 <translation id="4792686369684665359">اطلاعاتی که می‌خواهید ارسال کنید ایمن نیست</translation>
@@ -1174,7 +1170,6 @@
 <translation id="560412284261940334">مدیریت پشتیبانی نمی‌شود</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">‏این سایت می‌تواند جعلی یا کلاهبردارانه باشد. Chrome توصیه می‌کند همین‌الان خارج شوید.</translation>
 <translation id="5610142619324316209">بررسی اتصال</translation>
 <translation id="5610807607761827392">می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" />، کارت‌ها و نشانی‌ها را مدیریت کنید.</translation>
 <translation id="561165882404867731">‏این صفحه را با «ترجمه Google» ترجمه کنید</translation>
@@ -1246,6 +1241,7 @@
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5905445707201418379">مسدودشده براساس خط‌مشی اصلی <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (همگام‌سازی‌شده)</translation>
+<translation id="5913377024445952699">ضبط صفحه‌نمایش متوقف شد</translation>
 <translation id="59174027418879706">فعال شد</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">روشن</translation>
@@ -1402,7 +1398,6 @@
 <translation id="6529602333819889595">&amp;انجام مجدد حذف</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
 <translation id="6547208576736763147">دو سوراخ در چپ</translation>
-<translation id="6554795675067793129">حساب شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود.</translation>
 <translation id="6556866813142980365">انجام مجدد</translation>
 <translation id="6569060085658103619">درحال مشاهده یک صفحه افزونه هستید</translation>
 <translation id="6573200754375280815">دو سوراخ در راست</translation>
@@ -1917,6 +1912,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">گذرواژه منطبقی وجود ندارد. نمایش همه گذرواژه‌های ذخیره‌شده.</translation>
 <translation id="8625384913736129811">ذخیره کردن این کارت در این دستگاه</translation>
+<translation id="8627040765059109009">ضبط صفحه‌نمایش ازسر گرفته شد</translation>
 <translation id="8657078576661269990">سرپرست هم‌رسانی از <ph name="ORIGIN_NAME" /> به <ph name="VM_NAME_1" /> و <ph name="VM_NAME_2" /> را مسدود کرده است</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
 <translation id="867224526087042813">امضا</translation>

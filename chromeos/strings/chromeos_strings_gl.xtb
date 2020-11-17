@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Axustar á zona de escaneo</translation>
 <translation id="1397738625398125236">Pódeselle facer ping á pasarela</translation>
 <translation id="1413240736185167732">Produciuse un erro: fallo no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1478594628797167447">Escáner</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
+<translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
 <translation id="3310640316857623290">A latencia do DNS supera considerablemente o límite permitido</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
-<translation id="4027485274696301677">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores poden configuralo de forma remota.</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Gardáronse os ficheiros escaneados</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> xestiona este usuario e pode xestionar a súa configuración e controlar a súa actividade de forma remota.</translation>
 <translation id="520299634122159966">Non hai ningún escáner dispoñible</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
 Proba a tocar o micrófono para preguntarme algo.</translation>
@@ -122,12 +122,14 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
+<translation id="65587193855025101">Superficie plana</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
+<translation id="6839141349259399400">Non podes conectarte a ningún escáner?</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7855434858642800953">Gardouse o ficheiro escaneado</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
+<translation id="8160445423316272678">Coloca o documento no escáner e selecciona <ph name="SPAN_BEGIN" />Escanear<ph name="SPAN_END" /> para comezar</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
 <translation id="8294431847097064396">Fonte</translation>
@@ -159,5 +163,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 </translationbundle>

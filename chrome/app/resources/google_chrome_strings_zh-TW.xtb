@@ -188,6 +188,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6368958679917195344">Chrome 作業系統藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世。</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">如要使用 Rosetta 播放設有保護的媒體，必須重新啟動 Chrome。</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6750954913813541382">Chrome 會將你在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
@@ -250,6 +251,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome 推出全新版本，速度更勝以往。</translation>
+<translation id="861359755029082151">Rosetta 可讓 Chrome 播放這個頁面中設有保護的媒體。</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
@@ -263,6 +265,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="884296878221830158">這個擴充功能也會控管 Chrome 啟動時或你點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>
+<translation id="8907709077090383765">如果要讓 Chrome 播放設有保護的媒體，必須安裝 Rosetta。要立即安裝 Rosetta 嗎？</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>

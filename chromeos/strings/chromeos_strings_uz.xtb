@@ -2,16 +2,18 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
+<translation id="1071587090247825784">Fayrvol aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
+<translation id="1238612778414822719">HTTPS kechikishi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
+<translation id="1398634363027580500">HTTPS kechikishi juda yuqori</translation>
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
 <translation id="1468664791493211953">Takliflar</translation>
 <translation id="1478594628797167447">Skaner</translation>
-<translation id="1482734542997480527">Bu qurilma <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="1644574205037202324">Tarix</translation>
@@ -59,11 +61,10 @@
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
-<translation id="4003259559679196451">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi.</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
-<translation id="4027485274696301677">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
+<translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
@@ -79,6 +80,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="4646949265910132906">Xavfsiz WiFi aloqasi</translation>
 <translation id="467510802200863975">Parollaringiz mos kelmadi</translation>
+<translation id="467715984478005772">Fayrvol muzlatildi</translation>
 <translation id="4691278870498629773">Toʻxtatildi - Tarnov joyida emas</translation>
 <translation id="469379815867856270">Signal darajasi</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
@@ -89,7 +91,6 @@
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>
@@ -111,6 +112,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6048107060512778456">Bajarilmadi - Qogʻoz tiqilib qoldi</translation>
 <translation id="6050189528197190982">Kulrang tuslari</translation>
 <translation id="6058625436358447366">Yakunlash uchun eski va yangi parollarni kiriting</translation>
+<translation id="6061772781719867950">HTTP soʻrovlari yuborilmadi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
 <translation id="6146993107019042706">Yakunlash uchun yangi parolni kiriting</translation>
@@ -128,12 +130,15 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
+<translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
+<translation id="6768237774506518020">DNS manzil ajratilmasligi juda yuqori</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7162487448488904999">Galereya</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl turi</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
 <translation id="7805768142964895445">Holat</translation>
@@ -143,6 +148,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8294431847097064396">Manba</translation>
+<translation id="8302368968391049045">HTTPS Fayrvol</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>

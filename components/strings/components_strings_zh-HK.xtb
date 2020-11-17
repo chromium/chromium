@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">網頁的來源語言不是<ph name="LANGUAGE" />嗎？</translation>
 <translation id="2909946352844186028">系統偵測到網絡變更。</translation>
-<translation id="2910133103376701357">您的裝置和帳戶由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="2911973620368911614">工作帳戶使用者 ID</translation>
 <translation id="2915068235268646559">當機時間：<ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">關閉其他程式</translation>
@@ -752,7 +751,6 @@
 <translation id="3996311196211510766">網站 <ph name="ORIGIN" /> 指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
-<translation id="4032320456957708163">您的瀏覽器由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4058922952496707368">金鑰「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
@@ -831,7 +829,6 @@
 <translation id="4270541775497538019">堆疊器 6</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277028893293644418">重設密碼</translation>
-<translation id="4279811152705618813">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{此卡已儲存至您的 Google 帳戶}other{這些卡已儲存至您的 Google 帳戶}}</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁嘅縮圖</translation>
 <translation id="42981349822642051">展開</translation>
@@ -951,7 +948,6 @@
 <translation id="4771973620359291008">發生不明的錯誤。</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已封鎖彈出式視窗}other{已封鎖 # 個彈出式視窗}}</translation>
 <translation id="4780366598804516005">出紙槽 1</translation>
-<translation id="4780900888022378816">您的裝置由 <ph name="ENROLLMENT_DOMAIN" /> 管理，而您的帳戶由 <ph name="ACCOUNT_DOMAIN" /> 管理。</translation>
 <translation id="4785689107224900852">切換至此分頁</translation>
 <translation id="4791134497475588553">已安裝的 Linux 應用程式及上次使用時間</translation>
 <translation id="4792686369684665359">您即將提交的資料不安全</translation>
@@ -1164,7 +1160,6 @@
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">這可能是偽造或詐騙網站，Chrome 建議您立即離開。</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理名片和地址。</translation>
 <translation id="561165882404867731">使用「Google 翻譯」來翻譯此頁面</translation>
@@ -1236,6 +1231,7 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5905445707201418379">已根據 <ph name="ORIGIN" /> 的安全政策封鎖。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
+<translation id="5913377024445952699">已暫停擷取螢幕畫面</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">開啟</translation>
@@ -1392,7 +1388,6 @@
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
-<translation id="6554795675067793129">您的帳戶由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6569060085658103619">您正在查看擴充程式頁面</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
@@ -1907,6 +1902,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">沒有相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8625384913736129811">將這張信用卡儲存至此裝置</translation>
+<translation id="8627040765059109009">已繼續擷取螢幕畫面</translation>
 <translation id="8657078576661269990">管理員已禁止將 <ph name="ORIGIN_NAME" /> 的內容分享至 <ph name="VM_NAME_1" /> 和 <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="867224526087042813">簽名</translation>

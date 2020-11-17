@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
+<translation id="2111166930115883695">Apasă pe Space pentru a juca</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Politica este ignorată, deoarece a fost înlocuită de <ph name="POLICY_NAME" />.</translation>
@@ -486,7 +487,6 @@
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Pagina nu este în <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">A fost detectată o schimbare a rețelei.</translation>
-<translation id="2910133103376701357">Dispozitivul și contul sunt gestionate de <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID-ul de utilizator al contului sarcinii</translation>
 <translation id="2915068235268646559">Blocare survenită <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">închide celelalte programe;</translation>
@@ -520,6 +520,7 @@
 <translation id="3010559122411665027">Intrarea din listă „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
 <translation id="3023071826883856138">You4 (Plic)</translation>
 <translation id="3024663005179499861">Tip de politică greșit</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
@@ -758,10 +759,10 @@
     să se aplice tuturor solicitărilor, dar această politică nu poate fi aplicată momentan.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
 <translation id="4030383055268325496">&amp;Anulați adăugarea</translation>
-<translation id="4032320456957708163">Browserul este gestionat de <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Cheie „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Plic)</translation>
+<translation id="4067669230157909013">Funcția de realizare a capturilor de ecran a fost reluată.</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4075732493274867456">Clientul și serverul nu acceptă o versiune a protocolului SSL sau o suită de codificare obișnuită.</translation>
@@ -841,11 +842,11 @@
 <translation id="4270541775497538019">Receptorul de hârtie 6</translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4277028893293644418">Resetează parola</translation>
-<translation id="4279811152705618813">Dispozitivul <ph name="DEVICE_TYPE" /> este gestionat de <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Acest card a fost salvat în Contul tău Google}few{Aceste carduri au fost salvate în Contul tău Google}other{Aceste carduri au fost salvate în Contul tău Google}}</translation>
 <translation id="4297502707443874121">Miniatură pentru pagina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4300675098767811073">Perforare multiplă în dreapta</translation>
+<translation id="4302514097724775343">Atinge dinozaurul ca să joci</translation>
 <translation id="4302965934281694568">Chou3 (Plic)</translation>
 <translation id="4305666528087210886">Fișierul nu a putut fi accesat</translation>
 <translation id="4305817255990598646">Comută</translation>
@@ -961,7 +962,6 @@
 <translation id="4771973620359291008">A apărut o eroare necunoscută.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fereastră pop-up blocată}few{# ferestre pop-up blocate}other{# de ferestre pop-up blocate}}</translation>
 <translation id="4780366598804516005">Căsuța de e-mail 1</translation>
-<translation id="4780900888022378816">Dispozitivul este gestionat de <ph name="ENROLLMENT_DOMAIN" />, iar contul tău este gestionat de <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Comută la această filă</translation>
 <translation id="4791134497475588553">Aplicațiile Linux instalate și ultima dată când au fost folosite</translation>
 <translation id="4792686369684665359">Informațiile pe care ești pe cale să le trimiți nu sunt securizate</translation>
@@ -1174,7 +1174,6 @@
 <translation id="560412284261940334">Gestionarea nu este acceptată</translation>
 <translation id="5605670050355397069">Registru</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Acest site poate fi fals sau fraudulos. Chrome îți recomandă să ieși acum.</translation>
 <translation id="5610142619324316209">să verifici conexiunea;</translation>
 <translation id="5610807607761827392">Poți să gestionezi cardurile și adresele în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tradu această pagină cu Google Traducere</translation>
@@ -1246,6 +1245,7 @@
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5905445707201418379">Blocat conform politicii de origine de la <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizat)</translation>
+<translation id="5913377024445952699">Funcție de realizare a capturilor întreruptă</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">activate</translation>
@@ -1258,6 +1258,7 @@
 <translation id="5963413905009737549">Secțiune</translation>
 <translation id="5967592137238574583">Editează informațiile de contact</translation>
 <translation id="5967867314010545767">Eliminați din istoric</translation>
+<translation id="5968793460449681917">La fiecare vizită</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5979084224081478209">Verifică parolele</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1402,7 +1403,6 @@
 <translation id="6529602333819889595">&amp;Repetați ștergerea</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
 <translation id="6547208576736763147">Perforare dublă în stânga</translation>
-<translation id="6554795675067793129">Contul tău este administrat de <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6569060085658103619">Se afișează pagina unei extensii</translation>
 <translation id="6573200754375280815">Perforare dublă în dreapta</translation>
@@ -1473,6 +1473,7 @@
 <translation id="6895330447102777224">Cardul tău este confirmat</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Organizația (O)</translation>
+<translation id="6907293445143367439">Permite ca <ph name="SITE_NAME" /> să:</translation>
 <translation id="6910240653697687763">Adresa <ph name="URL" /> dorește să preia controlul complet asupra dispozitivelor MIDI</translation>
 <translation id="6915804003454593391">Utilizator:</translation>
 <translation id="6934672428414710184">Acest nume provine din Contul tău Google</translation>
@@ -1909,6 +1910,7 @@ Detalii suplimentare:
 <translation id="858637041960032120">Adăugați telefon
 </translation>
 <translation id="8589998999637048520">Calitate optimă</translation>
+<translation id="8600271352425265729">Doar de data aceasta</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
 <translation id="8606726445206553943">Folosească dispozitive MIDI</translation>
 <translation id="8612761427948161954">Salut, <ph name="USERNAME" />!
@@ -1918,6 +1920,7 @@ Detalii suplimentare:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8625384913736129811">Salvează cardul pe acest dispozitiv</translation>
+<translation id="8627040765059109009">Funcție de realizare a capturilor reluată</translation>
 <translation id="8657078576661269990">Administratorul a blocat permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME_1" /> și la <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Rezumatul comenzii, <ph name="TOTAL_LABEL" />, Mai multe detalii</translation>
 <translation id="867224526087042813">Semnătura</translation>
@@ -2065,6 +2068,7 @@ Detalii suplimentare:
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="945855313015696284">Verifică informațiile de mai jos și șterge cardurile nevalide</translation>
 <translation id="950736567201356821">Perforare triplă în partea de sus</translation>
+<translation id="951941430552851965">Funcția de realizare a capturilor de ecran a fost întreruptă de administrator din cauza conținutului de pe ecran.</translation>
 <translation id="961663415146723894">Legare în partea de jos</translation>
 <translation id="962484866189421427">Acest conținut poate încerca să instaleze aplicații înșelătoare care pretind a fi altceva sau colectează date care pot fi folosite pentru a te urmări. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Versiune oficială</translation>

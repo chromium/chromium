@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Întreabă atunci când se deschide Chromium</translation>
 <translation id="1396446129537741364">Chromium încearcă să afișeze parolele.</translation>
 <translation id="1414495520565016063">V-ați conectat la Chromium!</translation>
+<translation id="1414973082589232775">Ca să poți reda conținut media protejat în Rosetta, trebuie să repornești Chromium.</translation>
 <translation id="151962892725702025">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="1524282610922162960">Distribuie o filă Chromium</translation>
 <translation id="1553461853655228091">Chromium are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Chromium necesită Windows 7 sau o versiune ulterioară.</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
+<translation id="5736967399513123100">Ca să poți reda conținut media protejat în Chromium, trebuie să instalezi Rosetta. Vrei să instalezi acum?</translation>
 <translation id="5820394555380036790">Sistemul de operare Chromium</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -175,6 +177,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>
 <translation id="6893813176749746474">Chromium a fost actualizat, dar nu l-ați utilizat de cel puțin 30 de zile.</translation>
+<translation id="6897548120660295439">Rosetta face posibilă redarea conținutului media protejat din această pagină în Chromium.</translation>
 <translation id="6964305034639999644">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="6978145336957848883">Parolele slabe sunt ușor de ghicit. Permite browserului Chromium <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>

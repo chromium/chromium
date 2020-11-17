@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને બદલીને <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) કરવામાં આવ્યું. ફેરફારો જાળવવા માટે કન્ફર્મ કરો પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="1919743966458266018">Tasks સંચાલક ખોલવાનો શોર્ટકટ બદલાયો છે. કૃપા કરીને <ph name="NEW_SHORTCUT" /> ની બદલે <ph name="OLD_SHORTCUT" /> નો ઉપયોગ કરો.</translation>
 <translation id="1923539912171292317">ઑટોમૅટિક રીતે ક્લિક</translation>
-<translation id="1924640696879807758">ફોન પરથી</translation>
 <translation id="1928739107511554905">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરવા માટે ટચસ્કીનનો ઉપયોગ કરો.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">કનેક્ટ કરેલું નથી</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
 <translation id="2412593942846481727">અપડેટ ઉપલબ્ધ છે</translation>
-<translation id="2413728805700750528">મેનેજ કરાયેલ સત્ર <ph name="DISPLAY_NAME" />ને <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
 <translation id="2429753432712299108">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. સ્વીકારતાં પહેલાં, કૃપા કરીને તે ડિવાઇસ પર બતાવેલ આ પાસકીની પુષ્ટિ કરો: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
@@ -326,7 +324,6 @@
 <translation id="4121728057981832179">કોઈ વર્ચ્યુઅલ મશીન તમારા માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે</translation>
 <translation id="4129129681837227511">તમારી લૉક સ્ક્રીન પર નોટિફિકેશન જોવા માટે, સેટિંગને બદલવા માટે અનલૉક કરો</translation>
 <translation id="4146833061457621061">મ્યુઝિક વગાડો</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="415719264485676252">સ્ક્રીન કૅપ્ચર કરવાની ક્ષમતા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="4157822100366708405">ઘેરી થીમનું સેટિંગ</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
@@ -613,7 +610,6 @@
 <translation id="6910714959251846841">આ અપડેટ માટે તમારા ઉપકરણને પાવરવોશ કરવું જરૂરી છે. નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો.</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
-<translation id="6953890208095195458">તમારી સ્ક્રીન પરના કન્ટેન્ટને કારણે તમારા વ્યવસ્થાપક દ્વારા સ્ક્રીન રેકોર્ડિંગ બંધ કરવામાં આવ્યું છે.</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6972754398087986839">પ્રારંભ કરો</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
@@ -667,7 +663,6 @@
 <translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">તમારી સ્ક્રીન પરના કન્ટેન્ટનો 'સ્ક્રીન કૅપ્ચર' લેવાની ક્ષમતા તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="7548434653388805669">સૂવાનો સમય</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>

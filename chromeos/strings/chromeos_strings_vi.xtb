@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Vừa với vùng quét</translation>
 <translation id="1397738625398125236">Có thể ping cổng vào</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
 <translation id="1478594628797167447">Máy quét</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
+<translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
+<translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
-<translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> này do <ph name="ENROLLMENT_DOMAIN" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Đã lưu các tệp được quét!</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
 <translation id="445059817448385655">Mật khẩu cũ</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="4985509611418653372">Chạy</translation>
-<translation id="5094480857972195099">Miền <ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
@@ -122,12 +122,14 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
+<translation id="65587193855025101">Bề mặt phẳng</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
+<translation id="6839141349259399400">Không thể kết nối với các máy quét?</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
+<translation id="7855434858642800953">Đã lưu tệp được quét!</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="8041089156583427627">Gửi phản hồi</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
+<translation id="8160445423316272678">Đặt tài liệu lên máy quét rồi chọn <ph name="SPAN_BEGIN" />Quét<ph name="SPAN_END" /> để bắt đầu</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8294431847097064396">Nguồn</translation>
@@ -159,5 +163,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
 </translationbundle>

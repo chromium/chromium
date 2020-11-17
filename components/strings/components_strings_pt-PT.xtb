@@ -305,6 +305,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2107021941795971877">Suportes de impressão</translation>
 <translation id="2108755909498034140">Reiniciar o computador</translation>
+<translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
@@ -488,7 +489,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Foi detetada uma alteração de rede.</translation>
-<translation id="2910133103376701357">O seu dispositivo e a sua conta são geridos por <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID do utilizador da contabilidade da tarefa</translation>
 <translation id="2915068235268646559">Falha de sistema de <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Fechar outros programas</translation>
@@ -522,6 +522,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3010559122411665027">Entrada da lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3016780570757425217">Conhecer a sua localização</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, prima Tab e, em seguida Enter para remover a sugestão.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
@@ -760,10 +761,10 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     a todos os pedidos, mas, de momento, não é possível aplicar essa política.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
-<translation id="4032320456957708163">O navegador é gerido por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">A captura de ecrã foi retomada.</translation>
 <translation id="4067947977115446013">Adicionar endereço válido</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar a sua encomenda. Tente novamente.</translation>
 <translation id="4075732493274867456">O cliente e o servidor não suportam uma versão do protocolo SSL ou um conjunto de cifras comum.</translation>
@@ -843,11 +844,11 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4270541775497538019">Empilhador 6</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277028893293644418">Repor palavra-passe</translation>
-<translation id="4279811152705618813">O seu <ph name="DEVICE_TYPE" /> é gerido por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perfuração múltipla à direita</translation>
+<translation id="4302514097724775343">Toque no dinossauro para jogar.</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Não foi possível aceder ao seu ficheiro</translation>
 <translation id="4305817255990598646">Mudar</translation>
@@ -963,7 +964,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de correio 1</translation>
-<translation id="4780900888022378816">O seu dispositivo é gerido por <ph name="ENROLLMENT_DOMAIN" /> e a sua conta é gerida por <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Mudar para este separador</translation>
 <translation id="4791134497475588553">Apps do Linux instaladas e quando foram utilizadas pela última vez.</translation>
 <translation id="4792686369684665359">As informações que está prestes a enviar não são seguras</translation>
@@ -1176,7 +1176,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="560412284261940334">Gestão não suportada</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Este site pode ser falso ou fraudulento. O Chrome recomenda que saia agora.</translation>
 <translation id="5610142619324316209">Verificar a ligação</translation>
 <translation id="5610807607761827392">Pode gerir cartões e endereços nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1248,6 +1247,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
+<translation id="5913377024445952699">Captura de ecrã em pausa</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Ativado</translation>
@@ -1260,6 +1260,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5963413905009737549">Secção</translation>
 <translation id="5967592137238574583">Editar informações de contacto</translation>
 <translation id="5967867314010545767">Remover do histórico</translation>
+<translation id="5968793460449681917">Em cada visita</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5979084224081478209">Verificar palavras-passe</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1404,7 +1405,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
 <translation id="6547208576736763147">Perfuração dupla à esquerda</translation>
-<translation id="6554795675067793129">A sua conta é gerida pelo domínio <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6569060085658103619">Está a ver a página de uma extensão</translation>
 <translation id="6573200754375280815">Perfuração dupla à direita</translation>
@@ -1475,6 +1475,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6895330447102777224">O seu cartão foi confirmado</translation>
 <translation id="6897140037006041989">Agente do utilizador</translation>
 <translation id="6898699227549475383">Organização (O)</translation>
+<translation id="6907293445143367439">Permitir à app <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> pretende obter o controlo total sobre os seus dispositivos MIDI.</translation>
 <translation id="6915804003454593391">Utilizador:</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
@@ -1910,6 +1911,7 @@ Detalhes adicionais:
 <translation id="858637041960032120">Adic. n.º telef.
 </translation>
 <translation id="8589998999637048520">Qualidade óptima</translation>
+<translation id="8600271352425265729">Apenas desta vez</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8606726445206553943">Utilizar os seus dispositivos MIDI</translation>
 <translation id="8612761427948161954">Olá, <ph name="USERNAME" />,
@@ -1919,6 +1921,7 @@ Detalhes adicionais:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Não existem palavras-passe correspondentes. Mostrar todas as palavras-passe guardadas.</translation>
 <translation id="8625384913736129811">Guardar este cartão neste dispositivo</translation>
+<translation id="8627040765059109009">Captura de ecrã retomada</translation>
 <translation id="8657078576661269990">O seu administrador bloqueou a partilha de <ph name="ORIGIN_NAME" /> com as VMs <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" />.</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="867224526087042813">Assinatura</translation>
@@ -2066,6 +2069,7 @@ Detalhes adicionais:
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="945855313015696284">Verifique as informações abaixo e elimine os cartões inválidos</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
+<translation id="951941430552851965">A captura de ecrã foi colocada em pausa pelo seu administrador devido a conteúdo no ecrã.</translation>
 <translation id="961663415146723894">Encadernar parte inferior</translation>
 <translation id="962484866189421427">Este conteúdo poderá tentar instalar aplicações fraudulentas que se fazem passar por algo diferente ou que recolhem dados que podem ser utilizados para o monitorizar. <ph name="BEGIN_LINK" />Mostrar, mesmo assim<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Compilação oficial</translation>

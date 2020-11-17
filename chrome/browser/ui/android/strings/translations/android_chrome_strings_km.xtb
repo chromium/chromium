@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">ការថត​អេក្រង់</translation>
 <translation id="1111673857033749125">ចំណាំដែលបានរក្សាទុកនៅលើឧបករណ៍ផ្សេងទៀតរបស់អ្នកនឹងបង្ហាញនៅទីនេះ</translation>
 <translation id="1113597929977215864">បង្ហាញ​ទិដ្ឋភាព​សាមញ្ញ</translation>
+<translation id="1118561384561215815">ទទួលជំនួយក្នុងការបំពេញកិច្ចការនៅលើបណ្ដាញ</translation>
 <translation id="1123070903960493543">របៀបដែលអ្នក​មានអន្តរកម្មជាមួយ Chrome ការកំណត់ដែល​អ្នកបានជ្រើសរើស ព័ត៌មានលម្អិត​អំពីការគាំង Chrome</translation>
 <translation id="1126809382673880764">មិនការពារអ្នក​ពីគេហទំព័រ ការទាញយក ឬកម្មវិធី​បន្ថែម​ដែលមានគ្រោះថ្នាក់ទេ។ អ្នក​នឹង​នៅតែ​ទទួលបាន​ការការពារ​ការរុករក​ដោយសុវត្ថិភាព (ប្រសិនបើមាន) នៅក្នុង​សេវាកម្ម Google ផ្សេងទៀត​ដូចជា Gmail និង​កម្មវិធីស្វែងរកជាដើម។</translation>
 <translation id="1129510026454351943">ព័ត៌មានលម្អិត៖ <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">ធ្វើសមកាលកម្មចំណាំរបស់អ្នក</translation>
 <translation id="17513872634828108">បើកផ្ទាំង</translation>
 <translation id="1754404134430936718">បានចម្លង​អត្ថបទ</translation>
+<translation id="1772137089884020309">បញ្ជី​ថត​ចំណាំ​ត្រូវបានបិទ</translation>
 <translation id="1782483593938241562">កាលបរិច្ឆេទ​បញ្ចប់​ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">បាន​ដំឡើង</translation>
 <translation id="1792959175193046959">ប្ដូរ​ទីតាំង​ទាញយក​លំនាំដើម​បាន​គ្រប់ពេល</translation>
@@ -181,6 +183,7 @@
 <translation id="2276696007612801991">ចូលគណនី Google របស់អ្នក ដើម្បីពិនិត្យ​ពាក្យសម្ងាត់​របស់អ្នក</translation>
 <translation id="2286841657746966508">អាសយដ្ឋានទូទាត់​វិក្កយបត្រ</translation>
 <translation id="230115972905494466">រកមិន​ឃើញ​ឧបករណ៍​ដែល​ត្រូវគ្នាទេ</translation>
+<translation id="230155349749732438">ត្រូវតែ​បើកការ<ph name="BEGIN_LINK" />ធ្វើឱ្យ​ការស្វែងរក និងការរុករក​ប្រសើរជាងមុន<ph name="END_LINK" /> ដើម្បី​ប្រើ​ការកំណត់​នេះ</translation>
 <translation id="2318045970523081853">ចុច​ដើម្បី​ហៅទូរសព្ទ</translation>
 <translation id="2321086116217818302">កំពុង​រៀប​ចំពាក្យ​សម្ងាត់…</translation>
 <translation id="2321958826496381788">ទាញរបារំកិលរហូតអ្នកអាចអានបានយ៉ាងងាយស្រួល។ អត្ថបទគួរតែមើលទៅធំប៉ុននេះ បន្ទាប់ពីប៉ះពីរដងនៅលើកថាខណ្ឌ។</translation>
@@ -204,6 +207,7 @@
 <translation id="2450907520913474542">ស្វែងយល់​អំពី​ប្រធានបទ​នៅលើ​គេហទំព័រ​ដោយមិន​ចាំបាច់​ចាកចេញ​ពីទំព័រ។ មុខងារចុច​ដើម្បី​ស្វែងរក​ផ្ញើពាក្យ និង​បរិបទ​នៅជុំវិញ​ពាក្យនោះទៅ​កម្មវិធីស្វែងរកនៅលើ Google ដែលបញ្ជូន​ត្រឡប់មកវិញនូវ​និយមន័យ រូបភាព លទ្ធផល​ស្វែងរក និងព័ត៌មាន​លម្អិតផ្សេងទៀត។
 
 ចុចពាក្យ​ណាមួយ​ឱ្យជាប់ ដើម្បី​ស្វែងរក។ ដើម្បី​កែលម្អ​ការស្វែងរក​របស់អ្នក សូម​ជ្រើសរើស​ពាក្យច្រើន ឬតិច។ ដើម្បីកែ​ការស្វែងរក​របស់អ្នក សូម​បើកផ្ទាំង រួចចុច​រូបតំណាង​ដើម្បី​បើកនៅក្នុង​ផ្ទាំងថ្មី បន្ទាប់មក​ធ្វើការផ្លាស់ប្ដូរ​របស់អ្នក​នៅក្នុង​ប្រអប់​ស្វែងរក។</translation>
+<translation id="2459390580524506445">ការស្វែងរកតាម​សំឡេងប្រសើរជាងមុន</translation>
 <translation id="246532703174860178">ចែករំលែក</translation>
 <translation id="2478076885740497414">តំឡើងកម្មវិធី</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
@@ -272,6 +276,7 @@
 <translation id="2932150158123903946">ទំហំផ្ទុក Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">ផ្ទាំងមើលសាកល្បងបាន​បិទ</translation>
 <translation id="2956410042958133412">គណនីត្រូវបានគ្រប់គ្រងដោយ <ph name="PARENT_NAME_1" /> និង <ph name="PARENT_NAME_2" />។</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ទំព័រមិន​ទាន់អាន <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{ទំព័រមិន​ទាន់អាន <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
 <translation id="2962095958535813455">បានប្តូរទៅផ្ទាំងអនាមិក</translation>
 <translation id="2979025552038692506">ផ្ទាំងអនាមិកដែលបានជ្រើស</translation>
 <translation id="2987620471460279764">អត្ថបទដែលបាន​ចែករំលែកពីឧបករណ៍​ផ្សេងទៀត</translation>
@@ -315,11 +320,13 @@
 <translation id="3269093882174072735">ដំណើរការរូបភាព</translation>
 <translation id="3269956123044984603">ដើម្បីទទួលយកផ្ទាំងរបស់អ្នកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមបើក "ធ្វើសមកាលកម្មទិន្នន័យដោយស្វ័យប្រវត្តិ" នៅក្នុងការកំណត់គណនី Android ។</translation>
 <translation id="3282568296779691940">ចូលទៅ Chrome</translation>
+<translation id="3284510035090979597">ជំនួយ​បរិសកម្ម</translation>
 <translation id="3285080554353377245">វីដេអូអំពីរបៀបប្រើប្រាស់ Chrome</translation>
 <translation id="3288003805934695103">ដំណើរការទំព័រឡើងវិញ</translation>
 <translation id="32895400574683172">ការជូន​ដំណឹង​ត្រូវ​បាន​អនុញ្ញាត</translation>
 <translation id="3290991969712132877">ដើម្បីចូលមកទីនេះបានរហ័សជាងមុន សូមបញ្ចូលទំព័រនេះទៅក្នុងអេក្រង់ដើមរបស់អ្នកពីប៊ូតុង "ជម្រើសច្រើនទៀត"</translation>
 <translation id="3295530008794733555">រុករករហ័ស​ជាងមុន។ ប្រើទិន្នន័យតិច​ជាងមុន។</translation>
+<translation id="3297344142967351106">ជំនួយជាសំឡេង</translation>
 <translation id="3298243779924642547">មុខងារ​ស្រាល</translation>
 <translation id="3303414029551471755">បន្តដើម្បីទាញយកមាតិកានេះ?</translation>
 <translation id="3315103659806849044">ឥឡូវនេះ អ្នកកំពុងប្ដូរ​ការកំណត់សេវាកម្ម Google និង​សមកាលកម្ម​របស់អ្នកតាមបំណង។ ដើម្បីបញ្ចប់ការបើក​សមកាលកម្ម សូមចុចប៊ូតុង "បញ្ជាក់" នៅជិតផ្នែកខាងក្រោម​នៃអេក្រង់។ រំកិលឡើងលើ</translation>
@@ -422,6 +429,7 @@
 <translation id="4084682180776658562">ចំណាំ</translation>
 <translation id="4084712963632273211">ពី <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />បានបញ្ជូន​ដោយ Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">លុបទិន្នន័យកម្មវិធីឬ?</translation>
+<translation id="4095189195365058471">អាន​នៅពេលក្រោយ <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">ជួយធ្វើឲ្យ Chrome ប្រសើរជាងមុនដោយផ្ញើស្ថិតិប្រើប្រាស់ និងរបាយការណ៍ការគាំងទៅ Google។</translation>
 <translation id="4108998448622696017">រកមើល និងព្រមានអ្នកអំពី​ព្រឹត្តិការណ៍គ្រោះថ្នាក់ នៅពេលព្រឹត្តិការណ៍ទាំងនោះកើតឡើង។</translation>
 <translation id="4116038641877404294">ទាញយក​ទំព័រ​ដើម្បី​ប្រើ​ពួកវាដោយគ្មានអ៊ីនធឺណិត</translation>
@@ -514,6 +522,7 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ការទាញយក 1 បាន​បញ្ចប់។}other{ការទាញយក # បាន​បញ្ចប់។}}</translation>
 <translation id="4766678251456904326">បញ្ចូលគណនីទៅក្នុងឧបករណ៍</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{បានកំណត់​កាលវិភាគ​នៃការទាញយក 1។}other{បានកំណត់​កាលវិភាគ​នៃការទាញយក #។}}</translation>
+<translation id="4791358705705538979">ជួយអ្នក​ក្នុងការបំពេញ​កិច្ចការ ដូចជា​បង់ប្រាក់ចេញ​នៅទូទាំង​បណ្ដាញ​ជាដើម</translation>
 <translation id="4802417911091824046">ការ​អ៊ីនគ្រីបឃ្លាសម្ងាត់មិន​រួមបញ្ចូល​អាសយដ្ឋាន និងវិធីបង់ប្រាក់​ពី Google Pay ទេ។
 
 ដើម្បី​ផ្លាស់ប្ដូរ​ការកំណត់នេះ <ph name="BEGIN_LINK" />សូមកំណត់​សមកាលកម្មឡើងវិញ<ph name="END_LINK" /></translation>
@@ -619,6 +628,7 @@
 <translation id="5524843473235508879">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត។</translation>
 <translation id="5527082711130173040">Chrome ត្រូវការចូលប្រើទីតាំងដើម្បីស្កេនរកឧបករណ៍ សូម<ph name="BEGIN_LINK1" />អាប់ដេតសិទ្ធិអនុញ្ញាត<ph name="END_LINK1" />។ ការចូលប្រើទីតាំងក៏ត្រូវ<ph name="BEGIN_LINK2" />បានបិទសម្រាប់ឧបករណ៍នេះផងដែរ<ph name="END_LINK2" />។</translation>
 <translation id="5530766185686772672">បិទផ្ទាំងអនាមិក</translation>
+<translation id="5530920986376047241">អ្នកអាច​រក្សាទុក​ទំព័រ​នៅក្នុង​បញ្ជីអាន​របស់អ្នក ដើម្បីរកមើល​ទំព័រទាំងនោះ​ម្ដងទៀត</translation>
 <translation id="5534640966246046842">បានចម្លង​ទំព័រ</translation>
 <translation id="5556459405103347317">ដំណើរការឡើងវិញ</translation>
 <translation id="5561549206367097665">កំពុង​រង់​ចាំ​បណ្ដាញ​…</translation>
@@ -663,6 +673,7 @@
 <translation id="5797070761912323120">Google អាចនឹង​ប្រើ​ប្រវត្តិ​របស់អ្នក ដើម្បី​ធ្វើឱ្យ​ការស្វែងរក ការផ្សាយ​ពាណិជ្ជកម្ម និងសេវាកម្ម Google ផ្សេងទៀតស្របនឹងអ្នក</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ម៉ោងមុន}other{# ម៉ោងមុន}}</translation>
 <translation id="5810288467834065221">រក្សា​សិទ្ធិ <ph name="YEAR" /> Google LLC ។ រក្សាសិទ្ធិ​គ្រប់យ៉ាង។</translation>
+<translation id="5810864297166300463">ជំនួយ​នៅលើ​បណ្ដាញ</translation>
 <translation id="5814131985548525293">វាយបញ្ចូលត្រង់នេះ ឬចុចរូបមីក្រូហ្វូន ដើម្បីចាប់ផ្ដើម</translation>
 <translation id="5817918615728894473">ផ្គូផ្គង</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
@@ -697,6 +708,7 @@
 <translation id="5982307838673692400">បើក​ផ្ទាំងឯកជន</translation>
 <translation id="6000066717592683814">រក្សា Google ដដែល</translation>
 <translation id="6005538289190791541">ពាក្យ​សម្ងាត់​ដែលបានណែនាំ</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{អ្នកមាន <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ទំព័រ}other{អ្នកមាន <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ទំព័រ}}</translation>
 <translation id="6014293228235665243">មិនទាន់អាន</translation>
 <translation id="6036057147555329831">ICU បន្ថែម</translation>
 <translation id="6039379616847168523">លោតទៅផ្ទាំងបន្ទាប់</translation>
@@ -857,6 +869,7 @@
 <translation id="702463548815491781">បានណែនាំ នៅពេល​បើកកម្មវិធីតបវិញ ឬមុខងារ​ប្រើប៊ូតុងចុច​</translation>
 <translation id="7027549951530753705">បានស្ដារ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">ពាក្យសម្ងាត់</translation>
+<translation id="7030675613184250187">អ្នក​អាច​រក្សាទុក​ទំព័រ​ទៅក្នុង​បញ្ជីអាន​របស់អ្នក ដើម្បីអាច​រកមើល​ទំព័រទាំងនោះ​ម្ដងទៀត ឬ​អាន​ដោយគ្មានអ៊ីនធឺណិត​</translation>
 <translation id="703523980599857277">ប្ដូរ​ទំព័រដើម</translation>
 <translation id="7054588988317389591">យកការពណ៌នា​អំពីរូបភាពឬ?</translation>
 <translation id="7055152154916055070">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត៖</translation>
@@ -877,6 +890,7 @@
 <translation id="7177466738963138057">អ្នក​អាច​ប្ដូរ​វា​ពេល​ក្រោយ​ក្នុង​ការ​កំណត់។</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7187993566681480880">រក្សា​សុវត្ថិភាព​របស់អ្នក​នៅលើ Chrome និង​អាចប្រើ​សម្រាប់​កែលម្អ​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​កម្មវិធីរបស់ Google ផ្សេងទៀត នៅពេល​អ្នក​ចូលគណនី។</translation>
+<translation id="718926126787620637">បញ្ជី​ថត​ចំណាំ​ដែលបានបើក​ពេញ​អេក្រង់</translation>
 <translation id="7189372733857464326">កំពុង​រង់ចាំ​សេវាកម្ម​ Google Play ដើម្បី​បញ្ចប់​ការ​ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="7191430249889272776">ផ្ទាំងដែលបានបើកនៅផ្ទៃខាងក្រោយ។</translation>
 <translation id="7233236755231902816">ដើម្បីមើល​គេហទំព័រ​ជា​ភាសា​របស់អ្នក សូម​ទាញយក​កំណែចុងក្រោយ​បំផុត​របស់ Chrome</translation>
@@ -929,6 +943,7 @@
 <translation id="756809126120519699">បានជម្រះទិន្នន័យ Chrome</translation>
 <translation id="7577900504646297215">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
 <translation id="757855969265046257">{FILES,plural, =1{បានទាញយកឯកសារ <ph name="FILES_DOWNLOADED_ONE" />}other{បានទាញយកឯកសារ <ph name="FILES_DOWNLOADED_MANY" />}}</translation>
+<translation id="7583262514280211622">អ្នក​នឹង​មើលឃើញ​បញ្ជីអាន​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="7588219262685291874">បើក​រចនាប័ទ្មងងឹត ពេល​បើក​កម្មវិធីសន្សំថ្មនៅលើ​ឧបករណ៍របស់អ្នក</translation>
 <translation id="7593557518625677601">បើកការកំណត់ Android និងបើកដំណើរការសមកាលកម្មប្រព័ន្ធ Android ឡើងវិញដើម្បីចាប់ផ្តើមសមកាលកម្ម Chrome</translation>
 <translation id="7596558890252710462">ប្រព័ន្ធប្រតិបត្តិការ</translation>
@@ -960,6 +975,7 @@
 <translation id="7772375229873196092">បិទ <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}}</translation>
 <translation id="7778840695157240389">សូមពិនិត្យមើល​ម្ដងទៀត​នៅពេលក្រោយ ដើម្បីទទួលបាន​អត្ថបទថ្មីៗ</translation>
+<translation id="7786595606756654269">Google ជំនួយការ​ផ្ដល់បទពិសោធន៍​ប្រើប្រាស់សំឡេង​កាន់តែប្រសើរ​សម្រាប់ស្វែងរកនៅលើអ៊ីនធឺណិត និងធ្វើអន្តរកម្មជាមួយ​គេហទំព័រដែលអ្នកបានបើក។ Google ជំនួយការ​នឹងទទួល URL និងខ្លឹមសារ​របស់គេហទំព័រ​ដែលអ្នកប្រើជាមួយវា។</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7798392620021911922">បានស្ដារផ្ទាំង <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
@@ -985,6 +1001,7 @@
 <translation id="7961926449547174351">អ្នកបានបិទការចូលប្រើទំហំ​ផ្ទុក សូមចូលទៅកាន់ការកំណត់ ដើម្បីបើកវា។</translation>
 <translation id="7963646190083259054">អ្នកលក់៖</translation>
 <translation id="7967911570373677897">ដើម្បី​ស្កេន​កូដ QR សូមប្ដូរ​ការកំណត់​របស់អ្នក ដើម្បីឱ្យ Chrome អាចប្រើ​កាមេរ៉ា​របស់អ្នក​បាន</translation>
+<translation id="7968014550143838305">បានបញ្ចូល​ទៅក្នុង​បញ្ជីអាន</translation>
 <translation id="7971136598759319605">ដំណើរការ 1 ថ្ងៃមុន</translation>
 <translation id="7975379999046275268">មើល​ទំព័រ​សាកល្បង <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ផ្ទុក​ទំព័រ​ជាមុន​ដើម្បី​ឱ្យ​ការ​រុករក​ និង​ការ​ស្វែង​រក​កាន់តែ​លឿន​ជាងមុន</translation>
@@ -1015,6 +1032,7 @@
 <translation id="8127542551745560481">កែទំព័រដើម</translation>
 <translation id="813082847718468539">មើលព័ត៌មានគេហទំព័រ</translation>
 <translation id="8137558756159375272">ប៉ះដើម្បីស្វែងរក ផ្ញើពាក្យដែលបានជ្រើសយក និងគេហទំព័រថ្មីៗជាបរិបទទៅ Google ស្វែងរក។ អ្នកអាចបើកវានៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
+<translation id="8153351135626613369">ជំនួយការ​នឹង​បង្ហាញ នៅពេល​វាចាប់ដឹងថា​វាអាចជួយអ្នក​នៅលើ​គេហទំព័រ​ដែលស្គាល់</translation>
 <translation id="8156139159503939589">តើអ្នក​អានជាភាសាអ្វី?</translation>
 <translation id="8168435359814927499">មាតិកា</translation>
 <translation id="8186512483418048923">នៅសល់ឯកសារចំនួន <ph name="FILES" /></translation>
@@ -1045,6 +1063,7 @@
 <translation id="8372925856448695381">អាចប្រើភាសា<ph name="LANG" />បានហើយ។</translation>
 <translation id="8393700583063109961">ផ្ញើ​សារ</translation>
 <translation id="8407396331882458341">1. ជ្រើសរើស <ph name="APP_NAME" />\n2. ចុច "ជានិច្ច"</translation>
+<translation id="8410695015584479363">តាមដាន​តម្លៃ</translation>
 <translation id="8413126021676339697">បង្ហាញប្រវត្តិពេញលេញ</translation>
 <translation id="8425213833346101688">ប្តូរ</translation>
 <translation id="8427875596167638501">ផ្ទាំងមើលសាកល្បងបានបើក​ពាក់កណ្ដាល</translation>
@@ -1112,6 +1131,7 @@
 <translation id="8912362522468806198">គណនី Google</translation>
 <translation id="8920114477895755567">កំពុងរង់ចាំព័ត៌មានលំអិតអំពីឪពុកម្តាយ។</translation>
 <translation id="8922289737868596582">ទាញយកទំព័រ​ពីប៊ូតុង​ជម្រើសច្រើនទៀត ដើម្បីប្រើប្រាស់​ពួកវា​ដោយគ្មានអ៊ីនធឺណិត</translation>
+<translation id="8928626432984354940">បញ្ជី​ថត​ចំណាំ​ដែលបានបើក​ពាក់កណ្ដាល​អេក្រង់</translation>
 <translation id="8937772741022875483">លុបសកម្មភាព Chrome របស់អ្នកពី​សុខុមាលភាព​ឌីជីថល?</translation>
 <translation id="8942627711005830162">បើកនៅក្នុងផ្ទាំងវិនដូផ្សេងទៀត</translation>
 <translation id="8951232171465285730">Chrome សន្សំឲ្យអ្នកបាន <ph name="MEGABYTES" /> MB</translation>
@@ -1151,7 +1171,6 @@
 <translation id="9155898266292537608">​អ្នក​ក៏​អាច​ស្វែងរក​ដោយ​គ្រាន់​តែ​ចុចបន្តិច​នៅលើ​ពាក្យ​ណាមួយ​បានផងដែរ</translation>
 <translation id="9169507124922466868">ប្រវត្តិ​រុករក​ត្រូវបានបើក​ពាក់កណ្ដាល</translation>
 <translation id="9191031968346938109">បញ្ចូលទៅ…</translation>
-<translation id="919615279147764192">ដើម្បី​ជួយអ្នកក្នុងការបំពេញ​កិច្ចការផ្សេងៗ Google នឹងទទួល URL និង​ខ្លឹមសារ​របស់គេហទំព័រ ដែលអ្នកប្រើជាមួយ​ជំនួយការ​របស់អ្នក ព្រមទាំង​ព័ត៌មាន​ដែលអ្នកដាក់បញ្ជូន​តាមរយៈ​ជំនួយការ។ ព័ត៌មាននេះ​អាចត្រូវបានរក្សាទុ​កនៅក្នុងគណនី Google របស់អ្នក។ អ្នក​អាចបិទជំនួយការនៅក្នុងការកំណត់ Chrome។</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{បាន​ពិនិត្យមើល​កាលពី 1 នាទីមុន}other{បាន​ពិនិត្យមើល​កាលពី # នាទីមុន}}</translation>
 <translation id="9204836675896933765">នៅសល់ឯកសារចំនួន 1</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@
 <translation id="93753284658583800">បានប្ដូរ​ទំព័រដើម</translation>
 <translation id="938850635132480979">កំហុស៖ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">បញ្ចូលឃ្លាសម្ងាត់</translation>
+<translation id="948039501338975565">បញ្ជី​ថត​ចំណាំ</translation>
 <translation id="95817756606698420">Chrome អាចប្រើ <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> សម្រាប់ការស្វែងរកនៅក្នុងប្រទេសចិន។ អ្នកអាចផ្លាស់ប្តូរវាបាននៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="962979164594783469">ដំឡើង​កម្មវិធី​នេះ</translation>
 <translation id="968900484120156207">ទំព័រ​ដែលអ្នកចូលមើល​បង្ហាញនៅទីនេះ</translation>

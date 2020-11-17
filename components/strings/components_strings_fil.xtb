@@ -305,6 +305,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2102495993840063010">Mga Android app</translation>
 <translation id="2107021941795971877">Mga suporta sa pag-print</translation>
 <translation id="2108755909498034140">I-restart ang iyong computer</translation>
+<translation id="2111166930115883695">Pindutin ang space para i-play</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Binalewala dahil na-override ito ng <ph name="POLICY_NAME" />.</translation>
@@ -488,7 +489,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2903493209154104877">Mga Address</translation>
 <translation id="290376772003165898">Hindi nakasalin ang page sa <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">May nakitang pagbabago sa network.</translation>
-<translation id="2910133103376701357">Ang iyong device at account ay pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">User ID ng accounting ng trabaho</translation>
 <translation id="2915068235268646559">Pag-crash mula noong <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Isara ang iba pang program</translation>
@@ -522,6 +522,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3010559122411665027">Listahan ng entry na "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Awtomatikong na-block</translation>
 <translation id="3016780570757425217">Alamin ang iyong lokasyon</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, pindutin ang Tab at pagkatapos ay ang Enter para Alisin ang Suhestyon.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Maling uri ng patakaran</translation>
 <translation id="3037605927509011580">Ay, Naku!</translation>
@@ -760,10 +761,10 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     sa lahat ng kahilingan dito, pero hindi pa mailalapat sa ngayon ang patakarang ito.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF na dokumentong naglalaman ng {COUNT} page}one{PDF na dokumentong naglalaman ng {COUNT} page}other{PDF na dokumentong naglalaman ng {COUNT} na page}}</translation>
 <translation id="4030383055268325496">&amp;I-undo ang pagdagdag</translation>
-<translation id="4032320456957708163">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang iyong browser</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Ipinagpatuloy ang screen capture.</translation>
 <translation id="4067947977115446013">Magdagdag ng Wastong Address</translation>
 <translation id="4072486802667267160">Nagkaroon ng error sa pagproseso ng iyong order. Pakisubukang muli.</translation>
 <translation id="4075732493274867456">Hindi sinusuportahan ng client at server ang isang karaniwang bersyon o cipher suite ng SSL protocol.</translation>
@@ -843,11 +844,11 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4270541775497538019">Stacker 6</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4277028893293644418">I-reset ang password</translation>
-<translation id="4279811152705618813">Ang iyong <ph name="DEVICE_TYPE" /> ay pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Na-save na ang card na ito sa iyong Google Account}one{Na-save na ang mga card na ito sa iyong Google Account}other{Na-save na ang mga card na ito sa iyong Google Account}}</translation>
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Palawakin</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
+<translation id="4302514097724775343">I-tap ang dino para maglaro</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Hindi ma-access ang iyong file</translation>
 <translation id="4305817255990598646">Lumipat</translation>
@@ -963,7 +964,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4771973620359291008">Isang hindi alam na error ang nangyari.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Na-block ang pop-up}one{# pop-up ang na-block}other{# na pop-up ang na-block}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
-<translation id="4780900888022378816">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_DOMAIN" /> ang account mo.</translation>
 <translation id="4785689107224900852">Lumipat sa tab na ito</translation>
 <translation id="4791134497475588553">Mga naka-install na app ng Linux at kung kailan huling nagamit ang mga ito</translation>
 <translation id="4792686369684665359">Hindi secure ang impormasyong isusumite mo</translation>
@@ -1176,7 +1176,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Puwedeng maging peke o mapanloko ang site na ito. Inirerekomenda ng Chrome na umalis ngayon.</translation>
 <translation id="5610142619324316209">Suriin ang koneksyon</translation>
 <translation id="5610807607761827392">Maaari mong pamahalaan ang mga card at address sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Isalin ang page na ito gamit ang Google Translate</translation>
@@ -1248,6 +1247,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5905445707201418379">Na-black ayon sa patakaran ng pinagmulan ng <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (naka-sync)</translation>
+<translation id="5913377024445952699">Na-pause ang screen capture</translation>
 <translation id="59174027418879706">Pinagana</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Naka-on</translation>
@@ -1260,6 +1260,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5963413905009737549">Seksyon</translation>
 <translation id="5967592137238574583">I-edit ang Impormasyon ng Contact</translation>
 <translation id="5967867314010545767">Alisin sa history</translation>
+<translation id="5968793460449681917">Tuwing bibisita</translation>
 <translation id="5975083100439434680">Mag-zoom out</translation>
 <translation id="5979084224081478209">Suriin ang mga password</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1404,7 +1405,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6529602333819889595">&amp;Gawing Muli ang Pagtanggal</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
 <translation id="6547208576736763147">Dual punch left</translation>
-<translation id="6554795675067793129">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang iyong account.</translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6569060085658103619">Isang page ng extension ang tinitingnan mo</translation>
 <translation id="6573200754375280815">Dual punch right</translation>
@@ -1475,6 +1475,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6895330447102777224">Nakumpirma na ang iyong card</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Samahan (O)</translation>
+<translation id="6907293445143367439">Payagan ang <ph name="SITE_NAME" /> na:</translation>
 <translation id="6910240653697687763">Gusto ng <ph name="URL" /> na magkaroon ng buong kontrol sa iyong mga MIDI device</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>
@@ -1910,6 +1911,7 @@ Mga karagdagang detalye:
 <translation id="8574899947864779331">Gamitin ang Touch ID para kumpirmahin nang mas mabilis ang mga card</translation>
 <translation id="858637041960032120">Magdagdag ng numero ng telepono</translation>
 <translation id="8589998999637048520">Pinakamahusay na kalidad</translation>
+<translation id="8600271352425265729">Sa pagkakataong ito lang</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
 <translation id="8606726445206553943">Gamitin ang iyong mga MIDI device</translation>
 <translation id="8612761427948161954">Kumusta <ph name="USERNAME" />,
@@ -1919,6 +1921,7 @@ Mga karagdagang detalye:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Walang tumutugmang password. Ipakita ang lahat ng naka-save na password.</translation>
 <translation id="8625384913736129811">I-save ang Card na Ito sa Device na Ito</translation>
+<translation id="8627040765059109009">Ipinagpatuloy ang screen capture</translation>
 <translation id="8657078576661269990">Na-block ng iyong administrator ang pagbabahagi mula sa <ph name="ORIGIN_NAME" /> sa <ph name="VM_NAME_1" /> at <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Buod ng Order, <ph name="TOTAL_LABEL" />, Higit pang Detalye</translation>
 <translation id="867224526087042813">Lagda</translation>
@@ -2066,6 +2069,7 @@ Mga karagdagang detalye:
 <translation id="939736085109172342">Bagong folder</translation>
 <translation id="945855313015696284">Tingnan ang impormasyon sa ibaba at mag-delete ng anumang invalid na card</translation>
 <translation id="950736567201356821">Triple punch top</translation>
+<translation id="951941430552851965">Na-pause ng iyong administrator ang screen capture dahil sa content sa screen mo.</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">Maaaring subukan ng content na itong mag-install ng mga mapanlinlang na app na nagpapanggap na ibang bagay o nangongolekta ng data na maaaring gamitin para subaybayan ka. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>

@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Captura de tela</translation>
 <translation id="1111673857033749125">Favoritos salvos nos seus outros dispositivos serão exibidos aqui.</translation>
 <translation id="1113597929977215864">Mostrar a versão simplificada</translation>
+<translation id="1118561384561215815">Receber ajuda em tarefas na Web</translation>
 <translation id="1123070903960493543">A forma como você interage com o Chrome, as configurações selecionadas e os detalhes de falhas do Chrome</translation>
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
+<translation id="1772137089884020309">A lista de pastas de favoritos está fechada</translation>
 <translation id="1782483593938241562">Data de término: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Altere o local padrão de download a qualquer momento</translation>
@@ -181,6 +183,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 <translation id="2276696007612801991">Faça login na Conta do Google para verificar suas senhas</translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
 <translation id="230115972905494466">Nenhum dispositivo compatível encontrado</translation>
+<translation id="230155349749732438">Para usar esta configuração, é preciso ativar a opção <ph name="BEGIN_LINK" />Melhorar as pesquisas e a navegação<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Toque para ligar</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
 <translation id="2321958826496381788">Arraste o controle deslizante até a leitura ficar confortável. Com o toque duplo em um parágrafo, o texto ficará pelo menos deste tamanho.</translation>
@@ -315,6 +318,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3269093882174072735">Carregar imagem</translation>
 <translation id="3269956123044984603">Para ver as guias dos seus outros dispositivos, ative a opção "Sincronizar dados automaticamente" nas configurações de conta do Android.</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
+<translation id="3284510035090979597">Ajuda proativa</translation>
 <translation id="3285080554353377245">Vídeos sobre como usar o Chrome</translation>
 <translation id="3288003805934695103">Atualizar a página</translation>
 <translation id="32895400574683172">Notificações são permitidas</translation>
@@ -422,6 +426,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
+<translation id="4095189195365058471">Ler mais tarde <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome. Envie estatísticas de uso e relatórios de falhas ao Google.</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="4116038641877404294">Faça o download de páginas e acesse off-line</translation>
@@ -515,6 +520,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 download concluído.}one{# download concluído.}other{# downloads concluídos.}}</translation>
 <translation id="4766678251456904326">Adicionar uma conta ao dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 download programado.}one{# download programado.}other{# downloads programados.}}</translation>
+<translation id="4791358705705538979">Ajuda você a realizar tarefas na Web, como finalizações de compra</translation>
 <translation id="4802417911091824046">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
 
 Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
@@ -664,6 +670,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5797070761912323120">O Google pode usar seu histórico para personalizar a Pesquisa, os anúncios e outros serviços que ele oferece</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# hora atrás}one{# horas atrás}other{# horas atrás}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
+<translation id="5810864297166300463">Assistência na Web</translation>
 <translation id="5814131985548525293">Digite aqui ou toque no ícone de voz para começar</translation>
 <translation id="5817918615728894473">Parear</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -858,6 +865,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o acesso com interruptor estão ativados</translation>
 <translation id="7027549951530753705">Download de <ph name="ITEM_TITLE" /> restaurado</translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7030675613184250187">É possível salvar páginas na sua lista de leituras para encontrá-las novamente com facilidade ou ler off-line</translation>
 <translation id="703523980599857277">Mudar página inicial</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
@@ -878,6 +886,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7177466738963138057">Você poderá alterar isso mais tarde nas configurações</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7187993566681480880">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
+<translation id="718926126787620637">Lista de pastas de favoritos aberta no tamanho máximo</translation>
 <translation id="7189372733857464326">Aguardando o fim da atualização do Google Play Services</translation>
 <translation id="7191430249889272776">Guia aberta no plano de fundo.</translation>
 <translation id="7233236755231902816">Para ver as páginas da Web no seu idioma, instale a versão mais recente do Chrome</translation>
@@ -1016,6 +1025,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="813082847718468539">Visualizar informações do site</translation>
 <translation id="8137558756159375272">"Toque para pesquisar" envia a palavra selecionada e a página atual como contexto para a Pesquisa Google. Desative esse recurso em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">O Assistente será exibido quando ele detectar que pode oferecer ajuda nos sites compatíveis</translation>
 <translation id="8156139159503939589">Quais idiomas você lê?</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> arquivos restantes</translation>
@@ -1113,6 +1123,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8920114477895755567">Aguardando detalhes dos pais.</translation>
 <translation id="8922289737868596582">Use o botão Mais opções para fazer o download de páginas e acessá-las off-line</translation>
+<translation id="8928626432984354940">Lista de pastas de favoritos aberta na metade da altura</translation>
 <translation id="8937772741022875483">Remover sua atividade do Chrome do Bem-estar digital?</translation>
 <translation id="8942627711005830162">Abrir em outra janela</translation>
 <translation id="8951232171465285730">O Chrome economizou <ph name="MEGABYTES" /> MB</translation>
@@ -1152,7 +1163,6 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="9155898266292537608">Você também pode pesquisar com um toque rápido em uma palavra</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>
-<translation id="919615279147764192">Para ajudar você com suas tarefas, o Google receberá os URLs e o conteúdo de sites em que você usa o Assistente, assim como as informações que você envia por ele. Essas informações poderão ser armazenadas na sua Conta do Google. É possível desativar o Assistente nas configurações do Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Verificado 1 minuto atrás}one{Verificado # minuto atrás}other{Verificado # minutos atrás}}</translation>
 <translation id="9204836675896933765">1 arquivo restante</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1164,6 +1174,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="93753284658583800">Página inicial modificada</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserir senha</translation>
+<translation id="948039501338975565">Lista de pastas de favoritos</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Instalar este app</translation>
 <translation id="968900484120156207">As páginas visitadas são exibidas aqui</translation>

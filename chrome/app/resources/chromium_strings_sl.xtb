@@ -14,6 +14,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1357932062193643861">Vprašaj, ko se Chromium odpre</translation>
 <translation id="1396446129537741364">Chromium poskuša prikazati gesla.</translation>
 <translation id="1414495520565016063">Prijavljeni ste v Chromium.</translation>
+<translation id="1414973082589232775">Če želite uporabljati program Rosetta za predvajanje zaščitene predstavnosti, morate znova zagnati Chromium.</translation>
 <translation id="151962892725702025">Chromium OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
@@ -131,6 +132,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5634636535844844681">Za Chromium potrebujete Windows 7 ali novejši.</translation>
 <translation id="5653831366781983928">Znova zaženite Chromium</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
+<translation id="5736967399513123100">Če želite v Chromiumu omogočiti predvajanje zaščitene predstavnosti, morate namestiti program Rosetta. Ali ga želite namestiti zdaj?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
@@ -177,6 +179,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano v Chromium)</translation>
 <translation id="6893813176749746474">Chromium je posodobljen, vendar ga niste uporabljali najmanj 30 dni.</translation>
+<translation id="6897548120660295439">Program Rosetta Chromiumu omogoča predvajanje zaščitene predstavnosti na tej strani.</translation>
 <translation id="6964305034639999644">Odpri povezavo v Chromiumovem oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="6978145336957848883">Šibka gesla je preprosto ugotoviti. Chromiumu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>

@@ -342,7 +342,6 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4747097190499141774">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay. Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. La phrase secrète n'est pas envoyée à Google et Google ne la stocke pas. Si vous l'oubliez ou si vous souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
-<translation id="4758977202923349869">Positionnez la carte de crédit à l'intérieur de ce cadre</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.
@@ -352,7 +351,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
 <translation id="481968316161811770">Cookies/données site</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}many{{domain} and {count} others}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les cookies tiers</translation>
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
@@ -477,7 +476,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Non lus</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
-<translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}many{Close {COUNT} Tabs}other{Fermer {COUNT} onglets}}</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
@@ -604,12 +603,12 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7454057999980797137">État/Comté</translation>
 <translation id="7456847797759667638">Ouvrir une adresse</translation>
-<translation id="7460314822154045102">Utiliser la caméra</translation>
 <translation id="7464701184726199289">Les données synchronisées seront effacées de tous les appareils. Les paramètres de site enregistrés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7472734401283673885">Nom de la société</translation>
 <translation id="7473891865547856676">Non, merci</translation>
 <translation id="7481312909269577407">Avancer</translation>
+<translation id="7483467499335917849">Utiliser votre position actuelle</translation>
 <translation id="750493650310597496">Aucun favori sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
@@ -645,7 +644,7 @@ Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome 
 <translation id="7939128259257418052">Export mots de passe…</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
 <translation id="794799177247607889">Arrêter la journalisation</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
+<translation id="7953440832920792856">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}many{{COUNT} Compromised passwords}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7966516440812255683">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 

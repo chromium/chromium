@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Snimanje ekrana</translation>
 <translation id="1111673857033749125">Obeleživači sačuvani na drugim uređajima će se prikazati ovde.</translation>
 <translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
+<translation id="1118561384561215815">Nađite pomoć za zadatke na vebu</translation>
 <translation id="1123070903960493543">Kako ostvarujete interakciju sa Chrome-om, podešavanja koja ste izabrali, detalji o otkazivanjima Chrome-a</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
 <translation id="1129510026454351943">Detalji: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Sinhronizujte obeleživače</translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="1754404134430936718">Tekst je kopiran</translation>
+<translation id="1772137089884020309">Lista foldera sa obeleživačima je zatvorena</translation>
 <translation id="1782483593938241562">Datum završetka: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792959175193046959">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku</translation>
@@ -181,6 +183,7 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2276696007612801991">Prijavite se na Google nalog da biste proverili lozinke</translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilan uređaj</translation>
+<translation id="230155349749732438">Da biste koristili ovo podešavanje, opcija <ph name="BEGIN_LINK" />Poboljšaj pretrage i pregledanje<ph name="END_LINK" /> mora da bude uključena</translation>
 <translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
 <translation id="2321958826496381788">Prevlačite klizač dok ovo ne budete mogli lako da pročitate. Kada dvaput dodirnete pasus, tekst treba da bude bar ovoliki.</translation>
@@ -204,6 +207,7 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2450907520913474542">Saznajte više o temama na veb-sajtovima bez napuštanja stranice. „Dodirnite za pretragu“ šalje reč i njen kontekst u Google pretragu i prikazuje definicije, slike, rezultate pretrage i druge detalje.
 
 Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu, izaberite više ili manje reči. Da biste izmenili pretragu, otvorite okno, dodirnite ikonu za otvaranje na novoj kartici i unesite promene u okviru za pretragu.</translation>
+<translation id="2459390580524506445">Poboljšana glasovna pretraga</translation>
 <translation id="246532703174860178">Deli</translation>
 <translation id="2478076885740497414">Instaliraj aplikaciju</translation>
 <translation id="2479148705183875116">Idi u Podešavanja</translation>
@@ -272,6 +276,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2932150158123903946">Memorijski prostor za Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Kartica za pregled je zatvorena</translation>
 <translation id="2956410042958133412">Ovim nalogom upravljaju <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
 <translation id="2962095958535813455">Prebacili ste na kartice bez arhiviranja</translation>
 <translation id="2979025552038692506">Izabrane kartice bez arhiviranja</translation>
 <translation id="2987620471460279764">Tekst koji se deli sa drugog uređaja</translation>
@@ -315,11 +320,13 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3269093882174072735">Učitaj sliku</translation>
 <translation id="3269956123044984603">Da bi vam bile dostupne kartice sa drugih uređaja, uključite opciju „Automatski sinhronizuj podatke“ u Android podešavanjima na nalogu.</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
+<translation id="3284510035090979597">Proaktivna pomoć</translation>
 <translation id="3285080554353377245">Video snimci o tome kako da koristite Chrome</translation>
 <translation id="3288003805934695103">da ponovo učitate stranicu</translation>
 <translation id="32895400574683172">Obaveštenja su dozvoljena</translation>
 <translation id="3290991969712132877">Da brže pristupali ovoj stranici, dodajte je na početni ekran pomoću dugmeta Još opcija</translation>
 <translation id="3295530008794733555">Pregledajte brže. Koristite manje podataka.</translation>
+<translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3298243779924642547">Lagano</translation>
 <translation id="3303414029551471755">Želite li da nastavite sa preuzimanjem sadržaja?</translation>
 <translation id="3315103659806849044">Trenutno prilagođavate podešavanja Sinhronizacije i Google usluga. Da biste dovršili uključivanje sinhronizacije, dodirnite dugme Potvrdi u dnu ekrana. Idi nagore</translation>
@@ -422,6 +429,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4084682180776658562">Obeleživač</translation>
 <translation id="4084712963632273211">Od objavljivača <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />prikazuje Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Želite li da izbrišete podatke aplikacije?</translation>
+<translation id="4095189195365058471">Pročitajte kasnije <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Poboljšajte Chrome slanjem statistike korišćenja i izveštaja o otkazivanju Google-u.</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
 <translation id="4116038641877404294">Preuzmite stranice da biste ih koristili oflajn</translation>
@@ -514,6 +522,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 preuzimanje je dovršeno.}one{# preuzimanje je dovršeno.}few{# preuzimanja su dovršena.}other{# preuzimanja je dovršeno.}}</translation>
 <translation id="4766678251456904326">Dodaj nalog na uređaj</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Zakazano je 1 preuzimanje.}one{Zakazano je # preuzimanje.}few{Zakazana su # preuzimanja.}other{Zakazano je # preuzimanja.}}</translation>
+<translation id="4791358705705538979">Pomaže vam da dovršavate zadatke, poput plaćanja, širom veba</translation>
 <translation id="4802417911091824046">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
@@ -619,6 +628,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
 <translation id="5527082711130173040">Chrome-u je potreban pristup lokaciji da bi tražio uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dozvole<ph name="END_LINK1" />. Pristup lokaciji je takođe <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori kartice bez arhiv.</translation>
+<translation id="5530920986376047241">Možete da čuvate stranice na listu za čitanje da biste ih ponovo pronašli</translation>
 <translation id="5534640966246046842">Sajt je kopiran</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5561549206367097665">Čeka se mreža...</translation>
@@ -663,6 +673,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5797070761912323120">Google može da koristi istoriju za personalizaciju Pretrage, oglasa i drugih Google usluga</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Pre # sata}one{Pre # sata}few{Pre # sata}other{Pre # sati}}</translation>
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
+<translation id="5810864297166300463">Pomoć na vebu</translation>
 <translation id="5814131985548525293">Unesite tekst ovde ili dodirnite ikonu mikrofona da biste započeli</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="583281660410589416">Nepoznato</translation>
@@ -697,6 +708,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5982307838673692400">Otvori karticu bez arhiviranja</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranica}}</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
 <translation id="6036057147555329831">Dodatni ICU modul</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
@@ -857,6 +869,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="702463548815491781">Preporučujemo vam kada uključite TalkBack ili pristup pomoću prekidača</translation>
 <translation id="7027549951530753705">Vraćena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
+<translation id="7030675613184250187">Možete da sačuvate stranice na listi za čitanje da biste ih ponovo pronašli ili čitali oflajn</translation>
 <translation id="703523980599857277">Promeni početnu stranicu</translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
 <translation id="7055152154916055070">Blokirano je preusmeravanje:</translation>
@@ -877,6 +890,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7177466738963138057">To možete da promenite kasnije u podešavanjima</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7187993566681480880">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
+<translation id="718926126787620637">Lista foldera sa obeleživačima otvorena je na celom ekranu</translation>
 <translation id="7189372733857464326">Čeka se da Google Play usluge završe ažuriranje</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7233236755231902816">Da biste pregledali veb na svom jeziku, preuzmite najnoviju verziju Chrome-a</translation>
@@ -929,6 +943,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="756809126120519699">Chrome podaci su obrisani</translation>
 <translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Preuzeli ste <ph name="FILES_DOWNLOADED_ONE" /> datoteku}one{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteku}few{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteke}other{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteka}}</translation>
+<translation id="7583262514280211622">Ovde ćete pronaći listu za čitanje</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je Ušteda baterije na uređaju uključena</translation>
 <translation id="7593557518625677601">Otvorite Android podešavanja i ponovo omogućite sinhronizaciju Android sistema da biste započeli Chrome sinhronizaciju</translation>
 <translation id="7596558890252710462">Operativni sistem</translation>
@@ -960,6 +975,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7772375229873196092">Zatvori <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Vratite se kasnije za još novih vesti</translation>
+<translation id="7786595606756654269">Google pomoćnik pruža bolji glasovni doživljaj za pretraživanje veba i interakciju sa sajtovima koje ste otvorili. Google pomoćnik će primiti URL-ove i sadržaj sajtova koje koristite sa njim.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćene kartice: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -985,6 +1001,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7961926449547174351">Onemogućili ste pristup memorijskom prostoru. Idite u Podešavanja da biste ga omogućili.</translation>
 <translation id="7963646190083259054">Prodavac:</translation>
 <translation id="7967911570373677897">Da biste skenirali QR kôd, promenite podešavanja kako bi Chrome mogao da koristi kameru</translation>
+<translation id="7968014550143838305">Dodato je na listu za čitanje</translation>
 <translation id="7971136598759319605">Poslednja aktivnost: pre 1 dan</translation>
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Stranice se učitavaju unapred radi bržeg pregledanja i pretraživanja</translation>
@@ -1015,6 +1032,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8127542551745560481">Izmenite početnu stranicu</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>
 <translation id="8137558756159375272">Funkcija Dodirnite za pretragu šalje izabranu reč i aktuelnu stranicu kao kontekst u Google pretragu. Možete da je isključite u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Pomoćnik se pojavljuje kada utvrdi da može da vam pomogne na podržanim veb-sajtovima</translation>
 <translation id="8156139159503939589">Na kojim jezicima čitate?</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8186512483418048923">Preostale datoteke: <ph name="FILES" /></translation>
@@ -1045,6 +1063,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8372925856448695381">Jezik <ph name="LANG" /> je spreman.</translation>
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8407396331882458341">1. Izaberite <ph name="APP_NAME" />\n2. Dodirnite „Uvek“</translation>
+<translation id="8410695015584479363">Pratite cene</translation>
 <translation id="8413126021676339697">Prikaži svu istoriju</translation>
 <translation id="8425213833346101688">Promeni</translation>
 <translation id="8427875596167638501">Kartica za pregled je poluotvorena</translation>
@@ -1112,6 +1131,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8912362522468806198">Google naloga</translation>
 <translation id="8920114477895755567">Čekaju se detalji roditelja.</translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Još opcija da biste ih koristili oflajn</translation>
+<translation id="8928626432984354940">Lista foldera sa obeleživačima otvorena je do polovine ekrana</translation>
 <translation id="8937772741022875483">Želite li da uklonite Chrome aktivnosti iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8951232171465285730">Chrome vam je uštedeo <ph name="MEGABYTES" /> MB</translation>
@@ -1151,7 +1171,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="9155898266292537608">Možete i kratko da dodirnete reč da biste je pretražili</translation>
 <translation id="9169507124922466868">Istorija navigacije je poluotvorena</translation>
 <translation id="9191031968346938109">Dodaj u…</translation>
-<translation id="919615279147764192">Da bi vam pomogao u obavljanju zadataka, Google će dobijati URL-ove i sadržaj sajtova na kojima koristite Pomoćnik, kao i informacije koje pošaljete preko Pomoćnika. Ove informacije mogu da se čuvaju na Google nalogu. Pomoćnik možete da isključite u podešavanjima Chrome-a.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provereno pre 1 minut}one{Provereno pre # minut}few{Provereno pre # minuta}other{Provereno pre # minuta}}</translation>
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="93753284658583800">Početna stranica je promenjena</translation>
 <translation id="938850635132480979">Greška: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Unesite pristupnu frazu</translation>
+<translation id="948039501338975565">Lista foldera sa obeleživačima</translation>
 <translation id="95817756606698420">Chrome može da koristi <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> za pretragu u Kini. Ovo možete da promenite u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Instalirajte ovu aplikaciju</translation>
 <translation id="968900484120156207">Stranice koje posećujete se prikazuju ovde</translation>

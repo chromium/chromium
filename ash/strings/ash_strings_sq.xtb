@@ -103,7 +103,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucioni ndryshoi në <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliko "Konfirmo" për të ruajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Shkurtorja për të hapur menaxherin e detyrave ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klikimet automatike</translation>
-<translation id="1924640696879807758">Nga telefoni</translation>
 <translation id="1928739107511554905">Për të marrë përditësimin, përdor ekranin me prekje për ta rinisur Chromebook me tastierën e lidhur.</translation>
 <translation id="1951012854035635156">Asistenti</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2405664212338326887">Nuk është i lidhur</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="DOMAIN" /></translation>
 <translation id="2427507373259914951">Klikimi me butonin majtas</translation>
 <translation id="2429753432712299108">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Përpara se të pranosh, konfirmo që ky kod shfaqet në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
@@ -324,9 +322,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
 <translation id="4114315158543974537">Aktivizo "Qendrën e telefonit"</translation>
 <translation id="4121728057981832179">Një pajisje virtuale po përdor mikrofonin tënd</translation>
+<translation id="4126167871198063089">Dil nga "Zgjidh që të thuhet"</translation>
 <translation id="4129129681837227511">Për të parë njoftime në ekranin e kyçjes, shkyçe për të ndryshuar cilësimin</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="DOMAIN" /></translation>
 <translation id="415719264485676252">Regjistrimi i ekranit është i bllokuar</translation>
 <translation id="4157822100366708405">Cilësimet e "Temës së errët"</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
@@ -383,6 +381,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4570957409596482333">Butoni i "Zgjidh që të thuhet"</translation>
 <translation id="4577274620589681794">Koha mbaroi · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Shfaq paraafishimet</translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
@@ -430,11 +429,13 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
+<translation id="5003993274120026347">Fjalia tjetër</translation>
 <translation id="5019169674188023236">Me sa duket Bluetooth-i ose Wi-Fi yt është i çaktivizuar në pajisjen tënde <ph name="DEVICE_TYPE" />. Kontrollo lidhjen tënde për të përdorur Phone Hub.</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
+<translation id="504465286040788597">Paragrafi i mëparshëm</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
@@ -474,6 +475,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5571066253365925590">Bluetooth-i u aktivizua</translation>
+<translation id="557563299383177668">Paragrafi tjetër</translation>
 <translation id="558849140439112033">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Shtyp Ctrl + Alt + Z për të çaktivizuar komentet me zë.</translation>
@@ -613,7 +615,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Karta inteligjente nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
-<translation id="6953890208095195458">Regjistrimi i ekranit është ndaluar nga administratori yt për shkak të përmbajtjes në ekranin tënd.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6981982820502123353">Qasja</translation>
@@ -667,7 +668,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Mundësia për të nxjerr një regjistrim ekrani të përmbajtjes së ekranit të është bllokuar nga administratori.</translation>
 <translation id="7548434653388805669">Koha për gjumë</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
@@ -726,6 +726,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8029247720646289474">Lidhja me zonën e qasjes për internet dështoi</translation>
 <translation id="8029629653277878342">Kërkohet kodi PIN ose fjalëkalimi për më shumë siguri</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
+<translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
@@ -864,6 +865,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="921989828232331238">Prindi yt e kyçi pajisjen tënde për këtë ditë</translation>
 <translation id="9220525904950070496">Hiq llogarinë</translation>
 <translation id="923686485342484400">Shtyp dy herë Control, Shift, Q për të dalë.</translation>
+<translation id="925832987464884575">Fshih pamjet paraprake</translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="98515147261107953">Horizontal</translation>

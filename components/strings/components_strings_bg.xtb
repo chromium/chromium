@@ -484,7 +484,6 @@
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Страницата не е на <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Установена бе промяна в мрежата.</translation>
-<translation id="2910133103376701357">Устройството и профилът ви се управляват от <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Потребителски идентификатор за отчитане на задания</translation>
 <translation id="2915068235268646559">Срив от <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Затворете другите програми.</translation>
@@ -756,7 +755,6 @@
 да се прилага правило за източник, но понастоящем то не може да бъде приложено.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ, съдържащ {COUNT} страница}other{PDF документ, съдържащ {COUNT} страници}}</translation>
 <translation id="4030383055268325496">&amp;Отмяна на добавянето</translation>
-<translation id="4032320456957708163">Браузърът ви се управлява от <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">Ключ „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (плик)</translation>
@@ -839,7 +837,6 @@
 <translation id="4270541775497538019">Стакер 6</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
-<translation id="4279811152705618813">Вашият <ph name="DEVICE_TYPE" /> се управлява от <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Разгъване</translation>
@@ -959,7 +956,6 @@
 <translation id="4771973620359291008">Възникна неизвестна грешка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Блокиран е изскачащ прозорец}other{Блокирани са # изскач. прозореца}}</translation>
 <translation id="4780366598804516005">Пощенска кутия 1</translation>
-<translation id="4780900888022378816">Устройството ви се управлява от <ph name="ENROLLMENT_DOMAIN" />, а профилът ви се управлява от <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Превключване към този раздел</translation>
 <translation id="4791134497475588553">Инсталираните приложения за Linux и кога са използвани последно</translation>
 <translation id="4792686369684665359">Информацията, която сте напът да изпратите, не е защитена</translation>
@@ -1172,7 +1168,6 @@
 <translation id="560412284261940334">Управлението не се поддържа</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Този сайт може да е фалшив или измамнически. Chrome препоръчва да го напуснете сега.</translation>
 <translation id="5610142619324316209">Проверете връзката.</translation>
 <translation id="5610807607761827392">Можете да управлявате картите и адресите от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Преведете тази страница с Google Преводач</translation>
@@ -1244,6 +1239,7 @@
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5905445707201418379">Блокирано според правилото за източник на <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирано)</translation>
+<translation id="5913377024445952699">Функцията за заснемане на екрана е поставена на пауза</translation>
 <translation id="59174027418879706">Активирано</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Включено</translation>
@@ -1400,7 +1396,6 @@
 <translation id="6529602333819889595">&amp;Възстановяване на изтриването</translation>
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
 <translation id="6547208576736763147">Двойно перфориране отляво</translation>
-<translation id="6554795675067793129">Профилът ви се управлява от <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
@@ -1915,6 +1910,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Няма съответстващи пароли. Показване на всички запазени пароли.</translation>
 <translation id="8625384913736129811">Запазване на картата на това устройство</translation>
+<translation id="8627040765059109009">Функцията за заснемане на екрана е възобновена</translation>
 <translation id="8657078576661269990">Администраторът ви е блокирал споделянето от <ph name="ORIGIN_NAME" /> с(ъс) <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="867224526087042813">Подпис</translation>

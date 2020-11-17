@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
 <translation id="1111673857033749125">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ സംരക്ഷിച്ച ബുക്ക്‌മാർക്കുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="1113597929977215864">ലളിതവൽക്കരിച്ച കാഴ്‌ച കാണിക്കുക</translation>
+<translation id="1118561384561215815">വെബിലെ ടാസ്‌ക്കുകളിൽ സഹായം തേടുക</translation>
 <translation id="1123070903960493543">നിങ്ങൾ Chrome-മായി ഇടപഴകുന്ന രീതി, തിരഞ്ഞെടുത്ത ക്രമീകരണം, Chrome ക്രാഷായതിന്റെ വിശദാംശങ്ങൾ എന്നിവ</translation>
 <translation id="1126809382673880764">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. Gmail, Search പോലുള്ള മറ്റ് Google സേവനങ്ങളിൽ ഉള്ള സുരക്ഷിത ബ്രൗസിംഗ് പരിരക്ഷ നിങ്ങൾക്ക് തുടർന്നും ലഭിക്കും.</translation>
 <translation id="1129510026454351943">വിശദാംശങ്ങള്‍: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">നിങ്ങളുടെ ബുക്ക്മാർക്കുകൾ സമന്വയിപ്പിക്കുക</translation>
 <translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1754404134430936718">ടെക്‌സ്‌റ്റ് പകർത്തി</translation>
+<translation id="1772137089884020309">ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ് അടച്ചു</translation>
 <translation id="1782483593938241562">അവസാന തീയതി <ph name="DATE" /></translation>
 <translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
 <translation id="1792959175193046959">ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക</translation>
@@ -181,6 +183,7 @@
 <translation id="2276696007612801991">പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് സെെൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2286841657746966508">ബില്ലിംഗ് വിലാസം</translation>
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="230155349749732438">ഈ ക്രമീകരണം ഉപയോഗിക്കാൻ <ph name="BEGIN_LINK" />തിരയലുകളും ബ്രൗസിംഗും മെച്ചപ്പെടുത്തുക<ph name="END_LINK" /> ഓണാക്കണം</translation>
 <translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2321086116217818302">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു…</translation>
 <translation id="2321958826496381788">നിങ്ങൾക്ക് ഇത് സൗകര്യപ്രദമായി വായിക്കാൻ കഴിയുന്നതുവരെ സ്ലൈഡർ വലിക്കുക. ഒരു ഖണ്ഡികയിൽ ഇരട്ട-ടാപ്പ് ചെയ്‌തതിനുശേഷം ടെക്‌സ്റ്റിന് ഈ വലുപ്പമെങ്കിലും ഉണ്ടായിരിക്കണം.</translation>
@@ -204,6 +207,7 @@
 <translation id="2450907520913474542">പേജ് വിട്ടുപോകാതെ തന്നെ വെബ്‌സൈറ്റുകളിലെ വിഷയങ്ങളെക്കുറിച്ച് അറിയുക. 'തിരയാൻ സ്‌പർശിക്കുക' എന്നത് പദവും അതിന്റെ സന്ദർഭവും Google തിരയലിലേക്ക് അയച്ച്, നിർവചനങ്ങളും ചിത്രങ്ങളും തിരയൽ ഫലങ്ങളും മറ്റ് വിശദാംശങ്ങളും ലഭ്യമാക്കുന്നു.
 
 തിരയാനായി ഏത് പദത്തിലും സ്‌പർശിച്ച് പിടിക്കുക. നിങ്ങളുടെ തിരയൽ പരിഷ്‌കരിക്കാൻ കൂടുതൽ വാക്കുകളോ കുറച്ച് വാക്കുകളോ തിരഞ്ഞെടുക്കുക. നിങ്ങളുടെ തിരയൽ എഡിറ്റ് ചെയ്യാൻ, പാനൽ തുറന്ന ശേഷം പുതിയ ടാബിൽ തുറക്കാൻ ഐക്കണിൽ ടാപ്പ് ചെയ്‌ത് സെര്‍ച്ച് ബോക്‌സിൽ മാറ്റങ്ങൾ വരുത്തുക.</translation>
+<translation id="2459390580524506445">മെച്ചപ്പെടുത്തിയ ശബ്ദ തിരയൽ</translation>
 <translation id="246532703174860178">പങ്കിടുക</translation>
 <translation id="2478076885740497414">അപ്ലിക്കേഷൻ ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -272,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> സ്‌റ്റോറേജ്</translation>
 <translation id="2942036813789421260">പ്രിവ്യു ടാബ് അടച്ചു</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" />, <ph name="PARENT_NAME_2" /> എന്നിവരാണ് ഈ അക്കൗണ്ട് നിയന്ത്രിക്കുന്നത്.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> പേജ്}other{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> പേജുകൾ}}</translation>
 <translation id="2962095958535813455">ആൾമാറാട്ട ടാബുകളിലേക്ക് മാറി</translation>
 <translation id="2979025552038692506">തിരഞ്ഞെടുത്ത അദൃശ്യ ടാബ്</translation>
 <translation id="2987620471460279764">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്‌റ്റ്</translation>
@@ -315,11 +320,13 @@
 <translation id="3269093882174072735">ചിത്രം ലോഡ് ചെയ്യുക</translation>
 <translation id="3269956123044984603">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, Android അക്കൗണ്ട് ക്രമീകരണത്തിൽ "ഡാറ്റ സ്വയം സമന്വയിപ്പിക്കുക" ഓണാക്കുക.</translation>
 <translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="3284510035090979597">സമയോചിത സഹായം</translation>
 <translation id="3285080554353377245">Chrome എങ്ങനെ ഉപയോഗിക്കാം എന്നതിനെക്കുറിച്ചുള്ള വീഡിയോകൾ</translation>
 <translation id="3288003805934695103">പേജ് റീലോഡുചെയ്യുന്നു</translation>
 <translation id="32895400574683172">അറിയിപ്പുകൾ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="3290991969712132877">ഇവിടെ വേഗത്തിൽ എത്താൻ, കൂടുതൽ ഓപ്ഷനുകൾ മെനുവിൽ പോയി നിങ്ങളുടെ ഹോം സ്‌ക്രീനിലേക്ക് ഈ പേജ് ചേർക്കുക</translation>
 <translation id="3295530008794733555">വേഗത്തിൽ ബ്രൗസ് ചെയ്യൂ. കുറച്ച് ഡാറ്റ ഉപയോഗിക്കൂ.</translation>
+<translation id="3297344142967351106">ശബ്ദ സഹായം</translation>
 <translation id="3298243779924642547">ലൈറ്റ്</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
 <translation id="3315103659806849044">നിലവിൽ നിങ്ങൾ സമന്വയ, Google സേവന ക്രമീകരണം ഇഷ്‌ടാനുസൃതമാക്കുന്നു. സമന്വയിപ്പിക്കൽ ഓണാക്കുന്നത് പൂർത്തിയാക്കാൻ, സ്‌ക്രീനിൻ്റെ ചുവടുവശത്തിന് സമീപമുള്ള 'സ്ഥിരീകരിക്കുക' ടാപ്പ് ചെയ്യുക. മുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക</translation>
@@ -422,6 +429,7 @@
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-ൽ നിന്ന് – <ph name="BEGIN_DEEMPHASIZED" />Google നൽകുന്നത്<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ആപ്പ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
+<translation id="4095189195365058471">പിന്നീട് വായിക്കുക <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google-ലേക്ക് ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോർട്ടുകളും അയയ്‌ക്കുന്നതിലൂടെ Chrome-നെ മികച്ചതാക്കാൻ സഹായിക്കുക.</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="4116038641877404294">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -514,6 +522,7 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പൂർത്തിയായി.}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി.}}</translation>
 <translation id="4766678251456904326">ഉപകരണത്തിലേക്ക് ഒരു അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു.}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു.}}</translation>
+<translation id="4791358705705538979">ചെക്കൗട്ട് പോലെ, വെബിലുടനീളമുള്ള ടാസ്‌ക്കുകൾ പൂർത്തിയാക്കാൻ സഹായിക്കുന്നു</translation>
 <translation id="4802417911091824046">പാസ്‌ഫ്രെയ്‌സ് എൻക്രി‌പ്ഷനിൽ, Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല.
 
 ഈ ക്രമീകരണം മാറ്റാൻ, <ph name="BEGIN_LINK" />സമന്വയം പുനഃക്രമീകരിക്കുക<ph name="END_LINK" /></translation>
@@ -619,6 +628,7 @@
 <translation id="5524843473235508879">റീഡയറക്ട് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു.</translation>
 <translation id="5527082711130173040">ഉപകരണങ്ങൾ സ്‌കാൻ ചെയ്യാൻ Chrome-ന് ലൊക്കേഷൻ ആക്‌സസ് ആവശ്യമാണ്. <ph name="BEGIN_LINK1" />അനുമതികൾ അപ്‌ഡേറ്റ് ചെയ്യുക<ph name="END_LINK1" />. ഈ ഉപകരണത്തിന്റെ <ph name="BEGIN_LINK2" />ലൊക്കേഷൻ ആക്‌സസും ഓഫാക്കിയിരിക്കുകയാണ്<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">ആൾമാറാട്ട ടാബുകൾ അടയ്‌ക്കുക</translation>
+<translation id="5530920986376047241">പേജുകൾ വീണ്ടും കണ്ടെത്താൻ നിങ്ങളുടെ വായനാ ലിസ്‌റ്റിൽ അവ സംരക്ഷിക്കാവുന്നതാണ്</translation>
 <translation id="5534640966246046842">സൈറ്റ് ‌പകർത്തി</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5561549206367097665">നെറ്റ്‌വർക്കിനായി കാത്തിരിക്കുന്നു...</translation>
@@ -663,6 +673,7 @@
 <translation id="5797070761912323120">തിരയലും പരസ്യവും മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# മണിക്കൂര്‍ മുമ്പ്}other{# മണിക്കൂര്‍ മുമ്പ്}}</translation>
 <translation id="5810288467834065221">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
+<translation id="5810864297166300463">Web സഹായം</translation>
 <translation id="5814131985548525293">ആരംഭിക്കാൻ ഇവിടെ ടൈപ്പ് ചെയ്യുക അല്ലെങ്കിൽ വോയ്‌സ് ഐക്കണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5817918615728894473">ജോടിയാക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
@@ -697,6 +708,7 @@
 <translation id="5982307838673692400">അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="6000066717592683814">Google ഉപയോഗിക്കുക</translation>
 <translation id="6005538289190791541">നിർദ്ദേശിച്ച പാസ്‌വേഡ്</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{നിങ്ങൾക്ക് <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> പേജ് ഉണ്ട്}other{നിങ്ങൾക്ക് <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> പേജുകൾ ഉണ്ട്}}</translation>
 <translation id="6014293228235665243">വായിക്കാത്തവ</translation>
 <translation id="6036057147555329831">അധിക ICU</translation>
 <translation id="6039379616847168523">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
@@ -857,6 +869,7 @@
 <translation id="702463548815491781">TalkBack അല്ലെങ്കിൽ ആക്‌സസ് മാറുക ഓണായിരിക്കുമ്പോൾ ശുപാർശ ചെയ്യുന്നു</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
+<translation id="7030675613184250187">പേജുകൾ വീണ്ടും കണ്ടെത്താനോ ഓഫ്‌ലൈനിൽ വായിക്കാനോ അവ നിങ്ങളുടെ വായനാ ലിസ്‌റ്റിൽ സംരക്ഷിക്കാം</translation>
 <translation id="703523980599857277">ഹോം പേജ് മാറ്റുക</translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
@@ -877,6 +890,7 @@
 <translation id="7177466738963138057">നിങ്ങൾക്കിത് പിന്നീട് ക്രമീകരണങ്ങളിൽ മാറ്റാനാവും</translation>
 <translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7187993566681480880">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
+<translation id="718926126787620637">മുഴുവൻ ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="7189372733857464326">Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റുചെയ്യുന്നത് പൂർത്തിയാക്കാൻ കാത്തിരിക്കുന്നു</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>
 <translation id="7233236755231902816">നിങ്ങളുടെ ഭാഷയിൽ വെബ് കാണാൻ Chrome-ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പ് നേടൂ</translation>
@@ -929,6 +943,7 @@
 <translation id="756809126120519699">Chrome ഡാറ്റ മായ്‌ച്ചു</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{<ph name="FILES_DOWNLOADED_MANY" /> ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു}}</translation>
+<translation id="7583262514280211622">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഇവിടെ കാണാം</translation>
 <translation id="7588219262685291874">ഉപകരണത്തിന്റെ ബാറ്ററി ലാഭിക്കൽ ഓണായിരിക്കുമ്പോൾ ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="7593557518625677601">Chrome സമന്വയം ആരംഭിക്കാൻ Android ക്രമീകരണം തുറന്ന് Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7596558890252710462">ഓപ്പറേറ്റിംഗ് സിസ്റ്റം</translation>
@@ -960,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> അടയ്‌ക്കുക</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
+<translation id="7786595606756654269">വെബിൽ തിരയാനും നിങ്ങൾ തുറന്ന സൈറ്റുകളുമായി ഇടപഴകാനും Google Assistant മികച്ച ശബ്‌ദാനുഭവം നൽകുന്നു. നിങ്ങൾ Google Assistant ഉപയോഗിക്കുന്ന സൈറ്റുകളുടെ URL-ഉം അവയുടെ ഉള്ളടക്കവും ഇതിന് ലഭിക്കും.</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
@@ -985,6 +1001,7 @@
 <translation id="7961926449547174351">നിങ്ങൾ സ്‌റ്റോറേജ് ആക്‌സസ് പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു, ക്രമീകരണത്തിൽ പോയി അത് പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="7963646190083259054">വെണ്ടർ:</translation>
 <translation id="7967911570373677897">QR കോഡ് സ്‌കാൻ ചെയ്യുന്നതിന് നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക, ഇങ്ങനെ ചെയ്യുന്നതിലൂടെ Chrome-ന് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാം</translation>
+<translation id="7968014550143838305">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="7971136598759319605">ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="7981313251711023384">കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാനും തിരയാനും പേജുകൾ റീലോഡ് ചെയ്യുക</translation>
@@ -1015,6 +1032,7 @@
 <translation id="8127542551745560481">ഹോംപേജ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="813082847718468539">സൈറ്റ് വിവരങ്ങള്‍ കാണുക</translation>
 <translation id="8137558756159375272">Google തിരയലിന് സന്ദർഭം വ്യക്തമാക്കാൻ തിരഞ്ഞെടുത്ത വാക്കും നിലവിലെ പേജും, തിരയുന്നതിനായി സ്‌പർശിക്കുക അയയ്‌ക്കും. <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിന്ന് നിങ്ങൾക്കിത് ഓഫാക്കാം.</translation>
+<translation id="8153351135626613369">പിന്തുണയ്ക്കുന്ന വെബ്‌സൈറ്റുകളിൽ നിങ്ങളെ സഹായിക്കാനാകുമെന്ന് കണ്ടെത്തുമ്പോൾ Assistant ദൃശ്യമാകും</translation>
 <translation id="8156139159503939589">ഏതൊക്കെ ഭാഷകൾ നിങ്ങൾക്ക് വായിക്കാനാകും?</translation>
 <translation id="8168435359814927499">ഉള്ളടക്കം</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ഫയലുകൾ ശേഷിക്കുന്നു</translation>
@@ -1045,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> തയ്യാറാണ്.</translation>
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> തിരഞ്ഞെടുക്കുക\n2. “എല്ലായ്‌പ്പോഴും” ടാപ്പ് ചെയ്യുക</translation>
+<translation id="8410695015584479363">നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8413126021676339697">മുഴുവന്‍ ചരിത്രവും കാണിക്കുക</translation>
 <translation id="8425213833346101688">മാറ്റുക</translation>
 <translation id="8427875596167638501">പ്രിവ്യു ടാബ് പാതി തുറന്നിരിക്കുന്നു</translation>
@@ -1112,6 +1131,7 @@
 <translation id="8912362522468806198">Google അക്കൗണ്ട്</translation>
 <translation id="8920114477895755567">രക്ഷകർത്താക്കളുടെ വിശദാംശങ്ങൾക്കായി കാത്തിരിക്കുന്നു.</translation>
 <translation id="8922289737868596582">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ 'കൂടുതൽ ഓപ്ഷനുകൾ' ബട്ടണിൽ നിന്ന് പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="8928626432984354940">പകുതി ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="8937772741022875483">ഡിജിറ്റൽ ആരോഗ്യത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ആക്റ്റിവിറ്റി നീക്കം ചെയ്യണോ?</translation>
 <translation id="8942627711005830162">മറ്റൊരു വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="8951232171465285730">Chrome നിങ്ങളുടെ <ph name="MEGABYTES" /> MB ലാഭിച്ചു</translation>
@@ -1151,7 +1171,6 @@
 <translation id="9155898266292537608">ഒരു വാക്കിൽ പെട്ടെന്ന് ടാപ്പ് ചെയ്‌തും നിങ്ങൾക്ക് തിരയാൻ കഴിയും</translation>
 <translation id="9169507124922466868">നാവിഗേഷൻ ചരിത്രം പകുതിയായി തുറന്നിരിക്കുന്നു</translation>
 <translation id="9191031968346938109">ഇതിലേക്ക് ചേർക്കുക…</translation>
-<translation id="919615279147764192">ടാസ്‌ക്കുകൾ പൂർത്തിയാക്കാൻ നിങ്ങളെ സഹായിക്കുന്നതിന്, നിങ്ങൾ Assistant ഉപയോഗിക്കുന്ന സൈറ്റുകളുടെ URL-കളും അവയിലെ ഉള്ളടക്കവും Assistant-ലൂടെ നിങ്ങൾ സമർപ്പിക്കുന്ന വിവരങ്ങളും Google-ന് ലഭിക്കും. ഈ വിവരങ്ങൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംഭരിച്ചേക്കാം. നിങ്ങൾക്ക് Chrome ക്രമീകരണത്തിൽ Assistant ഓഫാക്കാം.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ഒരു മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}other{# മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="9204836675896933765">ഒരു ഫയൽ ശേഷിക്കുന്നു</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@
 <translation id="93753284658583800">ഹോംപേജ് മാറ്റി</translation>
 <translation id="938850635132480979">പിശക്: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
+<translation id="948039501338975565">ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="95817756606698420"><ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ഉപയോഗിച്ച് Chrome-ന് ചൈനയിൽ തിരയാനാവും. നിങ്ങൾക്കിത്‌ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാറ്റാനാവും.</translation>
 <translation id="962979164594783469">ഈ ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="968900484120156207">നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>

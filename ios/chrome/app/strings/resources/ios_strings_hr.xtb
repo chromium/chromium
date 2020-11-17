@@ -342,7 +342,6 @@ Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
-<translation id="4758977202923349869">Postavite kreditnu karticu u ovaj okvir</translation>
 <translation id="4775879719735953715">Zadani preglednik</translation>
 <translation id="4778644898150334464">Upotreba druge zaporke</translation>
 <translation id="4802417911091824046">Enkripcija šifrom ne uključuje načine plaćanja i adrese s Google Paya.
@@ -604,12 +603,12 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7435356471928173109">Isključio vaš administrator</translation>
 <translation id="7454057999980797137">Županija</translation>
 <translation id="7456847797759667638">Otvori lokaciju...</translation>
-<translation id="7460314822154045102">Koristi Kameru</translation>
 <translation id="7464701184726199289">Sinkronizirani podaci izbrisat će se sa svih uređaja. Spremljene postavke web-lokacije neće se izbrisati i mogu odražavati vaše navike prilikom pregledavanja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Odaberite Chrome</translation>
 <translation id="7472734401283673885">Naziv tvrtke</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Naprijed</translation>
+<translation id="7483467499335917849">Upotrijebite svoju trenutačnu lokaciju</translation>
 <translation id="750493650310597496">Nije odabrana nijedna oznaka</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7537586195939242955">Žao nam je, pristupna riječ trenutačno se ne može instalirati u Passbook.</translation>

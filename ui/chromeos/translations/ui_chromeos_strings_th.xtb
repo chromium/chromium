@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1000498691615767391">เลือกโฟลเดอร์เพื่อเปิด</translation>
+<translation id="1016731229041675999">อาหรับ (การทับศัพท์)</translation>
+<translation id="102325055885714714">ทมิฬ (การทับศัพท์)</translation>
 <translation id="1035094536595558507">มุมมองสไลด์</translation>
 <translation id="1047956942837015229">กำลังลบ <ph name="COUNT" /> รายการ...</translation>
 <translation id="1049926623896334335">เอกสาร Word</translation>
 <translation id="1060368002126861100">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้ย้ายไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="1062407476771304334">แทนที่</translation>
+<translation id="1082570120854863773">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="1119069657431255176">ไฟล์ Tar ที่บีบอัดโดย Bzip2</translation>
 <translation id="1120073797882051782">ฮังกูลแบบโรมัน</translation>
 <translation id="1148097584170732637">พบ <ph name="FILE_COUNT" />
@@ -41,10 +44,13 @@
 <translation id="1378727793141957596">ยินดีต้อนรับสู่ Google ไดรฟ์!</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1395262318152388157">แถบเลื่อนสำหรับกรอวิดีโอ</translation>
+<translation id="1411401459521499147">โรมาเนีย (แป้นพิมพ์มาตรฐาน)</translation>
+<translation id="14286271616944851">เปอร์เซีย</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1439494416798956626">ย้ายไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="1464724975715666883">ข้อผิดพลาด 1 รายการ</translation>
+<translation id="1466220122465387403">เคิร์ดโซรานี (แป้นพิมพ์ตามแบบภาษาอังกฤษ)</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1472351751615457820">ภาษากรีก (การทับศัพท์)</translation>
 <translation id="1474339897586437869">ไม่ได้อัปโหลด "<ph name="FILENAME" />" มีพื้นที่ว่างไม่เพียงพอใน Google ไดรฟ์ของคุณ</translation>
@@ -59,6 +65,7 @@
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1622022025445651011">ภาษาฝรั่งเศส (ฝรั่งเศส)</translation>
 <translation id="1646019627374511909">กำลังทำให้ไฟล์ <ph name="NUMBER_OF_ITEMS" /> ไฟล์ใช้งานแบบออฟไลน์ได้</translation>
+<translation id="1649464394998806860">รัสเซีย (แป้นพิมพ์ AATSEEL ตามการออกเสียง)</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
 <translation id="1665611772925418501">ไม่สามารถแก้ไขไฟล์</translation>
 <translation id="1673103856845176271">ไม่สามารถเข้าถึงไฟล์เนื่องจากเหตุผลด้านความปลอดภัย</translation>
@@ -89,9 +96,11 @@
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
+<translation id="2016165510591645686">พินอินภาษาจีน</translation>
 <translation id="2028997212275086731">ไฟล์ RAR</translation>
 <translation id="2046702855113914483">ราเม็ง</translation>
 <translation id="2060251957438343874">ภาษาเยอรมัน (เยอรมนี)</translation>
+<translation id="2060392775416297569">จีน (Cangjie)</translation>
 <translation id="2066433303065022982">ภาษาฮิบรู (การทับศัพท์)</translation>
 <translation id="2070909990982335904">ชื่อที่ขึ้นต้นด้วยจุดสงวนไว้สำหรับระบบ โปรดเลือกชื่ออื่น</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
@@ -123,11 +132,13 @@
 <translation id="2453576648990281505">มีไฟล์นี้อยู่แล้ว</translation>
 <translation id="2464079411014186876">ไอศกรีม</translation>
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
+<translation id="2484472280211296077">ทมิฬ (ตามการออกเสียง)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547">ลบแล้ว <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="2541377937973966830">เนื้อหาของโฟลเดอร์นี้เป็นแบบอ่านอย่างเดียว โดยระบบจะไม่รองรับบางกิจกรรม</translation>
 <translation id="2542049655219295786">ตารางของ Google</translation>
 <translation id="2547921442987553570">เพิ่มไปยัง <ph name="EXTENSION_NAME" /></translation>
+<translation id="255285553751745003">เวียดนาม (Telex)</translation>
 <translation id="255937426064304553">สหรัฐอเมริกาสากล</translation>
 <translation id="2562685439590298522">เอกสาร</translation>
 <translation id="2563185590376525700">กบ</translation>
@@ -140,11 +151,13 @@
 <translation id="2664412712123763093">ตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2672394958563893062">เกิดข้อผิดพลาด คลิกเพื่อเริ่มใหม่ตั้งแต่ต้น</translation>
 <translation id="2676946222714718093">กำลังเล่นบน</translation>
+<translation id="2718873684053049373">จีน (Dayi)</translation>
 <translation id="2735623501230989521">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2781645665747935084">เบลเยียม</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2787047795752739979">เขียนทับต้นฉบับ</translation>
+<translation id="2798201218072736543">โปรตุเกส (บราซิล)</translation>
 <translation id="2822854841007275488">อาหรับ</translation>
 <translation id="2843806747483486897">เปลี่ยนค่าเริ่มต้น...</translation>
 <translation id="2850124913210091882">สำรองข้อมูล</translation>
@@ -167,12 +180,14 @@
 <translation id="3003633581067744647">เปลี่ยนเป็นมุมมองภาพขนาดย่อ</translation>
 <translation id="3007214526293698309">คงอัตราส่วนเดิม</translation>
 <translation id="303198083543495566">ภูมิศาสตร์</translation>
+<translation id="3040867506619073727">สิงหล</translation>
 <translation id="3057861065630527966">สำรองรูปภาพและวิดีโอ</translation>
 <translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3078461028045006476">แชร์กับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">เสร็จสิ้น</translation>
+<translation id="3171711500892772766">เตลูกู (ตามการออกเสียง)</translation>
 <translation id="3182237543071236785">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3197563288998582412">ดีโวรักสหราชอาณาจักร</translation>
@@ -211,6 +226,7 @@
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3603385196401704894">ฝรั่งเศสแบบแคนาดา</translation>
 <translation id="3606220979431771195">ภาษาตุรกี-F</translation>
+<translation id="3608699648194837100">ทมิฬ (ITRANS)</translation>
 <translation id="3609785682760573515">กำลังซิงค์...</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3619115746895587757">คาปูชิโน</translation>
@@ -221,6 +237,7 @@
 <translation id="3645531960514756307">เลิกตรึงโฟลเดอร์</translation>
 <translation id="3685122418104378273">เมื่อใช้ข้อมูลมือถือ การซิงค์ Google ไดรฟ์จะปิดใช้อยู่เป็นค่าเริ่มต้น</translation>
 <translation id="3689865792480713551">ยกเลิก<ph name="ACTIVITY_DESCRIPTION" /></translation>
+<translation id="3717701509378976246">อาร์เมเนีย</translation>
 <translation id="3726463242007121105">ไม่สามารถเปิดอุปกรณ์นี้ได้ เนื่องจากไม่สนับสนุนระบบไฟล์ของอุปกรณ์นี้</translation>
 <translation id="3741243925913727067">สำรองรูปภาพและวิดีโอของอุปกรณ์สื่อไปยัง Google ไดรฟ์</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
@@ -259,6 +276,7 @@
 <translation id="4261901459838235729">งานนำเสนอของ Google</translation>
 <translation id="4290535918735525311">แชร์กับ Linux แล้ว 1 โฟลเดอร์</translation>
 <translation id="4299729908419173967">บราซิล</translation>
+<translation id="4305486654020746131">ปัญจาบ</translation>
 <translation id="4309915981827077375">ข้อมูลทั่วไป</translation>
 <translation id="4315949787858895817">ดัตช์ (เบลเยียม)</translation>
 <translation id="4326192123064055915">กาแฟ</translation>
@@ -266,6 +284,7 @@
 <translation id="4364327530094270451">เมลอน</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">ลิงก์ภายนอก</translation>
+<translation id="4406790547322756995">เวียดนาม (แป้นพิมพ์ TCVN)</translation>
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4470564870223067757">ฮังกูลแบบ 2 ชุด</translation>
 <translation id="4477219268485577442">การออกเสียงภาษาบัลแกเรีย</translation>
@@ -284,8 +303,10 @@
 <translation id="4603392156942865207">กำลังคัดลอก <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">สันสกฤต</translation>
 <translation id="4631887759990505102">ศิลปิน</translation>
+<translation id="463813589602055304">จีน (Wubi)</translation>
 <translation id="4656293982926141856">คอมพิวเตอร์เครื่องนี้</translation>
 <translation id="4669606053856530811">สมาชิกของ "<ph name="SOURCE_NAME" />" จะสูญเสียสิทธิ์เข้าถึง เว้นแต่มีการแชร์รายการเหล่านี้กับสมาชิกดังกล่าว</translation>
+<translation id="4669979276126590335">เซอร์เบีย (การทับศัพท์)</translation>
 <translation id="4690246192099372265">สวีเดน</translation>
 <translation id="4693155481716051732">ซูชิ</translation>
 <translation id="4694604912444486114">ลิง</translation>
@@ -296,8 +317,10 @@
 <translation id="4724850507808590449">สำรองรูปภาพ <ph name="FILE_COUNT" /> รูปแล้ว</translation>
 <translation id="4725511304875193254">คอร์กี</translation>
 <translation id="4732760563705710320">ขออภัย เครื่องส่งไม่สนับสนุนวิดีโอนี้</translation>
+<translation id="4733240808404733495">ไทย (แป้นพิมพ์ TIS 820-2531)</translation>
 <translation id="4734518477988699048">ค่าที่ป้อนไม่ถูกต้อง</translation>
 <translation id="4737050008115666127">ลงจอด</translation>
+<translation id="4738570502598323051">ทมิฬ (แป้นพิมพ์ InScript)</translation>
 <translation id="4747271164117300400">มาซิโดเนีย</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4763055924467562718">ภาษากันนาดา (คำที่ใช้ออกเสียง)</translation>
@@ -309,6 +332,7 @@
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4823651846660089135">อุปกรณ์เป็นแบบอ่านอย่างเดียว</translation>
 <translation id="4839847978919684242">เลือก <ph name="SELCTED_FILES_COUNT" /> รายการ</translation>
+<translation id="4842306555839940112">เตลูกู (การทับศัพท์)</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">เยอรมัน (เบลเยียม)</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
@@ -384,6 +408,7 @@
 <translation id="5368191757080475556">แชร์โฟลเดอร์กับ Linux</translation>
 <translation id="5402367795255837559">เบรลล์</translation>
 <translation id="5418923334382419584">แป้นพิมพ์ภาษาพม่า</translation>
+<translation id="5427022459704612663">เวียดนาม (VIQR)</translation>
 <translation id="5428105026674456456">สเปน</translation>
 <translation id="5438282218546237410">ไม่มีผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
 <translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
@@ -399,6 +424,7 @@
 <translation id="5534520101572674276">กำลังคำนวณขนาด</translation>
 <translation id="5551831234974556292">มอลตา</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5601917305267643189">สเปน (สเปน)</translation>
 <translation id="5605830556594064952">ดีโวรักสหรัฐอเมริกา</translation>
 <translation id="5623849870004487514">เนปาลโดยใช้แป้นพิมพ์ตามการออกเสียง</translation>
 <translation id="5649768706273821470">ฟัง</translation>
@@ -423,6 +449,7 @@
 <translation id="5833610766403489739">ไฟล์นี้ไม่อยู่ในตำแหน่งที่กำหนดไว้ โปรดตรวจสอบการตั้งค่าตำแหน่งที่เก็บไฟล์ดาวน์โหลดและลองอีกครั้ง</translation>
 <translation id="5838451609423551646">นำรายการทั้งหมดออกจากรายการที่เลือกไว้</translation>
 <translation id="5838825566232597749">Workman สหรัฐฯ แบบสากล</translation>
+<translation id="5846013392911797712">ไทย (แป้นพิมพ์เกษมณี)</translation>
 <translation id="5850516540536751549">ไม่สนับสนุนไฟล์ประเภทนี้ โปรดไปที่ <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" />เพื่อหาแอปที่สามารถเปิดไฟล์ประเภทนี้
     <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ไม่มีอะไรอยู่ในนี้...</translation>
@@ -440,6 +467,7 @@
 <translation id="60357267506638014">QWERTY แบบเช็ก</translation>
 <translation id="604001903249547235">การสำรองข้อมูลในระบบคลาวด์</translation>
 <translation id="6040143037577758943">ปิด</translation>
+<translation id="6041767187407754614">จีน (Quick)</translation>
 <translation id="6074825444536523002">Google ฟอร์ม</translation>
 <translation id="6096979789310008754">ล้างข้อความค้นหาแล้ว กำลังแสดงไฟล์และโฟลเดอร์ทั้งหมด</translation>
 <translation id="610101264611565198">กำลังย้าย <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
@@ -496,6 +524,7 @@
 <translation id="6795884519221689054">แพนด้า</translation>
 <translation id="6806699711453372963">จัดการการแชร์ของ Linux</translation>
 <translation id="6808193438228982088">สุนัขจิ้งจอก</translation>
+<translation id="6819938753873901684">ตีกรินยา</translation>
 <translation id="6820687829547641339">ไฟล์ Tar ที่บีบอัดโดย Gzip</translation>
 <translation id="6823166707458800069">ระบบจะสำรองข้อมูลไฟล์ทั้งหมดที่บันทึกไว้ในโฟลเดอร์นี้แบบออนไลน์โดยอัตโนมัติ</translation>
 <translation id="6825883775269213504">รัสเซีย</translation>
@@ -504,6 +533,7 @@
 <translation id="6862635236584086457">ไฟล์ทั้งหมดที่บันทึกไว้ในโฟลเดอร์นี้จะถูกสำรองข้อมูลแบบออนไลน์โดยอัตโนมัติ</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
 <translation id="6878261347041253038">แป้นพิมพ์ภาษาเทวานาครี (คำที่ใช้ออกเสียง)</translation>
+<translation id="6878301034829092662">รัสเซีย (แป้นพิมพ์ YaZHert ตามการออกเสียง)</translation>
 <translation id="6885780034956018177">หอยทาก</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6898028766943174120">โฟลเดอร์ย่อยเพิ่มเติม...</translation>
@@ -531,10 +561,14 @@
 <translation id="7106346894903675391">ซื้อพื้นที่เก็บข้อมูลเพิ่มเติม...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;ค้นหาไดรฟ์&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="714369685015246514">จีน (Array)</translation>
+<translation id="7169438078134535111">ตุรกี (F-keyboard)</translation>
 <translation id="7170467426996704624">การทับศัพท์ (salam → ሰላም)</translation>
+<translation id="7173380554947442031">เวียดนาม (VNI)</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">บันทึกแฟ้มเป็น</translation>
+<translation id="7221999925319694720">จีน (Zhuyin)</translation>
 <translation id="7238097264433196391">ชื่อไดรฟ์</translation>
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
@@ -601,6 +635,7 @@
 <translation id="7881969471599061635">ปิดคำบรรยาย</translation>
 <translation id="78946041517601018">ไดรฟ์ที่แชร์</translation>
 <translation id="7898607018410277265">แป้นพิมพ์ภาษาคุชราต (คำที่ใช้ออกเสียงใหม่)</translation>
+<translation id="7908150161525408421">สเปน (ละตินอเมริกา)</translation>
 <translation id="7908793776359722643">การฟอร์แมตพาร์ติชันจะลบข้อมูลทั้งหมดที่จัดเก็บในพาร์ติชันนั้น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7925686952655276919">อย่าใช้ข้อมูลมือถือสำหรับการซิงค์</translation>
 <translation id="7928710562641958568">ยกเลิกการต่อเชื่อมอุปกรณ์</translation>
@@ -608,6 +643,7 @@
 <translation id="7953739707111622108">ไม่สามารถเปิดอุปกรณ์นี้ได้เนื่องจากระบบไฟล์ของอุปกรณ์ไม่เป็นที่รู้จัก</translation>
 <translation id="7969525169268594403">สโลวีเนีย</translation>
 <translation id="7982283708762922719">ความสูง</translation>
+<translation id="7988940501536183135">รัสเซีย (แป้นพิมพ์ตามการออกเสียง)</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
 <translation id="803771048473350947">ไฟล์</translation>
@@ -627,8 +663,10 @@
 <translation id="8154842056504218462">เลือกรายการทั้งหมดอยู่</translation>
 <translation id="8157684860301034423">ดึงข้อมูลแอปไม่สำเร็จ</translation>
 <translation id="8157939133946352716">7x5</translation>
+<translation id="8159982522558068586">ทมิฬ (แป้นพิมพ์เครื่องพิมพ์ดีด)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">รุ่นอุปกรณ์</translation>
+<translation id="8196481879028929035">โปรตุเกส (โปรตุเกส)</translation>
 <translation id="8208580316430297579">งานศิลปะ</translation>
 <translation id="8223479393428528563">หากต้องการบันทึกไฟล์เหล่านี้เพื่อใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ และเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
@@ -661,6 +699,10 @@
 <translation id="8579285237314169903">กำลังซิงค์ <ph name="NUMBER_OF_FILES" /> รายการ...</translation>
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
+<translation id="8608272065177710825">บัลแกเรีย (แป้นพิมพ์ตามการออกเสียง)</translation>
+<translation id="8619608420536266892">ทมิฬ (แป้นพิมพ์ Tamil99)</translation>
+<translation id="863846969551842412">จีนกวางตุ้ง</translation>
+<translation id="8669047053197791123">ไทย (แป้นพิมพ์ปัตตะโชติ)</translation>
 <translation id="8669949407341943408">กำลังย้าย...</translation>
 <translation id="8688649574682805922">ภาษาเยอรมัน (สวิตเซอร์แลนด์)</translation>
 <translation id="8694836330346852143">อูรดู</translation>

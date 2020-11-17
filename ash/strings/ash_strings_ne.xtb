@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
 <translation id="1919743966458266018">कार्य प्रबन्धक खोल्ने सर्टकटमा परिवर्तन भएको छ। कृपया <ph name="OLD_SHORTCUT" />को सट्टामा <ph name="NEW_SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="1923539912171292317">स्वचालित क्लिकहरू</translation>
-<translation id="1924640696879807758">फोनबाट प्राप्त</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
 <translation id="1951012854035635156">सहायक</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> भनेको <ph name="DOMAIN" /> ले व्यवस्थापन गर्ने कुनै सत्रको नाम हो</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
@@ -326,7 +324,6 @@
 <translation id="4121728057981832179">कुनै भर्चुअल मेसिनले तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="4129129681837227511">आफ्नो लक स्क्रिनमा सूचनाहरू हेर्नका लागि सेटिङहरू परिवर्तन गर्न अनलक गर्नुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
-<translation id="4149156641122542261"><ph name="DOMAIN" /> ले व्यवस्थित गरेको<ph name="DEVICE_TYPE" /></translation>
 <translation id="415719264485676252">स्क्रिनसट खिच्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="4157822100366708405">अँध्यारो थिमसम्बन्धी सेटिङ</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
@@ -613,7 +610,6 @@
 <translation id="6910714959251846841">यस अद्यावधिका लागि तपाईंको यन्त्र पावरवास गर्नु पर्ने हुन्छ। <ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्।</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
-<translation id="6953890208095195458">तपाईंको स्क्रिनमा गोप्य सामग्री भएका कारण तपाईंका एड्मिनले स्क्रिन रेकर्ड गर्ने कार्य बन्द गर्नुभएको छ।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6972754398087986839">सुरु गर्नुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
@@ -667,7 +663,6 @@
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
 <translation id="7536035074519304529">IP ठेगाना: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">तपाईंका एड्मिनले तपाईंको स्क्रिनमा रहेका सामग्रीको स्क्रिनसट खिच्ने सुविधा ब्लक गर्नुभएको छ।</translation>
 <translation id="7548434653388805669">सुत्ने बेला भयो</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>

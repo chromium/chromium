@@ -482,7 +482,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="290376772003165898">Ez al da <ph name="LANGUAGE" /> orriko hizkuntza?</translation>
 <translation id="2909946352844186028">Aldaketa bat hauteman da sarean.</translation>
-<translation id="2910133103376701357"><ph name="ENROLLMENT_DOMAIN" /> domeinuak kudeatzen ditu gailua eta kontua.</translation>
 <translation id="2911973620368911614">Laneko kontabilitateaz arduratzen den erabiltzailearen IDa</translation>
 <translation id="2915068235268646559">Hutsegitearen ordua: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Itxi beste programa batzuk</translation>
@@ -749,7 +748,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3996311196211510766"><ph name="ORIGIN" /> webguneak hartarako eskaera guztiei jatorri-gidalerro bat aplikatzeko eskatu du, baina ezin da aplikatu gidalerroa une honetan.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} orri daukan PDF dokumentua}other{{COUNT} orri dauzkan PDF dokumentua}}</translation>
 <translation id="4030383055268325496">&amp;Desegin gehitzea</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> da arakatzailearen kudeatzailea</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" tekla: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (gutun-azala)</translation>
@@ -828,7 +826,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4270541775497538019">6. pilatzailea</translation>
 <translation id="4275830172053184480">Berrabiarazi gailua</translation>
 <translation id="4277028893293644418">Berrezarri pasahitza</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> da <ph name="DEVICE_TYPE" /> gailuaren kudeatzailea</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Google-ko kontuan gorde da txartela}other{Google-ko kontuan gorde dira txartelak}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> orriaren irudi txikia</translation>
 <translation id="42981349822642051">Zabaldu</translation>
@@ -948,7 +945,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4771973620359291008">Errore ezezagun bat gertatu da.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Leiho gainerakor bat blokeatu da}other{# leiho gainerakor blokeatu dira}}</translation>
 <translation id="4780366598804516005">1. postontzia</translation>
-<translation id="4780900888022378816"><ph name="ENROLLMENT_DOMAIN" /> domeinuak kudeatzen du gailua; <ph name="ACCOUNT_DOMAIN" /> domeinuak, berriz, kontua.</translation>
 <translation id="4785689107224900852">Aldatu fitxa honetara</translation>
 <translation id="4791134497475588553">Instalatutako Linux-erako aplikazioak eta azken erabiltze-data</translation>
 <translation id="4792686369684665359">Bidaltzear zauden informazioa ez da segurua</translation>
@@ -1161,7 +1157,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="560412284261940334">Ez da onartzen kudeaketarik</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Webgune hau iruzurrezkoa izan liteke. Chrome-k orain irtetea gomendatzen du.</translation>
 <translation id="5610142619324316209">Konexioa egiaztatu.</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean kudea ditzakezu txartelak eta helbideak.</translation>
 <translation id="561165882404867731">Itzuli orria Google Translate-rekin</translation>
@@ -1233,6 +1228,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5905445707201418379">Blokeatuta, <ph name="ORIGIN" /> webguneko jatorri-gidalerro bati jarraikiz.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizatuta)</translation>
+<translation id="5913377024445952699">Pausatu da pantaila-argazkiak ateratzeko aukera</translation>
 <translation id="59174027418879706">Gaituta</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Aktibatuta</translation>
@@ -1388,7 +1384,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6529602333819889595">&amp;Berregin ezabatzea</translation>
 <translation id="6545864417968258051">Bluetooth bidezko gailuen bilaketa</translation>
 <translation id="6547208576736763147">Bi zulo ezkerrean</translation>
-<translation id="6554795675067793129"><ph name="ENROLLMENT_DOMAIN" /> domeinuak kudeatzen du zure kontua.</translation>
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6569060085658103619">Luzapen baten orria ari zara ikusten</translation>
 <translation id="6573200754375280815">Bi zulo eskuinean</translation>
@@ -1903,6 +1898,7 @@ Xehetasun gehiago:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ez dago bat datorren pasahitzik. Erakutsi gordetako pasahitz guztiak.</translation>
 <translation id="8625384913736129811">Gorde txartela gailu honetan</translation>
+<translation id="8627040765059109009">Berrekin zaio pantaila-argazkiak ateratzeko aukerari</translation>
 <translation id="8657078576661269990">Administratzaileak blokeatu egin du <ph name="ORIGIN_NAME" /> domeinutik <ph name="VM_NAME_1" /> eta <ph name="VM_NAME_2" /> makina birtualetara edukia partekatzeko aukera</translation>
 <translation id="8663226718884576429">Eskaeraren laburpena, <ph name="TOTAL_LABEL" />, xehetasun gehiago</translation>
 <translation id="867224526087042813">Sinadura</translation>

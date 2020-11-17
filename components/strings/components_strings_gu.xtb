@@ -488,7 +488,6 @@
 <translation id="2903493209154104877">સરનામાંઓ</translation>
 <translation id="290376772003165898">પેજ <ph name="LANGUAGE" />માં નથી?</translation>
 <translation id="2909946352844186028">નેટવર્ક ફેરફાર મળ્યો હતો.</translation>
-<translation id="2910133103376701357">તમારું ડિવાઇસ અને એકાઉન્ટ <ph name="ENROLLMENT_DOMAIN" /> દ્વારા મેનેજ થાય છે.</translation>
 <translation id="2911973620368911614">જોબ એકાઉન્ટિંગ વપરાશકર્તાનું ID</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> પછીનો ક્રૅશ</translation>
 <translation id="2916038427272391327">અન્ય પ્રોગ્રામ બંધ કરો</translation>
@@ -760,7 +759,6 @@
     બધી વિનંતી પર લાગુ થાય છે, પણ હાલમાં આ નીતિ લાગુ કરી શકાતી નથી.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}one{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}other{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}}</translation>
 <translation id="4030383055268325496">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
-<translation id="4032320456957708163">તમારું બ્રાઉઝર <ph name="ENROLLMENT_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">કી "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (એન્વલપ)</translation>
@@ -843,7 +841,6 @@
 <translation id="4270541775497538019">સ્ટૅકર 6</translation>
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
 <translation id="4277028893293644418">પાસવર્ડ રીસેટ કરો</translation>
-<translation id="4279811152705618813">તમારા <ph name="DEVICE_TYPE" />ને <ph name="ENROLLMENT_DOMAIN" /> મેનેજ કરે છે</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે}one{આ કાર્ડને Google એકાઉન્ટમાં સાચવવામાં આવ્યાં છે}other{આ કાર્ડને Google એકાઉન્ટમાં સાચવવામાં આવ્યાં છે}}</translation>
 <translation id="4297502707443874121">પેજ <ph name="THUMBNAIL_PAGE" /> માટે થંબનેલ</translation>
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
@@ -963,7 +960,6 @@
 <translation id="4771973620359291008">કોઈ અજ્ઞાત ભૂલ આવી.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{પૉપ-અપ બ્લૉક કર્યુંં છે}one{# પૉપ-અપ બ્લૉક કર્યુંં છે}other{# પૉપ-અપ બ્લૉક કર્યુંં છે}}</translation>
 <translation id="4780366598804516005">મેઇલબૉક્સ 1</translation>
-<translation id="4780900888022378816">તમારું ડિવાઇસ <ph name="ENROLLMENT_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે અને તમારું એકાઉન્ટ <ph name="ACCOUNT_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="4785689107224900852">આ ટૅબ પર સ્વિચ કરો</translation>
 <translation id="4791134497475588553">Linuxની બધી ઍપ ક્યારે ઇન્સ્ટૉલ થઈ અને છેલ્લે ક્યારે તેનો ઉપયોગ કરવામાં આવ્યો હતો</translation>
 <translation id="4792686369684665359">તમે જે માહિતી સબમિટ કરવા જઈ રહ્યાં છો તે સુરક્ષિત કનેક્શન પરથી નથી</translation>
@@ -1176,7 +1172,6 @@
 <translation id="560412284261940334">સંચાલન સમર્થિત નથી</translation>
 <translation id="5605670050355397069">લેજર</translation>
 <translation id="5607240918979444548">સ્થાપત્ય-C</translation>
-<translation id="5608165884683734521">આ સાઇટ બનાવટી અથવા કપટપૂર્ણ હોઈ શકે છે. Chrome ભલામણ કરે છે કે તમે અત્યારે જ આ સાઇટ બંધ કરી દો.</translation>
 <translation id="5610142619324316209">કનેક્શન તપાસીને</translation>
 <translation id="5610807607761827392">તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં કાર્ડ અને સરનામાં મેનેજ કરી શકો છો.</translation>
 <translation id="561165882404867731">Google Translate વડે આ પેજનો અનુવાદ કરો</translation>
@@ -1404,7 +1399,6 @@
 <translation id="6529602333819889595">&amp;ફરી કરો ડિલીટ કરો</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="6547208576736763147">ડાબી બાજુએ બે ચતુષ્કોણ કાણાં પાડો</translation>
-<translation id="6554795675067793129"><ph name="ENROLLMENT_DOMAIN" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે.</translation>
 <translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6569060085658103619">તમે એક્સ્ટેન્શન પૃષ્ઠ જોઈ રહ્યાં છો</translation>
 <translation id="6573200754375280815">જમણી બાજુએ બે કાણાં પાડો</translation>

@@ -488,7 +488,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2903493209154104877">Địa chỉ</translation>
 <translation id="290376772003165898">Trang này không được viết bằng <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Đã phát hiện thấy thay đổi mạng.</translation>
-<translation id="2910133103376701357">Thiết bị và tài khoản của bạn do <ph name="ENROLLMENT_DOMAIN" /> quản lý.</translation>
 <translation id="2911973620368911614">Mã người dùng tài khoản công việc</translation>
 <translation id="2915068235268646559">Sự cố từ <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Đóng các chương trình khác</translation>
@@ -760,7 +759,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     cho tất cả yêu cầu gửi tới trang web đó. Tuy nhiên, chính sách này hiện không áp dụng được.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Tài liệu PDF chứa {COUNT} trang}other{Tài liệu PDF chứa {COUNT} trang}}</translation>
 <translation id="4030383055268325496">&amp;Hoàn tác thêm</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> quản lý trình duyệt của bạn</translation>
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
 <translation id="4058922952496707368">Khóa "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Phong bì)</translation>
@@ -843,7 +841,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4270541775497538019">Khay xếp chồng 6</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4277028893293644418">Đặt lại mật khẩu</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> của bạn do <ph name="ENROLLMENT_DOMAIN" /> quản lý</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Đã lưu thẻ này vào Tài khoản Google của bạn}other{Đã lưu các thẻ này vào Tài khoản Google của bạn}}</translation>
 <translation id="4297502707443874121">Hình thu nhỏ của trang <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Mở rộng</translation>
@@ -963,7 +960,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4771973620359291008">Xảy ra lỗi chưa biết.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Đã chặn cửa sổ bật lên}other{Đã chặn # cửa sổ bật lên}}</translation>
 <translation id="4780366598804516005">Hộp thư 1</translation>
-<translation id="4780900888022378816">Thiết bị của bạn do <ph name="ENROLLMENT_DOMAIN" /> quản lý, còn tài khoản của bạn do <ph name="ACCOUNT_DOMAIN" /> quản lý.</translation>
 <translation id="4785689107224900852">Chuyển sang thẻ này</translation>
 <translation id="4791134497475588553">Các ứng dụng Linux đã cài đặt và thời điểm sử dụng gần đây nhất</translation>
 <translation id="4792686369684665359">Thông tin bạn sắp gửi không an toàn</translation>
@@ -1176,7 +1172,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="560412284261940334">Không hỗ trợ quản lý</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Đây có thể là trang web giả mạo hoặc lừa đảo. Bạn nên thoát khỏi trang web này ngay.</translation>
 <translation id="5610142619324316209">Kiểm tra kết nối</translation>
 <translation id="5610807607761827392">Bạn có thể quản lý thẻ và địa chỉ trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Dịch trang này bằng Google Dịch</translation>
@@ -1248,6 +1243,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5905445707201418379">Bị chặn theo chính sách nguồn gốc của <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (được đồng bộ hóa)</translation>
+<translation id="5913377024445952699">Tính năng chụp ảnh màn hình bị tạm dừng</translation>
 <translation id="59174027418879706">Được kích hoạt</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Đang bật</translation>
@@ -1404,7 +1400,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6529602333819889595">&amp;Làm lại xóa</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
 <translation id="6547208576736763147">Đục 2 lỗ bên trái</translation>
-<translation id="6554795675067793129">Tài khoản của bạn do <ph name="ENROLLMENT_DOMAIN" /> quản lý.</translation>
 <translation id="6556866813142980365">Làm lại</translation>
 <translation id="6569060085658103619">Bạn đang xem trang tiện ích</translation>
 <translation id="6573200754375280815">Đục 2 lỗ bên phải</translation>
@@ -1920,6 +1915,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Không có mật khẩu nào khớp. Hiển thị tất cả các mật khẩu đã lưu.</translation>
 <translation id="8625384913736129811">Lưu thẻ này vào thiết bị này</translation>
+<translation id="8627040765059109009">Tiếp tục chụp ảnh màn hình</translation>
 <translation id="8657078576661269990">Quản trị viên của bạn đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> tới <ph name="VM_NAME_1" /> và <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Tóm tắt đơn hàng, <ph name="TOTAL_LABEL" />, chi tiết khác</translation>
 <translation id="867224526087042813">Chữ ký</translation>

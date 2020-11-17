@@ -342,7 +342,6 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="473775607612524610">Update</translation>
 <translation id="4747097190499141774">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">New Incognito Tab</translation>
-<translation id="4758977202923349869">Position Credit Card in this frame</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4778644898150334464">Use other password</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
@@ -604,12 +603,12 @@ Try to use a unique password for every site.</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7454057999980797137">State / County</translation>
 <translation id="7456847797759667638">Open Location...</translation>
-<translation id="7460314822154045102">Use camera</translation>
 <translation id="7464701184726199289">This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
 <translation id="7472734401283673885">Company Name</translation>
 <translation id="7473891865547856676">No, thanks</translation>
 <translation id="7481312909269577407">Forward</translation>
+<translation id="7483467499335917849">Use your current location</translation>
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>

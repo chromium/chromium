@@ -305,6 +305,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2102495993840063010">Android-programme</translation>
 <translation id="2107021941795971877">Drukondersteuning</translation>
 <translation id="2108755909498034140">Herbegin jou rekenaar</translation>
+<translation id="2111166930115883695">Druk spasie om te speel</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kaart</translation>
 <translation id="2114841414352855701">Geïgnoreer, want dit is deur <ph name="POLICY_NAME" /> geïgnoreer.</translation>
@@ -488,7 +489,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2903493209154104877">Adresse</translation>
 <translation id="290376772003165898">Bladsy is nie in <ph name="LANGUAGE" /> nie?</translation>
 <translation id="2909946352844186028">'n Netwerkverandering is bespeur.</translation>
-<translation id="2910133103376701357">Jou toestel en rekening word deur <ph name="ENROLLMENT_DOMAIN" /> bestuur.</translation>
 <translation id="2911973620368911614">Taakrekening se gebruiker-ID</translation>
 <translation id="2915068235268646559">Omval op <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Maak ander programme toe</translation>
@@ -522,6 +522,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3010559122411665027">Lysinskrywing "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3016780570757425217">Jou ligging ken</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, druk Tab en dan Enter om voorstel te verwyder.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Verkeerde beleidtipe</translation>
 <translation id="3037605927509011580">O, mapstieks!</translation>
@@ -760,10 +761,10 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     op alle versoeke daaraan toegepas word, maar hierdie beleid kan nie op die oomblik toegepas word nie.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument met {COUNT} bladsy}other{PDF-dokument met {COUNT} bladsye}}</translation>
 <translation id="4030383055268325496">Ontdoen voeg by</translation>
-<translation id="4032320456957708163">Jou blaaier word bestuur deur <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Sleutel "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Skermskoot is hervat.</translation>
 <translation id="4067947977115446013">Voeg geldige adres by</translation>
 <translation id="4072486802667267160">Kon nie jou betaling verwerk nie. Probeer weer.</translation>
 <translation id="4075732493274867456">Die kliënt en bediener steun nie 'n gemeenskaplike SSL-protokolweergawe of kodesuite nie.</translation>
@@ -843,11 +844,11 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4270541775497538019">Stapelaar 6</translation>
 <translation id="4275830172053184480">Herbegin jou toestel</translation>
 <translation id="4277028893293644418">Stel wagwoord terug</translation>
-<translation id="4279811152705618813">Jou <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Hierdie kaart is in jou Google-rekening gestoor}other{Hierdie kaarte is in jou Google-rekening gestoor}}</translation>
 <translation id="4297502707443874121">Kleinkiekie vir bladsy <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Vou uit</translation>
 <translation id="4300675098767811073">Veelvuldige pons regs</translation>
+<translation id="4302514097724775343">Tik op die dinosourus om te speel</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Kon nie toegang tot jou lêer kry nie</translation>
 <translation id="4305817255990598646">Skakel oor</translation>
@@ -963,7 +964,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4771973620359291008">'n Onbekende fout het voorgekom.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Opspringer is geblokkeer}other{# opspringers is geblokkeer}}</translation>
 <translation id="4780366598804516005">Posbus 1</translation>
-<translation id="4780900888022378816">Jou toestel word deur <ph name="ENROLLMENT_DOMAIN" /> bestuur en jou rekening word deur <ph name="ACCOUNT_DOMAIN" /> bestuur.</translation>
 <translation id="4785689107224900852">Skakel oor na hierdie oortjie toe</translation>
 <translation id="4791134497475588553">Geïnstalleerde Linux-programme en wanneer hulle laas gebruik is</translation>
 <translation id="4792686369684665359">Die inligting wat jy op die punt is om in te dien, is nie veilig nie</translation>
@@ -1005,7 +1005,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4953689047182316270">Reageer op toeganklikheidgebeurtenisse</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Vou lys uit</translation>
-<translation id="4959153516955727495">Skermvasvang is hervat.</translation>
 <translation id="4973922308112707173">Dubbelpons bo</translation>
 <translation id="4974590756084640048">Heraktiveer waarskuwings</translation>
 <translation id="4984088539114770594">Gebruik mikrofoon?</translation>
@@ -1177,7 +1176,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="560412284261940334">Bestuur word nie gesteun nie</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Hierdie werf is dalk vals of bedrieglik. Chrome beveel aan dat jy dit nou verlaat.</translation>
 <translation id="5610142619324316209">Die verbinding nagaan</translation>
 <translation id="5610807607761827392">Jy kan kaarte en adresse in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> bestuur.</translation>
 <translation id="561165882404867731">Vertaal hierdie bladsy met Google Vertaal</translation>
@@ -1215,7 +1213,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5759751709240058861">Gebruik en beweeg jou kamera</translation>
 <translation id="5763042198335101085">Voer 'n geldige e-posadres in</translation>
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>
-<translation id="5769902225741524803">Jou administrateur het skermskoot onderbreek weens inhoud op jou skerm.</translation>
 <translation id="5776313857861697733">Prioriteit</translation>
 <translation id="5778550464785688721">MIDI-toestelle volle beheer</translation>
 <translation id="5781136890105823427">Eksperiment is geaktiveer</translation>
@@ -1263,6 +1260,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5963413905009737549">Afdeling</translation>
 <translation id="5967592137238574583">Wysig kontakinligting</translation>
 <translation id="5967867314010545767">Verwyder uit geskiedenis</translation>
+<translation id="5968793460449681917">Met elke besoek</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1407,7 +1405,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6529602333819889595">Herdoen uitvee</translation>
 <translation id="6545864417968258051">Bluetooth-opsporing</translation>
 <translation id="6547208576736763147">Dubbelpons links</translation>
-<translation id="6554795675067793129">Jou rekening word bestuur deur <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Herdoen</translation>
 <translation id="6569060085658103619">Jy bekyk tans 'n uitbreidingbladsy</translation>
 <translation id="6573200754375280815">Dubbelpons regs</translation>
@@ -1478,6 +1475,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6895330447102777224">Jou kaart is bevestig</translation>
 <translation id="6897140037006041989">Gebruikeragent</translation>
 <translation id="6898699227549475383">Organisasie (O)</translation>
+<translation id="6907293445143367439">Laat <ph name="SITE_NAME" /> toe om:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wil volle beheer van jou MIDI-toestelle oorneem</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6934672428414710184">Hierdie naam is van jou Google-rekening af</translation>
@@ -1913,6 +1911,7 @@ Bykomende besonderhede:
 <translation id="8574899947864779331">Gebruik Touch ID om kaarte vinniger te bevestig</translation>
 <translation id="858637041960032120">Voeg foonnommer by</translation>
 <translation id="8589998999637048520">Beste gehalte</translation>
+<translation id="8600271352425265729">Net hierdie keer</translation>
 <translation id="860043288473659153">Kaarthouernaam</translation>
 <translation id="8606726445206553943">Gebruik jou MIDI-toestelle</translation>
 <translation id="8612761427948161954">Hallo <ph name="USERNAME" />
@@ -2070,6 +2069,7 @@ Bykomende besonderhede:
 <translation id="939736085109172342">Nuwe vouer</translation>
 <translation id="945855313015696284">Gaan die inligting hieronder na en vee ongeldige kaarte uit</translation>
 <translation id="950736567201356821">Tripelpons bo</translation>
+<translation id="951941430552851965">Jou administrateur het skermskoot onderbreek weens inhoud op jou skerm.</translation>
 <translation id="961663415146723894">Gebind onder</translation>
 <translation id="962484866189421427">Hierdie inhoud kan probeer om misleidende programme te installeer wat voorgee om iets anders te wees of wat data insamel wat gebruik kan word om jou na te spoor. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Amptelike bou</translation>

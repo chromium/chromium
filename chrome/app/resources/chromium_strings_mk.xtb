@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">Прашувај кога ќе се отвори Chromium</translation>
 <translation id="1396446129537741364">Chromium се обидува да покаже лозинки.</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
+<translation id="1414973082589232775">За да користите Rosetta за пуштање заштитени аудиовизуелни содржини, треба да го рестартирате Chromium.</translation>
 <translation id="151962892725702025">Chromium ОС не може да ги синхронизира вашите податоци бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
@@ -29,7 +30,7 @@
 <translation id="2008474315282236005">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
 <translation id="2185166961232948079">Chromium - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
-<translation id="2225696941839557119">Chromium OS не можеше да ги синхронизира вашите лозинки.</translation>
+<translation id="2225696941839557119">Chromium OS не може да ги синхронизира вашите лозинки.</translation>
 <translation id="2241627712206172106">Ако го делите компјутерот, пријателите и семејството може одделно да прелистуваат и да го поставуваат Chromium токму како што сакаат.</translation>
 <translation id="2294245788148774212">Незадолжително: помогнете да се подобрат функциите и изведбата на Chromium OS со автоматско испраќање дијагностички податоци и податоци за користењето до Google.</translation>
 <translation id="2343156876103232566">За да испратите број оттука до телефонот со Android, најавете се на Chromium на двата уреда.</translation>
@@ -68,7 +69,7 @@
 <translation id="3283186697780795848">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="328888136576916638">Клучевите Google API недостасуваат. Некои функции на Chromium ќе бидат оневозможени.</translation>
 <translation id="3296368748942286671">Продолжи со извршување на заднинските апликации кога Chromium е затворен</translation>
-<translation id="331951419404882060">Chromium OS не можеше да ги синхронизира вашите податоци поради грешка при најавување.</translation>
+<translation id="331951419404882060">Chromium OS не може да ги синхронизира вашите податоци поради грешка при најавување.</translation>
 <translation id="347328004046849135">Chromium ќе ве извести ако се најавите со компромитирана лозинка</translation>
 <translation id="3474745554856756813">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Затворете ги сите прозорци на Chromium и обидете се повторно.</translation>
@@ -131,6 +132,7 @@
 <translation id="5634636535844844681">Chromium бара Windows 7 или понова верзија.</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
+<translation id="5736967399513123100">За да му овозможите на Chromium да пушта заштитени аудиовизуелни содржини, треба да инсталирате Rosetta. Дали сакате да се инсталира сега?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -149,7 +151,7 @@
 <translation id="6183079672144801177">Проверете дали сте најавени на Chromium на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
-<translation id="623836266260425961">Chromium OS не можеше да ги синхронизира вашите податоци.</translation>
+<translation id="623836266260425961">Chromium OS не може да ги синхронизира вашите податоци.</translation>
 <translation id="6248213926982192922">Постави го Chromium за стандарден прелистувач</translation>
 <translation id="6266342355635466082">Chromium не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
@@ -177,14 +179,15 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>
 <translation id="6893813176749746474">Chromium се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
+<translation id="6897548120660295439">Rosetta му овозможува на Chromium да пушта заштитени аудиовизуелни содржини на страницава.</translation>
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="6978145336957848883">Слабите лозинки се лесни за погаѓање. Дозволете Chromium да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">На Chromium му треба дозвола за да пристапи до микрофонот за сајтов</translation>
 <translation id="701244094609242530">Chromium не може да ги провери вашите екстензии. Обидете се пак подоцна.</translation>
 <translation id="705851970750939768">Ажурирај го Chromium</translation>
-<translation id="7066436765290594559">Chromium OS не можеше да ги синхронизира вашите податоци. Ажурирајте ја пристапната фраза за Синхронизација.</translation>
+<translation id="7066436765290594559">Chromium OS не може да ги синхронизира вашите податоци. Ажурирајте ја пристапната фраза за Синхронизација.</translation>
 <translation id="7067091210845072982">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
-<translation id="7196312274710523067">Не можеше да се стартува Chromium. Обидете се повторно.</translation>
+<translation id="7196312274710523067">Не може да се стартува Chromium. Обидете се повторно.</translation>
 <translation id="7197677400338048821">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
 <translation id="7205698830395646142">Сокриј во мени на Chromium</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
@@ -210,9 +213,9 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7617377681829253106">Chromium е подобрен</translation>
 <translation id="7686590090926151193">Chromium не е вашиот стандарден прелистувач</translation>
 <translation id="7689606757190482937">Синхронизирајте го и персонализирајте го Chromium на сите ваши уреди</translation>
-<translation id="7729447699958282447">Chromium не можеше да ги синхронизира вашите податоци затоа што Синхронизација не е достапна на вашиот домен.</translation>
+<translation id="7729447699958282447">Chromium не може да ги синхронизира вашите податоци затоа што Синхронизација не е достапна на вашиот домен.</translation>
 <translation id="7745317241717453663">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
-<translation id="7747138024166251722">Инсталаторот не можеше да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
+<translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
 <translation id="7773960292263897147">Предупредување: Chromium не може да ги спречи екстензиите да ја снимаат вашата историја на прелистување. За да ја оневозможите оваа екстензија во режим инкогнито, поништете го изборот на оваа опција.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">Избришете ги колачињата и податоците за сајтовите кога ќе го напуштите Chromium</translation>

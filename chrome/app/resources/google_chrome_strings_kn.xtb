@@ -187,6 +187,7 @@
 <translation id="6368958679917195344">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ Chrome OS ಸಾಕಾರಗೊಂಡಿದೆ.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕೆ Rosetta ಅನ್ನು ಬಳಸಲು, ನೀವು Chrome ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
 <translation id="6676384891291319759">ಇಂಟರ್ನೆಟ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="6679975945624592337">Google Chrome ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗಲು ಅನುಮತಿಸಿ</translation>
 <translation id="6750954913813541382">ಕಾಗುಣಿತ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸಲು, Chrome, ನೀವು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡುವ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
@@ -249,6 +250,7 @@
 <translation id="8521348052903287641">mDNS ಟ್ರಾಫಿಕ್‌ಗೆ ಅನುಮತಿಸುವ ನಿಟ್ಟಿನಲ್ಲಿ Google Chrome ಬೀಟಾಗೆ ಒಳಬರುವ ನಿಯಮ.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google Chrome ನ ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ, ಮತ್ತು ಇದು ಎಂದಿಗಿಂತಲೂ ವೇಗವಾಗಿದೆ.</translation>
+<translation id="861359755029082151">Rosetta, ಈ ಪುಟದಲ್ಲಿ ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡಲು Chrome ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="8614913330719544658">Google Chrome ಸ್ಪಂದಿಸುತ್ತಿಲ್ಲ. ಇದೀಗ ಮರುಪ್ರಾರಂಭಿಸುವುದೆ?
 </translation>
 <translation id="861702415419836452">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ ಪರಿಸರದ 3D ನಕ್ಷೆಯನ್ನು ರಚಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chrome ಗೆ ಅನುಮತಿ ಬೇಕಾಗಿದೆ</translation>
@@ -263,6 +265,7 @@
 <translation id="8834965163890861871">Google Chrome, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="884296878221830158">ನೀವು Chrome ಪ್ರಾರಂಭಿಸಿದಾಗ ಅಥವಾ ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="8862326446509486874">ಸಿಸ್ಟಂ ಮಟ್ಟದ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ನೀವು ಸರಿಯಾದ ಹಕ್ಕುಗಳನ್ನು ಹೊಂದಿಲ್ಲ. ನಿರ್ವಾಹಕರಂತೆ ಮತ್ತೆ ಇನ್‌ಸ್ಟಾಲರ್ ಅನ್ನು ರನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="8907709077090383765">ಸುರಕ್ಷಿತ ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕೆ Chrome ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ನೀವು Rosetta ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. ನೀವು ಈಗಲೇ ಅದನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="8914504000324227558">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> ನಿಂದ ನಿಮ್ಮ Android ಫೋನ್‌ಗೆ ಸಂಖ್ಯೆಯನ್ನು ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>

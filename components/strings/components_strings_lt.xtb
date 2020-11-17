@@ -305,6 +305,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2102495993840063010">„Android“ programos</translation>
 <translation id="2107021941795971877">Spausdinimo atraminės struktūros</translation>
 <translation id="2108755909498034140">Iš naujo paleiskite kompiuterį</translation>
+<translation id="2111166930115883695">Paleiskite paspaudę tarpo klavišą</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kortelė</translation>
 <translation id="2114841414352855701">Nepaisoma, nes buvo pakeista taikant „<ph name="POLICY_NAME" />“.</translation>
@@ -488,7 +489,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="290376772003165898">Puslapis parašytas ne <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Aptiktas tinklo pasikeitimas.</translation>
-<translation id="2910133103376701357">Jūsų įrenginį ir paskyrą valdo <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Užduoties paskyros naudotojo ID</translation>
 <translation id="2915068235268646559">Strigtis, įvykusi <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Uždarykite kitas programas</translation>
@@ -522,6 +522,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3010559122411665027">Sąrašo įrašas „<ph name="ENTRY_INDEX" />“: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3016780570757425217">Žinoti jūsų vietovę</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, paspauskite tabuliavimo klavišą, tada „Enter“, kad pašalintumėte pasiūlymą.</translation>
 <translation id="3023071826883856138">„You4“ (vokas)</translation>
 <translation id="3024663005179499861">Netinkamas politikos tipas</translation>
 <translation id="3037605927509011580">Oi!</translation>
@@ -761,10 +762,10 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
     visoms jos užklausoms, bet šiuo metu šios politikos taikyti negalima.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumente yra {COUNT} puslapis}one{PDF dokumente yra {COUNT} puslapis}few{PDF dokumente yra {COUNT} puslapiai}many{PDF dokumente yra {COUNT} puslapio}other{PDF dokumente yra {COUNT} puslapių}}</translation>
 <translation id="4030383055268325496">&amp;Anuliuoti pridėjimą</translation>
-<translation id="4032320456957708163">Jūsų naršyklę tvarko <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Raktas „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (vokas)</translation>
+<translation id="4067669230157909013">Ekrano fiksavimas atnaujintas.</translation>
 <translation id="4067947977115446013">Tinkamo adreso pridėjimas</translation>
 <translation id="4072486802667267160">Apdorojant jūsų užsakymą įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="4075732493274867456">Kliento programa ir serveris nepalaiko įprasto SSL protokolo versijos ar šifruotojo programų komplekto.</translation>
@@ -844,11 +845,11 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4270541775497538019">6 dėtuvė</translation>
 <translation id="4275830172053184480">Iš naujo paleisti įrenginį</translation>
 <translation id="4277028893293644418">Iš naujo nustatyti slaptažodį</translation>
-<translation id="4279811152705618813">Jūsų „<ph name="DEVICE_TYPE" />“ tvarko <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ši kortelė išsaugota jūsų „Google“ paskyroje}one{Šios kortelės išsaugotos jūsų „Google“ paskyroje}few{Šios kortelės išsaugotos jūsų „Google“ paskyroje}many{Šios kortelės išsaugotos jūsų „Google“ paskyroje}other{Šios kortelės išsaugotos jūsų „Google“ paskyroje}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> puslapio miniatiūra</translation>
 <translation id="42981349822642051">Išskleisti</translation>
 <translation id="4300675098767811073">Kelios skylės dešinėje</translation>
+<translation id="4302514097724775343">Palieskite dinozaurą, kad paleistumėte</translation>
 <translation id="4302965934281694568">„Chou3“ (vokas)</translation>
 <translation id="4305666528087210886">Nepavyko pasiekti failo</translation>
 <translation id="4305817255990598646">Perjungti</translation>
@@ -964,7 +965,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4771973620359291008">Įvyko nežinoma klaida.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Iššokantysis langas užblokuotas}one{# iššokantysis langas užblokuotas}few{# iššokantieji langai užblokuoti}many{# iššokančiojo lango užblokuota}other{# iššokančiųjų langų užblokuota}}</translation>
 <translation id="4780366598804516005">1 pašto dėžutė</translation>
-<translation id="4780900888022378816">Jūsų įrenginį valdo <ph name="ENROLLMENT_DOMAIN" />, o paskyrą – <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Perjungti į šį skirtuką</translation>
 <translation id="4791134497475588553">Įdiegtos „Linux“ programos ir kada paskutinį kartą jos buvo naudotos</translation>
 <translation id="4792686369684665359">Informacija, kurią ketinate pateikti, nesaugi</translation>
@@ -1177,7 +1177,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="560412284261940334">Tvarkymas nepalaikomas</translation>
 <translation id="5605670050355397069">Buhalterinis</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Svetainė gali būti suklastota ar apgavikiška. „Chrome“ rekomenduoja dabar iš jos išeiti.</translation>
 <translation id="5610142619324316209">Patikrinti ryšį</translation>
 <translation id="5610807607761827392">Korteles ir adresus galite tvarkyti skiltyje <ph name="BEGIN_LINK" />Nustatymai<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Verskite šį puslapį naudodami „Google“ vertėją</translation>
@@ -1249,6 +1248,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5905445707201418379">Užblokuota vadovaujantis „<ph name="ORIGIN" />“ pradine politika.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinchronizuota)</translation>
+<translation id="5913377024445952699">Ekrano fiksavimas pristabdytas</translation>
 <translation id="59174027418879706">Įjungta</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Įjungta</translation>
@@ -1261,6 +1261,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5963413905009737549">Skiltis</translation>
 <translation id="5967592137238574583">Kontaktinės informacijos redagavimas</translation>
 <translation id="5967867314010545767">Pašalinti iš istorijos</translation>
+<translation id="5968793460449681917">Per kiekvieną apsilankymą</translation>
 <translation id="5975083100439434680">Tolinti</translation>
 <translation id="5979084224081478209">Patikrinti slaptažodžius</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1405,7 +1406,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6529602333819889595">&amp;Ištrinti dar kartą</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
 <translation id="6547208576736763147">Dvi skylės kairėje</translation>
-<translation id="6554795675067793129">Jūsų paskyrą tvarko <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Grąžinti</translation>
 <translation id="6569060085658103619">Peržiūrite plėtinio puslapį</translation>
 <translation id="6573200754375280815">Dvi skylės dešinėje</translation>
@@ -1476,6 +1476,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6895330447102777224">Kortelė patvirtinta</translation>
 <translation id="6897140037006041989">Naudotojo atstovas</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
+<translation id="6907293445143367439">Leisti <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> nori visiškai valdyti MIDI įrenginius</translation>
 <translation id="6915804003454593391">Naudotojas:</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
@@ -1912,6 +1913,7 @@ Papildoma išsami informacija:
 <translation id="858637041960032120">Pridėti tel. nr.
 </translation>
 <translation id="8589998999637048520">Geriausia kokybė</translation>
+<translation id="8600271352425265729">Tik šį kartą</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>
 <translation id="8606726445206553943">Naudoti MIDI įrenginius</translation>
 <translation id="8612761427948161954">Sveiki, <ph name="USERNAME" />,
@@ -1921,6 +1923,7 @@ Papildoma išsami informacija:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nėra jokių atitinkančių slaptažodžių. Rodyti visus išsaugotus slaptažodžius.</translation>
 <translation id="8625384913736129811">Išsaugoti šią kortelę šiame įrenginyje</translation>
+<translation id="8627040765059109009">Ekrano fiksavimas atnaujintas</translation>
 <translation id="8657078576661269990">Administratorius užblokavo bendrinimą iš <ph name="ORIGIN_NAME" /> su „<ph name="VM_NAME_1" />“ ir „<ph name="VM_NAME_2" />“</translation>
 <translation id="8663226718884576429">Užsakymo suvestinė, <ph name="TOTAL_LABEL" />, daugiau informacijos</translation>
 <translation id="867224526087042813">Parašas</translation>
@@ -2068,6 +2071,7 @@ Papildoma išsami informacija:
 <translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="945855313015696284">Patikrinkite toliau pateiktą informaciją ir ištrinkite visas netinkamas korteles</translation>
 <translation id="950736567201356821">Trys skylės viršuje</translation>
+<translation id="951941430552851965">Administratorius pristabdė ekrano fiksavimą dėl jūsų ekrane rodomo turinio.</translation>
 <translation id="961663415146723894">Įrišimas apačioje</translation>
 <translation id="962484866189421427">Šis turinys gali bandyti įdiegti klaidinančių programų, kurios apsimeta kitomis programomis, arba rinkti duomenis, naudojamus jums stebėti. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Oficialiai pagaminta</translation>

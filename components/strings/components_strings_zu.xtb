@@ -488,7 +488,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2903493209154104877">Amakheli</translation>
 <translation id="290376772003165898">Ikhasi alikho ngesi-<ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Kutholwe ukuguqulwa kwenethiwekhi.</translation>
-<translation id="2910133103376701357">Idivayisi yakho ne-akhawunti ziphethwe i-<ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">I-ID yomsebenzisi womsebenzi we-akhawunti</translation>
 <translation id="2915068235268646559">Ukukhubazeka okuvela ku-<ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Vala ezinye izinhlelo</translation>
@@ -757,7 +756,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
     isebenze kuzo zonke izicelo zayo, kodwa le nqubomgomo ayikwazi ukusetshenziswa okwamanje.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Idokhumenti le-PDF eliqukethe ikhasi elingu-{COUNT}}one{Idokhumenti le-PDF eliqukethe amakhasi angu-{COUNT}}other{Idokhumenti le-PDF eliqukethe amakhasi angu-{COUNT}}}</translation>
 <translation id="4030383055268325496">&amp;Hlelisa ukungeza</translation>
-<translation id="4032320456957708163">Isiphequluli sakho siphethwe i-<ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">I-Sepia</translation>
 <translation id="4058922952496707368">Ukhiye we-"<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -840,7 +838,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4270541775497538019">Isitaki esingu-6</translation>
 <translation id="4275830172053184480">Qalisa kabusha idivayisi yakho</translation>
 <translation id="4277028893293644418">Setha kabusha iphasiwedi</translation>
-<translation id="4279811152705618813">I-<ph name="DEVICE_TYPE" /> yakho iphethwe ngu-<ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Leli khadi lilondolozwe ku-akhawunti yakho ye-Google}one{Lawa makhadi alondolozwe ku-akhawunti yakho ye-Google}other{Lawa makhadi alondolozwe ku-akhawunti yakho ye-Google}}</translation>
 <translation id="4297502707443874121">Isithonjana sekhasi le-<ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Nweba</translation>
@@ -960,7 +957,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4771973620359291008">Kuvele iphutha elingaziwa.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Okwesikhashana kuvinjiwe}one{# okwesikhashana kuvinjiwe}other{# okwesikhashana kuvinjiwe}}</translation>
 <translation id="4780366598804516005">Ibhokisi lemeyili elingu-1</translation>
-<translation id="4780900888022378816">Idivayisi yakho iphethwe i-<ph name="ENROLLMENT_DOMAIN" /> futhi i-akhawunti yakho iphethwe i-<ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Shintshela kule thebhu</translation>
 <translation id="4791134497475588553">Izinhlelo zokusebenza ze-Linux zifakiwe kanye nangenkathi zigcina ukusetshenziswa</translation>
 <translation id="4792686369684665359">Ulwazi osuzolithumela aluvikelekile</translation>
@@ -1173,7 +1169,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="560412284261940334">Ukuphathwa akusekelwe</translation>
 <translation id="5605670050355397069">I-Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Leli sayithi lingaba imbumbulu noma umgunyathi. I-Chrome incoma ukuhamba manje.</translation>
 <translation id="5610142619324316209">Ukuhlola uxhumo</translation>
 <translation id="5610807607761827392">Ungaphatha amakhadi namakheli <ph name="BEGIN_LINK" />Kuzilungiselelo<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Humusha leli khasi nge-Google Translate</translation>
@@ -1245,6 +1240,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5901630391730855834">Okuliphuzi</translation>
 <translation id="5905445707201418379">Kuvinjelwe ngokuya kwenqubomgomo yoqobo ye-<ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (kuvumelanisiwe)</translation>
+<translation id="5913377024445952699">Ukuthatha isikrini kuphunyuziwe</translation>
 <translation id="59174027418879706">Kunikwe amandla</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Vuliwe</translation>
@@ -1401,7 +1397,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6529602333819889595">&amp;Yenza futhi ukususa</translation>
 <translation id="6545864417968258051">Ukuskena kwe-Bluetooth</translation>
 <translation id="6547208576736763147">Ukushay okubili kwesokunxele</translation>
-<translation id="6554795675067793129">I-akhawunti yakho iphethwe i-<ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Yenza kabusha</translation>
 <translation id="6569060085658103619">Ubuka ikhasi ngesandiso sekhasi</translation>
 <translation id="6573200754375280815">Ukushaya okubili kwesokudla</translation>
@@ -1916,6 +1911,7 @@ Imininingwane engeziwe:
 <translation id="8622948367223941507">Okungaphezulu kwezomthetho</translation>
 <translation id="8623885649813806493">Awekho amaphasiwedi afanayo. Bonisa onke amaphasiwedi alondoloziwe.</translation>
 <translation id="8625384913736129811">Londoloza leli khadi kule divayisi</translation>
+<translation id="8627040765059109009">Ukuthatha isikrini kuyaqhubeka</translation>
 <translation id="8657078576661269990">Umlawuli wakho uvimbe ukwabelana kusuka ku-<ph name="ORIGIN_NAME" /> kuya ku-<ph name="VM_NAME_1" /> no-<ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Isifinyezo se-oda, <ph name="TOTAL_LABEL" />, Imininingwane eminingi</translation>
 <translation id="867224526087042813">Isiginesha</translation>

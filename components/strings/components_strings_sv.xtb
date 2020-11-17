@@ -488,7 +488,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="290376772003165898">Är sidan inte på <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">En nätverksförändring upptäcktes.</translation>
-<translation id="2910133103376701357">Enheten och kontot hanteras av <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Användar-id för jobbkonto</translation>
 <translation id="2915068235268646559">Krasch från <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Stäng andra program</translation>
@@ -760,7 +759,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
     ska gälla varje gång den svarar på en begäran, men denna princip går inte att tillämpa just nu.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som innehåller {COUNT} sida}other{PDF-dokument som innehåller {COUNT} sidor}}</translation>
 <translation id="4030383055268325496">&amp;Ångra Lägg till</translation>
-<translation id="4032320456957708163">Din webbläsare hanteras av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Nyckel <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (kuvert)</translation>
@@ -843,7 +841,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4270541775497538019">Utmatningsfack 6</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4277028893293644418">Återställ lösenord</translation>
-<translation id="4279811152705618813">Din <ph name="DEVICE_TYPE" /> hanteras av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Det här kortet har sparats i ditt Google-konto}other{De här korten har sparats i ditt Google-konto}}</translation>
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandera</translation>
@@ -963,7 +960,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4771973620359291008">Ett okänt fel uppstod.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup-fönster har blockerats}other{# popup-fönster har blockerats}}</translation>
 <translation id="4780366598804516005">Postfack 1</translation>
-<translation id="4780900888022378816">Enheten hanteras av <ph name="ENROLLMENT_DOMAIN" /> och kontot hanteras av <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Byt till den här fliken</translation>
 <translation id="4791134497475588553">Installerade Linux-program och när de användes senast</translation>
 <translation id="4792686369684665359">Informationen som du är på väg att skicka in är inte säker</translation>
@@ -1176,7 +1172,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="560412284261940334">Hantering stöds inte</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Den här webbplatsen kan vara falsk eller bedräglig. Chrome rekommenderar att du lämnar den nu.</translation>
 <translation id="5610142619324316209">kontrollera anslutningen</translation>
 <translation id="5610807607761827392">Du hanterar kort och adresser under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Översätt den här sidan med Google Översätt</translation>
@@ -1248,6 +1243,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5905445707201418379">Blockerad i enlighet med ursprungsprincipen på <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniserade)</translation>
+<translation id="5913377024445952699">Skärmbild/skärminspelning har pausats</translation>
 <translation id="59174027418879706">Aktiverad</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">På</translation>
@@ -1404,7 +1400,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6529602333819889595">&amp;Gör om Ta bort</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6547208576736763147">Två hål till vänster</translation>
-<translation id="6554795675067793129">Kontot hanteras av <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Upprepa</translation>
 <translation id="6569060085658103619">Du visar en tilläggssida</translation>
 <translation id="6573200754375280815">Två hål till höger</translation>
@@ -1920,6 +1915,7 @@ Mer information:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Inga matchande lösenord. Visa alla sparade lösenord.</translation>
 <translation id="8625384913736129811">Spara kortet på enheten</translation>
+<translation id="8627040765059109009">Skärmbilder/skärminspelningar har återupptagits</translation>
 <translation id="8657078576661269990">Administratören har blockerat delning från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME_1" /> och <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="867224526087042813">Signatur</translation>

@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android апликације</translation>
 <translation id="2107021941795971877">Подршка за штампање</translation>
 <translation id="2108755909498034140">Поново покрените рачунар</translation>
+<translation id="2111166930115883695">Притисните тастер за размак да бисте играли</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Картица</translation>
 <translation id="2114841414352855701">Занемарују се јер су замењене смерницама <ph name="POLICY_NAME" />.</translation>
@@ -488,7 +489,6 @@
 <translation id="2903493209154104877">Адресе</translation>
 <translation id="290376772003165898">Ова страница није на језику <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Откривена је промена на мрежи.</translation>
-<translation id="2910133103376701357">Уређајем и налогом управља <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ИД корисника за рачуноводствени задатак</translation>
 <translation id="2915068235268646559">Извештај о отказивању од <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Затворите друге програме</translation>
@@ -522,6 +522,7 @@
 <translation id="3010559122411665027">Унос на листи „<ph name="ENTRY_INDEX" />“: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3016780570757425217">зна вашу локацију</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, притисните Tab, па Enter да бисте уклонили предлог.</translation>
 <translation id="3023071826883856138">You4 (коверат)</translation>
 <translation id="3024663005179499861">Погрешан тип смерница</translation>
 <translation id="3037605927509011580">О, не!</translation>
@@ -760,10 +761,10 @@
     примене на све захтеве ка њему, али ове смернице тренутно не могу да се примене.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ који садржи {COUNT} страницу}one{PDF документ који садржи {COUNT} страницу}few{PDF документ који садржи {COUNT} странице}other{PDF документ који садржи {COUNT} страница}}</translation>
 <translation id="4030383055268325496">&amp;Опозови додавање</translation>
-<translation id="4032320456957708163">Прегледачем управља <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4058922952496707368">Кључ „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (коверат)</translation>
+<translation id="4067669230157909013">Снимање екрана је настављено.</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
 <translation id="4075732493274867456">Клијент и сервер не подржавају исту верзију SSL протокола или пакет за шифровање.</translation>
@@ -843,11 +844,11 @@
 <translation id="4270541775497538019">6. преграда за слагање</translation>
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" />-ом управља <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ова картица је сачувана на Google налогу}one{Ове картице су сачуване на Google налогу}few{Ове картице су сачуване на Google налогу}other{Ове картице су сачуване на Google налогу}}</translation>
 <translation id="4297502707443874121">Сличица за <ph name="THUMBNAIL_PAGE" />. страницу</translation>
 <translation id="42981349822642051">Проширите</translation>
 <translation id="4300675098767811073">Вишеструко бушење на десној страни</translation>
+<translation id="4302514097724775343">Додирните диносауруса да бисте играли</translation>
 <translation id="4302965934281694568">Chou3 (коверат)</translation>
 <translation id="4305666528087210886">Приступ датотеци није успео</translation>
 <translation id="4305817255990598646">Пређи</translation>
@@ -963,7 +964,6 @@
 <translation id="4771973620359291008">Дошло је до непознате грешке.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Искачући прозор је блокиран}one{# искачући прозор је блокиран}few{# искачућа прозора су блокирана}other{# искачућих прозора је блокирано}}</translation>
 <translation id="4780366598804516005">1. поштанско сандуче</translation>
-<translation id="4780900888022378816">Уређајем управља <ph name="ENROLLMENT_DOMAIN" />, а налогом <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Пређите на ову картицу</translation>
 <translation id="4791134497475588553">Инсталиране Linux апликације и када су последњи пут коришћене</translation>
 <translation id="4792686369684665359">Информације које ћете послати нису безбедне</translation>
@@ -1176,7 +1176,6 @@
 <translation id="560412284261940334">Управљање није подржано</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Овај сајт је можда лажан или служи за превару. Chrome вам препоручује да га одмах напустите.</translation>
 <translation id="5610142619324316209">да проверите везу</translation>
 <translation id="5610807607761827392">Картицама и адресама можете да управљате у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Преведите ову страницу помоћу Google преводиоца</translation>
@@ -1248,6 +1247,7 @@
 <translation id="5901630391730855834">Жута</translation>
 <translation id="5905445707201418379">Блокирано је у складу са смерницама за порекло (<ph name="ORIGIN" />).</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизовано)</translation>
+<translation id="5913377024445952699">Снимање екрана је паузирано</translation>
 <translation id="59174027418879706">Омогућено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Укључено</translation>
@@ -1260,6 +1260,7 @@
 <translation id="5963413905009737549">Одељак</translation>
 <translation id="5967592137238574583">Измените контакт информације</translation>
 <translation id="5967867314010545767">Уклони из историје</translation>
+<translation id="5968793460449681917">При свакој посети</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1403,7 +1404,6 @@
 <translation id="6529602333819889595">&amp;Понови брисање</translation>
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6547208576736763147">Двоструко бушење на левој страни</translation>
-<translation id="6554795675067793129">Вашим налогом управља <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Понови</translation>
 <translation id="6569060085658103619">Прегледате страницу додатка.</translation>
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
@@ -1474,6 +1474,7 @@
 <translation id="6895330447102777224">Картица је потврђена</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
+<translation id="6907293445143367439">Дозволите да <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> жели да у потпуности контролише MIDI уређаје</translation>
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6934672428414710184">То је име са вашег Google налога</translation>
@@ -1910,6 +1911,7 @@
 <translation id="858637041960032120">Додај тел. број
 </translation>
 <translation id="8589998999637048520">Најбољи квалитет</translation>
+<translation id="8600271352425265729">Само овај пут</translation>
 <translation id="860043288473659153">Име власника картице</translation>
 <translation id="8606726445206553943">користи MIDI уређаје</translation>
 <translation id="8612761427948161954">Здраво <ph name="USERNAME" />,
@@ -1919,6 +1921,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ниједна лозинка се не подудара. Прикажи све сачуване лозинке.</translation>
 <translation id="8625384913736129811">Сачувај ову картицу на овом уређају</translation>
+<translation id="8627040765059109009">Снимање екрана је настављено</translation>
 <translation id="8657078576661269990">Администратор је блокирао дељење са <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Резиме поруџбине, <ph name="TOTAL_LABEL" />, још детаља</translation>
 <translation id="867224526087042813">Потпис</translation>
@@ -2066,6 +2069,7 @@
 <translation id="939736085109172342">Нови директоријум</translation>
 <translation id="945855313015696284">Проверите информације у наставку и избришите све неважеће картице</translation>
 <translation id="950736567201356821">Троструко бушење на врху</translation>
+<translation id="951941430552851965">Администратор је паузирао снимање екрана због садржаја на вашем екрану.</translation>
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="962484866189421427">Овај садржај можда покушава да инсталира обмањујуће апликације које се претварају да су нешто друго или да прикупљају податке који могу да се користе за праћење. <ph name="BEGIN_LINK" />Прикажи<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Званична верзија</translation>

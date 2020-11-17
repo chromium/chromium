@@ -342,7 +342,6 @@ Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroo
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4747097190499141774">Parooli krüpteerimine ei hõlma Google Pay makseviise ega aadresse. Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil sünkroonimine lähtestada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Uus inkognito vaheleht</translation>
-<translation id="4758977202923349869">Paigutage krediitkaart sellesse kaadrisse</translation>
 <translation id="4775879719735953715">Vaikebrauser</translation>
 <translation id="4778644898150334464">Kasuta muud parooli</translation>
 <translation id="4802417911091824046">Parooli krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
@@ -604,12 +603,12 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>
 <translation id="7456847797759667638">Ava asukoht...</translation>
-<translation id="7460314822154045102">Kasuta kaamerat</translation>
 <translation id="7464701184726199289">See kustutab sünkroonitud andmed kõikidest seadmetest. Saitide salvestatud seadeid ei kustutata ja need võivad kajastada teie sirvimisharjumusi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Valige Chrome.</translation>
 <translation id="7472734401283673885">Ettevõtte nimi</translation>
 <translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7481312909269577407">Edasta</translation>
+<translation id="7483467499335917849">Kasutage oma praegust asukohta</translation>
 <translation id="750493650310597496">0 valitud</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7537586195939242955">Kahjuks ei saa teie Passi praegu Passbooki installida.</translation>

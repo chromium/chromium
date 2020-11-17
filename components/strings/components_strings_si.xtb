@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android යෙදුම්</translation>
 <translation id="2107021941795971877">මුද්‍රණ සහය</translation>
 <translation id="2108755909498034140">ඔබේ පරිගණකය යළි අරඹන්න</translation>
+<translation id="2111166930115883695">වාදනය කිරීමට ඉඩ යතුර ඔබන්න</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">කාඩ්පත</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> විසින් ප්‍රතිස්ථාපනය කළ නිසා නොතකා හරින ලදි.</translation>
@@ -486,7 +487,6 @@
 <translation id="2903493209154104877">ලිපින</translation>
 <translation id="290376772003165898">පිටුව <ph name="LANGUAGE" /> බසින් නොවේ ද?</translation>
 <translation id="2909946352844186028">ජාල වෙනස්කමක් සොයා ගන්නා ලදි.</translation>
-<translation id="2910133103376701357">ඔබේ උපාංගය සහ ගිණුම <ph name="ENROLLMENT_DOMAIN" /> විසින් කළමනා කරනු ලැබේ.</translation>
 <translation id="2911973620368911614">වැඩ ගිණුම්කරණ පරිශීලක හැඳුනුම</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> වෙතින් බිඳ වැටීම්</translation>
 <translation id="2916038427272391327">අනෙකුත් වැඩසටහන් වසන්න</translation>
@@ -520,6 +520,7 @@
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />": <ph name="ERROR" /> ලැයිස්තුගත කරන්න</translation>
 <translation id="301521992641321250">ස්වයංක්‍රියව අවහිර කර ඇත</translation>
 <translation id="3016780570757425217">ඔබේ පිහිටීම දැන ගන්න</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, යෝජනාව ඉවත් කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="3023071826883856138">You4 (ලියුම් කවරය)</translation>
 <translation id="3024663005179499861">වැරදි ප්‍රතිපත්ති වර්ගය</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
@@ -758,10 +759,10 @@
     ඉල්ලා ඇති නමුත්, දැනට මෙම ප්‍රතිපත්තිය යෙදිය නොහැක.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} පිටුවක් ඇති PDF ලේඛනය}one{පිටු {COUNT} ක් ඇති PDF ලේඛනය}other{පිටු {COUNT} ක් ඇති PDF ලේඛනය}}</translation>
 <translation id="4030383055268325496">&amp;එක් කිරීම පසුගමනය කිරීම</translation>
-<translation id="4032320456957708163">ඔබේ බ්‍රවුසරය <ph name="ENROLLMENT_DOMAIN" /> විසින් කළමනා කෙරේ</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">යතුර "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ලියුම් කවරය)</translation>
+<translation id="4067669230157909013">තිර ග්‍රහණය නැවත පටන් ගන්නා ලදි.</translation>
 <translation id="4067947977115446013">වලංගු ලිපිනයක් එක් කරන්න</translation>
 <translation id="4072486802667267160">ඔබේ ඇණවුම සැකසීමේ දෝෂයක් විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="4075732493274867456">සේවාලාභියා සහ සේවාදායකයා පොදු SSL ප්‍රොටොකෝල අනුවාදයක් හෝ කේතාංක කට්ටලයක් සඳහා සහාය නොදක්වයි.</translation>
@@ -838,11 +839,11 @@
 <translation id="4270541775497538019">අට්ටිය 6</translation>
 <translation id="4275830172053184480">ඔබේ උපාංගය නැවත අරඹන්න</translation>
 <translation id="4277028893293644418">මුරපදය යළි සකසන්න</translation>
-<translation id="4279811152705618813">ඔබේ <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> විසින් කළමනා කෙරේ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{මෙම කාඩ්පත ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}one{මෙම කාඩ්පත් ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}other{මෙම කාඩ්පත් ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> පිටුව සඳහා සිඟිති රුව</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
 <translation id="4300675098767811073">දකුණට බොහෝ වරක් අනින්න</translation>
+<translation id="4302514097724775343">වාදනය කිරීමට ඩයිනෝ තට්ටු කරන්න</translation>
 <translation id="4302965934281694568">Chou3 (ලියුම් කවරය)</translation>
 <translation id="4305666528087210886">ඔබගේ ගොනුවට පිවිසීමට නොහැකි විය.</translation>
 <translation id="4305817255990598646">ස්විචය</translation>
@@ -958,7 +959,6 @@
 <translation id="4771973620359291008">නොදන්නා දෝෂයක් ඇති විය.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{උත්පතනය අවහිර කරන ලදී}one{උත්පතන #ක් අවහිර කරන ලදී}other{උත්පතන #ක් අවහිර කරන ලදී}}</translation>
 <translation id="4780366598804516005">තැපැල් පෙට්ටිය 1</translation>
-<translation id="4780900888022378816">ඔබේ උපාංගය <ph name="ENROLLMENT_DOMAIN" /> විසින් කළමනා කෙරෙන අතර ඔබේ ගිණුම <ph name="ACCOUNT_DOMAIN" /> විසින් කළමනා කෙරේ.</translation>
 <translation id="4785689107224900852">මෙම පටිත්තට මාරු වන්න</translation>
 <translation id="4791134497475588553">ස්ථාපන කළ ලිනක්ස් යෙදුම් සහ ඒවා අවසන් වරට භාවිත කළ අවස්ථාව</translation>
 <translation id="4792686369684665359">ඔබ ඉදිරිපත් කිරීමට යන තොරතුරු ආරක්ෂිත නොවේ</translation>
@@ -1171,7 +1171,6 @@
 <translation id="560412284261940334">කළමනාකරණය සහාය නොදක්වයි</translation>
 <translation id="5605670050355397069">ලෙජරය</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">මෙම වෙබ් අඩවිය ව්‍යාජ හෝ වංචනික විය හැක. Chrome දැන් පිට වීම නිර්දේශ කරයි.</translation>
 <translation id="5610142619324316209">සම්බන්ධතාව පරීක්ෂා කරමින්</translation>
 <translation id="5610807607761827392">ඔබට කාඩ්පත් සහ ලිපින <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="561165882404867731">Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කරන්න</translation>
@@ -1243,6 +1242,7 @@
 <translation id="5901630391730855834">කහ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />ගේ මූලාරම්භ ප්‍රතිපත්තියට අනුව අවහිර කර ඇත.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (සමමුහුර්තයි)</translation>
+<translation id="5913377024445952699">තිර ග්‍රහණය විරාම කරන ලදි</translation>
 <translation id="59174027418879706">සබලයි</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ක්‍රියාත්මකයි</translation>
@@ -1255,6 +1255,7 @@
 <translation id="5963413905009737549">කොටස</translation>
 <translation id="5967592137238574583">සම්බන්ධතා තතු සංස්කරණය</translation>
 <translation id="5967867314010545767">ඉතිහාසයෙන් මකන්න</translation>
+<translation id="5968793460449681917">සෑම පිවිසීමකදීම</translation>
 <translation id="5975083100439434680">විශාලනය අඩු කරන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1399,7 +1400,6 @@
 <translation id="6529602333819889595">මැකීම &amp;යළි කරන්න</translation>
 <translation id="6545864417968258051">බ්ලූටූත් ස්කෑන් කිරීම</translation>
 <translation id="6547208576736763147">වමට ද්වි අනින්න</translation>
-<translation id="6554795675067793129">ඔබගේ ගිණුම <ph name="ENROLLMENT_DOMAIN" /> විසින් කළමනා කෙරේ.</translation>
 <translation id="6556866813142980365">නැවත කරන්න</translation>
 <translation id="6569060085658103619">ඔබ දිගු පිටුවක් බලමින් සිටී</translation>
 <translation id="6573200754375280815">දකුණට දෙවරක් අනින්න</translation>
@@ -1470,6 +1470,7 @@
 <translation id="6895330447102777224">ඔබේ කාඩ්පත තහවුරු කර ඇත</translation>
 <translation id="6897140037006041989">භාවිත නියෝජිත</translation>
 <translation id="6898699227549475383">සංවිධානය (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> හට මේවාට ඉඩ දෙන්න:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> හට ඔබේ MIDI උපාංගවල සම්පූර්ණ පාලනය ලබා ගැනීමට අවශ්‍යයි</translation>
 <translation id="6915804003454593391">පරිශීලක</translation>
 <translation id="6934672428414710184">මෙම නම ඔබගේ Google ගිණුමෙනි</translation>
@@ -1905,6 +1906,7 @@
 <translation id="8574899947864779331">කාඩ්පත් වඩා වේගයෙන් තහවුරු කිරීමට ස්පර්ශ හැඳුනුම භාවිත කරන්න</translation>
 <translation id="858637041960032120">දුරකථන අංකය එක් කරන්න</translation>
 <translation id="8589998999637048520">ඉහළම ගුණත්වය</translation>
+<translation id="8600271352425265729">මෙම වතාවේ පමණී</translation>
 <translation id="860043288473659153">කාඩ්පත් හිමිකරුගේ නම</translation>
 <translation id="8606726445206553943">ඔබේ MIDI උපකරණ භාවිත කරන්න</translation>
 <translation id="8612761427948161954">ආයුබෝවන් <ph name="USERNAME" />,
@@ -1914,6 +1916,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ගැළපෙන මුරපද නැත. සුරැකි මුරපද සියල්ල පෙන්වන්න.</translation>
 <translation id="8625384913736129811">මෙම උපාංගයට මෙම කාඩ්පත සුරකින්න</translation>
+<translation id="8627040765059109009">තිර ග්‍රහණය නැවත පටන් ගන්නා ලදි</translation>
 <translation id="8657078576661269990">ඔබගේ පරිපාලක <ph name="ORIGIN_NAME" /> වෙතින්<ph name="VM_NAME_1" /> සහ <ph name="VM_NAME_2" /> වෙත බෙදා ගැනීම අවහිර කර ඇත</translation>
 <translation id="8663226718884576429">ඇණවුමේ සාරාංශය, <ph name="TOTAL_LABEL" />, තව විස්තර</translation>
 <translation id="867224526087042813">අත්සන</translation>
@@ -2061,6 +2064,7 @@
 <translation id="939736085109172342">නව ෆෝල්ඩරය</translation>
 <translation id="945855313015696284">පහත තොරතුරු පරීක්‍ෂා කර, කිසියම් අවලංගු කාඩ්පත් තිබේ නම් මකන්න</translation>
 <translation id="950736567201356821">ඉහළ තුන් වරක් අනින්න</translation>
+<translation id="951941430552851965">ඔබගේ තිරයේ අන්තර්ගතය හේතුවෙන් ඔබගේ පරිපාලක විසින් තිර ග්‍රහණය කිරීම විරාම කරන ලදි.</translation>
 <translation id="961663415146723894">පහළ බඳින්න</translation>
 <translation id="962484866189421427">වෙනත් දෙයක් බවට පෙන්වීමට උත්සාහ කරන හෝ ඔබට හඹා යාමට භාවිතා කළ හැකි දත්ත එකතු කරන රැවටිලිකාර යෙදුම් ස්ථාපනය කිරීමට මෙම අන්තර්ගතය මගින් උත්සාහ කිරීමට හැකිය. <ph name="BEGIN_LINK" />කෙසේ වුවත් පෙන්වන්න<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">නිල තැනුම</translation>

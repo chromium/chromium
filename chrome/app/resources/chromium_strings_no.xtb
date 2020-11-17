@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Spør når Chromium åpnes</translation>
 <translation id="1396446129537741364">Chromium prøver å vise passord.</translation>
 <translation id="1414495520565016063">Du er logget på Chromium.</translation>
+<translation id="1414973082589232775">For å bruke Rosetta til å spille av beskyttede medier må du starte Chromium på nytt.</translation>
 <translation id="151962892725702025">Chromium OS kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Chromium krever Windows 7 eller nyere.</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
+<translation id="5736967399513123100">For at Chromium skal kunne spille av beskyttede medier, må du installere Rosetta. Vil du installere det nå?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
@@ -175,6 +177,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopiert til Chromium)</translation>
 <translation id="6893813176749746474">Chromium har blitt oppdatert, men du har ikke brukt den på minst 30 dager.</translation>
+<translation id="6897548120660295439">Rosetta gjør Chromium i stand til å spille av de beskyttede mediene på denne siden.</translation>
 <translation id="6964305034639999644">Åpne linken i et inko&amp;gnitovindu i Chromium</translation>
 <translation id="6978145336957848883">Svake passord er enkle å gjette. La Chromium <ph name="BEGIN_LINK" />opprette og huske sterke passord for deg<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium trenger tilgang til mikrofonen din for dette nettstedet</translation>

@@ -482,7 +482,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="290376772003165898">Stránka není v jazyce <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Byla zjištěna změna sítě.</translation>
-<translation id="2910133103376701357">Vaše zařízení a účet jsou spravovány doménou <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID uživatele účtování úlohy</translation>
 <translation id="2915068235268646559">Selhání z: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Zavřete ostatní programy</translation>
@@ -749,7 +748,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3996311196211510766">Web <ph name="ORIGIN" /> požádal, aby se na všechny na něj odesílané požadavky vztahovaly zásady ohledně původu, ale tyto zásady momentálně nelze použít.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF obsahující {COUNT} stránku}few{Dokument PDF obsahující {COUNT} stránky}many{Dokument PDF obsahující {COUNT} stránky}other{Dokument PDF obsahující {COUNT} stránek}}</translation>
 <translation id="4030383055268325496">&amp;Vrátit přidání zpět</translation>
-<translation id="4032320456957708163">Prohlížeč je spravován doménou <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sépie</translation>
 <translation id="4058922952496707368">Klíč <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (obálka)</translation>
@@ -828,7 +826,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4270541775497538019">Stohovač 6</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4277028893293644418">Resetovat heslo</translation>
-<translation id="4279811152705618813">Váš <ph name="DEVICE_TYPE" /> spravuje doména <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Tato karta byla uložena do vašeho učtu Google}few{Tyto karty byly uloženy do vašeho účtu Google.}many{Tyto karty byly uloženy do vašeho účtu Google.}other{Tyto karty byly uloženy do vašeho účtu Google.}}</translation>
 <translation id="4297502707443874121">Miniatura stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Rozbalit</translation>
@@ -948,7 +945,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4771973620359291008">Došlo k neznámé chybě.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokováno vyskakovací okno}few{Zablokována # vyskakovací okna}many{Zablokováno # vyskakovacího okna}other{Zablokováno # vyskakovacích oken}}</translation>
 <translation id="4780366598804516005">Schránka 1</translation>
-<translation id="4780900888022378816">Vaše zařízení spravuje doména <ph name="ENROLLMENT_DOMAIN" /> a váš účet spravuje doména <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Přejít na tuto kartu</translation>
 <translation id="4791134497475588553">Nainstalované aplikace pro Linux a čas jejich posledního použití</translation>
 <translation id="4792686369684665359">Informace, které se chystáte odeslat, nejsou zabezpečené</translation>
@@ -1161,7 +1157,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="560412284261940334">Správa není podporována</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Tento web může být falešný nebo podvodný. Chrome vám doporučuje okamžitě odejít.</translation>
 <translation id="5610142619324316209">Zkontrolovat připojení</translation>
 <translation id="5610807607761827392">Karty a adresy můžete spravovat v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Přeložte tuto stránku pomocí Překladače Google</translation>
@@ -1233,6 +1228,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5905445707201418379">Zablokováno na základě zásad webu <ph name="ORIGIN" /> ohledně původu.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronizováno)</translation>
+<translation id="5913377024445952699">Záznam obrazovky je pozastaven</translation>
 <translation id="59174027418879706">Povoleno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Zapnuto</translation>
@@ -1388,7 +1384,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6529602333819889595">&amp;Opakovat smazání</translation>
 <translation id="6545864417968258051">Vyhledávání Bluetooth</translation>
 <translation id="6547208576736763147">Dva otvory vlevo</translation>
-<translation id="6554795675067793129">Váš účet je spravován doménou <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6569060085658103619">Prohlížíte si stránku rozšíření</translation>
 <translation id="6573200754375280815">Dvě díry vpravo</translation>
@@ -1903,6 +1898,7 @@ Další podrobnosti:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nebyla nalezena žádná odpovídající hesla. Zobrazit všechna uložená hesla.</translation>
 <translation id="8625384913736129811">Uložit tuto kartu do zařízení</translation>
+<translation id="8627040765059109009">Záznam obrazovky byl znovu spuštěn</translation>
 <translation id="8657078576661269990">Váš administrátor zablokoval sdílení ze zdroje <ph name="ORIGIN_NAME" /> s virtuálními počítači <ph name="VM_NAME_1" /> a <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Shrnutí objednávky, <ph name="TOTAL_LABEL" />, další podrobnosti</translation>
 <translation id="867224526087042813">Podpis</translation>

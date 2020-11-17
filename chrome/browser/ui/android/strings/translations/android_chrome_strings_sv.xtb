@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Skärmavbildning</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
+<translation id="1118561384561215815">Få hjälp med uppgifter på webben</translation>
 <translation id="1123070903960493543">Hur du använder Chrome, inställningar du har valt, information om krascher i Chrome</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1129510026454351943">Mer information: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1754404134430936718">Texten har kopierats</translation>
+<translation id="1772137089884020309">Listan över bokmärkesmappar är stängd</translation>
 <translation id="1782483593938241562">Slutdatum <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
@@ -181,6 +183,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
+<translation id="230155349749732438">Om du vill använda den här inställningen behöver du först aktivera <ph name="BEGIN_LINK" />Förbättra sökningar och surfande<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
 <translation id="2321958826496381788">Flytta reglaget tills du kan läsa texten ordentligt. Texten bör bli åtminstone så här stor när du trycker två gånger på ett stycke.</translation>
@@ -315,6 +318,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="3269956123044984603">Aktivera Automatisk synkronisering av data i kontoinställningarna för Android om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
+<translation id="3284510035090979597">Proaktiv hjälp</translation>
 <translation id="3285080554353377245">Videor om hur du använder Chrome</translation>
 <translation id="3288003805934695103">läsa in sidan igen</translation>
 <translation id="32895400574683172">Aviseringar tillåts</translation>
@@ -422,6 +426,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4084682180776658562">Infoga bokmärke</translation>
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
+<translation id="4095189195365058471">Läs senare <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
@@ -514,6 +519,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 nedladdning har slutförts.}other{# nedladdningar har slutförts.}}</translation>
 <translation id="4766678251456904326">Lägg till konto på enheten</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 nedladdning har schemalagts.}other{# nedladdningar har schemalagts.}}</translation>
+<translation id="4791358705705538979">Hjälper dig att slutföra uppgifter på webben. Den kan till exempel fylla i information automatiskt när du påbörjar en kassabetalning.</translation>
 <translation id="4802417911091824046">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras.
 
 <ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> om du vill ändra den här inställningen.</translation>
@@ -663,6 +669,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5797070761912323120">Google kan anpassa Sök, annonser och andra Google-tjänster utifrån historiken</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{för # timme sedan}other{för # timmar sedan}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
+<translation id="5810864297166300463">Webbhjälp</translation>
 <translation id="5814131985548525293">Börja genom att skriva här eller trycka på mikrofonikonen</translation>
 <translation id="5817918615728894473">Koppla</translation>
 <translation id="583281660410589416">Okänd</translation>
@@ -857,6 +864,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
 <translation id="7029809446516969842">Lösenord</translation>
+<translation id="7030675613184250187">Du kan spara sidor i läslistan så att du kan hitta dem igen eller läsa dem offline</translation>
 <translation id="703523980599857277">Ändra startsida</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
@@ -877,6 +885,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7187993566681480880">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
+<translation id="718926126787620637">Lista över bokmärkesmappar som har öppnats över hela skärmen</translation>
 <translation id="7189372733857464326">Väntar på Google Play-tjänster ska avsluta uppdateringen</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7233236755231902816">Skaffa den senaste versionen av Chrome och få webben översatt till ditt språk</translation>
@@ -1015,6 +1024,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8127542551745560481">Redigera startsida</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8137558756159375272">Funktionen Tryck för att söka skickar det markerade ordet till Google Sök med den aktuella sidan som kontext. Du kan stänga av funktionen i <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Assistenten visas när den upptäcker att den kan hjälpa dig på webbplatser som stöds.</translation>
 <translation id="8156139159503939589">Vilka språk kan du läsa?</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer återstår</translation>
@@ -1112,6 +1122,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8920114477895755567">Väntar på föräldrauppgifter.</translation>
 <translation id="8922289737868596582">Ladda ned sidor via knappen Fler alternativ så att du kan använda dem offline</translation>
+<translation id="8928626432984354940">Lista över bokmärkesmappar som har öppnats över halva skärmen</translation>
 <translation id="8937772741022875483">Vill du ta bort din aktivitet i Chrome från Digitalt välmående?</translation>
 <translation id="8942627711005830162">Öppna i ett annat fönster</translation>
 <translation id="8951232171465285730">Du har sparat <ph name="MEGABYTES" /> MB med Chrome</translation>
@@ -1151,7 +1162,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9191031968346938109">Lägg till i …</translation>
-<translation id="919615279147764192">Innehållet på en webbplats där du använder Google Assistent, dess webbadress samt information som du skickar via assistenten överförs till Google så att du kan få uppgifterna utförda. Informationen kan sparas i Google-kontot. Du kan inaktivera Google Assistent i Chrome-inställningarna.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1173,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="93753284658583800">Startsidan har ändrats</translation>
 <translation id="938850635132480979">Fel: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
+<translation id="948039501338975565">Lista över bokmärkesmappar</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Installera appen</translation>
 <translation id="968900484120156207">Sidor som du besöker visas här</translation>

@@ -489,7 +489,6 @@
 <translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="290376772003165898">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নয়?</translation>
 <translation id="2909946352844186028">একটি নেটওয়ার্ক পরিবর্তন শনাক্ত হয়েছে৷</translation>
-<translation id="2910133103376701357">আপনার ডিভাইস ও অ্যাকাউন্ট <ph name="ENROLLMENT_DOMAIN" /> ম্যানেজ করছে।</translation>
 <translation id="2911973620368911614">জব অ্যাকাউন্টিং ব্যবহারকারীর আইডি</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />-এ হওয়া ক্র্যাশ</translation>
 <translation id="2916038427272391327">অন্যান্য প্রোগ্রামগুলি বন্ধ করুন</translation>
@@ -761,7 +760,6 @@
     একটি 'অরিজিন নীতি' প্রয়োগ করা হোক, কিন্তু বর্তমানে এই নীতি কার্যকর করা যাচ্ছে না।</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}one{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}other{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}}</translation>
 <translation id="4030383055268325496">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> আপনার ব্রাউজার ম্যানেজ করে</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4058922952496707368">কী "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -844,7 +842,6 @@
 <translation id="4270541775497538019">স্ট্যাকার ৬</translation>
 <translation id="4275830172053184480">আপনার ডিভাইস বন্ধ করে চালু করুন</translation>
 <translation id="4277028893293644418">পাসওয়ার্ড রিসেট করুন</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> আপনার <ph name="DEVICE_TYPE" /> ম্যানেজ করে</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{এই কার্ডটি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}one{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}other{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
@@ -964,7 +961,6 @@
 <translation id="4771973620359291008">একটি অজানা ত্রুটি ঘটেছে৷</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ ব্লক করা হয়েছে}one{#টি পপ-আপ ব্লক করা হয়েছে}other{#টি পপ-আপ ব্লক করা হয়েছে}}</translation>
 <translation id="4780366598804516005">মেলবক্স ১</translation>
-<translation id="4780900888022378816">আপনার ডিভাইস <ph name="ENROLLMENT_DOMAIN" /> এবং আপনার অ্যাকাউন্ট <ph name="ACCOUNT_DOMAIN" /> ম্যানেজ করে।</translation>
 <translation id="4785689107224900852">এই ট্যাবে পরিবর্তন করুন</translation>
 <translation id="4791134497475588553">ইনস্টল থাকা Linux অ্যাপ এবং শেষবার কখন সেগুলি ব্যবহার করা হয়েছে</translation>
 <translation id="4792686369684665359">আপনি নিরাপদ নয় এমন ফর্মের মাধ্যমে তথ্য জমা দিচ্ছেন</translation>
@@ -1177,7 +1173,6 @@
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">এই সাইটটি জাল বা প্রতারণামূলক হতে পারে। Chrome এখনই আপনাকে সাইটটি ছেড়ে বেরিয়ে আসতে সাজেস্ট করছে।</translation>
 <translation id="5610142619324316209">সংযোগ পরীক্ষা করে দেখুন</translation>
 <translation id="5610807607761827392">আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কার্ড এবং ঠিকানাগুলি পরিচালনা করতে পারেন।</translation>
 <translation id="561165882404867731">Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করুন</translation>
@@ -1249,6 +1244,7 @@
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> সার্ভারের 'অরিজিন নীতি' অনুযায়ী ব্লক করা হয়েছে।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (সিঙ্ক হয়েছে)</translation>
+<translation id="5913377024445952699">স্ক্রিন ক্যাপচার পজ করা হয়েছে</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">চালু করা আছে</translation>
@@ -1404,7 +1400,6 @@
 <translation id="6529602333819889595">&amp;মুছে ফেলাকে আবার করুন</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6547208576736763147">বাঁদিকে ডুয়াল পাঞ্চ</translation>
-<translation id="6554795675067793129">আপনার অ্যাকাউন্ট <ph name="ENROLLMENT_DOMAIN" /> ম্যানেজ করে।</translation>
 <translation id="6556866813142980365">আবার করুন</translation>
 <translation id="6569060085658103619">আপনি একটি এক্সটেনশন পৃষ্ঠা দেখছেন</translation>
 <translation id="6573200754375280815">ডানদিকে ডুয়াল পাঞ্চ</translation>
@@ -1919,6 +1914,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8625384913736129811">এই ডিভাইসে এই কার্ডটি সেভ করুন</translation>
+<translation id="8627040765059109009">স্ক্রিন ক্যাপচার আবার চালু করা হয়েছে</translation>
 <translation id="8657078576661269990">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME_1" /> ও <ph name="VM_NAME_2" />-এ শেয়ার করা ব্লক করে দিয়েছেন</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
 <translation id="867224526087042813">স্বাক্ষর</translation>

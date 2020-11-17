@@ -11,7 +11,6 @@
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
 <translation id="1478594628797167447">स्क्यानर</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ले यो यन्त्रको व्यवस्थापन गर्ने छ र तपाईंको क्रियाकलाप निरीक्षण गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -59,9 +58,7 @@
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />ले यस यन्त्रको व्यवस्थापन गर्छ र भ्रमण गरिएका वेब पृष्ठ, पासवर्ड र इमेललगायत प्रयोगकर्ताका सबै क्रियाकलापमाथि यसको पहुँच छ।</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
-<translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
 <translation id="4034824040120875894">प्रिन्टर</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
@@ -89,7 +86,6 @@
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4932733599132424254">मिति</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ले यो यन्त्रको व्यवस्थापन गर्छ र यसले दूरवर्ती रूपमा सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="520299634122159966">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="5212543919916444558">मैले तपाईंको स्क्रिनमा आफूले मद्दत गर्न मिल्ने कुनै पनि कुरा फेला पार्न सकिन। मलाई केही कुरा सोध्न माइकमा ट्याप गरी हेर्नुहोस्।</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>

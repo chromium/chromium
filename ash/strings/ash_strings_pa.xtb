@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਰੱਖਣ ਲਈ ਤਸਦੀਕ ਕਰੋ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1919743966458266018">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹਣ ਲਈ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ <ph name="OLD_SHORTCUT" /> ਦੀ ਥਾਂ <ph name="NEW_SHORTCUT" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1923539912171292317">ਆਟੋਮੈਟਿਕ ਕਲਿਕ</translation>
-<translation id="1924640696879807758">ਫ਼ੋਨ ਤੋਂ</translation>
 <translation id="1928739107511554905">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਟੱਚਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1951012854035635156">ਸਹਾਇਕ</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> <ph name="DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਸੈਸ਼ਨ ਹੈ</translation>
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2429753432712299108">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
 <translation id="4114315158543974537">ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4121728057981832179">ਆਭਾਸੀ ਮਸ਼ੀਨ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
+<translation id="4126167871198063089">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="4129129681837227511">ਆਪਣੀ ਲਾਕ ਸਕ੍ਰੀਨ 'ਤੇ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ, ਅਣਲਾਕ ਕਰਕੇ ਸੈਟਿੰਗ ਬਦਲੋ</translation>
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
-<translation id="4149156641122542261"><ph name="DOMAIN" /> ਡੋਮੇਨ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="415719264485676252">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4157822100366708405">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4570957409596482333">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਬਟਨ</translation>
 <translation id="4577274620589681794">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4623167406982293031">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ਘੰ <ph name="MINUTES" />ਮਿੰ <ph name="SECONDS" />ਸਕਿੰ</translation>
 <translation id="4975771730019223894">ਐਪ ਬੈਜਿੰਗ</translation>
+<translation id="5003993274120026347">ਅਗਲਾ ਵਾਕ</translation>
 <translation id="5019169674188023236">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 'ਤੇ ਤੁਹਾਡਾ ਬਲੂਟੁੱਥ ਜਾਂ ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ। ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਵਰਤਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="5030687792513154421">ਸਮਾਂ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ਨੂੰ ਨਵੇਂ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5035389544768382859">ਡਿਸਪਲੇ ਸੰਰੂਪਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
+<translation id="504465286040788597">ਪਿਛਲਾ ਪੈਰਾ</translation>
 <translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5083553833479578423">'ਸਹਾਇਕ' ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="556042886152191864">ਬਟਨ</translation>
 <translation id="5571066253365925590">ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ</translation>
+<translation id="557563299383177668">ਅਗਲਾ ਪੈਰਾ</translation>
 <translation id="558849140439112033">ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Alt + Z ਦਬਾਓ।</translation>
@@ -613,7 +615,6 @@
 <translation id="6910714959251846841">ਇਸ ਅੱਪਡੇਟ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
-<translation id="6953890208095195458">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਉਤਲੀ ਸਮੱਗਰੀ ਦੇ ਕਾਰਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
@@ -667,7 +668,6 @@
 <translation id="7509246181739783082">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">ਸਕ੍ਰੀਨ ‘ਤੇ ਮੌਜੂਦ ਸਮੱਗਰੀ ਦਾ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਲੈਣ ਦੀ ਸਮਰੱਥਾ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="7548434653388805669">ਸੌਣ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
 <translation id="7561982940498449837">ਮੀਨੂ ਬੰਦ ਕਰੋ</translation>
@@ -726,6 +726,7 @@
 <translation id="8029247720646289474">ਹੌਟਸਪੌਟ ਕਨੈਕਸ਼ਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8029629653277878342">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8030169304546394654">ਡਿਸਕਨੈਕਟ ਕੀਤਾ</translation>
+<translation id="8036504271468642248">ਪਿਛਲਾ ਵਾਕ</translation>
 <translation id="8042893070933512245">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8048123526339889627">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8054466585765276473">ਬੈਟਰੀ ਸਮੇਂ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ।</translation>
@@ -864,6 +865,7 @@
 <translation id="921989828232331238">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਅੱਜ ਦੇ ਦਿਨ ਲਈ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="9220525904950070496">ਖਾਤਾ ਹਟਾਓ</translation>
 <translation id="923686485342484400">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Control Shift Q ਦਬਾਓ।</translation>
+<translation id="925832987464884575">ਪੂਰਵ-ਝਲਕਾਂ ਲੁਕਾਓ</translation>
 <translation id="938963181863597773">ਮੇਰੇ ਕੈਲੰਡਰ 'ਤੇ ਕੀ ਹੈ?</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="98515147261107953">ਲੈਂਡਸਕੇਪ</translation>

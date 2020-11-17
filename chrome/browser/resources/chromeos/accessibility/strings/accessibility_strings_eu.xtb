@@ -24,8 +24,10 @@
 <translation id="1126928665165112660">Ez du formatu etzanik</translation>
 <translation id="113582498867142724"><ph name="NUM" /> elementu dituen <ph name="TAG" /> bilduma</translation>
 <translation id="1161762950103988776">Saltatu</translation>
+<translation id="1164857107703583584">Web-orri batean nabigatzeko erabil daitezke toki batetik bestera joateko aginduak.</translation>
 <translation id="1175914831232945926">Digituak</translation>
 <translation id="1188858454923323853">osagarria</translation>
+<translation id="1189258430971676908">Praktikatzeko eremua: goitibeherako zerrendak</translation>
 <translation id="1195238899008218998">Hitzatzea</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
@@ -68,11 +70,13 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">Berde argia</translation>
+<translation id="1411043317877497323">Praktikatzeko eremua</translation>
 <translation id="141454040365657399">Orri-goiburua</translation>
 <translation id="1417889266572670458">Itsas urdina</translation>
 <translation id="1431911867058218151">Aran-kolorekoa</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">Objektu grafikoa</translation>
+<translation id="1465097259579587977">Berrabiarazi Laguntza bizkorra ikasgaia</translation>
 <translation id="1480046233931937785">Kredituak</translation>
 <translation id="1487494366197411587">Chromebook-etan, Bilaketa tekla ezkerraldeko Maius teklaren gainean dago.</translation>
 <translation id="1498498210836053409">Desaktibatu modu itsaskorra testua editatzean (modu itsaskor adimenduna)</translation>
@@ -83,6 +87,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1524531499102321782">Idatzi braillez hurrengo lerroa</translation>
 <translation id="1542513807034338907">Joan aurreko orrira</translation>
 <translation id="1546370775711804143">Korritze-barra</translation>
+<translation id="1551572888042734032">Uda</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1559739829547075274">Egin atzera</translation>
 <translation id="1565432156062359693">Ez dago beste zerrendarik honen ondoren</translation>
@@ -110,6 +115,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1714116687360794776">Metroa</translation>
 <translation id="1722567105086139392">Esteka</translation>
 <translation id="1727806147743597030">ftr</translation>
+<translation id="1730447754326314349">Ongi etorri ChromeVox-en tutorialera. Edozein unetan tutorialetik irteteko, sakatu teklatuaren goiko ezkerreko izkinan dagoen Ihes tekla. ChromeVox desaktibatzeko, eduki sakatuta Ktrl + Alt eta, gero, sakatu Z. Prest zaudenean, sakatu zuriune-barra hurrengo ikasgaira joateko.</translation>
 <translation id="174268867904053074">Hurrengo grafikoa</translation>
 <translation id="1756785467854861272">Magenta iluna</translation>
 <translation id="1765245556747822181">Pasatu hatz bat gorantz</translation>
@@ -154,9 +160,11 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2121067395472282800">Sarbide-tekla:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Elementu honek ez du testurik</translation>
 <translation id="2127747486437921899">Etzana</translation>
+<translation id="2152179395627233441">Itxi praktikatzeko eremua</translation>
 <translation id="2163782704988363449">Akatsa</translation>
 <translation id="2169714232367507776">Egin klik uneko elementuan</translation>
 <translation id="2179452035581866348">ChromeVox-ek soinuak erabiltzen ditu informazioa eskaintzeko (bai oinarrizkoa, bai gehigarria). Soinu bakoitzak zer esan nahi duen ikasten baduzu, bizkorrago nabigatzeko gida gisa balioko dizute. Ohitzen zaren heinean, audio-azalpenak desaktibatu ahal izango dituzu, eta orriko informazio oinarrizkoenaren berri ematen duten soinuak bakarrik utzi. Hemen duzu soinu guztien eta haien esanahien zerrenda.</translation>
+<translation id="2183409941723714159">Fitxen artean nabigatzeko aukera</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{eskuin-parentesia}other{# eskuin-parentesi}}</translation>
 <translation id="2197863150503783129">Marroi iluna</translation>
 <translation id="2199994615414171367">Aurreko adierazpen matematikoa</translation>
@@ -176,6 +184,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2318372665160196757">Nagusia</translation>
 <translation id="2329324941084714723">Fitxen panela</translation>
 <translation id="2347456970887948350">Esteka bat</translation>
+<translation id="2365384324219615024">Elementuak aktibatzeko ere saka dezakezu Sartu tekla. Esate baterako, inprimaki bateko testua bidaltzeko erabil daiteke. Aurrera egiteko, saka ezazu.</translation>
 <translation id="2381733276052567791">Aktibatu edo desaktibatu hizketa</translation>
 <translation id="2390264819538553347">Aurrera egiteko, sakatu Sartu; atzera egiteko, berriz, sakatu zuriune-barra.</translation>
 <translation id="2398579267367951220">Idatzi orrian bilatu nahi duzuna. Sakatu Sartu tekla emaitza saltatzeko, Gora edo Behera geziak emaitzak arakatzeko, jarraitu idazten bilaketa aldatzeko edo sakatu Ihes tekla uzteko.</translation>
@@ -199,6 +208,8 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2523609930580546572">ChromeVox tutoriala</translation>
 <translation id="2525706221823668172">Chromebook-eko lasterbideak</translation>
 <translation id="2553108862507765288">gramatika-akatsa</translation>
+<translation id="2556326187583116255">Sakatu bi hatzekin uneko hizketa gelditzeko</translation>
+<translation id="2573256689920773241">Oinarrizko nabigazioa</translation>
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2582407057977008361">Aside</translation>
 <translation id="2592212930811759050">Sakatu birritan idazten hasteko</translation>
@@ -210,6 +221,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2638785836053527382">Berrekin zaio <ph name="FILE_NAME" /> deskargatzeari</translation>
 <translation id="2639750663247012216">ChromeVox aldatzailea</translation>
 <translation id="2644542693584024604">gaizki idatzia</translation>
+<translation id="2651441758640020174">Zerrendan, hautatu gogoko duzun urte-sasoia.</translation>
 <translation id="2654172656519784359">Aurreratu hitz bat</translation>
 <translation id="2661530546602071611">Oharra</translation>
 <translation id="2673280813984708147">hau editatzen ari da:</translation>
@@ -235,6 +247,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2808001342598757276">Argitu pantaila</translation>
 <translation id="2811019999044652585">Pantailaren beste toki batzuetara joateko (adibidez, tresna-barrak eta sistema-erretilua), sakatu Kontrol + Aurrera. Chromebook-etan, Aurrera tekla 2 zenbakiaren teklaren gainean dago.</translation>
 <translation id="2811204574343810641">Errenkada</translation>
+<translation id="2816868829355607410">Praktikatzeko eremua: toki batetik bestera joateko aginduak</translation>
 <translation id="2841013758207633010">Ordua</translation>
 <translation id="2843432675592278677">Ez dago beste ARIA mugarririk honen aurretik</translation>
 <translation id="2843814945404750166">Oliba-berde iluna</translation>
@@ -270,6 +283,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menua ireki da</translation>
 <translation id="3060880924447482063">Pasatu hatza ezkerrera edo eskuinera elementu batetik bestera joateko</translation>
 <translation id="3070245424257836917">Pasatu hiru hatz gorantz</translation>
+<translation id="307516670110542567">Laguntza bizkorra</translation>
 <translation id="3078345202707391975">2. mailako hurrengo goiburua</translation>
 <translation id="3078740164268491126">taula</translation>
 <translation id="3082249673510793544">Egin atzera</translation>
@@ -298,6 +312,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{zuriunea}other{# zuriune}}</translation>
 <translation id="3179119189286472195">Ez du estekarik</translation>
 <translation id="320041337977930740">Ezarri bistaratze-estilo tartekatua</translation>
+<translation id="3206698050650195442">Irten tutorialetik</translation>
 <translation id="3208346789712025453">Ez dago kontrolatzeko beste aukerarik honen ondoren</translation>
 <translation id="321072937702597574">Orkidea-kolorekoa</translation>
 <translation id="3218691001991391708">itsatsi <ph name="TEXT" />.</translation>
@@ -326,6 +341,8 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="335581015389089642">Hizketa</translation>
 <translation id="3356951775008366684">Iragarri hitzen ahoskera fonetikoa</translation>
 <translation id="3359142382821736686">seprtr</translation>
+<translation id="3363015957057974366">Pantailako hurrengo elementu interaktibora joateko ere erabil dezakezu tabuladorea. Bilaketa-teklaren gainean aurkituko duzu. Aurrera egiteko, saka ezazu.</translation>
+<translation id="3366946046494222386">Tutoriala (<ph name="TOPIC" />), <ph name="LESSONS" /> ikasgai</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{plus ikurra}other{# plus ikur}}</translation>
 <translation id="338583716107319301">Bereizlea</translation>
 <translation id="3389259863310851658">Aurreko inprimaki-eremua</translation>
@@ -333,6 +350,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3406283310380167331">Erakutsi inprimakien zerrenda</translation>
 <translation id="3414400929511680526">Aliziaren soinekoko urdina</translation>
 <translation id="3418936350470374046">Ez dago beste gelaxkarik behean</translation>
+<translation id="3435494200763325275">Fitxen artean nabigatzeko aukera (jarraipena)</translation>
 <translation id="344800400831402066">Peru kolorekoa</translation>
 <translation id="3457000393508828486">Partzialki sakatuta</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, desaktibatu</translation>
@@ -348,6 +366,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">ebaki <ph name="TEXT" />.</translation>
 <translation id="3564729643041517261">Alboz alboko bistaratze-estiloa dago ezarrita</translation>
+<translation id="3570904478351465021">Negua</translation>
 <translation id="3573145950452451508">Orri-oina</translation>
 <translation id="3587482841069643663">Guztiak</translation>
 <translation id="3589661172894441357">Glosarioa</translation>
@@ -355,12 +374,15 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3594207934078151302">Bizitasun ertaineko itsaso-berdea</translation>
 <translation id="3599054940393788245">Ez dago matematika-funtzioan</translation>
 <translation id="360241989769010433">Esker-emateak</translation>
+<translation id="3616016838842055984">Klik egin nahi duzun elementu batera iristen bazara, sakatu bilaketa-tekla + zuriune-barra. Aurrera egiteko, saka ezazu.</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3622350485154495700">Sakatu birritan hatz batekin</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{azentu kamutsa}other{# azentu kamuts}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar ikur}other{# dolar ikur}}</translation>
 <translation id="3659787053479271466">alerta</translation>
+<translation id="366419593095697301">Aholkua: sakatu Ihes tekla tutorialetik irten nahi baduzu.</translation>
+<translation id="3676062394766691318">Gailua konfiguratzen duzunean, hona itzul zaitezke tutorial gehiago ikusteko. Horretarako, sakatu bilaketa-tekla + O eta, gero, T.</translation>
 <translation id="3681531118904532409">Papaia-kolorekoa</translation>
 <translation id="3692274950075847560">B:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Marratua</translation>
@@ -382,6 +404,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3856075812838139784">Irakurtzeko soilik</translation>
 <translation id="3857141338659865495">Bizitasun ertaineko turkesa</translation>
 <translation id="3870295413168340326">Ez dago hirugarren mailako beste goibururik honen aurretik</translation>
+<translation id="3887399638190992181">Ezinbesteko teklak</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">Menua</translation>
 <translation id="3907138069015388678">lstgrd</translation>
@@ -401,6 +424,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4004802134384979325">hautatuta</translation>
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Egin behera</translation>
+<translation id="4035381225449278841">Udaberria</translation>
 <translation id="4047216625641135770">Mark</translation>
 <translation id="4053520724192563562">Lima-berdea</translation>
 <translation id="4054936709456751127">sts</translation>
@@ -506,6 +530,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4846428657345567687">Ongi etorri ChromeVox-era!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Ez dago beste multimedia-widgetik honen aurretik</translation>
+<translation id="4855927945655956315">Ezinbesteko teklak: Ktrl</translation>
 <translation id="4862744964787595316">Ez du formatu lodirik</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Gaitu testua ahots bihurtzeko eginbidearen erregistroa</translation>
@@ -521,6 +546,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4973717656530883744"><ph name="X" /> gutxienez</translation>
 <translation id="4974612477719259470">Ez dago beste botoirik honen aurretik</translation>
 <translation id="4979404613699303341">Aurreko botoia</translation>
+<translation id="4982917827052020884">Has gaitezen erregularki erabiltzen dituzun tekla batzuekin. Ktrl tekla uneko edozein hizketa gelditzeko erabil daiteke. Teklatuaren beheko ezkerreko izkinan aurki dezakezu. Aurrera egiteko, saka ezazu.</translation>
 <translation id="4983588134362688868">Joan orriaren goialdera</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, leihoa</translation>
 <translation id="4993152509206108683">Hizketaren abiadura: ehuneko <ph name="PERCENT" /></translation>
@@ -532,6 +558,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5041394372352067729">Eraman braille-pantaila orriaren goiko aldera</translation>
 <translation id="5042770794184672516">Handitu hizketaren bolumena</translation>
 <translation id="5042992464904238023">Sareko edukia</translation>
+<translation id="5045870649377683106">Ktrl teklaren gainean aurkituko duzu Maius tekla. Aurrera egiteko, saka ezazu.</translation>
 <translation id="5050015258024679800">Aurreko 2. mailako goiburua</translation>
 <translation id="5054047268577924192">Zerrendako aurreko elementua</translation>
 <translation id="5085453135206054947">Bioleta-gorri oso argia</translation>
@@ -542,9 +569,11 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5111640677200759579">Zerrenda-goiburua</translation>
 <translation id="5115892389597951922">ChromeVox erregistroa</translation>
 <translation id="5119330972669454698">Egur-kolorekoa</translation>
+<translation id="5130133513489020984">Aurreko ikasgaia</translation>
 <translation id="513774504516943387">lnk</translation>
 <translation id="5138912041966667164">Bizitasun ertaineko arbel-urdina</translation>
 <translation id="5140016802771803559">More bizia</translation>
+<translation id="5142101052131610456">Ikasgai guztiak</translation>
 <translation id="5158275234811857234">Azala</translation>
 <translation id="5170206230005240598">Braille-oinak gaituta daude</translation>
 <translation id="5183440668879371625">Adierazi aurreko linea braillez</translation>
@@ -553,6 +582,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Amaitu</translation>
 <translation id="5302089807023311274">Bibliografia-erreferentzia</translation>
+<translation id="530391007967514163">Joan goiburu batetik bestera jarraian dagoen testuen artean nabigatzeko.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" /> fitxa</translation>
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5310788376443009632">kendu dena:</translation>
@@ -583,10 +613,12 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5452267669091857717">Ez dago lehenengo mailako beste goibururik honen ondoren</translation>
 <translation id="5455441614648621694">Osagarria</translation>
 <translation id="5462510922370980473">Orrien zerrenda</translation>
+<translation id="5495517933067991341">Ezinbesteko teklak: Maius</translation>
 <translation id="549602578321198708">Hitzez hitzekoa</translation>
 <translation id="5513242761114685513">Laster-menua</translation>
 <translation id="551361796444814639">Bizitasun ertaineko urdina</translation>
 <translation id="552195134157544755">Irrati-botoia</translation>
+<translation id="5522423213731659107">Amaitu duzu Laguntza bizkorra ikasgaia</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gris urdinxka argia</translation>
 <translation id="5549179427201066174">Aktibatu edo desaktibatu soinu bidezko erantzunak (soinu adierazgarriak)</translation>
@@ -600,6 +632,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5598905979683743333"><ph name="NAME" /> irrati-botoia desautatu da</translation>
 <translation id="5601172225407283979">Gauzatu ekintza lehenetsia</translation>
 <translation id="5608798115546226984">Osatze automatiko txertatua</translation>
+<translation id="5616029807486814372">Hurrengo ikasgaia</translation>
 <translation id="561939826962581046">ordua</translation>
 <translation id="5623778242535476823">rbtn</translation>
 <translation id="5623842676595125836">Erregistroa</translation>
@@ -608,6 +641,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5653397561111110475">Erabili Chromebook ukipen-pantailako erabilerraztasun-eginbideak</translation>
 <translation id="5655682562155942719">Saltatzeko aginduak</translation>
 <translation id="56637627897541303">Testu-eremua</translation>
+<translation id="5669637233317991674">Ikasgai honetan nabigatzeko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla edo bilaketa-tekla + ezkerrera egiteko gezi-tekla</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Mugarria</translation>
@@ -631,9 +665,11 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5850707923114094062">Atzerako panoramikoa</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
 <translation id="5866042630553435010">Partzialki egiaztatuta</translation>
+<translation id="5866210856231860256">Gai honi buruzko ikasgaiak arakatzeko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla edo bilaketa-tekla + ezkerrera egiteko gezi-tekla</translation>
 <translation id="5867591286054666064">Tutorial honetan, sakatu edozein tekla haren izena entzuteko.</translation>
 <translation id="5869546221129391014">Sareta</translation>
 <translation id="5876817486144482042">Jaitsi hizketaren bolumena</translation>
+<translation id="5878206664863390311">Gaiak arakatzeko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla edo bilaketa-tekla + ezkerrera egiteko gezi-tekla.</translation>
 <translation id="5878908838135392163">Hauts-urdina</translation>
 <translation id="588108970619830498">Berrezarri testua ahots bihurtzeko eginbidearen ezarpenen balio lehenetsiak</translation>
 <translation id="5891934789323004067">Taula</translation>
@@ -680,6 +716,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6254901459154107917">Testu editagarria duen hurrengo eremua</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> edukitzailetik irten zara.</translation>
 <translation id="6282062888058716985">nabigazioa</translation>
+<translation id="6295699829709583154">Ezinbesteko teklak: bilaketa-tekla</translation>
 <translation id="6305702903308659374">Erreproduzitu bolumen normalean ChromeVox hitz egiten ari bada ere</translation>
 <translation id="6307969636681130414">Sakatuta</translation>
 <translation id="6315652249189065725">Ireki lasterbideen menua</translation>
@@ -698,6 +735,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6385591741672306837">zut</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Desgaitu gertaeren iragazki guztiak</translation>
+<translation id="6411569524720229058">Udazkena</translation>
 <translation id="6417265370957905582">Google-ren Laguntzailea</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{bi puntu}other{# bi puntu}}</translation>
 <translation id="6444046323172968959">Alerta-leihoa</translation>
@@ -733,6 +771,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6730312624811567147">Erabili Bilaketa tekla eta Ezkerrera gezia Hasiera teklaren baliokide gisa; erabili Bilaketa tekla eta Eskuinera gezia Amaiera teklaren baliokide gisa; erabili Bilaketa eta Kontrol teklak eta Ezkerrera gezia Kontrol eta Hasiera teklak batera sakatzearen baliokide gisa; erabili Bilaketa, Kontrol eta Eskuinera gezia Kontrol eta Amaiera teklak batera sakatzearen baliokide gisa; erabili Bilaketa tekla eta Gora gezia orrian gora egiteko, eta erabili Bilaketa tekla eta Behera gezia orrian behera egiteko</translation>
 <translation id="6736510033526053669">fitxa sortu da</translation>
 <translation id="675895815784134693">pgbar</translation>
+<translation id="6759710362319508545">Baliabideak</translation>
 <translation id="67862343314499040">Bioleta</translation>
 <translation id="6786800275320335305">Artikulua</translation>
 <translation id="6793101435925451627">lstbx</translation>
@@ -744,6 +783,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6858047746862060282">Hitzaurrea</translation>
 <translation id="6859876496651143278">Pasatu hatz bat ezkerrerantz</translation>
 <translation id="6865519907510167493">Ortografia-akatsa</translation>
+<translation id="6873188295213080042">Aholkua: eduki sakatuta bilaketa-tekla eta sakatu gezi-teklak nabigatzeko.</translation>
 <translation id="6894148351896207544">Esan uneko ordua eta data</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6897341342232909480">Ezkerretara</translation>
@@ -809,14 +849,17 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7308519659008003150">Ez dago beste inprimaki-eremurik honen aurretik</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">partzialki hautatuta</translation>
+<translation id="7344012264516629579">Lotura, botoi eta koadro bidezko jauziak dira, besteak beste, toki batetik bestera joateko beste agindu batzuk. ChromeVox-eko menuetan aurki daiteke toki batetik bestera joateko aginduen zerrenda osoa; bilaketa-tekla + puntuaren tekla sakatuta ireki daitezke menuok.</translation>
 <translation id="7356165926712028380">Aldatu 8 puntuko braillera</translation>
 <translation id="7356610683936413584">Azalpenen zerrendaren xehetasunak</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et ikur}other{# et ikur}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Arbel-urdina</translation>
+<translation id="7393979322571982935">Soinuak eta ezarpenak</translation>
 <translation id="739763518212184081">Aurreko lerroa</translation>
 <translation id="7400575256015741911">Ortografia-akatsa hauteman da</translation>
 <translation id="7408482676469142474">table</translation>
+<translation id="7419264136822406994">Aurreko elementu interaktibora itzultzeko erabil dezakezu Maius + tabuladorea. Aurrera egiteko, saka ezazu.</translation>
 <translation id="7425395583360211003">itzuli</translation>
 <translation id="7429415133937917139">Etengabe freskatzen den braille-pantaila baten idazketa simulatzen du pantailaren goialdeko ChromeVox-en panelean</translation>
 <translation id="7434509671034404296">Garatzailea</translation>
@@ -843,6 +886,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="762020119231868829">Unean erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
 <translation id="7625690649919402823">Hurrengo taula</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
+<translation id="7637342083105831460">Praktikatzeko eremua aurkitzeko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla edo "Hurrengo ikasgaia" botoia. Gero, aktibatu bilaketa-tekla + zuriune-barra praktikatzeko eremua aktibatzeko.</translation>
 <translation id="7639968568612851608">Gris iluna</translation>
 <translation id="7663318257180412551">2. goiburua</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{ordu}other{ordu}}</translation>
@@ -882,6 +926,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{a bildua}other{# a bildu}}</translation>
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7948364528129376623">Ez dago bisitatutako beste estekarik honen ondoren</translation>
+<translation id="7952460583030260752">Aginduen erreferentziak</translation>
 <translation id="7965147473449754028">itxi da menua</translation>
 <translation id="7968340748835037139">Berde iluna</translation>
 <translation id="7972507042926081808">Txokolate-kolorekoa</translation>
@@ -911,6 +956,8 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="812886159861361726">Utzi zaio <ph name="FILE_NAME" /> deskargatzeari</translation>
 <translation id="8129445297241948503">Ez dago beste gelaxkarik goian</translation>
 <translation id="8138880386467279117">Ukipena</translation>
+<translation id="8146613869421949343">Jarraian, bilaketa-teklari buruzko azalpenak emango dizkizugu. Bilaketa-tekla beste tekla batzuekin batera erabiltzen da aginduak sortzeko ChromeVox-en. Ezkerraldeko Maius teklaren gainean aurkituko duzu. Aurrera egiteko, saka ezazu.</translation>
+<translation id="816818801578874684">Lehenengo goiburua da hau. Sakatu bilaketa-tekla + H hurrengo goiburura joateko.</translation>
 <translation id="8173092779156526980">Pasatu lau hatz ezkerrerantz</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{azpimarra}other{# azpimarra}}</translation>
 <translation id="8179976553408161302">Sartu</translation>
@@ -951,6 +998,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8473540203671727883">Irakurri ozen saguaren kurtsorearen azpiko testua</translation>
 <translation id="8476408756881832830">Pausatu erreprodukzioa ChromeVox hitz egiten ari bada</translation>
 <translation id="8476508772960940536">leihoen ikuspegi orokorra</translation>
+<translation id="8480873377842220259">Nabigazioaren hastapenak ikastera zoaz. Pantailatik mugitzeko, eduki sakatuta bilaketa-tekla eta sakatu gezi-teklak. Aurrera egiteko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="8503360654911991865">Gutxitu nabigazio-pikortsutasuna</translation>
 <translation id="8520472399088452386">Biratze-botoia</translation>
 <translation id="8534394844575788431">Formatua</translation>
@@ -965,6 +1013,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8603071050456974042">ChromeVox panela</translation>
 <translation id="8606621670302093223">Dataren kontrola</translation>
 <translation id="8613709718990529335">Itsaski-kremaren kolorekoa</translation>
+<translation id="8614129468475308349">Bikain! ChromeVox-en hastapenak ikasi dituzu. Tutoriala berriro irakur dezakezu, edo bertatik irten beheko botoia sakatuta.</translation>
 <translation id="8625173877182443267">Ez dago seigarren mailako beste goibururik honen ondoren</translation>
 <translation id="8628186274519446680">Tomate-kolorekoa</translation>
 <translation id="8638532244051952400">Adierazi uneko gelaxkaren koordenatuak</translation>
@@ -972,15 +1021,19 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8651481478098336970">desaktibatu bolumena</translation>
 <translation id="8653646212587894517">Erakutsi esteken zerrenda</translation>
 <translation id="8656888282555543604">Gaitu braille-teklatua erregistratzeko aukera</translation>
+<translation id="8659501358298941449">Goitibeherako zerrendak</translation>
 <translation id="867187640362843212">5. goiburua</translation>
+<translation id="8693391540059827073">Gogoko dudan urte-sasoia</translation>
 <translation id="8696284982970258155">Ezti-ihintzaren kolorekoa</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barra bertikal}}</translation>
+<translation id="8741370088760768424">Aholkua: sakatu bilaketa-tekla eta zuriune-barra uneko elementua aktibatzeko.</translation>
 <translation id="8743786158317878347">sartu egituratutako edukian, adibidez, tauletan</translation>
 <translation id="8747966237988593539">Zerrenda ordenatua</translation>
 <translation id="8749988712346667988">Zilar-kolorekoa</translation>
 <translation id="875769700429317857">Deskargatu da <ph name="FILE_NAME" /></translation>
 <translation id="8767968232364267681">Hurrengo 4. mailaren goiburua</translation>
 <translation id="8770473310765924354">irten egituradun edukitik, adibidez, tauletatik</translation>
+<translation id="8775203254697638994">Zenbaitetan, goitibeherako zerrendako aukera bat hautatu beharko duzu. Horretarako, zabaldu zerrenda bilaketa-tekla + zuriune-barra sakatuta. Gero, erabili gora eta behera egiteko gezi-teklak aukera bat hautatzeko. Amaitzeko, tolestu zerrenda bilaketa-tekla + zuriune-barra sakatuta.</translation>
 <translation id="8779057862865475116">Ez dago beste estekarik honen aurretik</translation>
 <translation id="8796411681063377102">3. mailako hurrengo goiburua</translation>
 <translation id="8823311177246872527"><ph name="CURRENTPAGE" />/<ph name="TOTALPAGES" /> orria</translation>
@@ -1002,6 +1055,8 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="89720367119469899">Ihes-tekla</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Ahaztu</translation>
+<translation id="8989104346085848538">ChromeVox-eko uneko edozein hizketa gelditzeko, sakatu Ktrl tekla.</translation>
+<translation id="9014206344398081366">ChromeVox-en tutoriala</translation>
 <translation id="9040132695316389094">1. goiburua</translation>
 <translation id="9061884144798498064">Hautatu zortzi puntuko braille-taula:</translation>
 <translation id="9065283790526219006">+leiho gainerakorra</translation>

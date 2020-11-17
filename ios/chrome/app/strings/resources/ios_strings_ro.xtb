@@ -342,7 +342,6 @@ Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru 
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4747097190499141774">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay. Numai un utilizator care are expresia de acces poate citi datele tale criptate. Google nu primește și nu stochează expresia ta de acces. Dacă uiți expresia de acces sau vrei să modifici această setare, va trebui să resetezi sincronizarea. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Filă incognito nouă</translation>
-<translation id="4758977202923349869">Poziționează cardul de credit în acest cadru</translation>
 <translation id="4775879719735953715">Browser prestabilit</translation>
 <translation id="4778644898150334464">Folosește altă parolă</translation>
 <translation id="4802417911091824046">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.
@@ -604,12 +603,12 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7454057999980797137">Stat/Județ</translation>
 <translation id="7456847797759667638">Deschide o locație...</translation>
-<translation id="7460314822154045102">Folosește camera foto</translation>
 <translation id="7464701184726199289">Astfel, datele sincronizate vor fi șterse de pe toate dispozitivele. Setările salvate pentru site-uri nu vor fi șterse și pot reflecta obiceiurile de navigare. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. selectează Chrome.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>
+<translation id="7483467499335917849">Folosește locația actuală</translation>
 <translation id="750493650310597496">Niciunul selectat</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7537586195939242955">Momentan, parola nu poate fi instalată în Agenda de parole.</translation>

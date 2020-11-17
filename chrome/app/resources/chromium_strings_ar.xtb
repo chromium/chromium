@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">‏السؤال عند فتح متصفِّح Chromium</translation>
 <translation id="1396446129537741364">‏يحاول Chromium إظهار كلمات المرور.</translation>
 <translation id="1414495520565016063">‏تم تسجيل دخولك إلى Chromium!</translation>
+<translation id="1414973082589232775">‏يجب إعادة تشغيل متصفِّح Chromium لاستخدام برنامج Rosetta والسماح له بتشغيل الوسائط المحمية</translation>
 <translation id="151962892725702025">‏تعذر على نظام التشغيل Chromium مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="1524282610922162960">‏مشاركة علامة تبويب Chromium</translation>
 <translation id="1553461853655228091">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">‏يتطلب Chromium نظام التشغيل Windows 7 أو إصدارًا أحدث.</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
 <translation id="5698481217667032250">‏عرض Chromium بهذه اللغة</translation>
+<translation id="5736967399513123100">‏للسماح لمتصفِّح Chromium بتشغيل الوسائط المحمية، يجب تثبيت برنامج Rosetta. هل تريد تنزيل البرنامج الآن؟</translation>
 <translation id="5820394555380036790">‏نظام التشغيل Chromium</translation>
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -175,6 +177,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (تم النسخ إلى Chromium)</translation>
 <translation id="6893813176749746474">‏تم تحديث متصفح Chromium، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>
+<translation id="6897548120660295439">‏يسمح برنامج Rosetta لمتصفِّح Chromium بتشغيل الوسائط المحمية في هذه الصفحة.</translation>
 <translation id="6964305034639999644">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
 <translation id="6978145336957848883">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chromium <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏يحتاج Chromium إلى إذن للوصول إلى الميكروفون من أجل الموقع الإلكتروني هذا.</translation>

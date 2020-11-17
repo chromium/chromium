@@ -306,6 +306,7 @@
 <translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
+<translation id="2111166930115883695">کھیلنے کے لیے اسپیس دبائیں</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">کارڈ</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> کی جانب سے اسے اوور رائڈ کیے جانے کی وجہ سے نظر انداز کر دیا گیا۔</translation>
@@ -490,7 +491,6 @@
 <translation id="2903493209154104877">پتے</translation>
 <translation id="290376772003165898">صفحہ <ph name="LANGUAGE" /> میں نہیں ہے؟</translation>
 <translation id="2909946352844186028">نیٹ ورک میں ایک تبدیلی کا پتہ چلا۔</translation>
-<translation id="2910133103376701357">آپ کا آلہ اور اکاؤنٹ <ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہیں۔</translation>
 <translation id="2911973620368911614">‏جاب اکاؤنٹنگ صارف ID</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> سے ناکامی</translation>
 <translation id="2916038427272391327">دیگر پروگرامز بند کریں</translation>
@@ -524,6 +524,7 @@
 <translation id="3010559122411665027">فہرست کا اندراج "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
 <translation id="3016780570757425217">اپنا مقام جانیں</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />، تجویز ہٹانے کے لیے ٹیب، پھر اینٹر دبائیں۔</translation>
 <translation id="3023071826883856138">You4 ‎(Envelope‎)‎</translation>
 <translation id="3024663005179499861">پالیسی کی غلط قسم</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
@@ -763,10 +764,10 @@
     اس سے کی جانے والی سبھی درخواستوں پر کیا جائے، لیکن فی الحال اس پالیسی کو لاگو نہیں کیا جا سکتا۔</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏{COUNT} صفحہ پر مشتمل PDF دستاویز}other{‏{COUNT} صفحات پر مشتمل PDF دستاویز}}</translation>
 <translation id="4030383055268325496">شامل کریں کو &amp;کالعدم کریں</translation>
-<translation id="4032320456957708163">آپ کا براؤزر <ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4058922952496707368">کلید "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 ‎(Envelope‎)‎</translation>
+<translation id="4067669230157909013">اسکرین کیپچر دوبارہ شروع کر دیا گیا۔</translation>
 <translation id="4067947977115446013">درست پتہ شامل کریں</translation>
 <translation id="4072486802667267160">آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آگئی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4075732493274867456">‏کلائنٹ اور سرور عام SSL پروٹوکول ورژن یا سائفر سوئٹ کا تعاون نہیں کرتے ہیں۔</translation>
@@ -846,11 +847,11 @@
 <translation id="4270541775497538019">اسٹیکر 6</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277028893293644418">پاس ورڈ ری سیٹ کریں</translation>
-<translation id="4279811152705618813">آپ کا <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏اس کارڈ کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}other{‏ان کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> صفحہ کا تھمب نیل</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4300675098767811073">دائیں طرف متعدد سوراخ</translation>
+<translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
 <translation id="4302965934281694568">Chou3 ‎(Envelope‎)‎</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
 <translation id="4305817255990598646">سوئچ کریں</translation>
@@ -966,7 +967,6 @@
 <translation id="4771973620359291008">ایک نامعلوم خرابی پیش آگئی ہے۔</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{پاپ اپ مسدود کر دیا گیا}other{# پاپ اپس مسدود کر دیے گئے}}</translation>
 <translation id="4780366598804516005">میل باکس 1</translation>
-<translation id="4780900888022378816">آپ کا آلہ <ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہے اور آپ کا اکاؤنٹ <ph name="ACCOUNT_DOMAIN" /> کے زیر انتظام ہے۔</translation>
 <translation id="4785689107224900852">اس ٹیب پر سوئچ کریں</translation>
 <translation id="4791134497475588553">‏Linux ایپس انسٹال کی گئیں اور کب آخری بار استعمال کی گئیں</translation>
 <translation id="4792686369684665359">آپ جو معلومات جمع کرانے والے ہیں وہ محفوظ نہیں ہے</translation>
@@ -1179,7 +1179,6 @@
 <translation id="560412284261940334">مینیجمنٹ تعاون یافتہ نہیں ہے</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">‏یہ سائٹ جعلی یا پُر فریب ہو سکتی ہے۔ Chrome سائٹ ابھی چھوڑنے کی تجویز دیتا ہے۔</translation>
 <translation id="5610142619324316209">کنکشن چیک کیا جا رہا ہے</translation>
 <translation id="5610807607761827392">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کارڈز اور پتوں کا نظم کر سکتے ہیں۔</translation>
 <translation id="561165882404867731">‏اس صفحہ کو Google ترجمہ ایپ کی مدد سے ترجمہ کریں</translation>
@@ -1251,6 +1250,7 @@
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> کی اصل پالیسی کے مطابق مسدود کردہ۔</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
+<translation id="5913377024445952699">اسکرین کیپچر روک دیا گیا</translation>
 <translation id="59174027418879706">فعال</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">آن</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5963413905009737549">سیکشن</translation>
 <translation id="5967592137238574583">رابطے کی معلومات میں ترمیم کریں</translation>
 <translation id="5967867314010545767">سرگزشت سے ہٹا دیں</translation>
+<translation id="5968793460449681917">ہر ملاحظے پر</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1408,7 +1409,6 @@
 <translation id="6529602333819889595">&amp;دوبارہ حذف کریں</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
 <translation id="6547208576736763147">بائیں طرف دُہرا سوراخ</translation>
-<translation id="6554795675067793129"><ph name="ENROLLMENT_DOMAIN" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔</translation>
 <translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6569060085658103619">آپ ایک ایکسٹینشن صفحہ دیکھ رہے ہیں</translation>
 <translation id="6573200754375280815">دائیں طرف دُہرا سوراخ</translation>
@@ -1479,6 +1479,7 @@
 <translation id="6895330447102777224">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
 <translation id="6897140037006041989">صارف کا ایجنٹ</translation>
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> کو اس کی اجازت دیں:</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> آپ کے MIDI آلات کا پورا کنٹرول حاصل کرنا چاہتا ہے</translation>
 <translation id="6915804003454593391">صارف:</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
@@ -1914,6 +1915,7 @@
 <translation id="8574899947864779331">‏تیزی سے اپنے کارڈز کی تصدیق کرنے کے لیے Touch ID استعمال کریں</translation>
 <translation id="858637041960032120">فون نمبر شامل کریں</translation>
 <translation id="8589998999637048520">بہترین معیار</translation>
+<translation id="8600271352425265729">صرف اس وقت</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>
 <translation id="8606726445206553943">‏اپنے MIDI آلات استعمال کریں</translation>
 <translation id="8612761427948161954">آداب <ph name="USERNAME" />،
@@ -1923,6 +1925,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">کوئی مماثل پاس ورڈ نہیں۔ سبھی محفوظ پاس ورڈز دکھائيں</translation>
 <translation id="8625384913736129811">اس کارڈ کو اس آلہ میں محفوظ کریں</translation>
+<translation id="8627040765059109009">اسکرین کیپچر دوبارہ شروع کر دیا گیا</translation>
 <translation id="8657078576661269990">آپ کے منتظم نے <ph name="ORIGIN_NAME" /> سے <ph name="VM_NAME_1" /> اور <ph name="VM_NAME_2" /> میں اشتراک کرنا مسدود کر دیا ہے</translation>
 <translation id="8663226718884576429">آرڈر کا خلاصہ، <ph name="TOTAL_LABEL" />، مزید تفصیلات</translation>
 <translation id="867224526087042813">دستخط</translation>
@@ -2071,6 +2074,7 @@
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
+<translation id="951941430552851965">آپ کی اسکرین پر موجود مواد کی وجہ سے آپ کے منتظم کی جانب سے اسکرین کیپچر روک دیا گیا۔</translation>
 <translation id="961663415146723894">نیچے باندھیں</translation>
 <translation id="962484866189421427">ہو سکتا ہے کہ یہ مواد ایسی پُر فریب ایپس انسٹال کرنے کی کوشش کرے جو کچھ اور ہونے کا دکھاوا کریں یا آپ کی براؤزنگ سرگرمیوں پر نظر رکھنے کیلئے استعمال کیا جانے والا ڈیٹا جمع کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>

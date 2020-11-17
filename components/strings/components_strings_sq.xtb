@@ -485,7 +485,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2903493209154104877">Adresat</translation>
 <translation id="290376772003165898">Faqja nuk është në <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">U zbulua një ndryshim i rrjetit.</translation>
-<translation id="2910133103376701357">Pajisja dhe llogaria jote menaxhohen nga <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">ID-ja e përdoruesit të llogarisë së punës</translation>
 <translation id="2915068235268646559">Ndërprerje aksidentale nga <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
@@ -757,7 +756,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     për të gjitha kërkesat drejtuar atij, por kjo politikë nuk mund të zbatohet aktualisht.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
-<translation id="4032320456957708163">Shfletuesi yt menaxhohet nga <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zarf)</translation>
@@ -838,7 +836,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4270541775497538019">Stivuesi 6</translation>
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4277028893293644418">Rivendos fjalëkalimin</translation>
-<translation id="4279811152705618813">Pajisja jote <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kjo kartë është ruajtur në "Llogarinë tënde të Google"}other{Këto karta janë ruajtur në "Llogarinë tënde të Google"}}</translation>
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Zgjero</translation>
@@ -958,7 +955,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4771973620359291008">Ka ndodhur një gabim i panjohur.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Një dritare kërcyese u bllokua}other{# dritare kërcyese u bllokuan}}</translation>
 <translation id="4780366598804516005">Kutia postare 1</translation>
-<translation id="4780900888022378816">Pajisja jote menaxhohet nga <ph name="ENROLLMENT_DOMAIN" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Kalo te kjo skedë</translation>
 <translation id="4791134497475588553">Aplikacionet e instaluara të Linux dhe kur janë përdorur për herë të fundit</translation>
 <translation id="4792686369684665359">Informacionet që po dërgon nuk janë të sigurta</translation>
@@ -1171,7 +1167,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Ky sajt mund të jetë i rremë ose mashtrues. Chrome rekomandon që të largohesh tani.</translation>
 <translation id="5610142619324316209">Të kontrollosh lidhjen</translation>
 <translation id="5610807607761827392">Mund t'i menaxhosh kartat dhe adresat te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
@@ -1243,6 +1238,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5905445707201418379">Bllokuar sipas politikës së origjinës së <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizuar)</translation>
+<translation id="5913377024445952699">Regjistrimi i ekranit u vendos në pauzë</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Aktive</translation>
@@ -1398,7 +1394,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
 <translation id="6547208576736763147">Dy shpime majtas</translation>
-<translation id="6554795675067793129">Llogaria jote menaxhohet nga <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6569060085658103619">Po shikon një faqe të shtesës</translation>
 <translation id="6573200754375280815">Dy shpime djathtas</translation>
@@ -1913,6 +1908,7 @@ Detaje shtesë:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nuk ka asnjë fjalëkalim që përputhet. Shfaq të gjitha fjalëkalimet e ruajtura.</translation>
 <translation id="8625384913736129811">Ruaje këtë kartë në këtë pajisje</translation>
+<translation id="8627040765059109009">Regjistrimi i ekranit u riaktivizua</translation>
 <translation id="8657078576661269990">Administratori yt ka bllokuar ndarjen nga <ph name="ORIGIN_NAME" /> në <ph name="VM_NAME_1" /> dhe <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
 <translation id="867224526087042813">Nënshkrimi</translation>

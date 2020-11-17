@@ -488,7 +488,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="290376772003165898">¿La página no está en <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Se ha detectado un cambio de red.</translation>
-<translation id="2910133103376701357"><ph name="ENROLLMENT_DOMAIN" /> gestiona tu dispositivo y tu cuenta.</translation>
 <translation id="2911973620368911614">ID de usuario de contabilidad de tareas</translation>
 <translation id="2915068235268646559">Fallo registrado el <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Cierra otros programas</translation>
@@ -760,7 +759,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     a todas las solicitudes que reciba, pero esta política no se puede aplicar actualmente.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF que contiene {COUNT} página}other{Documento PDF que contiene {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Deshacer acción de añadir</translation>
-<translation id="4032320456957708163">El navegador lo administra <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
@@ -843,7 +841,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4270541775497538019">Apilador 6</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277028893293644418">Cambiar contraseña</translation>
-<translation id="4279811152705618813">Tu <ph name="DEVICE_TYPE" /> lo gestiona <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Se ha guardado esta tarjeta en tu cuenta de Google}other{Se han guardado estas tarjetas en tu cuenta de Google}}</translation>
 <translation id="4297502707443874121">Miniatura de la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Mostrar</translation>
@@ -963,7 +960,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ventana emergente bloqueada}other{# ventanas emergentes bloqueadas}}</translation>
 <translation id="4780366598804516005">Buzón de correo 1</translation>
-<translation id="4780900888022378816"><ph name="ENROLLMENT_DOMAIN" /> gestiona tu dispositivo y <ph name="ACCOUNT_DOMAIN" /> gestiona tu cuenta.</translation>
 <translation id="4785689107224900852">Cambiar a esta pestaña</translation>
 <translation id="4791134497475588553">Aplicaciones de Linux instaladas y última vez que se usaron</translation>
 <translation id="4792686369684665359">Estás a punto de enviar una información no segura</translation>
@@ -1176,7 +1172,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="560412284261940334">Administración no admitida</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Este sitio web podría ser falso o fraudulento. Chrome te recomienda que salgas ahora.</translation>
 <translation id="5610142619324316209">Comprobar la conexión</translation>
 <translation id="5610807607761827392">Puedes gestionar las tarjetas y las direcciones en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduce esta página con el Traductor de Google</translation>
@@ -1248,6 +1243,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5905445707201418379">Se ha bloqueado según la política de origen de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5913377024445952699">Grabación de pantalla pausada</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activado</translation>
@@ -1404,7 +1400,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6529602333819889595">&amp;Rehacer eliminación</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Perforado doble en la parte izquierda</translation>
-<translation id="6554795675067793129"><ph name="ENROLLMENT_DOMAIN" /> administra tu cuenta.</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
@@ -1919,6 +1914,7 @@ Más información:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No hay contraseñas que coincidan. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8625384913736129811">Guardar esta tarjeta en el dispositivo</translation>
+<translation id="8627040765059109009">Grabación de pantalla reanudada</translation>
 <translation id="8657078576661269990">Tu administrador ha bloqueado la opción de compartir contenido de <ph name="ORIGIN_NAME" /> en <ph name="VM_NAME_1" /> y <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resumen del pedido: <ph name="TOTAL_LABEL" /> (más detalles)</translation>
 <translation id="867224526087042813">Firma</translation>

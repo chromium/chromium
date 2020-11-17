@@ -2,18 +2,22 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018656279737460067">בוטל</translation>
+<translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
+<translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
+<translation id="1398634363027580500">‏משך זמן אחזור HTTPS ארוך מאוד</translation>
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1478594628797167447">סורק</translation>
-<translation id="1482734542997480527">הניהול של המכשיר הזה נעשה מהדומיין <ph name="ENROLLMENT_DOMAIN" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +46,7 @@
 <translation id="3083667275341675831">אבחון קישוריות</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
+<translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
@@ -59,16 +64,16 @@
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
-<translation id="4003259559679196451">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="ENROLLMENT_DOMAIN" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
-<translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="ENROLLMENT_DOMAIN" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="4034824040120875894">מדפסת</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
+<translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">הקבצים שנסרקו נשמרו!</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
 <translation id="445059817448385655">סיסמה ישנה</translation>
@@ -79,6 +84,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
+<translation id="467715984478005772">חומת אש חשודה</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
@@ -89,7 +95,6 @@
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4985509611418653372">הרצה</translation>
-<translation id="5094480857972195099">המשתמש הזה מנוהל על ידי <ph name="ENROLLMENT_DOMAIN" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="520299634122159966">אין סורקים זמינים</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
 אפשר להקיש על המיקרופון כדי לשאול אותי משהו.</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">נכשלה – חסימת נייר</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
+<translation id="6061772781719867950">‏בקשות HTTP שנכשלו</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
@@ -122,27 +128,35 @@
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
+<translation id="65587193855025101">שטוח</translation>
 <translation id="6564646048574748301">נכשלה – לא ניתן להתחבר אל המדפסת</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
+<translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
+<translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
+<translation id="6839141349259399400">לא ניתן להתחבר לסורקים?</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
+<translation id="7855434858642800953">נשמר הקובץ שנסרק!</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
+<translation id="8160445423316272678">כדי להתחיל, יש למקם את המסמך על הסורק וללחוץ על <ph name="SPAN_BEGIN" />סריקה<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8294431847097064396">מקור</translation>
+<translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
@@ -159,5 +173,6 @@
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 </translationbundle>

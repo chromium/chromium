@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығын қолдамайды. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1919743966458266018">Тапсырмалар реттегішін ашатын пернелер тіркесімі өзгертілді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
-<translation id="1924640696879807758">Телефоннан</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">Қосылмаған</translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> – <ph name="DOMAIN" /> басқаратын сеанс</translation>
 <translation id="2427507373259914951">Тінтуірдің сол жақ түймесін басу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптау рұқсатын сұрайды. Қабылдаудан бұрын бұл кіру кілті аталмыш құрылғыда көрсетілетінін растаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">Артқа</translation>
 <translation id="4114315158543974537">Телефон хабын қосу</translation>
 <translation id="4121728057981832179">Виртуалды құрылғы микрофоныңызды пайдалануда</translation>
+<translation id="4126167871198063089">Select-to-speak функциясынан шығу</translation>
 <translation id="4129129681837227511">Құлып экранында хабарландыруларды көру және параметрді өзгерту үшін құлыпты ашыңыз.</translation>
 <translation id="4146833061457621061">Музыка ойнату</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="DOMAIN" /> басқарады.</translation>
 <translation id="415719264485676252">Экранды суретке түсіруге тыйым салынған</translation>
 <translation id="4157822100366708405">Қараңғы тақырып параметрлері</translation>
 <translation id="4181841719683918333">Тілдер</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
 <translation id="4570957409596482333">Select-to-Speak түймесі</translation>
 <translation id="4577274620589681794">Уақыт бітті · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Алдын ала көріністерді көрсету</translation>
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
 <translation id="4596144739579517758">Қараңғы тақырып өшірулі.</translation>
 <translation id="4623167406982293031">Есептік жазбаны растау</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">Экран трансляциясы</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />с <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
 <translation id="4975771730019223894">Қолданбаға танымбелгі қою</translation>
+<translation id="5003993274120026347">Келесі сөйлем</translation>
 <translation id="5019169674188023236"><ph name="DEVICE_TYPE" /> құрылғыңыздағы Bluetooth немесе Wi-Fi өшіп тұрған сияқты. Phone Hub функциясымен байланыс орнатылып тұрғанын тексеріңіз.</translation>
 <translation id="5030687792513154421">Уақыт бітті</translation>
 <translation id="5033299697334913360">Толық экранды түсіру үшін кез келген жерді басыңыз.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңа телефонға жалғанды</translation>
 <translation id="5035389544768382859">Дисплей конфигурациясын растау</translation>
+<translation id="504465286040788597">Алдыңғы абзац</translation>
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">Дауыстап оқуды қосу/өшіру</translation>
 <translation id="556042886152191864">Түйме</translation>
 <translation id="5571066253365925590">Bluetooth қосылды</translation>
+<translation id="557563299383177668">Келесі абзац</translation>
 <translation id="558849140439112033">Түсіруге керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Айтылған пікірді өшіру үшін Ctrl + Alt + Z пернелерін басыңыз.</translation>
@@ -569,7 +571,7 @@
 <translation id="6520517963145875092">Түсіру үшін терезені таңдаңыз</translation>
 <translation id="652139407789908527">Жаңарту кезінде экраныңыз әдеттегіден ұзағырақ уақыт (бір минутқа дейін) өшіп тұрады. Жаңарту кезінде қуат түймесін баспаңыз.</translation>
 <translation id="6528179044667508675">Мазаламау</translation>
-<translation id="65320610082834431">Эмодзилер</translation>
+<translation id="65320610082834431">Эмоджилер</translation>
 <translation id="6537270692134705506">Экранды түсіріп алу</translation>
 <translation id="6537924328260219877">Сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефон батареясы: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
@@ -613,7 +615,6 @@
 <translation id="6910714959251846841">Бұл жаңартылған нұсқаны орнату үшін құрылғыны зауыттық параметрлерге қайтару қажет. <ph name="SYSTEM_APP_NAME" /> қолданбасының ең жаңа нұсқасы туралы толығырақ.</translation>
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6945221475159498467">Таңдау</translation>
-<translation id="6953890208095195458">Құпия мазмұнның болуына байланысты әкімші экранды бейнеге жазуды тоқтатты.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
@@ -667,7 +668,6 @@
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Экрандағы мазмұнның суретін түсіруге әкімші тыйым салған.</translation>
 <translation id="7548434653388805669">Ұйықтайтын уақыт болды</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
@@ -726,6 +726,7 @@
 <translation id="8029247720646289474">Хотспотпен байланыс орнатылмады</translation>
 <translation id="8029629653277878342">Қауіпсіздікті күшейту үшін PIN коды немесе құпия сөз қажет.</translation>
 <translation id="8030169304546394654">Ажыратылған</translation>
+<translation id="8036504271468642248">Алдыңғы сөйлем</translation>
 <translation id="8042893070933512245">Арнайы мүмкіндіктер параметрлері мәзірін ашу</translation>
 <translation id="8048123526339889627">Bluetooth параметрлері</translation>
 <translation id="8054466585765276473">Батарея уақытын есептеу.</translation>
@@ -864,6 +865,7 @@
 <translation id="921989828232331238">Ата-анаңыз құрылғыны бір күнге құлыптап қойды</translation>
 <translation id="9220525904950070496">Есептік жазбаны жою</translation>
 <translation id="923686485342484400">Шығу үшін Control + Shift + Q тіркесімін екі рет басыңыз.</translation>
+<translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="98515147261107953">Альбомдық</translation>

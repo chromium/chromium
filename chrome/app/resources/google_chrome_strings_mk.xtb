@@ -13,7 +13,7 @@
 <translation id="1125124144982679672">Кој користи Chrome?</translation>
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
-<translation id="123620459398936149">Chrome OS не можеше да ги синхронизира вашите податоци. Ажурирајте ја пристапната фраза за Синхронизација.</translation>
+<translation id="123620459398936149">Chrome OS не може да ги синхронизира вашите податоци. Ажурирајте ја пристапната фраза за Синхронизација.</translation>
 <translation id="1302523850133262269">Почекајте додека Chrome ги инсталира последните системски ажурирања.</translation>
 <translation id="1355000804395496115">Користете различни профили во Chrome за да ги одделите личното и професионалното прелистување или за различни луѓе кои го користат уредов.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -25,7 +25,7 @@
 <translation id="1587325591171447154">Датотеката <ph name="FILE_NAME" /> е опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="1597911401261118146">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">За Chrome да биде побезбеден, ја оневозможивме следнава екстензија што не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е додадена без ваше знаење.</translation>
-<translation id="162629503687514352">Chrome OS не можеше да ги синхронизира вашите лозинки.</translation>
+<translation id="162629503687514352">Chrome OS не може да ги синхронизира вашите лозинки.</translation>
 <translation id="1628000112320670027">Добијте помош за Chrome</translation>
 <translation id="1662639173275167396">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како и <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бета)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="1666409074978194368">Речиси сте готови! Рестартирајте го Google Chrome за да заврши ажурирањето. Прозорците „Инкогнито“ нема да се отворат повторно.</translation>
@@ -86,7 +86,7 @@
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="3089968997497233615">Достапна е нова, побезбедна верзија на Google Chrome.</translation>
 <translation id="3114643501466072395">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome OS не можеше да ги синхронизира вашите податоци.</translation>
+<translation id="3127818369811890733">Chrome OS не може да ги синхронизира вашите податоци.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ќе се рестартира сега}=1{Chrome ќе се рестартира по 1 секунда}one{Chrome ќе се рестартира по # секунда}other{Chrome ќе се рестартира по # секунди}}</translation>
@@ -176,7 +176,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ќе се рестартира за 1 секунда}one{Google Chrome ќе се рестартира за # секунда}other{Google Chrome ќе се рестартира за # секунди}}</translation>
 <translation id="573759479754913123">За Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
-<translation id="5804318322022881572">Не можеше да се стартува Chrome. Обидете се повторно.</translation>
+<translation id="5804318322022881572">Не може да се стартува Chrome. Обидете се повторно.</translation>
 <translation id="5867197326698922595">Google Chrome се обидува да измени лозинки.</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
@@ -194,6 +194,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6368958679917195344">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">За да користите Rosetta за пуштање заштитени аудиовизуелни содржини, треба да го рестартирате Chrome.</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="6679975945624592337">Остави Google Chrome да работи во заднина</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
@@ -222,12 +223,12 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7486227612705979895">Chrome ќе пристапува до Drive за да дава предлози во лентата за адреси</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за Chrome OS<ph name="LINK_END" /></translation>
-<translation id="7592736734348559088">Google Chrome не можеше да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
+<translation id="7592736734348559088">Google Chrome не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
 <translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7629695634924605473">Chrome ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="7641148173327520642">Системскиот администратор го конфигурирал Google Chrome да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
-<translation id="7747138024166251722">Инсталаторот не можеше да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
+<translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
 <translation id="7761834446675418963">Кликнете си на името за да го отворите Chrome и да започнете со прелистување.</translation>
 <translation id="7777080907402804672">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="7781002470561365167">Достапна е нова верзија на Google Chrome.</translation>
@@ -256,6 +257,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8521348052903287641">Дојдовно правило за Google Chrome Dev за овозможување mDNS-сообраќај.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Достапна е нова верзија на Google Chrome и побрза е од кога било.</translation>
+<translation id="861359755029082151">Rosetta му овозможува на Chrome да пушта заштитени аудиовизуелни содржини на страницава.</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
@@ -269,6 +271,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8834965163890861871">Google Chrome се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="884296878221830158">Контролира и која страница се прикажува кога ќе стартувате Chrome или ако кликнете на копчето Дома.</translation>
 <translation id="8862326446509486874">Немате соодветни права за инсталирање на системско ниво. Обидете се да го извршите инсталаторот повторно како администратор.</translation>
+<translation id="8907709077090383765">За да му овозможите на Chrome да пушта заштитени аудиовизуелни содржини, треба да инсталирате Rosetta. Дали сакате да се инсталира сега?</translation>
 <translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8922193594870374009">За да испратите број од <ph name="ORIGIN" /> до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>

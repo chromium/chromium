@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Chromium ochilganda soʻralsin</translation>
 <translation id="1396446129537741364">Kirtilgan parollar Chromium brauzerida ko‘rsatiladi.</translation>
 <translation id="1414495520565016063">Chromium‘ga xush kelibsiz!</translation>
+<translation id="1414973082589232775">Himoyalangan mediani ijro etishda Rosetta dasturidan foydalanish uchun Chromium brauzerini qayta ishga tushiring.</translation>
 <translation id="151962892725702025">Ma’lumotlarni sinxronlab bo‘lmadi, chunki domeningizda Sync xizmati mavjud emas.</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
@@ -127,6 +128,7 @@
 <translation id="5634636535844844681">Chromium brauzeri ishlashi uchun kompyuterda Windows 7 yoki undan yangiroq versiyadagi operatsion tizim o‘rnatilgan bo‘lishi lozim.</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
+<translation id="5736967399513123100">Chromium himoyalangan mediani ijro etishi uchun Rosetta oʻrnatilishi lozim. Uni hozir oʻrnatishni xohlaysizmi?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
@@ -173,6 +175,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
 <translation id="6893813176749746474">Chromium yangilandi, lekin siz undan 30 kun davomida foydalanmadingiz.</translation>
+<translation id="6897548120660295439">Rosetta Chromium brauzerida bu sahifada mediani ijro etish imkoniyatini yoqadi.</translation>
 <translation id="6964305034639999644">Havolani Chromium &amp;inkognito oynasida ochish</translation>
 <translation id="6978145336957848883">Kuchsiz parollar oson topiladi. Chromium <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>

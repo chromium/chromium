@@ -342,7 +342,6 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新しいシークレット タブ</translation>
-<translation id="4758977202923349869">クレジット カードをこの枠に合わせます</translation>
 <translation id="4775879719735953715">既定のブラウザ</translation>
 <translation id="4778644898150334464">他のパスワードを使用</translation>
 <translation id="4802417911091824046">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。
@@ -604,12 +603,12 @@
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7454057999980797137">州/都道府県</translation>
 <translation id="7456847797759667638">場所を開く...</translation>
-<translation id="7460314822154045102">カメラを使う</translation>
 <translation id="7464701184726199289">すべてのデバイスから同期データを削除します。保存済みのサイト設定は削除されず、普段の閲覧行動を反映した設定などが残る場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3.[Chrome] を選択する</translation>
 <translation id="7472734401283673885">会社名</translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
+<translation id="7483467499335917849">現在地を使用</translation>
 <translation id="750493650310597496">選択されていません</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>

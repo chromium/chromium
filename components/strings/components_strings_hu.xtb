@@ -486,7 +486,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2903493209154104877">Címek</translation>
 <translation id="290376772003165898">Az oldal nem <ph name="LANGUAGE" /> nyelvű?</translation>
 <translation id="2909946352844186028">Változást érzékeltünk a hálózatban.</translation>
-<translation id="2910133103376701357">Eszközét és fiókját a következő kezeli: <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2911973620368911614">Munkafiók felhasználói azonosítója</translation>
 <translation id="2915068235268646559">Összeomlás – <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Zárja be a többi programot</translation>
@@ -756,7 +755,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     az összes kérésére, de ez a házirend jelenleg nem alkalmazható.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} oldalból álló PDF-dokumentum}other{{COUNT} oldalból álló PDF-dokumentum}}</translation>
 <translation id="4030383055268325496">&amp;Hozzáadás visszavonása</translation>
-<translation id="4032320456957708163">Böngészőjét a(z) <ph name="ENROLLMENT_DOMAIN" /> felügyeli</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" kulcs: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (boríték)</translation>
@@ -839,7 +837,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4270541775497538019">6. kötegelő</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> eszközét a(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{A kártyát mentettük a Google-fiókjába.}other{Ezeket a kártyákat mentettük a Google-fiókjába.}}</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
 <translation id="42981349822642051">Kibontás</translation>
@@ -959,7 +956,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4771973620359291008">Ismeretlen hiba történt.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Előugró ablak letiltva}other{# előugró ablak letiltva}}</translation>
 <translation id="4780366598804516005">1. postaláda</translation>
-<translation id="4780900888022378816">Eszközét a(z) <ph name="ENROLLMENT_DOMAIN" />, fiókját pedig a(z) <ph name="ACCOUNT_DOMAIN" /> kezeli.</translation>
 <translation id="4785689107224900852">Váltás erre a lapra</translation>
 <translation id="4791134497475588553">A telepített Linux-alkalmazások és legutóbbi használatuk ideje</translation>
 <translation id="4792686369684665359">Az elküldeni kívánt adatok nem biztonságosak</translation>
@@ -1172,7 +1168,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="560412284261940334">A kezelés nem támogatott</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Ez a webhely hamis vagy megtévesztő szándékú lehet. A Chrome a webhely azonnali elhagyását javasolja.</translation>
 <translation id="5610142619324316209">A kapcsolat ellenőrzése</translation>
 <translation id="5610807607761827392">A kártyákat és a címeket a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> menüpontban kezelheti.</translation>
 <translation id="561165882404867731">Oldal fordítása a Google Fordítóval</translation>
@@ -1244,6 +1239,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5905445707201418379">Letiltva a(z) <ph name="ORIGIN" /> eredetházirendje miatt.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (szinkronizálva)</translation>
+<translation id="5913377024445952699">Képernyőrögzítés szüneteltetve</translation>
 <translation id="59174027418879706">Engedélyezve</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Be</translation>
@@ -1400,7 +1396,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6529602333819889595">&amp;Törlés újra</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
 <translation id="6547208576736763147">Kettő lyuk a bal oldalon</translation>
-<translation id="6554795675067793129">Az Ön fiókkezelője: <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Újra</translation>
 <translation id="6569060085658103619">Jelenleg bővítményoldalt tekint meg</translation>
 <translation id="6573200754375280815">Kettő lyuk a jobb oldalon</translation>
@@ -1916,6 +1911,7 @@ További részletek:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nincs egyező jelszó. Az összes mentett jelszó megjelenítése.</translation>
 <translation id="8625384913736129811">Kártya mentése az eszközre</translation>
+<translation id="8627040765059109009">Képernyőrögzítés folytatva</translation>
 <translation id="8657078576661269990">A rendszergazda letiltotta a megosztást innen: <ph name="ORIGIN_NAME" /> ide: <ph name="VM_NAME_1" /> és <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Rendelés-összefoglaló, <ph name="TOTAL_LABEL" />, További részletek</translation>
 <translation id="867224526087042813">Aláírás</translation>

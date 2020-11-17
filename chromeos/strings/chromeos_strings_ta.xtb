@@ -11,7 +11,6 @@
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
-<translation id="1482734542997480527">இந்தச் சாதனத்தை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
@@ -59,9 +58,7 @@
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
-<translation id="4003259559679196451">இந்தச் சாதனத்தை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது. இதற்கு பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட எல்லாப் பயனர் செயல்பாட்டுக்கான அணுகலும் உள்ளது.</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
-<translation id="4027485274696301677">இந்த <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> டொமைனால் நிர்வகிக்கப்படுகிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
@@ -89,7 +86,6 @@
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> இந்தப் பயனரை நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="520299634122159966">ஸ்கேனர்கள் எதுவும் இல்லை</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>

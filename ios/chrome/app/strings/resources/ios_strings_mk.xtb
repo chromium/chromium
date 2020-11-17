@@ -220,7 +220,7 @@
 <translation id="3311748811247479259">Исклучено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
-<translation id="3329904751041170572">Не можеше да се поврзе на серверот.</translation>
+<translation id="3329904751041170572">Не може да се поврзе на серверот.</translation>
 <translation id="3335947283844343239">Повторно отвори затворена картичка</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3393920035788932672">Појавни прозорци се дозволени</translation>
@@ -342,7 +342,6 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4747097190499141774">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
-<translation id="4758977202923349869">Ставете ја кредитната картичка во рамкава</translation>
 <translation id="4775879719735953715">Стандарден прелистувач</translation>
 <translation id="4778644898150334464">Употребете друга лозинка</translation>
 <translation id="4802417911091824046">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay.
@@ -419,7 +418,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5592679540098330836">Вклучете ја синхронизацијата за <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
-<translation id="5626245204502895507">Датотеката не можеше да се преземе во моментов.</translation>
+<translation id="5626245204502895507">Датотеката не може да се преземе во моментов.</translation>
 <translation id="5631164295104953411">Додајте начин на плаќање</translation>
 <translation id="5653058065071344726">Управувано од вашата организација. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5659593005791499971">Е-пошта</translation>
@@ -604,12 +603,12 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
 <translation id="7454057999980797137">Држава/Земја</translation>
 <translation id="7456847797759667638">Отвори локација...</translation>
-<translation id="7460314822154045102">Користи ја камерата</translation>
 <translation id="7464701184726199289">Ова ги чисти синхронизираните податоци од сите уреди. Поставките на зачуваните сајтови нема да се избришат и може да ги отсликуваат вашите навики за прелистување. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Изберете Chrome</translation>
 <translation id="7472734401283673885">Име на компанија</translation>
 <translation id="7473891865547856676">Не, фала</translation>
 <translation id="7481312909269577407">Напред</translation>
+<translation id="7483467499335917849">Користете ја тековната локација</translation>
 <translation id="750493650310597496">0 избрани</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
@@ -637,7 +636,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
-<translation id="7856733331829174190">Не можеше да се преземе</translation>
+<translation id="7856733331829174190">Не може да се преземе</translation>
 <translation id="7859704718976024901">Историја на прелистувањето</translation>
 <translation id="7887198238286927132">За да ја заштити вашата приватност, Chrome нема автоматски да го пополнува ова поле.</translation>
 <translation id="7918293828610777738">„Списокот за читање“ е достапен офлајн. За да додадете страница во списокот за читање, допрете <ph name="SHARE_OPENING_ICON" />, а потоа <ph name="READ_LATER_TEXT" />.</translation>

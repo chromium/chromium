@@ -2,18 +2,22 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
+<translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
 <translation id="1075811647922107217">പേജിന്റെ വലുപ്പം</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
 <translation id="1204296502688602597">DNS പ്രതികരണ സമയം</translation>
+<translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
+<translation id="1398634363027580500">വളരെ ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
 <translation id="1478594628797167447">സ്‌കാനർ</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
 <translation id="150962533380566081">അസാധുവായ PUK.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
+<translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
@@ -42,6 +46,7 @@
 <translation id="3083667275341675831">കണക്റ്റിവിറ്റി തകരാർ കണ്ടെത്തൽ</translation>
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
+<translation id="3199982728237701504">ഡോക്യുമെന്റ് ഫീഡർ (രണ്ട് വശമുള്ളത്)</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
@@ -59,16 +64,16 @@
 <translation id="3865414814144988605">റെസല്യൂഷൻ</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുകയും സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="4003384961948020559">പ്രിന്റ് ചെയ്യാനായില്ല - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
-<translation id="4027485274696301677">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="ENROLLMENT_DOMAIN" /> ആണ്. അഡ്മിൻമാർ ഉപകരണം വിദൂരമായി കോൺഫിഗർ ചെയ്‌തേക്കാം.</translation>
 <translation id="4034824040120875894">പ്രിന്റർ</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
+<translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">സ്‌കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിച്ചു!</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
 <translation id="4429881212383817840">Kerberos ടിക്കറ്റ് ഉടൻ കാലഹരണപ്പെടും</translation>
 <translation id="445059817448385655">പഴയ പാസ്‌വേഡ്</translation>
@@ -79,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
 <translation id="467510802200863975">പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
+<translation id="467715984478005772">സംശയാസ്‌പദമായ ഫയര്‍വാള്‍</translation>
 <translation id="4691278870498629773">പ്രിന്റ് ജോലി നിർത്തി - ട്രേ കാണുന്നില്ല</translation>
 <translation id="469379815867856270">സിഗ്‌നൽ ശക്തി</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
@@ -89,7 +95,6 @@
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
 <translation id="4932733599132424254">തീയതി</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഇത് വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="520299634122159966">ലഭ്യമായ സ്‌കാനറുകളൊന്നുമില്ല</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -110,6 +115,7 @@
 <translation id="6048107060512778456">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പർ ജാമായിരിക്കുന്നു</translation>
 <translation id="6050189528197190982">ഗ്രേസ്‌കെയിൽ</translation>
 <translation id="6058625436358447366">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡും പുതിയ പാസ്‌വേഡും നൽകുക</translation>
+<translation id="6061772781719867950">പരാജയപ്പെട്ട HTTP അഭ്യർത്ഥനകൾ</translation>
 <translation id="6106186594183574873">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6108689792487843350">ഗേറ്റ്‌വേയിലേക്ക് എത്താനാകുന്നില്ല</translation>
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
@@ -121,27 +127,35 @@
 <translation id="649050271426829538">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പർ ജാമായി</translation>
 <translation id="6517239166834772319">അടുത്തറിയുക</translation>
 <translation id="6527081081771465939">അജ്ഞാതമായ വെെഫെെ സുരക്ഷാ പ്രോട്ടോക്കോൾ</translation>
+<translation id="65587193855025101">ഫ്ലാറ്റ്ബെഡ്</translation>
 <translation id="6564646048574748301">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രിന്റർ ലഭ്യമല്ല</translation>
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6620487321149975369">നേരിട്ട് നീക്കം ചെയ്തില്ലെങ്കിൽ പ്രിന്റ് ജോലികൾ ചരിത്രത്തിൽ ദൃശ്യമാകും</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
 <translation id="6747215703636344499">പ്രിന്റ് ജോലി നിർത്തി - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
+<translation id="6766275201586212568">പരാജയപ്പെട്ട DNS റെസല്യൂഷനുകൾ</translation>
+<translation id="6768237774506518020">ഉയർന്ന DNS റെസല്യൂഷൻ ഫെയ്‌ലിയർ നിരക്ക്</translation>
+<translation id="6839141349259399400">സ്‌കാനറുകളിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ലേ?</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
 <translation id="7162487448488904999">ഗാലറി</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7805768142964895445">നില</translation>
+<translation id="7855434858642800953">സ്‌കാൻ ചെയ്ത ഫയൽ സംരക്ഷിച്ചു!</translation>
 <translation id="7936303884198020182">നെയിം സെർവറുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
+<translation id="8160445423316272678">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്‌ക്കുക, ആരംഭിക്കാൻ <ph name="SPAN_BEGIN" />സ്‌കാൻ ചെയ്യുക<ph name="SPAN_END" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
+<translation id="8302368968391049045">HTTPS ഫയര്‍വാള്‍</translation>
 <translation id="8347227221149377169">പ്രിന്റ് ജോലികൾ</translation>
 <translation id="8352772353338965963">ഒന്നിലധികം സൈൻ-ഇന്നിനായി ഒരു അക്കൗണ്ട് ചേർക്കുക. സൈൻ-ഇൻ ചെയ്‌ത അക്കൗണ്ടുകളെല്ലാം ഒരു പാസ്‌വേഡില്ലാതെ ആക്‌സസ് ചെയ്യാനാകുമെന്നതിനാൽ ഈ സവിശേഷത പരിചയമുള്ള അക്കൗണ്ടുകളിൽ മാത്രമേ ഉപയോഗിക്കാവൂ.</translation>
 <translation id="8364946094152050673">ശൂന്യമായ നെയിം സെർവറുകൾ</translation>
@@ -158,5 +172,6 @@
 <translation id="8919837981463578619">പ്രിന്റ് ചെയ്യാനായില്ല - ട്രേ കാണുന്നില്ല</translation>
 <translation id="8928727111548978589">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പറില്ല</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് പുതുക്കിയെടുക്കുക</translation>
+<translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
 </translationbundle>

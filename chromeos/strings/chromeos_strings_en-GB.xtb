@@ -2,17 +2,19 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1018656279737460067">Cancelled</translation>
+<translation id="1071587090247825784">Firewall detected</translation>
 <translation id="1075811647922107217">Page size</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
 <translation id="1204296502688602597">DNS latency</translation>
+<translation id="1238612778414822719">HTTPS latency</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1397738625398125236">Gateway can be pinged</translation>
+<translation id="1398634363027580500">Very high HTTPS latency</translation>
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1478594628797167447">Scanner</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="150962533380566081">Invalid PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
@@ -62,11 +64,10 @@
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
-<translation id="4027485274696301677">This <ph name="DEVICE_TYPE" /> is managed by <ph name="ENROLLMENT_DOMAIN" />. Administrators may remotely configure the device.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Black and white</translation>
+<translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
@@ -83,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
+<translation id="467715984478005772">Firewall suspected</translation>
 <translation id="4691278870498629773">Stopped – tray missing</translation>
 <translation id="469379815867856270">Signal strength</translation>
 <translation id="4731797938093519117">Parent access</translation>
@@ -93,7 +95,6 @@
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Run</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> manages this user and may remotely manage settings and monitor user activity.</translation>
 <translation id="520299634122159966">No available scanners</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
 Try tapping the mic to ask me anything.</translation>
@@ -115,6 +116,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6048107060512778456">Failed – Paper jam</translation>
 <translation id="6050189528197190982">Greyscale</translation>
 <translation id="6058625436358447366">To finish, enter your old and new passwords</translation>
+<translation id="6061772781719867950">Failed HTTP requests</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
 <translation id="6146993107019042706">To finish, enter your new password</translation>
@@ -133,6 +135,8 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6747215703636344499">Stopped – output full</translation>
+<translation id="6766275201586212568">Failed DNS resolutions</translation>
+<translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="6839141349259399400">Can't connect to scanners?</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -140,6 +144,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +156,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8294431847097064396">Source</translation>
+<translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>

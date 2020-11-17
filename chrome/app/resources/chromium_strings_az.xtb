@@ -14,6 +14,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1357932062193643861">Chromium açıldığı zaman soruşulsun</translation>
 <translation id="1396446129537741364">Chromium parolları göstərməyə çalışır.</translation>
 <translation id="1414495520565016063">Chromium'a daxil oldunuz!</translation>
+<translation id="1414973082589232775">Qorunan medianı Rosetta vasitəsilə oxutmaq üçün Chromium yenidən başladılmalıdır.</translation>
 <translation id="151962892725702025">Chomium OS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="1524282610922162960">Chromium tabı paylaşın</translation>
 <translation id="1553461853655228091">Chromium ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
@@ -129,6 +130,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="5634636535844844681">Chromium Windows 7 və ya daha yeni versiya tələb edir.</translation>
 <translation id="5653831366781983928">Chromium'u indi başladın</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
+<translation id="5736967399513123100">Chromium'un qorunan media oxutmasına imkan vermək üçün Rosetta quraşdırılmalıdır. İndi quraşdırmaq istəyirsiniz?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
@@ -175,6 +177,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6893813176749746474">Xrom yeniləndi, lakin ən azı 30 gün üçün istifadə etməmişlər.</translation>
+<translation id="6897548120660295439">Rosetta Chromium'un bu səhifədə qorunan medianı oxutmasına imkan verir.</translation>
 <translation id="6964305034639999644">Linki gizli Chromium pəncərəsində açın</translation>
 <translation id="6978145336957848883">Zəif parolları tapmaq asandır. Chromium'un <ph name="BEGIN_LINK" />sizin üçün güclü parollar yaratmasına və yadda saxlamasına<ph name="END_LINK" /> imkan verin.</translation>
 <translation id="6990124437352146030">Chromium bu sayt üçün mikrofona giriş tələb edir</translation>

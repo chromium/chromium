@@ -194,6 +194,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6368958679917195344">Sistemi operativ Chrome bëhet i mundur nga softueri shtesë <ph name="BEGIN_LINK_CROS_OSS" />me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Po përditëson Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Për të përdorur Rosetta që të luajë media të mbrojtur, duhet të rinisësh Chrome.</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
 <translation id="6679975945624592337">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
@@ -256,6 +257,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Ofrohet një version i ri i Google Chrome dhe është më i shpejtë se kurrë.</translation>
+<translation id="861359755029082151">Rosetta e mundëson Chrome që të luajë median e mbrojtur në këtë faqe.</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
@@ -269,6 +271,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8834965163890861871">Google Chrome po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="884296878221830158">Ai kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur klikon te butoni "Kreu".</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
+<translation id="8907709077090383765">Për ta mundësuar Chrome që të luajë media të mbrojtur, duhet të instalosh Rosetta. Dëshiron që ta instalosh atë tani?</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>

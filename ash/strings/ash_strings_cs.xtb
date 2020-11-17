@@ -103,7 +103,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1888656773939766144">Monitor <ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Změny potvrdíte kliknutím. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Zkratka k otevření správce úloh se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
-<translation id="1924640696879807758">Z telefonu</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2405664212338326887">Nepřipojeno</translation>
 <translation id="2408955596600435184">Zadejte PIN</translation>
 <translation id="2412593942846481727">K dispozici je aktualizace</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> je návštěvy spravovaná doménou <ph name="DOMAIN" /></translation>
 <translation id="2427507373259914951">Kliknutí levým tlačítkem</translation>
 <translation id="2429753432712299108">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Než toto povolení schválíte, zkontrolujte si, zda je na zařízení zobrazen následující přístupový klíč: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
@@ -324,9 +322,9 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
 <translation id="4121728057981832179">Virtuální počítač používá váš mikrofon</translation>
+<translation id="4126167871198063089">Ukončit poslech vybraného textu</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
-<translation id="4149156641122542261">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="DOMAIN" /></translation>
 <translation id="415719264485676252">Snímky obrazovky jsou zablokovány</translation>
 <translation id="4157822100366708405">Nastavení tmavého motivu</translation>
 <translation id="4181841719683918333">Jazyky</translation>
@@ -383,6 +381,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4570957409596482333">Tlačítko pro poslech vybraného textu</translation>
 <translation id="4577274620589681794">Čas vypršel · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Zobrazit náhledy</translation>
 <translation id="4585337515783392668">Ukončit odesílání do neznámého přijímače</translation>
 <translation id="4596144739579517758">Tmavý motiv je vypnutý</translation>
 <translation id="4623167406982293031">Ověřit účet</translation>
@@ -430,11 +429,13 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
+<translation id="5003993274120026347">Další věta</translation>
 <translation id="5019169674188023236">Zdá se, že je připojení Bluetooth nebo Wi-Fi v zařízení <ph name="DEVICE_TYPE" /> vypnuté. Pokud chcete používat Telefonní centurm, zkontrolujte připojení.</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>
+<translation id="504465286040788597">Předchozí odstavec</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
@@ -474,6 +475,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5571066253365925590">Rozhraní Bluetooth aktivováno</translation>
+<translation id="557563299383177668">Další odstavec</translation>
 <translation id="558849140439112033">Přetažením vyberte oblast, kterou chcete zachytit</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Hlasovou odezvu vypnete stisknutím kláves Ctrl + Alt + Z.</translation>
@@ -613,7 +615,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6910714959251846841">Kvůli této aktualizaci je potřeba zařízení pomocí funkce Powerwash obnovit do továrního nastavení. Viz další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
 <translation id="6945221475159498467">Vybrat</translation>
-<translation id="6953890208095195458">Nahrávání obrazovky ukončil administrátor kvůli obsahu na obrazovce.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Začínáme</translation>
 <translation id="6981982820502123353">Usnadnění</translation>
@@ -667,7 +668,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Možnost pořizovat snímky obsahu obrazovky zablokoval váš administrátor.</translation>
 <translation id="7548434653388805669">Čas jít spát</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
@@ -726,6 +726,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8029247720646289474">Připojení k hotspotu se nezdařilo</translation>
 <translation id="8029629653277878342">Kvůli zabezpečení je potřeba zadat PIN nebo heslo</translation>
 <translation id="8030169304546394654">Odpojeno</translation>
+<translation id="8036504271468642248">Předchozí věta</translation>
 <translation id="8042893070933512245">Otevřít nabídku nastavení usnadnění přístupu</translation>
 <translation id="8048123526339889627">Nastavení Bluetooth</translation>
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
@@ -864,6 +865,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="921989828232331238">Rodič zařízení na celý den uzamkl</translation>
 <translation id="9220525904950070496">Odebrat účet</translation>
 <translation id="923686485342484400">Odhlásíte se dvojitým stisknutím kombinace kláves Control Shift Q.</translation>
+<translation id="925832987464884575">Skrýt náhledy</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="98515147261107953">Na šířku</translation>

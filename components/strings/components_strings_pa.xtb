@@ -483,7 +483,6 @@
 <translation id="2903493209154104877">ਪਤੇ</translation>
 <translation id="290376772003165898">ਕੀ ਪੰਨਾ <ph name="LANGUAGE" /> ਵਿੱਚ ਨਹੀਂ ਹੈ?</translation>
 <translation id="2909946352844186028">ਇੱਕ ਨੈੱਟਵਰਕ ਬਦਲਾਅ ਖੋਜਿਆ ਗਿਆ ਸੀ।</translation>
-<translation id="2910133103376701357">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2911973620368911614">ਕਾਰਵਾਈ ਖਾਤਾ ਵਰਤੋਂਕਾਰ ਆਈਡੀ</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> ਤੋਂ ਕ੍ਰੈਸ਼</translation>
 <translation id="2916038427272391327">ਦੂਜੇ ਪ੍ਰੋਗਰਾਮ ਬੰਦ ਕਰੋ</translation>
@@ -751,7 +750,6 @@
 <translation id="3996311196211510766">ਸਾਈਟ <ph name="ORIGIN" /> ਨੇ ਬੇਨਤੀ ਕੀਤੀ ਹੈ ਕਿ ਮੂਲ ਸੰਬੰਧੀ ਨੀਤੀ ਨੂੰ ਉਸ ਦੀਆਂ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ 'ਤੇ ਲਾਗੂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਪਰ ਇਸ ਨੀਤੀ ਨੂੰ ਫਿਲਹਾਲ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨਾ ਹੈ}one{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨਾ ਹੈ}other{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨੇ ਹਨ}}</translation>
 <translation id="4030383055268325496">&amp;ਜੋੜਨਾ ਅਨਡੂ ਕਰੋ</translation>
-<translation id="4032320456957708163">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">ਕੁੰਜੀ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
@@ -830,7 +828,6 @@
 <translation id="4270541775497538019">ਸਟੈਕਰ 6</translation>
 <translation id="4275830172053184480">ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
-<translation id="4279811152705618813">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਹਨਾਂ ਕਾਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="4297502707443874121">ਪੰਨਾ <ph name="THUMBNAIL_PAGE" /> ਲਈ ਲਘੂ-ਚਿੱਤਰ</translation>
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
@@ -950,7 +947,6 @@
 <translation id="4771973620359291008">ਇੱਕ ਅਗਿਆਤ ਗੜਬੜ ਹੋਈ ਹੈ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{[=1]ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{# ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{# ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="4780366598804516005">ਮੇਲਬਾਕਸ 1</translation>
-<translation id="4780900888022378816">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ACCOUNT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="4785689107224900852">ਇਸ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="4791134497475588553">Linux ਐਪਾਂ ਸਥਾਪਤ ਕਰਨ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਵਰਤੇ ਜਾਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="4792686369684665359">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਪੁਰਦ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
@@ -1163,7 +1159,6 @@
 <translation id="560412284261940334">ਪ੍ਰਬੰਧਨ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="5605670050355397069">ਵਹੀ-ਖਾਤਾ</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ਸਾਈਟ ਨਕਲੀ ਜਾਂ ਧੋਖਾਧੜੀ ਵਾਲੀ ਹੋ ਸਕਦੀ ਹੈ। Chrome ਹੁਣੇ ਇਸਨੂੰ ਛੱਡਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5610142619324316209">ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5610807607761827392">ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕਾਰਡਾਂ ਅਤੇ ਪਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="561165882404867731">ਇਸ ਪੰਨੇ ਦਾ Google Translate ਨਾਲ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -1235,6 +1230,7 @@
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> ਦੀ ਮੂਲ ਸੰਬੰਧੀ ਨੀਤੀ ਮੁਤਾਬਕ ਬਲਾਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੇ ਗਏ)</translation>
+<translation id="5913377024445952699">ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨਾ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="59174027418879706">ਸਮਰਥਿਤ</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ਚਾਲੂ</translation>
@@ -1390,7 +1386,6 @@
 <translation id="6529602333819889595">&amp;ਮਿਟਾਏ ਗਏ ਨੂੰ ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="6547208576736763147">ਖੱਬੇ ਪਾਸੇ ਦੋ ਮੋਰੀਆਂ</translation>
-<translation id="6554795675067793129">ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ENROLLMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6556866813142980365">ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="6569060085658103619">ਤੁਸੀਂ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="6573200754375280815">ਸੱਜੇ ਦੋ ਮੋਰੀਆਂ</translation>
@@ -1905,6 +1900,7 @@
 <translation id="8622948367223941507">ਕਨੂੰਨੀ-ਵਾਧੂ</translation>
 <translation id="8623885649813806493">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਪਾਸਵਰਡ ਨਹੀਂ। ਸਾਰੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦਿਖਾਓ।</translation>
 <translation id="8625384913736129811">ਇਸ ਕਾਰਡ ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="8627040765059109009">ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8657078576661269990">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="ORIGIN_NAME" /> ਤੋਂ <ph name="VM_NAME_1" /> ਅਤੇ <ph name="VM_NAME_2" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="8663226718884576429">ਆਰਡਰ ਸਾਰਾਂਸ਼, <ph name="TOTAL_LABEL" />, ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="867224526087042813">ਹਸਤਾਖਰ</translation>

@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">网页的源语言不是<ph name="LANGUAGE" />？</translation>
 <translation id="2909946352844186028">检测到了网络变化。</translation>
-<translation id="2910133103376701357">您的设备和帐号由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="2911973620368911614">工作帐号用户 ID</translation>
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
@@ -749,7 +748,6 @@
 <translation id="3996311196211510766">网站 <ph name="ORIGIN" /> 已要求收到的所有请求都应用一项来源政策，但此政策目前无法应用。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
 <translation id="4030383055268325496">撤消添加(&amp;U)</translation>
-<translation id="4032320456957708163">您的浏览器由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="4056223980640387499">棕色调</translation>
 <translation id="4058922952496707368">“<ph name="SUBKEY" />”键：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -828,7 +826,6 @@
 <translation id="4270541775497538019">堆叠出纸器 6</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277028893293644418">重置密码</translation>
-<translation id="4279811152705618813">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{这张卡已保存到您的 Google 帐号中}other{这些卡已保存到您的 Google 帐号中}}</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
 <translation id="42981349822642051">展开</translation>
@@ -948,7 +945,6 @@
 <translation id="4771973620359291008">发生未知错误。</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已拦截弹出式窗口}other{已拦截 # 个弹出式窗口}}</translation>
 <translation id="4780366598804516005">信箱 1</translation>
-<translation id="4780900888022378816">您的设备由 <ph name="ENROLLMENT_DOMAIN" /> 管理，您的帐号由 <ph name="ACCOUNT_DOMAIN" /> 管理。</translation>
 <translation id="4785689107224900852">切换到这个标签页</translation>
 <translation id="4791134497475588553">已安装的 Linux 应用及其上次使用时间</translation>
 <translation id="4792686369684665359">您即将提交的信息不安全</translation>
@@ -1161,7 +1157,6 @@
 <translation id="560412284261940334">不支持管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">此网站可能是虚假或欺诈性网站。Chrome 建议您立即离开。</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
 <translation id="5610807607761827392">您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理信用卡和地址信息。</translation>
 <translation id="561165882404867731">使用“Google 翻译”服务来翻译此页面</translation>
@@ -1388,7 +1383,6 @@
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
-<translation id="6554795675067793129">您的帐号由 <ph name="ENROLLMENT_DOMAIN" /> 管理。</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>

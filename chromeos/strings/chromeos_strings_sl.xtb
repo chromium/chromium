@@ -2,18 +2,22 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1018656279737460067">Preklicano</translation>
+<translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
+<translation id="1238612778414822719">Zakasnitev HTTPS</translation>
 <translation id="1290331692326790741">Šibek signal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Ustrezanje velikosti območja za optično branje</translation>
 <translation id="1397738625398125236">Prehod je mogoče preveriti</translation>
+<translation id="1398634363027580500">Precejšnja zakasnitev HTTPS</translation>
 <translation id="1413240736185167732">Napaka – napaka filtra</translation>
 <translation id="1468664791493211953">Ponudbe</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> upravlja to napravo in morda nadzira vašo dejavnost.</translation>
 <translation id="150962533380566081">Neveljavna koda PUK.</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
+<translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +46,7 @@
 <translation id="3083667275341675831">Diagnosticiranje povezav</translation>
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
+<translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
@@ -59,16 +64,16 @@
 <translation id="3865414814144988605">Ločljivost</translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
-<translation id="4027485274696301677">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="ENROLLMENT_DOMAIN" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
+<translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Optično prebrane datoteke so shranjene.</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
 <translation id="445059817448385655">Staro geslo</translation>
@@ -79,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
+<translation id="467715984478005772">Sum na požarni zid</translation>
 <translation id="4691278870498629773">Ustavljeno – ni pladnja</translation>
 <translation id="469379815867856270">Moč signala</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
@@ -89,7 +95,6 @@
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Izvedi</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
 <translation id="520299634122159966">Ni razpoložljivih optičnih bralnikov</translation>
 <translation id="5212543919916444558">Na zaslonu ni ničesar uporabnega.
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
@@ -111,6 +116,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6048107060512778456">Napaka – zastoj papirja</translation>
 <translation id="6050189528197190982">Sivine</translation>
 <translation id="6058625436358447366">Za dokončanje vnesite staro in novo geslo</translation>
+<translation id="6061772781719867950">Neuspele zahteve HTTP</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
@@ -122,27 +128,35 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
 <translation id="6517239166834772319">Raziskovanje</translation>
 <translation id="6527081081771465939">Neznani varnostni protokol za Wi-Fi</translation>
+<translation id="65587193855025101">Plosko</translation>
 <translation id="6564646048574748301">Napaka – tiskalnik je nedosegljiv</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
 <translation id="6620487321149975369">Tiskalna opravila bodo prikazana v zgodovini, razen če jih ročno odstranite</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6704062477274546131">Razrešitev DNS-ja</translation>
 <translation id="6747215703636344499">Ustavljeno – izhodni pladenj je poln</translation>
+<translation id="6766275201586212568">Neuspele razrešitve DNS</translation>
+<translation id="6768237774506518020">Visoko število napak pri razreševanju DNS</translation>
+<translation id="6839141349259399400">Ni mogoče vzpostaviti povezave z optičnimi bralniki?</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7805768142964895445">Stanje</translation>
+<translation id="7855434858642800953">Optično prebrana datoteka je shranjena.</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
+<translation id="8160445423316272678">Če želite začeti, dokument postavite na optični bralnik in izberite <ph name="SPAN_BEGIN" />Optično branje<ph name="SPAN_END" />.</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
 <translation id="8294431847097064396">Vir</translation>
+<translation id="8302368968391049045">Požarni zid HTTPS</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8352772353338965963">Dodajte račun za prijavo z več računi. Do vseh prijavljenih računov je mogoče dostopati brez gesla, zato to funkcijo uporabljajte samo z zaupanja vrednimi računi.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>
@@ -159,5 +173,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
 </translationbundle>

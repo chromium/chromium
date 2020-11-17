@@ -488,7 +488,6 @@
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="290376772003165898">Бет <ph name="LANGUAGE" /> тілінде емес пе?</translation>
 <translation id="2909946352844186028">Желі өзгерісі анықталды.</translation>
-<translation id="2910133103376701357">Құрылғы мен есептік жазбаны <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="2911973620368911614">Тапсырма орындалатын есептік жазба пайдаланушысының идентификаторы</translation>
 <translation id="2915068235268646559">Бұзылу уақыты: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Басқа бағдарламаларды жабу</translation>
@@ -759,7 +758,6 @@
     қолдануын талап етті, бірақ бұл саясатты дәл қазір қолдану мүмкін емес.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттік PDF құжаты}other{{COUNT} беттік PDF құжаты}}</translation>
 <translation id="4030383055268325496">&amp;Қосу әрекетін кері қайтару</translation>
-<translation id="4032320456957708163">Браузерді <ph name="ENROLLMENT_DOMAIN" /> басқарады</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" кілті: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -842,7 +840,6 @@
 <translation id="4270541775497538019">6-жинастырушы</translation>
 <translation id="4275830172053184480">Құрылғыңызды қайта іске қосу</translation>
 <translation id="4277028893293644418">Құпия сөзді қайта орнату</translation>
-<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Бұл карта Google есептік жазбаңызда сақталды}other{Бұл карталар Google есептік жазбаңызда сақталды}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> бетіне арналған нобай</translation>
 <translation id="42981349822642051">Жаю</translation>
@@ -962,7 +959,6 @@
 <translation id="4771973620359291008">Белгісіз қате орын алды.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Қалқымалы терезе бөгелді}other{# қалқымалы терезе бөгелді}}</translation>
 <translation id="4780366598804516005">1-ші пошта жәшігі</translation>
-<translation id="4780900888022378816">Құрылғыңызды <ph name="ENROLLMENT_DOMAIN" /> домені, ал есептік жазбаңызды <ph name="ACCOUNT_DOMAIN" /> домені басқарады.</translation>
 <translation id="4785689107224900852">Осы қойындыға ауысу</translation>
 <translation id="4791134497475588553">Орнатылған Linux қолданбалары және олар соңғы рет пайдаланылған күн</translation>
 <translation id="4792686369684665359">Жібергелі тұрған ақпаратыңыз қорғалмаған</translation>
@@ -1175,7 +1171,6 @@
 <translation id="560412284261940334">Басқаруға қолдау көрсетілмеген</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">Бұл – жалған немесе алаяқ сайт болуы мүмкін. Chrome одан шығып кетуді ұсынады.</translation>
 <translation id="5610142619324316209">Байланысты тексеру</translation>
 <translation id="5610807607761827392">Карталарды және мекенжайларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде реттей аласыз.</translation>
 <translation id="561165882404867731">Осы бетті Google Translate арқылы аударыңыз.</translation>
@@ -1247,6 +1242,7 @@
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> бастапқы саясатына сәйкес бөгелді.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхрондалған)</translation>
+<translation id="5913377024445952699">Экранды түсіру кідіртілді</translation>
 <translation id="59174027418879706">Қосылған</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Қосулы</translation>
@@ -1403,7 +1399,6 @@
 <translation id="6529602333819889595">Жоюды &amp;қайталау</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
-<translation id="6554795675067793129">Есептік жазбаңызды <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="6556866813142980365">Қайта орындау</translation>
 <translation id="6569060085658103619">Кеңейтім бетін көрудесіз</translation>
 <translation id="6573200754375280815">Оң жағын екі рет тесу</translation>
@@ -1918,6 +1913,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Сәйкес құпия сөздер жоқ. Барлық сақталған құпия сөздерді көрсету.</translation>
 <translation id="8625384913736129811">Картаны осы құрылғыға сақтау</translation>
+<translation id="8627040765059109009">Экранды түсіру қайта қосылды</translation>
 <translation id="8657078576661269990">Әкімші <ph name="ORIGIN_NAME" /> сайтындағы мазмұнды <ph name="VM_NAME_1" /> және <ph name="VM_NAME_2" /> жүйелерімен бөлісуге тыйым салды.</translation>
 <translation id="8663226718884576429">Тапсырыс қорытындысы, <ph name="TOTAL_LABEL" />, толығырақ деректер</translation>
 <translation id="867224526087042813">Қолтаңба</translation>

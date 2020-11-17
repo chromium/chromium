@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Tangkapan Skrin</translation>
 <translation id="1111673857033749125">Penanda halaman yang disimpan pada peranti anda yang lain akan dipaparkan di sini.</translation>
 <translation id="1113597929977215864">Tunjukkan paparan ringkas</translation>
+<translation id="1118561384561215815">Dptkan bantuan utk tugas di web</translation>
 <translation id="1123070903960493543">Cara anda berinteraksi dengan Chrome, tetapan yang telah anda pilih, butiran ranap sistem Chrome</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada tapak web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
 <translation id="1129510026454351943">Butiran: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">Segerakkan penanda halaman anda</translation>
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1754404134430936718">Teks Disalin</translation>
+<translation id="1772137089884020309">Senarai folder penanda halaman ditutup</translation>
 <translation id="1782483593938241562">Tarikh tamat <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Dipasang</translation>
 <translation id="1792959175193046959">Tukar lokasi muat turun lalai pada bila-bila masa</translation>
@@ -181,6 +183,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2276696007612801991">Log masuk ke akaun Google anda untuk menyemak kata laluan anda</translation>
 <translation id="2286841657746966508">Alamat pengebilan</translation>
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
+<translation id="230155349749732438">Untuk menggunakan tetapan ini <ph name="BEGIN_LINK" />Jadikan carian dan penyemakan imbas lebih baik<ph name="END_LINK" /> mesti dihidupkan</translation>
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
 <translation id="2321958826496381788">Seret gelangsar sehingga anda selesa membaca teks ini. Teks harus kelihatan sekurang-kurangnya sebesar ini selepas mengetik dua kali pada perenggan.</translation>
@@ -315,6 +318,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3269093882174072735">Muatkan imej</translation>
 <translation id="3269956123044984603">Untuk mendapatkan tab daripada peranti anda yang lain, hidupkan "Auto segerak data" dalam tetapan akaun Android.</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
+<translation id="3284510035090979597">Bantuan Proaktif</translation>
 <translation id="3285080554353377245">Video tentang cara menggunakan Chrome</translation>
 <translation id="3288003805934695103">Memuatkan semula halaman</translation>
 <translation id="32895400574683172">Pemberitahuan dibenarkan</translation>
@@ -422,6 +426,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4084682180776658562">Penanda halaman</translation>
 <translation id="4084712963632273211">Daripada <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />disampaikan oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Padam data apl?</translation>
+<translation id="4095189195365058471">Baca kemudian <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Bantu jadikan Chrome lebih baik dengan menghantar laporan perangkaan penggunaan dan ranap sistem kepada Google.</translation>
 <translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
 <translation id="4116038641877404294">Muat turun halaman untuk digunakan di luar talian</translation>
@@ -514,6 +519,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 muat turun selesai.}other{# muat turun selesai.}}</translation>
 <translation id="4766678251456904326">Tambahkan akaun pada peranti</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 muat turun dijadualkan.}other{# muat turun dijadualkan.}}</translation>
+<translation id="4791358705705538979">Membantu anda menyelesaikan tugas, seperti daftar keluar, di seluruh web</translation>
 <translation id="4802417911091824046">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.
 
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /></translation>
@@ -663,6 +669,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5797070761912323120">Google boleh menggunakan sejarah anda untuk memperibadikan Carian, iklan dan perkhidmatan Google yang lain</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# jam yang lalu}other{# jam yang lalu}}</translation>
 <translation id="5810288467834065221">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
+<translation id="5810864297166300463">Bantuan Web</translation>
 <translation id="5814131985548525293">Ketik di sini atau ketik ikon suara untuk bermula</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
@@ -857,6 +864,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="702463548815491781">Disyorkan apabila TalkBack atau Akses Suis dihidupkan</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> dipulihkan</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
+<translation id="7030675613184250187">Anda boleh menyimpan halaman ke senarai bacaan anda untuk mencari halaman itu lagi atau membaca halaman itu secara luar talian</translation>
 <translation id="703523980599857277">Tukar halaman utama</translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
@@ -877,6 +885,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7177466738963138057">Anda boleh menukar perkara ini selepas ini dalam Tetapan</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7187993566681480880">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
+<translation id="718926126787620637">Senarai folder penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="7189372733857464326">Menunggu Perkhidmatan Google Play selesai mengemas kini</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7233236755231902816">Untuk melihat web dalam bahasa anda, dapatkan versi terkini Chrome</translation>
@@ -1015,6 +1024,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8127542551745560481">Edit halaman utama</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8137558756159375272">Sentuh untuk Cari menghantar perkataan yang dipilih dan halaman semasa sebagai konteks kepada Carian Google. Anda boleh mematikannya di <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
+<translation id="8153351135626613369">Assistant akan muncul apabila apl ini mengesan bahawa bantuannya akan memudahkan anda pada laman web yang disokong</translation>
 <translation id="8156139159503939589">Apakah bahasa yang anda gunakan untuk membaca?</translation>
 <translation id="8168435359814927499">Kandungan</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fail lagi</translation>
@@ -1112,6 +1122,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8912362522468806198">Akaun Google</translation>
 <translation id="8920114477895755567">Menunggu butiran ibu bapa.</translation>
 <translation id="8922289737868596582">Muat turun halaman daripada butang Lagi pilihan untuk digunakan di luar talian</translation>
+<translation id="8928626432984354940">Senarai folder penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="8937772741022875483">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital?</translation>
 <translation id="8942627711005830162">Buka dalam tetingkap lain</translation>
 <translation id="8951232171465285730">Chrome telah menjimatkan data anda sebanyak <ph name="MEGABYTES" /> MB</translation>
@@ -1151,7 +1162,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="9155898266292537608">Anda juga boleh mencari dengan mengetik pantas pada perkataan</translation>
 <translation id="9169507124922466868">Sejarah navigasi separa terbuka</translation>
 <translation id="9191031968346938109">Tambahkan pada…</translation>
-<translation id="919615279147764192">Untuk membantu anda menyelesaikan tugas, Google akan menerima URL dan kandungan bagi laman tempat anda menggunakan Assistant, serta maklumat yang anda serahkan menerusi Assistant. Maklumat ini mungkin disimpan dalam akaun Google anda. Anda boleh mematikan Assistant dalam tetapan Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Disemak 1 minit yang lalu}other{Disemak # minit yang lalu}}</translation>
 <translation id="9204836675896933765">1 fail lagi</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1173,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="93753284658583800">Halaman utama ditukar</translation>
 <translation id="938850635132480979">Ralat: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Masukkan frasa laluan</translation>
+<translation id="948039501338975565">Senarai folder penanda halaman</translation>
 <translation id="95817756606698420">Chrome boleh menggunakan <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> untuk melakukan carian di China. Anda boleh menukarnya dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Pasang apl ini</translation>
 <translation id="968900484120156207">Halaman yang anda lawati dipaparkan di sini</translation>

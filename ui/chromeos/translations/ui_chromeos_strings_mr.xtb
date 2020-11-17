@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1000498691615767391">उघडण्यासाठी फोल्डर निवडा</translation>
+<translation id="1016731229041675999">अरबी लिप्यंतरण</translation>
+<translation id="102325055885714714">तामिळ लिप्यंतरण</translation>
 <translation id="1035094536595558507">स्लाइड दृश्य</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> आयटम हटवत आहे...</translation>
 <translation id="1049926623896334335">Word दस्तऐवज</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये हलवा.</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
+<translation id="1082570120854863773">चीनी (पारंपारिक) पिनयिन</translation>
 <translation id="1119069657431255176">Bzip2 संकीर्ण tar संग्रहण</translation>
 <translation id="1120073797882051782">हँगल Romaja</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> आढळले.
@@ -41,10 +44,13 @@
 <translation id="1378727793141957596">Google ड्राइव्ह मध्ये तुमचे स्वागत आहे!</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">स्लायाडर शोधा</translation>
+<translation id="1411401459521499147">मानक कीबोर्डसह रोमानियन</translation>
+<translation id="14286271616944851">फारसी</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> मध्ये हलवले.</translation>
 <translation id="1464724975715666883">१ एरर.</translation>
+<translation id="1466220122465387403">इंग्रजी-आधारित कीबोर्डसह सोरानी कुर्दिश</translation>
 <translation id="1467432559032391204">डावे</translation>
 <translation id="1472351751615457820">ग्रीक लिप्यंतरण</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" अपलोड केली नाही. आपल्या Google ड्राइव्हमध्ये पर्याप्त स्थान नाही.</translation>
@@ -59,6 +65,7 @@
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1622022025445651011">फ्रेंच (फ्रान्स)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फाइल ऑफलाइन उपलब्ध करत आहे</translation>
+<translation id="1649464394998806860">फोनेटिक AATSEEL कीबोर्डसह रशियन</translation>
 <translation id="164969095109328410">Chrome डिव्हाइस</translation>
 <translation id="1665611772925418501">फाइल सुधारली जाऊ शकली नाही.</translation>
 <translation id="1673103856845176271">फाइलमध्ये सुरक्षिततेच्या कारणांमुळे प्रवेश करता येऊ शकला नाही.</translation>
@@ -89,9 +96,11 @@
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
+<translation id="2016165510591645686">चीनी पिनयिन</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="2060251957438343874">जर्मन (जर्मनी)</translation>
+<translation id="2060392775416297569">चीनी कँगजी</translation>
 <translation id="2066433303065022982">हिब्रू लिप्यंतरण</translation>
 <translation id="2070909990982335904">डॉटने प्रारंभ होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
@@ -123,11 +132,13 @@
 <translation id="2453576648990281505">फाइल याआधीच विद्यमान आहे</translation>
 <translation id="2464079411014186876">आईस्क्रीम</translation>
 <translation id="2468402215065996499">तामागोची</translation>
+<translation id="2484472280211296077">तामिळ फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2541377937973966830">या फोल्डरमधील आशय रीड-ओन्ली आहेत. काही अ‍ॅक्टिव्हिटींना सपोर्ट नाही.</translation>
 <translation id="2542049655219295786">Google सारणी</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> मध्ये जोडा</translation>
+<translation id="255285553751745003">व्हिएतनामी टेलेक्स</translation>
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">बेडूक</translation>
@@ -140,11 +151,13 @@
 <translation id="2664412712123763093">फाइलचे स्थान</translation>
 <translation id="2672394958563893062">एरर आली. सुरवातीपासून रीस्टार्ट करण्यासाठी क्लिक करा.</translation>
 <translation id="2676946222714718093">यावर प्ले होत आहे</translation>
+<translation id="2718873684053049373">चीनी दाई</translation>
 <translation id="2735623501230989521">Parallels Desktop ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2781645665747935084">बेल्जियन</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
 <translation id="2787047795752739979">मूळवर खाडाखोड करा</translation>
+<translation id="2798201218072736543">पोर्तुगीज (ब्राझील)</translation>
 <translation id="2822854841007275488">अरबी</translation>
 <translation id="2843806747483486897">डीफॉल्ट बदला...</translation>
 <translation id="2850124913210091882">बॅकअप घ्या</translation>
@@ -167,12 +180,14 @@
 <translation id="3003633581067744647">थंबनेल व्ह्यू वर स्विच करा</translation>
 <translation id="3007214526293698309">गुणोत्तराचे निराकरण करा</translation>
 <translation id="303198083543495566">भूगोल</translation>
+<translation id="3040867506619073727">सिंहला</translation>
 <translation id="3057861065630527966">तुमचे फोटो आणि व्हिडिओंचा बॅकअप घ्या</translation>
 <translation id="3067790092342515856">Windows फाइल</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> सह शेअर करा</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">पूर्ण झाले</translation>
+<translation id="3171711500892772766">तेलुगु फोनेटिक</translation>
 <translation id="3182237543071236785">इंग्रजी (यूके)</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3197563288998582412">यूके द्वोराक</translation>
@@ -211,6 +226,7 @@
 <translation id="357479282490346887">लिथुआनियन</translation>
 <translation id="3603385196401704894">कॅनेडियन फ्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
+<translation id="3608699648194837100">तामिळ ITRANS</translation>
 <translation id="3609785682760573515">सिंक करत आहे...</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
@@ -221,6 +237,7 @@
 <translation id="3645531960514756307">फोल्डर अनपिन करा</translation>
 <translation id="3685122418104378273">मोबाइल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
+<translation id="3717701509378976246">आर्मेनियन</translation>
 <translation id="3726463242007121105">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम समर्थित नाही.</translation>
 <translation id="3741243925913727067">Google ड्राइव्हवर तुमच्या मीडिया डिव्हाइसच्या फोटो आणि व्हिडिओंचा बॅकअप घ्या.</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -259,6 +276,7 @@
 <translation id="4261901459838235729">Google सादरीकरण</translation>
 <translation id="4290535918735525311">Linux सह एक फोल्डर शेअर केला</translation>
 <translation id="4299729908419173967">ब्राझिलियन</translation>
+<translation id="4305486654020746131">पंजाबी</translation>
 <translation id="4309915981827077375">सामान्य माहिती</translation>
 <translation id="4315949787858895817">डच (बेल्जियम)</translation>
 <translation id="4326192123064055915">कॉफी</translation>
@@ -266,6 +284,7 @@
 <translation id="4364327530094270451">खरबूज</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
+<translation id="4406790547322756995">TCVN कीबोर्डसह व्हिएतनामी</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
 <translation id="4470564870223067757">हँगल 2 संच</translation>
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
@@ -284,8 +303,10 @@
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर कॉपी करत आहे</translation>
 <translation id="4627439232948440198">संस्कृत</translation>
 <translation id="4631887759990505102">कलाकार</translation>
+<translation id="463813589602055304">चीनी वुबी</translation>
 <translation id="4656293982926141856">हा कॉंप्युटर</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' च्या सदस्यांशी हे आयटम शेअर केले जात नाही तोवर त्यांना ॲक्सेस असणार नाही.</translation>
+<translation id="4669979276126590335">सर्बियन लिप्यंतरण</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
 <translation id="4693155481716051732">सुशी</translation>
 <translation id="4694604912444486114">माकड</translation>
@@ -296,8 +317,10 @@
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
 <translation id="4732760563705710320">क्षमस्‍व, आपल्‍या कास्‍ट डिव्‍हाइसद्वारे हा व्‍हिडिओ समर्थित नाही.</translation>
+<translation id="4733240808404733495">TIS 820-2531 कीबोर्डसह थाई</translation>
 <translation id="4734518477988699048">इनपुट मूल्य चुकीचे आहे.</translation>
 <translation id="4737050008115666127">लँड करत आहे</translation>
+<translation id="4738570502598323051">InScript कीबोर्डसह तामिळ</translation>
 <translation id="4747271164117300400">मॅसे‍डोनियन</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4763055924467562718">कन्नड फोनेटिक</translation>
@@ -309,6 +332,7 @@
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
 <translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आयटम निवडले</translation>
+<translation id="4842306555839940112">तेलुगु लिप्यंतरण</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">जर्मन (बेल्जियम)</translation>
 <translation id="4850886885716139402">पहा</translation>
@@ -384,6 +408,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5368191757080475556">Linux सह फोल्डर शेअर करा</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
 <translation id="5418923334382419584">म्यानमार कीबोर्ड</translation>
+<translation id="5427022459704612663">व्हिएतनामी VIQR</translation>
 <translation id="5428105026674456456">स्पॅनिश</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> साठी कोणतेही परिणाम नाहीत.</translation>
 <translation id="5449551289610225147">चुकीचा पासवर्ड</translation>
@@ -399,6 +424,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5534520101572674276">आकार मोजत आहे</translation>
 <translation id="5551831234974556292">माल्टीज</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5601917305267643189">स्पॅनिश (स्पेन)</translation>
 <translation id="5605830556594064952">येएस द्वोराक</translation>
 <translation id="5623849870004487514">फोनेटिक कीबोर्डसह नेपाळी</translation>
 <translation id="5649768706273821470">ऐका</translation>
@@ -423,6 +449,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5833610766403489739">ही फाइल कुठेतरी हरवली आहे. कृपया तुमचे डाउनलोड स्थान सेटिंग तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
+<translation id="5846013392911797712">किडमनी कीबोर्डसह थाई</translation>
 <translation id="5850516540536751549">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> ला भेट द्या.
 <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">येथे पाहण्यासाठी काहीही नाही...</translation>
@@ -440,6 +467,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="60357267506638014">झेक QWERTY</translation>
 <translation id="604001903249547235">क्लाउड बॅकअप</translation>
 <translation id="6040143037577758943">बंद करा</translation>
+<translation id="6041767187407754614">चीनी क्विक</translation>
 <translation id="6074825444536523002">Google Forms</translation>
 <translation id="6096979789310008754">शोध मजकूर साफ केला, सर्व फाइल आणि फोल्डर दाखवत आहे.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर हलवत आहे</translation>
@@ -496,6 +524,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6806699711453372963">Linux शेअरिंग व्यवस्थापित करा</translation>
 <translation id="6808193438228982088">कोल्हा</translation>
+<translation id="6819938753873901684">टिग्रीन्या</translation>
 <translation id="6820687829547641339">Gzip संकीर्ण tar संग्रहण</translation>
 <translation id="6823166707458800069">या फोल्डरमध्ये सेव्ह केलेल्या सर्व फाइलचा आपोआप ऑनलाइन बॅकअप घेतला जातो.</translation>
 <translation id="6825883775269213504">रशियन</translation>
@@ -504,6 +533,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6862635236584086457">या फोल्डरमध्ये सेव्ह केलेल्या सर्व फायलींचा आपोआप ऑनलाइन बॅक अप घेतला जातो</translation>
 <translation id="6876155724392614295">सायकल</translation>
 <translation id="6878261347041253038">देवनागरी कीबोर्ड (Phonetic)</translation>
+<translation id="6878301034829092662">फोनेटिक YaZHert कीबोर्डसह रशियन</translation>
 <translation id="6885780034956018177">गोगलगाय</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6898028766943174120">आणखी सब-फोल्डर...</translation>
@@ -531,10 +561,14 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7106346894903675391">अधिक स्टोरेज विकत घ्या...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइव्ह शोधा&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="714369685015246514">चीनी ॲरे</translation>
+<translation id="7169438078134535111">F-कीबोर्डसह तुर्की</translation>
 <translation id="7170467426996704624">लिप्यंतरण (salam → ሰላም)</translation>
+<translation id="7173380554947442031">व्हिएतनामी VNI</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">या फॉरमॅटमध्ये फाइल सेव्ह करा</translation>
+<translation id="7221999925319694720">चीनी झुयिन</translation>
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
 <translation id="7248671827512403053">ॲप्लिकेशन</translation>
 <translation id="7268659760406822741">उपलब्ध सेवा</translation>
@@ -601,6 +635,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7881969471599061635">उपशीर्षके अक्षम करा</translation>
 <translation id="78946041517601018">शेअर केलेली ड्राइव्ह</translation>
 <translation id="7898607018410277265">गुजराती कीबोर्ड (नवीन फोनेटिक)</translation>
+<translation id="7908150161525408421">स्पॅनिश (लॅटिन अमेरिका)</translation>
 <translation id="7908793776359722643">पार्टिशन फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="7925686952655276919">समक्रमणासाठी मोबाइल डेटा वापरु नका</translation>
 <translation id="7928710562641958568">डिव्हाइस काढून टाका</translation>
@@ -608,6 +643,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7953739707111622108">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम ओळखीचे नाही.</translation>
 <translation id="7969525169268594403">स्लोव्हेनियन</translation>
 <translation id="7982283708762922719">उंची</translation>
+<translation id="7988940501536183135">फोनेटिक कीबोर्डसह रशियन</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -627,8 +663,10 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
 <translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>
 <translation id="8157939133946352716">7x5</translation>
+<translation id="8159982522558068586">टाइपरायटर कीबोर्डसह तामिळ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">डिव्हाइस मॉडेल</translation>
+<translation id="8196481879028929035">पोर्तुगीज (पोर्तुगाल)</translation>
 <translation id="8208580316430297579">कलाकृती</translation>
 <translation id="8223479393428528563">ऑफलाइन वापराकरिता या फाइल सेव्ह करण्यासाठी, परत ऑनलाइन व्‍हा, फाइलंवर राइट-क्लिक करा आणि <ph name="OFFLINE_CHECKBOX_NAME" /> पर्याय निवडा.</translation>
 <translation id="8249296373107784235">रद्द करा</translation>
@@ -661,6 +699,10 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> आयटम संकालित करीत आहे...</translation>
 <translation id="8600173386174225982">फाइल सूची थंबनेल व्ह्यूमध्ये बदलली गेली आहे.</translation>
 <translation id="8601932370724196034">Crostini इमेज फाइल</translation>
+<translation id="8608272065177710825">फोनेटिक कीबोर्डसह बल्गेरियन</translation>
+<translation id="8619608420536266892">Tamil99 कीबोर्डसह तामिळ</translation>
+<translation id="863846969551842412">कँटोनीज</translation>
+<translation id="8669047053197791123">पट्टाचोटे कीबोर्डसह थाई</translation>
 <translation id="8669949407341943408">हलवत आहे...</translation>
 <translation id="8688649574682805922">जर्मन (स्वित्झर्लंड)</translation>
 <translation id="8694836330346852143">उर्दू</translation>

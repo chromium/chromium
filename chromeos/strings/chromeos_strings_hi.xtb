@@ -2,18 +2,22 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1018656279737460067">रद्द</translation>
+<translation id="1071587090247825784">फ़ायरवॉल पहचाना गया</translation>
 <translation id="1075811647922107217">पेज का साइज़</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
+<translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
+<translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
-<translation id="1482734542997480527">इस डिवाइस को <ph name="ENROLLMENT_DOMAIN" /> प्रबंधित करता है और आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1703835215927279855">लेटर</translation>
@@ -42,6 +46,7 @@
 <translation id="3083667275341675831">कनेक्टिविटी डाइग्नोस्टिक्स</translation>
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
+<translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
@@ -59,16 +64,16 @@
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> इस डिवाइस को प्रबंधित करता है. इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के किसी वेबपेज पर जाने, उसके पासवर्ड, और ईमेल की जानकारी शामिल होती है.</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
-<translation id="4027485274696301677">इस <ph name="DEVICE_TYPE" /> को <ph name="ENROLLMENT_DOMAIN" /> प्रबंधित करता है. एडमिन, डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
+<translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
+<translation id="4421943235406860811">स्कैन की गई फ़ाइलें सेव हो गईं!</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
@@ -79,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> में से <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट का काम बंद करने के लिए enter का बटन दबाएं.</translation>
 <translation id="4646949265910132906">सुरक्षित वाई-फ़ाई कनेक्शन</translation>
 <translation id="467510802200863975">पासवर्ड मेल नहीं खाते</translation>
+<translation id="467715984478005772">फ़ायरवॉल हो सकता है</translation>
 <translation id="4691278870498629773">बंद हो गया - ट्रे नहीं है</translation>
 <translation id="469379815867856270">सिग्नल की क्षमता</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
@@ -89,7 +95,6 @@
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4985509611418653372">चलाएं</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> इस उपयोगकर्ता को प्रबंधित करता है और यह किसी दूसरी जगह से सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता गतिविधि की निगरानी कर सकता है.</translation>
 <translation id="520299634122159966">कोई भी स्कैनर उपलब्ध नहीं है</translation>
 <translation id="5212543919916444558">मुझे आपकी स्क्रीन पर ऐसा कुछ नहीं मिला जिसमें मैं आपकी सहायता कर पाऊं.
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">प्रिंट नहीं हो पाया - काग़ज़ फ़ंसा है</translation>
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
+<translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
@@ -122,27 +128,35 @@
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>
 <translation id="6527081081771465939">इस वाई-फ़ाई सुरक्षा प्रोटोकॉल की जानकारी नहीं है</translation>
+<translation id="65587193855025101">फ़्लैटबेड</translation>
 <translation id="6564646048574748301">प्रिंट नहीं हो पाया - प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
 <translation id="6618744767048954150">जांच चल रही है</translation>
 <translation id="6620487321149975369">प्रिंट की गई फ़ाइलें तब तक इतिहास में दिखेंगी, जब तक इन्हें मैन्युअल तरीके से हटा नहीं दिया जाता</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
+<translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
+<translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की ज़्यादा दर</translation>
+<translation id="6839141349259399400">क्या आप स्कैनर से कनेक्ट नहीं कर पा रहे हैं?</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन प्रबंधित करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7805768142964895445">स्थिति</translation>
+<translation id="7855434858642800953">स्कैन की गई फ़ाइल सेव हो गई!</translation>
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
+<translation id="8160445423316272678">स्कैनर पर अपना दस्तावेज़ रखें और शुरू करने के लिए, <ph name="SPAN_BEGIN" />स्कैन करें<ph name="SPAN_END" /> को चुनें</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8294431847097064396">स्रोत</translation>
+<translation id="8302368968391049045">एचटीटीपीएस फ़ायरवॉल</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>
@@ -159,5 +173,6 @@
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
+<translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
 </translationbundle>

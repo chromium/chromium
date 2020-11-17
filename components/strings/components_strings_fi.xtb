@@ -488,7 +488,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2903493209154104877">Osoitteet</translation>
 <translation id="290376772003165898">Eikö sivu ole kirjoitettu kielellä <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Verkossa havaittiin muutos.</translation>
-<translation id="2910133103376701357"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää laitettasi ja tiliäsi.</translation>
 <translation id="2911973620368911614">Työpaikan kirjanpitokäyttäjän tunnus</translation>
 <translation id="2915068235268646559">Kaatuminen <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Sulje muita ohjelmia.</translation>
@@ -761,7 +760,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     soveltamista kaikkiin sen pyyntöihin, mutta käytäntöä ei voi soveltaa tällä hetkellä.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokumentti, jossa on {COUNT} sivu}other{PDF-dokumentti, jossa on {COUNT} sivua}}</translation>
 <translation id="4030383055268325496">K&amp;umoa lisäys</translation>
-<translation id="4032320456957708163">Selaimen ylläpitäjä on <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4058922952496707368">Avain <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (kirjekuori)</translation>
@@ -844,7 +842,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4270541775497538019">Pinoaja 6</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää laitetta (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Tämä kortti on tallennettu Google-tilillesi}other{Nämä kortit on tallennettu Google-tilillesi}}</translation>
 <translation id="4297502707443874121">Sivun <ph name="THUMBNAIL_PAGE" /> pikkukuva</translation>
 <translation id="42981349822642051">Laajenna</translation>
@@ -964,7 +961,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4771973620359291008">Tapahtui tuntematon virhe.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ponnahdusikkuna estetty}other{# ponnahdusikkunaa estetty}}</translation>
 <translation id="4780366598804516005">Postilaatikko 1</translation>
-<translation id="4780900888022378816"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää laitettasi ja <ph name="ACCOUNT_DOMAIN" /> tiliäsi.</translation>
 <translation id="4785689107224900852">Siirry tälle välilehdelle</translation>
 <translation id="4791134497475588553">Asennetut Linux-sovellukset ja niiden edellinen käyttökerta</translation>
 <translation id="4792686369684665359">Olet lähettämässä suojaamattomia tietoja</translation>
@@ -1177,7 +1173,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
 <translation id="5605670050355397069">Kierrevihko</translation>
 <translation id="5607240918979444548">Arkkitehti-C</translation>
-<translation id="5608165884683734521">Tämä voi olla vilpillinen tai valesivusto. Chrome suosittelee siltä poistumista.</translation>
 <translation id="5610142619324316209">Tarkista yhteys.</translation>
 <translation id="5610807607761827392">Voit hallita kortteja ja osoitteita <ph name="BEGIN_LINK" />Asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Käännä tämä sivu Google Kääntäjällä</translation>
@@ -1249,6 +1244,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> estää tämän alkuperäkäytännössään.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronoitu)</translation>
+<translation id="5913377024445952699">Näytön tallennus keskeytetty</translation>
 <translation id="59174027418879706">Käytössä</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Päällä</translation>
@@ -1405,7 +1401,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6529602333819889595">&amp;Toista poisto</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6547208576736763147">Kaksi reikää vasemmalla</translation>
-<translation id="6554795675067793129">Tätä tiliä ylläpitää <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="6556866813142980365">Tee uudelleen</translation>
 <translation id="6569060085658103619">Tämä on laajennussivu.</translation>
 <translation id="6573200754375280815">Kaksi reikää oikealla</translation>
@@ -1921,6 +1916,7 @@ Lisätietoja:
 <translation id="8622948367223941507">Laki-ekstra</translation>
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8625384913736129811">Tallenna kortti tälle laitteelle</translation>
+<translation id="8627040765059109009">Näytön tallennusta jatkettu</translation>
 <translation id="8657078576661269990">Järjestelmänvalvoja on estänyt sivustolta <ph name="ORIGIN_NAME" /> jakamisen näille: <ph name="VM_NAME_1" /> ja <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
 <translation id="867224526087042813">Allekirjoitus</translation>

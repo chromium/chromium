@@ -17,7 +17,7 @@
 <translation id="1104084341931202936">ユーザー補助機能の設定を表示</translation>
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
 <translation id="1119348796022671382">壁紙から抽出した色を使用して、インターフェースに薄く色付けします。</translation>
-<translation id="112308213915226829">シェルフを自動的に隠す</translation>
+<translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -103,7 +103,6 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> Hz）に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" />）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1919743966458266018">タスク マネージャを起動するショートカットが変わりました。<ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> をご使用ください。</translation>
 <translation id="1923539912171292317">自動クリック</translation>
-<translation id="1924640696879807758">スマートフォンから</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@
 <translation id="2405664212338326887">未接続</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> は <ph name="DOMAIN" /> が管理する管理対象セッションです</translation>
 <translation id="2427507373259914951">左クリック</translation>
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
@@ -324,9 +322,9 @@
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4121728057981832179">仮想マシンがマイクを使用しています</translation>
+<translation id="4126167871198063089">「選択して読み上げ」を終了</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> は <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="415719264485676252">画面キャプチャはブロックされています</translation>
 <translation id="4157822100366708405">ダークテーマの設定</translation>
 <translation id="4181841719683918333">言語</translation>
@@ -383,6 +381,7 @@
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4570957409596482333">[選択して読み上げ] ボタン</translation>
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">プレビューを表示</translation>
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4596144739579517758">ダークテーマはオフになっています</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
@@ -430,11 +429,13 @@
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />時間<ph name="MINUTES" />分<ph name="SECONDS" />秒</translation>
 <translation id="4975771730019223894">アプリのバッジ</translation>
+<translation id="5003993274120026347">次の文</translation>
 <translation id="5019169674188023236">お使いの <ph name="DEVICE_TYPE" /> では Bluetooth または Wi-Fi が無効になっているようです。Phone Hub を使用するには接続を確認してください。</translation>
 <translation id="5030687792513154421">時間切れです</translation>
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>
+<translation id="504465286040788597">前の段落</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
@@ -474,6 +475,7 @@
 <translation id="554893713779400387">音声入力を切り替え</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
+<translation id="557563299383177668">次の段落</translation>
 <translation id="558849140439112033">キャプチャする領域をドラッグして選択してください</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
@@ -613,7 +615,6 @@
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6945221475159498467">選択</translation>
-<translation id="6953890208095195458">画面上のコンテンツに問題があるため、管理者によって画面の録画が停止されました。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
@@ -668,7 +669,6 @@
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">画面上のコンテンツの画面キャプチャを撮る機能は、管理者によってブロックされています。</translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
@@ -727,6 +727,7 @@
 <translation id="8029247720646289474">アクセス ポイント接続エラー</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
 <translation id="8030169304546394654">切断済み</translation>
+<translation id="8036504271468642248">前の文</translation>
 <translation id="8042893070933512245">ユーザー補助機能の設定メニューを開く</translation>
 <translation id="8048123526339889627">Bluetooth 設定</translation>
 <translation id="8054466585765276473">バッテリーの残り時間を計算しています。</translation>
@@ -865,6 +866,7 @@
 <translation id="921989828232331238">保護者の方がこのデバイスを終日ロックしています</translation>
 <translation id="9220525904950070496">アカウントを削除</translation>
 <translation id="923686485342484400">ログアウトするには、Ctrl Shift Q を 2 回押します。</translation>
+<translation id="925832987464884575">プレビューを非表示</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="98515147261107953">横</translation>

@@ -12,6 +12,7 @@
 <translation id="1357932062193643861">Chromium açıldığında sor</translation>
 <translation id="1396446129537741364">Chromium, şifreleri göstermeye çalışıyor.</translation>
 <translation id="1414495520565016063">Chromium'da oturum açtınız!</translation>
+<translation id="1414973082589232775">Korunan medyayı izlemek üzere Rosetta'yı kullanmak için Chromium'u yeniden başlatmalısınız.</translation>
 <translation id="151962892725702025">Senkronizasyon alan adınızda kullanılamadığından Chromium OS, verilerinizi senkronize edemedi.</translation>
 <translation id="1524282610922162960">Chromium sekmesini paylaşın</translation>
 <translation id="1553461853655228091">Çevrenizin 3D haritasını oluşturmak için Chromium'un kameranıza erişim iznine ihtiyacı var</translation>
@@ -127,6 +128,7 @@
 <translation id="5634636535844844681">Chromium, Windows 7 veya daha sonraki bir sürümü gerektirir.</translation>
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
+<translation id="5736967399513123100">Chromium'un korunan medyayı oynatmasını sağlamak için Rosetta'yı yüklemeniz gerekir. Şimdi yüklemek ister misiniz?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -173,6 +175,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6893813176749746474">Chromium güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
+<translation id="6897548120660295439">Rosetta, Chromium'un bu sayfadaki korunan medyayı oynatmasını sağlar.</translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6978145336957848883">Zayıf şifrelerin tahmin edilmesi kolaydır. Chromium'un <ph name="BEGIN_LINK" />sizin için güçlü şifreler oluşturup bu şifreleri hatırlamasına<ph name="END_LINK" /> izin verin.</translation>
 <translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>

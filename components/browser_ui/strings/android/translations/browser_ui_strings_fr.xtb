@@ -53,13 +53,13 @@
 <translation id="2315043854645842844">La sélection de certificat côté client n'est pas compatible avec le système d'exploitation.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mo</translation>
-<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="2434158240863470628">Téléchargement terminé <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2490684707762498678">Géré par <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqué}one{# cookie bloqué}other{# cookies bloqués}}</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqué}one{# cookie bloqué}many{# cookies blocked}other{# cookies bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
@@ -151,7 +151,7 @@
 <translation id="5354152178998424783">Cette action entraînera la suppression de <ph name="DATASIZE" /> de données et de cookies stockés par les sites.</translation>
 <translation id="5384883051496921101">Ce site s'apprête à partager des informations avec une application en dehors du mode navigation privée.</translation>
 <translation id="5391532827096253100">Votre connexion à ce site n'est pas sécurisée. Informations sur le site</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}many{(+ # more)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui affichent des annonces intrusives ou trompeuses</translation>
@@ -197,7 +197,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche Bluetooth</translation>
-<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="6561560012278703671">Activer l'affichage discret (permet d'empêcher les invites liées aux notifications de vous interrompre)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
@@ -219,7 +219,7 @@
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="7016516562562142042">Autorisé pour le moteur de recherche actuel</translation>
 <translation id="7053983685419859001">Bloquer</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}many{# selected}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" />. Options disponibles dans la partie supérieure de l'écran</translation>
 <translation id="7128222689758636196">Autoriser pour le moteur de recherche actuel</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres pop-up et de redirections par les sites (recommandé)</translation>
@@ -276,7 +276,7 @@
 <translation id="8441146129660941386">Retour rapide</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez également la localisation dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie est actuellement utilisé}one{# cookie est actuellement utilisé}other{# cookies sont actuellement utilisés}}</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie est actuellement utilisé}one{# cookie est actuellement utilisé}many{# cookies in use}other{# cookies sont actuellement utilisés}}</translation>
 <translation id="8463851957836045671">Le site est rapide</translation>
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
@@ -302,7 +302,7 @@
 <translation id="8959122750345127698">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="965817943346481315">Bloquer si le site affiche des annonces intrusives ou trompeuses (recommandé)</translation>
 <translation id="967624055006145463">Données stockées</translation>

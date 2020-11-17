@@ -14,6 +14,7 @@
 <translation id="1357932062193643861">Chromium खुल्दा सोधियोस्</translation>
 <translation id="1396446129537741364">Chromium ले पासवर्डहरू देखाउने प्रयास गर्दैछ।</translation>
 <translation id="1414495520565016063">तपाइँ Chromium मा साइन इन</translation>
+<translation id="1414973082589232775">Rosetta प्रयोग गरी संरक्षित मिडिया प्ले गर्न तपाईंले अनिवार्य रूपमा Chromium रिस्टार्ट गर्नु पर्ने हुन्छ।</translation>
 <translation id="151962892725702025">Chromium OS ले तपाईंको डाटालाई समक्रमण गर्न सकेन किनभने तपाईंको डोमेनको लागि समक्रमण उपलब्ध छैन।</translation>
 <translation id="1524282610922162960">Chromium को ट्याब सेयर गर्नुहोस्</translation>
 <translation id="1553461853655228091">Chromium लाई तपाईं वरपरको ठाउँको 3D नक्सा बनाउन तपाईंको क्यामेरा प्रयोग गर्ने अनुमति चाहिन्छ</translation>
@@ -129,6 +130,7 @@
 <translation id="5634636535844844681">Chromium लाई Windows 7 वा सो भन्दा पछाडिका संस्करणको आवश्यकता पर्छ।</translation>
 <translation id="5653831366781983928">अहिले नै Chromium पुनः सुरु गर्नुहोस्</translation>
 <translation id="5698481217667032250">यो भाषामा Chromium प्रदर्शित गर्नुहोस्</translation>
+<translation id="5736967399513123100">Chromium मा संरक्षित मिडिया प्ले गर्ने सुविधा अन गर्न तपाईंले Rosetta इन्स्टल गर्नु पर्ने हुन्छ। तपाईं अहिले नै यसलाई इन्स्टल गर्न चाहनुहुन्छ?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Chromium मा स्वागतम्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -175,6 +177,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium मा प्रतिलिपि गरियो)</translation>
 <translation id="6893813176749746474">Chromium अद्यावधिक गरिएको छ, तर तपाइँले त्यसलाई कम्तीमा पनि 30 दिनहरूको लागि प्रयोग गरनुभएको छैन।</translation>
+<translation id="6897548120660295439">Chromium ले Rosetta को सहयोग लिएर यो पेजमा संरक्षित मिडिया प्ले गर्न सक्छ।</translation>
 <translation id="6964305034639999644">लिंकलाई Chromium को इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="6978145336957848883">कमजोर पासवर्डहरू सजिलै अनुमान लगाउन सकिन्छ। Chromium लाई <ph name="BEGIN_LINK" />तपाईंका लागि भरपर्दा पासवर्ड बनाउन र याद राख्न<ph name="END_LINK" /> दिनुहोस्।</translation>
 <translation id="6990124437352146030">Chromium लाई यो साइटका लागि तपाईंको माइक्रोफोनमाथि पहुँच राख्ने अनुमति चाहिन्छ</translation>

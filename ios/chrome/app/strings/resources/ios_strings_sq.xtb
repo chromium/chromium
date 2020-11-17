@@ -342,7 +342,6 @@ Të dhënat e tua janë të koduara me frazën tënde të kalimit. Fute atë pë
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Skedë e re "e fshehtë"</translation>
-<translation id="4758977202923349869">Pozicionoje kartën e kreditit në këtë kornizë</translation>
 <translation id="4775879719735953715">Shfletuesi i parazgjedhur</translation>
 <translation id="4778644898150334464">Përdor një fjalëkalim tjetër</translation>
 <translation id="4802417911091824046">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
@@ -604,12 +603,12 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="7435356471928173109">Çaktivizuar nga administratori yt</translation>
 <translation id="7454057999980797137">Shteti / Qarku</translation>
 <translation id="7456847797759667638">Hap vendndodhjen...</translation>
-<translation id="7460314822154045102">Përdor kamerën</translation>
 <translation id="7464701184726199289">Kjo pastron të dhënat e sinkronizuara nga të gjitha pajisjet. Cilësimet e ruajtura të sajteve nuk do të fshihen dhe mund të pasqyrojnë zakonet e tua të shfletimit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Zgjidh Chrome</translation>
 <translation id="7472734401283673885">Emri i kompanisë</translation>
 <translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7481312909269577407">Përpara</translation>
+<translation id="7483467499335917849">Përdor vendndodhjen tënde aktuale</translation>
 <translation id="750493650310597496">0 të përzgjedhura</translation>
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>

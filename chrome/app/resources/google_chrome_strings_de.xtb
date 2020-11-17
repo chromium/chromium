@@ -185,6 +185,7 @@
 <translation id="6368958679917195344">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6650333065969705433">Damit geschützte Medien mit Rosetta abgespielt werden können, muss Chrome neu gestartet werden.</translation>
 <translation id="6676384891291319759">Internetzugriff</translation>
 <translation id="6679975945624592337">Google Chrome im Hintergrund ausführen</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
@@ -247,6 +248,7 @@
 <translation id="8521348052903287641">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Dev.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Es gibt eine neue Version von Google Chrome, die schneller ist, als anderen zuvor.</translation>
+<translation id="861359755029082151">Rosetta ermöglicht Chrome, geschützte Medien auf dieser Seite abzuspielen.</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
@@ -260,6 +262,7 @@
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="884296878221830158">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome angezeigt wird oder wenn Sie auf die Schaltfläche "Startseite" klicken.</translation>
 <translation id="8862326446509486874">Sie verfügen nicht über die erforderlichen Rechte für eine systemweite Installation. Starten Sie das Installationsprogramm als Administrator.</translation>
+<translation id="8907709077090383765">Damit Chrome geschützte Medien abspielen kann, muss Rosetta installiert werden. Jetzt installieren?</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn Sie eine Nummer von <ph name="ORIGIN" /> an Ihr Android-Smartphone senden möchten, müssen Sie sich auf beiden Geräten in Chrome anmelden.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>

@@ -482,7 +482,6 @@
 <translation id="2903493209154104877">ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="290376772003165898">ପୃଷ୍ଠାଟି <ph name="LANGUAGE" />ରେ ନାହିଁ?</translation>
 <translation id="2909946352844186028">ନେଟ୍‌ୱର୍କରେ ଏକ ପରିବର୍ତ୍ତନ ଚିହ୍ନଟ କରାଯାଇଥିଲା।</translation>
-<translation id="2910133103376701357">ଆପଣଙ୍କର ଡିଭାଇସ୍ ଏବଂ ଆକାଉଣ୍ଟ <ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="2911973620368911614">ଜବ୍ ଆକାଉଣ୍ଟିଂ ଉପଯୋଗକର୍ତ୍ତା ID</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />ରେ କ୍ରାସ୍ ହୋଇଛି</translation>
 <translation id="2916038427272391327">ଅନ୍ୟ ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -750,7 +749,6 @@
 <translation id="3996311196211510766">ଏଇ ସାଇଟକୁ କରାଯାଇଥିବା ସମସ୍ତ ଅନୁରୋଧରେ ଏକ ମୂଳ ନୀତି ଲାଗୁ କରାଯାଉ ବୋଲି ଏହି <ph name="ORIGIN" /> ସାଇଟ୍ ଅନୁରୋଧ କରିଛି, କିନ୍ତୁ ଏ ନୀତି ବର୍ତ୍ତମାନ ଲାଗୁ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}ଟି ପୃଷ୍ଠା ଥିବା PDF ଡକ୍ୟୁମେଣ୍ଟ}other{{COUNT}ଟି ପୃଷ୍ଠା ଥିବା PDF ଡକ୍ୟୁମେଣ୍ଟ}}</translation>
 <translation id="4030383055268325496">&amp;ପୂର୍ବବତ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="4032320456957708163">ଆପଣଙ୍କର ବ୍ରାଉଜର୍ <ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="4056223980640387499">ସେପିଆ</translation>
 <translation id="4058922952496707368">କୀ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ଏନଭଲପ୍)</translation>
@@ -829,7 +827,6 @@
 <translation id="4270541775497538019">ଷ୍ଟାକର୍ 6</translation>
 <translation id="4275830172053184480">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4277028893293644418">ପାସ୍‌ୱର୍ଡ ରିସେଟ୍ କରନ୍ତୁ</translation>
-<translation id="4279811152705618813">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}other{ଏହି କାର୍ଡଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ପୃଷ୍ଠା ପାଇଁ ଥମ୍ବନେଲ୍</translation>
 <translation id="42981349822642051">ପ୍ରସାରଣ କରନ୍ତୁ</translation>
@@ -949,7 +946,6 @@
 <translation id="4771973620359291008">ଏକ ଅଜ୍ଞାତ ତୃଟି ସଂଘଟିତ ହୋଇଅଛି ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="4780366598804516005">ମେଲବକ୍ସ 1</translation>
-<translation id="4780900888022378816">ଆପଣଙ୍କର ଡିଭାଇସ୍ <ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="ACCOUNT_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="4785689107224900852">ଏହି ଟାବ୍‌କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="4791134497475588553">Linux ଆପ୍ସ ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି ଏବଂ ଗତ ଥର ପାଇଁ ଏହା କେବେ ବ୍ୟବହାର କରାଯାଇଥିଲା</translation>
 <translation id="4792686369684665359">ଆପଣ ଦାଖଲ କରିବାକୁ ଯାଉଥିବା ସୂଚନା ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -1162,7 +1158,6 @@
 <translation id="560412284261940334">ପରିଚାଳନା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="5605670050355397069">ଲେଜର୍</translation>
 <translation id="5607240918979444548">ଆର୍କିଟେକ୍‌ଚର୍-C</translation>
-<translation id="5608165884683734521">ଏହି ସାଇଟ୍ ନକଲ ବା ପ୍ରତାରଣାମୂଳକ ହୋଇପାରିବ ନାହିଁ Chrome ଅନୁମୋଦନଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ଛାଡ଼ୁଛି।</translation>
 <translation id="5610142619324316209">ସଂଯୋଗ ଯାଞ୍ଚ ହେଉଛି</translation>
 <translation id="5610807607761827392">ଆପଣ <ph name="BEGIN_LINK" />ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ କାର୍ଡ ଓ ଠିକଣା ପରିଚାଳନ କରିପାରିବେ।</translation>
 <translation id="561165882404867731">Google Translate ସାହାଯ୍ୟରେ ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
@@ -1234,6 +1229,7 @@
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />ର ମୂଳ ନୀତି ଅନୁଯାୟୀ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> ( ସିଙ୍କ୍‍ କରାଯାଇଛି)</translation>
+<translation id="5913377024445952699">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ ବିରତ କରାଯାଇଛି</translation>
 <translation id="59174027418879706">ସାମର୍ଥ୍ୟ ହୋଇଛି</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ଚାଲୁ ଅଛି</translation>
@@ -1389,7 +1385,6 @@
 <translation id="6529602333819889595">&amp;ଡିଲିଟ୍‌କୁ ରି-ଡୁ କରନ୍ତୁ</translation>
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="6547208576736763147">ବାମ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
-<translation id="6554795675067793129">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="6556866813142980365">ରି-ଡୁ କରନ୍ତୁ</translation>
 <translation id="6569060085658103619">ଆପଣ ଏକ ଏକ୍ସଟେନ୍‌ସନ୍ ପୃଷ୍ଠା ଦେଖୁଛନ୍ତି</translation>
 <translation id="6573200754375280815">ଡାହାଣ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
@@ -1904,6 +1899,7 @@
 <translation id="8622948367223941507">ଲିଗାଲ୍-ଅତିରିକ୍ତ</translation>
 <translation id="8623885649813806493">କୌଣସି ମେଳ ହେଉଥିବା ପାସୱାର୍ଡ ନାହିଁ। ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ।</translation>
 <translation id="8625384913736129811">ଏହି ଡିଭାଇସ୍‌ରେ କାର୍ଡଟିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="8627040765059109009">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ ପୁଣି ଆରମ୍ଭ ହୋଇଛି</translation>
 <translation id="8657078576661269990">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME_1" /> ଏବଂ <ph name="VM_NAME_2" />କୁ ସେୟାରିଂ ବ୍ଲକ୍ କରିଛନ୍ତି</translation>
 <translation id="8663226718884576429">ଅର୍ଡର ସାରାଂଶ, <ph name="TOTAL_LABEL" />, ଅଧିକ ବିବରଣୀ</translation>
 <translation id="867224526087042813">ଦସ୍ତଖତ</translation>

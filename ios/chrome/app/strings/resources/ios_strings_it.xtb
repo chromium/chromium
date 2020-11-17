@@ -342,7 +342,6 @@ I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inserisc
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4747097190499141774">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay. Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nuova scheda in incognito</translation>
-<translation id="4758977202923349869">Posiziona la carta di credito all'interno di quest'area</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4778644898150334464">Utilizza un'altra password</translation>
 <translation id="4802417911091824046">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay.
@@ -604,12 +603,12 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7454057999980797137">Stato/contea</translation>
 <translation id="7456847797759667638">Apri percorso...</translation>
-<translation id="7460314822154045102">Usa Fotocamera</translation>
 <translation id="7464701184726199289">Questa operazione comporta la cancellazione dei dati sincronizzati da tutti i dispositivi. Le impostazioni del sito salvate non verranno eliminate e potrebbero rispecchiare le tue abitudini di navigazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Seleziona Chrome</translation>
 <translation id="7472734401283673885">Nome dell'azienda</translation>
 <translation id="7473891865547856676">No grazie</translation>
 <translation id="7481312909269577407">Avanti</translation>
+<translation id="7483467499335917849">Usa la posizione attuale</translation>
 <translation id="750493650310597496">0 selezionati</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>

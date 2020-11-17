@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
 <translation id="1397738625398125236">গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1468664791493211953">অফার</translation>
 <translation id="1478594628797167447">স্ক্যানার</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং এটি আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
+<translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">কানেক্টিভিটি ডায়াগনস্টিকস</translation>
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
+<translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="3941014780699102620">হোস্ট নেম যাচাই করা যায়নি</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবসাইট, পাসওয়ার্ড ও ইমেলে সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করতে পারে।</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
-<translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে। অ্যাডমিনিস্ট্রেটররা অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="4034824040120875894">প্রিন্টার</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
+<translation id="4421943235406860811">স্ক্যান করা ফাইল সেভ হয়েছে!</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
 <translation id="4429881212383817840">Kerberos টিকিটের মেয়াদ শীঘ্রই শেষ হয়ে যাবে</translation>
 <translation id="445059817448385655">পুরনো পাসওয়ার্ড</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="4932733599132424254">তারিখ</translation>
 <translation id="4985509611418653372">চালান</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং অন্য কোনও ডিভাইস থেকে সেটিংস ম্যানেজ করতে পারে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="520299634122159966">স্ক্যানার উপলভ্য নেই</translation>
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
@@ -121,12 +121,14 @@
 <translation id="649050271426829538">বন্ধ হয়ে গেছে - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
+<translation id="65587193855025101">ফ্ল্যাটবেড</translation>
 <translation id="6564646048574748301">প্রিন্ট করা যায়নি - প্রিন্টারের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
+<translation id="6839141349259399400">স্ক্যানারের সাথে কানেক্ট করা যাচ্ছে না?</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -136,9 +138,11 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
+<translation id="7855434858642800953">স্ক্যান করা ফাইল সেভ হয়েছে!</translation>
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="8160445423316272678">শুরু করতে, স্ক্যানারে আপনার ডকুমেন্ট রেখে <ph name="SPAN_BEGIN" />স্ক্যান করুন<ph name="SPAN_END" /> বিকল্পটি বেছে নিন</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8294431847097064396">উৎস</translation>
@@ -158,5 +162,6 @@
 <translation id="8919837981463578619">প্রিন্ট করা যায়নি - ট্রে পাওয়া যাচ্ছে না</translation>
 <translation id="8928727111548978589">প্রিন্ট করা যায়নি - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
+<translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
 </translationbundle>

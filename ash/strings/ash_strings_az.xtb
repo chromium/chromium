@@ -103,7 +103,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ayırdetmə dəqiqliyini dəstəkləmir (<ph name="SPECIFIED_REFRESH_RATE" /> Hs). Ayırdetmə dəqiqliyi <ph name="FALLBACK_RESOLUTION" /> ilə dəyişdirilib (<ph name="FALLBACK_REFRESH_RATE" />). Dəyişiklikləri saxlamaq üçün "Təsdiq" seçiminə toxunun. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="1919743966458266018">Task menecerini açmaq üçün qısayol dəyişilib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> istifadə edin.</translation>
 <translation id="1923539912171292317">Avtomatik kliklər</translation>
-<translation id="1924640696879807758">Telefondan</translation>
 <translation id="1928739107511554905">Güncəlləməni əldə etmək məqsədilə əlavə edilən klavatura ilə Chromebook'u yenidən başlatmaq üçün toxunuş ekranından istifadə edin.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -155,7 +154,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2405664212338326887">Qoşulmayıb</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2412593942846481727">Güncəlləmə əlçatandır</translation>
-<translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> sessiyası <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="2427507373259914951">Sol düymə</translation>
 <translation id="2429753432712299108">Bluetooth cihazı "<ph name="DEVICE_NAME" />" cütlənmək üçün icazə istəyir. Qəbul etmədən öncə bu parolun həmin cihazda göstərildiyini təsdiq edin: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Parolu göstərin</translation>
@@ -324,9 +322,9 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4112140312785995938">Geri çəkin</translation>
 <translation id="4114315158543974537">Telefon Paylayıcısını aktiv edin</translation>
 <translation id="4121728057981832179">Virtual maşın mikrofonunuzdan istifadə edir</translation>
+<translation id="4126167871198063089">Seç və dinlə bölməsindən çıxın</translation>
 <translation id="4129129681837227511">Bildirişlərin kilid ekranında görünməsini istəyirsinizsə, ayarı dəyişmək üçün cihazı kiliddən çıxarın</translation>
 <translation id="4146833061457621061">Musiqini oxudun</translation>
-<translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> tərəfindən idarə edilir</translation>
 <translation id="415719264485676252">Ekran çəkilişi bloklanıb</translation>
 <translation id="4157822100366708405">Tünd Tema Ayarları</translation>
 <translation id="4181841719683918333">Dillər</translation>
@@ -383,6 +381,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4570957409596482333">Səsləndirmək üçün Seçim düyməsi</translation>
 <translation id="4577274620589681794">Vaxt bitdi · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">Önbaxışları göstərin</translation>
 <translation id="4585337515783392668">Naməlum alıcının yayımını dayandırın</translation>
 <translation id="4596144739579517758">Tünd tema deaktivdir</translation>
 <translation id="4623167406982293031">Hesabı doğrulayın</translation>
@@ -430,11 +429,13 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4961318399572185831">Cast ekran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />s <ph name="MINUTES" />dəq <ph name="SECONDS" />san</translation>
 <translation id="4975771730019223894">Tətbiq nişanlanması</translation>
+<translation id="5003993274120026347">Növbəti cümlə</translation>
 <translation id="5019169674188023236">Görünür, Bluetooth və ya Wi-Fi <ph name="DEVICE_TYPE" /> cihazınızda deaktiv edilib. Telefon Habını istifadə etmək üçün bağlantınızı yoxlayın.</translation>
 <translation id="5030687792513154421">Vaxt bitdi</translation>
 <translation id="5033299697334913360">Tam ekranı çəkmək üçün istənilən yerə klikləyin</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yeni telefona qoşuldu</translation>
 <translation id="5035389544768382859">Displey Konfiqurasiyasını təsdiq edin</translation>
+<translation id="504465286040788597">Əvvəlki paraqraf</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
@@ -474,6 +475,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="554893713779400387">İmlanı aktiv edin</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5571066253365925590">Bluetooth aktivdir</translation>
+<translation id="557563299383177668">Növbəti paraqraf</translation>
 <translation id="558849140439112033">Çəkmək üçün sahə seçmək məqsədilə sürüşdürün</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Səsli rəyi deaktiv etmək üçün Ctrl + Alt + Z düymələrinə basın.</translation>
@@ -613,7 +615,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6910714959251846841">Bu güncəlləmə cihazın sıfırlanmasını tələb edir. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
 <translation id="6945221475159498467">Seçin</translation>
-<translation id="6953890208095195458">Ekrandakı məzmuna görə ekran yazılması administratorunuz tərəfindən dayandırılıb.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
@@ -667,7 +668,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7509246181739783082">Kimliyinizi doğrulayın</translation>
 <translation id="7526573455193969409">Şəbəkəyə nəzarət edilə bilər</translation>
 <translation id="7536035074519304529">IP ünvanı: <ph name="ADDRESS" /></translation>
-<translation id="7542906349682405018">Ekranınızda məzmunun ekran şəklini çəkmək imkanı administratorunuz tərəfindən bloklanıb.</translation>
 <translation id="7548434653388805669">Yatmaq vaxtı</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
@@ -726,6 +726,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8029247720646289474">Hotspot bağlantısı alınmadı</translation>
 <translation id="8029629653277878342">Əlavə təhlükəsizlik üçün PIN və ya parol tələb olunur</translation>
 <translation id="8030169304546394654">Bağlantı kəsildi</translation>
+<translation id="8036504271468642248">Əvvəlki cümlə</translation>
 <translation id="8042893070933512245">Əlçatımlılıq ayarları menyusunu açın</translation>
 <translation id="8048123526339889627">Bluetooth ayarları</translation>
 <translation id="8054466585765276473">Enerji vaxtı hesablanır.</translation>
@@ -864,6 +865,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="921989828232331238">Valideyniniz cihazı bugün üçün kilidləyib</translation>
 <translation id="9220525904950070496">Hesabı silin</translation>
 <translation id="923686485342484400">Hesabdan çıxmaq üçün iki dəfə Control Shift Q basın</translation>
+<translation id="925832987464884575">Önbaxışları gizlədin</translation>
 <translation id="938963181863597773">Təqvimdə nə var?</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="98515147261107953">Peyzaj</translation>

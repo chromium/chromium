@@ -488,7 +488,6 @@
 <translation id="2903493209154104877">पत्ते</translation>
 <translation id="290376772003165898">पेज <ph name="LANGUAGE" />मध्ये नाही?</translation>
 <translation id="2909946352844186028">एक नेटवर्क बदल आढळला.</translation>
-<translation id="2910133103376701357">तुमचे डिव्हाइस आणि खाते <ph name="ENROLLMENT_DOMAIN" /> कडून व्यवस्थापित केले जाते.</translation>
 <translation id="2911973620368911614">जॉब लेखांकन वापरकर्ता आयडी</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> पासून क्रॅश</translation>
 <translation id="2916038427272391327">अन्य प्रोग्राम बंद करा</translation>
@@ -759,7 +758,6 @@
     त्याच्या सर्व विनंत्यांवर लागू होईल पण हे धोरण सध्या लागू केले जाऊ शकत नाही.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF दस्तऐवजामध्ये {COUNT} पेज आहे}other{PDF दस्तऐवजामध्ये {COUNT} पेज आहेत}}</translation>
 <translation id="4030383055268325496">&amp;जोडा पूर्ववत करा</translation>
-<translation id="4032320456957708163">तुमचा ब्राउझर <ph name="ENROLLMENT_DOMAIN" /> द्वारे व्यवस्थापित केला आहे</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">की "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -842,7 +840,6 @@
 <translation id="4270541775497538019">स्टॅकर ६</translation>
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करा</translation>
-<translation id="4279811152705618813">तुमचा <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> द्वारे व्यवस्थापित केला आहे</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{हे कार्ड तुमच्या Google खात्यात सेव्ह केले गेले}other{ही कार्डे तुमच्या Google खात्यात सेव्ह केली गेली}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> पेजची थंबनेल</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
@@ -962,7 +959,6 @@
 <translation id="4771973620359291008">एक अज्ञात एरर आली आहे.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पॉप-अप ब्लॉक केला}other{# पॉप-अप ब्लॉक केले}}</translation>
 <translation id="4780366598804516005">मेलबॉक्स १</translation>
-<translation id="4780900888022378816">तुमचे डिव्हाइस <ph name="ENROLLMENT_DOMAIN" /> कडून व्यवस्थापित केले जाते आणि तुमचे खाते <ph name="ACCOUNT_DOMAIN" /> कडून व्यवस्थापित केले जाते.</translation>
 <translation id="4785689107224900852">या टॅबवर स्विच करा</translation>
 <translation id="4791134497475588553">इंस्टॉल केलेली Linux अ‍ॅप्स आणि ती कधी शेवटची वापरली</translation>
 <translation id="4792686369684665359">तुम्‍ही सबमिट करणार आहात ती माहिती सुरक्षित नाही</translation>
@@ -1175,7 +1171,6 @@
 <translation id="560412284261940334">व्यवस्थापन समर्थित नाही</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">ही साइट बनावट किंवा कपटपूर्ण असू शकते. आता सोडून देण्याची Chrome शिफारस करते.</translation>
 <translation id="5610142619324316209">कनेक्शन तपासणे</translation>
 <translation id="5610807607761827392">तुम्ही कार्ड आणि पत्ते <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="561165882404867731">या पेजचे Google Translate यासह भाषांतर करा</translation>
@@ -1247,6 +1242,7 @@
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> च्या मूळ धोरणानुसार ब्लॉक केले आहे.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक केलेले)</translation>
+<translation id="5913377024445952699">स्‍क्रीन कॅप्‍चर थांबवले आहे</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">सुरू करा</translation>
@@ -1404,7 +1400,6 @@
 <translation id="6529602333819889595">&amp;पुन्हा करा हटवा</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कॅन करत आहे</translation>
 <translation id="6547208576736763147">ड्युअल पंच लेफ्ट</translation>
-<translation id="6554795675067793129">तुमचे खाते <ph name="ENROLLMENT_DOMAIN" /> ने व्यवस्थापित केले आहे.</translation>
 <translation id="6556866813142980365">पुन्हा करा</translation>
 <translation id="6569060085658103619">तुम्ही एक एक्स्टेंशन पेज पाहत आहात</translation>
 <translation id="6573200754375280815">ड्युअल पंच राइट</translation>
@@ -1919,6 +1914,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">जुळणारे कोणतेही पासवर्ड नाहीत. सेव्ह केलेले सर्व पासवर्ड दाखवा.</translation>
 <translation id="8625384913736129811">या डिव्हाइसवर हे कार्ड सेव्‍ह करा</translation>
+<translation id="8627040765059109009">स्‍क्रीन कॅप्‍चर पुन्हा सुरू केले आहे</translation>
 <translation id="8657078576661269990">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME_1" /> आणि <ph name="VM_NAME_2" /> वर शेअर करणे ब्लॉक केले</translation>
 <translation id="8663226718884576429">ऑर्डर सारांश, <ph name="TOTAL_LABEL" />, आणखी तपशील</translation>
 <translation id="867224526087042813">स्वाक्षरी</translation>

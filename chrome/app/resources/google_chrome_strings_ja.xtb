@@ -186,6 +186,7 @@
 <translation id="6368958679917195344">Chrome OS は、さらに追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
+<translation id="6650333065969705433">Rosetta を使用して、保護されたメディアを再生するには、Chrome を再起動する必要があります。</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
 <translation id="6679975945624592337">Google Chrome をバックグラウンドで実行する</translation>
 <translation id="6750954913813541382">スペルミスを修正するために、ブラウザに入力したテキストが Chrome から Google に送信されます</translation>
@@ -248,6 +249,7 @@
 <translation id="8521348052903287641">mDNS トラフィックを許可する Google Chrome Dev のインバウンド ルールです。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8556340503434111824">Google クロームブラウザがバージョンアップ！是非お試しください。</translation>
+<translation id="861359755029082151">Rosetta をインストールすると、このページ上の保護されたメディアを Chrome で再生できるようになります。</translation>
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>
 <translation id="861702415419836452">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome は 1 分後に再起動されます}other{Chrome は # 分後に再起動されます}}</translation>
@@ -261,6 +263,7 @@
 <translation id="8834965163890861871">Google Chrome でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="884296878221830158">この拡張機能では、Chrome の起動時、またはホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>
+<translation id="8907709077090383765">保護されたメディアを Chrome で再生できるようにするには、Rosetta をインストールする必要があります。今すぐインストールしますか？</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>

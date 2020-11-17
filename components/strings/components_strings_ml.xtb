@@ -304,6 +304,7 @@
 <translation id="2102495993840063010">Android ആപ്‌സ്</translation>
 <translation id="2107021941795971877">പ്രിന്റ് സപ്പോർട്ടുകൾ</translation>
 <translation id="2108755909498034140">നിങ്ങളുടെ കമ്പ്യൂട്ടർ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
+<translation id="2111166930115883695">കളിക്കാൻ 'Space' അമർത്തുക</translation>
 <translation id="2111256659903765347">സൂപ്പർ-A</translation>
 <translation id="2113977810652731515">കാർഡ്</translation>
 <translation id="2114841414352855701"> <ph name="POLICY_NAME" /> എന്നതിനാൽ മറികടന്നതിനാൽ ഇത് അവഗണിച്ചു.</translation>
@@ -485,7 +486,6 @@
 <translation id="2903493209154104877">വിലാസങ്ങള്‍‌</translation>
 <translation id="290376772003165898">പേജ് <ph name="LANGUAGE" /> ഭാഷയിലല്ലേ?</translation>
 <translation id="2909946352844186028">ഒരു നെറ്റ്‌വർക്ക് മാറ്റം കണ്ടെത്തി.</translation>
-<translation id="2910133103376701357">നിങ്ങളുടെ ഉപകരണവും അക്കൗണ്ടും <ph name="ENROLLMENT_DOMAIN" /> മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="2911973620368911614">ജോബ് അക്കൗണ്ടിംഗ് ഉപയോക്തൃ ഐഡി</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> മുതൽ ക്രാഷ് ആയി</translation>
 <translation id="2916038427272391327">മറ്റ് പ്രോഗ്രാമുകൾ അടയ്‌ക്കുക</translation>
@@ -519,6 +519,7 @@
 <translation id="3010559122411665027">ലിസ്റ്റ് എൻട്രി "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">സ്വയമേവ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="3016780570757425217">നിങ്ങളുടെ ലൊക്കേഷൻ അറിയുക</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, നിർദ്ദേശം നീക്കം ചെയ്യാൻ Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക.</translation>
 <translation id="3023071826883856138">You4 (എൻവലപ്പ്)</translation>
 <translation id="3024663005179499861">തെറ്റായ നയ തരം</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
@@ -756,10 +757,10 @@
     ബാധകമാകുമെന്ന് ഇത് അഭ്യർത്ഥിച്ചിരിക്കുന്നു, എന്നാൽ ഈ നയം ഇപ്പോൾ ബാധകമാക്കാനാവില്ല.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} പേജുള്ള PDF ഡോക്യുമെന്റ്}other{{COUNT} പേജുകളുള്ള PDF ഡോക്യുമെന്റ്}}</translation>
 <translation id="4030383055268325496">&amp;ചേർത്തത് പഴയപടിയാക്കുക</translation>
-<translation id="4032320456957708163">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4058922952496707368">കീ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (എൻവലപ്പ്)</translation>
+<translation id="4067669230157909013">സ്ക്രീൻ ക്യാപ്‌ചർ പുനരാരംഭിച്ചു.</translation>
 <translation id="4067947977115446013">ശരിയായ വിലാസം ചേർക്കുക</translation>
 <translation id="4072486802667267160">നിങ്ങളുടെ ഓർഡർ പ്രോസസ് ചെയ്യുന്നതിൽ ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിച്ചുനോക്കൂ.</translation>
 <translation id="4075732493274867456">ഒരു സാധാരണ SSL പ്രോട്ടോക്കോൾ പതിപ്പിനെയോ സൈഫർ സ്യൂട്ടിനെയോ ക്ലയന്റും സെർവറും പിന്തുണയ്‌ക്കില്ല.</translation>
@@ -837,11 +838,11 @@
 <translation id="4270541775497538019">സ്റ്റാക്കർ 6</translation>
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
-<translation id="4279811152705618813">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}other{ഈ കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}}</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />-ാം പേജിനുള്ള ലഘുചിത്രം</translation>
 <translation id="42981349822642051">വികസിപ്പിക്കുക</translation>
 <translation id="4300675098767811073">വലതുവശത്ത് ഒന്നിലധികം പഞ്ചുകൾ ചെയ്യുക</translation>
+<translation id="4302514097724775343">കളിക്കാൻ ദിനോസറിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4302965934281694568">Chou3 (എൻവലപ്പ്)</translation>
 <translation id="4305666528087210886">നിങ്ങളുടെ ഫയൽ ആക്‌സസ് ചെയ്യാനായില്ല</translation>
 <translation id="4305817255990598646">സ്വിച്ച് ചെയ്യുക</translation>
@@ -957,7 +958,6 @@
 <translation id="4771973620359291008">ഒരു അജ്ഞാത പിശക് സംഭവിച്ചു.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{പോപ്പ്-അപ്പ് തടഞ്ഞു}other{# പോപ്പ്-അപ്പുകൾ തടഞ്ഞു}}</translation>
 <translation id="4780366598804516005">മെയിൽബോക്സ് 1</translation>
-<translation id="4780900888022378816">നിങ്ങളുടെ ഉപകരണം <ph name="ENROLLMENT_DOMAIN" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_DOMAIN" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="4785689107224900852">ഈ ടാബിലേക്ക് സ്വിച്ച് ചെയ്യുക</translation>
 <translation id="4791134497475588553">Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌ത് അവസാനം ഉപയോഗിച്ചത് എപ്പോൾ</translation>
 <translation id="4792686369684665359">നിങ്ങൾ സമർപ്പിക്കാൻ പോകുന്ന വിവരങ്ങൾ സുരക്ഷിതമല്ല</translation>
@@ -1170,7 +1170,6 @@
 <translation id="560412284261940334">മാനേജുമെന്റ് പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="5605670050355397069">ലെഡ്‌ജർ</translation>
 <translation id="5607240918979444548">ആര്‍ക്കിടെക്ച്ചര്‍-C</translation>
-<translation id="5608165884683734521">ഈ സൈറ്റ് വ്യാജമോ വഞ്ചനാപരമോ ആകാം. ഈ സൈറ്റ് ഇപ്പോൾ വിടാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="5610142619324316209">കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="5610807607761827392">നിങ്ങൾക്ക് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> കാർഡുകളും വിലാസങ്ങളും മാനേജ് ചെയ്യാം.</translation>
 <translation id="561165882404867731">Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യുക</translation>
@@ -1242,6 +1241,7 @@
 <translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> എന്നതിന്റെ ഉറവിട നയത്തിന് അനുസൃതമായി ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (സമന്വയിപ്പിച്ചത്)</translation>
+<translation id="5913377024445952699">സ്‌ക്രീൻ ക്യാപ്‌ചർ താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="59174027418879706">പ്രാപ്തമാക്കി</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ഓണാണ്</translation>
@@ -1254,6 +1254,7 @@
 <translation id="5963413905009737549">വിഭാഗം</translation>
 <translation id="5967592137238574583">കോൺടാക്‌റ്റ് വിവരം എഡിറ്റുചെയ്യുക</translation>
 <translation id="5967867314010545767">ചരിത്രത്തിൽ നിന്നും നീക്കംചെയ്യുക</translation>
+<translation id="5968793460449681917">ഓരോ തവണ സന്ദർശിക്കുമ്പോഴും</translation>
 <translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="5979084224081478209">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
 <translation id="5980920751713728343">സൂചിക-3x5</translation>
@@ -1398,7 +1399,6 @@
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6545864417968258051">Bluetooth സ്‌കാനിംഗ്</translation>
 <translation id="6547208576736763147">ഇടതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
-<translation id="6554795675067793129">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="ENROLLMENT_DOMAIN" /> ആണ്.</translation>
 <translation id="6556866813142980365">വീണ്ടും ചെയ്യുക</translation>
 <translation id="6569060085658103619">നിങ്ങൾ ഒരു വിപുലീകരണ പേജാണ് കാണുന്നത്</translation>
 <translation id="6573200754375280815">വലതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
@@ -1469,6 +1469,7 @@
 <translation id="6895330447102777224">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിച്ചു</translation>
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
 <translation id="6898699227549475383">ഓര്‍‌ഗനൈസേഷന്‍‌ (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> ആപ്പിനെ ഇതിന് അനുവദിക്കുക:</translation>
 <translation id="6910240653697687763">നിങ്ങളുടെ MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണമായ നിയന്ത്രണം ഏറ്റെടുക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="6915804003454593391">ഉപയോക്താവ്:</translation>
 <translation id="6934672428414710184">ഈ പേര് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ളതാണ്</translation>
@@ -1902,6 +1903,7 @@
 <translation id="8574899947864779331">കാർഡുകൾ വേഗത്തിൽ സ്ഥിരീകരിക്കാൻ ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
 <translation id="858637041960032120">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>
 <translation id="8589998999637048520">ഏറ്റവും മികച്ച നിലവാരം</translation>
+<translation id="8600271352425265729">ഇപ്പോഴത്തേക്ക് മാത്രം</translation>
 <translation id="860043288473659153">കാർഡിന്റെ ഉടമയുടെ പേര്</translation>
 <translation id="8606726445206553943">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="8612761427948161954">ഹായ് <ph name="USERNAME" />,
@@ -1911,6 +1913,7 @@
 <translation id="8622948367223941507">നിയമപരം-അധികം</translation>
 <translation id="8623885649813806493">പൊരുത്തപ്പെടുന്ന പാസ്‌വേഡുകളൊന്നുമില്ല. സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും കാണിക്കുക.</translation>
 <translation id="8625384913736129811">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
+<translation id="8627040765059109009">സ്‌ക്രീൻ ക്യാപ്‌ചർ പുനരാരംഭിച്ചു</translation>
 <translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> എന്നതിൽ നിന്ന് <ph name="VM_NAME_1" />, <ph name="VM_NAME_2" /> എന്നിവയിലേക്ക് പങ്കിടുന്നത് നിങ്ങളുടെ അഡ്മിൻ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="867224526087042813">ഒപ്പ്</translation>
@@ -2058,6 +2061,7 @@
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="945855313015696284">ചുവടെയുള്ള വിവരം പരിശോധിച്ച്, അസാധുവായ കാര്‍ഡുകളുണ്ടെങ്കിൽ അവ ഇല്ലാതാക്കുക</translation>
 <translation id="950736567201356821">മുകളിൽ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
+<translation id="951941430552851965">സ്‌ക്രീനിലെ ഉള്ളടക്കം കാരണം സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ താൽക്കാലികമായി നിർത്തി.</translation>
 <translation id="961663415146723894">താഴെ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="962484866189421427">മറ്റെന്തെങ്കിലും ആണെന്ന് അവകാശപ്പെടുന്ന അല്ലെങ്കിൽ നിങ്ങളെ ട്രാക്ക് ചെയ്യാൻ ഉപയോഗിച്ചേക്കാവുന്ന ഡാറ്റ ശേഖരിക്കുന്ന, തെറ്റിദ്ധരിപ്പിക്കുന്ന ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ഈ ഉള്ളടക്കം ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">ഔദ്യോഗിക ബില്‍ഡ്</translation>

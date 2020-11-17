@@ -2,16 +2,18 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
+<translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
+<translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1397738625398125236">গে’টৱে’ পিং কৰিব পৰা যায়</translation>
+<translation id="1398634363027580500">HTTPSৰ অতি বেছি বিলম্বতা</translation>
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1468664791493211953">অ'ফাৰসমূহ</translation>
 <translation id="1478594628797167447">স্কেনাৰ</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" />এ এই ডিভাইচটো পৰিচালনা কৰে তথা আপোনাৰ কাৰ্যকলাপো নিৰীক্ষণ কৰিব পাৰে।</translation>
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -59,11 +61,10 @@
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="3941014780699102620">হ’ষ্ট সম্পৰ্কীয় সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠাসমূহ, পাছৱৰ্ডসমূহ আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ সকলো কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
-<translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" />এ এই <ph name="DEVICE_TYPE" /> পৰিচালনা কৰে। প্ৰশাসকসকলে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="4034824040120875894">প্ৰিণ্টাৰ</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
+<translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
 <translation id="4238516577297848345">কোনো প্ৰিণ্টৰ কাম চলি থকা নাই</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
@@ -79,6 +80,7 @@
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
 <translation id="467510802200863975">পাছৱৰ্ডসমূহ মিলা নাই</translation>
+<translation id="467715984478005772">ফায়াৰৱালৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="4691278870498629773">বন্ধ হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="469379815867856270">ছিগনেলৰ ক্ষমতা</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
@@ -89,7 +91,6 @@
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
 <translation id="4985509611418653372">চলাওক</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কার্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="520299634122159966">কোনো স্কেনাৰ নাই</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>
@@ -111,6 +112,7 @@
 <translation id="6048107060512778456">বিফল হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6050189528197190982">গ্ৰে’স্কে’ল</translation>
 <translation id="6058625436358447366">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি আৰু নতুন পাছৱর্ডসমূহ দিয়ক</translation>
+<translation id="6061772781719867950">HTTPৰ অনুৰোধ বিফল হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
@@ -128,12 +130,15 @@
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
+<translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
+<translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -143,6 +148,7 @@
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8294431847097064396">উৎস</translation>
+<translation id="8302368968391049045">HTTPSৰ ফায়াৰৱাল</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>

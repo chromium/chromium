@@ -7,13 +7,14 @@
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1478594628797167447">Numériseur</translation>
-<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1703835215927279855">Lettre</translation>
@@ -32,7 +33,7 @@
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2375079107209812402">Il vous reste <ph name="ATTEMPTS_LEFT" /> tentatives</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2805756323405976993">Applications</translation>
@@ -42,6 +43,7 @@
 <translation id="3083667275341675831">Diagnostics de connectivité</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
+<translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
@@ -59,9 +61,7 @@
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
-<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
-<translation id="4027485274696301677">Cet appareil <ph name="DEVICE_TYPE" /> est géré par <ph name="ENROLLMENT_DOMAIN" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
@@ -69,6 +69,7 @@
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Fichiers numérisés enregistrés!</translation>
 <translation id="4425149324548788773">Mon disque</translation>
 <translation id="4429881212383817840">Le ticket Kerberos expire bientôt</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
@@ -89,7 +90,6 @@
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Exécuter</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="520299634122159966">Aucun numériseur disponible</translation>
 <translation id="5212543919916444558">Je ne trouve aucun élément sur votre écran pour lequel je peux vous aider.
 Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation>
@@ -122,12 +122,14 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
+<translation id="65587193855025101">À plat</translation>
 <translation id="6564646048574748301">Échec : imprimante inaccessible</translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
+<translation id="6839141349259399400">Impossible d'établir la connexion avec les numériseurs?</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -137,9 +139,11 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
 <translation id="7805768142964895445">État</translation>
+<translation id="7855434858642800953">Fichier numérisé enregistré!</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="8160445423316272678">Placez votre document sur le numériseur, puis sélectionnez <ph name="SPAN_BEGIN" />Numériser<ph name="SPAN_END" /> pour commencer</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -159,5 +163,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8919837981463578619">Échec : bac manquant</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 </translationbundle>

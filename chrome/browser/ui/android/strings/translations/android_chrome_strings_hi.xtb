@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">स्‍क्रीन कैप्‍चर</translation>
 <translation id="1111673857033749125">आपके अन्‍य डिवाइस पर सहेजे गए बुकमार्क यहां दिखाई देंगे.</translation>
 <translation id="1113597929977215864">सरल बनाया गया व्यू दिखाएं</translation>
+<translation id="1118561384561215815">वेब पर टास्क में मदद पाएं</translation>
 <translation id="1123070903960493543">इसमें Chrome के साथ आपके इंटरैक्शन की जानकारी, आपकी चुनी गई सेटिंग, और Chrome बंद होने की गड़बड़ी की जानकारी शामिल है</translation>
 <translation id="1126809382673880764">इस मोड में आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से सुरक्षा नहीं मिलती. Gmail और Search जैसी दूसरी Google की सेवाओं में, आपको अब भी सुरक्षित ब्राउज़िंग की सुरक्षा मिल सकती है.</translation>
 <translation id="1129510026454351943">विवरण: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -102,6 +103,7 @@
 <translation id="1749561566933687563">अपने बुकमार्क समन्‍वयित करें</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1754404134430936718">टेक्स्ट कॉपी किया गया</translation>
+<translation id="1772137089884020309">बुकमार्क फ़ोल्डर वाली सूची बंद की गई</translation>
 <translation id="1782483593938241562">खत्म होने की तारीख: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
 <translation id="1792959175193046959">डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
@@ -181,6 +183,7 @@
 <translation id="2276696007612801991">अपने पासवर्ड की जांच करने के लिए, Google खाते में साइन इन करें</translation>
 <translation id="2286841657746966508">बिलिंग पता</translation>
 <translation id="230115972905494466">कोई संगत डिवाइस नहीं मिला</translation>
+<translation id="230155349749732438">इस सेटिंग का इस्तेमाल करने के लिए, <ph name="BEGIN_LINK" />खोजने और ब्राउज़ करने के अनुभव को बेहतर बनाएं<ph name="END_LINK" /> सुविधा को चालू करना ज़रूरी है</translation>
 <translation id="2318045970523081853">कॉल करने के लिए टैप करें</translation>
 <translation id="2321086116217818302">पासवर्ड तैयार हो रहे हैं…</translation>
 <translation id="2321958826496381788">इस टेक्स्ट को आसानी से पढ़ने लायक बनाने के लिए, स्‍लाइडर को आगे की ओर खींचें. पैराग्राफ़ पर डबल-टैप करने के बाद, टेक्स्ट को इतना बड़ा दिखाई देना चाहिए.</translation>
@@ -204,6 +207,7 @@
 <translation id="2450907520913474542">पेज को बंद किए बिना, वेबसाइटों पर दिए गए विषयों के बारे में जानें. 'खोजने के लिए टैप करें' सुविधा, 'Google सर्च' को शब्द और उससे जुड़ी जानकारी भेजती है. इसके बाद, 'सर्च' पर आपको उस शब्द की परिभाषाएं, फ़ोटो, खोज के नतीजे वगैरह दिखते हैं.
 
 खाेजने के लिए किसी भी शब्द को दबाकर रखें. अपनी खोज को फ़िल्टर करने के लिए, ज़्यादा या कम शब्दों काे चुनें. अपनी खाेज में बदलाव करने के लिए, पैनल को खोलें. आइकॉन पर टैप करके, उसे नए टैब में खाेलें. इसके बाद, खोज बॉक्स में शब्द को बदलें.</translation>
+<translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
 <translation id="246532703174860178">शेयर करें</translation>
 <translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
@@ -272,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> मेमोरी</translation>
 <translation id="2942036813789421260">झलक टैब बंद है</translation>
 <translation id="2956410042958133412">यह खाता <ph name="PARENT_NAME_1" /> और <ph name="PARENT_NAME_2" /> के द्वारा प्रबंधित है.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2962095958535813455">गुप्त टैब पर स्विच कर दिया गया</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2987620471460279764">दूसरी साइटों से शेयर किया गया टेक्स्ट</translation>
@@ -315,11 +320,13 @@
 <translation id="3269093882174072735">इमेज लोड करें</translation>
 <translation id="3269956123044984603">अपने अन्य डिवाइस से अपने टैब पाने के लिए, Android खाता सेटिंग में “डेटा अपने-आप सिंक करें” चालू करें.</translation>
 <translation id="3282568296779691940">Chrome में साइन इन करें</translation>
+<translation id="3284510035090979597">बिन मांगे मदद</translation>
 <translation id="3285080554353377245">Chrome को इस्तेमाल करने का तरीका बताने वाला वीडियो</translation>
 <translation id="3288003805934695103">पेज को पुनः लोड करें</translation>
 <translation id="32895400574683172">सूचनाओं की अनुमति है</translation>
 <translation id="3290991969712132877">इसे और जल्दी ऐक्सेस करने के लिए, 'ज़्यादा विकल्प' बटन पर क्लिक करके, इस पेज को अपनी होम स्क्रीन पर जोड़ें</translation>
 <translation id="3295530008794733555">तेज़ी से ब्राउज़ करें. कम डेटा इस्तेमाल करें.</translation>
+<translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
 <translation id="3298243779924642547">लाइट</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड करने के लिए आगे बढ़ें?</translation>
 <translation id="3315103659806849044">आप इस समय अपनी सिंक की सुविधा और Google सेवा की सेटिंग कस्टमाइज़ कर रहे हैं. सिंक चालू करने की प्रक्रिया पूरी करने के लिए, स्क्रीन के निचले हिस्से पर मौजूद 'पुष्टि करें' बटन पर टैप करें. ऊपर जाएं</translation>
@@ -422,6 +429,7 @@
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211">प्रकाशक: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google की ओर से डिलीवर किया गया<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
+<translation id="4095189195365058471">बाद में पढ़ें <ph name="BEGIN_NEW" />नई सुविधा<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
 <translation id="4108998448622696017">नुकसान पहुंचाने वाली घटनाएं होने पर उनकी पहचान करता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="4116038641877404294">पेजों को ऑफ़लाइन इस्तेमाल करने के लिए उन्हें डाउनलोड करें</translation>
@@ -514,6 +522,7 @@
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 डाउनलोड पूरा हुआ.}one{# डाउनलोड पूरे हुए.}other{# डाउनलोड पूरे हुए.}}</translation>
 <translation id="4766678251456904326">डिवाइस पर खाता जोड़ें</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया.}one{# डाउनलोड शेड्यूल किया गया.}other{# डाउनलोड शेड्यूल किए गए.}}</translation>
+<translation id="4791358705705538979">वेब पर, चेकआउट करने जैसे टास्क पूरे करने में आपकी मदद करती है</translation>
 <translation id="4802417911091824046">लंबा पासवर्ड सुरक्षित करने में Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.
 
 यह सेटिंग बदलने के लिए, <ph name="BEGIN_LINK" />सिंक रीसेट करें<ph name="END_LINK" /></translation>
@@ -619,6 +628,7 @@
 <translation id="5524843473235508879">रीडायरेक्ट ब्लॉक किया गया.</translation>
 <translation id="5527082711130173040">डिवाइस स्कैन करने के लिए Chrome को जगह की जानकारी का एक्सेस की ज़रूरत होती है. <ph name="BEGIN_LINK1" />अनुमतियां अपडेट करें<ph name="END_LINK1" />. जगह की जानकारी का एक्सेस <ph name="BEGIN_LINK2" />इस डिवाइस के लिए भी बंद<ph name="END_LINK2" /> है.</translation>
 <translation id="5530766185686772672">गुप्त टैब बंद करें</translation>
+<translation id="5530920986376047241">आप पेजों को अपनी 'पढ़ने की सूची' में सेव कर सकते हैं, ताकि उन्हें बाद में पढ़ सकें</translation>
 <translation id="5534640966246046842">साइट की कॉपी की गई</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5561549206367097665">नेटवर्क का इंतज़ार किया जा रहा है…</translation>
@@ -663,6 +673,7 @@
 <translation id="5797070761912323120">खोज, विज्ञापन, और दूसरी Google सेवाओं को मनमुताबिक बनाने के लिए, Google आपके इतिहास का इस्तेमाल कर सकता है</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
+<translation id="5810864297166300463">वेब सहायता</translation>
 <translation id="5814131985548525293">शुरू करने के लिए, यहां लिखें या आवाज़ वाले आइकॉन पर टैप करें</translation>
 <translation id="5817918615728894473">युग्‍मित करें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -697,6 +708,7 @@
 <translation id="5982307838673692400">गुप्त टैब खोलें</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
 <translation id="6014293228235665243">नहीं पढ़ा गया</translation>
 <translation id="6036057147555329831">कुछ और ICU</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
@@ -857,6 +869,7 @@
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7030675613184250187">आप पेजों को, पढ़ने की चीज़ों की सूची में सेव कर सकते हैं, ताकि आप उन्हें आसानी से दोबारा खोज सकें या उन्हें ऑफ़लाइन पढ़ सकें</translation>
 <translation id="703523980599857277">होम पेज बदलें</translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
@@ -877,6 +890,7 @@
 <translation id="7177466738963138057">आप इसे बाद में सेटिंग में जाकर बदल सकते हैं</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7187993566681480880">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है.</translation>
+<translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7189372733857464326">Google Play सेवाएं द्वारा अपडेट खत्म किए जाने की प्रतीक्षा की जा रही है</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
 <translation id="7233236755231902816">वेब को अपनी भाषा में देखने के लिए, Chrome का नया वर्शन पाएं</translation>
@@ -929,6 +943,7 @@
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फ़ाइल डाउनलोड की गई}one{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}other{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}}</translation>
+<translation id="7583262514280211622">आपको अपनी 'पढ़ने की सूची' यहां मिलेगी</translation>
 <translation id="7588219262685291874">आपके डिवाइस की 'बैटरी सेवर' सुविधा चालू होने पर 'गहरे रंग वाली थीम' चालू करें</translation>
 <translation id="7593557518625677601">Android सेटिंग खोलें और Chrome सिंक शुरू करने के लिए Android सिस्टम सिंक फिर से चालू करें</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
@@ -960,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> को बंद करें</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7778840695157240389">नई कहानियों के लिए कुछ समय बाद आएं</translation>
+<translation id="7786595606756654269">Google Assistant, वेब पर खोजने के लिए वॉइस सर्च का बेहतर अनुभव उपलब्ध कराती है और आपको खोली गई साइटों से जोड़े रखती है. Google Assistant, यूआरएल और उन साइटों का कॉन्टेंट इस्तेमाल करेगी जिन पर आप Assistant का इस्तेमाल करते हैं.</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
@@ -985,6 +1001,7 @@
 <translation id="7961926449547174351">आपने डिवाइस की मेमोरी का ऐक्सेस बंद कर दिया है. इसे चालू करने के लिए, कृपया सेटिंग पेज पर जाएं.</translation>
 <translation id="7963646190083259054">विक्रेता:</translation>
 <translation id="7967911570373677897">क्यूआर कोड को स्कैन करने के लिए, अपनी सेटिंग बदलें, ताकि Chrome आपके कैमरे का इस्तेमाल कर सके</translation>
+<translation id="7968014550143838305">'पढ़ने की सूची' में जोड़ा गया</translation>
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
@@ -1015,6 +1032,7 @@
 <translation id="8127542551745560481">होम पेज में बदलाव करें</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
 <translation id="8137558756159375272">'खोजने के लिए छुएं' सुविधा चुने हुए शब्‍द और मौजूदा पेज को संदर्भ के रूप में 'Google सर्च' पर भेजती है. आप इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर बंद कर सकते हैं.</translation>
+<translation id="8153351135626613369">कुछ वेबसाइटों पर Assistant आपकी मदद कर सकती है. जब आप इनमें से किसी वेबसाइट पर जाएंगे, तब Assistant अपने-आप स्क्रीन पर दिखेगी</translation>
 <translation id="8156139159503939589">आप किन भाषाओं में पढ़ सकते हैं?</translation>
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
@@ -1045,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> इस्तेमाल के लिए तैयार है.</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> चुनें\n2. “हमेशा” पर टैप करें</translation>
+<translation id="8410695015584479363">कीमतें ट्रैक करें</translation>
 <translation id="8413126021676339697">पूरा इतिहास दिखाएं</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
@@ -1112,6 +1131,7 @@
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8920114477895755567">अभिभावकों के विवरण की प्रतीक्षा कर रहे हैं.</translation>
 <translation id="8922289737868596582">पेज का ऑफ़लाइन उपयोग करने के लिए उन्हें ज़्यादा विकल्प बटन से डाउनलोड करें</translation>
+<translation id="8928626432984354940">बुकमार्क फ़ोल्डर वाली सूची, आधी स्क्रीन पर खोली गई</translation>
 <translation id="8937772741022875483">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाना चाहते हैं?</translation>
 <translation id="8942627711005830162">दूसरी विंडो में खोलें</translation>
 <translation id="8951232171465285730">Chrome ने आपके <ph name="MEGABYTES" /> एमबी की बचत की</translation>
@@ -1151,7 +1171,6 @@
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="9191031968346938109">इनमें जोड़ें…</translation>
-<translation id="919615279147764192">टास्क पूरे करने में आपकी मदद के लिए, Google उन साइटों के यूआरएल और कॉन्टेंट का इस्तेमाल करेगा जिन पर आप Assistant का इस्तेमाल करते हैं. साथ ही, Google उस जानकारी का भी इस्तेमाल करेगा जिसे आपने Assistant की मदद से सबमिट किया है. हो सकता है कि यह जानकारी आपके Google खाते में सेव हो. आप Chrome की सेटिंग में जाकर, Assistant को बंद कर सकते हैं.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1163,6 +1182,7 @@
 <translation id="93753284658583800">होम पेज बदल गया</translation>
 <translation id="938850635132480979">गड़बड़ी: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
+<translation id="948039501338975565">बुकमार्क फ़ोल्डर वाली सूची</translation>
 <translation id="95817756606698420">चीन में खोज करने के लिए Chrome, <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> का इस्तेमाल कर सकता है. आप इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में बदल सकते हैं.</translation>
 <translation id="962979164594783469">यह ऐप्लिकेशन इंस्टॉल करें</translation>
 <translation id="968900484120156207">आप जिन पेजों पर जाएंगे वे यहां दिखाई देंगे</translation>

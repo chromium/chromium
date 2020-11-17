@@ -488,7 +488,6 @@
 <translation id="2903493209154104877">ठेगानाहरू</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" /> भाषामा पृष्ठ छैन?</translation>
 <translation id="2909946352844186028">एउटा नेटवर्क परिवर्तन पत्ता लागेको थियो।</translation>
-<translation id="2910133103376701357"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको यन्त्र र खाताको व्यवस्थापन गर्दछ।</translation>
 <translation id="2911973620368911614">कार्य खाताको प्रयोगकर्ता ID</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> मा भएको क्र्यास</translation>
 <translation id="2916038427272391327">अन्य प्रोग्रामहरू बन्द गर्नुहोस्</translation>
@@ -757,7 +756,6 @@
     लागू गर्न अनुरोध गरेको छ। तर अहिले यो नीति लागू गर्न सकिँदैन।</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} पृष्ठ भएको PDF कागजात}other{{COUNT} पृष्ठहरू भएको PDF कागजात}}</translation>
 <translation id="4030383055268325496">थप्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको ब्राउजरको व्यवस्थापन गर्छ</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -839,7 +837,6 @@
 <translation id="4270541775497538019">स्ट्याकर ६</translation>
 <translation id="4275830172053184480">आफ्नो यन्त्रलाई फेरि सुरु गर्नुहोस्</translation>
 <translation id="4277028893293644418">पासवर्ड रिसेट गर्नुहोस्</translation>
-<translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यो कार्डलाई तपाईंको Google खातामा सुरक्षित गरिएको छ।}other{यी कार्डहरूलाई तपाईंको Google खातामा सुरक्षित गरिएको छ}}</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
@@ -959,7 +956,6 @@
 <translation id="4771973620359291008">एउटा अज्ञात त्रुटि देखापर्यो ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पप-अपमाथि रोक लगाइयो}other{# पप-अपहरूमाथि रोक लगाइयो}}</translation>
 <translation id="4780366598804516005">मेलबक्स १</translation>
-<translation id="4780900888022378816"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको यन्त्रको व्यवस्थापन गर्छ र <ph name="ACCOUNT_DOMAIN" /> ले तपाईंको खाताको व्यवस्थापन गर्छ।</translation>
 <translation id="4785689107224900852">यो ट्याबमा लैजानुहोस्</translation>
 <translation id="4791134497475588553">स्थापना गरिएका Linux एप र यिनीहरूलाई अन्तिम पटक प्रयोग गरिएको समय</translation>
 <translation id="4792686369684665359">तपाईंले पेस गर्न लाग्नुभएको जानकारी सुरक्षित छैन</translation>
@@ -1172,7 +1168,6 @@
 <translation id="560412284261940334">व्यवस्थापन समर्थित छैन</translation>
 <translation id="5605670050355397069">लेजर</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
-<translation id="5608165884683734521">यो साइट झुटो वा ठगीपूर्ण हुन सक्छ। Chrome ले अब यो साइट छोड्न सिफारिस गर्छ।</translation>
 <translation id="5610142619324316209">जडानलाई जाँच गर्नुहोस्</translation>
 <translation id="5610807607761827392">तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई कार्ड र ठेगानाहरूको व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="561165882404867731">Google अनुवादकका सहायताले यो पृष्ठ अनुवाद गर्नुहोस्</translation>
@@ -1400,7 +1395,6 @@
 <translation id="6529602333819889595">मेटाउने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6547208576736763147">बायाँपट्टि दुई प्वाल</translation>
-<translation id="6554795675067793129">तपाईंको खाता <ph name="ENROLLMENT_DOMAIN" /> द्वारा व्यवस्थापन गरिएको छ।</translation>
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
