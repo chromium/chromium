@@ -318,7 +318,7 @@ export function getZoomableViewport(
   const viewport = new Viewport(
       /** @type {!HTMLElement} */ (scrollParent),
       /** @type {!HTMLDivElement} */ (sizer), dummyContent, scrollbarWidth,
-      defaultZoom, topToolbarHeight, false);
+      defaultZoom, topToolbarHeight);
   viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
   return viewport;
 }

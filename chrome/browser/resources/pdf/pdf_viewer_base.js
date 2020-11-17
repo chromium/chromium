@@ -115,11 +115,6 @@ export class PDFViewerBaseElement extends PolymerElement {
     return 0;
   }
 
-  /** @return {boolean} Whether the top toolbar is fixed (does not auto-hide) */
-  hasFixedToolbar() {
-    return false;
-  }
-
   /**
    * @return {!HTMLDivElement}
    * @protected
@@ -248,8 +243,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     this.viewport_ = new Viewport(
         scrollContainer, this.getSizer(), this.getContent(),
-        getScrollbarWidth(), defaultZoom, this.getToolbarHeight(),
-        this.hasFixedToolbar());
+        getScrollbarWidth(), defaultZoom, this.getToolbarHeight());
     this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
     this.viewport_.setBeforeZoomCallback(
         () => this.currentController.beforeZoom());

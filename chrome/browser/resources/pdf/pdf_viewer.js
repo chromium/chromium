@@ -334,11 +334,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /** @override */
-  hasFixedToolbar() {
-    return this.pdfViewerUpdateEnabled_;
-  }
-
-  /** @override */
   getContent() {
     return /** @type {!HTMLDivElement} */ (this.$$('#content'));
   }
