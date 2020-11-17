@@ -381,7 +381,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^media/blink/',
   '^media/cast/',
   '^media/cdm/',
-  '^media/gpu/',
   '^media/mojo/',
   '^net/http/',
   '^net/url_request/',
