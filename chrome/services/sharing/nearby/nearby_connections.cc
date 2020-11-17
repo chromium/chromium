@@ -353,10 +353,14 @@ void NearbyConnections::StopDiscovery(const std::string& service_id,
 
 void NearbyConnections::InjectBluetoothEndpoint(
     const std::string& service_id,
+    const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info,
     const std::vector<uint8_t>& remote_bluetooth_mac_address,
     InjectBluetoothEndpointCallback callback) {
   OutOfBandConnectionMetadata oob_metadata{
       .medium = Medium::BLUETOOTH,
+      .endpoint_id = endpoint_id,
+      .endpoint_info = ByteArrayFromMojom(endpoint_info),
       .remote_bluetooth_mac_address =
           ByteArrayFromMojom(remote_bluetooth_mac_address)};
   GetCore(service_id)

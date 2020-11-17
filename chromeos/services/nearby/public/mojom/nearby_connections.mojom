@@ -195,13 +195,28 @@ interface NearbyConnections {
   // with DiscoveryOptions that set |is_out_of_band_connection| to true.
   // After this call completes, it is safe to invoke StopDiscovery().
   //
-  // service_id - Identifier used in the preceding StartDiscovery() call.
+  // service_id                   - Identifier used in the preceding
+  //                                StartDiscovery() call.
+  // endpoint_id                  - String of length 4 which should be randomly
+  //                                generated to uniquely identify this request.
+  //                                Note that there is only a single caller of
+  //                                this function, so collisions are highly
+  //                                unlikely since this field is randomly-
+  //                                generated.
+  // endpoint_info                - Describes the injected endpoint; will be
+  //                                passed to the OnEndpointFound() callback.
+  //                                Should uniquely identify this request so
+  //                                that clients can identify the injected
+  //                                endpoint. Must be >0 bytes and <131 bytes.
+  // remote_bluetooth_mac_address - MAC address of the injected device.
   // Possible return values include:
   //   Status::kSuccess if endpoint injection was attempted.
   //   Status::kError if |remote_bluetooth_mac_address| is malformed.
   //   Status::kOutOfOrderApiCall if the app is not discovering.
   InjectBluetoothEndpoint(
       string service_id,
+      string endpoint_id,
+      array<uint8> endpoint_info,
       array<uint8, 6> remote_bluetooth_mac_address) => (Status status);
 
   // Sends a request to connect to a remote endpoint.

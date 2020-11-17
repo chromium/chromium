@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/bind.h"
@@ -37,7 +38,7 @@ namespace {
 const char kServiceId[] = "NearbySharing";
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
-const char kRemoteEndpointId[] = "remote_endpoint_id";
+const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kRemoteEndpointInfo[] = {0x0d, 0x07, 0x06, 0x08, 0x09};
 const char kAuthenticationToken[] = "authentication_token";
@@ -76,13 +77,20 @@ struct EndpointData {
   std::vector<uint8_t> remote_endpoint_info;
 };
 
-const EndpointData CreateEndpointData(int suffix) {
+const EndpointData CreateEndpointData(int id) {
   EndpointData endpoint_data;
-  endpoint_data.remote_endpoint_id =
-      kRemoteEndpointId + base::NumberToString(suffix);
+
+  // Create an endpoint ID of length |kEndpointIdLength| which consists of
+  // |id| followed by spaces until the correct length is reached.
+  std::stringstream ss;
+  ss << id;
+  while (ss.str().size() < kEndpointIdLength)
+    ss << " ";
+  endpoint_data.remote_endpoint_id = ss.str();
+
   endpoint_data.remote_endpoint_info = std::vector<uint8_t>(
       std::begin(kRemoteEndpointInfo), std::end(kRemoteEndpointInfo));
-  endpoint_data.remote_endpoint_info.push_back(suffix);
+  endpoint_data.remote_endpoint_info.push_back(id);
   return endpoint_data;
 }
 
@@ -461,7 +469,7 @@ TEST_F(NearbyConnectionsTest, StopDiscovery) {
   EXPECT_CALL(*service_controller_ptr_, StopDiscovery(testing::_)).Times(1);
 }
 
-TEST_F(NearbyConnectionsTest, DISABLED_InjectEndpoint) {
+TEST_F(NearbyConnectionsTest, InjectEndpoint) {
   const std::vector<uint8_t> bluetooth_mac_address(
       std::begin(kBluetoothMacAddress), std::end(kBluetoothMacAddress));
   const EndpointData endpoint_data = CreateEndpointData(1);
@@ -485,6 +493,9 @@ TEST_F(NearbyConnectionsTest, DISABLED_InjectEndpoint) {
                     const OutOfBandConnectionMetadata& metadata) {
         EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(Medium::BLUETOOTH, metadata.medium);
+        EXPECT_EQ(endpoint_data.remote_endpoint_id, metadata.endpoint_id);
+        EXPECT_EQ(endpoint_data.remote_endpoint_info,
+                  ByteArrayToMojom(metadata.endpoint_info));
         EXPECT_EQ(bluetooth_mac_address,
                   ByteArrayToMojom(metadata.remote_bluetooth_mac_address));
         client_proxy->OnEndpointFound(
@@ -496,7 +507,8 @@ TEST_F(NearbyConnectionsTest, DISABLED_InjectEndpoint) {
 
   base::RunLoop inject_run_loop;
   nearby_connections_->InjectBluetoothEndpoint(
-      kServiceId, bluetooth_mac_address,
+      kServiceId, endpoint_data.remote_endpoint_id,
+      endpoint_data.remote_endpoint_info, bluetooth_mac_address,
       base::BindLambdaForTesting([&](mojom::Status status) {
         EXPECT_EQ(mojom::Status::kSuccess, status);
         inject_run_loop.Quit();
