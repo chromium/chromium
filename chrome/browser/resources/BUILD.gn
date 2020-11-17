@@ -105,6 +105,9 @@ if (enable_js_type_check) {
     if (is_win || is_linux || is_chromeos) {
       deps += [ "conflicts:closure_compile" ]
     }
+    if (is_linux || is_chromeos) {
+      deps += [ "certificate_viewer:closure_compile" ]
+    }
   }
 }
 

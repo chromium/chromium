@@ -101,9 +101,9 @@
       </if>
       <include name="IDR_AD_NETWORK_HASHES" file="resources\ad_networks.dat" type="BINDATA" />
       <if expr="is_posix and not is_macosx">
-        <include name="IDR_CERTIFICATE_VIEWER_HTML" file="resources\certificate_viewer.html" type="BINDATA" />
-        <include name="IDR_CERTIFICATE_VIEWER_JS" file="resources\certificate_viewer.js" type="BINDATA" />
-        <include name="IDR_CERTIFICATE_VIEWER_CSS" file="resources\certificate_viewer.css" type="BINDATA" />
+        <include name="IDR_CERTIFICATE_VIEWER_HTML" file="resources\certificate_viewer\certificate_viewer.html" type="BINDATA" />
+        <include name="IDR_CERTIFICATE_VIEWER_JS" file="resources\certificate_viewer\certificate_viewer.js" type="BINDATA" />
+        <include name="IDR_CERTIFICATE_VIEWER_CSS" file="resources\certificate_viewer\certificate_viewer.css" type="BINDATA" />
       </if>
       <if expr="chromeos">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />

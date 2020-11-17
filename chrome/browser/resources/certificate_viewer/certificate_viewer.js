@@ -1,9 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (function() {
   'use strict';
+
+  /**
+   * @typedef {{
+   *   general: !Object,
+   *   hierarchy: !Object,
+   * }}
+   */
+  let CertificateInfo;
 
   /**
    * Initialize the certificate viewer dialog by wiring up the close button,
@@ -13,7 +21,7 @@
     cr.ui.decorate('tabbox', cr.ui.TabBox);
 
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
-    getCertificateInfo(args);
+    getCertificateInfo(/** @type {!CertificateInfo} */ (args));
 
     /**
      * Initialize the second tab's contents.
@@ -23,8 +31,8 @@
      * fires.
      */
     const initializeDetailTab = oneShot(function() {
-      initializeTree($('hierarchy'), showCertificateFields);
-      initializeTree($('cert-fields'), showCertificateFieldValue);
+      initializeTree(assert($('hierarchy')), showCertificateFields);
+      initializeTree(assert($('cert-fields')), showCertificateFieldValue);
       createCertificateHierarchy(args.hierarchy);
     });
 
@@ -63,12 +71,12 @@
   /**
    * Initialize a cr.ui.Tree object from a given element using the specified
    * change handler.
-   * @param {HTMLElement} tree The HTMLElement to style as a tree.
+   * @param {!HTMLElement} tree The HTMLElement to style as a tree.
    * @param {function()} handler Function to call when a node is selected.
    */
   function initializeTree(tree, handler) {
     cr.ui.decorate(tree, cr.ui.Tree);
-    tree.detail = {payload: {}, children: {}};
+    tree['detail'] = {payload: {}, children: {}};
     tree.addEventListener('change', handler);
   }
 
@@ -89,19 +97,19 @@
 
   /**
    * Expand all nodes of the given tree object.
-   * @param {cr.ui.Tree} tree The tree object to expand all nodes on.
+   * @param {!cr.ui.Tree} tree The tree object to expand all nodes on.
    */
   function revealTree(tree) {
     tree.expanded = true;
-    for (const key in tree.detail.children) {
-      revealTree(tree.detail.children[key]);
+    for (const key in tree['detail'].children) {
+      revealTree(tree['detail'].children[key]);
     }
   }
 
   /**
    * This function is called from certificate_viewer_ui.cc with the certificate
    * information. Display all returned information to the user.
-   * @param {Object} certInfo Certificate information in named fields.
+   * @param {!CertificateInfo} certInfo Certificate information in named fields.
    */
   function getCertificateInfo(certInfo) {
     for (const key in certInfo.general) {
@@ -114,9 +122,9 @@
    * @param {Object} hierarchy A dictionary containing the hierarchy.
    */
   function createCertificateHierarchy(hierarchy) {
-    const treeItem = $('hierarchy');
+    const treeItem = /** @type {!cr.ui.Tree} */ ($('hierarchy'));
     const root = constructTree(hierarchy[0]);
-    treeItem.detail.children['root'] = root;
+    treeItem['detail'].children['root'] = root;
     treeItem.add(root);
 
     // Select the last item in the hierarchy (really we have a list here - each
@@ -132,7 +140,7 @@
   /**
    * Constructs a cr.ui.TreeItem corresponding to the passed in tree
    * @param {Object} tree Dictionary describing the tree structure.
-   * @return {cr.ui.TreeItem} Tree node corresponding to the input dictionary.
+   * @return {!cr.ui.TreeItem} Tree node corresponding to the input dictionary.
    */
   function constructTree(tree) {
     const treeItem = new cr.ui.TreeItem({
@@ -142,7 +150,7 @@
     if (tree.children) {
       for (let i = 0; i < tree.children.length; i++) {
         treeItem.add(
-            treeItem.detail.children[i] = constructTree(tree.children[i]));
+            treeItem['detail'].children[i] = constructTree(tree.children[i]));
       }
     }
     return treeItem;
@@ -152,10 +160,10 @@
    * Clear any previous certificate fields in the tree.
    */
   function clearCertificateFields() {
-    const treeItem = $('cert-fields');
-    for (const key in treeItem.detail.children) {
-      treeItem.remove(treeItem.detail.children[key]);
-      delete treeItem.detail.children[key];
+    const treeItem = /** @type {!cr.ui.Tree} */ ($('cert-fields'));
+    for (const key in treeItem['detail'].children) {
+      treeItem.remove(treeItem['detail'].children[key]);
+      delete treeItem['detail'].children[key];
     }
   }
 
@@ -178,9 +186,9 @@
    */
   function onCertificateFields(certFields) {
     clearCertificateFields();
-    const treeItem = $('cert-fields');
+    const treeItem = /** @type {!cr.ui.Tree} */ ($('cert-fields'));
     treeItem.add(
-        treeItem.detail.children['root'] = constructTree(certFields[0]));
+        treeItem['detail'].children['root'] = constructTree(certFields[0]));
     revealTree(treeItem);
     // Ensure the list is scrolled to the top by selecting the first item.
     treeItem.children[0].selected = true;
