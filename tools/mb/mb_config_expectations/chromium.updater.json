@@ -1,9 +1,27 @@
 {
+  "mac-updater-builder-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "is_google_branded": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "mac-updater-builder-rel": {
     "gn_args": {
       "is_component_build": false,
       "is_debug": false,
       "is_google_branded": true,
+      "use_goma": true
+    }
+  },
+  "win-updater-builder-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "is_google_branded": true,
+      "symbol_level": 1,
       "use_goma": true
     }
   },

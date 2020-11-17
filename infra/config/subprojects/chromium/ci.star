@@ -2623,9 +2623,21 @@ ci.fyi_builder(
 )
 
 ci.updater_builder(
+    name = "mac-updater-builder-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|mac",
+        short_name = "bld",
+    ),
+    os = os.MAC_ANY,
+    cpu = cpu.X86_64,
+    builderless = True,
+    cores = None,
+)
+
+ci.updater_builder(
     name = "mac-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "bld",
     ),
     os = os.MAC_ANY,
@@ -2637,7 +2649,7 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac10.10-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.10",
     ),
     triggered_by = ["mac-updater-builder-rel"],
@@ -2646,7 +2658,7 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac10.11-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.11",
     ),
     triggered_by = ["mac-updater-builder-rel"],
@@ -2655,16 +2667,25 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac10.12-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.12",
     ),
     triggered_by = ["mac-updater-builder-rel"],
 )
 
 ci.updater_builder(
+    name = "mac10.13-updater-tester-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.13",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "mac10.13-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.13",
     ),
     triggered_by = ["mac-updater-builder-rel"],
@@ -2673,7 +2694,7 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac10.14-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.14",
     ),
     triggered_by = ["mac-updater-builder-rel"],
@@ -2682,7 +2703,7 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac10.15-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "10.15",
     ),
     triggered_by = ["mac-updater-builder-rel"],
@@ -2691,16 +2712,27 @@ ci.updater_builder(
 ci.updater_builder(
     name = "mac11.0-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|mac",
+        category = "release|mac",
         short_name = "11.0",
     ),
     triggered_by = ["mac-updater-builder-rel"],
 )
 
 ci.updater_builder(
+    name = "win-updater-builder-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|win",
+        short_name = "bld",
+    ),
+    os = os.WINDOWS_DEFAULT,
+    cpu = cpu.X86,
+    builderless = True,
+)
+
+ci.updater_builder(
     name = "win-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|win",
+        category = "release|win",
         short_name = "bld",
     ),
     os = os.WINDOWS_DEFAULT,
@@ -2708,18 +2740,37 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "win7-updater-tester-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|win",
+        short_name = "7",
+    ),
+    triggered_by = ["win-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "win7-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|win",
+        category = "release|win",
         short_name = "7",
     ),
     triggered_by = ["win-updater-builder-rel"],
 )
 
 ci.updater_builder(
+    name = "win10-updater-tester-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "debug|win",
+        short_name = "10",
+    ),
+    os = os.WINDOWS_10,
+    triggered_by = ["win-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "win10-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
-        category = "updater|win",
+        category = "release|win",
         short_name = "10",
     ),
     os = os.WINDOWS_10,

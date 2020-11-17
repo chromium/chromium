@@ -5155,6 +5155,15 @@
           'isolated_scripts': 'updater_isolated_scripts',
         },
       },
+      'mac10.13-updater-tester-dbg': {
+        'mixins': [
+            'mac_10.13',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+      },
       'mac10.13-updater-tester-rel': {
         'mixins': [
             'mac_10.13',
@@ -5191,10 +5200,44 @@
           'isolated_scripts': 'updater_isolated_scripts',
         },
       },
+      'win10-updater-tester-dbg': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'integrity': 'high',
+            }
+          ]
+        },
+      },
       'win10-updater-tester-rel': {
         'mixins': [
           'win10',
           'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'integrity': 'high',
+            }
+          ]
+        },
+      },
+      'win7-updater-tester-dbg': {
+        'mixins': [
+          'win7',
+          'x86-64'
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',

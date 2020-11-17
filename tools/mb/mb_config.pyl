@@ -658,7 +658,9 @@
     },
 
     'chromium.updater': {
+      'mac-updater-builder-dbg': 'updater_debug_bot',
       'mac-updater-builder-rel': 'updater_release_bot',
+      'win-updater-builder-dbg': 'updater_debug_bot',
       'win-updater-builder-rel': 'updater_release_bot',
     },
 
@@ -1081,8 +1083,10 @@
     },
 
     'tryserver.chromium.updater': {
-       'mac-updater-try-builder-rel': 'updater_release_trybot_mac',
-       'win-updater-try-builder-rel': 'updater_release_trybot_win',
+       'mac-updater-try-builder-dbg': 'updater_debug_bot',
+       'mac-updater-try-builder-rel': 'updater_release_trybot',
+       'win-updater-try-builder-dbg': 'updater_debug_bot',
+       'win-updater-try-builder-rel': 'updater_release_trybot',
     },
 
     'tryserver.chromium.win': {
@@ -2329,16 +2333,16 @@
       'official_optimize_goma_trybot',
     ],
 
+    'updater_debug_bot': [
+      'updater_on_win_mac', 'debug_bot',
+    ],
+
     'updater_release_bot': [
       'updater_on_win_mac', 'release_bot',
     ],
 
-    'updater_release_trybot_mac': [
+    'updater_release_trybot': [
       'updater_on_win_mac', 'release_trybot',
-    ],
-
-    'updater_release_trybot_win': [
-      'updater_on_win_mac', 'shared_release_trybot',
     ],
 
     'ozone_linux_release_bot': [

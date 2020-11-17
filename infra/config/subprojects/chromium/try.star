@@ -1400,7 +1400,27 @@ try_.chromium_mac_ios_builder(
 )
 
 try_.chromium_updater_mac_builder(
+    name = "mac-updater-try-builder-dbg",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chrome/updater/.+",
+        ],
+    ),
+)
+
+try_.chromium_updater_mac_builder(
     name = "mac-updater-try-builder-rel",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chrome/updater/.+",
+        ],
+    ),
+)
+
+try_.chromium_updater_win_builder(
+    name = "win-updater-try-builder-dbg",
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
