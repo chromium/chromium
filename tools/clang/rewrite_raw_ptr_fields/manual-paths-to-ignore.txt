@@ -31,6 +31,9 @@ chrome/installer/mini_installer/
 # provide a stable C ABI. Can't depend on //base.
 android_webview/public/
 
+# Exclude dependences of checked_ptr.h
+base/logging.h
+
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
 # because they are sensitive to performance regressions (to a much higher
