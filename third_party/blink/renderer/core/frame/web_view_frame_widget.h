@@ -64,8 +64,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;
-  void UpdateLifecycle(WebLifecycleUpdate requested_update,
-                       DocumentUpdateReason reason) override;
   void MouseCaptureLost() override;
 
   // WebFrameWidget overrides:

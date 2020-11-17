@@ -91,8 +91,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size&) override;
-  void UpdateLifecycle(WebLifecycleUpdate requested_update,
-                       DocumentUpdateReason reason) override;
 
   void MouseCaptureLost() override;
 

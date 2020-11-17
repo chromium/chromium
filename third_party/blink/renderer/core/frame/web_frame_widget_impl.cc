@@ -317,17 +317,6 @@ bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
   return LocalRootImpl();
 }
 
-void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
-                                         DocumentUpdateReason reason) {
-  TRACE_EVENT0("blink", "WebFrameWidgetImpl::updateAllLifecyclePhases");
-  if (!LocalRootImpl())
-    return;
-
-  PageWidgetDelegate::UpdateLifecycle(*GetPage(), *LocalRootImpl()->GetFrame(),
-                                      requested_update, reason);
-  View()->UpdatePagePopup();
-}
-
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
   if (!element || !WebElement(element).IsEditable())

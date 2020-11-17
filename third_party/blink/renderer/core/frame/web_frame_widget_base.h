@@ -315,6 +315,12 @@ class CORE_EXPORT WebFrameWidgetBase
   static void SetIgnoreInputEvents(bool value) { ignore_input_events_ = value; }
   static bool IgnoreInputEvents() { return ignore_input_events_; }
 
+  // Resets the layout tracking steps for the main frame. When
+  // `UpdateLifecycle()` is called it generates `WebMeaningfulLayout` events
+  // only once. This resets the state back to the default so it will fire new
+  // events.
+  void ResetMeaningfulLayoutStateForMainFrame();
+
   // WebWidget methods.
   cc::LayerTreeHost* InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
@@ -376,6 +382,8 @@ class CORE_EXPORT WebFrameWidgetBase
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
   void DidBeginMainFrame() override;
+  void UpdateLifecycle(WebLifecycleUpdate requested_update,
+                       DocumentUpdateReason reason) override;
   void WillBeginMainFrame() override;
   void DidCompletePageScaleAnimation() override;
   void FocusChangeComplete() override;
@@ -852,6 +860,24 @@ class CORE_EXPORT WebFrameWidgetBase
   // It is always valid to read this variable but it can only be set for main
   // frame widgets.
   float device_scale_factor_for_testing_ = 0;
+
+  // This struct contains data that is only valid for main frame widgets.
+  // You should use `main_data()` to access it.
+  struct MainFrameData {
+    // `UpdateLifecycle()` generates `WebMeaningfulLayout` events these
+    // variables track what events should be generated. They are only applicable
+    // for main frame widgets.
+    bool should_dispatch_first_visually_non_empty_layout = false;
+    bool should_dispatch_first_layout_after_finished_parsing = false;
+    bool should_dispatch_first_layout_after_finished_loading = false;
+    // Last background color sent to the browser. Only set for main frames.
+    base::Optional<SkColor> last_background_color;
+  } main_frame_data_;
+
+  MainFrameData& main_data() {
+    DCHECK(ForMainFrame());
+    return main_frame_data_;
+  }
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

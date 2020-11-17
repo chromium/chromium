@@ -92,11 +92,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::UpdateLifecycle(WebLifecycleUpdate requested_update,
-                                         DocumentUpdateReason reason) {
-  web_view_->UpdateLifecycle(requested_update, reason);
-}
-
 void WebViewFrameWidget::ApplyViewportChanges(
     const ApplyViewportChangesArgs& args) {
   web_view_->ApplyViewportChanges(args);

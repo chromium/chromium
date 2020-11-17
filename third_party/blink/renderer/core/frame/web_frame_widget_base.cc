@@ -989,6 +989,61 @@ void WebFrameWidgetBase::DidBeginMainFrame() {
   PageWidgetDelegate::DidBeginFrame(*LocalRootImpl()->GetFrame());
 }
 
+void WebFrameWidgetBase::UpdateLifecycle(WebLifecycleUpdate requested_update,
+                                         DocumentUpdateReason reason) {
+  TRACE_EVENT0("blink", "WebFrameWidgetBase::UpdateLifecycle");
+  if (!LocalRootImpl())
+    return;
+
+  PageWidgetDelegate::UpdateLifecycle(*GetPage(), *LocalRootImpl()->GetFrame(),
+                                      requested_update, reason);
+  if (requested_update != WebLifecycleUpdate::kAll)
+    return;
+
+  View()->UpdatePagePopup();
+
+  // Meaningful layout events and background colors only apply to main frames.
+  if (ForMainFrame()) {
+    MainFrameData& data = main_data();
+
+    // There is no background color for non-composited WebViews (eg
+    // printing).
+    if (View()->does_composite()) {
+      SkColor background_color = View()->BackgroundColor();
+      SetBackgroundColor(background_color);
+      if (background_color != data.last_background_color) {
+        LocalRootImpl()->GetFrame()->DidChangeBackgroundColor(
+            background_color, false /* color_adjust */);
+        data.last_background_color = background_color;
+      }
+    }
+
+    if (LocalFrameView* view = LocalRootImpl()->GetFrameView()) {
+      LocalFrame* frame = LocalRootImpl()->GetFrame();
+
+      if (data.should_dispatch_first_visually_non_empty_layout &&
+          view->IsVisuallyNonEmpty()) {
+        data.should_dispatch_first_visually_non_empty_layout = false;
+        // TODO(esprehn): Move users of this callback to something
+        // better, the heuristic for "visually non-empty" is bad.
+        DidMeaningfulLayout(WebMeaningfulLayout::kVisuallyNonEmpty);
+      }
+
+      if (data.should_dispatch_first_layout_after_finished_parsing &&
+          frame->GetDocument()->HasFinishedParsing()) {
+        data.should_dispatch_first_layout_after_finished_parsing = false;
+        DidMeaningfulLayout(WebMeaningfulLayout::kFinishedParsing);
+      }
+
+      if (data.should_dispatch_first_layout_after_finished_loading &&
+          frame->GetDocument()->IsLoadCompleted()) {
+        data.should_dispatch_first_layout_after_finished_loading = false;
+        DidMeaningfulLayout(WebMeaningfulLayout::kFinishedLoading);
+      }
+    }
+  }
+}
+
 void WebFrameWidgetBase::WillBeginMainFrame() {
   Client()->WillBeginMainFrame();
 }
@@ -1366,6 +1421,13 @@ LocalFrame* WebFrameWidgetBase::FocusedLocalFrameInWidget() const {
 
 WebLocalFrame* WebFrameWidgetBase::FocusedWebLocalFrameInWidget() const {
   return WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
+}
+
+void WebFrameWidgetBase::ResetMeaningfulLayoutStateForMainFrame() {
+  MainFrameData& data = main_data();
+  data.should_dispatch_first_visually_non_empty_layout = true;
+  data.should_dispatch_first_layout_after_finished_parsing = true;
+  data.should_dispatch_first_layout_after_finished_loading = true;
 }
 
 cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(

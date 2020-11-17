@@ -848,10 +848,11 @@ Node* WebViewImpl::BestTapNode(
 
 void WebViewImpl::EnableTapHighlightAtPoint(
     const GestureEventWithHitTestResults& targeted_tap_event) {
+  DCHECK(MainFrameImpl());
   Node* touch_node = BestTapNode(targeted_tap_event);
   GetPage()->GetLinkHighlight().SetTapHighlight(touch_node);
-  UpdateLifecycle(WebLifecycleUpdate::kAll,
-                  DocumentUpdateReason::kTapHighlight);
+  MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
+                                     DocumentUpdateReason::kTapHighlight);
 }
 
 void WebViewImpl::AnimateDoubleTapZoom(const gfx::Point& point_in_root_frame,
@@ -1193,7 +1194,8 @@ void WebViewImpl::ResizeViewWhileAnchored(
   // Update lifecycle phases immediately to recalculate the minimum scale limit
   // for rotation anchoring, and to make sure that no lifecycle states are
   // stale if this WebView is embedded in another one.
-  UpdateLifecycle(WebLifecycleUpdate::kAll, DocumentUpdateReason::kSizeChange);
+  MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
+                                     DocumentUpdateReason::kSizeChange);
 }
 
 void WebViewImpl::ResizeWithBrowserControls(
@@ -1331,61 +1333,6 @@ void WebViewImpl::SetKeyboardFocusURL(const KURL& url) {
 
 WebViewFrameWidget* WebViewImpl::MainFrameViewWidget() {
   return web_widget_;
-}
-
-void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
-                                  DocumentUpdateReason reason) {
-  TRACE_EVENT0("blink", "WebViewImpl::updateAllLifecyclePhases");
-  if (!MainFrameImpl())
-    return;
-
-  PageWidgetDelegate::UpdateLifecycle(*page_, *MainFrameImpl()->GetFrame(),
-                                      requested_update, reason);
-  if (requested_update != WebLifecycleUpdate::kAll)
-    return;
-
-  UpdatePagePopup();
-
-  // There is no background color for non-composited WebViews (eg printing).
-  if (does_composite_) {
-    SkColor background_color = BackgroundColor();
-    MainFrameImpl()->FrameWidgetImpl()->SetBackgroundColor(background_color);
-    if (background_color != last_background_color_) {
-      last_background_color_ = background_color;
-      if (Page* page = page_.Get()) {
-        if (auto* main_local_frame = DynamicTo<LocalFrame>(page->MainFrame())) {
-          main_local_frame->DidChangeBackgroundColor(background_color,
-                                                     false /* color_adjust */);
-        }
-      }
-    }
-  }
-
-  if (LocalFrameView* view = MainFrameImpl()->GetFrameView()) {
-    LocalFrame* frame = MainFrameImpl()->GetFrame();
-    WebFrameWidgetBase* frame_widget =
-        WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-
-    if (should_dispatch_first_visually_non_empty_layout_ &&
-        view->IsVisuallyNonEmpty()) {
-      should_dispatch_first_visually_non_empty_layout_ = false;
-      // TODO(esprehn): Move users of this callback to something
-      // better, the heuristic for "visually non-empty" is bad.
-      frame_widget->DidMeaningfulLayout(WebMeaningfulLayout::kVisuallyNonEmpty);
-    }
-
-    if (should_dispatch_first_layout_after_finished_parsing_ &&
-        frame->GetDocument()->HasFinishedParsing()) {
-      should_dispatch_first_layout_after_finished_parsing_ = false;
-      frame_widget->DidMeaningfulLayout(WebMeaningfulLayout::kFinishedParsing);
-    }
-
-    if (should_dispatch_first_layout_after_finished_loading_ &&
-        frame->GetDocument()->IsLoadCompleted()) {
-      should_dispatch_first_layout_after_finished_loading_ = false;
-      frame_widget->DidMeaningfulLayout(WebMeaningfulLayout::kFinishedLoading);
-    }
-  }
 }
 
 void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
@@ -3312,9 +3259,8 @@ void WebViewImpl::SetOpenedByDOM() {
 void WebViewImpl::DidCommitLoad(bool is_new_navigation,
                                 bool is_navigation_within_page) {
   if (!is_navigation_within_page) {
-    should_dispatch_first_visually_non_empty_layout_ = true;
-    should_dispatch_first_layout_after_finished_parsing_ = true;
-    should_dispatch_first_layout_after_finished_loading_ = true;
+    if (web_widget_)
+      web_widget_->ResetMeaningfulLayoutStateForMainFrame();
 
     if (is_new_navigation)
       GetPageScaleConstraintsSet().SetNeedsReset(true);

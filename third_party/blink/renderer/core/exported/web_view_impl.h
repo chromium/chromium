@@ -526,8 +526,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
-  void UpdateLifecycle(WebLifecycleUpdate requested_update,
-                       DocumentUpdateReason reason);
   void ThemeChanged();
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
@@ -756,12 +754,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   SkColor base_background_color_override_ = Color::kTransparent;
   bool background_color_override_enabled_ = false;
   SkColor background_color_override_ = Color::kTransparent;
-  base::Optional<SkColor> last_background_color_;
   float zoom_factor_override_ = 0.f;
-
-  bool should_dispatch_first_visually_non_empty_layout_ = false;
-  bool should_dispatch_first_layout_after_finished_parsing_ = false;
-  bool should_dispatch_first_layout_after_finished_loading_ = false;
 
   FloatSize elastic_overscroll_;
 
