@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -57,7 +55,6 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -147,27 +144,66 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
 
-    private WindowAndroid mWindowAndroid;
+    @NonNull
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @NonNull
+    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private ActivityTabTabObserver mTabObserver;
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
 
-    public AutocompleteMediator(Context context, AutocompleteDelegate delegate,
-            UrlBarEditingTextStateProvider textProvider,
-            AutocompleteController autocompleteController, PropertyModel listPropertyModel,
-            Handler handler) {
+    public AutocompleteMediator(@NonNull Context context, @NonNull AutocompleteDelegate delegate,
+            @NonNull UrlBarEditingTextStateProvider textProvider,
+            @NonNull AutocompleteController autocompleteController,
+            @NonNull PropertyModel listPropertyModel, @NonNull Handler handler,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable ActivityTabProvider activityTabProvider,
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull LocationBarDataProvider locationBarDataProvider) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher.register(this);
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mAutocomplete = autocompleteController;
         mAutocomplete.setOnSuggestionsReceivedListener(this);
         mHandler = handler;
+        mDataProvider = locationBarDataProvider;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mAutocompleteResult = new AutocompleteResult(null, null);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(mAutocomplete);
+        mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
+
+        if (activityTabProvider != null) {
+            mDropdownViewInfoListBuilder.setActivityTabProvider(activityTabProvider);
+            mTabObserver = new ActivityTabTabObserver(activityTabProvider) {
+                @Override
+                public void onPageLoadFinished(Tab tab, String url) {
+                    maybeTriggerCacheRefresh(url);
+                }
+
+                @Override
+                protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    if (tab == null) return;
+                    maybeTriggerCacheRefresh(tab.getUrlString());
+                }
+
+                /**
+                 * Trigger ZeroSuggest cache refresh in case user is accessing a new tab page.
+                 * Avoid issuing multiple concurrent server requests for the same event to
+                 * reduce server pressure.
+                 */
+                private void maybeTriggerCacheRefresh(String url) {
+                    if (url == null) return;
+                    if (!UrlConstants.NTP_URL.equals(url)) return;
+                    AutocompleteControllerJni.get().prefetchZeroSuggestResults();
+                }
+            };
+        }
     }
 
     /**
@@ -191,6 +227,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDropdownViewInfoListBuilder.destroy();
         if (mTabObserver != null) {
             mTabObserver.destroy();
+        }
+        if (mLifecycleDispatcher != null) {
+            mLifecycleDispatcher.unregister(this);
         }
     }
 
@@ -254,27 +293,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     /**
      * Sets the data provider for the toolbar.
      */
-    void setLocationBarDataProvider(LocationBarDataProvider provider) {
+    void setLocationBarDataProviderForTesting(LocationBarDataProvider provider) {
         mDataProvider = provider;
-    }
-
-    /** Set the WindowAndroid instance associated with the containing Activity. */
-    void setWindowAndroid(WindowAndroid window) {
-        if (mLifecycleDispatcher != null) {
-            mLifecycleDispatcher.unregister(this);
-        }
-
-        mWindowAndroid = window;
-        if (window != null && window.getActivity().get() != null
-                && window.getActivity().get() instanceof AsyncInitializationActivity) {
-            mLifecycleDispatcher =
-                    ((AsyncInitializationActivity) mWindowAndroid.getActivity().get())
-                            .getLifecycleDispatcher();
-        }
-
-        if (mLifecycleDispatcher != null) {
-            mLifecycleDispatcher.register(this);
-        }
     }
 
     /**
@@ -328,48 +348,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
         mDeferredNativeRunnables.clear();
         mDropdownViewInfoListBuilder.onNativeInitialized();
-    }
-
-    /**
-     * @param provider A means of accessing the activity tab.
-     */
-    void setActivityTabProvider(ActivityTabProvider provider) {
-        mDropdownViewInfoListBuilder.setActivityTabProvider(provider);
-
-        if (mTabObserver != null) {
-            mTabObserver.destroy();
-            mTabObserver = null;
-        }
-
-        if (provider != null) {
-            mTabObserver = new ActivityTabTabObserver(provider) {
-                @Override
-                public void onPageLoadFinished(Tab tab, String url) {
-                    maybeTriggerCacheRefresh(url);
-                }
-
-                @Override
-                protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                    if (tab == null) return;
-                    maybeTriggerCacheRefresh(tab.getUrlString());
-                }
-
-                /**
-                 * Trigger ZeroSuggest cache refresh in case user is accessing a new tab page.
-                 * Avoid issuing multiple concurrent server requests for the same event to reduce
-                 * server pressure.
-                 */
-                private void maybeTriggerCacheRefresh(String url) {
-                    if (url == null) return;
-                    if (!UrlConstants.NTP_URL.equals(url)) return;
-                    AutocompleteControllerJni.get().prefetchZeroSuggestResults();
-                }
-            };
-        }
-    }
-
-    void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
-        mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
     }
 
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
@@ -563,11 +541,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         RecordUserAction.record("MobileOmniboxDeleteGesture");
         if (!suggestion.isDeletable()) return;
 
-        if (mWindowAndroid == null) return;
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null || !(activity instanceof AsyncInitializationActivity)) return;
-        ModalDialogManager manager =
-                ((AsyncInitializationActivity) activity).getModalDialogManager();
+        ModalDialogManager manager = mModalDialogManagerSupplier.get();
         if (manager == null) {
             assert false : "No modal dialog manager registered for this activity.";
             return;

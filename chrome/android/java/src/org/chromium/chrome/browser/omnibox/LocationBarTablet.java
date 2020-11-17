@@ -14,12 +14,20 @@ import android.util.Property;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.util.ArrayList;
@@ -103,8 +111,23 @@ class LocationBarTablet extends LocationBarLayout {
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
 
         mTargets = new View[] {mUrlBar, mDeleteButton};
+    }
+
+    @Override
+    public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
+            @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
+            @NonNull LocationBarDataProvider locationBarDataProvider,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
+            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+        super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
+                locationBarDataProvider, profileSupplier, windowDelegate, windowAndroid,
+                overrideUrlLoadingDelegate);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
-        mStatusCoordinator.setStatusIconShown(true);
+        if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                    mLocationBarDataProvider.isIncognito())) {
+            mStatusCoordinator.setStatusIconShown(true);
+        }
     }
 
     @Override

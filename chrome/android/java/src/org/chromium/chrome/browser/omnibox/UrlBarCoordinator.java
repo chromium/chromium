@@ -8,12 +8,13 @@ import android.text.TextWatcher;
 import android.view.ActionMode;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlDirectionListener;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -41,11 +42,21 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
 
     /**
      * Constructs a coordinator for the given UrlBar view.
+     *
+     * @param urlBar The {@link UrlBar} view this coordinator encapsulates.
+     * @param windowDelegate Delegate for accessing and mutating window properties, e.g. soft input
+     *         mode.
+     * @param actionModeCallback Callback to handle changes in contextual action Modes.
      */
-    public UrlBarCoordinator(UrlBar urlBar) {
+    public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
+            @NonNull ActionMode.Callback actionModeCallback) {
         mUrlBar = urlBar;
 
-        PropertyModel model = new PropertyModel(UrlBarProperties.ALL_KEYS);
+        PropertyModel model =
+                new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
+                        .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
+                        .with(UrlBarProperties.WINDOW_DELEGATE, windowDelegate)
+                        .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
         mMediator = new UrlBarMediator(model);
@@ -87,24 +98,14 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
         mMediator.setAllowFocus(allowFocus);
     }
 
-    /** @see UrlBarMediator#setUrlDirectionListener(UrlDirectionListener) */
-    public void setUrlDirectionListener(UrlDirectionListener listener) {
+    /** @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>) */
+    public void setUrlDirectionListener(Callback<Integer> listener) {
         mMediator.setUrlDirectionListener(listener);
     }
 
     /** @see UrlBarMediator#setOnFocusChangedCallback(Callback) */
     public void setOnFocusChangedCallback(Callback<Boolean> callback) {
         mMediator.setOnFocusChangedCallback(callback);
-    }
-
-    /** @see UrlBarMediator#setWindowDelegate(WindowDelegate) */
-    public void setWindowDelegate(WindowDelegate windowDelegate) {
-        mMediator.setWindowDelegate(windowDelegate);
-    }
-
-    /** @see UrlBarMediator#setActionModeCallback(android.view.ActionMode.Callback) */
-    public void setActionModeCallback(ActionMode.Callback callback) {
-        mMediator.setActionModeCallback(callback);
     }
 
     /** Selects all of the text of the UrlBar. */

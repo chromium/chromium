@@ -94,8 +94,8 @@ public final class StatusMediatorUnitTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable);
-            mMediator.setLocationBarDataProvider(mLocationBarDataProvider);
+                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable, null,
+                    mLocationBarDataProvider);
             mMediator.setDelegateForTesting(mDelegate);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
