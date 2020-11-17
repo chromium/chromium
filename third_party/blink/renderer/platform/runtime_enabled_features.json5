@@ -338,6 +338,9 @@
       status: "experimental",
     },
     {
+      name: "ClickPointerEventIntegerCoordinates",
+    },
+    {
       name: "ClickRetargetting",
       status: "experimental",
     },

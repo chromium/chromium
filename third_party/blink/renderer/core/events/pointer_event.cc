@@ -100,11 +100,22 @@ bool PointerEvent::IsMouseEvent() const {
   return false;
 }
 
+bool PointerEvent::ShouldHaveIntegerCoordinates() const {
+  if (RuntimeEnabledFeatures::ClickPointerEventIntegerCoordinatesEnabled() &&
+      (type() == event_type_names::kClick ||
+       type() == event_type_names::kContextmenu)) {
+    return true;
+  }
+  return false;
+}
+
 bool PointerEvent::IsPointerEvent() const {
   return true;
 }
 
 double PointerEvent::offsetX() const {
+  if (ShouldHaveIntegerCoordinates())
+    return MouseEvent::offsetX();
   if (!HasPosition())
     return 0;
   if (!has_cached_relative_position_)
@@ -113,6 +124,8 @@ double PointerEvent::offsetX() const {
 }
 
 double PointerEvent::offsetY() const {
+  if (ShouldHaveIntegerCoordinates())
+    return MouseEvent::offsetY();
   if (!HasPosition())
     return 0;
   if (!has_cached_relative_position_)

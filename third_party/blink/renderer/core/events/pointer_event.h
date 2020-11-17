@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -56,12 +57,36 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
   bool IsMouseEvent() const override;
   bool IsPointerEvent() const override;
 
-  double screenX() const override { return screen_location_.X(); }
-  double screenY() const override { return screen_location_.Y(); }
-  double clientX() const override { return client_location_.X(); }
-  double clientY() const override { return client_location_.Y(); }
-  double pageX() const override { return page_location_.X(); }
-  double pageY() const override { return page_location_.Y(); }
+  double screenX() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::screenX();
+    return screen_location_.X();
+  }
+  double screenY() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::screenY();
+    return screen_location_.Y();
+  }
+  double clientX() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::clientX();
+    return client_location_.X();
+  }
+  double clientY() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::clientY();
+    return client_location_.Y();
+  }
+  double pageX() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::pageX();
+    return page_location_.X();
+  }
+  double pageY() const override {
+    if (ShouldHaveIntegerCoordinates())
+      return MouseEvent::pageY();
+    return page_location_.Y();
+  }
 
   double offsetX() const override;
   double offsetY() const override;
@@ -82,6 +107,8 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
   void Trace(Visitor*) const override;
 
  private:
+  bool ShouldHaveIntegerCoordinates() const;
+
   PointerId pointer_id_;
   double width_;
   double height_;
