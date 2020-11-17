@@ -3522,7 +3522,9 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
   DCHECK(!commit_params->is_view_source);
   DCHECK(NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
 
-  CHECK(in_frame_tree_);
+  // TODO(danakj): Disabled for M87, but underlying problem exists.
+  // CHECK(in_frame_tree_);
+
   // Unlike a cross-document navigation commit, detach the MHTMLBodyLoaderClient
   // before resetting it. In the case of a cross-document navigation, it's
   // important to ensure *something* commits, even if the original commit
