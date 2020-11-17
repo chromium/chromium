@@ -273,13 +273,15 @@ try_.chromium_android_builder(
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
-                "//chrome/android:validate_expectations",
                 "//chrome/android:monochrome_public_minimal_apks",
+                "//chrome/android:trichrome_minimal_apks",
+                "//chrome/android:validate_expectations",
                 "//tools/binary_size:binary_size_trybot_py",
             ],
             "compile_targets": [
                 "monochrome_public_minimal_apks",
                 "monochrome_static_initializers",
+                "trichrome_minimal_apks",
                 "validate_expectations",
             ],
         },
