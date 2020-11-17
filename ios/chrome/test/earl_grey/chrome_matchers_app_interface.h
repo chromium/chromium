@@ -190,6 +190,9 @@
 // settings' navigation bar.
 + (id<GREYMatcher>)syncSettingsConfirmButton;
 
+// Returns matcher for the Autofill Credit Card "Payment Methods" edit view.
++ (id<GREYMatcher>)autofillCreditCardEditTableView;
+
 // Returns matcher for the Autofill Credit Card "Payment Methods" view in the
 // settings menu.
 + (id<GREYMatcher>)autofillCreditCardTableView;

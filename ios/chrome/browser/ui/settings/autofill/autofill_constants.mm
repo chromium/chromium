@@ -25,3 +25,6 @@ NSString* const kAutofillPaymentMethodsToolbarId =
     @"kAutofillPaymentMethodsToolbarId";
 NSString* const kSettingsAddPaymentMethodButtonId =
     @"kSettingsAddPaymentMethodButtonId";
+
+NSString* const kAutofillCreditCardEditTableViewId =
+    @"kAutofillCreditCardEditTableViewId";

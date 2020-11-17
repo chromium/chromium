@@ -167,7 +167,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // not enabled.
 - (void)testAddButtonDisabledOnInvalidNumber {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"1234")];
+      performAction:grey_replaceText(@"1234")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
@@ -178,11 +178,11 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // not enabled.
 - (void)testAddButtonDisabledOnInvalidExpiryDate {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"4111111111111111")];
+      performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_typeText(@"00")];
+      performAction:grey_replaceText(@"00")];
   [[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
-      performAction:grey_typeText(@"0000")];
+      performAction:grey_replaceText(@"0000")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
@@ -191,16 +191,15 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests when a user tries to add an invalid card nickname, the "Add" button is
 // not enabled.
-// TODO(crbug.com/1108809): Re-enable the test
-- (void)DISABLED_testAddButtonDisabledOnInvalidNickname {
+- (void)testAddButtonDisabledOnInvalidNickname {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"4111111111111111")];
+      performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_typeText(@"12")];
+      performAction:grey_replaceText(@"12")];
   [[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
-      performAction:grey_typeText(@"2030")];
+      performAction:grey_replaceText(@"2030")];
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_typeText(@"1234")];
+      performAction:grey_replaceText(@"1234")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
@@ -211,11 +210,11 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // enabled.
 - (void)testAddButtonEnabledOnEmptyNickname {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"4111111111111111")];
+      performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_typeText(@"12")];
+      performAction:grey_replaceText(@"12")];
   [[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
-      performAction:grey_typeText(@"2030")];
+      performAction:grey_replaceText(@"2030")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
@@ -232,11 +231,11 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
   }
   [AutofillAppInterface clearCreditCardStore];
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"4111111111111111")];
+      performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_typeText(@"12")];
+      performAction:grey_replaceText(@"12")];
   [[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
-      performAction:grey_typeText(@"2999")];
+      performAction:grey_replaceText(@"2999")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       performAction:grey_tap()];
@@ -256,18 +255,16 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests when a user add a card with a nickname, the screen is dismissed
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen with the nickname.
-// TODO(crbug.com/1109663): Enable the test on iPhone once the bug is fixed.
-// TODO(crbug.com/1149306): test flaky on iPads.
-- (void)DISABLED_testAddButtonOnValidNickname {
+- (void)testAddButtonOnValidNickname {
   [AutofillAppInterface clearCreditCardStore];
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"4111111111111111")];
+      performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_typeText(@"12")];
+      performAction:grey_replaceText(@"12")];
   [[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
-      performAction:grey_typeText(@"2999")];
+      performAction:grey_replaceText(@"2999")];
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_typeText(@"Fav Card")];
+      performAction:grey_replaceText(@"Fav Card")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       performAction:grey_tap()];
@@ -289,7 +286,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
   // Error icon displayed when field is invalid.
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
-      performAction:grey_typeText(@"1234")];
+      performAction:grey_replaceText(@"1234")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kErrorIconIdentifier)]
