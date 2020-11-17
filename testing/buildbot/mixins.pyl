@@ -169,15 +169,6 @@
       ],
     }
   },
-  'angler': {
-    # Nexus 6P
-    'swarming': {
-      'dimensions': {
-        'device_type': 'angler',
-        'os': 'Android',
-      },
-    },
-  },
   'arm64': {
     'swarming': {
       'dimensions': {

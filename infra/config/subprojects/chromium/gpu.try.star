@@ -80,11 +80,6 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-m-nexus-6p-64",
-    pool = "luci.chromium.gpu.android.nexus6p.try",
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-m-nexus-9-64",
     pool = "luci.chromium.gpu.android.nexus9.try",
 )
