@@ -404,30 +404,20 @@
         focusedElement.focus();
     },
 
-    /**
-     * This is called from oobe_welcome when this dialog is shown.
-     */
-    show() {
-      this.focus();
-      this.welcomeVideoController_.play();
-    },
-
     /*
-     * Observer method for changes to the hidden property
+     * Observer method for changes to the hidden property.
+     * This replaces the show() function, in this class.
      */
     updateHidden_(newValue, oldValue) {
-      /*
-       * hidden becomes True
-       */
-      if (newValue && newValue != oldValue) {
+      let visible = !newValue;
+      if (visible) {
+        this.focus();
+        this.welcomeVideoController_.play();
+      } else {
         // Pause the welcome video to avoid using resources while
         // this page is not visible
         this.welcomeVideoController_.pause();
       }
-      /* We are not calling show() when hidden becomes false
-       * as the pattern used in these classes is different, and show() is called
-       * by the parent anyway.
-       */
     },
 
     /**

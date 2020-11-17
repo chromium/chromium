@@ -239,7 +239,8 @@ Polymer({
     var screen = this.$[id];
     assert(screen);
     screen.hidden = false;
-    screen.show();
+    if (screen.show)
+      screen.show();
   },
 
   /**
