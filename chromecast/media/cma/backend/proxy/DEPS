@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/openscreen/src/cast/cast_core/api",
+  "+third_party/protobuf",
+]
