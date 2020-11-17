@@ -429,8 +429,16 @@ id<GREYMatcher> SystemSelectionCallout() {
   return [ChromeMatchersAppInterface systemSelectionCallout];
 }
 
+id<GREYMatcher> SystemSelectionCalloutLinkToTextButton() {
+  return [ChromeMatchersAppInterface systemSelectionCalloutLinkToTextButton];
+}
+
 id<GREYMatcher> SystemSelectionCalloutCopyButton() {
   return [ChromeMatchersAppInterface systemSelectionCalloutCopyButton];
+}
+
+id<GREYMatcher> CopyActivityButton() API_AVAILABLE(ios(13)) {
+  return [ChromeMatchersAppInterface copyActivityButton];
 }
 
 id<GREYMatcher> CopyLinkButton(BOOL use_new_string) {

@@ -2,8 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <vector>
+
+#import "base/ios/ios_util.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
+#import "components/shared_highlighting/core/common/text_fragments_utils.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -12,6 +20,8 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -21,11 +31,15 @@
 #error "This file requires ARC support."
 #endif
 
+using shared_highlighting::TextFragment;
+
 namespace {
 
 const char kFirstFragmentText[] = "Hello foo!";
 const char kSecondFragmentText[] = "bar";
 const char kTestPageTextSample[] = "Lorem ipsum";
+const char kSimpleTextElementId[] = "toBeSelected";
+const char kToBeSelectedText[] = "VeryUniqueWord";
 
 const char kTestURL[] = "/testPage";
 const char kURLWithTwoFragments[] = "/testPage/#:~:text=Hello%20foo!&text=bar";
@@ -37,6 +51,7 @@ const char kHTMLOfTestPage[] =
     "minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
     "ex ea "
     "commodo consequat. bar</p>"
+    "<p id=\"toBeSelected\">VeryUniqueWord</p>"
     "</body></html>";
 
 const char kTestLongPageURL[] = "/longTestPage";
@@ -106,6 +121,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kScrollToTextIOS);
+  config.features_enabled.push_back(kSharedHighlightingIOS);
   return config;
 }
 
@@ -123,14 +139,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
-- (void)loadURLPath:(const char*)path {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(path)];
-}
-
 // Tests that navigating to a URL with text fragments will highlight all
 // fragments.
 - (void)testHighlightAllFragments {
-  [self loadURLPath:kURLWithTwoFragments];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithTwoFragments)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
   NSArray<NSString*>* markedText = GetMarkedText();
@@ -145,7 +157,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
 // Tests that a fragment will be scrolled to if it's lower on the page.
 - (void)testScrollToHighlight {
-  [self loadURLPath:kLongPageURLWithOneFragment];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLongPageURLWithOneFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
   __block NSString* firstVisibleMark;
@@ -167,6 +179,76 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
   GREYAssertEqual(kFirstFragmentText, base::SysNSStringToUTF8(firstVisibleMark),
                   @"Visible marked text is not valid.");
+}
+
+// Tests that a link can be generated for a simple text selection.
+- (void)testGenerateLinkForSimpleText {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    // Skip test on iOS 12 as the Activity View on that version is not
+    // accessible by Earl Grey.
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS 12.");
+  }
+
+  // TODO(crbug.com/1149603): Re-enable this test on iPad once presenting
+  // popovers work.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is disabled on iPad.");
+  }
+
+  if (@available(iOS 13, *)) {
+    GURL pageURL = self.testServer->GetURL(kTestURL);
+    [ChromeEarlGrey loadURL:pageURL];
+    [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+    [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::LongPressElementForContextMenu(
+                          [ElementSelector
+                              selectorWithElementID:kSimpleTextElementId],
+                          true)];
+
+    // Edit menu should be there.
+    id<GREYMatcher> linkToTextButton =
+        chrome_test_util::SystemSelectionCalloutLinkToTextButton();
+    [ChromeEarlGrey
+        waitForSufficientlyVisibleElementWithMatcher:linkToTextButton];
+
+    [[EarlGrey selectElementWithMatcher:linkToTextButton]
+        performAction:grey_tap()];
+
+    // Make sure the Edit menu is gone.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SystemSelectionCallout()]
+        assertWithMatcher:grey_notVisible()];
+
+    // Wait for the Activity View to show up (look for the Copy action).
+    id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
+    [ChromeEarlGrey
+        waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
+
+    // Tap on the Copy action.
+    [[EarlGrey selectElementWithMatcher:copyActivityButton]
+        performAction:grey_tap()];
+
+    // Assert the values stored in the pasteboard. Lower-casing the expected
+    // GURL as that is what the JS library is doing.
+    std::vector<TextFragment> fragments{
+        TextFragment(base::ToLowerASCII(kToBeSelectedText))};
+    GURL expectedGURL =
+        shared_highlighting::AppendFragmentDirectives(pageURL, fragments);
+
+    // Wait for the value to be in the pasteboard.
+    GREYCondition* getPasteboardValue = [GREYCondition
+        conditionWithName:@"Could not get an expected URL from the pasteboard."
+                    block:^{
+                      return expectedGURL == [ChromeEarlGrey pasteboardURL];
+                    }];
+
+    GREYAssert([getPasteboardValue
+                   waitWithTimeout:base::test::ios::kWaitForActionTimeout],
+               @"Could not get expected URL from pasteboard.");
+  }
 }
 
 @end

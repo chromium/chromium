@@ -338,8 +338,16 @@ id<GREYMatcher> RecentTabsMenuButton();
 // Returns matcher for the system selection callout.
 id<GREYMatcher> SystemSelectionCallout();
 
+// Returns a matcher for the Link to text button in the edit menu.
+id<GREYMatcher> SystemSelectionCalloutLinkToTextButton();
+
 // Returns matcher for the copy button on the system selection callout.
 id<GREYMatcher> SystemSelectionCalloutCopyButton();
+
+// Matcher for a Copy button, such as the one in the Activity View. This matcher
+// is very broad and will look for any button with a matching string.
+// Only the iOS 13 Activity View is reachable by EarlGrey.
+id<GREYMatcher> CopyActivityButton() API_AVAILABLE(ios(13));
 
 // Matcher for the Copy Link option in the updated context menus when long
 // pressing on a link. |use_new_string| determines which string to use.

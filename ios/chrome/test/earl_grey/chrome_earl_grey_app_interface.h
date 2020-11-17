@@ -515,6 +515,10 @@
 // perspective.
 + (NSString*)pasteboardString;
 
+// Retrieves the currently stored URL on the pasteboard from the tested app's
+// perspective.
++ (NSString*)pasteboardURLSpec;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

@@ -700,6 +700,21 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                     [self systemSelectionCallout], nil);
 }
 
++ (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
+  return grey_allOf(grey_accessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT)),
+                    [self systemSelectionCallout], nil);
+}
+
++ (id<GREYMatcher>)copyActivityButton API_AVAILABLE(ios(13)) {
+  id<GREYMatcher> copyStaticText = [ChromeMatchersAppInterface
+      staticTextWithAccessibilityLabel:l10n_util::GetNSString(
+                                           IDS_IOS_SHARE_MENU_COPY)];
+  return grey_allOf(
+      copyStaticText,
+      grey_ancestor(grey_kindOfClassName(@"UIActivityActionGroupCell")), nil);
+}
+
 + (id<GREYMatcher>)copyLinkButtonWithUseNewString:(BOOL)useNewString {
   int stringId = useNewString ? IDS_IOS_COPY_LINK_ACTION_TITLE
                               : IDS_IOS_CONTENT_CONTEXT_COPY;

@@ -932,4 +932,8 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return [UIPasteboard generalPasteboard].string;
 }
 
++ (NSString*)pasteboardURLSpec {
+  return [UIPasteboard generalPasteboard].URL.absoluteString;
+}
+
 @end

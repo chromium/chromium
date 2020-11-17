@@ -585,6 +585,10 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // Verifies that |text| was copied to the pasteboard.
 - (void)verifyStringCopied:(NSString*)text;
 
+// Retrieves the GURL stored in the Pasteboard. Returns an empty GURL if no
+// URL is currently in the pasteboard.
+- (GURL)pasteboardURL;
+
 #pragma mark - Context Menus Utilities (EG2)
 
 // Taps on the Copy Link context menu action and verifies that the |text| has
