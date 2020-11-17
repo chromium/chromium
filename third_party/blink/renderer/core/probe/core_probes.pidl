@@ -118,7 +118,6 @@ interface CoreProbes {
   void WillCommitLoad([Keep] LocalFrame*, DocumentLoader*);
   void DidCommitLoad([Keep] LocalFrame*, DocumentLoader*);
   void DidNavigateWithinDocument([Keep] LocalFrame*);
-  void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*);
   void FrameDocumentUpdated([Keep] LocalFrame*);
   void FrameOwnerContentUpdated([Keep] LocalFrame*, HTMLFrameOwnerElement*);
   void FrameStartedLoading([Keep] LocalFrame*);

@@ -81,7 +81,6 @@ crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/i
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-css.js [ Timeout ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-iframe.js [ Timeout ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js.js [ Timeout ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/page/iframe-src-write-delay.js [ Pass Failure Timeout ]
 # Minor issues, need rebaselining
 crbug.com/901056 virtual/synchronous_html_parser/fast/css/focus-display-block-inline.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/fast/css/fontfaceset-multiple-families.html [ Failure ]

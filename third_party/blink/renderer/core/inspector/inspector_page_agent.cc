@@ -947,13 +947,6 @@ void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
   GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()));
 }
 
-void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
-                                         DocumentLoader* loader) {
-  GetFrontend()->documentOpened(BuildObjectForFrame(loader->GetFrame()));
-  LifecycleEvent(frame, loader, "init",
-                 base::TimeTicks::Now().since_origin().InSecondsF());
-}
-
 void InspectorPageAgent::FrameAttachedToParent(LocalFrame* frame) {
   Frame* parent_frame = frame->Tree().Parent();
   std::unique_ptr<SourceLocation> location =

@@ -191,7 +191,6 @@
         "DidResizeMainFrame",
         "DidRunJavaScriptDialog",
         "DomContentLoadedEventFired",
-        "DidOpenDocument",
         "FileChooserOpened",
         "FrameAttachedToParent",
         "FrameClearedScheduledNavigation",
