@@ -1018,7 +1018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-03-15">
+    expires_after="2021-05-16">
   <owner>jiameng@chromium.org</owner>
   <summary>
     What happens after screen is dimmed by powerd by ignoring the model
