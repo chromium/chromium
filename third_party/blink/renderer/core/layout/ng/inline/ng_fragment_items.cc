@@ -346,9 +346,15 @@ void NGFragmentItems::DirtyLinesFromNeedsLayout(
   // opportunities. Doing this complicates the logic, especially when culled
   // inline is involved, and common case is to append to large IFC. Choose
   // simpler logic and faster to check over more reuse opportunities.
+  const auto writing_mode = container.StyleRef().GetWritingMode();
   for (LayoutObject* child = container.FirstChild(); child;
        child = child->NextSibling()) {
-    if (child->NeedsLayout()) {
+    // NeedsLayout is not helpful for an orthogonal writing-mode root because
+    // its NeedsLayout flag is cleared during the ComputeMinMaxSizes() step of
+    // the container.
+    if (child->NeedsLayout() ||
+        !IsParallelWritingMode(writing_mode,
+                               child->StyleRef().GetWritingMode())) {
       DirtyLinesFromChangedChild(*child, container);
       return;
     }

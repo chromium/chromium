@@ -1371,6 +1371,7 @@ source_set("unit_tests") {
     "layout/ng/inline/ng_caret_position_test.cc",
     "layout/ng/inline/ng_fragment_item_test.cc",
     "layout/ng/inline/ng_fragment_items_builder_test.cc",
+    "layout/ng/inline/ng_fragment_items_test.cc",
     "layout/ng/inline/ng_inline_cursor_test.cc",
     "layout/ng/inline/ng_inline_fragment_traversal_test.cc",
     "layout/ng/inline/ng_inline_items_builder_test.cc",
