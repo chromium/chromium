@@ -60,4 +60,7 @@ const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
 
 const base::Feature kWheelEventRegions{"WheelEventRegions",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kHudDisplayForPerformanceMetrics{
+    "HudDisplayForPerformanceMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features

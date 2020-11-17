@@ -5,6 +5,7 @@
 #include "cc/layers/heads_up_display_layer.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -37,7 +38,7 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
 
   gfx::Size bounds;
 
-  if (layer_tree_host()->GetDebugState().ShowHudRects()) {
+  if (layer_tree_host()->GetDebugState().ShowDebugRects()) {
     bounds = device_viewport_in_layout_pixels;
   } else {
     // If the HUD is not displaying full-viewport rects (e.g., it is showing the
