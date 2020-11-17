@@ -29,7 +29,7 @@ namespace ash {
 namespace {
 
 // The preferred height for the bitmap.
-constexpr int kBitmapHeight = 64;
+constexpr int kBitmapHeight = 80;
 
 // The margins of the delete button.
 constexpr gfx::Insets kDeleteButtonMargins =
