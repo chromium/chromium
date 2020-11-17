@@ -97,6 +97,42 @@
   },
 
   /**
+   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
+   *         !chromeos.networkConfig.mojom.ManagedInt32|
+   *         !chromeos.networkConfig.mojom.ManagedString|
+   *         !chromeos.networkConfig.mojom.ManagedStringList|
+   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @return {boolean|number|string|!Array<string>|
+   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *         |property.policyValue| if the property is policy-enforced or null
+   *         otherwise.
+   */
+  getEnforcedPolicyValue(property) {
+    if (!property || !this.isNetworkPolicyEnforced(property)) {
+      return null;
+    }
+    return property.policyValue === undefined ? null : property.policyValue;
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
+   *         !chromeos.networkConfig.mojom.ManagedInt32|
+   *         !chromeos.networkConfig.mojom.ManagedString|
+   *         !chromeos.networkConfig.mojom.ManagedStringList|
+   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @return {boolean|number|string|!Array<string>|
+   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *         |property.policyValue| if the property is policy-recommended or
+   *         null otherwise.
+   */
+  getRecommendedPolicyValue(property) {
+    if (!property || !this.isNetworkPolicyRecommended(property)) {
+      return null;
+    }
+    return property.policyValue === undefined ? null : property.policyValue;
+  },
+
+  /**
    * @param {!chromeos.networkConfig.mojom.OncSource} source
    * @return {boolean}
    * @protected
