@@ -29,6 +29,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
+#include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/allow_service_worker_result.h"
@@ -67,8 +68,6 @@ namespace network {
 class ResourceRequestBody;
 struct URLLoaderCompletionStatus;
 }  // namespace network
-
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
 
 namespace content {
 
@@ -207,7 +206,7 @@ class CONTENT_EXPORT NavigationRequest
   static std::unique_ptr<NavigationRequest> CreateForCommit(
       FrameTreeNode* frame_tree_node,
       RenderFrameHostImpl* render_frame_host,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      const mojom::DidCommitProvisionalLoadParams& params,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       bool is_same_document,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info);
@@ -517,12 +516,11 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationEntry is current.
   // |did_replace_entry| is true if the committed entry has replaced the
   // existing one. A non-user initiated redirect causes such replacement.
-  void DidCommitNavigation(
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
-      bool navigation_entry_committed,
-      bool did_replace_entry,
-      const GURL& previous_url,
-      NavigationType navigation_type);
+  void DidCommitNavigation(const mojom::DidCommitProvisionalLoadParams& params,
+                           bool navigation_entry_committed,
+                           bool did_replace_entry,
+                           const GURL& previous_url,
+                           NavigationType navigation_type);
 
   NavigationType navigation_type() const {
     DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
@@ -840,7 +838,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Builds the parameters used to commit a navigation to a page that was
   // restored from the back-forward cache.
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+  mojom::DidCommitProvisionalLoadParamsPtr
   MakeDidCommitProvisionalLoadParamsForBFCache();
 
   // This enum describes the result of the credentialed subresource check for

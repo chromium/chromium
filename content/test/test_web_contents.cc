@@ -24,6 +24,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -154,41 +155,40 @@ void TestWebContents::TestDidNavigateWithSequenceNumber(
   if (!rfh->is_loading())
     rfh->SimulateNavigationStart(url);
 
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
-
-  params.nav_entry_id = nav_entry_id;
-  params.item_sequence_number = item_sequence_number;
-  params.document_sequence_number = document_sequence_number;
-  params.url = url;
-  params.base_url = GURL();
-  params.referrer = referrer;
-  params.transition = transition;
-  params.redirects = std::vector<GURL>();
-  params.should_update_history = true;
-  params.contents_mime_type = std::string("text/html");
-  params.intended_as_new_entry = did_create_new_entry;
-  params.did_create_new_entry = did_create_new_entry;
-  params.should_replace_current_entry = false;
-  params.gesture = NavigationGestureUser;
-  params.method = "GET";
-  params.post_id = 0;
-  params.http_status_code = 200;
-  params.url_is_unreachable = false;
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->nav_entry_id = nav_entry_id;
+  params->item_sequence_number = item_sequence_number;
+  params->document_sequence_number = document_sequence_number;
+  params->url = url;
+  params->base_url = GURL();
+  params->referrer = blink::mojom::Referrer::From(referrer);
+  params->transition = transition;
+  params->redirects = std::vector<GURL>();
+  params->should_update_history = true;
+  params->contents_mime_type = std::string("text/html");
+  params->intended_as_new_entry = did_create_new_entry;
+  params->did_create_new_entry = did_create_new_entry;
+  params->should_replace_current_entry = false;
+  params->gesture = NavigationGestureUser;
+  params->method = "GET";
+  params->post_id = 0;
+  params->http_status_code = 200;
+  params->url_is_unreachable = false;
   if (item_sequence_number != -1 && document_sequence_number != -1) {
-    params.page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
+    params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
         url, item_sequence_number, document_sequence_number);
   } else {
-    params.page_state = blink::PageState::CreateFromURL(url);
+    params->page_state = blink::PageState::CreateFromURL(url);
   }
-  params.original_request_url = GURL();
-  params.is_overriding_user_agent = false;
-  params.history_list_was_cleared = false;
-  params.origin = url::Origin::Create(url);
-  params.insecure_request_policy =
+  params->original_request_url = GURL();
+  params->is_overriding_user_agent = false;
+  params->history_list_was_cleared = false;
+  params->origin = url::Origin::Create(url);
+  params->insecure_request_policy =
       blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
-  params.has_potentially_trustworthy_unique_origin = false;
+  params->has_potentially_trustworthy_unique_origin = false;
 
-  rfh->SendNavigateWithParams(&params, was_within_same_document);
+  rfh->SendNavigateWithParams(std::move(params), was_within_same_document);
 }
 
 const std::string& TestWebContents::GetSaveFrameHeaders() {

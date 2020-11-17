@@ -5315,7 +5315,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
 void WebContentsImpl::DidNavigateMainFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
     const LoadCommittedDetails& details,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
+    const mojom::DidCommitProvisionalLoadParams& params) {
   OPTIONAL_TRACE_EVENT1(
       "content,navigation", "WebContentsImpl::DidNavigateMainFramePostCommit",
       "render_frame_host", base::trace_event::ToTracedValue(render_frame_host));
@@ -5353,7 +5353,7 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
 void WebContentsImpl::DidNavigateAnyFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
     const LoadCommittedDetails& details,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
+    const mojom::DidCommitProvisionalLoadParams& params) {
   OPTIONAL_TRACE_EVENT1(
       "content,navigation", "WebContentsImpl::DidNavigateAnyFramePostCommit",
       "render_frame_host", base::trace_event::ToTracedValue(render_frame_host));

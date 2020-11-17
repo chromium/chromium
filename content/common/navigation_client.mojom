@@ -4,20 +4,156 @@
 
 module content.mojom;
 
-import "services/network/public/mojom/host_resolver.mojom";
-import "services/network/public/mojom/url_response_head.mojom";
-import "services/network/public/mojom/url_loader.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 import "content/common/frame_messages.mojom";
 import "content/common/navigation_params.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "url/mojom/url.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
+import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
+import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
-import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+[Native]
+enum NavigationGesture;
+
+[Native]
+enum PageTransition;
+
+[Native]
+struct PageState;
+
+// Parameters structure used in the IPC:
+// - FrameHost.DidCommitProvisionalLoad
+// - FrameHost.DidCommitSameDocumentNavigation
+// - NavigationClient.CommitNavigationCallback
+// - NavigationClient.CommitFailedNavigationCallback
+struct DidCommitProvisionalLoadParams {
+  // The unique ID of the NavigationEntry for browser-initiated navigations.
+  // This value was given to the render process in the HistoryNavigationParams
+  // and is being returned by the renderer without it having any idea what it
+  // means. If the navigation was renderer-initiated, this value is 0.
+  int32 nav_entry_id = 0;
+
+  // The item sequence number identifies each stop in the session history.  It
+  // is unique within the renderer process and makes a best effort to be unique
+  // across browser sessions (using a renderer process timestamp).
+  int64 item_sequence_number = -1;
+
+  // The document sequence number is used to identify cross-document navigations
+  // in session history.  It increments for each new document and is unique in
+  // the same way as |item_sequence_number|.  In-page navigations get a new item
+  // sequence number but the same document sequence number.
+  int64 document_sequence_number = -1;
+
+  // URL of the page being loaded.
+  url.mojom.Url url;
+
+  // The base URL for the page's document when the frame was committed. Empty if
+  // similar to 'url' above. Note that any base element in the page has not been
+  // parsed yet and is therefore not reflected.
+  // This is of interest when a MHTML file is loaded, as the base URL has been
+  // set to original URL of the site the MHTML represents.
+  url.mojom.Url base_url;
+
+  // URL of the referrer of this load. WebKit generates this based on the
+  // source of the event that caused the load.
+  blink.mojom.Referrer referrer;
+
+  // The type of transition.
+  // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK)
+  PageTransition transition;
+
+  // Lists the redirects that occurred on the way to the current page. This
+  // vector has the same format as reported by the WebDataSource in the glue,
+  // with the current page being the last one in the list (so even when
+  // there's no redirect, there will be one entry in the list.
+  array<url.mojom.Url> redirects;
+
+  // Set to false if we want to update the session history but not update
+  // the browser history.  E.g., on unreachable urls.
+  bool should_update_history = false;
+
+  // Contents MIME type of main frame.
+  string contents_mime_type;
+
+  // This is the value from the browser (copied from the navigation request)
+  // indicating whether it intended to make a new entry. TODO(avi): Remove this
+  // when the pending entry situation is made sane and the browser keeps them
+  // around long enough to match them via nav_entry_id.
+  bool intended_as_new_entry;
+
+  // Whether this commit created a new entry.
+  bool did_create_new_entry;
+
+  // Whether this commit should replace the current entry.
+  bool should_replace_current_entry;
+
+  // The gesture that initiated this navigation.
+  NavigationGesture gesture;
+
+  // The HTTP method used by the navigation.
+  string method;
+
+  // The POST body identifier. -1 if it doesn't exist.
+  int64 post_id;
+
+  // The status code of the HTTP request.
+  int32 http_status_code;
+
+  // This flag is used to warn if the renderer is displaying an error page,
+  // so that we can set the appropriate page type.
+  bool url_is_unreachable;
+
+  // Serialized history item state to store in the navigation entry.
+  PageState page_state;
+
+  // Original request's URL.
+  url.mojom.Url original_request_url;
+
+  // User agent override used to navigate.
+  bool is_overriding_user_agent;
+
+  // Notifies the browser that for this navigation, the session history was
+  // successfully cleared.
+  bool history_list_was_cleared;
+
+  // Origin of the frame.  This will be replicated to any associated
+  // RenderFrameProxies.
+  url.mojom.Origin origin;
+
+  // The insecure request policy the document for the load is enforcing.
+  blink.mojom.InsecureRequestPolicy insecure_request_policy;
+
+  // The upgrade insecure navigations set the document for the load is
+  // enforcing.
+  array<uint32> insecure_navigations_set;
+
+  // True if the document for the load is a unique origin that should be
+  // considered potentially trustworthy.
+  bool has_potentially_trustworthy_unique_origin;
+
+  // Request ID generated by the renderer.
+  int32 request_id;
+
+  // A token that has been passed by the browser process when it asked the
+  // renderer process to commit the navigation.
+  mojo_base.mojom.UnguessableToken navigation_token;
+
+  // An embedding token used to signify the relationship between a document and
+  // its parent. This is populated for cross-document navigations including
+  // sub-documents and the main document.
+  mojo_base.mojom.UnguessableToken? embedding_token;
+};
+
 
 interface NavigationClient {
   // Tells the renderer that a navigation is ready to commit.

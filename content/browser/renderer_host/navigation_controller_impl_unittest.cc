@@ -2272,20 +2272,21 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
 
   // First navigation (using location.replace).
   const GURL url2("http://foo#a");
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
-  params.nav_entry_id = 0;
-  params.did_create_new_entry = false;
-  params.should_replace_current_entry = true;
-  params.url = url2;
-  params.transition = ui::PAGE_TRANSITION_LINK;
-  params.should_update_history = false;
-  params.gesture = NavigationGestureUser;
-  params.method = "GET";
-  params.page_state = blink::PageState::CreateFromURL(url2);
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->nav_entry_id = 0;
+  params->did_create_new_entry = false;
+  params->should_replace_current_entry = true;
+  params->url = url2;
+  params->referrer = blink::mojom::Referrer::New();
+  params->transition = ui::PAGE_TRANSITION_LINK;
+  params->should_update_history = false;
+  params->gesture = NavigationGestureUser;
+  params->method = "GET";
+  params->page_state = blink::PageState::CreateFromURL(url2);
 
   // This should NOT generate a new entry, nor prune the list.
   LoadCommittedDetailsObserver observer(contents());
-  main_test_rfh()->SendNavigateWithParams(&params, true);
+  main_test_rfh()->SendNavigateWithParams(std::move(params), true);
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
   EXPECT_TRUE(observer.is_same_document());
@@ -2295,15 +2296,16 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
 
 TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   ASSERT_FALSE(controller_impl().GetLastCommittedEntry());
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
   GURL url("http://foo");
-  params.nav_entry_id = 0;
-  params.did_create_new_entry = true;
-  params.url = url;
-  params.page_state = blink::PageState::CreateFromURL(url);
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->nav_entry_id = 0;
+  params->did_create_new_entry = true;
+  params->url = url;
+  params->referrer = blink::mojom::Referrer::New();
+  params->page_state = blink::PageState::CreateFromURL(url);
   main_test_rfh()->SendRendererInitiatedNavigationRequest(url, false);
   main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithParams(&params, true);
+  contents()->GetMainFrame()->SendNavigateWithParams(std::move(params), true);
   // We pass if we don't crash.
 }
 
@@ -2995,20 +2997,21 @@ TEST_F(NavigationControllerTest,
   EXPECT_EQ(0, rph->bad_msg_count());
 
   // Doing a replaceState to a cross-origin URL is thus allowed.
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
-  params.nav_entry_id = 1;
-  params.did_create_new_entry = false;
-  params.url = different_origin_url;
-  params.origin = file_origin;
-  params.transition = ui::PAGE_TRANSITION_LINK;
-  params.gesture = NavigationGestureUser;
-  params.page_state = blink::PageState::CreateFromURL(different_origin_url);
-  params.method = "GET";
-  params.post_id = -1;
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
+  params->nav_entry_id = 1;
+  params->did_create_new_entry = false;
+  params->url = different_origin_url;
+  params->referrer = blink::mojom::Referrer::New();
+  params->origin = file_origin;
+  params->transition = ui::PAGE_TRANSITION_LINK;
+  params->gesture = NavigationGestureUser;
+  params->page_state = blink::PageState::CreateFromURL(different_origin_url);
+  params->method = "GET";
+  params->post_id = -1;
   main_test_rfh()->SendRendererInitiatedNavigationRequest(different_origin_url,
                                                           false);
   main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithParams(&params, true);
+  contents()->GetMainFrame()->SendNavigateWithParams(std::move(params), true);
 
   // At this point, we should still consider the current origin to be file://,
   // so that a file URL would still be a same-document navigation.  See
@@ -4044,13 +4047,14 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
   controller().GetLastCommittedEntry()->GetFavicon() = favicon;
 
   // history.pushState() is called.
-  FrameHostMsg_DidCommitProvisionalLoad_Params params;
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
   GURL kUrl2("http://foo#foo");
-  params.nav_entry_id = 0;
-  params.did_create_new_entry = true;
-  params.url = kUrl2;
-  params.page_state = blink::PageState::CreateFromURL(kUrl2);
-  main_test_rfh()->SendNavigateWithParams(&params, true);
+  params->nav_entry_id = 0;
+  params->did_create_new_entry = true;
+  params->url = kUrl2;
+  params->referrer = blink::mojom::Referrer::New();
+  params->page_state = blink::PageState::CreateFromURL(kUrl2);
+  main_test_rfh()->SendNavigateWithParams(std::move(params), true);
 
   // The title should immediately be visible on the new NavigationEntry.
   base::string16 new_title =

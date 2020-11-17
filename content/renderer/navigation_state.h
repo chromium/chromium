@@ -14,8 +14,6 @@
 #include "content/common/navigation_params.mojom.h"
 #include "content/renderer/navigation_client.h"
 
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
-
 namespace blink {
 class WebDocumentLoader;
 
@@ -69,7 +67,7 @@ class CONTENT_EXPORT NavigationState {
   }
 
   void RunCommitNavigationCallback(
-      std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+      mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
  private:

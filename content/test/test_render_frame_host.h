@@ -97,11 +97,10 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,
                     const GURL& url);
-  void SendNavigateWithParams(
-      FrameHostMsg_DidCommitProvisionalLoad_Params* params,
-      bool was_within_same_document);
+  void SendNavigateWithParams(mojom::DidCommitProvisionalLoadParamsPtr params,
+                              bool was_within_same_document);
   void SendNavigateWithParamsAndInterfaceParams(
-      FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
       bool was_within_same_document);
 
@@ -128,8 +127,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       blink::mojom::InsecureRequestPolicy policy);
 
   // If set, navigations will appear to have cleared the history list in the
-  // RenderFrame
-  // (FrameHostMsg_DidCommitProvisionalLoad_Params::history_list_was_cleared).
+  // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
   // False by default.
   void set_simulate_history_list_was_cleared(bool cleared) {
     simulate_history_list_was_cleared_ = cleared;
@@ -157,7 +155,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // set to default null values.
   void SimulateCommitProcessed(
       NavigationRequest* navigation_request,
-      std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+      mojom::DidCommitProvisionalLoadParamsPtr params,
       mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
           interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
@@ -254,12 +252,12 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // Computes the page ID for a pending navigation in this RenderFrameHost;
   int32_t ComputeNextPageID();
 
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-  BuildDidCommitParams(int nav_entry_id,
-                       bool did_create_new_entry,
-                       const GURL& url,
-                       ui::PageTransition transition,
-                       int response_code);
+  mojom::DidCommitProvisionalLoadParamsPtr BuildDidCommitParams(
+      int nav_entry_id,
+      bool did_create_new_entry,
+      const GURL& url,
+      ui::PageTransition transition,
+      int response_code);
 
   mojom::DidCommitProvisionalLoadInterfaceParamsPtr
   BuildDidCommitInterfaceParams(bool is_same_document);

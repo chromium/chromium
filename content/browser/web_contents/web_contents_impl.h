@@ -837,11 +837,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidNavigateMainFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params) override;
+      const mojom::DidCommitProvisionalLoadParams& params) override;
   void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params) override;
+      const mojom::DidCommitProvisionalLoadParams&) override;
   bool CanOverscrollContent() const override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldTransferNavigation(bool is_main_frame_navigation) override;

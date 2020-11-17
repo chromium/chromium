@@ -1062,9 +1062,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void ShowDeferredContextMenu(const UntrustworthyContextMenuParams& params);
 
-  // Build DidCommitProvisionalLoad_Params based on the frame internal state.
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-  MakeDidCommitProvisionalLoadParams(
+  // Build DidCommitProvisionalLoadParams based on the frame internal state.
+  mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(
       blink::WebHistoryCommitType commit_type,
       ui::PageTransition transition,
       const base::Optional<base::UnguessableToken>& embedding_token);

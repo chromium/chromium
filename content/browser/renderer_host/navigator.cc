@@ -225,7 +225,7 @@ bool Navigator::StartHistoryNavigationInNewSubframe(
 
 void Navigator::DidNavigate(
     RenderFrameHostImpl* render_frame_host,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    const mojom::DidCommitProvisionalLoadParams& params,
     std::unique_ptr<NavigationRequest> navigation_request,
     bool was_within_same_document) {
   DCHECK(navigation_request);
@@ -918,7 +918,7 @@ void Navigator::LogRendererInitiatedBeforeUnloadTime(
 
 void Navigator::RecordNavigationMetrics(
     const LoadCommittedDetails& details,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    const mojom::DidCommitProvisionalLoadParams& params,
     SiteInstance* site_instance) {
   DCHECK(site_instance->HasProcess());
 

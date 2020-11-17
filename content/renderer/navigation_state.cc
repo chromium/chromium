@@ -56,7 +56,7 @@ bool NavigationState::IsContentInitiated() {
 }
 
 void NavigationState::RunCommitNavigationCallback(
-    std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+    mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
   if (commit_callback_) {
     std::move(commit_callback_)

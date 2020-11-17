@@ -57,6 +57,7 @@
 #include "content/common/frame_messages.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/input_messages.h"
+#include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
@@ -4968,7 +4969,7 @@ const RenderFrameImpl* RenderFrameImpl::GetLocalRoot() const {
                        : RenderFrameImpl::FromWebFrame(frame_->LocalRoot());
 }
 
-std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+mojom::DidCommitProvisionalLoadParamsPtr
 RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
@@ -4981,8 +4982,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
           frame_->GetDocumentLoader());
   NavigationState* navigation_state = internal_data->navigation_state();
 
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
-      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->http_status_code = response.HttpStatusCode();
   params->url_is_unreachable = document_loader->HasUnreachableURL();
   params->method = "GET";
@@ -5058,12 +5058,12 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // If the page contained a client redirect (meta refresh, document.loc...),
   // set the referrer appropriately.
   if (document_loader->IsClientRedirect()) {
-    params->referrer =
-        Referrer(params->redirects[0], document_loader->GetReferrerPolicy());
+    params->referrer = blink::mojom::Referrer::New(
+        params->redirects[0], document_loader->GetReferrerPolicy());
   } else {
-    params->referrer =
-        Referrer(blink::WebStringToGURL(document_loader->Referrer()),
-                 document_loader->GetReferrerPolicy());
+    params->referrer = blink::mojom::Referrer::New(
+        blink::WebStringToGURL(document_loader->Referrer()),
+        document_loader->GetReferrerPolicy());
   }
 
   if (!frame_->Parent()) {

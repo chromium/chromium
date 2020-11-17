@@ -29,7 +29,7 @@ class DidCommitNavigationInterceptor::FrameAgent
 
   bool WillProcessDidCommitNavigation(
       NavigationRequest* navigation_request,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
     return interceptor_->WillProcessDidCommitNavigation(
@@ -87,9 +87,9 @@ void CommitMessageDelayer::Wait() {
 bool CommitMessageDelayer::WillProcessDidCommitNavigation(
     RenderFrameHost* render_frame_host,
     NavigationRequest* navigation_request,
-    ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+    mojom::DidCommitProvisionalLoadParamsPtr* params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
-  if (params->url == deferred_url_) {
+  if ((**params).url == deferred_url_) {
     std::move(deferred_action_).Run(render_frame_host);
     if (run_loop_)
       run_loop_->Quit();

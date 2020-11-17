@@ -1184,8 +1184,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
 
 // A renderer process might try and claim that a cross site navigation was
 // within the same document by setting was_within_same_document = true in
-// FrameHostMsg_DidCommitProvisionalLoad_Params. Such case should be detected on
-// the browser side and the renderer process should be killed.
+// DidCommitProvisionalLoadParams. Such case should be detected on the browser
+// side and the renderer process should be killed.
 TEST_F(NavigatorTest, CrossSiteClaimWithinPage) {
   const GURL kUrl1("http://www.chromium.org/");
   const GURL kUrl2("http://www.google.com/");

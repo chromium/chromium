@@ -62,8 +62,7 @@ class TestRenderFrame : public RenderFrameImpl {
               const base::UnguessableToken& frame_token);
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
 
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-  TakeLastCommitParams();
+  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
 
   // Sets a callback to be run the next time DidAddMessageToConsole
   // is called (e.g. window.console.log() is called).

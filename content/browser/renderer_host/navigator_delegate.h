@@ -14,7 +14,6 @@
 #include "content/public/browser/reload_type.h"
 
 class GURL;
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
 
 namespace blink {
 struct UserAgentOverride;
@@ -68,11 +67,11 @@ class CONTENT_EXPORT NavigatorDelegate {
   virtual void DidNavigateMainFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params) = 0;
+      const mojom::DidCommitProvisionalLoadParams& params) = 0;
   virtual void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params) = 0;
+      const mojom::DidCommitProvisionalLoadParams& params) = 0;
 
   virtual bool CanOverscrollContent() const = 0;
 

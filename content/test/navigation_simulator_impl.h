@@ -26,8 +26,6 @@
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
-
 namespace content {
 
 class FrameTreeNode;
@@ -235,9 +233,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Build DidCommitProvisionalLoadParams to commit the ongoing navigation,
   // based on internal NavigationSimulator state and given parameters.
-  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
-  BuildDidCommitProvisionalLoadParams(bool same_document,
-                                      bool failed_navigation);
+  mojom::DidCommitProvisionalLoadParamsPtr BuildDidCommitProvisionalLoadParams(
+      bool same_document,
+      bool failed_navigation);
 
   // Simulate the UnloadACK in the old RenderFrameHost if it was unloaded at the
   // commit time.

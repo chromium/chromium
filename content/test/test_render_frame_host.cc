@@ -269,11 +269,11 @@ void TestRenderFrameHost::SendNavigateWithParameters(
   if (!was_within_same_document)
     params->embedding_token = base::UnguessableToken::Create();
 
-  SendNavigateWithParams(params.get(), was_within_same_document);
+  SendNavigateWithParams(std::move(params), was_within_same_document);
 }
 
 void TestRenderFrameHost::SendNavigateWithParams(
-    FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+    mojom::DidCommitProvisionalLoadParamsPtr params,
     bool was_within_same_document) {
   SendNavigateWithParamsAndInterfaceParams(
       std::move(params),
@@ -282,19 +282,15 @@ void TestRenderFrameHost::SendNavigateWithParams(
 }
 
 void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
-    FrameHostMsg_DidCommitProvisionalLoad_Params* params,
+    mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     bool was_within_same_document) {
-  if (was_within_same_document) {
-    DidCommitSameDocumentNavigation(
-        std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>(
-            *params));
-  } else {
-    DidCommitProvisionalLoad(
-        std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>(*params),
-        std::move(interface_params));
-  }
   last_commit_was_error_page_ = params->url_is_unreachable;
+  if (was_within_same_document) {
+    DidCommitSameDocumentNavigation(std::move(params));
+  } else {
+    DidCommitProvisionalLoad(std::move(params), std::move(interface_params));
+  }
 }
 
 void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
@@ -428,7 +424,7 @@ void TestRenderFrameHost::PrepareForCommitInternal(
 
 void TestRenderFrameHost::SimulateCommitProcessed(
     NavigationRequest* navigation_request,
-    std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+    mojom::DidCommitProvisionalLoadParamsPtr params,
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
         interface_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
@@ -436,7 +432,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
     bool same_document) {
   CHECK(params);
 
-  bool did_commit = false;
   if (!same_document) {
     // Note: Although the code does not prohibit the running of multiple
     // callbacks, no more than 1 callback will ever run, because navigation_id
@@ -449,7 +444,7 @@ void TestRenderFrameHost::SimulateCommitProcessed(
                  mojom::DidCommitProvisionalLoadInterfaceParams::New(
                      std::move(interface_provider_receiver),
                      std::move(browser_interface_broker_receiver)));
-        did_commit = true;
+        return;
       }
     }
     {
@@ -460,19 +455,17 @@ void TestRenderFrameHost::SimulateCommitProcessed(
                  mojom::DidCommitProvisionalLoadInterfaceParams::New(
                      std::move(interface_provider_receiver),
                      std::move(browser_interface_broker_receiver)));
-        did_commit = true;
+        return;
       }
     }
   }
 
-  if (!did_commit) {
-    SendNavigateWithParamsAndInterfaceParams(
-        params.get(),
-        mojom::DidCommitProvisionalLoadInterfaceParams::New(
-            std::move(interface_provider_receiver),
-            std::move(browser_interface_broker_receiver)),
-        same_document);
-  }
+  SendNavigateWithParamsAndInterfaceParams(
+      std::move(params),
+      mojom::DidCommitProvisionalLoadInterfaceParams::New(
+          std::move(interface_provider_receiver),
+          std::move(browser_interface_broker_receiver)),
+      same_document);
 }
 
 WebBluetoothServiceImpl*
@@ -527,16 +520,16 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
       BuildCommitFailedNavigationCallback(navigation_request);
 }
 
-std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
+mojom::DidCommitProvisionalLoadParamsPtr
 TestRenderFrameHost::BuildDidCommitParams(int nav_entry_id,
                                           bool did_create_new_entry,
                                           const GURL& url,
                                           ui::PageTransition transition,
                                           int response_code) {
-  auto params =
-      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
+  auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->nav_entry_id = nav_entry_id;
   params->url = url;
+  params->referrer = blink::mojom::Referrer::New();
   params->transition = transition;
   params->should_update_history = true;
   params->did_create_new_entry = did_create_new_entry;
