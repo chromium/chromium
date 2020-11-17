@@ -57,9 +57,15 @@ void AccelerometerSamplesObserver::OnSampleUpdated(
     return;
   }
 
+  auto it = sample.begin();
   std::vector<float> output_sample;
   for (size_t axes = 0; axes < kNumberOfAxes; ++axes) {
-    auto it = sample.find(channel_indices_[axes]);
+    if (axes != 0)
+      ++it;
+
+    if (it == sample.end() || it->first != channel_indices_[axes])
+      it = sample.find(channel_indices_[axes]);
+
     if (it == sample.end()) {
       LOG(ERROR) << "Missing channel: " << kAccelerometerChannels[axes]
                  << " in sample";
