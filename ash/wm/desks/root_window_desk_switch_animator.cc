@@ -75,6 +75,8 @@ void TakeScreenshot(
       viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
       std::move(on_screenshot_taken));
   screenshot_request->set_area(request_bounds);
+  screenshot_request->set_result_task_runner(
+      base::SequencedTaskRunnerHandle::Get());
   screenshot_layer->RequestCopyOfOutput(std::move(screenshot_request));
 }
 
@@ -325,7 +327,7 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
   return true;
 }
 
-void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
+int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
   // If the starting screenshot has not finished, just let our delegate know
   // that the desk animation is finished (and |this| will soon be deleted), and
   // go back to the starting desk.
@@ -333,7 +335,7 @@ void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
     animation_finished_ = true;
     ending_desk_index_ = starting_desk_index_;
     delegate_->OnDeskSwitchAnimationFinished();
-    return;
+    return ending_desk_index_;
   }
 
   // If the ending desk screenshot has not finished, |visible_desk_index_| will
@@ -344,6 +346,7 @@ void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
 
   ending_desk_index_ = visible_desk_index_;
   StartAnimation();
+  return ending_desk_index_;
 }
 
 void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {

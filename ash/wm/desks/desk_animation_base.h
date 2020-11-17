@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_DESK_ANIMATION_BASE_H_
 #define ASH_WM_DESKS_DESK_ANIMATION_BASE_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
@@ -19,7 +20,8 @@ class DesksController;
 // such as DeskActivationAnimation and DeskRemovalAnimation implement the
 // abstract interface of this class to handle the unique operations specific to
 // each animation type.
-class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
+class ASH_EXPORT DeskAnimationBase
+    : public RootWindowDeskSwitchAnimator::Delegate {
  public:
   DeskAnimationBase(DesksController* controller,
                     int ending_desk_index,
@@ -55,6 +57,10 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   void OnEndingDeskScreenshotTaken() override;
   void OnDeskSwitchAnimationFinished() override;
   void OnVisibleDeskChanged() override;
+
+  void set_skip_notify_controller_on_animation_finished_for_testing(bool val) {
+    skip_notify_controller_on_animation_finished_for_testing_ = val;
+  }
 
   RootWindowDeskSwitchAnimator* GetFirstDeskSwitchAnimatorForTesting() const;
 
@@ -97,6 +103,12 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
 
   // ThroughputTracker used for measuring this animation smoothness.
   ui::ThroughputTracker throughput_tracker_;
+
+  // If true, do not notify |controller_| when
+  // OnDeskSwitchAnimationFinished() is called. This class and
+  // DeskController are tied together in production code, but may not be in a
+  // test scenario.
+  bool skip_notify_controller_on_animation_finished_for_testing_ = false;
 };
 
 }  // namespace ash
