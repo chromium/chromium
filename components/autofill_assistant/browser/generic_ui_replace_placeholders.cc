@@ -323,6 +323,14 @@ void ReplacePlaceholdersInCallback(
                 placeholders);
           }
           return;
+        case ComputeValueProto::kStringEmpty:
+          if (in_out_proto->compute_value().string_empty().has_value()) {
+            ReplacePlaceholdersInValue(in_out_proto->mutable_compute_value()
+                                           ->mutable_string_empty()
+                                           ->mutable_value(),
+                                       placeholders);
+          }
+          return;
         case ComputeValueProto::KIND_NOT_SET:
           return;
       }

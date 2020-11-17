@@ -385,6 +385,27 @@ bool CreateLoginOptionResponse(UserModel* user_model,
   return true;
 }
 
+bool StringEmpty(UserModel* user_model,
+                 const std::string& result_model_identifier,
+                 const StringEmptyProto& proto) {
+  auto value = user_model->GetValue(proto.value());
+  if (!value.has_value()) {
+    DVLOG(2) << "Failed to find value in user model";
+    return false;
+  }
+
+  if (value->strings().values().size() != 1) {
+    DVLOG(2) << "Error evaluating " << __func__
+             << ": expected single string, but got " << *value;
+    return false;
+  }
+
+  user_model->SetValue(result_model_identifier,
+                       SimpleValue(value->strings().values(0).empty(),
+                                   ContainsClientOnlyValue({*value})));
+  return true;
+}
+
 }  // namespace
 
 base::WeakPtr<BasicInteractions> BasicInteractions::GetWeakPtr() {
@@ -479,6 +500,14 @@ bool BasicInteractions::ComputeValue(const ComputeValueProto& proto) {
                                        proto.result_model_identifier(),
                                        proto.create_login_option_response());
       break;
+    case ComputeValueProto::kStringEmpty:
+      if (!proto.string_empty().has_value()) {
+        DVLOG(2)
+            << "Error computing ComputeValue::StringEmpty: no value specified";
+        return false;
+      }
+      return StringEmpty(delegate_->GetUserModel(),
+                         proto.result_model_identifier(), proto.string_empty());
     case ComputeValueProto::KIND_NOT_SET:
       DVLOG(2) << "Error computing value: kind not set";
       return false;

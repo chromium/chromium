@@ -633,6 +633,32 @@ TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponse) {
   EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
 }
 
+TEST_F(BasicInteractionsTest, ComputeStringEmpty) {
+  ComputeValueProto proto;
+  proto.set_result_model_identifier("result");
+  proto.mutable_string_empty()->mutable_value()->set_model_identifier("value");
+
+  // Missing value.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Multiple strings.
+  ValueProto multiple_strings;
+  multiple_strings.mutable_strings()->add_values("Hello");
+  multiple_strings.mutable_strings()->add_values("World");
+  user_model_.SetValue("value", multiple_strings);
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Single empty string.
+  user_model_.SetValue("value", SimpleValue(std::string()));
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(true));
+
+  // Single non-empty string.
+  user_model_.SetValue("value", SimpleValue(std::string("Hello")));
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(false));
+}
+
 TEST_F(BasicInteractionsTest, ToggleUserAction) {
   ToggleUserActionProto proto;
   ValueProto user_actions_value;

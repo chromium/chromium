@@ -136,6 +136,8 @@ message ComputeValueProto {
     CreateCreditCardResponseProto create_credit_card_response = 8;
     // Writes safe-to-transmit parts of the input login option to the result.
     CreateLoginOptionResponseProto create_login_option_response = 9;
+    // Check if a string value is empty.
+    StringEmptyProto string_empty = 10;
   }
 
   // The model identifier to write the result to.
@@ -251,6 +253,12 @@ message CreateCreditCardResponseProto {
 // Creates a safe-to-transmit LoginOptionResponseProto for the input |value|.
 message CreateLoginOptionResponseProto {
   // The input LoginOptionProto.
+  optional ValueReferenceProto value = 1;
+}
+
+// Checks whether or not a string value is empty.
+message StringEmptyProto {
+  // The input string.
   optional ValueReferenceProto value = 1;
 }
 
