@@ -257,8 +257,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 // Tests the COM registration after the install. For now, tests that the
 // COM interfaces are registered, which is indirectly testing the type
 // library separation for the public, private, and legacy interfaces.
-// Disabled because of https://crbug.com/1149213
-TEST_F(IntegrationTest, DISABLED_COMRegistration) {
+TEST_F(IntegrationTest, COMRegistration) {
   Install();
   ExpectInterfacesRegistered();
   Uninstall();
