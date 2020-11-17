@@ -103,8 +103,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         // Set up light source
         ctx.light_probe = new THREE.LightProbe();
-        ctx.light_probe.intensity = 3;
+        ctx.light_probe.intensity = 1;
         ctx.scene.add(ctx.light_probe);
+
+        ctx.directional_light = new THREE.DirectionalLight();
+        ctx.scene.add(ctx.directional_light);
 
         ctx.xrButton = new XRDeviceButton({
           onRequestSession: () => onRequestSession(ctx),
@@ -127,22 +130,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           session.updateRenderState({ baseLayer: new XRWebGLLayer(session, ctx.gl) });
           session.requestReferenceSpace('local').then(refSpace => onReceivedReferenceSpace(ctx, refSpace));
-          session.requestLightProbe({reflectionFormat: "rgba16f"}).then((rgbaProbe) =>
-          {
-            ctx.rgbaProbe = rgbaProbe;
-            rgbaProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
-          }).catch(err => console.error(err));
 
-          session.requestLightProbe().then((defaultProbe) => {
-            ctx.defaultProbe = defaultProbe;
-            defaultProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
-          }).catch(err => console.error(err));
+          if (document.getElementById('useRGBA').checked) {
+            session.requestLightProbe({reflectionFormat: "rgba16f"}).then((lightProbe) => {
+              onReceivedLightProbe(ctx, lightProbe);
+            }).catch(err => console.error(err));
+          } else {
+            session.requestLightProbe().then((lightProbe) => {
+              onReceivedLightProbe(ctx, lightProbe);
+            }).catch(err => console.error(err));
+          }
 
           ctx.reflectionChanged = true;
 
-
           session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
         });
+      }
+
+      function onReceivedLightProbe(ctx, lightProbe) {
+        ctx.xrLightProbe = lightProbe;
+        lightProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
       }
 
       function onReflectionChanged(ctx) {
@@ -184,18 +191,31 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
 
         // Get ambient lighting estimation
-        const lightProbe = document.getElementById('useRGBA').checked ? ctx.rgbaProbe : ctx.defaultProbe;
-        if (lightProbe) {
-          const estimate = frame.getLightEstimate(lightProbe);
+        if (ctx.xrLightProbe) {
+          const estimate = frame.getLightEstimate(ctx.xrLightProbe);
 
           if (estimate) {
             ctx.light_probe.sh.fromArray(estimate.sphericalHarmonicsCoefficients);
+            const intensityScalar =
+              Math.max(1.0,
+              Math.max(estimate.primaryLightIntensity.x,
+              Math.max(estimate.primaryLightIntensity.y,
+                       estimate.primaryLightIntensity.z)));
+
+            ctx.directional_light.color.setRGB(
+              estimate.primaryLightIntensity.x / intensityScalar,
+              estimate.primaryLightIntensity.y / intensityScalar,
+              estimate.primaryLightIntensity.z / intensityScalar);
+
+            ctx.directional_light.intensity = intensityScalar;
+            ctx.directional_light.position.copy(estimate.primaryLightDirection);
+
           } else {
             console.log("light estimate not available");
           }
 
           if (ctx.reflectionChanged) {
-            const cubeMap = ctx.glBinding.getReflectionCubeMap(lightProbe);
+            const cubeMap = ctx.glBinding.getReflectionCubeMap(ctx.xrLightProbe);
             if (cubeMap) {
               let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
               rendererProps.__webglTexture = cubeMap;
