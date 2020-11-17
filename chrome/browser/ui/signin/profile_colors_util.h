@@ -13,6 +13,7 @@ struct ColorInfo;
 }
 
 class CustomThemeSupplier;
+class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
 struct ProfileThemeColors {
@@ -45,17 +46,27 @@ SkColor GetProfileForegroundIconColor(SkColor profile_highlight_color);
 // Returns the color that should be used to generate the default avatar icon.
 SkColor GetAvatarStrokeColor(SkColor avatar_fill_color);
 
+// Filters used for generating colors for a new profile. Exposed for tests.
+bool IsSaturatedForAutoselection(SkColor color);
+bool IsLightForAutoselection(SkColor color, double reference_lightness);
+
 // Returns a new color for a profile, based on the colors of the existing
 // profiles in `storage`. `random_generator` is called to provide randomness and
 // must return a value smaller than provided `count`. This implementation
 // function is mainly exposed for easier mocking in tests. In production code,
-// GenerateNewProfileColor() should be sufficient.
+// GenerateNewProfileColor() should be sufficient. `current_profile` should be
+// specified if a new profile is created within an existing profile (such as for
+// sign-in interception) and thus the two colors should somehow match.
 chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
     ProfileAttributesStorage& storage,
-    base::OnceCallback<size_t(size_t count)> random_generator);
+    base::OnceCallback<size_t(size_t count)> random_generator,
+    ProfileAttributesEntry* current_profile = nullptr);
 
 // Returns a new random color for a profile, based on the colors of the existing
-// profiles.
-chrome_colors::ColorInfo GenerateNewProfileColor();
+// profiles. `current_profile` should be specified if a new profile is created
+// within an existing profile (such as for sign-in interception) and thus the
+// two colors should somehow match.
+chrome_colors::ColorInfo GenerateNewProfileColor(
+    ProfileAttributesEntry* current_profile = nullptr);
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_PROFILE_COLORS_UTIL_H_

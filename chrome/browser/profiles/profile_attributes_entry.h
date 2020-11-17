@@ -141,6 +141,9 @@ class ProfileAttributesEntry {
   // Returns the colors specified by the profile theme, or default colors if no
   // theme is specified for the profile.
   ProfileThemeColors GetProfileThemeColors() const;
+  // Returns the colors specified by the profile theme, or empty if no theme is
+  // set for the profile.
+  base::Optional<ProfileThemeColors> GetProfileThemeColorsIfSet() const;
   // Returns the metrics bucket this profile should be recorded in.
   // Note: The bucket index is assigned once and remains the same all time. 0 is
   // reserved for the guest profile.
