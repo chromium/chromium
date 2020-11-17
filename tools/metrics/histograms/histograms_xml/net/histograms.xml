@@ -2907,7 +2907,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Logged every time we parse a QUIC Finch config, and logs whether the config
-    was valid. Invalid configs are most likely to be obsolete configs.
+    was valid. Invalid configs are most likely to be obsolete configs. Note that
+    this is still logged (as true) when no variations config is present.
   </summary>
 </histogram>
 
