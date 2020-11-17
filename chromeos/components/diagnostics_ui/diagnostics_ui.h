@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
+#include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -32,6 +33,10 @@ class DiagnosticsUI : public ui::MojoWebUIController {
 
   void BindInterface(
       mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<diagnostics::mojom::SystemRoutineController>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
