@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 
 #include "base/guid.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -54,6 +55,8 @@ class TestObserver : public InputMethodEngineBase::Observer {
  public:
   TestObserver() = default;
   ~TestObserver() override = default;
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   void OnActivate(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
@@ -89,36 +92,34 @@ class TestObserver : public InputMethodEngineBase::Observer {
     changed_engine_id_ = engine_id;
   }
   void ClearChangedEngineId() { changed_engine_id_ = ""; }
-  std::string GetChangedEngineId() { return changed_engine_id_; }
+  const std::string& changed_engine_id() const { return changed_engine_id_; }
 
  private:
-  std::string changed_engine_id_ = "";
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
+  std::string changed_engine_id_;
 };
 
 class TestPersonalDataManagerObserver
     : public autofill::PersonalDataManagerObserver {
  public:
-  explicit TestPersonalDataManagerObserver(Profile* profile)
-      : profile_(profile) {
-    autofill::PersonalDataManagerFactory::GetForProfile(profile_)->AddObserver(
-        this);
+  explicit TestPersonalDataManagerObserver(Profile* profile) {
+    observed_personal_data_manager_.Observe(
+        autofill::PersonalDataManagerFactory::GetForProfile(profile));
   }
   ~TestPersonalDataManagerObserver() override = default;
 
   // Waits for the PersonalDataManager's list of profiles to be updated.
   void Wait() {
     run_loop_.Run();
-    autofill::PersonalDataManagerFactory::GetForProfile(profile_)
-        ->RemoveObserver(this);
   }
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override { run_loop_.Quit(); }
 
  private:
-  Profile* profile_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<autofill::PersonalDataManager,
+                          autofill::PersonalDataManagerObserver>
+      observed_personal_data_manager_{this};
 };
 
 class KeyProcessingWaiter {
@@ -166,7 +167,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
     prefs_ = profile_->GetPrefs();
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
                 base::DictionaryValue());
-    engine_.Initialize(std::move(observer), "", profile_);
+    engine_.Initialize(std::move(observer), /*extension_id=*/"", profile_);
     engine_.get_assistive_suggester_for_testing()
         ->get_emoji_suggester_for_testing()
         ->LoadEmojiMapForTesting(kEmojiData);
@@ -616,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   pinyin1.SetBoolKey("foo", true);
   settings.SetPath("pinyin", std::move(pinyin1));
   prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings, settings);
-  EXPECT_EQ(observer_->GetChangedEngineId(), "pinyin");
+  EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
   observer_->ClearChangedEngineId();
 
   // Change key will trigger event.
@@ -624,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   pinyin2.SetBoolKey("foo", false);
   settings.SetPath("pinyin", std::move(pinyin2));
   prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings, settings);
-  EXPECT_EQ(observer_->GetChangedEngineId(), "pinyin");
+  EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, DestroyProfile) {
