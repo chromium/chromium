@@ -681,9 +681,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   EXPECT_FALSE(popup_node_data_2.HasState(ax::mojom::State::kInvisible));
 }
 
+// Flaky: https://crbug.com/1143630.
 // Omnibox returns to clean state after chrome://kill and reload.
 // https://crbug.com/993701 left the URL and icon as chrome://kill after reload.
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, ReloadAfterKill) {
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_ReloadAfterKill) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   OmniboxViewViews* omnibox_view_views =
