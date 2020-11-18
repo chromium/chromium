@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 if (is_android) {
   # Pull in enable_chrome_android_internal and public_android_sdk
   import("//build/config/android/config.gni")
 }
-if (is_chromeos) {
+if (is_chromeos_ash) {
   import("//build/config/chromeos/rules.gni")
 }
 
@@ -49,7 +50,7 @@ group("telemetry_chrome_test") {
     # CrOS currently has issues with the locally compiled version of
     # crashpad_database_util, so only include it on traditional Linux
     # platforms.
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       data_deps +=
           [ "//third_party/crashpad/crashpad/tools:crashpad_database_util" ]
     }
@@ -64,7 +65,7 @@ group("telemetry_chrome_test") {
     ]
   }
 
-  if (is_chromeos && is_chromeos_device) {
+  if (is_chromeos_ash && is_chromeos_device) {
     data_deps += [
       "//:chromiumos_preflight",
       "//chromeos:cros_chrome_deploy",
