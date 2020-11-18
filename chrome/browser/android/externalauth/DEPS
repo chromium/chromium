@@ -1,0 +1,9 @@
+noparent = True
+
+include_rules = [
+  "+base/android/java/src/org/chromium/base",
+  "+base/test/android/junit/src/org/chromium/base/test",
+  "+base/test/android/javatests/src/org/chromium/base/test",
+  "+content/public/android/java/src/org/chromium/content_public",
+  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/Origin.java",
+]
