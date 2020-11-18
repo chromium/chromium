@@ -39,7 +39,6 @@
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -73,6 +72,11 @@ constexpr char kVideoFileNameFmtStr[] = "Screen recording %s %s.webm";
 constexpr char kDateFmtStr[] = "%d-%02d-%02d";
 constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
+
+// The amount of time to wait before attempting to relaunch the recording
+// service if it crashes and gets disconnected.
+constexpr base::TimeDelta kReconnectDelay =
+    base::TimeDelta::FromMilliseconds(100);
 
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
@@ -274,6 +278,10 @@ CaptureModeController::CaptureModeController(
       base::BindRepeating(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(afakhry): Explore starting this only when a video recording starts, so
+  // as not to consume system resources while idle. https://crbug.com/1143411.
+  LaunchRecordingService();
 }
 
 CaptureModeController::~CaptureModeController() {
@@ -353,6 +361,29 @@ void CaptureModeController::OpenFeedbackDialog() {
   delegate_->OpenFeedbackDialog();
 }
 
+void CaptureModeController::BindVideoCapturer(
+    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
+  if (!is_recording_in_progress_ || !recording_service_remote_.is_connected()) {
+    NOTREACHED();
+    return;
+  }
+
+  aura::Env::GetInstance()
+      ->context_factory()
+      ->GetHostFrameSinkManager()
+      ->CreateVideoCapturer(std::move(receiver));
+}
+
+void CaptureModeController::BindAudioStreamFactory(
+    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+  if (!is_recording_in_progress_ || !recording_service_remote_.is_connected()) {
+    NOTREACHED();
+    return;
+  }
+
+  delegate_->BindAudioStreamFactory(std::move(receiver));
+}
+
 void CaptureModeController::OnMuxerOutput(const std::string& chunk) {
   DCHECK(video_file_handler_);
   video_file_handler_.AsyncCall(&VideoFileHandler::AppendChunk)
@@ -372,10 +403,6 @@ void CaptureModeController::OnRecordingEnded(bool success) {
     TerminateRecordingUiElements();
   }
 
-  // Resetting the service remote would terminate its process.
-  recording_service_remote_.reset();
-  recording_service_client_receiver_.reset();
-
   DCHECK(video_file_handler_);
   video_file_handler_.AsyncCall(&VideoFileHandler::FlushBufferedChunks)
       .Then(base::BindOnce(&CaptureModeController::OnVideoFileSaved,
@@ -386,6 +413,48 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   DCHECK(IsActive());
   DCHECK_EQ(type_, CaptureModeType::kVideo);
   OnVideoRecordCountDownFinished();
+}
+
+void CaptureModeController::LaunchRecordingService() {
+  recording_service_remote_.reset();
+  recording_service_client_receiver_.reset();
+  recording_service_remote_ = delegate_->LaunchRecordingService();
+  recording_service_remote_.set_disconnect_handler(
+      base::BindOnce(&CaptureModeController::OnRecordingServiceDisconnected,
+                     base::Unretained(this)));
+  recording_service_remote_->SetClient(
+      recording_service_client_receiver_.BindNewPipeAndPassRemote());
+}
+
+void CaptureModeController::OnRecordingServiceDisconnected() {
+  // TODO(afakhry): Consider what to do if the service crashes during an ongoin
+  // video recording. Do we try to resume recording, or notify with failure?
+  // For now, just end the recording and relaunch the service.
+  if (is_recording_in_progress_)
+    OnRecordingEnded(/*success=*/false);
+
+  // TODO(afakhry): Do we need an exponential backoff delay here?
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CaptureModeController::LaunchRecordingService,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kReconnectDelay);
+}
+
+bool CaptureModeController::IsCaptureAllowed(
+    const CaptureParams& capture_params) const {
+  return delegate_->IsCaptureAllowed(
+      capture_params.window, capture_params.bounds,
+      /*for_video=*/type_ == CaptureModeType::kVideo);
+}
+
+void CaptureModeController::TerminateRecordingUiElements() {
+  is_recording_in_progress_ = false;
+  Shell::Get()->UpdateCursorCompositingEnabled();
+  capture_mode_util::SetStopRecordingButtonVisibility(
+      video_recording_watcher_->window_being_recorded()->GetRootWindow(),
+      false);
+  video_recording_watcher_.reset();
 }
 
 base::Optional<CaptureModeController::CaptureParams>
@@ -432,99 +501,6 @@ CaptureModeController::GetCaptureParams() const {
   DCHECK(window);
 
   return CaptureParams{window, bounds};
-}
-
-void CaptureModeController::LaunchRecordingServiceAndStartRecording(
-    const CaptureParams& capture_params) {
-  DCHECK(!recording_service_remote_.is_bound())
-      << "Should not launch a new recording service while one is already "
-         "running.";
-
-  recording_service_remote_.reset();
-  recording_service_client_receiver_.reset();
-
-  recording_service_remote_ = delegate_->LaunchRecordingService();
-  recording_service_remote_.set_disconnect_handler(
-      base::BindOnce(&CaptureModeController::OnRecordingServiceDisconnected,
-                     base::Unretained(this)));
-
-  // Prepare the pending remotes of the client, the video capturer, and the
-  // audio stream factory.
-  mojo::PendingRemote<recording::mojom::RecordingServiceClient> client =
-      recording_service_client_receiver_.BindNewPipeAndPassRemote();
-  mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer;
-  aura::Env::GetInstance()
-      ->context_factory()
-      ->GetHostFrameSinkManager()
-      ->CreateVideoCapturer(video_capturer.InitWithNewPipeAndPassReceiver());
-  mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
-  delegate_->BindAudioStreamFactory(
-      audio_stream_factory.InitWithNewPipeAndPassReceiver());
-
-  auto frame_sink_id = capture_params.window->GetFrameSinkId();
-  if (!frame_sink_id.is_valid()) {
-    window_frame_sink_ = capture_params.window->CreateLayerTreeFrameSink();
-    frame_sink_id = capture_params.window->GetFrameSinkId();
-    DCHECK(frame_sink_id.is_valid());
-  }
-  const auto bounds = capture_params.bounds;
-  switch (source_) {
-    case CaptureModeSource::kFullscreen:
-      recording_service_remote_->RecordFullscreen(
-          std::move(client), std::move(video_capturer),
-          std::move(audio_stream_factory), frame_sink_id, bounds.size());
-      break;
-
-    case CaptureModeSource::kWindow:
-      // TODO(crbug.com/1143930): Window recording doesn't produce any frames at
-      // the moment.
-      recording_service_remote_->RecordWindow(
-          std::move(client), std::move(video_capturer),
-          std::move(audio_stream_factory), frame_sink_id, bounds.size(),
-          capture_params.window->GetRootWindow()
-              ->GetBoundsInRootWindow()
-              .size());
-      break;
-
-    case CaptureModeSource::kRegion:
-      recording_service_remote_->RecordRegion(
-          std::move(client), std::move(video_capturer),
-          std::move(audio_stream_factory), frame_sink_id,
-          capture_params.window->GetRootWindow()
-              ->GetBoundsInRootWindow()
-              .size(),
-          bounds);
-      break;
-  }
-}
-
-void CaptureModeController::OnRecordingServiceDisconnected() {
-  // TODO(afakhry): Consider what to do if the service crashes during an ongoing
-  // video recording. Do we try to resume recording, or notify with failure?
-  // For now, just end the recording.
-  // Note that the service could disconnect between the time we ask it to
-  // StopRecording(), and it calling us back with OnRecordingEnded(), so we call
-  // OnRecordingEnded() in all cases.
-  OnRecordingEnded(/*success=*/false);
-}
-
-bool CaptureModeController::IsCaptureAllowed(
-    const CaptureParams& capture_params) const {
-  return delegate_->IsCaptureAllowed(
-      capture_params.window, capture_params.bounds,
-      /*for_video=*/type_ == CaptureModeType::kVideo);
-}
-
-void CaptureModeController::TerminateRecordingUiElements() {
-  if (!is_recording_in_progress_)
-    return;
-
-  is_recording_in_progress_ = false;
-  Shell::Get()->UpdateCursorCompositingEnabled();
-  capture_mode_util::SetStopRecordingButtonVisibility(
-      video_recording_watcher_->window_being_recorded()->GetRootWindow(),
-      false);
-  video_recording_watcher_.reset();
 }
 
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params) {
@@ -765,7 +741,40 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   video_file_handler_.AsyncCall(&VideoFileHandler::Initialize)
       .Then(on_video_file_status_);
 
-  LaunchRecordingServiceAndStartRecording(*capture_params);
+  DCHECK(recording_service_remote_.is_bound());
+  DCHECK(recording_service_remote_.is_connected());
+
+  auto frame_sink_id = capture_params->window->GetFrameSinkId();
+  if (!frame_sink_id.is_valid()) {
+    window_frame_sink_ = capture_params->window->CreateLayerTreeFrameSink();
+    frame_sink_id = capture_params->window->GetFrameSinkId();
+    DCHECK(frame_sink_id.is_valid());
+  }
+  const auto bounds = capture_params->bounds;
+  switch (source_) {
+    case CaptureModeSource::kFullscreen:
+      recording_service_remote_->RecordFullscreen(frame_sink_id, bounds.size());
+      break;
+
+    case CaptureModeSource::kWindow:
+      // TODO(crbug.com/1143930): Window recording doesn't produce any frames at
+      // the moment.
+      recording_service_remote_->RecordWindow(
+          frame_sink_id, bounds.size(),
+          capture_params->window->GetRootWindow()
+              ->GetBoundsInRootWindow()
+              .size());
+      break;
+
+    case CaptureModeSource::kRegion:
+      recording_service_remote_->RecordRegion(
+          frame_sink_id,
+          capture_params->window->GetRootWindow()
+              ->GetBoundsInRootWindow()
+              .size(),
+          bounds);
+      break;
+  }
 
   delegate_->StartObservingRestrictedContent(
       capture_params->window, capture_params->bounds,

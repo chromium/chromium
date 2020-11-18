@@ -26,6 +26,11 @@ namespace recording {
 
 namespace {
 
+// The amount of time to wait before attempting to reconnect to a new video
+// capturer in case we get disconnected.
+constexpr base::TimeDelta kReconnectDelay =
+    base::TimeDelta::FromMilliseconds(100);
+
 // For a capture size of 320 by 240, we use a bitrate of 256 kbit/s. Based on
 // that, we calculate the bits per second per squared pixel.
 constexpr uint64_t kMinBitrateInBitsPerSecond = 256 * 1000;
@@ -77,50 +82,38 @@ RecordingService::RecordingService(
 
 RecordingService::~RecordingService() = default;
 
-void RecordingService::RecordFullscreen(
-    mojo::PendingRemote<mojom::RecordingServiceClient> client,
-    mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
-    const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& video_size) {
+void RecordingService::SetClient(
+    mojo::PendingRemote<mojom::RecordingServiceClient> client) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-
-  StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
-                    VideoCaptureParams::CreateForFullscreenCapture(
-                        frame_sink_id, video_size));
+  client_remote_.Bind(std::move(client));
 }
 
-void RecordingService::RecordWindow(
-    mojo::PendingRemote<mojom::RecordingServiceClient> client,
-    mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
-    const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& initial_video_size,
-    const gfx::Size& max_video_size) {
+void RecordingService::RecordFullscreen(const viz::FrameSinkId& frame_sink_id,
+                                        const gfx::Size& video_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  StartNewRecording(VideoCaptureParams::CreateForFullscreenCapture(
+      frame_sink_id, video_size));
+}
+
+void RecordingService::RecordWindow(const viz::FrameSinkId& frame_sink_id,
+                                    const gfx::Size& initial_video_size,
+                                    const gfx::Size& max_video_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   // TODO(crbug.com/1143930): Window recording doesn't produce any frames at the
   // moment.
-  StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
-                    VideoCaptureParams::CreateForWindowCapture(
-                        frame_sink_id, initial_video_size, max_video_size));
+  StartNewRecording(VideoCaptureParams::CreateForWindowCapture(
+      frame_sink_id, initial_video_size, max_video_size));
 }
 
-void RecordingService::RecordRegion(
-    mojo::PendingRemote<mojom::RecordingServiceClient> client,
-    mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
-    const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& full_capture_size,
-    const gfx::Rect& crop_region) {
+void RecordingService::RecordRegion(const viz::FrameSinkId& frame_sink_id,
+                                    const gfx::Size& full_capture_size,
+                                    const gfx::Rect& crop_region) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
-                    VideoCaptureParams::CreateForRegionCapture(
-                        frame_sink_id, full_capture_size, crop_region));
+  StartNewRecording(VideoCaptureParams::CreateForRegionCapture(
+      frame_sink_id, full_capture_size, crop_region));
 }
 
 void RecordingService::StopRecording() {
@@ -235,9 +228,6 @@ void RecordingService::OnCaptureError(const std::string& message) {
 void RecordingService::OnCaptureMuted(bool is_muted) {}
 
 void RecordingService::StartNewRecording(
-    mojo::PendingRemote<mojom::RecordingServiceClient> client,
-    mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
     std::unique_ptr<VideoCaptureParams> capture_params) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
@@ -245,9 +235,6 @@ void RecordingService::StartNewRecording(
     LOG(ERROR) << "Cannot start a new recording while another is in progress.";
     return;
   }
-
-  client_remote_.reset();
-  client_remote_.Bind(std::move(client));
 
   current_video_capture_params_ = std::move(capture_params);
   const auto capture_size = current_video_capture_params_->GetCaptureSize();
@@ -268,7 +255,11 @@ void RecordingService::StartNewRecording(
       base::BindOnce(&RecordingService::OnEncodingFailure,
                      base::Unretained(this)));
 
-  ConnectAndStartVideoCapturer(std::move(video_capturer));
+  ConnectAndStartVideoCapturer();
+
+  mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
+  client_remote_->BindAudioStreamFactory(
+      audio_stream_factory.InitWithNewPipeAndPassReceiver());
 
   audio_capturer_ = audio::CreateInputDevice(
       std::move(audio_stream_factory),
@@ -292,13 +283,17 @@ void RecordingService::TerminateRecording(bool success) {
                                weak_ptr_factory_.GetWeakPtr(), success));
 }
 
-void RecordingService::ConnectAndStartVideoCapturer(
-    mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer) {
+void RecordingService::ConnectAndStartVideoCapturer() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-  DCHECK(current_video_capture_params_);
+
+  if (!current_video_capture_params_) {
+    // No need to reconnect and resume capturing if there's no onging recording.
+    return;
+  }
 
   video_capturer_remote_.reset();
-  video_capturer_remote_.Bind(std::move(video_capturer));
+  client_remote_->BindVideoCapturer(
+      video_capturer_remote_.BindNewPipeAndPassReceiver());
   // The GPU process could crash while recording is in progress, and the video
   // capturer will be disconnected. We need to handle this event gracefully.
   video_capturer_remote_.set_disconnect_handler(base::BindOnce(
@@ -310,15 +305,13 @@ void RecordingService::ConnectAndStartVideoCapturer(
 
 void RecordingService::OnVideoCapturerDisconnected() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-
-  // On a crash in the GPU, the video capturer gets disconnected, so we can't
-  // communicate with it any longer, but we can still communicate with the audio
-  // capturer. We will stop the recording and flush whatever video chunks we
-  // currently have.
-  did_failure_occur_ = true;
-  audio_capturer_->Stop();
-  audio_capturer_.reset();
-  TerminateRecording(/*success=*/false);
+  // TODO(afakhry): Do we need an exponential backoff delay here? Should we
+  // really continue capturing here?
+  main_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&RecordingService::ConnectAndStartVideoCapturer,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kReconnectDelay);
 }
 
 void RecordingService::OnAudioCaptured(

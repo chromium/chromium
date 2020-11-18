@@ -37,7 +37,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void StopObservingRestrictedContent() override;
   void OpenFeedbackDialog() override;
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
-      override;
+      const override;
   void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
 
