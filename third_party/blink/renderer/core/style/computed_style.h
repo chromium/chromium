@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/border_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_base.h"
@@ -698,16 +697,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   // outline-offset
   int16_t OutlineOffsetInt() const { return OutlineOffset().ToInt(); }
-
-  // For history and compatibility reasons, we draw outline:auto (for focus
-  // rings) and normal style outline differently.
-  // Focus rings enclose block visual overflows (of line boxes and descendants),
-  // while normal outlines don't.
-  NGOutlineType OutlineRectsShouldIncludeBlockVisualOverflow() const {
-    return OutlineStyleIsAuto()
-               ? NGOutlineType::kIncludeBlockVisualOverflow
-               : NGOutlineType::kDontIncludeBlockVisualOverflow;
-  }
 
   // -webkit-perspective-origin-x
   const Length& PerspectiveOriginX() const { return PerspectiveOrigin().X(); }

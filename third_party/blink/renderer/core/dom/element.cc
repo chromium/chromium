@@ -1962,7 +1962,7 @@ Vector<IntRect> Element::OutlineRectsInVisualViewport(
 
   Vector<PhysicalRect> outline_rects = layout_object->OutlineRects(
       PhysicalOffset(),
-      layout_object->StyleRef().OutlineRectsShouldIncludeBlockVisualOverflow());
+      layout_object->OutlineRectsShouldIncludeBlockVisualOverflow());
   for (auto& r : outline_rects) {
     PhysicalRect physical_rect = layout_object->LocalToAbsoluteRect(r);
     IntRect absolute_rect =

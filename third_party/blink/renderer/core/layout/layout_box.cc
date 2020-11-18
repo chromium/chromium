@@ -6844,7 +6844,7 @@ LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
 
   if (style.HasOutline()) {
     Vector<PhysicalRect> outline_rects = OutlineRects(
-        PhysicalOffset(), style.OutlineRectsShouldIncludeBlockVisualOverflow());
+        PhysicalOffset(), OutlineRectsShouldIncludeBlockVisualOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
     bool outline_affected = rect.size != PhysicalSizeToBeNoop(Size());
     SetOutlineMayBeAffectedByDescendants(outline_affected);
