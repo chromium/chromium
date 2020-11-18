@@ -776,9 +776,6 @@ bool CheckNTLMProxyAuth(
 
 }  // namespace
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey
-// using kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 TEST_F(HttpNetworkTransactionTest, Basic) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());

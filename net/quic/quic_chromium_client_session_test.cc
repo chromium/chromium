@@ -314,9 +314,6 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
-// TODO(crbug.com/950069): Add testing for frame_origin in NetworkIsolationKey
-// using kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 // Basic test of ProofVerifyDetailsChromium is converted to SSLInfo retrieved
 // through QuicChromiumClientSession::GetSSLInfo(). Doesn't test some of the
 // more complicated fields.

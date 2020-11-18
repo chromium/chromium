@@ -492,9 +492,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
 
 using HttpStreamFactoryTest = TestWithTaskEnvironment;
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey using
-// kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
   for (size_t i = 0; i < base::size(kTests); ++i) {
     SpdySessionDependencies session_deps(

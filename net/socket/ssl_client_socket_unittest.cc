@@ -1457,9 +1457,6 @@ class HangingCertVerifier : public CertVerifier {
 
 }  // namespace
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey
-// using kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketVersionTest,
                          ::testing::ValuesIn(GetTLSVersions()));

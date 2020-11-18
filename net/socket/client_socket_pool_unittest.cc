@@ -20,9 +20,6 @@ namespace net {
 
 namespace {
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey
-// using kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 TEST(ClientSocketPool, GroupIdOperators) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

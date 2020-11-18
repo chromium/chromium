@@ -1019,9 +1019,6 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey using
-// kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   base::HistogramTester histograms;

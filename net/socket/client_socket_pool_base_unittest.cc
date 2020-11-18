@@ -733,9 +733,6 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   ClientSocketPoolTest test_base_;
 };
 
-// TODO(950069): Add testing for frame_origin in NetworkIsolationKey
-// using kAppendInitiatingFrameOriginToNetworkIsolationKey.
-
 TEST_F(ClientSocketPoolBaseTest, BasicSynchronous) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
 
