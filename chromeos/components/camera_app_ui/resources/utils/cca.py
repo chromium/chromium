@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import ast
 import argparse
 from distutils import dir_util
 import functools
@@ -44,6 +45,24 @@ def build_locale_strings():
         'build/strings',
     ]
     run(grit_cmd)
+
+
+def build_preload_images_js():
+    with open('images/images.gni') as f:
+        in_app_assets = ast.literal_eval(
+            re.search(r'in_app_assets\s*=\s*(\[.*\])', f.read(),
+                      re.DOTALL).group(1))
+    with tempfile.NamedTemporaryFile('w') as f:
+        f.writelines(asset + '\n' for asset in in_app_assets)
+        f.flush()
+        cmd = [
+            'utils/gen_preload_images_js.py',
+            '--images_list_file',
+            f.name,
+            '--output_file',
+            'build/camera/js/preload_images.js',
+        ]
+        subprocess.check_call(cmd)
 
 
 def build_mojom_bindings(mojom_bindings):
@@ -156,6 +175,7 @@ def build_cca(overlay=None, key=None):
         if d == 'build':
             continue
         dir_util.copy_tree(d, os.path.join('build/camera', d))
+    build_preload_images_js()
     shutil.copy2('manifest.json', 'build/camera/manifest.json')
 
     for f in mojo_files:

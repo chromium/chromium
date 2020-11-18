@@ -29,6 +29,7 @@ group("chrome_camera_app") {
     ":chrome_camera_app_js_views_camera_mode",
     ":chrome_camera_app_js_window_controller",
     ":chrome_camera_app_mojo_generated",
+    ":chrome_camera_app_preload_images_js",
     ":chrome_camera_app_sounds",
     ":chrome_camera_app_views",
   ]
@@ -46,53 +47,23 @@ copy("chrome_camera_app_css") {
   outputs = [ "$out_camera_app_dir/css/{{source_file_part}}" ]
 }
 
+import("images/images.gni")
+
 copy("chrome_camera_app_images") {
-  sources = [
-    "images/camera_app_icons_128.png",
-    "images/camera_app_icons_48.png",
-    "images/camera_button_fps_30.svg",
-    "images/camera_button_fps_60.svg",
-    "images/camera_button_grid_off.svg",
-    "images/camera_button_grid_on.svg",
-    "images/camera_button_mic_off.svg",
-    "images/camera_button_mic_on.svg",
-    "images/camera_button_mirror_off.svg",
-    "images/camera_button_mirror_on.svg",
-    "images/camera_button_settings.svg",
-    "images/camera_button_switch_device.svg",
-    "images/camera_button_switch_photo.svg",
-    "images/camera_button_switch_video.svg",
-    "images/camera_button_timer_off.svg",
-    "images/camera_button_timer_on_10s.svg",
-    "images/camera_button_timer_on_3s.svg",
-    "images/camera_focus_aim.svg",
-    "images/camera_intent_play_video.svg",
-    "images/camera_intent_result_cancel.svg",
-    "images/camera_intent_result_confirm.svg",
-    "images/camera_intro_banner_close.svg",
-    "images/camera_intro_banner_icon.svg",
-    "images/camera_mode_photo.svg",
-    "images/camera_mode_portrait.svg",
-    "images/camera_mode_square.svg",
-    "images/camera_mode_video.svg",
-    "images/camera_shutter_photo_start.svg",
-    "images/camera_shutter_photo_start_active.svg",
-    "images/camera_shutter_photo_start_hover.svg",
-    "images/camera_shutter_photo_stop.svg",
-    "images/camera_shutter_photo_stop_hover.svg",
-    "images/camera_shutter_video_pause.svg",
-    "images/settings_button_back.svg",
-    "images/settings_button_expand.svg",
-    "images/settings_expert.svg",
-    "images/settings_feedback.svg",
-    "images/settings_grid_type.svg",
-    "images/settings_help.svg",
-    "images/settings_resolution.svg",
-    "images/settings_timer_duration.svg",
-    "images/spinner.svg",
-  ]
+  sources = []
+  foreach(asset, in_app_assets) {
+    sources += [ "images/$asset" ]
+  }
 
   outputs = [ "$out_camera_app_dir/images/{{source_file_part}}" ]
+}
+
+copy("chrome_camera_app_preload_images_js") {
+  deps = [ "js:gen_preload_images_js" ]
+  js_gen_dir = get_label_info(deps[0], "target_gen_dir")
+  sources = [ "$js_gen_dir/preload_images.js" ]
+
+  outputs = [ "$out_camera_app_dir/js/{{source_file_part}}" ]
 }
 
 copy("chrome_camera_app_js") {

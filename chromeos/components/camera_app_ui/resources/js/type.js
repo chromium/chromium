@@ -211,6 +211,7 @@ export let ErrorInfo;
  */
 export const ErrorType = {
   BROKEN_THUMBNAIL: 'broken-thumbnail',
+  PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
 };
 

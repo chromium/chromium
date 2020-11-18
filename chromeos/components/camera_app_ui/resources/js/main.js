@@ -23,9 +23,10 @@ import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import {notifyCameraResourceReady} from './mojo/device_operator.js';
 import * as nav from './nav.js';
+import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {Mode, PerfEvent, ViewName} from './type.js';
+import {ErrorLevel, ErrorType, Mode, PerfEvent, ViewName} from './type.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
@@ -263,8 +264,29 @@ export class App {
       }
     })();
 
+    const preloadImages = (async () => {
+      const loadImage = (url) => new Promise((resolve, reject) => {
+        const link =
+            /** @type {!HTMLLinkElement} */ (document.createElement('link'));
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = url;
+        link.onload = () => resolve();
+        link.onerror = (e) => reject(e.reason);
+        document.head.appendChild(link);
+      });
+      const results = await Promise.allSettled(
+          preloadImagesList.map((name) => loadImage(`/images/${name}`)));
+      const failure = results.find(({status}) => status === 'rejected');
+      if (failure !== undefined) {
+        error.reportError(
+            ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(failure.reason, Error));
+      }
+    })();
+
     metrics.sendLaunchEvent({ackMigrate: false});
-    return Promise.all([showWindow, startCamera]);
+    return Promise.all([showWindow, startCamera, preloadImages]);
   }
 
   /**
