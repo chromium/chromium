@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_protection_metrics_util") {
+  sources = [
+    "metrics_util.cc",
+    "metrics_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/safe_browsing/core:csd_proto",
+    "//net",
+  ]
+}

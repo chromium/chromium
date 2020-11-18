@@ -471,7 +471,6 @@ static_library("ui") {
     "//components/renderer_context_menu",
     "//components/resources",
     "//components/safe_browsing/content/password_protection",
-    "//components/safe_browsing/content/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/content/triggers:ad_popup_trigger",
     "//components/safe_browsing/content/triggers:ad_redirect_trigger",
     "//components/safe_browsing/content/web_ui",
@@ -481,6 +480,7 @@ static_library("ui") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//components/schema_org/common:improved_mojom",
     "//components/search",
     "//components/search_engines",
@@ -4520,8 +4520,8 @@ static_library("ui") {
     deps += [
       "//chrome/browser/ui/webui/reset_password:mojo_bindings",
       "//chrome/common/safe_browsing:proto",
-      "//components/safe_browsing/content/password_protection:password_protection_metrics_util",
       "//components/safe_browsing/core:csd_proto",
+      "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     ]
   }
 

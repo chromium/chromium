@@ -19,7 +19,6 @@ source_set("password_protection") {
     public_deps = [ "//google_apis:google_apis" ]
 
     deps = [
-      ":password_protection_metrics_util",
       "//base:base",
       "//components/content_settings/core/browser:browser",
       "//components/history/core/browser:browser",
@@ -36,6 +35,7 @@ source_set("password_protection") {
       "//components/safe_browsing/core/db:allowlist_checker_client",
       "//components/safe_browsing/core/db:database_manager",
       "//components/safe_browsing/core/db:v4_protocol_manager_util",
+      "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/sessions",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
@@ -52,20 +52,6 @@ source_set("password_protection") {
   }
 }
 
-source_set("password_protection_metrics_util") {
-  sources = [
-    "metrics_util.cc",
-    "metrics_util.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/safe_browsing/core:csd_proto",
-    "//net:net",
-    "//ui/gfx/geometry:geometry",
-  ]
-}
-
 source_set("password_protection_unittest") {
   testonly = true
   if (safe_browsing_mode > 0) {
@@ -77,7 +63,6 @@ source_set("password_protection_unittest") {
     deps = [
       ":mock_password_protection",
       ":password_protection",
-      ":password_protection_metrics_util",
       "//base",
       "//base/test:test_support",
       "//components/content_settings/core/browser:browser",
@@ -88,6 +73,7 @@ source_set("password_protection_unittest") {
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:verdict_cache_manager",
       "//components/safe_browsing/core/db:test_database_manager",
+      "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/sync_preferences:test_support",

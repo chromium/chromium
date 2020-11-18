@@ -3260,7 +3260,7 @@ static_library("browser") {
       "//components/reading_list/features:flags",
       "//components/resources:android_resources",
       "//components/resources:components_resources",
-      "//components/safe_browsing/content/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/security_state/content/android",
       "//components/send_tab_to_self",
       "//components/signin/internal/identity_manager",  # cf android / signin /

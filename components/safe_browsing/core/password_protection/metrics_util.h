@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_METRICS_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_METRICS_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_METRICS_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_METRICS_UTIL_H_
 
-#include "base/macros.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class TimeTicks;
@@ -212,4 +210,4 @@ void LogModalWarningDialogLifetime(
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_METRICS_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_METRICS_UTIL_H_
