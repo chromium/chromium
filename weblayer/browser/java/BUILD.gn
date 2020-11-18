@@ -123,6 +123,7 @@ android_library("java") {
     "org/chromium/weblayer_private/ExternalNavigationDelegateImpl.java",
     "org/chromium/weblayer_private/FaviconCallbackProxy.java",
     "org/chromium/weblayer_private/FragmentAndroidPermissionDelegate.java",
+    "org/chromium/weblayer_private/FragmentHostingRemoteFragmentImpl.java",
     "org/chromium/weblayer_private/FragmentWindowAndroid.java",
     "org/chromium/weblayer_private/FullscreenCallbackProxy.java",
     "org/chromium/weblayer_private/FullscreenToast.java",
