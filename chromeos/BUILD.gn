@@ -289,17 +289,36 @@ if (is_chromeos_device) {
       "ui.ChromeCrashNotLoggedInDirect.breakpad",
       "ui.ChromeCrashLoggedInDirect.breakpad",
 
+      # TODO(sidereal, crbug.com/1128743, crbug.com/1148527) Remove
+      # _artifact versions of crostini tests from this list once
+      # CL:2374267 has been pulled into the LKGM
+
       # crbug.com/1073084
       "crostini.CopyPaste.wayland_to_x11_artifact",
+      "crostini.CopyPaste.wayland_to_x11_stretch_amd64_stable",
+      "crostini.CopyPaste.wayland_to_x11_stretch_arm_stable",
+      "crostini.CopyPaste.wayland_to_x11_buster_amd64_stable",
+      "crostini.CopyPaste.wayland_to_x11_buster_arm_stable",
+
+      # crbug.com/1114654
+      "crostini.Restart.artifact",
+      "crostini.Restart.stretch_amd64_stable",
+      "crostini.Restart.stretch_arm_stable",
+      "crostini.Restart.buster_amd64_stable",
+      "crostini.Restart.buster_arm_stable",
+
+      # crbug.com/1141944
+      "crostini.LaunchBrowser.artifact",
+      "crostini.LaunchBrowser.stretch_amd64_stable",
+      "crostini.LaunchBrowser.stretch_arm_stable",
+      "crostini.LaunchBrowser.buster_amd64_stable",
+      "crostini.LaunchBrowser.buster_arm_stable",
 
       # crbug.com/1098810
       "security.SELinuxFilesSystem",
 
       # crbug.com/1099695
       "platform.Drivefs",
-
-      # crbug.com/1114654
-      "crostini.Restart.artifact",
 
       # crbug.com/1114752
       "arc.ContainerMount",
@@ -312,8 +331,6 @@ if (is_chromeos_device) {
       "printer.PinPrintLexmark.no_pin",
       "printer.PinPrintLexmark.pin",
 
-      # crbug.com/1141944
-      "crostini.LaunchBrowser.artifact",
 
       # crbug.com/1147607
       "inputs.VirtualKeyboardAccessibility.stable",
