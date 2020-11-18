@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/template_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -315,6 +316,25 @@ TEST(StrongAliasTest, EnsureConstexpr) {
   static_assert(kZero <= kOne, "");
   static_assert(kOne > kZero, "");
   static_assert(kOne >= kZero, "");
+}
+
+// This next test is compile-time, and thus not in an actual TEST since it would
+// just result in running an empty test.
+void StreamOperatorExists() {
+  // Aliases of ints should be streamable because ints are streamable.
+  using StreamableAlias = StrongAlias<class IntTag, int>;
+  static_assert(base::internal::SupportsOstreamOperator<StreamableAlias>::value,
+                "");
+
+  // Aliases of a class which does not expose a stream operator should
+  // themselves not be streamable.
+  class Scope {
+   public:
+    Scope() = default;
+  };
+  using NonStreamableAlias = StrongAlias<class ScopeTag, Scope>;
+  static_assert(
+      !base::internal::SupportsOstreamOperator<NonStreamableAlias>::value, "");
 }
 
 }  // namespace base

@@ -6,7 +6,10 @@
 #define BASE_TYPES_STRONG_ALIAS_H_
 
 #include <ostream>
+#include <type_traits>
 #include <utility>
+
+#include "base/template_util.h"
 
 namespace base {
 
@@ -113,7 +116,10 @@ class StrongAlias {
 };
 
 // Stream operator for convenience, streams the UnderlyingType.
-template <typename TagType, typename UnderlyingType>
+template <typename TagType,
+          typename UnderlyingType,
+          typename = std::enable_if_t<
+              base::internal::SupportsOstreamOperator<UnderlyingType>::value>>
 std::ostream& operator<<(std::ostream& stream,
                          const StrongAlias<TagType, UnderlyingType>& alias) {
   return stream << alias.value();
