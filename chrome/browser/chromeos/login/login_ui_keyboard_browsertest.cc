@@ -28,7 +28,7 @@
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
-#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -301,10 +301,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
   StartupUtils::MarkOobeCompleted();
 }
 
-// TODO(crbug.com/1104861): Test has been flaky since
-// https://crrev.com/c/2215650 landed.
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
-                       DISABLED_CheckPODScreenKeyboard) {
+                       CheckPODScreenKeyboard) {
   EXPECT_EQ(3, ash::LoginScreenTestApi::GetUsersCount());
 
   std::vector<std::string> expected_input_methods;
@@ -321,13 +319,13 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
 
   // Switch to Gaia.
   ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+
   CheckGaiaKeyboard();
 
   // Switch back.
-  test::ExecuteOobeJS("$('gaia-signin').cancel()");
-  const auto update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-  ash::LoginScreenTestApi::WaitForUiUpdate(update_count);
+  test::ExecuteOobeJS("$('user-creation').cancel()");
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
