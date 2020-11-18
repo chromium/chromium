@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
@@ -98,6 +99,9 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   void OnComplianceReportReceived(
       const base::Value* compliance_report) override;
 
+  // Set stateful partition path for unit tests.
+  void SetStatefulPathForTesting(const base::FilePath& path);
+
  private:
   // Loads a list of packages from a pref.
   std::set<std::string> GetPackagesFromPref(const std::string& pref_name) const;
@@ -145,6 +149,9 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   // Whether |this| has set itself up as observer of other classes and needs to
   // remove itself as observer in the destructor.
   bool observing_ = false;
+
+  // Path for stateful partition.
+  base::FilePath stateful_path_;
 
   // The app push-install requests that were most recently sent to CloudDPC.
   std::set<std::string> requested_in_arc_;

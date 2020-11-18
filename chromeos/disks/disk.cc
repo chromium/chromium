@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 
 namespace chromeos {
@@ -184,6 +185,10 @@ std::unique_ptr<Disk> Disk::Builder::Build() {
 Disk::Builder& Disk::Builder::SetIsMounted(bool is_mounted) {
   disk_->is_mounted_ = is_mounted;
   return *this;
+}
+
+base::FilePath GetStatefulPartitionPath() {
+  return base::FilePath(kStatefulPartition);
 }
 
 }  // namespace disks

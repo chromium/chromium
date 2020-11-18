@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -28,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::DoAll;
 using testing::Invoke;
 using testing::Mock;
 using testing::WithArgs;
@@ -38,7 +40,7 @@ namespace policy {
 
 namespace {
 
-constexpr char kStatefulMountPath[] = "/mnt/stateful_partition";
+constexpr char kStatefulPath[] = "/tmp";
 constexpr char kPackageName[] = "com.example.app";
 constexpr char kPackageName2[] = "com.example.app2";
 constexpr char kPackageName3[] = "com.example.app3";
@@ -64,6 +66,38 @@ MATCHER_P(MatchEventExceptTimestamp, expected, "event matches") {
          expected_event.SerializePartialAsString();
 }
 
+MATCHER_P(MatchEventExceptDiskSpace, expected, "event matches") {
+  em::AppInstallReportLogEvent actual_event;
+  actual_event.MergeFrom(arg);
+  actual_event.clear_stateful_total();
+  actual_event.clear_stateful_free();
+
+  em::AppInstallReportLogEvent expected_event;
+  expected_event.MergeFrom(expected);
+  expected_event.clear_stateful_total();
+  expected_event.clear_stateful_free();
+
+  return actual_event.SerializePartialAsString() ==
+         expected_event.SerializePartialAsString();
+}
+
+MATCHER_P(MatchEventExceptTimestampAndDiskSpace, expected, "event matches") {
+  em::AppInstallReportLogEvent actual_event;
+  actual_event.MergeFrom(arg);
+  actual_event.clear_timestamp();
+  actual_event.clear_stateful_total();
+  actual_event.clear_stateful_free();
+
+  em::AppInstallReportLogEvent expected_event;
+  expected_event.MergeFrom(expected);
+  expected_event.clear_timestamp();
+  expected_event.clear_stateful_total();
+  expected_event.clear_stateful_free();
+
+  return actual_event.SerializePartialAsString() ==
+         expected_event.SerializePartialAsString();
+}
+
 ACTION_TEMPLATE(SaveTimestamp,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(out)) {
@@ -74,6 +108,18 @@ ACTION_TEMPLATE(SaveAndroidId,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(out)) {
   *out = testing::get<k>(args).android_id();
+}
+
+ACTION_TEMPLATE(SaveStatefulTotal,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(out)) {
+  *out = testing::get<k>(args).stateful_total();
+}
+
+ACTION_TEMPLATE(SaveStatefulFree,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(out)) {
+  *out = testing::get<k>(args).stateful_free();
 }
 
 int64_t GetCurrentTimestamp() {
@@ -120,18 +166,6 @@ class AppInstallEventLoggerTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
 
     chromeos::NetworkHandler::Initialize();
-
-    disk_mount_manager_ = new chromeos::disks::MockDiskMountManager;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_);
-    disk_mount_manager_->CreateDiskEntryForMountDevice(
-        chromeos::disks::DiskMountManager::MountPointInfo(
-            "/dummy/device/usb", kStatefulMountPath,
-            chromeos::MOUNT_TYPE_DEVICE, chromeos::disks::MOUNT_CONDITION_NONE),
-        "device_id", "device_label", "vendor", "product",
-        chromeos::DEVICE_TYPE_UNKNOWN, 1 << 20 /* total_size_in_bytes */,
-        false /* is_parent */, false /* has_media */, true /* on_boot_device */,
-        true /* on_removable_device */, "ext4");
   }
 
   void TearDown() override {
@@ -140,7 +174,6 @@ class AppInstallEventLoggerTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
     chromeos::NetworkHandler::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
-    chromeos::disks::DiskMountManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
@@ -191,9 +224,6 @@ class AppInstallEventLoggerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   TestingPrefServiceSimple pref_service_;
-
-  // Owned by chromeos::disks::DiskMountManager.
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_ = nullptr;
 
   MockAppInstallEventLoggerDelegate delegate_;
 
@@ -297,72 +327,78 @@ TEST_F(AppInstallEventLoggerTest, DoesNotAddsAndroidId) {
 }
 
 // Adds an event with a timestamp, requesting that disk space information be
-// added to it. Verifies that a background task is posted that consults the disk
-// mount manager. Then, verifies that after the background task has run, the
-// event is added.
-//
-// It is not possible to test that disk size information is retrieved correctly
-// as a mounted stateful partition cannot be simulated in unit tests.
+// added to it. Verifies that after the background task has run, the event is
+// added with valid disk space info.
 TEST_F(AppInstallEventLoggerTest, AddSetsDiskSpaceInfo) {
   CreateLogger();
+  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   event_.set_timestamp(kTimestamp);
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       std::make_unique<em::AppInstallReportLogEvent>();
   event->MergeFrom(event_);
+  event->clear_stateful_total();
+  event->clear_stateful_free();
 
-  EXPECT_CALL(*disk_mount_manager_, disks()).Times(0);
   EXPECT_CALL(delegate_, Add(_, _)).Times(0);
   logger_->Add(kPackageName, true /* gather_disk_space_info */,
                std::move(event));
-  Mock::VerifyAndClearExpectations(disk_mount_manager_);
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  EXPECT_CALL(*disk_mount_manager_, disks());
+  int64_t stateful_total = 0;
+  int64_t stateful_free = 0;
   SetAndroidId(kAndroidId);
-  EXPECT_CALL(delegate_,
-              Add(std::set<std::string>{kPackageName}, MatchProto(event_)));
+  EXPECT_CALL(delegate_, Add(std::set<std::string>{kPackageName},
+                             MatchEventExceptDiskSpace(event_)))
+      .WillOnce(DoAll(SaveStatefulTotal<1>(&stateful_total),
+                      SaveStatefulFree<1>(&stateful_free)));
   task_environment_.RunUntilIdle();
+
+  EXPECT_GT(stateful_total, 0);
+  EXPECT_GT(stateful_free, 0);
 }
 
 // Adds an event without a timestamp, requesting that disk space information be
-// added to it. Verifies that a background task is posted that consults the disk
-// mount manager. Then, verifies that after the background task has run, the
-// event is added and its timestamp is set to the current time before posting
-// the background task.
-//
-// It is not possible to test that disk size information is retrieved correctly
-// as a mounted stateful partition cannot be simulated in unit tests.
+// added to it. Verifies that after the background task has run, the event is
+// added with valid disk space info and its timestamp is set to the current time
+// before posting the background task.
 TEST_F(AppInstallEventLoggerTest, AddSetsTimestampAndDiskSpaceInfo) {
   CreateLogger();
+  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       std::make_unique<em::AppInstallReportLogEvent>();
   event->MergeFrom(event_);
+  event->clear_stateful_total();
+  event->clear_stateful_free();
 
-  EXPECT_CALL(*disk_mount_manager_, disks()).Times(0);
   EXPECT_CALL(delegate_, Add(_, _)).Times(0);
   const int64_t before = GetCurrentTimestamp();
   logger_->Add(kPackageName, true /* gather_disk_space_info */,
                std::move(event));
   const int64_t after = GetCurrentTimestamp();
-  Mock::VerifyAndClearExpectations(disk_mount_manager_);
   Mock::VerifyAndClearExpectations(&delegate_);
 
   int64_t timestamp = 0;
-  EXPECT_CALL(*disk_mount_manager_, disks());
+  int64_t stateful_total = 0;
+  int64_t stateful_free = 0;
   SetAndroidId(kAndroidId);
   EXPECT_CALL(delegate_, Add(std::set<std::string>{kPackageName},
-                             MatchEventExceptTimestamp(event_)))
-      .WillOnce(SaveTimestamp<1>(&timestamp));
+                             MatchEventExceptTimestampAndDiskSpace(event_)))
+      .WillOnce(DoAll(SaveTimestamp<1>(&timestamp),
+                      SaveStatefulTotal<1>(&stateful_total),
+                      SaveStatefulFree<1>(&stateful_free)));
   task_environment_.RunUntilIdle();
 
+  EXPECT_GT(stateful_total, 0);
+  EXPECT_GT(stateful_free, 0);
   EXPECT_LE(before, timestamp);
   EXPECT_GE(after, timestamp);
 }
 
 TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   CreateLogger();
+  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   policy::PolicyMap new_policy_map;
 
@@ -410,12 +446,18 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
 
   // Expected new packages added with disk info.
   event_.set_event_type(em::AppInstallReportLogEvent::SERVER_REQUEST);
+  int64_t stateful_total = 0;
+  int64_t stateful_free = 0;
   SetAndroidId(kAndroidId);
   EXPECT_CALL(delegate_, Add(std::set<std::string>{kPackageName, kPackageName3},
-                             MatchEventExceptTimestamp(event_)));
-  EXPECT_CALL(*disk_mount_manager_, disks());
+                             MatchEventExceptTimestampAndDiskSpace(event_)))
+      .WillOnce(DoAll(SaveStatefulTotal<1>(&stateful_total),
+                      SaveStatefulFree<1>(&stateful_free)));
   task_environment_.RunUntilIdle();
   Mock::VerifyAndClearExpectations(&delegate_);
+
+  EXPECT_GT(stateful_total, 0);
+  EXPECT_GT(stateful_free, 0);
 
   // To avoid extra logging.
   g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);

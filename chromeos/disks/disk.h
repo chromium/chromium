@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "chromeos/dbus/cros_disks_client.h"
 
@@ -204,6 +205,8 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
 
   DISALLOW_COPY_AND_ASSIGN(Builder);
 };
+
+COMPONENT_EXPORT(CHROMEOS_DISKS) base::FilePath GetStatefulPartitionPath();
 
 }  // namespace disks
 }  // namespace chromeos

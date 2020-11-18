@@ -23,7 +23,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -66,24 +65,17 @@ std::set<std::string> GetDifference(const std::set<std::string>& first,
 }
 
 std::unique_ptr<em::AppInstallReportLogEvent> AddDiskSpaceInfoToEvent(
-    std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  for (const auto& disk :
-       chromeos::disks::DiskMountManager::GetInstance()->disks()) {
-    if (!disk.second->IsStatefulPartition()) {
-      continue;
-    }
-    const base::FilePath stateful_path(disk.second->mount_path());
-    const int64_t stateful_total =
-        base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-    if (stateful_total >= 0) {
-      event->set_stateful_total(stateful_total);
-    }
-    const int64_t stateful_free =
-        base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-    if (stateful_free >= 0) {
-      event->set_stateful_free(stateful_free);
-    }
-    break;
+    std::unique_ptr<em::AppInstallReportLogEvent> event,
+    const base::FilePath& stateful_path) {
+  const int64_t stateful_total =
+      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
+  if (stateful_total >= 0) {
+    event->set_stateful_total(stateful_total);
+  }
+  const int64_t stateful_free =
+      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
+  if (stateful_free >= 0) {
+    event->set_stateful_free(stateful_free);
   }
   return event;
 }
@@ -128,6 +120,8 @@ AppInstallEventLogger::AppInstallEventLogger(Delegate* delegate,
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   bridge->AddObserver(this);
   policy_service->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+
+  stateful_path_ = chromeos::disks::GetStatefulPartitionPath();
 }
 
 AppInstallEventLogger::~AppInstallEventLogger() {
@@ -230,6 +224,11 @@ void AppInstallEventLogger::OnComplianceReportReceived(
   }
 }
 
+void AppInstallEventLogger::SetStatefulPathForTesting(
+    const base::FilePath& path) {
+  stateful_path_ = path;
+}
+
 std::set<std::string> AppInstallEventLogger::GetPackagesFromPref(
     const std::string& pref_name) const {
   std::set<std::string> packages;
@@ -305,7 +304,8 @@ void AppInstallEventLogger::AddForSetOfPackagesWithDiskSpaceInfo(
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event)),
+      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event),
+                     stateful_path_),
       base::BindOnce(&AppInstallEventLogger::AddForSetOfPackages,
                      weak_factory_.GetWeakPtr(), packages));
 }

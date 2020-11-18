@@ -71,6 +71,9 @@ class ExtensionInstallEventLogger
       const extensions::ExtensionId& extension_id) override;
   bool IsExtensionPending(const extensions::ExtensionId& extension_id) override;
 
+  // Set stateful partition path for unit tests.
+  void SetStatefulPathForTesting(const base::FilePath& path);
+
  private:
   // Loads list of force-installed extensions if available.
   void OnForcedExtensionsPrefChanged();
@@ -123,6 +126,9 @@ class ExtensionInstallEventLogger
   // not. In the initial case we would have to add the login event for the
   // extensions.
   bool initial_ = true;
+
+  // Path for stateful partition.
+  base::FilePath stateful_path_;
 
   // The |ExtensionInstallEventLogCollector| that collects detailed logs of the
   // extension install process. Non-|nullptr| whenever there are one or more

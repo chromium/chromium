@@ -12,7 +12,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -34,22 +33,16 @@ std::set<extensions::ExtensionId> GetDifference(
 }
 
 std::unique_ptr<em::ExtensionInstallReportLogEvent> AddDiskSpaceInfoToEvent(
-    std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
-  for (const auto& disk :
-       chromeos::disks::DiskMountManager::GetInstance()->disks()) {
-    if (!disk.second->IsStatefulPartition())
-      continue;
-    const base::FilePath stateful_path(disk.second->mount_path());
-    const int64_t stateful_total =
-        base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-    if (stateful_total >= 0)
-      event->set_stateful_total(stateful_total);
-    const int64_t stateful_free =
-        base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-    if (stateful_free >= 0)
-      event->set_stateful_free(stateful_free);
-    break;
-  }
+    std::unique_ptr<em::ExtensionInstallReportLogEvent> event,
+    const base::FilePath& stateful_path) {
+  const int64_t stateful_total =
+      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
+  if (stateful_total >= 0)
+    event->set_stateful_total(stateful_total);
+  const int64_t stateful_free =
+      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
+  if (stateful_free >= 0)
+    event->set_stateful_free(stateful_free);
   return event;
 }
 
@@ -164,6 +157,11 @@ bool ExtensionInstallEventLogger::IsExtensionPending(
   return pending_extensions_.find(extension_id) != pending_extensions_.end();
 }
 
+void ExtensionInstallEventLogger::SetStatefulPathForTesting(
+    const base::FilePath& path) {
+  stateful_path_ = path;
+}
+
 void ExtensionInstallEventLogger::UpdateCollector() {
   if (pending_extensions_.empty()) {
     StopCollector();
@@ -184,7 +182,8 @@ void ExtensionInstallEventLogger::AddForSetOfExtensionsWithDiskSpaceInfo(
     std::unique_ptr<em::ExtensionInstallReportLogEvent> event) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event)),
+      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event),
+                     stateful_path_),
       base::BindOnce(&ExtensionInstallEventLogger::AddForSetOfExtensions,
                      weak_factory_.GetWeakPtr(), extensions));
 }
