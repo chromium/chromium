@@ -4,11 +4,13 @@
 
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './text_badge.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineName, RoutineResult, StandardRoutineResult} from './diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
+import {BadgeType} from './text_badge.js';
 
 /**
  * Resolves an enum value to the string name. This is used temporarily to
@@ -51,12 +53,6 @@ Polymer({
       type: String,
       computed: 'getRoutineName_(item.routine)',
     },
-
-    /** @private */
-    status_: {
-      type: String,
-      computed: 'getRoutineStatus_(item.progress, item.result)',
-    },
   },
 
   /**
@@ -71,24 +67,44 @@ Polymer({
   },
 
   /**
-   * Get the status for the routine. This is a combination of progress and
-   * result.
-   * TODO(zentaro): Replace with a mapping to localized string when they are
-   * finalized.
-   * @param {!ExecutionProgress} progress
-   * @param {!RoutineResult} result
-   * @return {string}
+   * @protected
    */
-  getRoutineStatus_(progress, result) {
-    if (progress === ExecutionProgress.kNotStarted) {
-      return '';
+  getBadgeText_() {
+    // TODO(joonbug): Localize this string.
+    if (this.item.progress === ExecutionProgress.kRunning) {
+      return 'RUNNING';
     }
 
-    if (progress === ExecutionProgress.kRunning) {
-      return lookupEnumValueName(ExecutionProgress, ExecutionProgress.kRunning);
+    if (this.item.result &&
+        this.item.result.simpleResult === StandardRoutineResult.kTestPassed) {
+      return 'SUCCESS';
     }
 
-    return lookupEnumValueName(StandardRoutineResult, result.simpleResult);
+    return 'FAILED';
+  },
+
+  /**
+   * @protected
+   */
+  getBadgeType_() {
+    // TODO(joonbug): Localize this string.
+    if (this.item.progress === ExecutionProgress.kRunning) {
+      return BadgeType.DEFAULT;
+    }
+
+    if (this.item.result &&
+        this.item.result.simpleResult === StandardRoutineResult.kTestPassed) {
+      return BadgeType.SUCCESS;
+    }
+    return BadgeType.ERROR;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isTestStarted_() {
+    return this.item.progress !== ExecutionProgress.kNotStarted;
   },
 
   /** @override */

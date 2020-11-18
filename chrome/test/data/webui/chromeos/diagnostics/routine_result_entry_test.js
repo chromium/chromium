@@ -6,6 +6,7 @@ import 'chrome://diagnostics/routine_result_entry.js';
 
 import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
+import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -93,13 +94,14 @@ export function routineResultEntryTestSuite() {
   }
 
   /**
-   * Returns the status element text content.
-   * @return {string}
+   * Returns the status badge content.
+   * @return {!TextBadgeElement}
    */
-  function getStatusText() {
-    const status = routineResultEntryElement.$$('#status');
-    assertTrue(!!status);
-    return status.textContent.trim();
+  function getStatusBadge() {
+    const badge = /** @type{!TextBadgeElement} */ (
+        routineResultEntryElement.$$('#status'));
+    assertTrue(!!badge);
+    return badge;
   }
 
   test('ElementRendered', () => {
@@ -118,7 +120,8 @@ export function routineResultEntryTestSuite() {
       assertEquals(getNameText(), 'kCpuStress');
 
       // Status should be empty if the test is not started.
-      assertEquals(getStatusText(), '');
+      // TODO(joonbug): Utilize isVisible util function.
+      assertTrue(getStatusBadge().hidden);
     });
   });
 
@@ -130,7 +133,8 @@ export function routineResultEntryTestSuite() {
       assertEquals(getNameText(), 'kCpuStress');
 
       // Status should be running.
-      assertEquals(getStatusText(), 'kRunning');
+      assertEquals(getStatusBadge().value, 'RUNNING');
+      assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
     });
   });
 
@@ -143,7 +147,8 @@ export function routineResultEntryTestSuite() {
       assertEquals(getNameText(), 'kCpuStress');
 
       // Status should show the passed result.
-      assertEquals(getStatusText(), 'kTestPassed');
+      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
   });
 
@@ -156,7 +161,8 @@ export function routineResultEntryTestSuite() {
       assertEquals(getNameText(), 'kCpuStress');
 
       // Status should show the passed result.
-      assertEquals(getStatusText(), 'kTestFailed');
+      assertEquals(getStatusBadge().value, 'FAILED');
+      assertEquals(getStatusBadge().badgeType, BadgeType.ERROR);
     });
   });
 }
