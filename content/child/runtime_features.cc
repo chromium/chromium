@@ -318,6 +318,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      blink::features::kWebAppEnableProtocolHandlers},
     {wf::EnableWebID, features::kWebID},
     {wf::EnableWheelEventRegions, features::kWheelEventRegions},
+    {wf::EnableAOMAriaRelationshipProperties,
+     features::kEnableAriaElementReflection},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

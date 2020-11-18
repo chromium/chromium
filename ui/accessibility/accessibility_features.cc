@@ -107,6 +107,13 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
+const base::Feature kEnableAriaElementReflection{
+    "EnableAriaElementReflection", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAriaElementReflectionEnabled() {
+  return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
+}
+
 #if defined(OS_CHROMEOS)
 const base::Feature kSelectToSpeakNavigationControl{
     "SelectToSpeakNavigationControl", base::FEATURE_DISABLED_BY_DEFAULT};

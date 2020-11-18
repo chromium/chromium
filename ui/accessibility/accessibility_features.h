@@ -96,6 +96,13 @@ AX_BASE_EXPORT extern const base::Feature kUseAXPositionForDocumentMarkers;
 // nodes and which is different for each platform.
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
+// Enable support for ARIA element reflection, for example
+// element.ariaActiveDescendantElement = child;
+AX_BASE_EXPORT extern const base::Feature kEnableAriaElementReflection;
+
+// Returns true if ARIA element reflection is enabled.
+AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
+
 #if defined(OS_CHROMEOS)
 // Enables enhanced Select-to-speak features that allow users broader control
 // of TTS (pause, resume, skip between sentences and paragraphs).

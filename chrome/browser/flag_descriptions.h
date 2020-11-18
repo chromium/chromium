@@ -72,6 +72,9 @@ extern const char kAllowSignedHTTPExchangeCertsWithoutExtensionDescription[];
 extern const char kAllowSyncXHRInPageDismissalName[];
 extern const char kAllowSyncXHRInPageDismissalDescription[];
 
+extern const char kAriaElementReflectionName[];
+extern const char kAriaElementReflectionDescription[];
+
 extern const char kConversionMeasurementApiName[];
 extern const char kConversionMeasurementApiDescription[];
 

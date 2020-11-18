@@ -44662,6 +44662,7 @@ from previous Chrome versions.
   <int value="513728926" label="OsSettingsPolymer3:enabled"/>
   <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
+  <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
   <int value="517429103" label="AutofillImportDynamicForms:enabled"/>
   <int value="517568645" label="AnimatedAppMenuIcon:disabled"/>
@@ -45931,6 +45932,7 @@ from previous Chrome versions.
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>
+  <int value="1777241671" label="EnableAriaElementReflection:disabled"/>
   <int value="1777695562" label="SendTabToSelfShowSendingUI:disabled"/>
   <int value="1777806335" label="UsePasswordSeparatedSigninFlow:disabled"/>
   <int value="1779530254"

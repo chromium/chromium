@@ -3576,6 +3576,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic)},
+    {"enable-aria-element-reflection",
+     flag_descriptions::kAriaElementReflectionName,
+     flag_descriptions::kAriaElementReflectionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableAriaElementReflection)},
 #if defined(OS_CHROMEOS)
     {"enable-encryption-migration",
      flag_descriptions::kEnableEncryptionMigrationName,

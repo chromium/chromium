@@ -1144,6 +1144,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "enable-aria-element-reflection",
+    "owners": [ "aboxhall", "chrishall", "dmazzoni", "meredithl" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-assistant-aec",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 88

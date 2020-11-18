@@ -97,6 +97,10 @@ void WebRuntimeFeatures::EnableOriginTrialControlledFeatures(bool enable) {
   RuntimeEnabledFeatures::SetOriginTrialControlledFeaturesEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAOMAriaRelationshipProperties(bool enable) {
+  RuntimeEnabledFeatures::SetAOMAriaRelationshipPropertiesEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAccelerated2dCanvas(bool enable) {
   RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(enable);
 }
