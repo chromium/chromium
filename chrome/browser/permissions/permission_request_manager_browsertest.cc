@@ -756,8 +756,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   GetPermissionRequestManager()->Closing();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(request1.finished());
-  EXPECT_FALSE(request2.finished());
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
+    EXPECT_FALSE(request1.finished());
+    EXPECT_TRUE(request2.finished());
+  } else {
+    EXPECT_TRUE(request1.finished());
+    EXPECT_FALSE(request2.finished());
+  }
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Close second request. No more requests pending

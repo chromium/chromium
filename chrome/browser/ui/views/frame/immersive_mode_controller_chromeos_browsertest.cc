@@ -30,7 +30,9 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/window/frame_caption_button.h"
 
 class ImmersiveModeControllerChromeosWebAppBrowserTest
@@ -355,9 +357,23 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.
   base::RunLoop().RunUntilIdle();
-  views::Widget* prompt_window = test_api->GetPromptWindow();
+
+  // If the permission request is displayed using the chip UI, simulate a click
+  // on the chip to trigger showing the prompt.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  PermissionChip* permission_chip =
+      browser_view->toolbar()->location_bar()->permission_chip();
+  if (permission_chip->GetVisible()) {
+    views::test::ButtonTestApi(permission_chip->button())
+        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(),
+                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  views::Widget* prompt_widget = test_api->GetPromptWindow();
   views::BubbleDialogDelegate* bubble_dialog =
-      prompt_window->AsWidget()->widget_delegate()->AsBubbleDialogDelegate();
+      prompt_widget->widget_delegate()->AsBubbleDialogDelegate();
   ASSERT_TRUE(bubble_dialog);
   EXPECT_TRUE(bubble_dialog->GetAnchorView());
 
