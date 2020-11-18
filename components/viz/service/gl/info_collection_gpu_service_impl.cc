@@ -61,8 +61,6 @@ void InfoCollectionGpuServiceImpl::
   DCHECK(main_runner_->BelongsToCurrentThread());
 
   uint32_t d3d12_feature_level = gpu::GetGpuSupportedD3D12Version();
-  gpu::RecordGpuSupportedDx12VersionHistograms(d3d12_feature_level);
-
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), d3d12_feature_level,
                                       device_perf_info_));
