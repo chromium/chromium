@@ -482,7 +482,7 @@
     Select everything on the page
   </message>
   <message name="IDS_KSV_DESCRIPTION_CLIPBOARD_HISTORY" desc="Description of the command in keyboard shortcut viewer.">
-    Show the last few things copied onto the clipboard
+    Open Clipboard
   </message>
   <message name="IDS_KSV_DESCRIPTION_COPY" desc="Description of the command in keyboard shortcut viewer.">
     Copy selected content to the clipboard
