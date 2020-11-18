@@ -2216,9 +2216,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Aggiungi un pulsante di uscita all'area di notifica</translation>
-<translation id="4326288975020835343">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
-
-      Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione viene salvata.</translation>
 <translation id="4329095223358818804">Consenti a Risposte rapide di accedere ai contenuti selezionati</translation>
 <translation id="4330372709562934569">Consente ai siti elencati di effettuare richieste agli endpoint di rete con un livello di protezione più alto da parte di contesti non sicuri.</translation>
 <translation id="4332177773549877617">Registra eventi per le installazioni di app Android</translation>
@@ -2376,7 +2373,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 
       Se non viene configurato su Windows, viene utilizzato il percorso di profilo di roaming predefinito.</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
-<translation id="4604931264910482931">Configura lista nera di messaggi nativi</translation>
 <translation id="4607416370554533118">La configurazione del criterio consente di creare un elenco di pattern URL che specifica i siti per cui Chrome può selezionare automaticamente un certificato client. Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
 
       Esempi di utilizzo della sezione <ph name="FILTER_PLACEHOLDER" />:

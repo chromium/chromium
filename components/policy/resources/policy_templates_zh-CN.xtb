@@ -2139,9 +2139,6 @@
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
 <translation id="4325690621216251241">向系统任务栏添加退出按钮</translation>
-<translation id="4326288975020835343">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，而用户则无法更改此设置。
-
-      如果此政策已停用或未设置，系统将会保存浏览记录。</translation>
 <translation id="4329095223358818804">允许“快速解答”功能访问所选内容</translation>
 <translation id="4330372709562934569">允许所列网站从不安全情境向更专用网络上的端点发送请求。</translation>
 <translation id="4332177773549877617">记录 Android 应用安装事件</translation>
@@ -2298,7 +2295,6 @@
 
       在 Windows 上，如果此政策未设置，系统将会使用默认的漫游个人资料路径。</translation>
 <translation id="4600786265870346112">启用大号光标</translation>
-<translation id="4604931264910482931">配置本地消息传递主机黑名单</translation>
 <translation id="4607416370554533118">通过设置此政策，您可以指定一系列网址格式，从而指定 Chrome 可为哪些网站自动选择客户端证书。此政策的值是一个由字符串化的 JSON 字典组成的数组，每个字典条目都必须采用 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> 格式，其中 <ph name="URL_PATTERN_PLACEHOLDER" /> 是内容设置格式。<ph name="FILTER_PLACEHOLDER" /> 会限制浏览器可自动从哪些客户端证书中进行选择。无论是否设置了过滤器，系统都只会选择与服务器的证书请求相匹配的证书。
 
       <ph name="FILTER_PLACEHOLDER" /> 部分的用法示例：

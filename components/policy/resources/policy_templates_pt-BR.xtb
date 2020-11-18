@@ -2212,9 +2212,6 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Adicionar um botão de logout à bandeja do sistema</translation>
-<translation id="4326288975020835343">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
-
-      Se a política for definida como "Desativada" ou não for definida, o histórico de navegação será salvo.</translation>
 <translation id="4329095223358818804">Permitir que o recurso "Respostas rápidas" acesse conteúdo selecionado</translation>
 <translation id="4330372709562934569">Permitir que os sites listados façam solicitações para endpoints de uma rede mais privada a partir de contextos não seguros.</translation>
 <translation id="4332177773549877617">Registra eventos de instalações do app Android</translation>
@@ -2372,7 +2369,6 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       No Windows, se esta política for deixada sem definição, o caminho do perfil de roaming padrão será usado.</translation>
 <translation id="4600786265870346112">Ativar cursor grande</translation>
-<translation id="4604931264910482931">Configurar a lista de proibições de mensagens nativas</translation>
 <translation id="4607416370554533118">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para que o Chrome possa selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro utilizado, apenas os certificados correspondentes à solicitação do servidor serão selecionados.
 
       Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:

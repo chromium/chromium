@@ -2201,9 +2201,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
 <translation id="4322842393287974810">Autoriser l'application kiosque lancée automatiquement sans délai à contrôler la version de l'application <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Ajouter un bouton de déconnexion dans la barre d'état système</translation>
-<translation id="4326288975020835343">Si cette règle est activée, l'historique de navigation n'est pas enregistré, la synchronisation des onglets est désactivée et les utilisateurs ne peuvent pas modifier ce paramètre.
-
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'historique de navigation est enregistré.</translation>
 <translation id="4329095223358818804">Autoriser l'option "Réponses rapides" à accéder au contenu sélectionné</translation>
 <translation id="4330372709562934569">Permet d'autoriser les sites répertoriés à envoyer des requêtes à des points de terminaison plus privés du réseau à partir de contextes non sécurisés.</translation>
 <translation id="4332177773549877617">Enregistrer des événements pour les installations d'applications Android</translation>
@@ -2361,7 +2358,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Sous Windows, si cette règle n'est pas configurée, le chemin du profil itinérant par défaut sera utilisé.</translation>
 <translation id="4600786265870346112">Activer le grand curseur</translation>
-<translation id="4604931264910482931">Configurer la liste noire de messagerie native</translation>
 <translation id="4607416370554533118">Permet de définir une liste de formats d'URL indiquant les sites pour lesquels Chrome peut sélectionner automatiquement un certificat client. Cette valeur doit être un ensemble de dictionnaires convertis en chaînes JSON, chacun d'entre eux se présentant sous la forme <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, où <ph name="URL_PATTERN_PLACEHOLDER" /> correspond à un schéma de paramètre de contenu. Le filtre <ph name="FILTER_PLACEHOLDER" /> limite les certificats client parmi lesquels le navigateur effectue une sélection automatique. Indépendamment du filtre, seuls les certificats correspondant à la demande de certificat du serveur sont sélectionnés.
 
       Exemples pour l'utilisation de la section <ph name="FILTER_PLACEHOLDER" /> :

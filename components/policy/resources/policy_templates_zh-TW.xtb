@@ -2150,9 +2150,6 @@
 <translation id="4313767483634435271">裝置的指定座架 MAC 位址</translation>
 <translation id="4322842393287974810">允許使用無延遲資訊站應用程式的自動啟動功能來控制 <ph name="PRODUCT_OS_NAME" /> 版本</translation>
 <translation id="4325690621216251241">在系統列顯示登出按鈕</translation>
-<translation id="4326288975020835343">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
-
-      如果將這項政策設為停用或不設定，系統會儲存瀏覽記錄。</translation>
 <translation id="4329095223358818804">允許快速解答功能存取所選內容</translation>
 <translation id="4330372709562934569">允許列出的不安全網站向更私密的網路端點傳送要求。</translation>
 <translation id="4332177773549877617">Android 應用程式安裝記錄事件</translation>
@@ -2309,7 +2306,6 @@
       在非 Windows 平台上，必須設定這項政策，漫遊設定檔才能運作。
       在 Windows 上，如未設定這項政策，系統會使用預設的漫遊設定檔路徑。</translation>
 <translation id="4600786265870346112">啟用大型游標</translation>
-<translation id="4604931264910482931">設定內建訊息傳遞黑名單</translation>
 <translation id="4607416370554533118">你可以透過這項政策建立網址模式清單，用於指定 Chrome 可自動選取用戶端憑證的網站。政策的值是字串化的 JSON 條目陣列，每個條目的格式都是 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />，其中 <ph name="URL_PATTERN_PLACEHOLDER" /> 是內容設定格式。<ph name="FILTER_PLACEHOLDER" /> 會限制瀏覽器可自動選取的用戶端憑證。無論是否設定篩選器，瀏覽器都只會選取符合伺服器憑證要求的憑證。
 
       <ph name="FILTER_PLACEHOLDER" /> 區段的實際應用範例：

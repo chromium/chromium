@@ -152,6 +152,7 @@
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">За да започнете, поставете документа върху скенера и изберете <ph name="SPAN_BEGIN" />Сканиране<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>

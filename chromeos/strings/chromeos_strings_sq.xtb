@@ -151,6 +151,7 @@
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Vendose dokumentin tënd në skaner dhe zgjidh <ph name="SPAN_BEGIN" />Skano<ph name="SPAN_END" /> për të filluar</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>

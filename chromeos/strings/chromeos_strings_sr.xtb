@@ -152,6 +152,7 @@
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Поставите документ на скенер и изаберите <ph name="SPAN_BEGIN" />Скенирај<ph name="SPAN_END" /> да бисте започели</translation>
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>

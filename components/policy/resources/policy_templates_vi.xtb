@@ -2205,9 +2205,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4313767483634435271">Địa chỉ MAC chỉ định cho đế sạc của thiết bị</translation>
 <translation id="4322842393287974810">Cho phép ứng dụng kiosk tự động khởi chạy với độ trễ bằng không kiểm soát phiên bản <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Thêm một nút đăng xuất vào khay hệ thống</translation>
-<translation id="4326288975020835343">Khi bạn đặt chính sách này thành Bật, lịch sử duyệt web sẽ không được lưu, tính năng đồng bộ hóa thẻ sẽ tắt và người dùng không thể thay đổi tùy chọn cài đặt này.
-
-      Khi bạn đặt thành Tắt hoặc không đặt chính sách này, lịch sử duyệt web sẽ được lưu.</translation>
 <translation id="4329095223358818804">Cho phép tính năng Trả lời nhanh truy cập vào nội dung đã chọn</translation>
 <translation id="4330372709562934569">Cho phép các trang web có trong danh sách gửi yêu cầu từ những nguồn không an toàn đến các thiết bị đầu cuối trên mạng riêng.</translation>
 <translation id="4332177773549877617">Ghi lại các sự kiện cho lượt cài đặt ứng dụng Android</translation>
@@ -2365,7 +2362,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Trên Windows, nếu bạn không đặt chính sách này, đường dẫn tới cấu hình chuyển vùng mặc định sẽ được sử dụng.</translation>
 <translation id="4600786265870346112">Bật con trỏ lớn</translation>
-<translation id="4604931264910482931">Định cấu hình danh sách cấm nhắn tin gốc</translation>
 <translation id="4607416370554533118">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn.
 
       Ví dụ về cách sử dụng phần <ph name="FILTER_PLACEHOLDER" />:

@@ -142,6 +142,7 @@
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Para comenzar, coloca el documento en el escáner y selecciona <ph name="SPAN_BEGIN" />Escanear<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>

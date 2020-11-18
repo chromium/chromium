@@ -143,6 +143,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="8041089156583427627">Envoyer</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Placez votre document sur le scanner, puis sélectionnez <ph name="SPAN_BEGIN" />Scanner<ph name="SPAN_END" /> pour commencer</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>

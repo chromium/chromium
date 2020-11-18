@@ -152,6 +152,7 @@
 <translation id="7936303884198020182">Не знайдено серверів імен</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Щоб почати, покладіть документ і виберіть опцію <ph name="SPAN_BEGIN" />Сканувати<ph name="SPAN_END" /></translation>
 <translation id="8208861521865154048">Бонуси</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>

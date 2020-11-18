@@ -2019,11 +2019,11 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
       Bu ayar yapılandırılmadığında veya Yanlış (False) değerine ayarlandığında, <ph name="PRODUCT_OS_NAME" /> cihazlar güncellemeleri otomatik olarak kontrol eder.
 
       Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzeltmelerini alabilmesi için otomatik güncellemelerin etkin durumda tutulması önerilir. Otomatik güncellemelerin kapatılması, kullanıcıları risk altında bırakabilir.</translation>
-<translation id="4016367078069682737">Bu politika M61'da kaldırıldı.
+<translation id="4016367078069682737">Bu politika M61'de kaldırıldı.
 
       Ecryptfs koduyla gönderilen ve ext4 şifrelemesine geçmesi gereken bir cihazın nasıl davranması gerektiğini belirtir.
 
-      Bu politikayı "DisallowArc" değerine ayarlarsanız cihazdaki tüm kullanıcılar için Android uygulamaları devre dışı bırakılır (ext4 şifrelemesine önceden sahip olanlar dahil) ve kullanıcılara, ecryptfs'den ext4 şifrelemesine geçiş yapmaları teklif edilmez.
+      Bu politikayı "DisallowArc" değerine ayarlarsanız cihazdaki tüm kullanıcılar için Android uygulamaları devre dışı bırakılır (ext4 şifrelemesine önceden sahip olanlar dahil) ve kullanıcılara, ecryptfs'ten ext4 şifrelemesine geçiş yapmaları teklif edilmez.
 
       Bu politikayı "AllowMigration" değerine ayarlarsanız, ecryptfs ana dizinlerine sahip kullanıcılara gerektiğinde (şimdilik cihazda Android N kullanılabilir hale geldiğinde) bunların ext4 şifrelemesine taşınması teklif edilir).
 
@@ -2180,9 +2180,6 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 <translation id="4313767483634435271">Cihazın atanmış yuva MAC adresi</translation>
 <translation id="4322842393287974810">Sıfır gecikmeyle otomatik başlatılan kiosk uygulamasının <ph name="PRODUCT_OS_NAME" /> sürümünü kontrol etmesine izin ver</translation>
 <translation id="4325690621216251241">Sistem tepsisine çıkış düğmesi ekle</translation>
-<translation id="4326288975020835343">Politika Etkin değerine ayarlanırsa tarama geçmişi kaydedilmez, sekme senkronizasyonu kapalı olur ve kullanıcılar bu ayarı değiştiremezler.
-
-      Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi kaydedilir.</translation>
 <translation id="4329095223358818804">Hızlı Yanıtlar'ın seçilen içeriğe erişmesine izin verir</translation>
 <translation id="4330372709562934569">Listelenen sitelerin, güvenli olmayan bağlamlardan daha özel ağ uç noktalarına istekte bulunmasına izin verir.</translation>
 <translation id="4332177773549877617">Android uygulaması yüklemeleriyle ilgili etkinlikleri günlüğe kaydetme</translation>
@@ -2340,7 +2337,6 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 
       Windows'da bu politika ayarlanmadan bırakılırsa varsayılan dolaşım profili yolu kullanılır.</translation>
 <translation id="4600786265870346112">Büyük imleci etkinleştir</translation>
-<translation id="4604931264910482931">Yerel mesajlaşma kara listesini yapılandır</translation>
 <translation id="4607416370554533118">Politikayı ayarlayarak, Chrome'un istemci sertifikası seçebileceği siteleri otomatik belirten URL kalıplarının listesini çıkarabilirsiniz. <ph name="URL_PATTERN_PLACEHOLDER" /> içerik ayarı kalıbı olduğunda değer, her biri <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> biçiminde dizili JSON sözlükleri dizisidir. <ph name="FILTER_PLACEHOLDER" />, tarayıcının otomatik seçtiği istemci sertifikalarını sınırlandırır. Filtreden bağımsız olarak, yalnızca sunucunun sertifika isteğiyle eşleşen sertifikalar seçilir.
 
       <ph name="FILTER_PLACEHOLDER" /> bölümünün kullanımına dair örnekler:

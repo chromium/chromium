@@ -152,6 +152,7 @@
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">시작하려면 스캐너에 문서를 놓고 <ph name="SPAN_BEGIN" />스캔<ph name="SPAN_END" />을 선택하세요.</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
