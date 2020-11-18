@@ -182,9 +182,8 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   // and update their ending desk index. When the animation is finished we will
   // activate that desk.
   for (const auto& animator : desk_switch_animators_)
-    animator->EndSwipeAnimation();
+    ending_desk_index_ = animator->EndSwipeAnimation();
 
-  ending_desk_index_ = desk_switch_animators_[0]->ending_desk_index();
   return true;
 }
 
