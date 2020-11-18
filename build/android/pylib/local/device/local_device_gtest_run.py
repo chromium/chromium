@@ -454,6 +454,15 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       def bind_crash_handler(step, dev):
         return lambda: crash_handler.RetryOnSystemCrash(step, dev)
 
+      # Explicitly enable root to ensure that tests run under deterministic
+      # conditions. Without this explicit call, EnableRoot() is called from
+      # push_test_data() when PushChangedFiles() determines that it should use
+      # _PushChangedFilesZipped(), which is only most of the time.
+      # Root is required (amongst maybe other reasons) to pull the results file
+      # from the device, since it lives within the application's data directory
+      # (via GetApplicationDataDirectory()).
+      device.EnableRoot()
+
       steps = [
           bind_crash_handler(s, device)
           for s in (install_apk, push_test_data, init_tool_and_start_servers)]
