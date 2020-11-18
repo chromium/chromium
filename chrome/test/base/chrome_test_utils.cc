@@ -29,4 +29,17 @@ content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
 #endif
 }
 
+Profile* GetProfile(PlatformBrowserTest* browser_test) {
+#if defined(OS_ANDROID)
+  for (size_t i = 0; i < TabModelList::size(); ++i) {
+    if (TabModelList::get(i)->IsActiveModel())
+      return TabModelList::get(i)->GetProfile();
+  }
+  NOTREACHED() << "No active TabModel??";
+  return nullptr;
+#else
+  return browser_test->browser()->profile();
+#endif
+}
+
 }  // namespace chrome_test_utils
