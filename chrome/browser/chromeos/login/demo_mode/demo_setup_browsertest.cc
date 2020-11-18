@@ -515,8 +515,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, InvokeWithTaps) {
   EXPECT_TRUE(IsConfirmationDialogShown());
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DoNotInvokeWithNonConsecutiveTaps \
+  DISABLED_DoNotInvokeWithNonConsecutiveTaps
+#else
+#define MAYBE_DoNotInvokeWithNonConsecutiveTaps \
+  DoNotInvokeWithNonConsecutiveTaps
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DoNotInvokeWithNonConsecutiveTaps) {
+                       MAYBE_DoNotInvokeWithNonConsecutiveTaps) {
   // Use fake time to avoid flakiness.
   const base::Time kFakeTime = base::Time::UnixEpoch();
   SetFakeTimeForMultiTapDetector(kFakeTime);
@@ -534,7 +542,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(IsConfirmationDialogShown());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowSuccess) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowSuccess DISABLED_OnlineSetupFlowSuccess
+#else
+#define MAYBE_OnlineSetupFlowSuccess OnlineSetupFlowSuccess
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OnlineSetupFlowSuccess) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -739,8 +754,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowErrorPowerwashRequired \
+  DISABLED_OnlineSetupFlowErrorPowerwashRequired
+#else
+#define MAYBE_OnlineSetupFlowErrorPowerwashRequired \
+  OnlineSetupFlowErrorPowerwashRequired
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowErrorPowerwashRequired) {
+                       MAYBE_OnlineSetupFlowErrorPowerwashRequired) {
   // Simulate online setup failure that requires powerwash.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -937,8 +960,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OfflineSetupFlowErrorDefault DISABLED_OfflineSetupFlowErrorDefault
+#else
+#define MAYBE_OfflineSetupFlowErrorDefault OfflineSetupFlowErrorDefault
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OfflineSetupFlowErrorDefault) {
+                       MAYBE_OfflineSetupFlowErrorDefault) {
   // Simulate offline setup failure.
   enrollment_helper_.ExpectOfflineEnrollmentError(
       policy::EnrollmentStatus::ForStatus(
@@ -1068,7 +1097,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, NextDisabledOnNetworkScreen) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NextDisabledOnNetworkScreen DISABLED_NextDisabledOnNetworkScreen
+#else
+#define MAYBE_NextDisabledOnNetworkScreen NextDisabledOnNetworkScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_NextDisabledOnNetworkScreen) {
   SimulateNetworkDisconnected();
   SkipToScreen(NetworkScreenView::kScreenId);
   EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
@@ -1120,7 +1156,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnArcTermsScreen) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_BackOnArcTermsScreen DISABLED_BackOnArcTermsScreen
+#else
+#define MAYBE_BackOnArcTermsScreen BackOnArcTermsScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnArcTermsScreen) {
   // User cannot go to ARC ToS screen without accepting eula - simulate that.
   StartupUtils::MarkEulaAccepted();
 
@@ -1132,7 +1174,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnArcTermsScreen) {
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_BackOnErrorScreen DISABLED_BackOnErrorScreen
+#else
+#define MAYBE_BackOnErrorScreen BackOnErrorScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnErrorScreen) {
   SkipToErrorDialog();
 
   ClickScreenDialogButton(DemoSetupScreenView::kScreenId,
@@ -1142,7 +1190,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_RetryOnErrorScreen DISABLED_RetryOnErrorScreen
+#else
+#define MAYBE_RetryOnErrorScreen RetryOnErrorScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   SkipToErrorDialog();
 
   // We need to create another mock after showing error dialog.
