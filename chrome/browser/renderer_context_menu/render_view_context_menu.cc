@@ -1578,9 +1578,11 @@ void RenderViewContextMenu::AppendCopyItem() {
 }
 
 void RenderViewContextMenu::AppendCopyLinkToTextItem() {
-  if (!copy_link_to_text_menu_observer_) {
-    copy_link_to_text_menu_observer_ =
-        std::make_unique<CopyLinkToTextMenuObserver>(this);
+  if (copy_link_to_text_menu_observer_)
+    return;
+
+  copy_link_to_text_menu_observer_ = CopyLinkToTextMenuObserver::Create(this);
+  if (copy_link_to_text_menu_observer_) {
     observers_.AddObserver(copy_link_to_text_menu_observer_.get());
     copy_link_to_text_menu_observer_->InitMenu(params_);
   }
