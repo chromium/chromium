@@ -6227,7 +6227,7 @@
         'per_profile': True,
       },
       'example_value': 2,
-      'default': 3,
+      'default': None,
       'id': 774,
       'caption': '''Control use of the File System API for writing''',
       'tags': ['website-sharing'],
