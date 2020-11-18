@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.ui.base.LocalizationUtils;
@@ -458,7 +458,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // However, when the FRE is skipped, that initial value is the opposite of what we want, so
         // manually set it to false here.
         // TODO(https://crbug.com/1128955): Remove this once the default is not written on startup.
-        PrivacyPreferencesManager.getInstance().setUsageAndCrashReporting(false);
+        PrivacyPreferencesManagerImpl.getInstance().setUsageAndCrashReporting(false);
 
         launchPendingIntentAndFinish();
     }

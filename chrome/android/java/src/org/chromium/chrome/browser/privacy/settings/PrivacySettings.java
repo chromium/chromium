@@ -61,7 +61,8 @@ public class PrivacySettings
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        PrivacyPreferencesManager privacyPrefManager = PrivacyPreferencesManager.getInstance();
+        PrivacyPreferencesManagerImpl privacyPrefManager =
+                PrivacyPreferencesManagerImpl.getInstance();
         privacyPrefManager.migrateNetworkPredictionPreferences();
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
         assert NEW_PRIVACY_PREFERENCE_ORDER.length
@@ -104,7 +105,7 @@ public class PrivacySettings
         ChromeSwitchPreference networkPredictionPref =
                 (ChromeSwitchPreference) findPreference(PREF_NETWORK_PREDICTIONS);
         networkPredictionPref.setChecked(
-                PrivacyPreferencesManager.getInstance().getNetworkPredictionEnabled());
+                PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled());
         networkPredictionPref.setOnPreferenceChangeListener(this);
         networkPredictionPref.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
@@ -159,7 +160,8 @@ public class PrivacySettings
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, (boolean) newValue);
         } else if (PREF_NETWORK_PREDICTIONS.equals(key)) {
-            PrivacyPreferencesManager.getInstance().setNetworkPredictionEnabled((boolean) newValue);
+            PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(
+                    (boolean) newValue);
         }
 
         return true;
@@ -225,7 +227,7 @@ public class PrivacySettings
         return preference -> {
             String key = preference.getKey();
             if (PREF_NETWORK_PREDICTIONS.equals(key)) {
-                return PrivacyPreferencesManager.getInstance().isNetworkPredictionManaged();
+                return PrivacyPreferencesManagerImpl.getInstance().isNetworkPredictionManaged();
             }
             return false;
         };

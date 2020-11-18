@@ -2776,7 +2776,7 @@ static_library("browser") {
       "android/preferences/cookie_controls_service_bridge.h",
       "android/preferences/pref_change_registrar_android.cc",
       "android/preferences/pref_change_registrar_android.h",
-      "android/preferences/privacy_preferences_manager.cc",
+      "android/preferences/privacy_preferences_manager_impl.cc",
       "android/profile_key_startup_accessor.cc",
       "android/profile_key_startup_accessor.h",
       "android/profile_key_util.cc",

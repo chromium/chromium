@@ -28,7 +28,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
  *  Tests "Usage and Crash reporting" settings screen.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PrivacyPreferencesManagerNativeTest {
+public class PrivacyPreferencesManagerImplNativeTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -40,15 +40,16 @@ public class PrivacyPreferencesManagerNativeTest {
         PermissionContext context =
                 new PermissionContext(InstrumentationRegistry.getTargetContext());
         SharedPreferences pref = ContextUtils.getAppSharedPreferences();
-        PrivacyPreferencesManager preferenceManager = new PrivacyPreferencesManager(context);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new PrivacyPreferencesManagerImpl(context);
 
         // Setup prefs to be out of sync.
-        PrivacyPreferencesManager.getInstance().setMetricsReportingEnabled(false);
+        PrivacyPreferencesManagerImpl.getInstance().setMetricsReportingEnabled(false);
         pref.edit().putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, true).apply();
 
         preferenceManager.syncUsageAndCrashReportingPrefs();
         Assert.assertTrue("Native preference should be True ",
-                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
+                PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
     }
 
     @Test
@@ -60,17 +61,18 @@ public class PrivacyPreferencesManagerNativeTest {
         PermissionContext context =
                 new PermissionContext(InstrumentationRegistry.getTargetContext());
         SharedPreferences pref = ContextUtils.getAppSharedPreferences();
-        PrivacyPreferencesManager preferenceManager = new PrivacyPreferencesManager(context);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new PrivacyPreferencesManagerImpl(context);
 
         preferenceManager.setUsageAndCrashReporting(true);
         Assert.assertTrue(pref.getBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false));
         Assert.assertTrue("Native preference should be True ",
-                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
+                PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
 
         preferenceManager.setUsageAndCrashReporting(false);
         Assert.assertFalse(pref.getBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false));
         Assert.assertFalse("Native preference should be False ",
-                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
+                PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
     }
 
     private static class PermissionContext extends AdvancedMockContext {

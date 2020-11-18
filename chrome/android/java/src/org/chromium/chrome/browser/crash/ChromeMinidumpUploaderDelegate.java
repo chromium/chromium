@@ -9,7 +9,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.PersistableBundle;
 
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.components.minidump_uploader.MinidumpUploaderDelegate;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
@@ -73,7 +73,7 @@ public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate 
 
             @Override
             public boolean isUsageAndCrashReportingPermittedByUser() {
-                return PrivacyPreferencesManager.getInstance()
+                return PrivacyPreferencesManagerImpl.getInstance()
                         .isUsageAndCrashReportingPermittedByUser();
             }
 

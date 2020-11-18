@@ -3357,7 +3357,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
     "java/src/org/chromium/chrome/browser/previews/PreviewsAndroidBridge.java",
     "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
-    "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java",
+    "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
     "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
     "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
     "java/src/org/chromium/chrome/browser/query_tiles/TileProviderFactory.java",

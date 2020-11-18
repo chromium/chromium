@@ -19,7 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
@@ -99,7 +99,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
     public static void scheduleUploadJob() {
         assert shouldUseJobSchedulerForUploads();
 
-        CrashReportingPermissionManager permissionManager = PrivacyPreferencesManager.getInstance();
+        CrashReportingPermissionManager permissionManager =
+                PrivacyPreferencesManagerImpl.getInstance();
         PersistableBundle permissions = new PersistableBundle();
         permissions.putBoolean(ChromeMinidumpUploaderDelegate.IS_CLIENT_IN_METRICS_SAMPLE,
                 permissionManager.isClientInMetricsSample());
@@ -236,7 +237,7 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
      * Get the permission manager, can be overridden for testing.
      */
     CrashReportingPermissionManager getCrashReportingPermissionManager() {
-        return PrivacyPreferencesManager.getInstance();
+        return PrivacyPreferencesManagerImpl.getInstance();
     }
 
     private static String getNewNameAfterSuccessfulUpload(String fileName) {

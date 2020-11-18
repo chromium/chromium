@@ -4,7 +4,7 @@
 
 #include <jni.h>
 
-#include "chrome/android/chrome_jni_headers/PrivacyPreferencesManager_jni.h"
+#include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,44 +22,44 @@ PrefService* GetPrefService() {
 
 }  // namespace
 
-static jboolean JNI_PrivacyPreferencesManager_GetNetworkPredictionEnabled(
+static jboolean JNI_PrivacyPreferencesManagerImpl_GetNetworkPredictionEnabled(
     JNIEnv* env) {
   return GetPrefService()->GetInteger(prefs::kNetworkPredictionOptions) !=
          chrome_browser_net::NETWORK_PREDICTION_NEVER;
 }
 
-static jboolean JNI_PrivacyPreferencesManager_GetNetworkPredictionManaged(
+static jboolean JNI_PrivacyPreferencesManagerImpl_GetNetworkPredictionManaged(
     JNIEnv* env) {
   return GetPrefService()->IsManagedPreference(
       prefs::kNetworkPredictionOptions);
 }
 
-static jboolean JNI_PrivacyPreferencesManager_IsMetricsReportingEnabled(
+static jboolean JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
     JNIEnv* env) {
   PrefService* local_state = g_browser_process->local_state();
   return local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 }
 
-static void JNI_PrivacyPreferencesManager_SetMetricsReportingEnabled(
+static void JNI_PrivacyPreferencesManagerImpl_SetMetricsReportingEnabled(
     JNIEnv* env,
     jboolean enabled) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(metrics::prefs::kMetricsReportingEnabled, enabled);
 }
 
-static jboolean JNI_PrivacyPreferencesManager_IsMetricsReportingManaged(
+static jboolean JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingManaged(
     JNIEnv* env) {
   return GetPrefService()->IsManagedPreference(
       metrics::prefs::kMetricsReportingEnabled);
 }
 
-static jboolean JNI_PrivacyPreferencesManager_CanPrefetchAndPrerender(
+static jboolean JNI_PrivacyPreferencesManagerImpl_CanPrefetchAndPrerender(
     JNIEnv* env) {
   return chrome_browser_net::CanPrefetchAndPrerenderUI(GetPrefService()) ==
          chrome_browser_net::NetworkPredictionStatus::ENABLED;
 }
 
-static void JNI_PrivacyPreferencesManager_SetNetworkPredictionEnabled(
+static void JNI_PrivacyPreferencesManagerImpl_SetNetworkPredictionEnabled(
     JNIEnv* env,
     jboolean enabled) {
   GetPrefService()->SetInteger(
@@ -69,7 +69,7 @@ static void JNI_PrivacyPreferencesManager_SetNetworkPredictionEnabled(
 }
 
 static jboolean
-JNI_PrivacyPreferencesManager_ObsoleteNetworkPredictionOptionsHasUserSetting(
+JNI_PrivacyPreferencesManagerImpl_ObsoleteNetworkPredictionOptionsHasUserSetting(
     JNIEnv* env) {
   return GetPrefService()->GetUserPrefValue(prefs::kNetworkPredictionOptions) !=
          nullptr;

@@ -41,7 +41,7 @@ import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -623,8 +623,8 @@ public class CustomTabsConnectionTest {
         // Needs the browser process to be initialized.
         boolean enabled = TestThreadUtils.runOnUiThreadBlocking(() -> {
             boolean oldEnabled =
-                    PrivacyPreferencesManager.getInstance().getNetworkPredictionEnabled();
-            PrivacyPreferencesManager.getInstance().setNetworkPredictionEnabled(false);
+                    PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled();
+            PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(false);
             return oldEnabled;
         });
 
@@ -635,8 +635,8 @@ public class CustomTabsConnectionTest {
         } finally {
             TestThreadUtils.runOnUiThreadBlocking(
                     ()
-                            -> PrivacyPreferencesManager.getInstance().setNetworkPredictionEnabled(
-                                    enabled));
+                            -> PrivacyPreferencesManagerImpl.getInstance()
+                                       .setNetworkPredictionEnabled(enabled));
         }
     }
 

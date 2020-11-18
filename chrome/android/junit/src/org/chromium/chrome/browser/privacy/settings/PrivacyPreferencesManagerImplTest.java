@@ -19,12 +19,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
- * junit tests for {@link PrivacyPreferencesManager}'s handling of "Usage and Crash reporting"
+ * junit tests for {@link PrivacyPreferencesManagerImpl}'s handling of "Usage and Crash reporting"
  * preferences.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class PrivacyPreferencesManagerTest {
+public class PrivacyPreferencesManagerImplTest {
     // Parameters to simulate user- and network-permission state.
     private static final boolean CONNECTED = true;
     private static final boolean DISCONNECTED = false;
@@ -76,7 +76,8 @@ public class PrivacyPreferencesManagerTest {
                 .thenReturn(connectivityManager);
 
         // Perform other setup.
-        PrivacyPreferencesManager preferenceManager = new TestPrivacyPreferencesManager(context);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
         preferenceManager.setUsageAndCrashReporting(isMetricsReportingEnabled);
 
         // Test the usage and crash reporting permission accessors!
@@ -93,7 +94,7 @@ public class PrivacyPreferencesManagerTest {
                 preferenceManager.isNetworkAvailableForCrashUploads());
     }
 
-    private static class TestPrivacyPreferencesManager extends PrivacyPreferencesManager {
+    private static class TestPrivacyPreferencesManager extends PrivacyPreferencesManagerImpl {
         TestPrivacyPreferencesManager(Context context) {
             super(context);
         }

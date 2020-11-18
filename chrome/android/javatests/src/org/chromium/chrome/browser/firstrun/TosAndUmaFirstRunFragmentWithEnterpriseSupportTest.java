@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.PolicyService;
@@ -187,7 +187,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         // Try to accept ToS.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -219,7 +220,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         // Try to accept Tos.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -252,7 +254,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         // Try to accept Tos.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -315,7 +318,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.FASTER, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.SLOWER);
         Assert.assertFalse("Crash report should not be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -334,7 +338,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.FASTER, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.SLOWER);
         Assert.assertFalse("Crash report should not be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -360,7 +365,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.SLOWER, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.SLOWER);
         Assert.assertFalse("Crash report should not be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
@@ -395,7 +401,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         mAcceptTosCallbackHelper.waitForCallback("Accept Tos is never called.", 0);
         Assert.assertFalse("Crash report should not be enabled.",
-                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
