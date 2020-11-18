@@ -7,6 +7,4 @@ dlei@google.com
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-# TEAM: cros-essential-apps-dev@chromium.org
-# COMPONENT: Platform>Apps>PhotoEditor
 # Internal Component: b/components/562866
