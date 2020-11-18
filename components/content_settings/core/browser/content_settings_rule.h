@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace content_settings {

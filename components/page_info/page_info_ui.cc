@@ -412,7 +412,8 @@ base::string16 PageInfoUI::PermissionActionToUIString(
     ContentSettingsType type,
     ContentSetting setting,
     ContentSetting default_setting,
-    content_settings::SettingSource source) {
+    content_settings::SettingSource source,
+    bool is_one_time) {
   ContentSetting effective_setting =
       GetEffectiveSetting(type, setting, default_setting);
   const int* button_text_ids = nullptr;
@@ -436,7 +437,6 @@ base::string16 PageInfoUI::PermissionActionToUIString(
           break;
         }
 #endif
-
         button_text_ids = kPermissionButtonTextIDDefaultSetting;
         break;
       }
@@ -450,7 +450,6 @@ base::string16 PageInfoUI::PermissionActionToUIString(
         break;
       }
 #endif
-
       button_text_ids = kPermissionButtonTextIDUserManaged;
       break;
     case content_settings::SETTING_SOURCE_ALLOWLIST:
@@ -460,6 +459,13 @@ base::string16 PageInfoUI::PermissionActionToUIString(
       return base::string16();
   }
   int button_text_id = button_text_ids[effective_setting];
+
+  if (is_one_time) {
+    DCHECK_EQ(source, content_settings::SETTING_SOURCE_USER);
+    DCHECK_EQ(type, ContentSettingsType::GEOLOCATION);
+    DCHECK_EQ(button_text_id, IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER);
+    button_text_id = IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_ONCE_BY_USER;
+  }
   DCHECK_NE(button_text_id, kInvalidResourceID);
   return l10n_util::GetStringUTF16(button_text_id);
 }

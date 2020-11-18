@@ -167,7 +167,8 @@ class PageInfoUI {
       ContentSettingsType type,
       ContentSetting setting,
       ContentSetting default_setting,
-      content_settings::SettingSource source);
+      content_settings::SettingSource source,
+      bool is_one_time);
 
   // Returns a string indicating whether the permission was blocked via an
   // extension, enterprise policy, or embargo.

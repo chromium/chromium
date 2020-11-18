@@ -165,6 +165,7 @@ class PageInfo : public content::WebContentsObserver {
         content_settings::SETTING_SOURCE_NONE;
     // Whether we're in incognito mode.
     bool is_incognito = false;
+    bool is_one_time = false;
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
@@ -204,7 +205,9 @@ class PageInfo : public content::WebContentsObserver {
   void UpdatePermissions();
 
   // This method is called when ever a permission setting is changed.
-  void OnSitePermissionChanged(ContentSettingsType type, ContentSetting value);
+  void OnSitePermissionChanged(ContentSettingsType type,
+                               ContentSetting value,
+                               bool is_one_time);
 
   // This method is called whenever access to an object is revoked.
   void OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,

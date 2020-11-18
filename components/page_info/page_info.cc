@@ -504,7 +504,8 @@ void PageInfo::UpdatePermissions() {
 }
 
 void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
-                                       ContentSetting setting) {
+                                       ContentSetting setting,
+                                       bool is_one_time) {
   ContentSettingChangedViaPageInfo(type);
 
   // Count how often a permission for a specific content type is changed using
@@ -555,8 +556,12 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
     delegate_->GetPermissionDecisionAutoblocker()->RemoveEmbargoAndResetCounts(
         site_url_, type);
   }
-  content_settings->SetNarrowestContentSetting(site_url_, site_url_, type,
-                                               setting);
+  using Constraints = content_settings::ContentSettingConstraints;
+  content_settings->SetNarrowestContentSetting(
+      site_url_, site_url_, type, setting,
+      is_one_time
+          ? Constraints{base::Time(), content_settings::SessionModel::OneTime}
+          : Constraints{});
 
   // When the sound setting is changed, no reload is necessary.
   if (type != ContentSettingsType::SOUND)
@@ -929,6 +934,8 @@ void PageInfo::PresentSitePermissions() {
     permission_info.source = info.source;
     permission_info.is_incognito =
         web_contents()->GetBrowserContext()->IsOffTheRecord();
+    permission_info.is_one_time =
+        (info.session_model == content_settings::SessionModel::OneTime);
 
     if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
         info.secondary_pattern == ContentSettingsPattern::Wildcard()) {
