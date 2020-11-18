@@ -6,18 +6,11 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
 
 assert(is_mac)
 
 import("//build/config/mac/mac_sdk.gni")
-
-generate_stubs("vt_beta_stubs") {
-  extra_header = "vt_beta_stubs_header.fragment"
-  sigs = [ "vt_beta.sig" ]
-  output_name = "vt_beta_stubs"
-}
 
 source_set("mac") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
@@ -43,7 +36,6 @@ source_set("mac") {
     "VideoToolbox.framework",
   ]
   deps = [
-    ":vt_beta_stubs",
     "//base",
     "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/service:gles2",

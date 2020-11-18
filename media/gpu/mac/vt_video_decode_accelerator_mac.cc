@@ -46,7 +46,6 @@
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
-#include "media/gpu/mac/vt_beta_stubs.h"
 #include "media/gpu/mac/vt_config_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_context.h"
@@ -318,20 +317,8 @@ bool InitializeVideoToolboxInternal() {
 
   session.reset();
 
-  if (base::mac::IsAtLeastOS11()) {
-    // Until our target sdk version is 11.0 we need to dynamically link the
-    // VTRegisterSupplementalVideoDecoderIfAvailable() symbol in.
-    media_gpu_mac::StubPathMap paths;
-    paths[media_gpu_mac::kModuleVt_beta].push_back(FILE_PATH_LITERAL(
-        "/System/Library/Frameworks/VideoToolbox.framework/VideoToolbox"));
-    if (!media_gpu_mac::InitializeStubs(paths))
-      return true;  // VP9 support is optional.
-
-// __builtin_available doesn't work for 11.0 yet; https://crbug.com/1115294
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+  if (__builtin_available(macOS 11.0, *)) {
     VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
-#pragma clang diagnostic pop
 
     // Create a VP9 decoding session.
     if (!CreateVideoToolboxSession(

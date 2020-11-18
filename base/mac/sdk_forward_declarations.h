@@ -64,14 +64,4 @@
 //
 // ----------------------------------------------------------------------------
 
-#if !defined(MAC_OS_VERSION_11_0)
-#include <CoreMedia/CoreMedia.h>
-enum : CMVideoCodecType { kCMVideoCodecType_VP9 = 'vp09' };
-
-extern "C" {
-void VTRegisterSupplementalVideoDecoderIfAvailable(CMVideoCodecType codecType);
-}
-
-#endif  // MAC_OS_VERSION_11_0
-
 #endif  // BASE_MAC_SDK_FORWARD_DECLARATIONS_H_
