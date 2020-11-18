@@ -199,7 +199,6 @@ public class VideoCaptureCamera
         }
         android.hardware.Camera.Parameters parameters = getCameraParameters(camera);
         if (parameters == null) {
-            camera.release();
             return false;
         }
 
