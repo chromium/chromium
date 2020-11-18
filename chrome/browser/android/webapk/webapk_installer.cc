@@ -30,7 +30,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
-#include "chrome/browser/android/color_helpers.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk.pb.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -51,6 +50,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "ui/android/color_helpers.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
@@ -200,9 +200,9 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   web_app_manifest->set_display_mode(
       blink::DisplayModeToString(shortcut_info.display));
   web_app_manifest->set_background_color(
-      OptionalSkColorToString(shortcut_info.background_color));
+      ui::OptionalSkColorToString(shortcut_info.background_color));
   web_app_manifest->set_theme_color(
-      OptionalSkColorToString(shortcut_info.theme_color));
+      ui::OptionalSkColorToString(shortcut_info.theme_color));
 
   std::string* scope = web_app_manifest->add_scopes();
   scope->assign(shortcut_info.scope.spec());

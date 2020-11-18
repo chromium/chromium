@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/android/color_helpers.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "ui/android/color_helpers.h"
 #include "ui/gfx/color_utils.h"
 
 WebApksHandler::WebApksHandler()
@@ -64,9 +64,9 @@ void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
   result.SetString("orientation", blink::WebScreenOrientationLockTypeToString(
                                       webapk_info.orientation));
   result.SetString("themeColor",
-                   OptionalSkColorToString(webapk_info.theme_color));
+                   ui::OptionalSkColorToString(webapk_info.theme_color));
   result.SetString("backgroundColor",
-                   OptionalSkColorToString(webapk_info.background_color));
+                   ui::OptionalSkColorToString(webapk_info.background_color));
   result.SetDouble("lastUpdateCheckTimeMs",
                    webapk_info.last_update_check_time.ToJsTime());
   result.SetDouble("lastUpdateCompletionTimeMs",

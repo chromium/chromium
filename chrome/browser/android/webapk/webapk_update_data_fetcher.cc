@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
-#include "chrome/browser/android/color_helpers.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/installable/installable_manager.h"
@@ -27,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
+#include "ui/android/color_helpers.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -284,8 +284,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       java_is_primary_icon_maskable, java_splash_icon_url,
       java_splash_icon_murmur2_hash, java_splash_icon, java_icon_urls,
       static_cast<int>(info_.display), static_cast<int>(info_.orientation),
-      OptionalSkColorToJavaColor(info_.theme_color),
-      OptionalSkColorToJavaColor(info_.background_color), java_share_action,
+      ui::OptionalSkColorToJavaColor(info_.theme_color),
+      ui::OptionalSkColorToJavaColor(info_.background_color), java_share_action,
       java_share_params_title, java_share_params_text,
       java_share_params_is_method_post, java_share_params_is_enctype_multipart,
       java_share_params_file_names, java_share_params_accepts,

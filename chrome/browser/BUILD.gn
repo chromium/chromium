@@ -2507,8 +2507,6 @@ static_library("browser") {
       "android/chrome_session_state.h",
       "android/chrome_startup_flags.cc",
       "android/chrome_startup_flags.h",
-      "android/color_helpers.cc",
-      "android/color_helpers.h",
       "android/component_updater/background_task_update_scheduler.cc",
       "android/component_updater/background_task_update_scheduler.h",
       "android/compose_bitmaps_helper.cc",

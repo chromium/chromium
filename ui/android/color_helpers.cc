@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/color_helpers.h"
+#include "ui/android/color_helpers.h"
 
 #include "base/check.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/color_utils.h"
+
+namespace ui {
 
 std::string OptionalSkColorToString(const base::Optional<SkColor>& color) {
   if (!color)
@@ -26,3 +28,5 @@ base::Optional<SkColor> JavaColorToOptionalSkColor(int64_t java_color) {
   DCHECK(base::IsValueInRangeForNumericType<int32_t>(java_color));
   return static_cast<SkColor>(java_color);
 }
+
+}  // namespace ui

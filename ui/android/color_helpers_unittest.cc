@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/color_helpers.h"
+#include "ui/android/color_helpers.h"
 
 #include <stdint.h>
 
@@ -11,6 +11,8 @@
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+namespace ui {
 
 namespace {
 
@@ -52,3 +54,5 @@ TEST(ColorHelpersTest, Roundtrip) {
   EXPECT_EQ(SK_ColorTRANSPARENT,
             JavaColorToOptionalSkColor(kAndroidTransparent));
 }
+
+}  // namespace ui

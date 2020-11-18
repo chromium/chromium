@@ -19,13 +19,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
-#include "chrome/browser/android/color_helpers.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/android/color_helpers.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/color_analysis.h"
 #include "url/gurl.h"
@@ -103,8 +103,8 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
       java_short_name, java_best_primary_icon_url, java_bitmap,
       is_icon_maskable, static_cast<int>(info.display),
       static_cast<int>(info.orientation), info.source,
-      OptionalSkColorToJavaColor(info.theme_color),
-      OptionalSkColorToJavaColor(info.background_color));
+      ui::OptionalSkColorToJavaColor(info.theme_color),
+      ui::OptionalSkColorToJavaColor(info.background_color));
 
   // Start downloading the splash image in parallel with the app install.
   content::ManifestIconDownloader::Download(
