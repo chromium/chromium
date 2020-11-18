@@ -219,10 +219,12 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
 
 // static
 bool VideoFrame::IsSupportedPlanarFormat(media::VideoFrame* frame) {
-  // For now only I420 or NV12 in CPU or GPU memory is supported.
+  // For now only I420, I420A, or NV12 in CPU or GPU memory is supported.
   return frame && (frame->IsMappable() || frame->HasGpuMemoryBuffer()) &&
          ((frame->format() == media::PIXEL_FORMAT_I420 &&
            frame->layout().num_planes() == 3) ||
+          (frame->format() == media::PIXEL_FORMAT_I420A &&
+           frame->layout().num_planes() == 4) ||
           (frame->format() == media::PIXEL_FORMAT_NV12 &&
            frame->layout().num_planes() == 2));
 }
@@ -234,6 +236,7 @@ String VideoFrame::format() const {
 
   switch (local_frame->format()) {
     case media::PIXEL_FORMAT_I420:
+    case media::PIXEL_FORMAT_I420A:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
     case media::PIXEL_FORMAT_NV12:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
