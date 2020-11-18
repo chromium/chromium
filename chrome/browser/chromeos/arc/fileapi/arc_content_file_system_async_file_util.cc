@@ -45,7 +45,7 @@ void ArcContentFileSystemAsyncFileUtil::CreateOrOpen(
   NOTIMPLEMENTED();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), base::File(), base::Closure()));
+      base::BindOnce(std::move(callback), base::File(), base::OnceClosure()));
 }
 
 void ArcContentFileSystemAsyncFileUtil::EnsureFileExists(
