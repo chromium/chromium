@@ -13,8 +13,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -90,13 +92,28 @@ class AnnouncementNotificationServiceTest : public testing::Test {
             bool sign_in,
             int current_version,
             bool new_profile,
-            bool guest_session = false) {
-    if (enable_feature) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          kAnnouncementNotification, parameters);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(kAnnouncementNotification);
-    }
+            bool guest_profile = false,
+            bool ephemeral_guest_profile = false) {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (enable_feature)
+      enabled_features.emplace_back(kAnnouncementNotification, parameters);
+    else
+      disabled_features.push_back(kAnnouncementNotification);
+
+#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || \
+    defined(OS_MAC)
+    if (ephemeral_guest_profile)
+      enabled_features.push_back(
+          {features::kEnableEphemeralGuestProfilesOnDesktop, {}});
+    else
+      disabled_features.push_back(
+          features::kEnableEphemeralGuestProfilesOnDesktop);
+#endif
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
 
     // Setup sign in status.
     test_profile_manager_.reset(
@@ -111,7 +128,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
         std::unique_ptr<sync_preferences::PrefServiceSyncable>());
     builder.SetProfileName(kProfileId);
     builder.OverrideIsNewProfile(new_profile);
-    if (guest_session)
+    if (guest_profile || ephemeral_guest_profile)
       builder.SetGuestSession();
     test_profile_ = builder.Build();
 
@@ -175,10 +192,21 @@ TEST_F(AnnouncementNotificationServiceTest, SkipNewProfile) {
   EXPECT_EQ(CurrentVersionPref(), 2);
 }
 
-TEST_F(AnnouncementNotificationServiceTest, SkipGuestProfile) {
+TEST_F(AnnouncementNotificationServiceTest, SkipOTRGuestProfile) {
   std::map<std::string, std::string> parameters = {
       {kSkipFirstRun, "false"}, {kVersion, "2"}, {kSkipNewProfile, "false"}};
   Init(parameters, true, false, 1, false, /*guest_profile=*/true);
+  ON_CALL(*delegate(), IsFirstRun()).WillByDefault(Return(false));
+  EXPECT_CALL(*delegate(), ShowNotification()).Times(0);
+  service()->MaybeShowNotification();
+  EXPECT_EQ(CurrentVersionPref(), 2);
+}
+
+TEST_F(AnnouncementNotificationServiceTest, SkipEphemeralGuestProfile) {
+  std::map<std::string, std::string> parameters = {
+      {kSkipFirstRun, "false"}, {kVersion, "2"}, {kSkipNewProfile, "false"}};
+  Init(parameters, true, false, 1, false, /*guest_profile=*/false,
+       /*ephemeral_guest_profile=*/true);
   ON_CALL(*delegate(), IsFirstRun()).WillByDefault(Return(false));
   EXPECT_CALL(*delegate(), ShowNotification()).Times(0);
   service()->MaybeShowNotification();
