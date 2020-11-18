@@ -340,6 +340,10 @@ void OsIntegrationManager::SuppressOsManagersForTesting() {
   suppress_os_managers_for_testing_ = true;
 }
 
+TestOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
+  return nullptr;
+}
+
 void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
                                            bool add_to_desktop,
                                            CreateShortcutsCallback callback) {

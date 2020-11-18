@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,8 +50,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   TwoClientWebAppsBMOSyncTest()
       : SyncTest(TWO_CLIENT),
         test_web_app_provider_creator_(
-            std::make_unique<TestWebAppProviderCreator>(
-                base::BindRepeating(&CreateTestWebAppProvider))) {}
+            base::BindRepeating(&CreateTestWebAppProvider)) {}
   ~TwoClientWebAppsBMOSyncTest() override = default;
 
   bool SetupClients() override {
@@ -160,7 +158,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     return *web_app_registrar;
   }
 
-  TestOsIntegrationManager& GetOSIntegrationManager(Profile* profile) {
+  TestOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {
     return reinterpret_cast<TestOsIntegrationManager&>(
         WebAppProvider::Get(profile)->os_integration_manager());
   }
@@ -184,7 +182,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
  private:
-  std::unique_ptr<TestWebAppProviderCreator> test_web_app_provider_creator_;
+  TestWebAppProviderCreator test_web_app_provider_creator_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);
 };
@@ -616,10 +614,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
     EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
   }
   EXPECT_EQ(
-      1u, GetOSIntegrationManager(GetProfile(0)).num_create_shortcuts_calls());
+      1u, GetOsIntegrationManager(GetProfile(0)).num_create_shortcuts_calls());
 #if defined(OS_CHROMEOS)
   auto last_options =
-      GetOSIntegrationManager(GetProfile(1)).get_last_install_options();
+      GetOsIntegrationManager(GetProfile(1)).get_last_install_options();
   EXPECT_TRUE(last_options.has_value());
   OsHooksResults expected_os_hook_requests;
   expected_os_hook_requests[OsHookType::kShortcuts] = true;
@@ -630,9 +628,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   EXPECT_TRUE(last_options->add_to_desktop);
   EXPECT_FALSE(last_options->add_to_quick_launch_bar);
   EXPECT_EQ(
-      1u, GetOSIntegrationManager(GetProfile(1)).num_create_shortcuts_calls());
+      1u, GetOsIntegrationManager(GetProfile(1)).num_create_shortcuts_calls());
 #else
-  EXPECT_FALSE(GetOSIntegrationManager(GetProfile(1))
+  EXPECT_FALSE(GetOsIntegrationManager(GetProfile(1))
                    .get_last_install_options()
                    .has_value());
 #endif

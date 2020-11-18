@@ -99,6 +99,11 @@ void TestOsIntegrationManager::SetFileHandlerManager(
   set_file_handler_manager(std::move(file_handler_manager));
 }
 
+TestOsIntegrationManager*
+TestOsIntegrationManager::AsTestOsIntegrationManager() {
+  return this;
+}
+
 TestShortcutManager::TestShortcutManager(Profile* profile)
     : AppShortcutManager(profile) {}
 
@@ -114,4 +119,5 @@ void TestShortcutManager::GetShortcutInfoForApp(
     GetShortcutInfoCallback callback) {
   std::move(callback).Run(nullptr);
 }
+
 }  // namespace web_app

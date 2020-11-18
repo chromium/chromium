@@ -799,6 +799,9 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
   options.os_hooks[OsHookType::kRunOnOsLogin] = web_app_info->run_on_os_login;
+  // TODO(crbug.com/1087219): Determine if file handlers should be
+  // configured from somewhere else rather than always true.
+  options.os_hooks[OsHookType::kFileHandlers] = true;
 
   if (install_source_ == WebappInstallSource::SYNC)
     options.add_to_quick_launch_bar = false;
@@ -813,13 +816,12 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
         install_params_->run_on_os_login;
     options.os_hooks[OsHookType::kShortcutsMenu] =
         install_params_->add_to_applications_menu;
-    // TODO(crbug.com/1087219): Determine if file handlers should be
-    // configured from somewhere else rather than always true.
-    options.os_hooks[OsHookType::kFileHandlers] = true;
   }
+
   auto hooks_created_callback =
       base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
                      web_app_info->open_as_window, app_id);
+
   os_integration_manager_->InstallOsHooks(app_id,
                                           std::move(hooks_created_callback),
                                           std::move(web_app_info), options);
