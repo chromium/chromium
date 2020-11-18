@@ -87,7 +87,6 @@ class FrameNodeImpl
   void SetLifecycleState(LifecycleState state) override;
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
   void SetViewportIntersection(const gfx::Rect& viewport_intersection) override;
-  void SetOriginTrialFreezePolicy(mojom::InterventionPolicy policy) override;
   void SetIsAdFrame() override;
   void SetHadFormInteraction() override;
   void OnNonPersistentNotificationCreated() override;
@@ -116,7 +115,6 @@ class FrameNodeImpl
   const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
   const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
   LifecycleState lifecycle_state() const;
-  InterventionPolicy origin_trial_freeze_policy() const;
   bool has_nonempty_beforeunload() const;
   const GURL& url() const;
   bool is_current() const;
@@ -191,7 +189,6 @@ class FrameNodeImpl
   bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const override;
   const base::flat_set<const PageNode*> GetOpenedPageNodes() const override;
   LifecycleState GetLifecycleState() const override;
-  InterventionPolicy GetOriginTrialFreezePolicy() const override;
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
   bool IsCurrent() const override;
@@ -227,13 +224,6 @@ class FrameNodeImpl
         bool,
         &FrameNodeObserver::OnNetworkAlmostIdleChanged>
         network_almost_idle{false};
-
-    // Opt-in or opt-out of freezing via origin trial.
-    ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-        mojom::InterventionPolicy,
-        const mojom::InterventionPolicy&,
-        &FrameNodeObserver::OnOriginTrialFreezePolicyChanged>
-        origin_trial_freeze_policy{mojom::InterventionPolicy::kDefault};
 
     // Indicates if a form in the frame has been interacted with.
     ObservedProperty::NotifiesOnlyOnChanges<

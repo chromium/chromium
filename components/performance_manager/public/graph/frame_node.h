@@ -56,7 +56,6 @@ using execution_context_priority::PriorityAndReason;
 class FrameNode : public Node {
  public:
   using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
-  using InterventionPolicy = mojom::InterventionPolicy;
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
   using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
@@ -133,10 +132,6 @@ class FrameNode : public Node {
   // FrameNodeObserver::OnFrameLifecycleStateChanged.
   virtual LifecycleState GetLifecycleState() const = 0;
 
-  // Returns the freeze policy set via origin trial. kDefault when no freeze
-  // policy is set via origin trial.
-  virtual InterventionPolicy GetOriginTrialFreezePolicy() const = 0;
-
   // Returns true if this frame had a non-empty before-unload handler at the
   // time of its last transition to the frozen lifecycle state. This is only
   // meaningful while the object is frozen.
@@ -203,8 +198,6 @@ class FrameNode : public Node {
 // implement the entire interface.
 class FrameNodeObserver {
  public:
-  using InterventionPolicy = mojom::InterventionPolicy;
-
   FrameNodeObserver();
   virtual ~FrameNodeObserver();
 
@@ -226,11 +219,6 @@ class FrameNodeObserver {
 
   // Invoked when the LifecycleState property changes.
   virtual void OnFrameLifecycleStateChanged(const FrameNode* frame_node) = 0;
-
-  // Invoked when the OriginTrialFreezePolicy changes.
-  virtual void OnOriginTrialFreezePolicyChanged(
-      const FrameNode* frame_node,
-      const InterventionPolicy& previous_value) = 0;
 
   // Invoked when the URL property changes.
   virtual void OnURLChanged(const FrameNode* frame_node,
@@ -296,9 +284,6 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnIsCurrentChanged(const FrameNode* frame_node) override {}
   void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override {}
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override {}
-  void OnOriginTrialFreezePolicyChanged(
-      const FrameNode* frame_node,
-      const InterventionPolicy& previous_value) override {}
   void OnURLChanged(const FrameNode* frame_node,
                     const GURL& previous_value) override {}
   void OnIsAdFrameChanged(const FrameNode* frame_node) override {}

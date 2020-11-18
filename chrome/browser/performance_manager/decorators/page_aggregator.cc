@@ -21,8 +21,6 @@ const char kDescriberName[] = "PageAggregator";
 
 }
 
-using performance_manager::mojom::InterventionPolicy;
-
 // Provides PageAggregator machinery access to some internals of a PageNodeImpl.
 class PageAggregatorAccess {
  public:
@@ -30,11 +28,6 @@ class PageAggregatorAccess {
 
   static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
     return &page_node->page_aggregator_data_;
-  }
-
-  static void SetOriginTrialFreezePolicy(PageNodeImpl* page_node,
-                                         InterventionPolicy policy) {
-    page_node->SetOriginTrialFreezePolicy(policy);
   }
 
   static void SetPageIsHoldingWebLock(PageNodeImpl* page_node, bool value) {
@@ -70,17 +63,6 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
     return PageAggregatorAccess::GetInternalStorage(page_node);
   }
 
-  void IncrementFrameCountForFreezingPolicy(InterventionPolicy policy) {
-    ++num_current_frames_for_freezing_policy[static_cast<size_t>(policy)];
-  }
-
-  void DecrementFrameCountForFreezingPolicy(InterventionPolicy policy) {
-    DCHECK_GT(
-        num_current_frames_for_freezing_policy[static_cast<size_t>(policy)],
-        0U);
-    --num_current_frames_for_freezing_policy[static_cast<size_t>(policy)];
-  }
-
   // Updates the counter of frames using WebLocks and sets the corresponding
   // page-level property.
   void UpdateFrameCountForWebLockUsage(bool frame_is_holding_weblock,
@@ -91,12 +73,6 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
   void UpdateFrameCountForIndexedDBLockUsage(
       bool frame_is_holding_indexeddb_lock,
       PageNodeImpl* page_node);
-
-  // Updates the page's origin trial freeze policy from current data.
-  void UpdateOriginTrialFreezePolicy(PageNodeImpl* page_node) {
-    PageAggregatorAccess::SetOriginTrialFreezePolicy(
-        page_node, ComputeOriginTrialFreezePolicy());
-  }
 
   // Updates the counter of frames with form interaction and sets the
   // corresponding page-level property.  |frame_node_being_removed| indicates
@@ -109,21 +85,6 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
  private:
   friend class PageAggregator;
 
-  // Computes the page's origin trial freeze policy from current data.
-  InterventionPolicy ComputeOriginTrialFreezePolicy() const;
-
-  // Returns the number of current frames with |policy| on the page that owns
-  // this Data.
-  uint32_t GetNumCurrentFramesForFreezingPolicy(
-      InterventionPolicy policy) const {
-    return num_current_frames_for_freezing_policy[static_cast<size_t>(policy)];
-  }
-
-  // The number of current frames of this page that has set each freeze origin
-  // trial policy.
-  uint32_t num_current_frames_for_freezing_policy
-      [static_cast<size_t>(InterventionPolicy::kMaxValue) + 1] = {};
-
   // The number of frames holding at least one WebLock / IndexedDB lock. This
   // counts all frames, not just the current ones.
   uint32_t num_frames_holding_web_lock_ = 0;
@@ -135,18 +96,6 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
   DISALLOW_COPY_AND_ASSIGN(Data);
 };
 #pragma pack(pop)
-
-InterventionPolicy PageAggregator::Data::ComputeOriginTrialFreezePolicy()
-    const {
-  if (GetNumCurrentFramesForFreezingPolicy(InterventionPolicy::kOptOut))
-    return InterventionPolicy::kOptOut;
-
-  if (GetNumCurrentFramesForFreezingPolicy(InterventionPolicy::kOptIn))
-    return InterventionPolicy::kOptIn;
-
-  // A page with no frame can be frozen. This will have no effect.
-  return InterventionPolicy::kDefault;
-}
 
 void PageAggregator::Data::UpdateFrameCountForWebLockUsage(
     bool frame_is_holding_weblock,
@@ -218,9 +167,6 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (frame_node->IsCurrent()) {
     // Data should have been created when the frame became current.
     DCHECK(data);
-    data->DecrementFrameCountForFreezingPolicy(
-        frame_node->GetOriginTrialFreezePolicy());
-    data->UpdateOriginTrialFreezePolicy(page_node);
     if (frame_node->HadFormInteraction()) {
       // Decrement the form interaction counter for this page.
       data->UpdateCurrentFrameCountForFormInteraction(false, page_node,
@@ -239,14 +185,6 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
 void PageAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data* data = Data::GetOrCreate(page_node);
-  if (frame_node->IsCurrent()) {
-    data->IncrementFrameCountForFreezingPolicy(
-        frame_node->GetOriginTrialFreezePolicy());
-  } else {
-    data->DecrementFrameCountForFreezingPolicy(
-        frame_node->GetOriginTrialFreezePolicy());
-  }
-  data->UpdateOriginTrialFreezePolicy(page_node);
 
   // Check if the frame node had some form interaction, in this case there's two
   // possibilities:
@@ -257,22 +195,6 @@ void PageAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
   if (frame_node->HadFormInteraction()) {
     data->UpdateCurrentFrameCountForFormInteraction(frame_node->IsCurrent(),
                                                     page_node, nullptr);
-  }
-}
-
-void PageAggregator::OnOriginTrialFreezePolicyChanged(
-    const FrameNode* frame_node,
-    const InterventionPolicy& previous_value) {
-  if (frame_node->IsCurrent()) {
-    auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
-    Data* data = Data::Get(page_node);
-    // Data should have been created when the frame became current or the first
-    // time this frame grabbed a lock.
-    DCHECK(data);
-    data->DecrementFrameCountForFreezingPolicy(previous_value);
-    data->IncrementFrameCountForFreezingPolicy(
-        frame_node->GetOriginTrialFreezePolicy());
-    data->UpdateOriginTrialFreezePolicy(page_node);
   }
 }
 

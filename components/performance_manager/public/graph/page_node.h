@@ -29,7 +29,6 @@ class PageNodeObserver;
 class PageNode : public Node {
  public:
   using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
-  using InterventionPolicy = mojom::InterventionPolicy;
   using LifecycleState = mojom::LifecycleState;
   using Observer = PageNodeObserver;
   class ObserverDefaultImpl;
@@ -93,9 +92,6 @@ class PageNode : public Node {
   // lifecycle state of each frame in the frame tree. See
   // PageNodeObserver::OnPageLifecycleStateChanged.
   virtual LifecycleState GetLifecycleState() const = 0;
-
-  // Returns the freeze policy set via origin trial.
-  virtual InterventionPolicy GetOriginTrialFreezePolicy() const = 0;
 
   // Returns true if at least one of the frame in this page is currently
   // holding a WebLock.
@@ -195,10 +191,6 @@ class PageNodeObserver {
   // Invoked when the PageLifecycleState property changes.
   virtual void OnPageLifecycleStateChanged(const PageNode* page_node) = 0;
 
-  // Invoked when the OriginTrialFreezePolicy property changes.
-  virtual void OnPageOriginTrialFreezePolicyChanged(
-      const PageNode* page_node) = 0;
-
   // Invoked when the IsHoldingWebLock property changes.
   virtual void OnPageIsHoldingWebLockChanged(const PageNode* page_node) = 0;
 
@@ -250,8 +242,6 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnIsLoadingChanged(const PageNode* page_node) override {}
   void OnUkmSourceIdChanged(const PageNode* page_node) override {}
   void OnPageLifecycleStateChanged(const PageNode* page_node) override {}
-  void OnPageOriginTrialFreezePolicyChanged(
-      const PageNode* page_node) override {}
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override {}
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override {
   }

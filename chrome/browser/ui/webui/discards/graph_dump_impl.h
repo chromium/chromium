@@ -73,10 +73,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnFrameLifecycleStateChanged(
       const performance_manager::FrameNode* frame_node) override {}
-  // Ignored.
-  void OnOriginTrialFreezePolicyChanged(
-      const performance_manager::FrameNode* frame_node,
-      const InterventionPolicy& previous_value) override {}
   void OnURLChanged(const performance_manager::FrameNode* frame_node,
                     const GURL& previous_value) override;
   // Ignored.
@@ -128,9 +124,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node) override {}  // Ignored.
   // Ignored.
   void OnPageLifecycleStateChanged(
-      const performance_manager::PageNode* page_node) override {}
-  // Ignored.
-  void OnPageOriginTrialFreezePolicyChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnPageIsHoldingWebLockChanged(

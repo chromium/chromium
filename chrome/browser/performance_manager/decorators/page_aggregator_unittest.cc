@@ -14,8 +14,6 @@
 
 namespace performance_manager {
 
-using performance_manager::mojom::InterventionPolicy;
-
 namespace {
 
 class PageAggregatorTest : public GraphTestHarness {
@@ -26,135 +24,7 @@ class PageAggregatorTest : public GraphTestHarness {
   }
 };
 
-void ExpectInitialOriginTrialFreezingPolicyWorks(
-    TestGraphImpl* mock_graph,
-    InterventionPolicy f0_policy,
-    InterventionPolicy f1_policy,
-    InterventionPolicy f0_policy_aggregated,
-    InterventionPolicy f0f1_policy_aggregated) {
-  TestNodeWrapper<ProcessNodeImpl> process =
-      TestNodeWrapper<ProcessNodeImpl>::Create(mock_graph);
-  TestNodeWrapper<PageNodeImpl> page =
-      TestNodeWrapper<PageNodeImpl>::Create(mock_graph);
-
-  // Check the initial values before any frames are added.
-  EXPECT_EQ(InterventionPolicy::kDefault, page->origin_trial_freeze_policy());
-
-  // Create an initial frame. Expect the policy to be |f0_policy_aggregated|
-  // when it is made current.
-  TestNodeWrapper<FrameNodeImpl> f0 =
-      mock_graph->CreateFrameNodeAutoId(process.get(), page.get());
-  f0->SetOriginTrialFreezePolicy(f0_policy);
-  EXPECT_EQ(InterventionPolicy::kDefault, page->origin_trial_freeze_policy());
-  f0->SetIsCurrent(true);
-  EXPECT_EQ(f0_policy_aggregated, page->origin_trial_freeze_policy());
-
-  // Create a second frame and expect the page policy to be
-  // |f0f1_policy_aggregated| when it is made current.
-  TestNodeWrapper<FrameNodeImpl> f1 =
-      mock_graph->CreateFrameNodeAutoId(process.get(), page.get(), f0.get(), 1);
-  f1->SetOriginTrialFreezePolicy(f1_policy);
-  f1->SetIsCurrent(true);
-  EXPECT_EQ(f0f1_policy_aggregated, page->origin_trial_freeze_policy());
-
-  // Make the second frame non-current. Expect the page policy to go back to
-  // |f0_policy_aggregated|.
-  f1->SetIsCurrent(false);
-  EXPECT_EQ(f0_policy_aggregated, page->origin_trial_freeze_policy());
-  f1->SetIsCurrent(true);
-  EXPECT_EQ(f0f1_policy_aggregated, page->origin_trial_freeze_policy());
-
-  // Remove the second frame. Expect the page policy to go back to
-  // |f0_policy_aggregated|.
-  f1.reset();
-  EXPECT_EQ(f0_policy_aggregated, page->origin_trial_freeze_policy());
-}
-
 }  // namespace
-
-// Tests all possible combinations of Origin Trial freezing policies for 2
-// frames. In this test, the policy of a frame is set before it becomes current.
-TEST_F(PageAggregatorTest, InitialOriginTrialFreezingPolicy) {
-  auto* mock_graph = graph();
-
-  // Default x [Default, OptIn, OptOut]
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kDefault /* f0_policy */,
-      InterventionPolicy::kDefault /* f1_policy */,
-      InterventionPolicy::kDefault /* f0_policy_aggregated */,
-      InterventionPolicy::kDefault /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kDefault /* f0_policy */,
-      InterventionPolicy::kOptIn /* f1_policy */,
-      InterventionPolicy::kDefault /* f0_policy_aggregated */,
-      InterventionPolicy::kOptIn /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kDefault /* f0_policy */,
-      InterventionPolicy::kOptOut /* f1_policy */,
-      InterventionPolicy::kDefault /* f0_policy_aggregated */,
-      InterventionPolicy::kOptOut /* f0f1_policy_aggregated */);
-
-  // OptIn x [Default, OptIn, OptOut]
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptIn /* f0_policy */,
-      InterventionPolicy::kDefault /* f1_policy */,
-      InterventionPolicy::kOptIn /* f0_policy_aggregated */,
-      InterventionPolicy::kOptIn /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptIn /* f0_policy */,
-      InterventionPolicy::kOptIn /* f1_policy */,
-      InterventionPolicy::kOptIn /* f0_policy_aggregated */,
-      InterventionPolicy::kOptIn /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptIn /* f0_policy */,
-      InterventionPolicy::kOptOut /* f1_policy */,
-      InterventionPolicy::kOptIn /* f0_policy_aggregated */,
-      InterventionPolicy::kOptOut /* f0f1_policy_aggregated */);
-
-  // OptOut x [Default, OptIn, OptOut]
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptOut /* f0_policy */,
-      InterventionPolicy::kDefault /* f1_policy */,
-      InterventionPolicy::kOptOut /* f0_policy_aggregated */,
-      InterventionPolicy::kOptOut /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptOut /* f0_policy */,
-      InterventionPolicy::kOptIn /* f1_policy */,
-      InterventionPolicy::kOptOut /* f0_policy_aggregated */,
-      InterventionPolicy::kOptOut /* f0f1_policy_aggregated */);
-
-  ExpectInitialOriginTrialFreezingPolicyWorks(
-      mock_graph, InterventionPolicy::kOptOut /* f0_policy */,
-      InterventionPolicy::kOptOut /* f1_policy */,
-      InterventionPolicy::kOptOut /* f0_policy_aggregated */,
-      InterventionPolicy::kOptOut /* f0f1_policy_aggregated */);
-}
-
-// Test changing the Origin Trial Freezing policy of a frame after it becomes
-// current.
-TEST_F(PageAggregatorTest, OriginTrialFreezingPolicyChanges) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>();
-  TestNodeWrapper<FrameNodeImpl> frame =
-      graph()->CreateFrameNodeAutoId(process.get(), page.get());
-  frame->SetIsCurrent(true);
-
-  EXPECT_EQ(InterventionPolicy::kDefault, page->origin_trial_freeze_policy());
-  frame->SetOriginTrialFreezePolicy(InterventionPolicy::kOptIn);
-  EXPECT_EQ(InterventionPolicy::kOptIn, page->origin_trial_freeze_policy());
-  frame->SetOriginTrialFreezePolicy(InterventionPolicy::kOptOut);
-  EXPECT_EQ(InterventionPolicy::kOptOut, page->origin_trial_freeze_policy());
-  frame->SetOriginTrialFreezePolicy(InterventionPolicy::kDefault);
-  EXPECT_EQ(InterventionPolicy::kDefault, page->origin_trial_freeze_policy());
-}
 
 TEST_F(PageAggregatorTest, WebLocksAggregation) {
   // Creates a page containing 2 frames.

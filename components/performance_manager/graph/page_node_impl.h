@@ -80,7 +80,6 @@ class PageNodeImpl
   bool is_loading() const;
   ukm::SourceId ukm_source_id() const;
   LifecycleState lifecycle_state() const;
-  InterventionPolicy origin_trial_freeze_policy() const;
   bool is_holding_weblock() const;
   bool is_holding_indexeddb_lock() const;
   const base::flat_set<FrameNodeImpl*>& main_frame_nodes() const;
@@ -135,7 +134,6 @@ class PageNodeImpl
   bool IsLoading() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
-  InterventionPolicy GetOriginTrialFreezePolicy() const override;
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
   int64_t GetNavigationID() const override;
@@ -156,7 +154,6 @@ class PageNodeImpl
   void OnBeforeLeavingGraph() override;
 
   void SetLifecycleState(LifecycleState lifecycle_state);
-  void SetOriginTrialFreezePolicy(InterventionPolicy policy);
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetHadFormInteraction(bool had_form_interaction);
@@ -241,12 +238,6 @@ class PageNodeImpl
       LifecycleState,
       &PageNodeObserver::OnPageLifecycleStateChanged>
       lifecycle_state_{LifecycleState::kRunning};
-  // The origin trial freeze policy of this page. This is aggregated from the
-  // origin trial freeze policy of each current frame in the frame tree.
-  ObservedProperty::NotifiesOnlyOnChanges<
-      InterventionPolicy,
-      &PageNodeObserver::OnPageOriginTrialFreezePolicyChanged>
-      origin_trial_freeze_policy_{InterventionPolicy::kDefault};
   // Indicates if at least one frame of the page is currently holding a WebLock.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
@@ -275,7 +266,7 @@ class PageNodeImpl
   InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_;
 
   // Inline storage for PageAggregatorAccess user data.
-  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 24> page_aggregator_data_;
+  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 12> page_aggregator_data_;
 
   base::WeakPtrFactory<PageNodeImpl> weak_factory_{this};
 

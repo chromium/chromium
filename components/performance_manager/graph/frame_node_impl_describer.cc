@@ -67,9 +67,6 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
                  impl->document_.has_nonempty_beforeunload);
   doc.SetBoolKey("network_almost_idle",
                  impl->document_.network_almost_idle.value());
-  doc.SetStringKey(
-      "origin_trial_freeze_policy",
-      MojoEnumToString(impl->document_.origin_trial_freeze_policy.value()));
   doc.SetBoolKey("had_form_interaction",
                  impl->document_.had_form_interaction.value());
   ret.SetKey("document", std::move(doc));

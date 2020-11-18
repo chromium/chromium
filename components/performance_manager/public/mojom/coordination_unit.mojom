@@ -22,18 +22,6 @@ enum CoordinationUnitType {
   kSystem,
 };
 
-// Intervention policy status.
-enum InterventionPolicy {
-  // The frame/page has explicitly opted-in to an intervention.
-  kOptIn,
-  // The frame/page has explicitly opted-out from an intervention.
-  kOptOut,
-  // The frame/page has neither opted-in or opted-out. The intervention will be
-  // applied using its own heuristics. This is the default state for a
-  // frame/page.
-  kDefault,
-};
-
 // Interface used by a blink::Document to communicate state associated with
 // resource management to the embedder.
 interface DocumentCoordinationUnit {
@@ -44,12 +32,6 @@ interface DocumentCoordinationUnit {
 
   // Called the first time a form in this document is interacted with.
   SetHadFormInteraction();
-
-  // Sets the freeze policy set via origin trial for the document. Invoked once
-  // after finishing to parse the document. The freeze policies of all frames on
-  // a page are aggregated to determine whether the page as a whole can be
-  // frozen.
-  SetOriginTrialFreezePolicy(InterventionPolicy policy);
 
   SetIsAdFrame();
 

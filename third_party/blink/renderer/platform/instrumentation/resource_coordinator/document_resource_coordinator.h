@@ -30,8 +30,6 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void SetLifecycleState(performance_manager::mojom::LifecycleState);
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
-  void SetOriginTrialFreezePolicy(
-      performance_manager::mojom::InterventionPolicy policy);
   // A one way switch that marks a frame as being an adframe.
   void SetIsAdFrame();
   void OnNonPersistentNotificationCreated();

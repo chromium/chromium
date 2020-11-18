@@ -6853,28 +6853,6 @@ DOMWindow* Document::defaultView() const {
   return dom_window_;
 }
 
-namespace {
-
-using performance_manager::mojom::InterventionPolicy;
-
-// A helper function to set the origin trial freeze policy of a document.
-void SetOriginTrialFreezePolicy(
-    DocumentResourceCoordinator* document_resource_coordinator,
-    ExecutionContext* context) {
-  // An explicit opt-out overrides an explicit opt-in if both are present.
-  if (RuntimeEnabledFeatures::PageFreezeOptOutEnabled(context)) {
-    document_resource_coordinator->SetOriginTrialFreezePolicy(
-        InterventionPolicy::kOptOut);
-    UseCounter::Count(context, WebFeature::kPageFreezeOptOut);
-  } else if (RuntimeEnabledFeatures::PageFreezeOptInEnabled(context)) {
-    document_resource_coordinator->SetOriginTrialFreezePolicy(
-        InterventionPolicy::kOptIn);
-    UseCounter::Count(context, WebFeature::kPageFreezeOptIn);
-  }
-}
-
-}  // namespace
-
 void Document::RecordAsyncScriptCount() {
   UMA_HISTOGRAM_COUNTS_100("Blink.Script.AsyncScriptCount",
                            async_script_count_);
@@ -7028,11 +7006,6 @@ void Document::FinishedParsing() {
                          inspector_mark_load_event::Data(frame));
     probe::DomContentLoadedEventFired(frame);
     frame->GetIdlenessDetector()->DomContentLoadedEventFired();
-
-    // Forward origin trial freeze policy to the corresponding frame object in
-    // the resource coordinator.
-    if (auto* document_resource_coordinator = GetResourceCoordinator())
-      SetOriginTrialFreezePolicy(document_resource_coordinator, domWindow());
   }
 
   // Schedule dropping of the ElementDataCache. We keep it alive for a while

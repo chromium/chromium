@@ -189,12 +189,6 @@ PageNodeImpl::LifecycleState PageNodeImpl::lifecycle_state() const {
   return lifecycle_state_.value();
 }
 
-PageNodeImpl::InterventionPolicy PageNodeImpl::origin_trial_freeze_policy()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return origin_trial_freeze_policy_.value();
-}
-
 bool PageNodeImpl::is_holding_weblock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_holding_weblock_.value();
@@ -365,12 +359,6 @@ PageNodeImpl::LifecycleState PageNodeImpl::GetLifecycleState() const {
   return lifecycle_state();
 }
 
-PageNodeImpl::InterventionPolicy PageNodeImpl::GetOriginTrialFreezePolicy()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return origin_trial_freeze_policy();
-}
-
 bool PageNodeImpl::IsHoldingWebLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_holding_weblock();
@@ -434,11 +422,6 @@ const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lifecycle_state_.SetAndMaybeNotify(this, lifecycle_state);
-}
-
-void PageNodeImpl::SetOriginTrialFreezePolicy(InterventionPolicy policy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  origin_trial_freeze_policy_.SetAndMaybeNotify(this, policy);
 }
 
 void PageNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {

@@ -81,11 +81,6 @@ void FrameNodeImpl::SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) {
   document_.has_nonempty_beforeunload = has_nonempty_beforeunload;
 }
 
-void FrameNodeImpl::SetOriginTrialFreezePolicy(
-    mojom::InterventionPolicy policy) {
-  document_.origin_trial_freeze_policy.SetAndMaybeNotify(this, policy);
-}
-
 void FrameNodeImpl::SetIsAdFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_ad_frame_.SetAndMaybeNotify(this, true);
@@ -168,11 +163,6 @@ const base::flat_set<PageNodeImpl*>& FrameNodeImpl::opened_page_nodes() const {
 mojom::LifecycleState FrameNodeImpl::lifecycle_state() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lifecycle_state_.value();
-}
-
-mojom::InterventionPolicy FrameNodeImpl::origin_trial_freeze_policy() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.origin_trial_freeze_policy.value();
 }
 
 bool FrameNodeImpl::has_nonempty_beforeunload() const {
@@ -458,12 +448,6 @@ FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
   return lifecycle_state();
 }
 
-FrameNodeImpl::InterventionPolicy FrameNodeImpl::GetOriginTrialFreezePolicy()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return origin_trial_freeze_policy();
-}
-
 bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return has_nonempty_beforeunload();
@@ -695,8 +679,6 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   has_nonempty_beforeunload = false;
   // Network is busy on navigation.
   network_almost_idle.SetAndMaybeNotify(frame_node, false);
-  origin_trial_freeze_policy.SetAndMaybeNotify(
-      frame_node, mojom::InterventionPolicy::kDefault);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
 }
 

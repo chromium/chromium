@@ -67,9 +67,6 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
   result.SetStringKey(
       "lifecycle_state",
       MojoEnumToString(page_node_impl->lifecycle_state_.value()));
-  result.SetStringKey(
-      "origin_trial_freeze_policy",
-      MojoEnumToString(page_node_impl->origin_trial_freeze_policy_.value()));
   result.SetBoolKey("is_holding_weblock",
                     page_node_impl->is_holding_weblock_.value());
   result.SetBoolKey("is_holding_indexeddb_lock",
