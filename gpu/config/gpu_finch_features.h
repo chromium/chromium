@@ -35,8 +35,6 @@ GPU_EXPORT extern const base::Feature kDirectCompositionUseOverlayDamageList;
 
 GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;
 
-GPU_EXPORT extern const base::Feature kGpuWatchdogV2NewTimeout;
-
 #if defined(OS_MAC)
 GPU_EXPORT extern const base::Feature kMetal;
 #endif

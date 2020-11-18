@@ -3119,25 +3119,6 @@
             ]
         }
     ],
-    "GpuWatchdogV2NewTimeout": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GpuWatchdogV2NewTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
     "GwpAsanAndroid": [
         {
             "platforms": [

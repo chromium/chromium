@@ -35778,8 +35778,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Kill"/>
   <int value="2" label="MoreThreadTime"/>
   <int value="3" label="ProgressAfterMoreThreadTime"/>
-  <int value="4" label="TimeoutWait"/>
-  <int value="5" label="ProgressAfterWait"/>
+  <int value="4" label="TimeoutWait (deprecated)"/>
+  <int value="5" label="ProgressAfterWait (deprecated)"/>
   <int value="6" label="ContinueOnNonHostServerTty"/>
   <int value="7" label="LessThanFullThreadTimeAfterCapped"/>
   <int value="8" label="KillOnLessThreadTime"/>

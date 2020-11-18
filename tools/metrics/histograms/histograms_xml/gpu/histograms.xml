@@ -1217,7 +1217,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.WaitTime" units="ms"
-    expires_after="2020-12-15">
+    expires_after="2020-11-18">
+  <obsolete>
+    Used for an experiment only. Removed 11/2020.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="GPU.WatchdogStage" -->
 
   <owner>magchen@chromium.org</owner>
@@ -1229,7 +1232,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.WaitTime.NumOfUsers" units="seconds"
-    expires_after="2020-12-15">
+    expires_after="2020-11-18">
+  <obsolete>
+    Used for an experiment only. Removed 11/2020.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1241,7 +1247,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.WaitTime.ProgressAfterWait" units="seconds"
-    expires_after="2020-12-15">
+    expires_after="2020-11-18">
+  <obsolete>
+    Used for an experiment only. Removed 11/2020.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

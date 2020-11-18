@@ -451,12 +451,6 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
   // browser.
   int64_t kGpuChannelTimeoutInSeconds =
       gpu::kGpuWatchdogTimeout.InSeconds() * gpu::kRestartFactor + 5;
-
-  // TODO(magchen@): To be removed. For finch only.
-  if (base::FeatureList::IsEnabled(features::kGpuWatchdogV2NewTimeout)) {
-    kGpuChannelTimeoutInSeconds =
-        gpu::kGpuWatchdogTimeout.InSeconds() * gpu::kRestartFactorFinch + 5;
-  }
 #endif
 
   timeout_.Start(FROM_HERE,

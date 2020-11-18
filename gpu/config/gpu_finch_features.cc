@@ -79,10 +79,6 @@ const base::Feature kGpuUseDisplayThreadPriority{
 #endif
 };
 
-// Use a different set of watchdog timeouts on V2
-const base::Feature kGpuWatchdogV2NewTimeout{"GpuWatchdogV2NewTimeout",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_MAC)
 // Enable use of Metal for OOP rasterization.
 const base::Feature kMetal{"Metal", base::FEATURE_DISABLED_BY_DEFAULT};

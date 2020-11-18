@@ -6908,7 +6908,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="PowerResume" label="PowerResume"/>
   <affected-histogram name="GPU.WatchdogThread.ExtraThreadTime"/>
   <affected-histogram name="GPU.WatchdogThread.Timeout"/>
-  <affected-histogram name="GPU.WatchdogThread.WaitTime"/>
+  <affected-histogram name="GPU.WatchdogThread.WaitTime">
+    <obsolete>
+      Used for an experiment only. Removed 11/2020.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="GPUBlacklistPerFeature" separator=".">
