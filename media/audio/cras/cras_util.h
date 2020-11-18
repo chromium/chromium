@@ -25,6 +25,7 @@ struct CrasDevice {
                       DeviceType type);
   DeviceType type;
   uint64_t id;
+  int32_t active;
   std::string name;
 };
 

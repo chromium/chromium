@@ -68,6 +68,7 @@ CrasDevice::CrasDevice(const cras_ionode_info* node,
                        DeviceType type)
     : type(type) {
   id = cras_make_node_id(node->iodev_idx, node->ionode_idx);
+  active = node->active;
   name = std::string(node->name);
   // If the name of node is not meaningful, use the device name instead.
   if (name.empty() || name == "(default)")
@@ -101,6 +102,8 @@ CrasDevice::CrasDevice(const std::vector<cras_ionode_info>& nodes,
   } else {
     LOG(WARNING) << "Failed to create virtual device for " << dev->name;
   }
+
+  active = nodes[0].active || nodes[1].active;
 }
 
 std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {

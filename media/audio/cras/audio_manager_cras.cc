@@ -157,12 +157,18 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
 }
 
 uint64_t AudioManagerCras::GetPrimaryActiveInputNode() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  for (const auto& device : CrasGetAudioDevices(DeviceType::kInput)) {
+    if (device.active)
+      return device.id;
+  }
   return 0;
 }
 
 uint64_t AudioManagerCras::GetPrimaryActiveOutputNode() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+    if (device.active)
+      return device.id;
+  }
   return 0;
 }
 
