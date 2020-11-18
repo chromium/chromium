@@ -6,6 +6,8 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -22,12 +24,14 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   DCHECK(controller_->is_recording_in_progress());
 
   window_being_recorded_->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
   DCHECK(window_being_recorded_);
 
   window_being_recorded_->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void VideoRecordingWatcher::OnWindowDestroying(aura::Window* window) {
@@ -62,6 +66,20 @@ void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(
   capture_mode_util::SetStopRecordingButtonVisibility(window->GetRootWindow(),
                                                       false);
   capture_mode_util::SetStopRecordingButtonVisibility(new_root, true);
+}
+
+void VideoRecordingWatcher::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  DCHECK(controller_->is_recording_in_progress());
+
+  if (Shell::Get()->session_controller()->IsUserSessionBlocked())
+    controller_->EndVideoRecording();
+}
+
+void VideoRecordingWatcher::OnChromeTerminating() {
+  DCHECK(controller_->is_recording_in_progress());
+
+  controller_->EndVideoRecording();
 }
 
 }  // namespace ash
