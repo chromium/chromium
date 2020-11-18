@@ -29,6 +29,14 @@ class PolicyMap;
 void GetTestDataDirectory(base::FilePath* test_data_directory);
 
 class PolicyTest : public InProcessBrowserTest {
+ public:
+  // The possibilities for a boolean policy.
+  enum class BooleanPolicy {
+    kNotConfigured,
+    kFalse,
+    kTrue,
+  };
+
  protected:
   PolicyTest();
   ~PolicyTest() override;

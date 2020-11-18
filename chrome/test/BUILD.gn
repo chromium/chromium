@@ -1781,11 +1781,12 @@ if (!is_android) {
           [ "../browser/ssl/captive_portal_blocking_page_browsertest.cc" ]
     }
 
-    if (!is_android && !is_chromeos) {
+    if (!is_chromeos) {
       sources += [
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
+        "../browser/policy/promotional_tabs_enabled_policy_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
       ]
     }
