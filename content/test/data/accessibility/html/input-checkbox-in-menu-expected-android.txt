@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View
+++android.view.View role_description='menu'
 ++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='Checkbox1'
 ++++android.widget.CheckBox role_description='checkbox' checkable checked clickable focusable name='Checkbox2'
 ++android.view.View role_description='menu'

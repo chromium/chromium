@@ -1,11 +1,11 @@
 [document web]
-++[section]
-++++[radio menu item] checked checkable:true
+++[menu] xml-roles:menu
+++++[radio button] checked checkable:true xml-roles:radio
 ++++[static] name='Radio0 '
-++++[radio menu item] checkable:true
+++++[radio button] checkable:true xml-roles:radio
 ++++[static] name='Radio1 '
 ++++[radio button] name='Radio2' checkable:true xml-roles:radio
 ++[menu] xml-roles:menu
 ++++[radio button] name='Radio3' checkable:true xml-roles:radio
-++++[radio menu item] checkable:true
-++++[radio menu item] checked checkable:true
+++++[radio button] checkable:true xml-roles:radio
+++++[radio button] checked checkable:true xml-roles:radio

@@ -1740,11 +1740,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputButton) {
   RunHtmlTest(FILE_PATH_LITERAL("input-button.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputButtonInMenu) {
-  RunHtmlTest(FILE_PATH_LITERAL("input-button-in-menu.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputCheckBox) {
   RunHtmlTest(FILE_PATH_LITERAL("input-checkbox.html"));
 }
@@ -1830,11 +1825,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputHidden) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputImage) {
   RunHtmlTest(FILE_PATH_LITERAL("input-image.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputImageButtonInMenu) {
-  RunHtmlTest(FILE_PATH_LITERAL("input-image-button-in-menu.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputList) {
@@ -2069,9 +2059,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMath) {
   RunHtmlTest(FILE_PATH_LITERAL("math.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityMenutypecontext) {
-  RunHtmlTest(FILE_PATH_LITERAL("menu-type-context.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMenu) {
+  RunHtmlTest(FILE_PATH_LITERAL("menu.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMeta) {

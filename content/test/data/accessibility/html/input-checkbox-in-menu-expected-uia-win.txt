@@ -1,5 +1,5 @@
 Document
-++Group IsControlElement=false
+++Menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++CheckBox Name='Checkbox1' Toggle.ToggleState='Off'
 ++++CheckBox Name='Checkbox2' Toggle.ToggleState='On'
 ++Menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false

@@ -1,15 +1,15 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer
-++++++++menuItemRadio inputType='radio' checkedState=true
+++++++menu
+++++++++radioButton inputType='radio' checkedState=true
 ++++++++staticText name='Radio0 '
 ++++++++++inlineTextBox name='Radio0 '
-++++++++menuItemRadio inputType='radio' checkedState=false
+++++++++radioButton inputType='radio' checkedState=false
 ++++++++staticText name='Radio1 '
 ++++++++++inlineTextBox name='Radio1 '
 ++++++++radioButton inputType='radio' name='Radio2' checkedState=false
 ++++++menu
 ++++++++radioButton inputType='radio' name='Radio3' checkedState=false
-++++++++menuItemRadio inputType='radio' checkedState=false
-++++++++menuItemRadio inputType='radio' checkedState=true
+++++++++radioButton inputType='radio' checkedState=false
+++++++++radioButton inputType='radio' checkedState=true

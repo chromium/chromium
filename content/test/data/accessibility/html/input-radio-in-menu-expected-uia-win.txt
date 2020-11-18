@@ -1,5 +1,5 @@
 Document
-++Group IsControlElement=false
+++Menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++RadioButton SelectionItem.IsSelected=true
 ++++Text Name='Radio0 '
 ++++RadioButton SelectionItem.IsSelected=false

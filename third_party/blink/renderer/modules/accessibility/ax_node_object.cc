@@ -372,6 +372,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kDialog,
           ax::mojom::blink::Role::kFigcaption,
           ax::mojom::blink::Role::kFigure,
+          ax::mojom::blink::Role::kList,
           ax::mojom::blink::Role::kListItem,
           ax::mojom::blink::Role::kMark,
           ax::mojom::blink::Role::kMath,
@@ -788,22 +789,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     const AtomicString& type = input->type();
     if (input->DataList() && type != input_type_names::kColor)
       return ax::mojom::blink::Role::kTextFieldWithComboBox;
-    if (type == input_type_names::kButton) {
-      if ((GetNode()->parentNode() &&
-           IsA<HTMLMenuElement>(GetNode()->parentNode())) ||
-          (ParentObject() &&
-           ParentObject()->RoleValue() == ax::mojom::blink::Role::kMenu))
-        return ax::mojom::blink::Role::kMenuItem;
+    if (type == input_type_names::kButton)
       return ButtonRoleType();
-    }
-    if (type == input_type_names::kCheckbox) {
-      if ((GetNode()->parentNode() &&
-           IsA<HTMLMenuElement>(GetNode()->parentNode())) ||
-          (ParentObject() &&
-           ParentObject()->RoleValue() == ax::mojom::blink::Role::kMenu))
-        return ax::mojom::blink::Role::kMenuItemCheckBox;
+    if (type == input_type_names::kCheckbox)
       return ax::mojom::blink::Role::kCheckBox;
-    }
     if (type == input_type_names::kDate)
       return ax::mojom::blink::Role::kDate;
     if (type == input_type_names::kDatetime ||
@@ -812,14 +801,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       return ax::mojom::blink::Role::kDateTime;
     if (type == input_type_names::kFile)
       return ax::mojom::blink::Role::kButton;
-    if (type == input_type_names::kRadio) {
-      if ((GetNode()->parentNode() &&
-           IsA<HTMLMenuElement>(GetNode()->parentNode())) ||
-          (ParentObject() &&
-           ParentObject()->RoleValue() == ax::mojom::blink::Role::kMenu))
-        return ax::mojom::blink::Role::kMenuItemRadio;
+    if (type == input_type_names::kRadio)
       return ax::mojom::blink::Role::kRadioButton;
-    }
     if (type == input_type_names::kNumber)
       return ax::mojom::blink::Role::kSpinButton;
     if (input->IsTextButton())
@@ -862,6 +845,15 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (IsA<HTMLDivElement>(*GetNode()))
     return RoleFromLayoutObject(ax::mojom::blink::Role::kGenericContainer);
+
+  if (IsA<HTMLMenuElement>(*GetNode())) {
+    // <menu> is a deprecated feature of HTML 5, but is included for semantic
+    // compatibility with HTML3, and may contain list items. Exposing it as an
+    // unordered list works better than the current HTML-AAM recommendaton of
+    // exposing as a role=menu, because if it's just used semantically, it won't
+    // be interactive. If used as a widget, the author must provide role=menu.
+    return ax::mojom::blink::Role::kList;
+  }
 
   if (IsA<HTMLMeterElement>(*GetNode()))
     return ax::mojom::blink::Role::kMeter;

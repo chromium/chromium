@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.widget.Button role_description='button' clickable focusable name='Bullet'
-++android.view.View role_description='menu'
-++++android.widget.Button role_description='button' clickable focusable name='Bullet'

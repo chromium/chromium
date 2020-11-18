@@ -1,0 +1,8 @@
+[document web]
+++[paragraph]
+++++[static] name='Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553.'
+++[list]
+++++[list item]
+++++++[static] name='Cats'
+++++[list item]
+++++++[static] name='Dogs'

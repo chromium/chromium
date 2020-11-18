@@ -96,14 +96,16 @@ AXRole: AXGenericContainer
         AXRole: AXStaticText "Button has a button role because it has an explicit role."
             AXRole: AXInlineTextBox "Button has a button role because it has an explicit role."
     AXRole: AXPresentational
-        AXRole: AXMenuItemCheckBox
+        AXRole: AXCheckBox
         AXRole: AXStaticText " I have a bike "
             AXRole: AXInlineTextBox " I have a bike "
         AXRole: AXButton "Click me"
-        AXRole: AXMenuItemRadio
+            AXRole: AXStaticText "Click me"
+                AXRole: AXInlineTextBox "Click me"
+        AXRole: AXRadioButton
         AXRole: AXStaticText " Male "
             AXRole: AXInlineTextBox " Male "
-        AXRole: AXMenuItemRadio
+        AXRole: AXRadioButton
         AXRole: AXStaticText " Female"
             AXRole: AXInlineTextBox " Female"
     AXRole: AXGenericContainer

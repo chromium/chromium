@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer
+++++++menu
 ++++++++checkBox inputType='checkbox' name='Checkbox1' checkedState=false
 ++++++++checkBox inputType='checkbox' name='Checkbox2' checkedState=true
 ++++++menu
