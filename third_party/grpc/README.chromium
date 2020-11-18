@@ -1,16 +1,21 @@
-Name: gRPC
+Name: grpc
 URL: https://github.com/grpc/grpc
-Version: 0
-Date: Jul 16, 2019
-Revision: 74b981a6a3d9ba17f3acae1d72b9109325ef656d
 License: Apache 2.0
-License File: LICENSE
+Version: v1.33.0+
+Revision: 4ac9c6f755463a2321f84b0cb2d631e1828faedb
 Security Critical: yes
 
-Description:
-gRPC is a library to make remote procedure calls (RPC) between server and client
-applications. This is currently used by Chrome Remote Desktop during the
-signaling process.
-
-Local Modifications:
-None
+Steps to upgrade to a new version of GRPC:
+1. Merge origin/grpc/master into eureka/master branch.
+2. Update revision and version information in this file.
+4. Checkout GRPC submodules with: git submodule update --init
+5. Copy template/BUILD.chromium.gn.template to src/templates
+6. Rebuild BUILD.gn by running tools/buildgen/generate_projects.sh
+    (make sure mako_templates python module is installed in your system)
+   and then running gn format BUILD.gn. This will use the template in
+   templates/BUILD.chromium.gn.template to generate BUILD.chromium.gn file.
+4. Do:
+  mv third_party/grpc/src/BUILD.chromium.gn BUILD.gn
+6. Update plugin_register. Ensure xds_resolver and all lb_policies are
+disabled except first_pick.
+5. Run 'gn format --in-place BUILD.gn'

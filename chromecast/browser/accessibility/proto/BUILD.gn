@@ -7,7 +7,7 @@ proto_library("gallium_accessibility_proto") {
   ]
 
   deps = [
-    "//third_party/grpc:grpcpp",
+    "//third_party/grpc:grpc++",
     "//third_party/protobuf:protobuf_lite",
   ]
 
