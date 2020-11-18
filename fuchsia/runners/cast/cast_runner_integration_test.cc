@@ -62,11 +62,29 @@ constexpr char kDummyAgentUrl[] =
 
 constexpr char kEnableFrameHostComponent[] = "enable-frame-host-component";
 
+class FakeCorsExemptHeaderProvider
+    : public chromium::cast::CorsExemptHeaderProvider {
+ public:
+  FakeCorsExemptHeaderProvider() = default;
+  ~FakeCorsExemptHeaderProvider() final = default;
+
+  FakeCorsExemptHeaderProvider(const FakeCorsExemptHeaderProvider&) = delete;
+  FakeCorsExemptHeaderProvider& operator=(const FakeCorsExemptHeaderProvider&) =
+      delete;
+
+ private:
+  void GetCorsExemptHeaderNames(
+      GetCorsExemptHeaderNamesCallback callback) final {
+    callback({cr_fuchsia::StringToBytes("Test")});
+  }
+};
+
 class FakeUrlRequestRewriteRulesProvider
     : public chromium::cast::UrlRequestRewriteRulesProvider {
  public:
   FakeUrlRequestRewriteRulesProvider() = default;
-  ~FakeUrlRequestRewriteRulesProvider() override = default;
+  ~FakeUrlRequestRewriteRulesProvider() final = default;
+
   FakeUrlRequestRewriteRulesProvider(
       const FakeUrlRequestRewriteRulesProvider&) = delete;
   FakeUrlRequestRewriteRulesProvider& operator=(
@@ -74,7 +92,7 @@ class FakeUrlRequestRewriteRulesProvider
 
  private:
   void GetUrlRequestRewriteRules(
-      GetUrlRequestRewriteRulesCallback callback) override {
+      GetUrlRequestRewriteRulesCallback callback) final {
     // Only send the rules once. They do not expire
     if (rules_sent_)
       return;
@@ -195,6 +213,7 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
   base::Optional<base::fuchsia::ScopedServiceBinding<
       chromium::cast::UrlRequestRewriteRulesProvider>>
       url_request_rules_provider_binding_;
+
   FakeApplicationContext application_context_;
   const base::fuchsia::ScopedServiceBinding<chromium::cast::ApplicationContext>
       context_binding_;
@@ -398,10 +417,6 @@ class CastRunnerIntegrationTest : public testing::Test {
   void StartCastComponent(base::StringPiece component_url) {
     // Configure the Runner, including a service directory channel to publish
     // services to.
-    fidl::InterfaceHandle<fuchsia::io::Directory> directory;
-    component_services_.GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
-        directory.NewRequest().TakeChannel());
     fuchsia::sys::StartupInfo startup_info;
     startup_info.launch_info.url = component_url.as_string();
 
@@ -418,7 +433,16 @@ class CastRunnerIntegrationTest : public testing::Test {
     component_services_client_ =
         std::make_unique<sys::ServiceDirectory>(std::move(svc_directory));
 
-    // Place the ServiceDirectory in the |flat_namespace|.
+    // Populate |component_services_| with services for the component to use.
+    fidl::InterfaceHandle<fuchsia::io::Directory> directory;
+    component_services_.GetOrCreateDirectory("svc")->Serve(
+        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+        directory.NewRequest().TakeChannel());
+    component_services_.AddPublicService(
+        cors_exempt_header_provider_binding_.GetHandler(
+            &cors_exempt_header_provider_));
+
+    // Provide the directory of services in the |flat_namespace|.
     startup_info.flat_namespace.paths.emplace_back(base::kServiceDirectoryPath);
     startup_info.flat_namespace.directories.emplace_back(
         directory.TakeChannel());
@@ -532,6 +556,10 @@ class CastRunnerIntegrationTest : public testing::Test {
   TestApiBindings api_bindings_;
   std::unique_ptr<FakeUrlRequestRewriteRulesProvider>
       url_request_rewrite_rules_provider_;
+
+  FakeCorsExemptHeaderProvider cors_exempt_header_provider_;
+  fidl::BindingSet<chromium::cast::CorsExemptHeaderProvider>
+      cors_exempt_header_provider_binding_;
 
   // Incoming service directory, ComponentContext and per-component state.
   sys::OutgoingDirectory component_services_;
@@ -1096,6 +1124,25 @@ TEST_F(CastRunnerIntegrationTest,
   CheckAppUrl(kContentDirectoryUrl);
 
   EXPECT_EQ(ExecuteJavaScript("document.title"), "absent");
+}
+
+// Verifies that starting a component fails if CORS exempt headers cannot be
+// fetched.
+TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
+  GURL app_url = test_server_.GetURL(kBlankAppUrl);
+  app_config_manager_.AddApp(kTestAppId, app_url);
+
+  // Start the Cast component, and wait for the controller to disconnect.
+  StartCastComponent(base::StringPrintf("cast:%s", kTestAppId));
+
+  base::RunLoop run_loop;
+  component_controller_.set_error_handler([&run_loop](zx_status_t status) {
+    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
+    run_loop.Quit();
+  });
+  run_loop.Run();
+
+  EXPECT_TRUE(!component_state_);
 }
 
 class CastRunnerFrameHostIntegrationTest : public CastRunnerIntegrationTest {
