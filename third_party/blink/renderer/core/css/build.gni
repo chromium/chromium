@@ -573,6 +573,8 @@ blink_core_sources_css = [
   "style_recalc_root.h",
   "style_rule.cc",
   "style_rule.h",
+  "style_rule_counter_style.cc",
+  "style_rule_counter_style.h",
   "style_rule_css_style_declaration.cc",
   "style_rule_css_style_declaration.h",
   "style_rule_import.cc",

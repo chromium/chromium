@@ -27,6 +27,7 @@ class CSSParserTokenStream;
 class StyleRule;
 class StyleRuleBase;
 class StyleRuleCharset;
+class StyleRuleCounterStyle;
 class StyleRuleFontFace;
 class StyleRuleImport;
 class StyleRuleKeyframe;
