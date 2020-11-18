@@ -86,6 +86,11 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "session_id_max_age_days",
           config->session_id_max_age.InDays()));
 
+  config->max_prefetch_image_requests_per_refresh =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kInterestFeedV2, "max_prefetch_image_requests_per_refresh",
+          config->max_prefetch_image_requests_per_refresh);
+
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
 }

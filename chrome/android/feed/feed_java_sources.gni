@@ -47,6 +47,7 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/CardMenuBottomSheetContent.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedListContentManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProvider.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTracker.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",

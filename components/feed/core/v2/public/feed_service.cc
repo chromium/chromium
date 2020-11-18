@@ -121,6 +121,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return service_delegate_->GetLanguageTag();
   }
   void ClearAll() override { service_delegate_->ClearAll(); }
+  void PrefetchImage(const GURL& url) override {
+    service_delegate_->PrefetchImage(url);
+  }
   bool IsSignedIn() override { return identity_manager_->HasPrimaryAccount(); }
 
  private:

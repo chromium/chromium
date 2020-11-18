@@ -92,4 +92,10 @@ bool FeedServiceBridge::IsEnabled() {
   return FeedService::IsEnabled(*profile->GetPrefs());
 }
 
+void FeedServiceBridge::PrefetchImage(const GURL& url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FeedServiceBridge_prefetchImage(
+      env, base::android::ConvertUTF8ToJavaString(env, url.spec()));
+}
+
 }  // namespace feed

@@ -67,6 +67,8 @@ class FeedService : public KeyedService {
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     // Clear all stored data.
     virtual void ClearAll() = 0;
+    // Fetch the image and store it in the disk cache.
+    virtual void PrefetchImage(const GURL& url) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.

@@ -34,6 +34,7 @@
 #include "components/feed/core/v2/tasks/clear_all_task.h"
 #include "components/feed/core/v2/tasks/get_prefetch_suggestions_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
+#include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
 #include "components/feed/feed_feature_list.h"
@@ -276,6 +277,10 @@ void FeedStream::UpdateIsActivityLoggingEnabled() {
 
 std::string FeedStream::GetSessionId() const {
   return GetMetadata()->GetSessionIdToken();
+}
+
+void FeedStream::PrefetchImage(const GURL& url) {
+  delegate_->PrefetchImage(url);
 }
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
@@ -702,6 +707,10 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   metrics_reporter_->OnBackgroundRefresh(result.final_status);
   if (result.loaded_new_content_from_network && prefetch_service_)
     prefetch_service_->NewSuggestionsAvailable();
+
+  // Add prefetch images to task queue without waiting to finish
+  // since we treat them as best-effort.
+  task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
 
   refresh_task_scheduler_->RefreshTaskComplete();
 }

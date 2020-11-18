@@ -602,6 +602,10 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
   std::string GetLanguageTag() override { return "en-US"; }
   void ClearAll() override {}
   bool IsSignedIn() override { return is_signed_in_; }
+  void PrefetchImage(const GURL& url) override {
+    prefetched_images_.push_back(url);
+    prefetch_image_call_count_++;
+  }
 
   // For tests.
 
@@ -692,6 +696,8 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
   bool is_offline_ = false;
   bool is_signed_in_ = true;
   base::test::ScopedFeatureList scoped_feature_list_;
+  int prefetch_image_call_count_ = 0;
+  std::vector<GURL> prefetched_images_;
 };
 
 class FeedStreamConditionalActionsUploadTest : public FeedStreamTest {
@@ -742,6 +748,21 @@ TEST_F(FeedStreamTest, BackgroundRefreshSuccess) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   // Verify that prefetch service was informed.
   EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
+}
+
+TEST_F(FeedStreamTest, BackgroundRefreshPrefetchesImages) {
+  // Trigger a background refresh.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->ExecuteRefreshTask();
+  EXPECT_EQ(0, prefetch_image_call_count_);
+  WaitForIdleTaskQueue();
+
+  std::vector<GURL> expected_fetches(
+      {GURL("http://image0/"), GURL("http://favicon0/"), GURL("http://image1/"),
+       GURL("http://favicon1/")});
+  // Verify that images were prefetched.
+  EXPECT_EQ(4, prefetch_image_call_count_);
+  EXPECT_EQ(expected_fetches, prefetched_images_);
 }
 
 TEST_F(FeedStreamTest, BackgroundRefreshNotAttemptedWhenModelIsLoading) {

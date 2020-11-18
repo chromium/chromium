@@ -42,6 +42,8 @@ struct Config {
   bool send_signed_out_session_logs = false;
   // The max age of a signed-out session token.
   base::TimeDelta session_id_max_age = base::TimeDelta::FromDays(30);
+  // Maximum number of images prefetched per refresh.
+  int max_prefetch_image_requests_per_refresh = 50;
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {
