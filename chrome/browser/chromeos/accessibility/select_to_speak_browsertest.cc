@@ -72,7 +72,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   }
 
-  SpeechMonitor sm_;
+  test::SpeechMonitor sm_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
   gfx::Rect GetWebContentsBounds() const {

@@ -16,6 +16,7 @@
 // TODO(katie): This may need to move into Content as part of the TTS refactor.
 
 namespace chromeos {
+namespace test {
 
 struct SpeechMonitorUtterance {
   SpeechMonitorUtterance(std::string text_, std::string lang_)
@@ -129,6 +130,7 @@ class SpeechMonitor : public content::TtsPlatform {
   DISALLOW_COPY_AND_ASSIGN(SpeechMonitor);
 };
 
+}  // namespace test
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_SPEECH_MONITOR_H_

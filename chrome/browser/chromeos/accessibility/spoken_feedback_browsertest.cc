@@ -963,7 +963,7 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
         chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
   }
 
-  SpeechMonitor sm_;
+  test::SpeechMonitor sm_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OobeSpokenFeedbackTest);

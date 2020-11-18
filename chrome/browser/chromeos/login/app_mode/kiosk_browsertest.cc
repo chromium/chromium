@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, NoEnterpriseAutoLaunchWhenUntrusted) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
-  SpeechMonitor sm;
+  test::SpeechMonitor sm;
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
 IN_PROC_BROWSER_TEST_F(
     KioskTest,
     PRE_AccessibilityExtensionsResetTheirStateUponSessionRestart) {
-  SpeechMonitor speech_monitor;
+  test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchWithOptions(true /* check_launch_data */,
@@ -1574,7 +1574,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The data should persist when extension is restarted.
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
-  SpeechMonitor speech_monitor2;
+  test::SpeechMonitor speech_monitor2;
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   speech_monitor2.ExpectSpeech("ChromeVox spoken feedback is ready");
   speech_monitor2.Replay();
@@ -1596,7 +1596,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     KioskTest,
     AccessibilityExtensionsResetTheirStateUponSessionRestart) {
-  SpeechMonitor speech_monitor;
+  test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchWithOptions(true /* check_launch_data */,

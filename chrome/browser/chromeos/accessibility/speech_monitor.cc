@@ -11,6 +11,7 @@
 #include "content/public/browser/tts_controller.h"
 
 namespace chromeos {
+namespace test {
 
 namespace {
 
@@ -266,4 +267,5 @@ void SpeechMonitor::MaybePrintExpectations() {
              << base::JoinString(replayed_queue_, "\n");
 }
 
+}  // namespace test
 }  // namespace chromeos

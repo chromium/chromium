@@ -2616,7 +2616,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 // the accessibility focus.
 IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  chromeos::SpeechMonitor speech_monitor;
+  chromeos::test::SpeechMonitor speech_monitor;
 
   // Enable ChromeVox.
   ASSERT_FALSE(
