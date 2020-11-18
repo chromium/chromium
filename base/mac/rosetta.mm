@@ -97,7 +97,7 @@ void RequestRosettaInstallation(
     // - (void)[OAHSoftwareUpdateController
     //      startUpdateWithOptions:(NSDictionary*)options
     //              withHostWindow:(NSWindow*)window
-    //                  completion:(void (^)(BOOL))block]
+    //                  completion:(void (^)(BOOL, NSError*))block]
     SEL selector = @selector(startUpdateWithOptions:withHostWindow:completion:);
 
     scoped_nsobject<NSObject> controller(
@@ -137,7 +137,7 @@ void RequestRosettaInstallation(
 
     __block OnceCallback<void(RosettaInstallationResult)> block_callback =
         std::move(callback);
-    auto completion = ^(BOOL success) {
+    auto completion = ^(BOOL success, NSError* error) {
       // There _should_ be a valid callback and current_rosetta_installation
       // here. However, crashes indicate that sometimes
       // OAHSoftwareUpdateController performs a double-callback of the block.
