@@ -19,7 +19,7 @@
 namespace {
 
 // The preferred height for the label.
-constexpr int kLabelPreferredHeight = 16;
+constexpr int kLabelPreferredHeight = 32;
 
 // The margins of the delete button.
 constexpr gfx::Insets kDeleteButtonMargins =
