@@ -273,7 +273,8 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, UserDeletedEntryDispatchesEvent) {
   EXPECT_TRUE(GetAllItems().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(ContentIndexTest, MetricsCollected) {
+// TODO(crbug.com/1080922): flaky.
+IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
   // Inititally there is no content.
   {
     base::HistogramTester histogram_tester;
