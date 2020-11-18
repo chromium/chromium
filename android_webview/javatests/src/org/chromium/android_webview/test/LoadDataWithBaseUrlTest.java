@@ -491,7 +491,7 @@ public class LoadDataWithBaseUrlTest {
         final int callCount = onPageFinishedHelper.getCallCount();
         mActivityTestRule.loadDataWithBaseUrlAsync(
                 mAwContents, pageHtml, "text/html", false, baseUrl, null);
-        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42");
+        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42+42");
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(baseUrl, onPageFinishedHelper.getUrl());
     }
