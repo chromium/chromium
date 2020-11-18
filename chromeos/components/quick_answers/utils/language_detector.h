@@ -17,7 +17,6 @@ namespace chromeos {
 namespace quick_answers {
 
 // Utility class for language detection.
-// TODO(b/172992698): Add test support.
 class LanguageDetector {
  public:
   using DetectLanguageCallback =

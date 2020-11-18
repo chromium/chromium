@@ -76,6 +76,7 @@ source_set("unit_tests") {
     "translation_response_parser_unittest.cc",
     "translation_result_loader_unittest.cc",
     "understanding/intent_generator_unittest.cc",
+    "utils/language_detector_unittest.cc",
   ]
 
   deps = [
