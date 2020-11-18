@@ -262,7 +262,6 @@ class ComputedStyle : public ComputedStyleBase,
   // removed.
   friend class CSSToStyleMap;
   friend class FilterOperationResolver;
-  friend class StyleBuilderConverter;
   friend class StyleResolverState;
   friend class StyleResolver;
 
