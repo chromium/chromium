@@ -314,8 +314,13 @@ void WaylandDataDragController::OnMimeTypeDataTransferred(
 
 void WaylandDataDragController::OnDataTransferFinished(
     std::unique_ptr<OSExchangeData> received_data) {
-  data_offer_->FinishOffer();
   window_->OnDragDrop(std::move(received_data));
+
+  // Offer must be finished and destroyed here as some compositors may delay to
+  // send wl_data_source::finished|cancelled until owning client destroys the
+  // drag offer. e.g: Exosphere.
+  data_offer_->FinishOffer();
+  data_offer_.reset();
 
   unprocessed_mime_types_.clear();
   state_ = State::kIdle;
