@@ -356,6 +356,8 @@ In a bird's‐eye view, it consists of two parts:
 
    This is part of the Line Box Construction phase above.
 
+Initial design doc: [Using ICU BiDi in LayoutNG](https://docs.google.com/document/d/182H1Sj_FCEHcl6eC69J4KcIc5m3ohSzgo297KYB0S_c/edit?usp=sharing)
+
 ### Interface for Editing ###
 
 [NGOffsetMapping] provides functions for converting between offsets in the text
