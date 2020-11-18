@@ -88,17 +88,17 @@
         <h1 id="appTitle">[[i18n('appTitle')]]</h1>
         <scanner-select id="scannerSelect" scanners="[[scanners_]]"
             loaded="[[scannersLoaded_]]"
-            settings-disabled="[[settingsDisabled_]]"
+            disabled="[[settingsDisabled_]]"
             selected-scanner-id="{{selectedScannerId}}"></scanner-select>
         <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
-            settings-disabled="[[settingsDisabled_]]"
+            disabled="[[settingsDisabled_]]"
             selected-source="{{selectedSource}}"></source-select>
         <scan-to-select id="scanToSelect"
-            settings-disabled="[[settingsDisabled_]]"
+            disabled="[[settingsDisabled_]]"
             selected-file-path="{{selectedFilePath}}">
         </scan-to-select>
         <file-type-select id="fileTypeSelect"
-            settings-disabled="[[settingsDisabled_]]"
+            disabled="[[settingsDisabled_]]"
             selected-file-type="{{selectedFileType}}"></file-type-select>
         <div id="more-settings-line-separator"></div>
         <cr-button id="moreSettingsButton" on-click="toggleClicked_"
@@ -111,17 +111,17 @@
         <iron-collapse id="collapse" opened="{{opened}}">
           <color-mode-select id="colorModeSelect"
               color-modes="[[capabilities_.colorModes]]"
-              settings-disabled="[[settingsDisabled_]]"
+              disabled="[[settingsDisabled_]]"
               selected-color-mode="{{selectedColorMode}}">
           </color-mode-select>
           <page-size-select id="pageSizeSelect"
               page-sizes="[[selectedSourcePageSizes_]]"
-              settings-disabled="[[settingsDisabled_]]"
+              disabled="[[settingsDisabled_]]"
               selected-page-size="{{selectedPageSize}}">
           </page-size-select>
           <resolution-select id="resolutionSelect"
               resolutions="[[capabilities_.resolutions]]"
-              settings-disabled="[[settingsDisabled_]]"
+              disabled="[[settingsDisabled_]]"
               selected-resolution="{{selectedResolution}}">
           </resolution-select>
         </iron-collapse>

@@ -44,8 +44,7 @@ Polymer({
     loaded: Boolean,
   },
 
-  observers:
-      ['onNumOptionsChange(scanners.length)', 'onScannersChange_(scanners.*)'],
+  observers: ['onScannersChange_(scanners.*)'],
 
   /**
    * @param {!chromeos.scanning.mojom.Scanner} scanner

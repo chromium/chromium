@@ -4,9 +4,6 @@
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @type {number} */
-const REQUIRED_NUM_OPTIONS = 2;
-
 /**
  * Helper functions for custom elements that implement a scan setting using a
  * single select element.
@@ -14,48 +11,8 @@ const REQUIRED_NUM_OPTIONS = 2;
  */
 export const SelectBehavior = {
   properties: {
-    /** Controls whether the select element is disabled. */
-    disabled: {
-      type: Boolean,
-      computed: 'computeDisabled_(numOptions_, settingsDisabled)',
-    },
-
-    /**
-     * Indicates whether all scan settings have been disabled by the parent
-     * element.
-     */
-    settingsDisabled: Boolean,
-
-    /**
-     * The number of options in the select element.
-     * @type {number}
-     * @private
-     */
-    numOptions_: {
-      type: Number,
-      value: 0,
-    },
-  },
-
-  /**
-   * Called by the custom element when the number of options in its select
-   * element changes.
-   * @param {number} numOptions
-   */
-  onNumOptionsChange(numOptions) {
-    this.numOptions_ = numOptions;
-  },
-
-  /**
-   * Determines whether the select element should be disabled based on its
-   * number of options and whether settings are disabled.
-   * @param {number} numOptions
-   * @param {boolean} settingsDisabled
-   * @return {boolean}
-   * @private
-   */
-  computeDisabled_(numOptions, settingsDisabled) {
-    return numOptions < REQUIRED_NUM_OPTIONS || settingsDisabled;
+    /** @type {boolean} */
+    disabled: Boolean,
   },
 
   /**

@@ -34,10 +34,10 @@ export function colorModeSelectTest() {
   });
 
   test('initializeColorModeSelect', () => {
-    // Before options are added, the dropdown should be disabled and empty.
+    // Before options are added, the dropdown should be enabled and empty.
     const select = colorModeSelect.$$('select');
     assertTrue(!!select);
-    assertTrue(select.disabled);
+    assertFalse(select.disabled);
     assertEquals(0, select.length);
 
     const firstColorMode = ColorMode.COLOR;
@@ -45,9 +45,8 @@ export function colorModeSelectTest() {
     colorModeSelect.colorModes = [firstColorMode, secondColorMode];
     flush();
 
-    // Verify that adding more than one color mode results in the dropdown
-    // becoming enabled with the correct options.
-    assertFalse(select.disabled);
+    // Verify that adding color modes results in the dropdown displaying the
+    // correct options.
     assertEquals(2, select.length);
     assertEquals(
         getColorModeString(firstColorMode),
@@ -56,27 +55,6 @@ export function colorModeSelectTest() {
         getColorModeString(secondColorMode),
         select.options[1].textContent.trim());
     assertEquals(firstColorMode.toString(), select.value);
-  });
-
-  test('colorModeSelectDisabled', () => {
-    const select = colorModeSelect.$$('select');
-    assertTrue(!!select);
-
-    let colorModeArr = [ColorMode.BLACK_AND_WHITE];
-    colorModeSelect.colorModes = colorModeArr;
-    flush();
-
-    // Verify the dropdown is disabled when there's only one option.
-    assertEquals(1, select.length);
-    assertTrue(select.disabled);
-
-    colorModeArr = colorModeArr.concat([ColorMode.GRAYSCALE]);
-    colorModeSelect.colorModes = colorModeArr;
-    flush();
-
-    // Verify the dropdown is enabled when there's more than one option.
-    assertEquals(2, select.length);
-    assertFalse(select.disabled);
   });
 
   test('colorModesSortedAlphabetically', () => {

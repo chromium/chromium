@@ -40,10 +40,7 @@ Polymer({
     },
   },
 
-  observers: [
-    'onNumOptionsChange(resolutions.length)',
-    'onResolutionsChange_(resolutions.*)'
-  ],
+  observers: ['onResolutionsChange_(resolutions.*)'],
 
   /**
    * @param {number} resolution

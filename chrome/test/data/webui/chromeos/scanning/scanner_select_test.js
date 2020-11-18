@@ -72,29 +72,6 @@ export function scannerSelectTest() {
     assertEquals(tokenToString(firstScannerId), select.value);
   });
 
-  test('scannerSelectDisabled', () => {
-    const select = scannerSelect.$$('select');
-    assertTrue(!!select);
-
-    let scannerArr = [createScanner(firstScannerId, firstScannerName)];
-    scannerSelect.scanners = scannerArr;
-    scannerSelect.loaded = true;
-    flush();
-
-    // Verify the dropdown is disabled when there's only one option.
-    assertEquals(1, select.length);
-    assertTrue(select.disabled);
-
-    scannerArr =
-        scannerArr.concat([createScanner(secondScannerId, secondScannerName)]);
-    scannerSelect.scanners = scannerArr;
-    flush();
-
-    // Verify the dropdown is enabled when there's more than one option.
-    assertEquals(2, select.length);
-    assertFalse(select.disabled);
-  });
-
   test('noScanners', () => {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
@@ -107,11 +84,10 @@ export function scannerSelectTest() {
     // Verify that scanner connection help text is visible.
     assertFalse(helpLink.hidden);
 
-    // Verify the dropdown is disabled and displays the default option when no
-    // scanners are available.
+    // Verify the dropdown displays the default option when no scanners are
+    // available.
     assertEquals(1, select.length);
     assertEquals('No available scanners', select.options[0].textContent.trim());
-    assertTrue(select.disabled);
   });
 
   test('scannersSortedAlphabetically', () => {

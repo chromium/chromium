@@ -27,11 +27,11 @@ export function resolutionSelectTest() {
   });
 
   test('initializeResolutionSelect', () => {
-    // Before options are added, the dropdown should be disabled and empty.
+    // Before options are added, the dropdown should be enabled and empty.
     const select =
         /** @type {!HTMLSelectElement} */ (resolutionSelect.$$('select'));
     assertTrue(!!select);
-    assertTrue(select.disabled);
+    assertFalse(select.disabled);
     assertEquals(0, select.length);
 
     const firstResolution = 75;
@@ -39,9 +39,8 @@ export function resolutionSelectTest() {
     resolutionSelect.resolutions = [firstResolution, secondResolution];
     flush();
 
-    // Verify that adding more than one resolution results in the dropdown
-    // becoming enabled with the correct options.
-    assertFalse(select.disabled);
+    // Verify that adding resolutions results in the dropdown displaying the
+    // correct options.
     assertEquals(2, select.length);
     assertEquals(
         secondResolution.toString() + ' dpi',
@@ -58,27 +57,6 @@ export function resolutionSelectTest() {
           assertEquals(
               secondResolution.toString(), resolutionSelect.selectedResolution);
         });
-  });
-
-  test('resolutionSelectDisabled', () => {
-    const select = resolutionSelect.$$('select');
-    assertTrue(!!select);
-
-    let resolutionArr = [75];
-    resolutionSelect.resolutions = resolutionArr;
-    flush();
-
-    // Verify the dropdown is disabled when there's only one option.
-    assertEquals(1, select.length);
-    assertTrue(select.disabled);
-
-    resolutionArr = resolutionArr.concat([150]);
-    resolutionSelect.resolutions = resolutionArr;
-    flush();
-
-    // Verify the dropdown is enabled when there's more than one option.
-    assertEquals(2, select.length);
-    assertFalse(select.disabled);
   });
 
   test('resolutionsSortedCorrectly', () => {

@@ -29,10 +29,4 @@ Polymer({
       notify: true,
     },
   },
-
-  /** @override */
-  created() {
-    // The dropdown always contains one option per FileType.
-    this.onNumOptionsChange(chromeos.scanning.mojom.FileType.MAX_VALUE + 1);
-  },
 });

@@ -40,9 +40,7 @@ Polymer({
     },
   },
 
-  observers: [
-    'onNumOptionsChange(colorModes.length)', 'onColorModesChange_(colorModes.*)'
-  ],
+  observers: ['onColorModesChange_(colorModes.*)'],
 
   /**
    * @param {chromeos.scanning.mojom.ColorMode} mojoColorMode

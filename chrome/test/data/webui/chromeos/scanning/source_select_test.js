@@ -48,10 +48,10 @@ export function sourceSelectTest() {
   });
 
   test('initializeSourceSelect', () => {
-    // Before options are added, the dropdown should be disabled and empty.
+    // Before options are added, the dropdown should be enabled and empty.
     const select = sourceSelect.$$('select');
     assertTrue(!!select);
-    assertTrue(select.disabled);
+    assertFalse(select.disabled);
     assertEquals(0, select.length);
 
     const firstSource =
@@ -62,9 +62,8 @@ export function sourceSelectTest() {
     sourceSelect.sources = sourceArr;
     flush();
 
-    // Verify that adding more than one source results in the dropdown becoming
-    // enabled with the correct options.
-    assertFalse(select.disabled);
+    // Verify that adding sources results in the dropdown displaying the correct
+    // options.
     assertEquals(2, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
@@ -73,29 +72,6 @@ export function sourceSelectTest() {
         getSourceTypeString(secondSource.type),
         select.options[1].textContent.trim());
     assertEquals(secondSource.name, select.value);
-  });
-
-  test('sourceSelectDisabled', () => {
-    const select = sourceSelect.$$('select');
-    assertTrue(!!select);
-
-    let sourceArr =
-        [createScannerSource(SourceType.FLATBED, 'flatbed', pageSizes)];
-    sourceSelect.sources = sourceArr;
-    flush();
-
-    // Verify the dropdown is disabled when there's only one option.
-    assertEquals(1, select.length);
-    assertTrue(select.disabled);
-
-    sourceArr = sourceArr.concat(
-        [createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes)]);
-    sourceSelect.sources = sourceArr;
-    flush();
-
-    // Verify the dropdown is enabled when there's more than one option.
-    assertEquals(2, select.length);
-    assertFalse(select.disabled);
   });
 
   test('sourcesSortedAlphabetically', () => {

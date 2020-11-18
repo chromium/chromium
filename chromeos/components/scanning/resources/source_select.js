@@ -37,10 +37,7 @@ Polymer({
     },
   },
 
-  observers: [
-    'onNumOptionsChange(sources.length)',
-    'onSourcesChange_(sources.*)',
-  ],
+  observers: ['onSourcesChange_(sources.*)'],
 
   /**
    * @param {chromeos.scanning.mojom.SourceType} mojoSourceType

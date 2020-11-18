@@ -40,9 +40,7 @@ Polymer({
     },
   },
 
-  observers: [
-    'onNumOptionsChange(pageSizes.length)', 'onPageSizesChange_(pageSizes.*)'
-  ],
+  observers: ['onPageSizesChange_(pageSizes.*)'],
 
   /**
    * @param {!chromeos.scanning.mojom.PageSize} pageSize

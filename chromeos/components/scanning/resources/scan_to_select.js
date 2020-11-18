@@ -44,9 +44,6 @@ Polymer({
     // Default option is 'My files'.
     this.displayText_ = this.i18n('myFilesSelectOption');
 
-    // The dropdown always has 2 options.
-    this.onNumOptionsChange(2);
-
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
   },
