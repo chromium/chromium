@@ -364,10 +364,7 @@ android_aar_prebuilt("androidx_fragment_fragment_java") {
     ":androidx_viewpager_viewpager_java",
   ]
   resource_overlay = true
-  deps += [
-    "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java",
-    "//third_party/android_deps/utils:java",
-  ]
+  deps += [ "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java" ]
 
   # Omit this file since we use our own copy, included above.
   # We can remove this once we migrate to AndroidX master for all libraries.

@@ -207,8 +207,6 @@ def ProcessJavacOutput(output):
       r'(Note: .* uses? unchecked or unsafe operations.)$')
   recompile_re = re.compile(r'(Note: Recompile with -Xlint:.* for details.)$')
 
-  activity_re = re.compile(r'^(?P<prefix>\s*location: )class Activity$')
-
   warning_color = ['full_message', colorama.Fore.YELLOW + colorama.Style.DIM]
   error_color = ['full_message', colorama.Fore.MAGENTA + colorama.Style.BRIGHT]
   marker_color = ['marker', colorama.Fore.BLUE + colorama.Style.BRIGHT]
@@ -224,13 +222,6 @@ def ProcessJavacOutput(output):
     return not (deprecated_re.match(line) or unchecked_re.match(line)
                 or recompile_re.match(line))
 
-  def Elaborate(line):
-    if activity_re.match(line):
-      prefix = ' ' * activity_re.match(line).end('prefix')
-      return '{}\n{}Expecting a FragmentActivity? See {}'.format(
-          line, prefix, 'docs/ui/android/bytecode_rewriting.md')
-    return line
-
   def ApplyColors(line):
     if warning_re.match(line):
       line = Colorize(line, warning_re, warning_color)
@@ -240,9 +231,7 @@ def ProcessJavacOutput(output):
       line = Colorize(line, marker_re, marker_color)
     return line
 
-  lines = (l for l in output.split('\n') if ApplyFilters(l))
-  lines = (ApplyColors(Elaborate(l)) for l in lines)
-  return '\n'.join(lines)
+  return '\n'.join(map(ApplyColors, filter(ApplyFilters, output.split('\n'))))
 
 
 def CheckErrorproneStderrWarning(jar_path, expected_warning_regex,
