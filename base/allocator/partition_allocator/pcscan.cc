@@ -256,6 +256,8 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
   static_assert(alignof(uintptr_t) % alignof(void*) == 0,
                 "Alignment of uintptr_t must be at least as strict as "
                 "alignment of a pointer type.");
+  const bool uses_giga_cage = root_.UsesGigaCage();
+  (void)uses_giga_cage;
   size_t new_quarantine_size = 0;
 
   for (uintptr_t* payload = begin; payload < end; ++payload) {
@@ -269,7 +271,7 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
 #if defined(PA_HAS_64_BITS_POINTERS)
     // On partitions without extras (partitions with aligned allocations),
     // memory is not allocated from the GigaCage.
-    if (root_.UsesGigaCage()) {
+    if (uses_giga_cage) {
       // With GigaCage, we first do a fast bitmask check to see if the
       // pointer points to the normal bucket pool.
       if (!PartitionAddressSpace::IsInNormalBucketPool(
