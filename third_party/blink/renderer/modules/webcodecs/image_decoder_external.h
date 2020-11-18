@@ -66,6 +66,10 @@ class MODULES_EXPORT ImageDecoderExternal final : public ScriptWrappable,
   void MaybeSatisfyPendingMetadataDecodes();
   void MaybeUpdateMetadata();
 
+  // Returns false if the decoder was constructed with an ArrayBuffer or
+  // ArrayBufferView that has since been neutered.
+  bool HasValidEncodedData() const;
+
   Member<ScriptState> script_state_;
 
   // Used when a ReadableStream is provided.
