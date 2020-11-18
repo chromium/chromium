@@ -1525,6 +1525,9 @@ extern const char kBentoOfflineDescription[];
 extern const char kCCTIncognitoName[];
 extern const char kCCTIncognitoDescription[];
 
+extern const char kCCTIncognitoAvailableToThirdPartyName[];
+extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
+
 extern const char kCCTTargetTranslateLanguageName[];
 extern const char kCCTTargetTranslateLanguageDescription[];
 

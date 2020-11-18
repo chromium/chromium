@@ -461,6 +461,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "cct-incognito-available-to-third-party",
+    "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "cdm-factory-daemon",
     "owners": [ "jkardatzke", "xhwang", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 91

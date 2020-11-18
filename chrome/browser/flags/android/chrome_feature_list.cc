@@ -128,6 +128,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kCCTClientDataHeader,
     &kCCTExternalLinkHandling,
     &kCCTIncognito,
+    &kCCTIncognitoAvailableToThirdParty,
     &kCCTPostMessageAPI,
     &kCCTRedirectPreconnect,
     &kCCTReportParallelRequestStatus,
@@ -356,6 +357,9 @@ const base::Feature kCCTExternalLinkHandling{"CCTExternalLinkHandling",
 
 const base::Feature kCCTIncognito{"CCTIncognito",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTIncognitoAvailableToThirdParty{
+    "CCTIncognitoAvailableToThirdParty", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTPostMessageAPI{"CCTPostMessageAPI",
                                        base::FEATURE_ENABLED_BY_DEFAULT};

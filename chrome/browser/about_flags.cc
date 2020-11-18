@@ -4727,6 +4727,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_ANDROID)
+    {"cct-incognito-available-to-third-party",
+     flag_descriptions::kCCTIncognitoAvailableToThirdPartyName,
+     flag_descriptions::kCCTIncognitoAvailableToThirdPartyDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTIncognitoAvailableToThirdParty)},
+#endif
+
+#if defined(OS_ANDROID)
     {"background-task-component-update",
      flag_descriptions::kBackgroundTaskComponentUpdateName,
      flag_descriptions::kBackgroundTaskComponentUpdateDescription, kOsAndroid,

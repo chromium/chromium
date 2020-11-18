@@ -42664,6 +42664,7 @@ from previous Chrome versions.
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
   <int value="-1428589407" label="WebRTCPipeWireCapturer:disabled"/>
+  <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
   <int value="-1426817842" label="BlockTabUnders:enabled"/>
   <int value="-1426150007" label="ignore-previews-blacklist"/>
   <int value="-1426034869" label="NoCreditCardAbort:enabled"/>
@@ -44581,6 +44582,7 @@ from previous Chrome versions.
   <int value="453017472"
       label="IntentBlockExternalFormRedirectsNoGesture:disabled"/>
   <int value="453102772" label="OfflinePagesLoadSignalCollecting:disabled"/>
+  <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
