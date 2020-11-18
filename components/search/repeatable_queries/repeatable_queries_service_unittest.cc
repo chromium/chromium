@@ -146,6 +146,18 @@ class TestRepeatableQueriesService : public RepeatableQueriesService {
     return &search_provider_observer_;
   }
 
+  void SearchProviderChanged() {
+    RepeatableQueriesService::SearchProviderChanged();
+  }
+
+  void SigninStatusChanged() {
+    RepeatableQueriesService::SigninStatusChanged();
+  }
+
+  void FlushForTesting(base::OnceClosure flushed) {
+    RepeatableQueriesService::FlushForTesting(std::move(flushed));
+  }
+
   GURL GetQueryDestinationURL(const base::string16& query) {
     return RepeatableQueriesService::GetQueryDestinationURL(query);
   }
@@ -155,14 +167,6 @@ class TestRepeatableQueriesService : public RepeatableQueriesService {
   }
 
   GURL GetRequestURL() { return RepeatableQueriesService::GetRequestURL(); }
-
-  void SearchProviderChanged() {
-    RepeatableQueriesService::SearchProviderChanged();
-  }
-
-  void SigninStatusChanged() {
-    RepeatableQueriesService::SigninStatusChanged();
-  }
 
   testing::NiceMock<MockSearchProviderObserver> search_provider_observer_;
 };
@@ -220,8 +224,10 @@ class RepeatableQueriesServiceTest : public ::testing::Test,
     // InMemoryURLIndex must be explicitly shut down or it will DCHECK() in
     // its destructor.
     in_memory_url_index_->Shutdown();
-    // Needed to prevent leaks due to posted history index rebuild task.
-    task_environment_.RunUntilIdle();
+
+    WaitForRepeatableQueriesService();
+    WaitForHistoryService();
+    WaitForInMemoryURLIndex();
   }
 
   const TemplateURL* default_search_provider() {
@@ -284,12 +290,20 @@ class RepeatableQueriesServiceTest : public ::testing::Test,
     }
   }
 
+  // Waits for RepeatableQueriesService's async operations.
+  void WaitForRepeatableQueriesService() {
+    base::RunLoop run_loop;
+    service_->FlushForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // Waits for history::HistoryService's async operations.
   void WaitForHistoryService() {
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  }
 
-    // MemoryURLIndex schedules tasks to rebuild its index on the history
-    // thread. Block here to make sure they are complete.
+  // Waits for InMemoryURLIndex's async operations.
+  void WaitForInMemoryURLIndex() {
     BlockUntilInMemoryURLIndexIsRefreshed(in_memory_url_index_.get());
   }
 
@@ -650,6 +664,9 @@ TEST_F(RepeatableQueriesServiceTest, SignedOut_Deletion) {
                              GetQueryDestinationURL("local query 2"), ""}};
   // The deleted suggestion is not offered anymore.
   EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+
+  // Make sure there is no pending deletion task.
+  WaitForRepeatableQueriesService();
 
   // Request a refresh.
   RefreshAndMaybeWaitForService();

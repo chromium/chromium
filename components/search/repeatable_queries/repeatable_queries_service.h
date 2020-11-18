@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -19,8 +20,13 @@
 class SearchProviderObserver;
 class TemplateURLService;
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace history {
 class HistoryService;
+class URLDatabase;
 }  // namespace history
 
 namespace network {
@@ -59,8 +65,8 @@ class RepeatableQuery {
 
 // Provides repeatable query suggestions to be shown in the NTP Most Visited
 // tiles when Google is the default search provider. The repeatable queries are
-// requested from the server for signed-in users and extracted from the URL
-// database for unauthenticated users.
+// requested from the server for signed-in users and extracted from the
+// in-memory URLDatabase for unauthenticated users.
 class RepeatableQueriesService : public KeyedService {
  public:
   RepeatableQueriesService(
@@ -85,7 +91,7 @@ class RepeatableQueriesService : public KeyedService {
 
   // If Google is the default search provider, asynchronously requests
   // repeatable query suggestions from the server for signed-in users and
-  // synchronously extracts them from the URL database for
+  // synchronously extracts them from the in-memory URLDatabase for
   // unauthenticated users. Regardless of success, observers are notified via
   // RepeatableQueriesServiceObserver::OnRepeatableQueriesUpdated.
   void Refresh();
@@ -122,6 +128,8 @@ class RepeatableQueriesService : public KeyedService {
   // Returns the server request URL.
   GURL GetRequestURL();
 
+  void FlushForTesting(base::OnceClosure flushed);
+
  private:
   // Requests repeatable queries from the server. Called for signed-in users.
   void GetRepeatableQueriesFromServer();
@@ -135,6 +143,8 @@ class RepeatableQueriesService : public KeyedService {
 
   // Deletes |query| from the in-memory URLDatabase.
   void DeleteRepeatableQueryFromURLDatabase(const base::string16& query);
+  void DeleteRepeatableQueryFromURLDatabaseTask(const base::string16& query,
+                                                history::URLDatabase* url_db);
 
   // Deletes the query with |deletion_url| from the server.
   void DeleteRepeatableQueryFromServer(const std::string& deletion_url);
@@ -168,6 +178,9 @@ class RepeatableQueriesService : public KeyedService {
   std::set<base::string16> deleted_repeatable_queries_;
 
   std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders_;
+
+  // The TaskRunner to which in-memory URLDatabase deletion tasks are posted.
+  scoped_refptr<base::SequencedTaskRunner> deletion_task_runner_;
 
   base::WeakPtrFactory<RepeatableQueriesService> weak_ptr_factory_{this};
 };
