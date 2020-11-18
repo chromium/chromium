@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace net {
 
@@ -153,22 +154,14 @@ bool ParseBoolRelaxed(const Input& in, bool* out) {
 // one octet, then the bits of the first octet and the most significant bit
 // of the second octet must not be all zeroes or all ones.
 bool IsValidInteger(const Input& in, bool* negative) {
-  der::ByteReader reader(in);
-  uint8_t first_byte;
-
-  if (!reader.ReadByte(&first_byte))
-    return false;  // Empty inputs are not allowed.
-
-  uint8_t second_byte;
-  if (reader.ReadByte(&second_byte)) {
-    if ((first_byte == 0x00 || first_byte == 0xFF) &&
-        (first_byte & 0x80) == (second_byte & 0x80)) {
-      // Not a minimal encoding.
-      return false;
-    }
+  CBS cbs;
+  CBS_init(&cbs, in.UnsafeData(), in.Length());
+  int negative_int;
+  if (!CBS_is_valid_asn1_integer(&cbs, &negative_int)) {
+    return false;
   }
 
-  *negative = (first_byte & 0x80) == 0x80;
+  *negative = !!negative_int;
   return true;
 }
 
