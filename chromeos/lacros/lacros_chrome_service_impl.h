@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -234,7 +235,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Returns ash's version of the AshChromeService mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
-  int AshChromeServiceVersion();
+  base::Optional<uint32_t> AshChromeServiceVersion();
 
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.
