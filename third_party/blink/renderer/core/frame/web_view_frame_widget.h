@@ -70,8 +70,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   bool ScrollFocusedEditableElementIntoView() override;
 
   // WebFrameWidgetBase overrides:
-  bool ForSubframe() const override { return false; }
-  bool ForTopLevelFrame() const override { return !is_for_nested_main_frame_; }
   void SetAutoResizeMode(bool auto_resize,
                          const gfx::Size& min_size_before_dsf,
                          const gfx::Size& max_size_before_dsf,
@@ -90,7 +88,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WidgetBaseClient overrides:
   void FocusChanged(bool enabled) override;
 
-  void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
   void SetWindowRect(const gfx::Rect& window_rect);
@@ -109,11 +106,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
-
-  // This bit is used to tell if this is a nested widget (an "inner web
-  // contents") like a <webview> or <portal> widget. If false, the widget is the
-  // top level widget.
-  bool is_for_nested_main_frame_ = false;
 
   // In web tests, synchronous resizing mode may be used. Normally each widget's
   // size is controlled by IPC from the browser. In synchronous resize mode the

@@ -219,7 +219,8 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          frame_sink_id,
                          hidden,
                          never_composited,
-                         /*is_for_child_local_root=*/true),
+                         /*is_for_child_local_root=*/true,
+                         /*is_for_nested_main_frame=*/false),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;

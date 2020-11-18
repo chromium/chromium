@@ -100,8 +100,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   PaintLayerCompositor* Compositor() const;
 
   // WebFrameWidgetBase overrides:
-  bool ForSubframe() const override { return true; }
-  bool ForTopLevelFrame() const override { return false; }
   void DidCreateLocalRootView() override;
   void SetAutoResizeMode(bool auto_resize,
                          const gfx::Size& min_size_before_dsf,

@@ -82,7 +82,8 @@ class CORE_EXPORT WebFrameWidgetBase
       const viz::FrameSinkId& frame_sink_id,
       bool hidden,
       bool never_composited,
-      bool is_for_child_local_root);
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame);
   ~WebFrameWidgetBase() override;
 
   // Returns the WebFrame that this widget is attached to. It will be a local
@@ -95,15 +96,19 @@ class CORE_EXPORT WebFrameWidgetBase
 
   void BindLocalRoot(WebLocalFrame&);
 
-  // If this widget is for the top level frame. This is different than
+  // If this widget is for the top most main frame. This is different than
   // |ForMainFrame| because |ForMainFrame| could return true but this method
   // returns false. If this widget is a MainFrame widget embedded in another
   // widget, for example embedding a portal.
-  virtual bool ForTopLevelFrame() const = 0;
+  bool ForTopMostMainFrame() const;
+
+  // Adjusts whether the widget is nested or not. This is called during portal
+  // transitions.
+  void SetIsNestedMainFrameWidget(bool is_nested);
 
   // Returns true if this widget is for a local root that is a child frame,
   // false otherwise.
-  virtual bool ForSubframe() const = 0;
+  bool ForSubframe() const { return is_for_child_local_root_; }
 
   // Opposite of |ForSubframe|. If this widget is for the local main frame.
   bool ForMainFrame() const { return !ForSubframe(); }
@@ -325,7 +330,6 @@ class CORE_EXPORT WebFrameWidgetBase
   cc::LayerTreeHost* InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
-      bool for_child_local_root_frame,
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings) override;
@@ -871,12 +875,24 @@ class CORE_EXPORT WebFrameWidgetBase
     bool should_dispatch_first_layout_after_finished_loading = false;
     // Last background color sent to the browser. Only set for main frames.
     base::Optional<SkColor> last_background_color;
+    // This bit is used to tell if this is a nested widget (an "inner web
+    // contents") like a <webview> or <portal> widget. If false, the widget is
+    // the top level widget.
+    bool is_for_nested_main_frame = false;
   } main_frame_data_;
 
   MainFrameData& main_data() {
     DCHECK(ForMainFrame());
     return main_frame_data_;
   }
+
+  const MainFrameData& main_data() const {
+    DCHECK(ForMainFrame());
+    return main_frame_data_;
+  }
+
+  // Whether this widget is for a child local root, or otherwise a main frame.
+  const bool is_for_child_local_root_;
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

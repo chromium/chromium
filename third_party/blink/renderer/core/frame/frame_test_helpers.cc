@@ -292,7 +292,7 @@ WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
         GetSynchronousSingleThreadLayerTreeSettings();
     widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
         widget_client->main_thread_scheduler(),
-        widget_client->task_graph_runner(), true,
+        widget_client->task_graph_runner(),
         widget_client->GetInitialScreenInfo(),
         std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
     frame_widget->SetCompositorVisible(true);
@@ -309,7 +309,7 @@ WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
         GetSynchronousSingleThreadLayerTreeSettings();
     widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
         widget_client->main_thread_scheduler(),
-        widget_client->task_graph_runner(), true,
+        widget_client->task_graph_runner(),
         widget_client->GetInitialScreenInfo(),
         std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
     frame_widget->SetCompositorVisible(true);
@@ -377,8 +377,7 @@ WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
       GetSynchronousSingleThreadLayerTreeSettings();
   widget_client->set_layer_tree_host(frame_widget->InitializeCompositing(
       widget_client->main_thread_scheduler(),
-      widget_client->task_graph_runner(), true,
-      widget_client->GetInitialScreenInfo(),
+      widget_client->task_graph_runner(), widget_client->GetInitialScreenInfo(),
       std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
   frame_widget->SetCompositorVisible(true);
   // Set an initial size for subframes.
@@ -472,7 +471,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
       GetSynchronousSingleThreadLayerTreeSettings();
   test_web_widget_client_->set_layer_tree_host(widget->InitializeCompositing(
       test_web_widget_client_->main_thread_scheduler(),
-      test_web_widget_client_->task_graph_runner(), true,
+      test_web_widget_client_->task_graph_runner(),
       test_web_widget_client_->GetInitialScreenInfo(),
       std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
   widget->SetCompositorVisible(true);

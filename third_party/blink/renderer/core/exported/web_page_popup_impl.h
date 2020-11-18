@@ -160,7 +160,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   cc::LayerTreeHost* InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
-      bool for_child_local_root_frame,
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings) override;

@@ -146,8 +146,8 @@ void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
 
   layer_tree_host_ = webwidget_->InitializeCompositing(
       compositor_deps_->GetWebMainThreadScheduler(),
-      compositor_deps_->GetTaskGraphRunner(), for_child_local_root_frame_,
-      screen_info, compositor_deps_->CreateUkmRecorderFactory(),
+      compositor_deps_->GetTaskGraphRunner(), screen_info,
+      compositor_deps_->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);
   DCHECK(layer_tree_host_);
 }

@@ -63,9 +63,9 @@ WebViewFrameWidget::WebViewFrameWidget(
                          frame_sink_id,
                          hidden,
                          never_composited,
-                         /*is_for_child_local_root=*/false),
+                         /*is_for_child_local_root=*/false,
+                         is_for_nested_main_frame),
       web_view_(&web_view),
-      is_for_nested_main_frame_(is_for_nested_main_frame),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {
   web_view_->SetMainFrameViewWidget(this);
 }
@@ -332,10 +332,6 @@ void WebViewFrameWidget::SetAutoResizeMode(bool auto_resize,
   } else if (web_view_->AutoResizeMode()) {
     web_view_->DisableAutoResizeMode();
   }
-}
-
-void WebViewFrameWidget::SetIsNestedMainFrameWidget(bool is_nested) {
-  is_for_nested_main_frame_ = is_nested;
 }
 
 void WebViewFrameWidget::SetPageScaleStateAndLimits(
