@@ -231,8 +231,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     self.dragDropHandler.origin = WindowActivityReadingListOrigin;
     self.dragDropHandler.dragDataSource = self;
     self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled =
-        !tests_hook::DisableTableDragAndDrop();
+    self.tableView.dragInteractionEnabled = true;
   }
 }
 

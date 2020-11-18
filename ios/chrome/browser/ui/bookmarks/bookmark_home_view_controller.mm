@@ -496,8 +496,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     self.dragDropHandler.dropDelegate = self;
     self.tableView.dragDelegate = self.dragDropHandler;
     self.tableView.dropDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled =
-        !tests_hook::DisableTableDragAndDrop();
+    self.tableView.dragInteractionEnabled = true;
   }
 
   // Configure the table view.

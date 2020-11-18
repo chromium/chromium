@@ -183,11 +183,7 @@ API_AVAILABLE(ios(13.0))
     self.dragDropHandler.origin = WindowActivityRecentTabsOrigin;
     self.dragDropHandler.dragDataSource = self;
     self.tableView.dragDelegate = self.dragDropHandler;
-
-    // TODO(crbug.com/1129058): Clean this up when EarlGrey allows interacting
-    // with context menus that can be dragged.
-    self.tableView.dragInteractionEnabled =
-        !tests_hook::DisableTableDragAndDrop();
+    self.tableView.dragInteractionEnabled = true;
   }
 }
 
