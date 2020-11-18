@@ -302,6 +302,15 @@ CaptureModeSession::~CaptureModeSession() {
   // This may happen if we hit esc while dragging.
   if (old_mouse_warp_status_)
     SetMouseWarpEnabled(*old_mouse_warp_status_);
+
+  // Close these widgets immediately to avoid having them show up in the
+  // captured screenshots or video.
+  if (capture_label_widget_)
+    capture_label_widget_->CloseNow();
+  if (dimensions_label_widget_)
+    dimensions_label_widget_->CloseNow();
+  DCHECK(capture_mode_bar_widget_);
+  capture_mode_bar_widget_->CloseNow();
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {

@@ -29,6 +29,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -297,7 +298,14 @@ TEST_F(CaptureModeTest, StartStop) {
   // Calling start again is a no-op.
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
+
+  // Closing the session should close the native window of capture mode bar
+  // immediately.
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  auto* bar_window = test_api.capture_mode_bar_widget()->GetNativeWindow();
+  aura::WindowTracker tracker({bar_window});
   controller->Stop();
+  EXPECT_TRUE(tracker.windows().empty());
   EXPECT_FALSE(controller->IsActive());
 }
 
