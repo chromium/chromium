@@ -37,7 +37,9 @@
     [[header]]
   </label>
   <div class="body">
-    <paper-progress id="barChart" value="[[value]]" max="[[max]]"></paper-progress>
+    <paper-progress id="barChart"
+      value="[[getAdjustedValue_(value, max)]]" max="[[max]]">
+    </paper-progress>
     <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
   </div>
 </div>

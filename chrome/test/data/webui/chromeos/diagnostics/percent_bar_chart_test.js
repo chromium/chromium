@@ -77,4 +77,14 @@ export function percentBarChartTestSuite() {
       assertTrue(!!percentBarChartElement.$$('#headerIcon'));
     });
   });
+
+  test('ClampsToMaxValue', () => {
+    const header = 'Test header';
+    const value = 101;
+    const max = 100;
+    return initializePercentBarChart(header, value, max).then(() => {
+      const paperProgress = percentBarChartElement.$$('paper-progress');
+      assertEquals(paperProgress.value, paperProgress.max);
+    });
+  });
 }
