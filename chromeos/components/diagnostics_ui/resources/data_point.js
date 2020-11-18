@@ -18,10 +18,12 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
+    /** @type {string} */
     header: {
       type: String,
     },
 
+    /** @type {string} */
     value: {
       type: String,
       value: '',

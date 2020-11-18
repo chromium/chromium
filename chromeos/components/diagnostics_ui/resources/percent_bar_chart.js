@@ -23,20 +23,24 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
+    /** @type {string} */
     header: {
       type: String,
     },
 
+    /** @type {string} */
     headerIcon: {
       type: String,
       value: '',
     },
 
+    /** @type {number} */
     value: {
       type: Number,
       value: 0,
     },
 
+    /** @type {number} */
     max: {
       type: Number,
       value: 100,

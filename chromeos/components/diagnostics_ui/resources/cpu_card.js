@@ -38,6 +38,7 @@ Polymer({
   cpuUsageObserverReceiver_: null,
 
   properties: {
+    /** @private {!Array<!RoutineName>} */
     routines_: {
       type: Array,
       value: () => {

@@ -35,7 +35,7 @@ Polymer({
   systemDataProvider_: null,
 
   properties: {
-    /** @private */
+    /** @private {boolean} */
     showBatteryStatusCard_: {
       type: Boolean,
       value: false,

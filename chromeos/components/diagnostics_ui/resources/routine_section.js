@@ -64,20 +64,20 @@ Polymer({
 
     /**
      * Name of currently running test
-     * @private
+     * @private {string}
      */
     currentTestName_: {
       type: String,
       value: '',
     },
 
-    /** @private */
+    /** @private {boolean} */
     isRunTestsDisabled_: {
       type: Boolean,
       value: false,
     },
 
-    /** @private */
+    /** @private {boolean} */
     isReportListHidden_: {
       type: Boolean,
       value: true,

@@ -36,7 +36,7 @@ Polymer({
    */
   yAxisScaleFn_: null,
 
-  /** @private {!Array<Object>} */
+  /** @private {!Array<!Object>} */
   data_: [],
 
   /**
@@ -46,54 +46,56 @@ Polymer({
   dataLastUpdated_: 0,
 
   properties: {
+    /** @type {number} */
     user: {
       type: Number,
       value: 0,
     },
 
+    /** @type {number} */
     system: {
       type: Number,
       value: 0,
     },
 
-    /** @private */
+    /** @private {number} */
     numDataPoints_: {
       type: Number,
       value: 50,
     },
 
-    /** @private */
+    /** @private {number} */
     refreshInterval_: {
       type: Number,
       value: 200,  // in milliseconds.
     },
 
-    /** @private */
+    /** @private {number} */
     width_: {
       type: Number,
       value: 350,
     },
 
-    /** @private */
+    /** @private {number} */
     height_: {
       type: Number,
       value: 100,
     },
 
-    /** @private */
+    /** @private {!Object} */
     margin_: {
       type: Object,
       value: {top: 10, right: 20, bottom: 10, left: 30},
     },
 
-    /** @private */
+    /** @private {number} */
     graphWidth_: {
       readOnly: true,
       type: Number,
       computed: 'getGraphDimension_(width_, margin_.left, margin_.right)'
     },
 
-    /** @private */
+    /** @private {number} */
     graphHeight_: {
       readOnly: true,
       type: Number,
