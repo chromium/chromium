@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
@@ -15,8 +13,9 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.core.view.inputmethod.EditorInfoCompat;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.VerifiesOnR;
 import org.chromium.blink_public.web.WebTextInputFlags;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.ui.base.ime.TextInputAction;
@@ -28,26 +27,6 @@ import java.util.Locale;
  * Utilities for IME such as computing outAttrs, and dumping object information.
  */
 public class ImeUtils {
-    /**
-     * A class to contain R-specific code inside a separate class to avoid performance regression.
-     *
-     * See
-     * https://source.chromium.org/chromium/chromium/src/+/master:build/android/docs/class_verification_failures.md
-     * for details.
-     */
-    @VerifiesOnR
-    @TargetApi(Build.VERSION_CODES.R)
-    private static final class HelperForR {
-        /** see {@link EditorInfo#setInitialSurroundingText(EditorInfo, String)} */
-        public static void setInitialSurroundingText(EditorInfo outAttrs, String lastText) {
-            // Note: Android's internal implementation trims the text up to 2048 chars before
-            // sending it to the IMM service. In the future, if we consider limiting the number of
-            // chars between renderer and browser, then consider calling
-            // setInitialSurroundingSubText() instead.
-            outAttrs.setInitialSurroundingText(lastText);
-        }
-    }
-
     /**
      * Compute {@link EditorInfo} based on the given parameters. This is needed for
      * {@link View#onCreateInputConnection(EditorInfo)}.
@@ -159,9 +138,11 @@ public class ImeUtils {
 
         outAttrs.initialSelStart = initialSelStart;
         outAttrs.initialSelEnd = initialSelEnd;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            HelperForR.setInitialSurroundingText(outAttrs, lastText);
-        }
+        // Note: Android's internal implementation trims the text up to 2048 chars before
+        // sending it to the IMM service. In the future, if we consider limiting the number of
+        // chars between renderer and browser, then consider calling
+        // setInitialSurroundingSubText() instead.
+        EditorInfoCompat.setInitialSurroundingText(outAttrs, lastText);
     }
 
     private static int getImeAction(int inputType, int inputFlags, int inputMode, int inputAction,
