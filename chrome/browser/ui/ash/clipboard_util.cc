@@ -69,7 +69,9 @@ void CopyImageToClipboard(bool maintain_clipboard,
   std::string html = base::StrCat(
       {kImageClipboardFormatPrefix, encoded, kImageClipboardFormatSuffix});
 
-  if (!maintain_clipboard) {
+  if (!maintain_clipboard ||
+      !ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(
+          nullptr)) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string());
     clipboard_writer.WriteImage(decoded_image);
