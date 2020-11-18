@@ -29,6 +29,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chromeos {
@@ -186,8 +187,8 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 
   extensions::SetCurrentFeatureSessionType(
       is_auto_launch && auto_launch_delay == 0
-          ? extensions::FeatureSessionType::AUTOLAUNCHED_KIOSK
-          : extensions::FeatureSessionType::KIOSK);
+          ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
+          : extensions::mojom::FeatureSessionType::kKiosk);
 
   kiosk_launch_controller_ =
       std::make_unique<KioskLaunchController>(GetOobeUI());

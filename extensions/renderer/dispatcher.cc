@@ -42,6 +42,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -1108,7 +1109,7 @@ void Dispatcher::OnDispatchEvent(
 }
 
 void Dispatcher::OnSetSessionInfo(version_info::Channel channel,
-                                  FeatureSessionType session_type,
+                                  mojom::FeatureSessionType session_type,
                                   bool is_lock_screen_context) {
   SetCurrentChannel(channel);
   SetCurrentFeatureSessionType(session_type);

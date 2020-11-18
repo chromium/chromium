@@ -9,6 +9,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
 
@@ -21,8 +22,8 @@ using SystemPowerSourceApiTest = ShellApiTest;
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SystemPowerSourceApiTest, TestAllApiFunctions) {
-  std::unique_ptr<base::AutoReset<FeatureSessionType>> session_type =
-      ScopedCurrentFeatureSessionType(FeatureSessionType::KIOSK);
+  std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type =
+      ScopedCurrentFeatureSessionType(mojom::FeatureSessionType::kKiosk);
 
   // These values must match the assertions in
   // extensions/test/data/api_test/system_power_source/api/background.js.

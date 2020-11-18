@@ -157,6 +157,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "rlz/buildflags/buildflags.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
@@ -673,15 +674,16 @@ void UserSessionManager::InitNonKioskExtensionFeaturesSessionType(
       bool auto_launched = base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAppAutoLaunched);
       extensions::SetCurrentFeatureSessionType(
-          auto_launched ? extensions::FeatureSessionType::AUTOLAUNCHED_KIOSK
-                        : extensions::FeatureSessionType::KIOSK);
+          auto_launched
+              ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
+              : extensions::mojom::FeatureSessionType::kKiosk);
     }
     return;
   }
 
   extensions::SetCurrentFeatureSessionType(
-      user->HasGaiaAccount() ? extensions::FeatureSessionType::REGULAR
-                             : extensions::FeatureSessionType::UNKNOWN);
+      user->HasGaiaAccount() ? extensions::mojom::FeatureSessionType::kRegular
+                             : extensions::mojom::FeatureSessionType::kUnknown);
 }
 
 void UserSessionManager::SetFirstLoginPrefs(

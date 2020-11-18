@@ -22,8 +22,8 @@
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 
 namespace extensions {
 
@@ -108,7 +108,8 @@ class SimpleFeature : public Feature {
   void set_dependencies(std::initializer_list<const char* const> dependencies);
   void set_extension_types(std::initializer_list<Manifest::Type> types);
   void set_feature_flag(base::StringPiece feature_flag);
-  void set_session_types(std::initializer_list<FeatureSessionType> types);
+  void set_session_types(
+      std::initializer_list<mojom::FeatureSessionType> types);
   void set_internal(bool is_internal) { is_internal_ = is_internal; }
   void set_disallow_for_service_workers(bool disallow) {
     disallow_for_service_workers_ = disallow;
@@ -158,12 +159,13 @@ class SimpleFeature : public Feature {
   }
   const URLPatternSet& matches() const { return matches_; }
 
-  std::string GetAvailabilityMessage(AvailabilityResult result,
-                                     Manifest::Type type,
-                                     const GURL& url,
-                                     Context context,
-                                     version_info::Channel channel,
-                                     FeatureSessionType session_type) const;
+  std::string GetAvailabilityMessage(
+      AvailabilityResult result,
+      Manifest::Type type,
+      const GURL& url,
+      Context context,
+      version_info::Channel channel,
+      mojom::FeatureSessionType session_type) const;
 
   // Handy utilities which construct the correct availability message.
   Availability CreateAvailability(AvailabilityResult result) const;
@@ -176,7 +178,7 @@ class SimpleFeature : public Feature {
   Availability CreateAvailability(AvailabilityResult result,
                                   version_info::Channel channel) const;
   Availability CreateAvailability(AvailabilityResult result,
-                                  FeatureSessionType session_type) const;
+                                  mojom::FeatureSessionType session_type) const;
 
  private:
   friend struct FeatureComparator;
@@ -195,7 +197,7 @@ class SimpleFeature : public Feature {
 
   // Checks if the feature is allowed in a session of type |session_type|
   // (based on session type feature restrictions).
-  bool MatchesSessionTypes(FeatureSessionType session_type) const;
+  bool MatchesSessionTypes(mojom::FeatureSessionType session_type) const;
 
   Availability CheckDependencies(
       const base::RepeatingCallback<Availability(const Feature*)>& checker)
@@ -209,7 +211,7 @@ class SimpleFeature : public Feature {
   Availability GetEnvironmentAvailability(
       Platform platform,
       version_info::Channel channel,
-      FeatureSessionType session_type) const;
+      mojom::FeatureSessionType session_type) const;
 
   // Returns the availability of the feature with respect to a given extension's
   // properties.
@@ -231,7 +233,7 @@ class SimpleFeature : public Feature {
   std::vector<std::string> allowlist_;
   std::vector<std::string> dependencies_;
   std::vector<Manifest::Type> extension_types_;
-  std::vector<FeatureSessionType> session_types_;
+  std::vector<mojom::FeatureSessionType> session_types_;
   base::Optional<std::vector<Context>> contexts_;
   std::vector<Platform> platforms_;
   URLPatternSet matches_;

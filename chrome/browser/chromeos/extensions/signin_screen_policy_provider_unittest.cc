@@ -9,7 +9,6 @@
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/features/feature_session_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;

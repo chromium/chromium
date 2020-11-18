@@ -26,6 +26,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +48,7 @@ const char* const kSessionTypeTestFeatures[] = {
 struct FeatureSessionTypesTestData {
   std::string api_name;
   bool expect_available;
-  FeatureSessionType current_session_type;
+  mojom::FeatureSessionType current_session_type;
 };
 
 class TestExtensionAPI : public ExtensionAPI {
@@ -391,24 +392,25 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
           .Build();
 
   const std::vector<FeatureSessionTypesTestData> kTestData(
-      {{"kiosk_only", true, FeatureSessionType::KIOSK},
-       {"kiosk_only", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"kiosk_only", false, FeatureSessionType::REGULAR},
-       {"kiosk_only", false, FeatureSessionType::UNKNOWN},
-       {"non_kiosk", false, FeatureSessionType::KIOSK},
-       {"non_kiosk", true, FeatureSessionType::REGULAR},
-       {"non_kiosk", false, FeatureSessionType::UNKNOWN},
-       {"autolaunched_kiosk", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"autolaunched_kiosk", false, FeatureSessionType::KIOSK},
-       {"autolaunched_kiosk", false, FeatureSessionType::REGULAR},
-       {"multiple_session_types", true, FeatureSessionType::KIOSK},
-       {"multiple_session_types", true, FeatureSessionType::REGULAR},
-       {"multiple_session_types", false, FeatureSessionType::UNKNOWN},
+      {{"kiosk_only", true, mojom::FeatureSessionType::kKiosk},
+       {"kiosk_only", true, mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"kiosk_only", false, mojom::FeatureSessionType::kRegular},
+       {"kiosk_only", false, mojom::FeatureSessionType::kUnknown},
+       {"non_kiosk", false, mojom::FeatureSessionType::kKiosk},
+       {"non_kiosk", true, mojom::FeatureSessionType::kRegular},
+       {"non_kiosk", false, mojom::FeatureSessionType::kUnknown},
+       {"autolaunched_kiosk", true,
+        mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"autolaunched_kiosk", false, mojom::FeatureSessionType::kKiosk},
+       {"autolaunched_kiosk", false, mojom::FeatureSessionType::kRegular},
+       {"multiple_session_types", true, mojom::FeatureSessionType::kKiosk},
+       {"multiple_session_types", true, mojom::FeatureSessionType::kRegular},
+       {"multiple_session_types", false, mojom::FeatureSessionType::kUnknown},
        // test6.foo is available to apps and has no session type restrictions.
-       {"test6.foo", true, FeatureSessionType::KIOSK},
-       {"test6.foo", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"test6.foo", true, FeatureSessionType::REGULAR},
-       {"test6.foo", true, FeatureSessionType::UNKNOWN}});
+       {"test6.foo", true, mojom::FeatureSessionType::kKiosk},
+       {"test6.foo", true, mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"test6.foo", true, mojom::FeatureSessionType::kRegular},
+       {"test6.foo", true, mojom::FeatureSessionType::kUnknown}});
 
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
@@ -420,7 +422,7 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
       api.add_fake_schema(key);
     ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
 
-    std::unique_ptr<base::AutoReset<FeatureSessionType>> current_session(
+    std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
         ScopedCurrentFeatureSessionType(test.current_session_type));
     EXPECT_EQ(test.expect_available,
               api.IsAvailable(test.api_name, app.get(),

@@ -55,6 +55,7 @@ CC_FILE_BEGIN = """
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/manifest_feature.h"
 #include "extensions/common/features/permission_feature.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 
 namespace extensions {
 
@@ -251,9 +252,10 @@ FEATURE_GRAMMAR = ({
     'session_types': {
         list: {
             'enum_map': {
-                'regular': 'FeatureSessionType::REGULAR',
-                'kiosk': 'FeatureSessionType::KIOSK',
-                'kiosk.autolaunched': 'FeatureSessionType::AUTOLAUNCHED_KIOSK',
+                'regular': 'mojom::FeatureSessionType::kRegular',
+                'kiosk': 'mojom::FeatureSessionType::kKiosk',
+                'kiosk.autolaunched':
+                  'mojom::FeatureSessionType::kAutolaunchedKiosk',
             }
         }
     },

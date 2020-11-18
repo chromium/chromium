@@ -15,6 +15,7 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -94,7 +95,7 @@ class AudioApiTest : public ShellApiTest {
 
   void SetUp() override {
     session_feature_type_ = extensions::ScopedCurrentFeatureSessionType(
-        extensions::FeatureSessionType::KIOSK);
+        extensions::mojom::FeatureSessionType::kKiosk);
 
     ShellApiTest::SetUp();
   }
@@ -110,7 +111,7 @@ class AudioApiTest : public ShellApiTest {
   }
 
  protected:
-  std::unique_ptr<base::AutoReset<extensions::FeatureSessionType>>
+  std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_feature_type_;
 
  private:

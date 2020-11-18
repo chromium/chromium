@@ -407,6 +407,7 @@ source_set("browser_sources") {
     "//extensions/browser/guest_view/web_view/web_ui",
     "//extensions/buildflags",
     "//extensions/common",
+    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//google_apis",
@@ -544,6 +545,7 @@ source_set("browser_tests") {
       "//chromeos/login/login_state",
       "//chromeos/network",
       "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+      "//extensions/common:mojom",
     ]
   }
 }

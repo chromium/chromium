@@ -33,6 +33,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/host_id.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
@@ -710,7 +711,7 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 // type is running.
 IPC_MESSAGE_CONTROL3(ExtensionMsg_SetSessionInfo,
                      version_info::Channel /* channel */,
-                     extensions::FeatureSessionType /* session_type */,
+                     extensions::mojom::FeatureSessionType /* session_type */,
                      bool /* is_lock_screen_context */)
 
 // Notify the renderer that its window has closed.

@@ -14,6 +14,7 @@
 #include "extensions/browser/api/media_perception_private/media_perception_private_api.h"
 #include "extensions/common/api/media_perception_private.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/browser/shell_extensions_api_client.h"
 #include "extensions/shell/test/shell_apitest.h"
@@ -115,12 +116,12 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
 
   void SetUpOnMainThread() override {
     session_feature_type_ = extensions::ScopedCurrentFeatureSessionType(
-        extensions::FeatureSessionType::KIOSK);
+        extensions::mojom::FeatureSessionType::kKiosk);
     ShellApiTest::SetUpOnMainThread();
   }
 
  private:
-  std::unique_ptr<base::AutoReset<extensions::FeatureSessionType>>
+  std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_feature_type_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPerceptionPrivateApiTest);

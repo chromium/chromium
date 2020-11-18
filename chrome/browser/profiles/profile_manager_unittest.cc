@@ -68,6 +68,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -162,7 +163,7 @@ class ProfileManagerTest : public testing::Test {
 
     // Have to manually reset the session type in between test runs because
     // some tests log in users.
-    ASSERT_EQ(extensions::FeatureSessionType::INITIAL,
+    ASSERT_EQ(extensions::mojom::FeatureSessionType::kInitial,
               extensions::GetCurrentFeatureSessionType());
     session_type_ = extensions::ScopedCurrentFeatureSessionType(
         extensions::GetCurrentFeatureSessionType());
@@ -252,7 +253,7 @@ class ProfileManagerTest : public testing::Test {
 
 #if defined(OS_CHROMEOS)
   chromeos::ScopedTestUserManager test_user_manager_;
-  std::unique_ptr<base::AutoReset<extensions::FeatureSessionType>>
+  std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
   std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;

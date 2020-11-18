@@ -323,6 +323,7 @@ source_set("chromeos") {
     "//extensions/browser",
     "//extensions/browser/kiosk",
     "//extensions/common",
+    "//extensions/common:mojom",
     "//google_apis/drive",
     "//gpu",
     "//gpu/ipc/host",

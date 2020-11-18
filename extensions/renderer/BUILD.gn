@@ -264,6 +264,7 @@ source_set("renderer") {
     "//content/public/renderer",
     "//extensions:extensions_resources",
     "//extensions/common",
+    "//extensions/common:mojom",
     "//extensions/common/api",
     "//gin",
     "//mojo/public/js:resources",

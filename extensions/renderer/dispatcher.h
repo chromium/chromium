@@ -24,7 +24,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
@@ -240,7 +240,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
   void OnSetSessionInfo(version_info::Channel channel,
-                        FeatureSessionType session_type,
+                        mojom::FeatureSessionType session_type,
                         bool lock_screen_context);
   void OnSetScriptingAllowlist(
       const ExtensionsClient::ScriptingAllowlist& extension_ids);

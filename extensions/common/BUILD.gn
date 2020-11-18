@@ -40,6 +40,7 @@ if (enable_extensions) {
 
     sources = [
       "mojom/app_window.mojom",
+      "mojom/feature_session_type.mojom",
       "mojom/guest_view.mojom",
       "mojom/keep_alive.mojom",
       "mojom/renderer.mojom",
@@ -345,6 +346,7 @@ if (enable_extensions) {
       "//device/bluetooth",
       "//device/bluetooth/public/cpp",
       "//extensions:extensions_resources",
+      "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",
       "//net",
@@ -489,6 +491,7 @@ if (enable_extensions) {
       "//components/version_info:version_info",
       "//content/test:test_support",
       "//extensions:extensions_resources",
+      "//extensions/common:mojom",
       "//extensions/common/api",
       "//tools/json_schema_compiler:generated_api_util",
 

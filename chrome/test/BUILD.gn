@@ -5461,6 +5461,7 @@ test("unit_tests") {
       "//extensions/browser:test_support",
       "//extensions/browser:value_store_test_support",
       "//extensions/common",
+      "//extensions/common:mojom",
       "//extensions/renderer:unit_test_support",
       "//extensions/strings",
       "//google_apis",
