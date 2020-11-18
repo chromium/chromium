@@ -464,9 +464,17 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
     return false;
   if (decoded_frame_count_ == 1)
     return ImageDecoder::FrameIsReceivedAtIndex(index);
-  return index < frame_buffer_cache_.size() &&
-         (IsAllDataReceived() ||
-          avifDecoderNthImageReady(decoder_.get(), index) == AVIF_RESULT_OK);
+  if (index >= frame_buffer_cache_.size())
+    return false;
+  if (IsAllDataReceived())
+    return true;
+  avifExtent dataExtent;
+  if (avifDecoderNthImageMaxExtent(decoder_.get(), index, &dataExtent) !=
+      AVIF_RESULT_OK) {
+    return false;
+  }
+  return dataExtent.size == 0 ||
+         dataExtent.offset + dataExtent.size <= data_->size();
 }
 
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(size_t index) const {
