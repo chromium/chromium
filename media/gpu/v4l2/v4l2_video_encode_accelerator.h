@@ -262,6 +262,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // time Encode() if the coded size is different from the expected one by VEA.
   // For example, it happens in WebRTC simulcast case.
   gfx::Size input_frame_size_;
+  // A natural_size() of VideoFrame on VEA::Encode(). This is updated on the
+  // first time Encode() always. The natural_size() of VideoFrames fed by
+  // VEA::Encode() must be the same as |input_natural_size_|.
+  gfx::Size input_natural_size_;
 
   // Visible rectangle of VideoFrame to be fed to an encoder driver, in other
   // words, a visible rectangle that output encoded bitstream buffers represent.
