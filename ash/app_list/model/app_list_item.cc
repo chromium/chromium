@@ -90,7 +90,7 @@ void AppListItem::SetNameAndShortName(const std::string& name,
     observer.ItemNameChanged();
 }
 
-void AppListItem::UpdateBadge(bool has_badge) {
+void AppListItem::UpdateNotificationBadge(bool has_badge) {
   if (has_notification_badge_ == has_badge)
     return;
 

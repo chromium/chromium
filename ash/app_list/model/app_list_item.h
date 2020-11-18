@@ -86,7 +86,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool has_notification_badge() const { return has_notification_badge_; }
 
-  void UpdateBadgeForTesting(bool has_badge) { UpdateBadge(has_badge); }
+  void UpdateNotificationBadgeForTesting(bool has_badge) {
+    UpdateNotificationBadge(has_badge);
+  }
 
  protected:
   // Subclasses also have mutable access to the metadata ptr.
@@ -109,7 +111,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
                            const std::string& short_name);
 
   // Updates whether the notification badge is shown on the view.
-  void UpdateBadge(bool has_badge);
+  void UpdateNotificationBadge(bool has_badge);
 
   void set_position(const syncer::StringOrdinal& new_position) {
     DCHECK(new_position.IsValid());

@@ -156,7 +156,7 @@ void ShelfController::OnActiveUserPrefServiceChanged(
   if (is_notification_indicator_enabled_) {
     pref_change_registrar_->Add(
         prefs::kAppNotificationBadgingEnabled,
-        base::BindRepeating(&ShelfController::UpdateAppBadging,
+        base::BindRepeating(&ShelfController::UpdateAppNotificationBadging,
                             base::Unretained(this)));
 
     // Observe AppRegistryCache for the current active account to get
@@ -167,14 +167,15 @@ void ShelfController::OnActiveUserPrefServiceChanged(
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
     Observe(cache_);
 
-    // Resetting the recorded pref forces the next call to UpdateAppBadging()
-    // to update notification badging for every app item.
+    // Resetting the recorded pref forces the next call to
+    // UpdateAppNotificationBadging() to update notification badging for every
+    // app item.
     notification_badging_pref_enabled_.reset();
 
     // Update the notification badge indicator for all apps. This will also
     // ensure that apps have the correct notification badge value for the
     // multiprofile case when switching between users.
-    UpdateAppBadging();
+    UpdateAppNotificationBadging();
   }
 }
 
@@ -252,10 +253,10 @@ void ShelfController::ShelfItemAdded(int index) {
 }
 
 void ShelfController::OnQuietModeChanged(bool in_quiet_mode) {
-  UpdateAppBadging();
+  UpdateAppNotificationBadging();
 }
 
-void ShelfController::UpdateAppBadging() {
+void ShelfController::UpdateAppNotificationBadging() {
   bool new_badging_enabled = pref_change_registrar_
                                  ? pref_change_registrar_->prefs()->GetBoolean(
                                        prefs::kAppNotificationBadgingEnabled)

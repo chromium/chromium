@@ -163,7 +163,7 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
     auto* model = ash::Shell::Get()->app_list_controller()->GetModel();
     auto* item = model->FindItem(id);
 
-    item->UpdateBadgeForTesting(has_badge);
+    item->UpdateNotificationBadgeForTesting(has_badge);
   }
 
  private:

@@ -505,7 +505,8 @@ void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
     // Update the notification badge indicator for the newly added app list
     // item.
     cache_->ForOneApp(item->id(), [item](const apps::AppUpdate& update) {
-      item->UpdateBadge(update.HasBadge() == apps::mojom::OptionalBool::kTrue);
+      item->UpdateNotificationBadge(update.HasBadge() ==
+                                    apps::mojom::OptionalBool::kTrue);
     });
   }
 }
@@ -518,8 +519,9 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
 
     pref_change_registrar_->Add(
         prefs::kAppNotificationBadgingEnabled,
-        base::BindRepeating(&AppListControllerImpl::UpdateAppBadging,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &AppListControllerImpl::UpdateAppNotificationBadging,
+            base::Unretained(this)));
 
     // Observe AppRegistryCache for the current active account to get
     // notification updates.
@@ -529,10 +531,11 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
     Observe(cache_);
 
-    // Resetting the recorded pref forces the next call to UpdateAppBadging()
-    // to update notification badging for every app item.
+    // Resetting the recorded pref forces the next call to
+    // UpdateAppNotificationBadging() to update notification badging for every
+    // app item.
     notification_badging_pref_enabled_.reset();
-    UpdateAppBadging();
+    UpdateAppNotificationBadging();
   }
 
   if (!IsTabletMode()) {
@@ -1741,7 +1744,7 @@ void AppListControllerImpl::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppListControllerImpl::OnQuietModeChanged(bool in_quiet_mode) {
-  UpdateAppBadging();
+  UpdateAppNotificationBadging();
 }
 
 void AppListControllerImpl::UpdateTrackedAppWindow() {
@@ -1765,11 +1768,13 @@ void AppListControllerImpl::UpdateItemNotificationBadge(
     const std::string& app_id,
     apps::mojom::OptionalBool has_badge) {
   AppListItem* item = model_->FindItem(app_id);
-  if (item)
-    item->UpdateBadge(has_badge == apps::mojom::OptionalBool::kTrue);
+  if (item) {
+    item->UpdateNotificationBadge(has_badge ==
+                                  apps::mojom::OptionalBool::kTrue);
+  }
 }
 
-void AppListControllerImpl::UpdateAppBadging() {
+void AppListControllerImpl::UpdateAppNotificationBadging() {
   bool new_badging_enabled = pref_change_registrar_
                                  ? pref_change_registrar_->prefs()->GetBoolean(
                                        prefs::kAppNotificationBadgingEnabled)

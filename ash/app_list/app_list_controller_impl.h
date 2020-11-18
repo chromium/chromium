@@ -383,7 +383,7 @@ class ASH_EXPORT AppListControllerImpl
 
   // Checks the notification badging pref and then updates whether a
   // notification badge is shown for each AppListItem.
-  void UpdateAppBadging();
+  void UpdateAppNotificationBadging();
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)

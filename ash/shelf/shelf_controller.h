@@ -66,8 +66,9 @@ class ASH_EXPORT ShelfController
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
-  // Updates whether an app badge is shown for the shelf items in the model.
-  void UpdateAppBadging();
+  // Updates whether an app notification badge is shown for the shelf items in
+  // the model.
+  void UpdateAppNotificationBadging();
 
   // The shelf model shared by all shelf instances.
   ShelfModel model_;
