@@ -3399,10 +3399,18 @@ class AXPosition {
       text_offset_ = max_text_offset;
   }
 
-  // Returns true if this position is on an empty object node that needs to
-  // be represented by an empty object replacement character. It does when the
-  // node is a collapsed menu list popup button or has no unignored child and is
-  // not a text object. This feature is only enabled on some platforms.
+  // Returns true if this position is on an empty control that needs to be
+  // represented by an "object replacement character". This feature is only
+  // enabled on some platforms.
+  //
+  // This is purely for navigational purposes. We need to expose an "object
+  // replacement character" in empty controls, such as in an empty text field or
+  // a collapsed popup menu. The presence or the absence of accessible content
+  // inside a control might alter whether an "object replacement character"
+  // would be exposed in that control, in contrast to ordinary text such as in
+  // the case of a non-empty simple text field which should only have textual
+  // nodes inside it. This is because empty controls need to act as a word and
+  // character boundary.
   bool IsEmptyObjectReplacedByCharacter() const {
     if (g_ax_embedded_object_behavior ==
             AXEmbeddedObjectBehavior::kSuppressCharacter ||

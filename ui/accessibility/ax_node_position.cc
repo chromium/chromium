@@ -257,18 +257,24 @@ bool AXNodePosition::IsEmbeddedObjectInParent() const {
     case AXEmbeddedObjectBehavior::kSuppressCharacter:
       return false;
     case AXEmbeddedObjectBehavior::kExposeCharacter:
-      // We don't need to expose an "embedded object character" for textual
-      // nodes as well as nodes that are invisible to platform APIs, AKA nodes
-      // that are descendants of platform leaves. In the former case, textual
-      // nodes are represented by their actual text in the text of their parent
-      // nodes, in order to maintain compatibility with how Firefox exposes text
-      // in IAccessibleText. For the latter case, an example of a platform leaf
-      // is a plain text field.
+      // We expose an "object replacement character" for all nodes except
+      // textual nodes as well as nodes that are invisible to platform APIs, AKA
+      // nodes that are descendants of platform leaves. In the former case,
+      // textual nodes are represented by their actual text in the text of their
+      // parent nodes, in order to maintain compatibility with how Firefox
+      // exposes text in IAccessibleText. For the latter case, an example of a
+      // platform leaf is a plain text field because all of the accessibility
+      // subtree inside the text field is not visible to platform APIs.
       //
-      // On the other hand, we do need to expose an "embedded object character"
-      // for empty objects, such as an empty text field, for navigational
-      // purposes. This is because such objects need to act as a word and
-      // character boundary.
+      // Please note that for navigational purposes, we need to expose an
+      // "object replacement character" in empty controls, such as in an empty
+      // text field. The presence or the absence of accessible content inside a
+      // control might alter whether an "object replacement character" would be
+      // exposed in that control, in contrast to ordinary text such as in the
+      // case of a non-empty simple text field which should only have textual
+      // nodes inside it. This is because empty controls need to act as a word
+      // and character boundary. See
+      // "AXPosition::IsEmptyObjectReplacedByCharacter()" for more information.
       return !IsNullPosition() && !GetAnchor()->IsText() &&
              !GetAnchor()->IsChildOfLeaf();
   }
