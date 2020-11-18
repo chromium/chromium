@@ -227,8 +227,7 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
     event_targeting_blocker_map_.erase(transient);
   }
 
-  if (!IsMinimized())
-    UpdateRoundedCorners(/*show=*/false);
+  UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
 
   window_observer_.RemoveAll();
@@ -504,7 +503,8 @@ void ScopedOverviewTransformWindow::UpdateWindowDimensionsType() {
 void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   // Hide the corners if minimized, OverviewItemView will handle showing the
   // rounded corners on the UI.
-  DCHECK(!IsMinimized());
+  if (IsMinimized())
+    DCHECK(!show);
 
   ui::Layer* layer = window_->layer();
   const float scale = layer->transform().Scale2d().x();
