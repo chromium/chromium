@@ -138,11 +138,19 @@ void RequestRosettaInstallation(
     __block OnceCallback<void(RosettaInstallationResult)> block_callback =
         std::move(callback);
     auto completion = ^(BOOL success) {
-      [current_rosetta_installation release];
-      current_rosetta_installation = nil;
-      std::move(block_callback)
-          .Run(success ? RosettaInstallationResult::kInstallationSuccess
-                       : RosettaInstallationResult::kInstallationFailure);
+      // There _should_ be a valid callback and current_rosetta_installation
+      // here. However, crashes indicate that sometimes
+      // OAHSoftwareUpdateController performs a double-callback of the block.
+      // Therefore, be paranoid.
+      if (current_rosetta_installation) {
+        [current_rosetta_installation release];
+        current_rosetta_installation = nil;
+      }
+      if (block_callback) {
+        std::move(block_callback)
+            .Run(success ? RosettaInstallationResult::kInstallationSuccess
+                         : RosettaInstallationResult::kInstallationFailure);
+      }
     };
 
     [invocation setArgument:&completion atIndex:4];
