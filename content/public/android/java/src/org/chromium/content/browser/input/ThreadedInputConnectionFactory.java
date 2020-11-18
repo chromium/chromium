@@ -310,5 +310,6 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
         if (DEBUG_LOGS) Log.d(TAG, "onViewDetachedFromWindow");
         if (mCheckInvalidator != null) mCheckInvalidator.invalidate();
         if (mProxyView != null) mProxyView.onOriginalViewDetachedFromWindow();
+        mThreadedInputConnection = null;
     }
 }
