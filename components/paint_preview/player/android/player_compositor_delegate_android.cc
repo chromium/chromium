@@ -32,7 +32,8 @@ namespace paint_preview {
 namespace {
 
 // To minimize peak memory usage limit the number of concurrent bitmap requests.
-constexpr size_t kMaxParallelBitmapRequests = 6;
+constexpr size_t kMaxParallelBitmapRequests = 3;
+constexpr size_t kMaxParallelBitmapRequestsLowMemory = 1;
 
 ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
     JNIEnv* env,
@@ -65,12 +66,14 @@ jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     jlong paint_preview_service,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
-    const JavaParamRef<jobject>& j_compositor_error_callback) {
+    const JavaParamRef<jobject>& j_compositor_error_callback,
+    jboolean j_is_low_mem) {
   PlayerCompositorDelegateAndroid* delegate =
       new PlayerCompositorDelegateAndroid(
           env, j_object,
           reinterpret_cast<PaintPreviewBaseService*>(paint_preview_service),
-          j_url_spec, j_directory_key, j_compositor_error_callback);
+          j_url_spec, j_directory_key, j_compositor_error_callback,
+          j_is_low_mem);
   return reinterpret_cast<intptr_t>(delegate);
 }
 
@@ -80,7 +83,8 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     PaintPreviewBaseService* paint_preview_service,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
-    const JavaParamRef<jobject>& j_compositor_error_callback)
+    const JavaParamRef<jobject>& j_compositor_error_callback,
+    jboolean j_is_low_mem)
     : PlayerCompositorDelegate(),
       request_id_(0),
       startup_timestamp_(base::TimeTicks::Now()) {
@@ -91,7 +95,9 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
           base::android::ConvertJavaStringToUTF8(env, j_directory_key)},
       base::BindOnce(&base::android::RunIntCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)),
-      base::TimeDelta::FromSeconds(15), kMaxParallelBitmapRequests);
+      base::TimeDelta::FromSeconds(15),
+      (static_cast<bool>(j_is_low_mem) ? kMaxParallelBitmapRequestsLowMemory
+                                       : kMaxParallelBitmapRequests));
   java_ref_.Reset(env, j_object);
 }
 

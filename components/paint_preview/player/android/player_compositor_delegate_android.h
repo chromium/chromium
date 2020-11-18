@@ -23,7 +23,8 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       PaintPreviewBaseService* paint_preview_service,
       const base::android::JavaParamRef<jstring>& j_url_spec,
       const base::android::JavaParamRef<jstring>& j_directory_key,
-      const base::android::JavaParamRef<jobject>& j_compositor_error_callback);
+      const base::android::JavaParamRef<jobject>& j_compositor_error_callback,
+      jboolean j_is_low_mem);
 
   void OnCompositorReady(
       CompositorStatus compositor_status,
