@@ -107,8 +107,29 @@ void StructuredMetricsProvider::PrefStoreErrorDelegate::OnError(
   LogPrefReadError(error);
 }
 
-base::Value* StructuredMetricsProvider::GetEventsList(
+StructuredMetricsProvider::StorageType
+StructuredMetricsProvider::StorageTypeForIdType(
     EventBase::IdentifierType type) {
+  switch (type) {
+    case EventBase::IdentifierType::kUmaId:
+      return StructuredMetricsProvider::StorageType::kAssociated;
+    case EventBase::IdentifierType::kProjectId:
+    case EventBase::IdentifierType::kUnidentified:
+      return StructuredMetricsProvider::StorageType::kIndependent;
+  }
+}
+
+base::StringPiece StructuredMetricsProvider::ListKeyForStorageType(
+    StructuredMetricsProvider::StorageType type) {
+  switch (type) {
+    case StructuredMetricsProvider::StorageType::kAssociated:
+      return base::StringPiece(kAssociatedEventsKey);
+    case StructuredMetricsProvider::StorageType::kIndependent:
+      return base::StringPiece(kIndependentEventsKey);
+  }
+}
+
+base::Value* StructuredMetricsProvider::GetEventsList(StorageType type) {
   // Ensure the events key exists. The "events" key was a list of event objects,
   // and is now a dict of lists. Migrate to the new layout if needed.
   base::Value* events = nullptr;
@@ -132,17 +153,7 @@ base::Value* StructuredMetricsProvider::GetEventsList(
 
   // Choose the key for |type|, ensure the list Value actually exists, and
   // return it.
-  base::StringPiece list_key;
-  switch (type) {
-    case EventBase::IdentifierType::kUmaId:
-      list_key = base::StringPiece(kAssociatedEventsKey);
-      break;
-    case EventBase::IdentifierType::kProjectId:
-    case EventBase::IdentifierType::kUnidentified:
-      list_key = base::StringPiece(kIndependentEventsKey);
-      break;
-  }
-
+  const base::StringPiece list_key = ListKeyForStorageType(type);
   base::Value* events_list = events->FindKey(list_key);
   if (events_list) {
     return events_list;
@@ -202,8 +213,7 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // Add the event to |storage_|.
   // TODO(crbug.com/1016655): Choose the event list based on the identifier type
   // of the event subclass.
-  GetEventsList(EventBase::IdentifierType::kUmaId)
-      ->Append(std::move(event_value));
+  GetEventsList(StorageType::kAssociated)->Append(std::move(event_value));
 }
 
 void StructuredMetricsProvider::OnProfileAdded(
@@ -265,10 +275,46 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
   if (!recording_enabled_ || !initialized_)
     return;
 
-  base::Value* events = GetEventsList(EventBase::IdentifierType::kUmaId);
+  base::Value* events = GetEventsList(StorageType::kAssociated);
   PopulateUmaProto(events, uma_proto);
   LogNumEventsInUpload(events->GetList().size());
   events->ClearList();
+}
+
+bool StructuredMetricsProvider::HasIndependentMetrics() {
+  // TODO(crbug.com/1148168): We cannot enable independent metrics uploads yet,
+  // because we will overwhelm the unsent log store shared across UMA, resulting
+  // in logs being dropped for long sessions.
+  return false;
+}
+
+void StructuredMetricsProvider::ProvideIndependentMetrics(
+    base::OnceCallback<void(bool)> done_callback,
+    ChromeUserMetricsExtension* uma_proto,
+    base::HistogramSnapshotManager*) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  if (!recording_enabled_ || !initialized_) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
+  base::Value* events = GetEventsList(StorageType::kIndependent);
+  const size_t num_events = events->GetList().size();
+  if (num_events == 0) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
+  // TODO(crbug.com/1148168): Add histograms for independent metrics upload
+  // size.
+
+  // Independent events should not be associated with the client_id, so clear
+  // it.
+  uma_proto->clear_client_id();
+  PopulateUmaProto(events, uma_proto);
+  events->ClearList();
+
+  std::move(done_callback).Run(true);
 }
 
 void StructuredMetricsProvider::CommitPendingWriteForTest() {

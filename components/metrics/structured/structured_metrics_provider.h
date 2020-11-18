@@ -86,6 +86,11 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   friend class Recorder;
   friend class StructuredMetricsProviderTest;
 
+  enum class StorageType {
+    kAssociated,
+    kIndependent,
+  };
+
   // An error delegate called when |storage_| has finished reading prefs from
   // disk.
   class PrefStoreErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
@@ -97,13 +102,21 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
     void OnError(PersistentPrefStore::PrefReadError error) override;
   };
 
-  base::Value* GetEventsList(EventBase::IdentifierType type);
+  StructuredMetricsProvider::StorageType StorageTypeForIdType(
+      EventBase::IdentifierType type);
+  base::StringPiece ListKeyForStorageType(
+      StructuredMetricsProvider::StorageType type);
+  base::Value* GetEventsList(StorageType type);
 
   // metrics::MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+  bool HasIndependentMetrics() override;
+  void ProvideIndependentMetrics(base::OnceCallback<void(bool)> done_callback,
+                                 ChromeUserMetricsExtension* uma_proto,
+                                 base::HistogramSnapshotManager*) override;
 
   // Recorder::Observer:
   void OnRecord(const EventBase& event) override;
