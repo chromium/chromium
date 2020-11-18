@@ -199,9 +199,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
         ContainsCookie(GetCookiesInCookieJar(),
                        AccountConsistencyService::kChromeConnectedCookieName,
                        GetCookieDomain(domain)));
-    EXPECT_GE(
-        account_consistency_service_->last_cookie_update_map_.count(domain),
-        1u);
   }
 
   void CheckNoChromeConnectedCookieForDomain(const std::string& domain) {
@@ -209,8 +206,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
         ContainsCookie(GetCookiesInCookieJar(),
                        AccountConsistencyService::kChromeConnectedCookieName,
                        GetCookieDomain(domain)));
-    EXPECT_EQ(0U, account_consistency_service_->last_cookie_update_map_.count(
-                      domain));
   }
 
   void CheckNoChromeConnectedCookies() {
@@ -245,6 +240,14 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Cookie APIs.
+  void CheckDomainHasChromeConnectedCookieWithUpdateTime(
+      const std::string& domain,
+      base::Time time) {
+    CheckDomainHasChromeConnectedCookie(domain);
+    EXPECT_EQ(time,
+              account_consistency_service_->last_cookie_update_map_[domain]);
+  }
+
   void WaitUntilAllCookieRequestsAreApplied() {
     // Spinning the runloop is needed to ensure that the cookie manager requests
     // are executed.
@@ -253,8 +256,8 @@ class AccountConsistencyServiceTest : public PlatformTest {
                      ->active_cookie_manager_requests_for_testing_);
   }
 
-  // Simulate the action of the action GaiaCookieManagerService to cleanup
-  // the cookies once the sign-out is done.
+  // Simulate the action of GaiaCookieManagerService to cleanup the cookies
+  // once the sign-out is done.
   void RemoveAllChromeConnectedCookies() {
     base::RunLoop run_loop;
     account_consistency_service_->RemoveAllChromeConnectedCookies(
@@ -262,15 +265,23 @@ class AccountConsistencyServiceTest : public PlatformTest {
     run_loop.Run();
   }
 
+  // Simulate removing all cookies associated with the google.com domain through
+  // an external source.
+  void SimulateExternalSourceRemovesAllGoogleDomainCookies() {
+    network::mojom::CookieManager* cookie_manager =
+        browser_state_.GetCookieManager();
+    network::mojom::CookieDeletionFilterPtr filter =
+        network::mojom::CookieDeletionFilter::New();
+    filter->including_domains =
+        base::Optional<std::vector<std::string>>({kGoogleDomain});
+    cookie_manager->DeleteCookies(std::move(filter),
+                                  base::OnceCallback<void(uint)>());
+  }
+
   // Simulates updating the Gaia cookie on the Google domain at the designated
   // time interval. Returns the time at which the cookie was updated.
   void SimulateUpdateGaiaCookie(base::OnceClosure callback) {
     account_consistency_service_->SetGaiaCookiesIfDeleted(std::move(callback));
-  }
-
-  // Returns time the CHROME_CONNECTED cookie was last updated for |domain|.
-  base::Time GetCookieLastUpdateTime(const std::string& domain) {
-    return account_consistency_service_->last_cookie_update_map_[domain];
   }
 
   // Returns time the Gaia cookie was last updated for Google domains.
@@ -296,6 +307,13 @@ class AccountConsistencyServiceTest : public PlatformTest {
                              id<ManageAccountsDelegate> delegate,
                              web::PageLoadCompletionStatus page_status,
                              bool expect_allowed_response) {
+    // If we have already added the |web_state_| with a previous |delegate|,
+    // remove it to enforce a one-to-one mapping between web state handler and
+    // web state.
+    if (!account_consistency_service_->web_state_handlers_.empty()) {
+      account_consistency_service_->RemoveWebStateHandler(&web_state_);
+    }
+
     account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
     EXPECT_EQ(
         expect_allowed_response,
@@ -630,30 +648,58 @@ TEST_F(AccountConsistencyServiceTest, DomainsClearedOnBrowsingDataRemoved) {
           ->size());
 }
 
-TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieNotUpdateTime) {
+TEST_F(AccountConsistencyServiceTest,
+       SetChromeConnectedCookieBeforeUpdateTime) {
   SignIn();
 
-  const base::Time signin_time = base::Time::Now();
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  NSDictionary* headers = [NSDictionary dictionary];
+
+  // HTTP response URL is eligible for Mirror (the test does not use google.com
+  // since the CHROME_CONNECTED cookie is generated for it by default.
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+
+  SimulateNavigateToURL(response, delegate);
+  SimulateExternalSourceRemovesAllGoogleDomainCookies();
+
   // Advance clock before 24-hour CHROME_CONNECTED update time.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
-  account_consistency_service_->SetChromeConnectedCookieWithUrls(
-      {GURL("https://google.com")});
-  WaitUntilAllCookieRequestsAreApplied();
+  SimulateNavigateToURL(response, delegate);
 
-  EXPECT_EQ(signin_time, GetCookieLastUpdateTime(kGoogleDomain));
+  CheckDomainHasChromeConnectedCookieWithUpdateTime(
+      kYoutubeDomain, base::Time::Now() - base::TimeDelta::FromHours(2));
+  CheckNoChromeConnectedCookieForDomain(kGoogleDomain);
 }
 
 TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
   SignIn();
 
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  NSDictionary* headers = [NSDictionary dictionary];
+
+  // HTTP response URL is eligible for Mirror (the test does not use google.com
+  // since the CHROME_CONNECTED cookie is generated for it by default.
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+
+  SimulateNavigateToURL(response, delegate);
+  SimulateExternalSourceRemovesAllGoogleDomainCookies();
+
   // Advance clock past 24-hour CHROME_CONNECTED update time.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(2));
-  const base::Time second_cookie_update_time = base::Time::Now();
-  account_consistency_service_->SetChromeConnectedCookieWithUrls(
-      {GURL("https://google.com")});
-  WaitUntilAllCookieRequestsAreApplied();
+  SimulateNavigateToURL(response, delegate);
 
-  EXPECT_EQ(second_cookie_update_time, GetCookieLastUpdateTime(kGoogleDomain));
+  CheckDomainHasChromeConnectedCookieWithUpdateTime(kGoogleDomain,
+                                                    base::Time::Now());
 }
 
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
