@@ -340,6 +340,7 @@ void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
 // should not continue.
 Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
                               const base::FilePath& user_data_dir,
+                              const base::FilePath& cur_dir,
                               const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile")
 
@@ -392,7 +393,7 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
   CHECK(profile) << "Cannot get default profile.";
 
 #else
-  profile = GetStartupProfile(user_data_dir, parsed_command_line);
+  profile = GetStartupProfile(user_data_dir, cur_dir, parsed_command_line);
 
   if (!profile && !set_last_used_profile)
     profile = GetFallbackStartupProfile();
@@ -1360,9 +1361,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
-  profile_ = CreatePrimaryProfile(parameters(),
-                                  user_data_dir_,
-                                  parsed_command_line());
+  profile_ = CreatePrimaryProfile(parameters(), user_data_dir_,
+                                  base::FilePath(), parsed_command_line());
   if (!profile_)
     return content::RESULT_CODE_NORMAL_EXIT;
 
