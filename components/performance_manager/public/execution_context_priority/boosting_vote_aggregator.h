@@ -128,7 +128,6 @@ class BoostingVoteAggregator : public VoteObserver {
     ~NodeData();
 
     const Vote& incoming_vote() const { return incoming_vote_.value(); }
-    const VoteReceipt& receipt() const { return receipt_; }
 
     void SetIncomingVote(const Vote& incoming_vote) {
       DCHECK(!incoming_vote_.has_value());
@@ -143,13 +142,13 @@ class BoostingVoteAggregator : public VoteObserver {
       incoming_vote_ = base::nullopt;
     }
 
-    // For modifying |receipt_|.
-    void ChangeOutgoingVote(base::TaskPriority priority, const char* reason) {
-      receipt_.ChangeVote(priority, reason);
+    void CancelOutgoingVote() {
+      DCHECK(has_outgoing_vote_);
+      has_outgoing_vote_ = false;
     }
-    void CancelOutgoingVote() { receipt_.Reset(); }
-    void SetOutgoingVoteReceipt(VoteReceipt&& receipt) {
-      receipt_ = std::move(receipt);
+    void SetHasOutgoingVote() {
+      DCHECK(!has_outgoing_vote_);
+      has_outgoing_vote_ = true;
     }
 
     // Returns true if this node has an active |incoming| vote. If false that
@@ -157,9 +156,8 @@ class BoostingVoteAggregator : public VoteObserver {
     // Same as |incoming_vote_.has_value()|, but more readable.
     bool HasIncomingVote() const { return incoming_vote_.has_value(); }
 
-    // Returns true if this node has an active outgoing vote. Same as
-    // |receipt_.HasVote()|, but more readable.
-    bool HasOutgoingVote() const { return receipt_.HasVote(); }
+    // Returns true if this node has an active outgoing vote.
+    bool HasOutgoingVote() const { return has_outgoing_vote_; }
 
     // Returns true if this node is involved in any edges.
     bool HasEdges() const { return edge_count_ > 0; }
@@ -183,8 +181,9 @@ class BoostingVoteAggregator : public VoteObserver {
     // The input vote we've received, if any.
     base::Optional<Vote> incoming_vote_;
 
-    // The receipt for the vote we've upstreamed, if any.
-    VoteReceipt receipt_;
+    // Indicates that a corresponding vote has been emitted via the
+    // voting channel.
+    bool has_outgoing_vote_ = false;
   };
 
   // NOTE: It is important that NodeDataMap preserve pointers to NodeData
@@ -371,7 +370,7 @@ class BoostingVoteAggregator : public VoteObserver {
   voting::VoterId<Vote> input_voter_id_ = voting::kInvalidVoterId<Vote>;
 
   // Our channel for upstreaming our votes.
-  VotingChannel channel_;
+  VotingChannelWrapper channel_;
 
   // Provides a VotingChannel to our input voter.
   VoteConsumerDefaultImpl vote_consumer_default_impl_;

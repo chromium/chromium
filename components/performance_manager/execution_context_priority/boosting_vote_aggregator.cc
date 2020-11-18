@@ -256,10 +256,7 @@ VotingChannel BoostingVoteAggregator::GetVotingChannel() {
 }
 
 void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
-  DCHECK(channel.IsValid());
-  DCHECK(nodes_.empty());
-  DCHECK(!channel_.IsValid());
-  channel_ = std::move(channel);
+  channel_.SetVotingChannel(std::move(channel));
 }
 
 bool BoostingVoteAggregator::IsSetup() const {
@@ -549,8 +546,10 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
   // default priority level of every execution context in the absence of any
   // specific higher votes.
   if (priority == base::TaskPriority::LOWEST) {
-    if (node_data->HasOutgoingVote())
+    if (node_data->HasOutgoingVote()) {
+      channel_.InvalidateVote(execution_context);
       node_data->CancelOutgoingVote();
+    }
     return;
   }
 
@@ -560,13 +559,13 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
   // If the node already has a vote, then change it. This is a nop if the vote
   // details are identical.
   if (node_data->HasOutgoingVote()) {
-    node_data->ChangeOutgoingVote(priority, reason);
+    channel_.ChangeVote(execution_context, Vote(priority, reason));
     return;
   }
 
   // Create an outgoing vote.
-  node_data->SetOutgoingVoteReceipt(
-      channel_.SubmitVote(execution_context, Vote(priority, reason)));
+  node_data->SetHasOutgoingVote();
+  channel_.SubmitVote(execution_context, Vote(priority, reason));
 }
 
 void BoostingVoteAggregator::UpstreamChanges(const NodeDataPtrSet& changes) {
