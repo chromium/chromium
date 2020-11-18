@@ -22,6 +22,12 @@ settings = struct(
     tree_status_host = None,
 )
 
+def _validate_settings():
+    if settings.is_master and settings.is_lts_branch:
+        fail("is_master and is_lts_branch can't both be True")
+
+_validate_settings()
+
 def _generate_project_pyl(ctx):
     ctx.output["project.pyl"] = "\n".join([
         "# This is a non-LUCI generated file",
