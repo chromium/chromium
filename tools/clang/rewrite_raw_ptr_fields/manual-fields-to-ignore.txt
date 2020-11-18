@@ -112,6 +112,7 @@ cc::GpuImageDecodeCache::dark_mode_filter_
 blink::scheduler::MainThreadSchedulerImpl::current_agent_group_scheduler_
 performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
+base::trace_event::MemoryDumpProviderInfo::name
 
 # Populated manually - requires rewriting member pointer type
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::input
