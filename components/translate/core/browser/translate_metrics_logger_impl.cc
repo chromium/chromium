@@ -5,6 +5,7 @@
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
 #include "components/translate/core/browser/translate_manager.h"
 
 namespace translate {
@@ -26,7 +27,9 @@ const char kTranslatePageLoadTriggerDecision[] =
 
 TranslateMetricsLoggerImpl::TranslateMetricsLoggerImpl(
     base::WeakPtr<TranslateManager> translate_manager)
-    : translate_manager_(translate_manager) {}
+    : translate_manager_(translate_manager),
+      clock_(base::DefaultTickClock::GetInstance()),
+      time_of_last_state_change_(clock_->NowTicks()) {}
 
 TranslateMetricsLoggerImpl::~TranslateMetricsLoggerImpl() = default;
 
@@ -36,13 +39,17 @@ void TranslateMetricsLoggerImpl::OnPageLoadStart(bool is_foreground) {
         weak_method_factory_.GetWeakPtr());
 
   is_foreground_ = is_foreground;
+  time_of_last_state_change_ = clock_->NowTicks();
 }
 
 void TranslateMetricsLoggerImpl::OnForegroundChange(bool is_foreground) {
+  UpdateTimeTranslated(current_state_is_translated_, is_foreground_);
   is_foreground_ = is_foreground;
 }
 
 void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
+  UpdateTimeTranslated(current_state_is_translated_, is_foreground_);
+
   // The first time |RecordMetrics| is called, record all page load frequency
   // UMA metrcis.
   if (sequence_no_ == 0)
@@ -133,9 +140,10 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted() {
 }
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(bool was_sucessful) {
-  if (was_sucessful)
+  if (was_sucessful) {
+    UpdateTimeTranslated(previous_state_is_translated_, is_foreground_);
     num_translations_++;
-  else {
+  } else {
     // If the translation fails, then undo the change to the current state.
     current_state_is_translated_ = previous_state_is_translated_;
 
@@ -149,6 +157,7 @@ void TranslateMetricsLoggerImpl::LogTranslationFinished(bool was_sucessful) {
 }
 
 void TranslateMetricsLoggerImpl::LogReversion() {
+  UpdateTimeTranslated(current_state_is_translated_, is_foreground_);
   current_state_is_translated_ = false;
   num_reversions_++;
 }
@@ -189,6 +198,26 @@ TranslateState TranslateMetricsLoggerImpl::ConvertToTranslateState(
 
   NOTREACHED();
   return TranslateState::kUninitialized;
+}
+
+void TranslateMetricsLoggerImpl::UpdateTimeTranslated(bool was_translated,
+                                                      bool was_foreground) {
+  base::TimeTicks current_time = clock_->NowTicks();
+  if (was_foreground) {
+    base::TimeDelta time_since_last_update =
+        current_time - time_of_last_state_change_;
+    if (was_translated)
+      total_time_translated_ += time_since_last_update;
+    else
+      total_time_not_translated_ += time_since_last_update;
+  }
+  time_of_last_state_change_ = current_time;
+}
+
+void TranslateMetricsLoggerImpl::SetInternalClockForTesting(
+    base::TickClock* clock) {
+  clock_ = clock;
+  time_of_last_state_change_ = clock_->NowTicks();
 }
 
 }  // namespace translate

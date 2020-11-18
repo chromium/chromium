@@ -10,6 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 
+namespace base {
+class TickClock;
+}  // namespace base
+
 namespace translate {
 
 extern const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[];
@@ -43,6 +47,10 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
 
 class TranslateManager;
 
+namespace testing {
+class TranslateMetricsLoggerImplTest;
+}  // namespace testing
+
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
 // Translate over the course of a page load.
 class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
@@ -54,6 +62,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   TranslateMetricsLoggerImpl(const TranslateMetricsLoggerImpl&) = delete;
   TranslateMetricsLoggerImpl& operator=(const TranslateMetricsLoggerImpl&) =
       delete;
+
+  // Overrides the clock used to track the time of certain actions. Should only
+  // be used for testing purposes.
+  void SetInternalClockForTesting(base::TickClock* clock);
 
   // TranslateMetricsLogger
   void OnPageLoadStart(bool is_foreground) override;
@@ -73,6 +85,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
  private:
+  friend class testing::TranslateMetricsLoggerImplTest;
+
   // Logs all page load frequency UMA metrics based on the stored state.
   void RecordPageLoadUmaMetrics();
 
@@ -81,6 +95,11 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   TranslateState ConvertToTranslateState(bool is_translated,
                                          bool is_ui_shown,
                                          bool is_omnibox_shown) const;
+
+  // Updates |total_time_translated_| and |total_time_not_translated_|. This
+  // function is only called immediately before the translated or foreground
+  // state is changed, and the input must be the state before the change.
+  void UpdateTimeTranslated(bool was_translated, bool was_foreground);
 
   base::WeakPtr<TranslateManager> translate_manager_;
 
@@ -122,6 +141,13 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // reverted.
   int num_translations_ = 0;
   int num_reversions_ = 0;
+
+  // Tracks the amount of time the page is in the foreground and either
+  // translated or not translated.
+  const base::TickClock* clock_;
+  base::TimeTicks time_of_last_state_change_;
+  base::TimeDelta total_time_translated_;
+  base::TimeDelta total_time_not_translated_;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };
