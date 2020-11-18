@@ -60,9 +60,6 @@
 # crbug.com/1061201
 -org.chromium.chrome.browser.history.HistoryActivityTest.testOpenSelectedItems
 
-# crbug.com/1061208
--org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
-
 # crbug.com/1061212
 -org.chromium.chrome.browser.metrics.UkmTest.testRegularPlusIncognitoCheck
 

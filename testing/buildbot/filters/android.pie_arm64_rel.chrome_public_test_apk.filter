@@ -30,9 +30,6 @@
 # crbug.com/707528
 -org.chromium.chrome.browser.push_messaging.PushMessagingTest.testPushAndShowNotification
 
-# crbug.com/836460
--org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
-
 # crbug.com/1036545
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileUndo
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileWithContextMenu
