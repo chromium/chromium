@@ -484,6 +484,13 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   }
 }
 
+template <bool thread_safe>
+void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
+  // Perform PCScan only if quarantine is not empty.
+  if (quarantine_data_.size())
+    PerformScan(invocation_mode);
+}
+
 template class PCScan<ThreadSafe>;
 template class PCScan<NotThreadSafe>;
 

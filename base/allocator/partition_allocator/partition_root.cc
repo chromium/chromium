@@ -610,7 +610,7 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   // TODO(chromium:1129751): Change to LIKELY once PCScan is enabled by default.
   if (UNLIKELY(pcscan)) {
-    pcscan->PerformScan(
+    pcscan->PerformScanIfNeeded(
         internal::PCScan<thread_safe>::InvocationMode::kBlocking);
   }
 

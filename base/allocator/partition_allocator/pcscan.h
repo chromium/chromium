@@ -53,7 +53,7 @@ class BASE_EXPORT PCScan final {
 
   ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
 
-  void PerformScan(InvocationMode invocation_mode);
+  void PerformScanIfNeeded(InvocationMode invocation_mode);
 
  private:
   class PCScanTask;
@@ -81,6 +81,8 @@ class BASE_EXPORT PCScan final {
     std::atomic<size_t> epoch_{0u};
     size_t last_size_ = 0;
   };
+
+  void PerformScan(InvocationMode invocation_mode);
 
   Root* root_;
   QuarantineData quarantine_data_;
