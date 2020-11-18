@@ -378,7 +378,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   friend class FakeServiceWorkerContextWrapper;
   friend class ServiceWorkerClientsApiBrowserTest;
   friend class ServiceWorkerInternalsUI;
-  friend class ServiceWorkerMainResourceHandleCore;
+  friend class ServiceWorkerMainResourceHandle;
   friend class ServiceWorkerProcessManager;
   friend class ServiceWorkerVersionBrowserTest;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;

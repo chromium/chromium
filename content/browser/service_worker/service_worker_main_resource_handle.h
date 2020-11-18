@@ -8,7 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -28,42 +29,31 @@ namespace content {
 class ServiceWorkerContextWrapper;
 
 // This class is used to manage the lifetime of ServiceWorkerContainerHosts
-// created for main resource requests (navigations and web workers). This is a
-// UI thread class, with a pendant class on the core thread, the
-// ServiceWorkerMainResourceHandleCore.
+// created for main resource requests (navigations and web workers).
 //
-// The lifetime of the ServiceWorkerMainResourceHandle, the
-// ServiceWorkerMainResourceHandleCore and the ServiceWorkerContainerHost are
-// the following:
-//   1) We create a ServiceWorkerMainResourceHandle on the UI thread without
-//   populating the member service worker container info. This also leads to the
-//   creation of a ServiceWorkerMainResourceHandleCore.
+// The lifetime of the ServiceWorkerMainResourceHandle and the
+// ServiceWorkerContainerHost are the following:
+//   1) We create a ServiceWorkerMainResourceHandle without populating the
+//   member service worker container info.
 //
-//   2) When the navigation request is sent to the core thread, we include a
-//   pointer to the ServiceWorkerMainResourceHandleCore.
-//
-//   3) If we pre-create a ServiceWorkerContainerHost for this navigation, it
+//   2) If we pre-create a ServiceWorkerContainerHost for this navigation, it
 //   is added to ServiceWorkerContextCore and its container info is passed to
-//   ServiceWorkerMainResourceHandle on the UI thread via
-//   ServiceWorkerMainResourceHandleCore. See
-//   ServiceWorkerMainResourceHandleCore::OnCreatedContainerHost() and
-//   ServiceWorkerMainResourceHandle::OnCreatedContainerHost() for details.
+//   ServiceWorkerMainResourceHandle::OnCreatedContainerHost().
 //
-//   4) When the navigation is ready to commit, the NavigationRequest will
+//   3) When the navigation is ready to commit, the NavigationRequest will
 //   call ServiceWorkerMainResourceHandle::OnBeginNavigationCommit() to
 //     - complete the initialization for the ServiceWorkerContainerHost.
 //     - take out the container info to be sent as part of navigation commit
 //       IPC.
 //
-//   5) When the navigation finishes, the ServiceWorkerMainResourceHandle is
+//   4) When the navigation finishes, the ServiceWorkerMainResourceHandle is
 //   destroyed. The destructor of the ServiceWorkerMainResourceHandle destroys
 //   the container info which in turn leads to the destruction of an unclaimed
-//   ServiceWorkerContainerHost, and posts a task to destroy the
-//   ServiceWorkerMainResourceHandleCore on the core thread.
+//   ServiceWorkerContainerHost.
 class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
  public:
   ServiceWorkerMainResourceHandle(
-      ServiceWorkerContextWrapper* context_wrapper,
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       ServiceWorkerAccessedCallback on_service_worker_accessed);
   ~ServiceWorkerMainResourceHandle();
 
@@ -106,7 +96,37 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   bool has_container_info() const { return !!container_info_; }
 
-  ServiceWorkerMainResourceHandleCore* core() { return core_; }
+  void set_container_host(
+      base::WeakPtr<ServiceWorkerContainerHost> container_host) {
+    container_host_ = std::move(container_host);
+  }
+
+  base::WeakPtr<ServiceWorkerContainerHost> container_host() {
+    return container_host_;
+  }
+
+  void set_parent_container_host(
+      base::WeakPtr<ServiceWorkerContainerHost> container_host) {
+    DCHECK(!parent_container_host_);
+    parent_container_host_ = std::move(container_host);
+  }
+
+  base::WeakPtr<ServiceWorkerContainerHost> parent_container_host() {
+    return parent_container_host_;
+  }
+
+  void set_interceptor(
+      std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor) {
+    interceptor_ = std::move(interceptor);
+  }
+
+  ServiceWorkerControlleeRequestHandler* interceptor() {
+    return interceptor_.get();
+  }
+
+  const ServiceWorkerAccessedCallback& service_worker_accessed_callback() {
+    return service_worker_accessed_callback_;
+  }
 
   ServiceWorkerContextWrapper* context_wrapper() {
     return context_wrapper_.get();
@@ -119,9 +139,19 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
  private:
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info_;
 
-  ServiceWorkerMainResourceHandleCore* core_;
+  base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+
+  // Only used for workers with a blob URL.
+  base::WeakPtr<ServiceWorkerContainerHost> parent_container_host_;
+
+  std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor_;
+
+  ServiceWorkerAccessedCallback service_worker_accessed_callback_;
+
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
+
   base::WeakPtrFactory<ServiceWorkerMainResourceHandle> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceHandle);
 };
 

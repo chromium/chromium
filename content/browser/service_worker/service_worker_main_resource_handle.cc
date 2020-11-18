@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,21 +18,14 @@
 namespace content {
 
 ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
-    ServiceWorkerContextWrapper* context_wrapper,
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     ServiceWorkerAccessedCallback on_service_worker_accessed)
-    : context_wrapper_(context_wrapper) {
+    : service_worker_accessed_callback_(std::move(on_service_worker_accessed)),
+      context_wrapper_(std::move(context_wrapper)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  core_ = new ServiceWorkerMainResourceHandleCore(
-      weak_factory_.GetWeakPtr(), context_wrapper,
-      std::move(on_service_worker_accessed));
 }
 
-ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Delete the ServiceWorkerMainResourceHandleCore on the core thread.
-  BrowserThread::DeleteSoon(ServiceWorkerContext::GetCoreThreadId(), FROM_HERE,
-                            core_);
-}
+ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
 
 void ServiceWorkerMainResourceHandle::OnCreatedContainerHost(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info) {
@@ -55,34 +48,29 @@ void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
   // We may have failed to pre-create the container host.
   if (!container_info_)
     return;
-  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
-      FROM_HERE,
-      base::BindOnce(
-          &ServiceWorkerMainResourceHandleCore::OnBeginNavigationCommit,
-          base::Unretained(core_), render_process_id, render_frame_id,
-          cross_origin_embedder_policy, std::move(coep_reporter),
-          document_ukm_source_id));
   *out_container_info = std::move(container_info_);
+
+  if (container_host_) {
+    container_host_->OnBeginNavigationCommit(
+        render_process_id, render_frame_id, cross_origin_embedder_policy,
+        std::move(coep_reporter), document_ukm_source_id);
+  }
 }
 
 void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
-      FROM_HERE,
-      base::BindOnce(
-          &ServiceWorkerMainResourceHandleCore::OnEndNavigationCommit,
-          base::Unretained(core_)));
+  if (container_host_)
+    container_host_->OnEndNavigationCommit();
 }
 
 void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     ukm::SourceId worker_ukm_source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
-      FROM_HERE,
-      base::BindOnce(&ServiceWorkerMainResourceHandleCore::OnBeginWorkerCommit,
-                     base::Unretained(core_), cross_origin_embedder_policy,
-                     worker_ukm_source_id));
+  if (container_host_) {
+    container_host_->CompleteWebWorkerPreparation(cross_origin_embedder_policy,
+                                                  worker_ukm_source_id);
+  }
 }
 
 }  // namespace content

@@ -17,7 +17,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
@@ -33,16 +32,16 @@ namespace {
 // Core thread helpers
 
 void LoaderCallbackWrapperOnCoreThread(
-    ServiceWorkerMainResourceHandleCore* handle_core,
+    ServiceWorkerMainResourceHandle* handle,
     base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_on_ui,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     SingleRequestURLLoaderFactory::RequestHandler handler) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   base::Optional<SubresourceLoaderParams> subresource_loader_params;
-  if (handle_core->interceptor()) {
+  if (handle->interceptor()) {
     subresource_loader_params =
-        handle_core->interceptor()->MaybeCreateSubresourceLoaderParams();
+        handle->interceptor()->MaybeCreateSubresourceLoaderParams();
   }
 
   RunOrPostTaskOnThread(
@@ -81,7 +80,7 @@ void InvokeRequestHandlerOnCoreThread(
 // |interceptor_on_ui->LoaderCallbackWrapper()| on the UI thread.
 void MaybeCreateLoaderOnCoreThread(
     base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_on_ui,
-    ServiceWorkerMainResourceHandleCore* handle_core,
+    ServiceWorkerMainResourceHandle* handle,
     network::mojom::RequestDestination request_destination,
     bool skip_service_worker,
     bool are_ancestors_secure,
@@ -99,16 +98,15 @@ void MaybeCreateLoaderOnCoreThread(
     bool initialize_container_host_only) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
-  ServiceWorkerContextCore* context_core =
-      handle_core->context_wrapper()->context();
+  ServiceWorkerContextCore* context_core = handle->context_wrapper()->context();
   if (!context_core || !browser_context) {
-    LoaderCallbackWrapperOnCoreThread(handle_core, std::move(interceptor_on_ui),
+    LoaderCallbackWrapperOnCoreThread(handle, std::move(interceptor_on_ui),
                                       std::move(loader_callback),
                                       /*handler=*/{});
     return;
   }
 
-  if (!handle_core->container_host()) {
+  if (!handle->container_host()) {
     // This is the initial request before redirects, so make the container host.
     // Its lifetime is tied to the |container_info| in the
     // ServiceWorkerMainResourceHandle on the UI thread and which will be passed
@@ -141,7 +139,7 @@ void MaybeCreateLoaderOnCoreThread(
       // parent. See
       // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
       base::WeakPtr<ServiceWorkerContainerHost> parent_container_host =
-          handle_core->parent_container_host();
+          handle->parent_container_host();
       if (parent_container_host &&
           tentative_resource_request.url.SchemeIsBlob()) {
         container_host->InheritControllerFrom(*parent_container_host,
@@ -150,15 +148,14 @@ void MaybeCreateLoaderOnCoreThread(
       }
     }
     DCHECK(container_host);
-    handle_core->set_container_host(container_host);
+    handle->set_container_host(container_host);
 
     // Also make the inner interceptor.
-    DCHECK(!handle_core->interceptor());
-    handle_core->set_interceptor(
+    DCHECK(!handle->interceptor());
+    handle->set_interceptor(
         std::make_unique<ServiceWorkerControlleeRequestHandler>(
             context_core->AsWeakPtr(), container_host, request_destination,
-            skip_service_worker,
-            handle_core->service_worker_accessed_callback()));
+            skip_service_worker, handle->service_worker_accessed_callback()));
 
     // For the blob worker case, we only inherit the controller and do not
     // let it intercept the requests. Blob URLs are not eligible to go through
@@ -167,9 +164,9 @@ void MaybeCreateLoaderOnCoreThread(
     // ControllerServiceWorkerInfoPtr and ServiceWorkerObjectHost from the
     // subresource loader params which is created by the interceptor.
     if (inherit_container_host_only) {
-      LoaderCallbackWrapperOnCoreThread(
-          handle_core, std::move(interceptor_on_ui), std::move(loader_callback),
-          /*handler=*/{});
+      LoaderCallbackWrapperOnCoreThread(handle, std::move(interceptor_on_ui),
+                                        std::move(loader_callback),
+                                        /*handler=*/{});
       return;
     }
   }
@@ -178,9 +175,8 @@ void MaybeCreateLoaderOnCoreThread(
   // there is no registered service worker on the UI thread, so just initialize
   // the container host for this request.
   if (initialize_container_host_only) {
-    handle_core->interceptor()->InitializeContainerHost(
-        tentative_resource_request);
-    LoaderCallbackWrapperOnCoreThread(handle_core, interceptor_on_ui,
+    handle->interceptor()->InitializeContainerHost(tentative_resource_request);
+    LoaderCallbackWrapperOnCoreThread(handle, interceptor_on_ui,
                                       std::move(loader_callback),
                                       /*handler=*/{});
     return;
@@ -189,11 +185,11 @@ void MaybeCreateLoaderOnCoreThread(
   // Start the inner interceptor. We continue in
   // LoaderCallbackWrapperOnCoreThread().
   //
-  // It's safe to bind the raw |handle_core| to the callback because it owns the
+  // It's safe to bind the raw |handle| to the callback because it owns the
   // interceptor, which invokes the callback.
-  handle_core->interceptor()->MaybeCreateLoader(
+  handle->interceptor()->MaybeCreateLoader(
       tentative_resource_request, browser_context,
-      base::BindOnce(&LoaderCallbackWrapperOnCoreThread, handle_core,
+      base::BindOnce(&LoaderCallbackWrapperOnCoreThread, handle,
                      interceptor_on_ui, std::move(loader_callback)),
       base::BindOnce(&FallbackCallbackWrapperOnCoreThread, interceptor_on_ui,
                      std::move(fallback_callback)));
@@ -270,9 +266,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
              network::mojom::RequestDestination::kSharedWorker)
       << resource_request.destination;
 
-  if (!ShouldCreateForWorker(
-          resource_request.url,
-          navigation_handle->core()->parent_container_host()))
+  if (!ShouldCreateForWorker(resource_request.url,
+                             navigation_handle->parent_container_host()))
     return nullptr;
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
@@ -328,16 +323,13 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   // Start the inner interceptor on the core thread. It will call back to
   // LoaderCallbackWrapper() on the UI thread.
-  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
-      FROM_HERE,
-      base::BindOnce(
-          &MaybeCreateLoaderOnCoreThread, GetWeakPtr(), handle_->core(),
-          request_destination_, skip_service_worker_, are_ancestors_secure_,
-          frame_tree_node_id_, process_id_,
-          base::OptionalOrNullptr(worker_token_), std::move(host_receiver),
-          std::move(client_remote), tentative_resource_request, browser_context,
-          std::move(loader_callback), std::move(fallback_callback),
-          initialize_container_host_only));
+  MaybeCreateLoaderOnCoreThread(
+      GetWeakPtr(), handle_.get(), request_destination_, skip_service_worker_,
+      are_ancestors_secure_, frame_tree_node_id_, process_id_,
+      base::OptionalOrNullptr(worker_token_), std::move(host_receiver),
+      std::move(client_remote), tentative_resource_request, browser_context,
+      std::move(loader_callback), std::move(fallback_callback),
+      initialize_container_host_only);
 
   if (original_callback)
     std::move(original_callback).Run({});

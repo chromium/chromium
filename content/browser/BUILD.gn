@@ -1624,8 +1624,6 @@ source_set("browser") {
     "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_main_resource_handle.cc",
     "service_worker/service_worker_main_resource_handle.h",
-    "service_worker/service_worker_main_resource_handle_core.cc",
-    "service_worker/service_worker_main_resource_handle_core.h",
     "service_worker/service_worker_main_resource_loader.cc",
     "service_worker/service_worker_main_resource_loader.h",
     "service_worker/service_worker_main_resource_loader_interceptor.cc",

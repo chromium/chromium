@@ -37,7 +37,6 @@
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
@@ -978,23 +977,14 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
         // TODO(crbug/898733): Support SignedExchange loading and Service
         // Worker integration.
         if (service_worker_handle_) {
-          RunOrPostTaskOnThread(
-              FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-              base::BindOnce(
-                  [](ServiceWorkerMainResourceHandleCore* core) {
-                    base::WeakPtr<ServiceWorkerContainerHost> container_host =
-                        core->container_host();
-                    if (container_host) {
-                      container_host->SetControllerRegistration(
-                          nullptr, false /* notify_controllerchange */);
-                      container_host->UpdateUrls(GURL(), net::SiteForCookies(),
-                                                 base::nullopt);
-                    }
-                  },
-                  // Unretained() is safe because the handle owns the core,
-                  // and core gets deleted on the core thread in a task that
-                  // must occur after this task.
-                  base::Unretained(service_worker_handle_->core())));
+          base::WeakPtr<ServiceWorkerContainerHost> container_host =
+              service_worker_handle_->container_host();
+          if (container_host) {
+            container_host->SetControllerRegistration(
+                nullptr, false /* notify_controllerchange */);
+            container_host->UpdateUrls(GURL(), net::SiteForCookies(),
+                                       base::nullopt);
+          }
         }
       }
       return true;

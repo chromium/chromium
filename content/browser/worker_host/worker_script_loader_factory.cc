@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/worker_host/worker_script_fetch_initiator.h"
 #include "content/browser/worker_host/worker_script_loader.h"

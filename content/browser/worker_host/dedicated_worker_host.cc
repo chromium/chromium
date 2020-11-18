@@ -193,8 +193,7 @@ void DedicatedWorkerHost::StartScriptLoad(
           RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
               ->GetLastCommittedServiceWorkerHost();
 
-      service_worker_handle_->core()->set_parent_container_host(
-          creator_container_host);
+      service_worker_handle_->set_parent_container_host(creator_container_host);
     } else {
       // TODO(https://crbug.com/1017034): When this worker is nested, the worker
       // should inherit the active service worker from the parent worker host.

@@ -11,7 +11,6 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/isolation_info.h"
@@ -111,7 +110,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
 
   // The container host should be set up.
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      service_worker_handle_->core()->container_host();
+      service_worker_handle_->container_host();
   EXPECT_TRUE(container_host->is_response_committed());
   EXPECT_TRUE(container_host->is_execution_ready());
   EXPECT_EQ(url, container_host->url());
