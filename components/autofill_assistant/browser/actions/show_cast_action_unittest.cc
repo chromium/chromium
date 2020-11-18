@@ -20,6 +20,7 @@ using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::SaveArgPointee;
 
 class ShowCastActionTest : public testing::Test {
  public:
@@ -74,23 +75,26 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::TimeDelta::FromSeconds(1)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(2)));
   EXPECT_CALL(mock_action_delegate_,
               ScrollToElementPosition(expected_selector, _,
                                       EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
   Run();
+
+  EXPECT_EQ(capture.status(), ACTION_APPLIED);
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 3000);
 }
 
 TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
@@ -109,21 +113,25 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(
       mock_action_delegate_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(1)));
   EXPECT_CALL(mock_action_delegate_,
               ScrollToElementPosition(expected_selector, _,
                                       EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
   Run();
+
+  EXPECT_EQ(capture.status(), ACTION_APPLIED);
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
 }
 
 TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
@@ -132,7 +140,8 @@ TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
                                         base::TimeDelta::FromSeconds(0)));
   test_util::MockFindAnyElement(mock_action_delegate_);
   ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
-      .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   ON_CALL(mock_action_delegate_, ScrollToElementPosition(_, _, _, _))
       .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
 

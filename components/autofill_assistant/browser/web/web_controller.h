@@ -103,7 +103,7 @@ class WebController {
       const ElementFinder::Result& element,
       int max_rounds,
       base::TimeDelta check_interval,
-      base::OnceCallback<void(const ClientStatus&)> callback);
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback);
 
   // Check whether the center given element is on top. Fail with
   // ELEMENT_NOT_ON_TOP if the center of the element is covered.
@@ -324,7 +324,8 @@ class WebController {
                     const ClientStatus& status);
   void OnWaitUntilElementIsStable(
       ElementPositionGetter* getter_to_release,
-      base::OnceCallback<void(const ClientStatus&)> callback,
+      base::TimeTicks wait_time_start,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& status);
   void TapOrClickOnCoordinates(
       ElementPositionGetter* getter_to_release,

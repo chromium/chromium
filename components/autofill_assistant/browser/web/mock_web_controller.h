@@ -48,7 +48,8 @@ class MockWebController : public WebController {
                void(const ElementFinder::Result& element,
                     int,
                     base::TimeDelta,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
+                    base::OnceCallback<void(const ClientStatus&,
+                                            base::TimeDelta)> callback));
 
   void ClickOrTapElement(
       const ElementFinder::Result& element,

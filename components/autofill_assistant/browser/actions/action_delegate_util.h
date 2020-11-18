@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_ACTION_DELEGATE_UTIL_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -87,6 +88,13 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
 void AddOptionalStep(OptionalStep optional_step,
                      ElementActionCallback step,
                      ElementActionVector* actions);
+
+// Adds a step to the |actions| and ignores its timing results.
+void AddStepIgnoreTiming(
+    base::OnceCallback<void(
+        const ElementFinder::Result&,
+        base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
+    ElementActionVector* actions);
 
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,

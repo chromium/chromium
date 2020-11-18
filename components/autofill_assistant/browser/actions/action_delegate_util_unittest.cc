@@ -150,14 +150,16 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
 
   EXPECT_CALL(*mock_delegate, WaitUntilElementIsStable(
                                   _, _, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(*mock_delegate, ScrollIntoView(_, _)).Times(0);
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
   auto actions = std::make_unique<ElementActionVector>();
-  actions->emplace_back(base::BindOnce(
-      &ActionDelegate::WaitUntilElementIsStable, mock_delegate->GetWeakPtr(), 1,
-      base::TimeDelta::FromMilliseconds(0)));
+  AddStepIgnoreTiming(base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
+                                     mock_delegate->GetWeakPtr(), 1,
+                                     base::TimeDelta::FromMilliseconds(0)),
+                      actions.get());
   actions->emplace_back(base::BindOnce(
       [](base::OnceCallback<void()> destroy_delegate,
          const ElementFinder::Result& element,

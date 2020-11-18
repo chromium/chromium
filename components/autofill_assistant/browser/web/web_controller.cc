@@ -433,10 +433,7 @@ void WebController::WaitUntilElementIsStable(
     const ElementFinder::Result& element,
     int max_rounds,
     base::TimeDelta check_interval,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(devtools_client_.get(),
                                               max_rounds, check_interval,
@@ -444,26 +441,26 @@ void WebController::WaitUntilElementIsStable(
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(element.container_frame_host, element.object_id(),
-             base::BindOnce(
-                 &WebController::OnWaitUntilElementIsStable,
-                 weak_ptr_factory_.GetWeakPtr(), ptr,
-                 base::BindOnce(
-                     &DecorateWebControllerStatus,
-                     WebControllerErrorInfoProto::WAIT_UNTIL_ELEMENT_IS_STABLE,
-                     std::move(wrapped_callback))));
+             base::BindOnce(&WebController::OnWaitUntilElementIsStable,
+                            weak_ptr_factory_.GetWeakPtr(), ptr,
+                            base::TimeTicks::Now(), std::move(callback)));
 }
 
 void WebController::OnWaitUntilElementIsStable(
     ElementPositionGetter* getter_to_release,
-    base::OnceCallback<void(const ClientStatus&)> callback,
+    base::TimeTicks wait_start_time,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
     const ClientStatus& status) {
   base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
     return worker.get() == getter_to_release;
   });
+  ClientStatus end_status = status;
   if (!status.ok()) {
     VLOG(1) << __func__ << " Element unstable.";
+    FillWebControllerErrorInfo(
+        WebControllerErrorInfoProto::WAIT_UNTIL_ELEMENT_IS_STABLE, &end_status);
   }
-  std::move(callback).Run(status);
+  std::move(callback).Run(end_status, base::TimeTicks::Now() - wait_start_time);
 }
 
 void WebController::ClickOrTapElement(

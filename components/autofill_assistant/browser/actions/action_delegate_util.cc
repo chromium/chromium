@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -77,6 +78,24 @@ void FindElementAndPerformImpl(
       base::BindOnce(&OnFindElement, std::move(perform), std::move(done)));
 }
 
+// Call |done| with the |status| while ignoring the |wait_time|.
+void IgnoreTimingResult(base::OnceCallback<void(const ClientStatus&)> done,
+                        const ClientStatus& status,
+                        base::TimeDelta wait_time) {
+  std::move(done).Run(status);
+}
+
+// Execute |action| and ignore the timing result.
+void RunAndIgnoreTiming(
+    base::OnceCallback<void(
+        const ElementFinder::Result&,
+        base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> action,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  std::move(action).Run(element,
+                        base::BindOnce(&IgnoreTimingResult, std::move(done)));
+}
+
 // Call |done| with a successful status, no matter what |status|.
 //
 // Note that the status details, if any, filled in |status| are conserved.
@@ -89,7 +108,7 @@ void IgnoreErrorStatus(base::OnceCallback<void(const ClientStatus&)> done,
   std::move(done).Run(status.WithStatusOverride(ACTION_APPLIED));
 }
 
-// Execute [action] but skip any failures by transforming failed ClientStatus
+// Execute |action| but skip any failures by transforming failed ClientStatus
 // into successes.
 //
 // Note that the status details filled by the failed action are conserved.
@@ -105,17 +124,21 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                            ClickType click_type,
                            OptionalStep on_top,
                            ElementActionVector* actions) {
-  actions->emplace_back(base::BindOnce(
-      &ActionDelegate::WaitUntilDocumentIsInReadyState, delegate->GetWeakPtr(),
-      delegate->GetSettings().document_ready_check_timeout,
-      DOCUMENT_INTERACTIVE));
+  AddStepIgnoreTiming(
+      base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
+                     delegate->GetWeakPtr(),
+                     delegate->GetSettings().document_ready_check_timeout,
+                     DOCUMENT_INTERACTIVE),
+      actions);
   actions->emplace_back(
       base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
   if (click_type != ClickType::JAVASCRIPT) {
-    actions->emplace_back(base::BindOnce(
-        &ActionDelegate::WaitUntilElementIsStable, delegate->GetWeakPtr(),
-        delegate->GetSettings().box_model_check_count,
-        delegate->GetSettings().box_model_check_interval));
+    AddStepIgnoreTiming(
+        base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
+                       delegate->GetWeakPtr(),
+                       delegate->GetSettings().box_model_check_count,
+                       delegate->GetSettings().box_model_check_interval),
+        actions);
     AddOptionalStep(
         on_top,
         base::BindOnce(&ActionDelegate::CheckOnTop, delegate->GetWeakPtr()),
@@ -155,6 +178,14 @@ void AddOptionalStep(OptionalStep optional_step,
       actions->emplace_back(std::move(step));
       break;
   }
+}
+
+void AddStepIgnoreTiming(
+    base::OnceCallback<void(
+        const ElementFinder::Result&,
+        base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
+    ElementActionVector* actions) {
+  actions->emplace_back(base::BindOnce(&RunAndIgnoreTiming, std::move(step)));
 }
 
 void FindElementAndPerform(const ActionDelegate* delegate,

@@ -125,7 +125,8 @@ class ActionDelegate {
       int max_rounds,
       base::TimeDelta check_interval,
       const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
 
   // Make sure that |element| is the topmost element at its center. Fails with
   // ELEMENT_NOT_ON_TOP.
@@ -346,7 +347,8 @@ class ActionDelegate {
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
 
   // Gets the value of Document.readyState in |optional_frame_element| or, if
   // it is empty, in the main document.

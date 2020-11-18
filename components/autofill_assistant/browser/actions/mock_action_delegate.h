@@ -91,7 +91,8 @@ class MockActionDelegate : public ActionDelegate {
                void(int,
                     base::TimeDelta,
                     const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
+                    base::OnceCallback<void(const ClientStatus&,
+                                            base::TimeDelta)> callback));
 
   MOCK_METHOD2(CheckOnTop,
                void(const ElementFinder::Result& element,
@@ -335,11 +336,12 @@ class MockActionDelegate : public ActionDelegate {
                                 callback);
   }
 
-  MOCK_METHOD4(WaitUntilDocumentIsInReadyState,
-               void(base::TimeDelta,
-                    DocumentReadyState,
-                    const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD4(
+      WaitUntilDocumentIsInReadyState,
+      void(base::TimeDelta,
+           DocumentReadyState,
+           const ElementFinder::Result&,
+           base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>));
 
   MOCK_METHOD0(RequireUI, void());
   MOCK_METHOD0(SetExpandSheetForPromptAction, bool());

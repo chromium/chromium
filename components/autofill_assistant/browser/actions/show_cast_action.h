@@ -11,6 +11,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -28,6 +31,13 @@ class ShowCastAction : public Action {
   void OnWaitForElement(const Selector& selector,
                         const TopPadding& top_padding,
                         const ClientStatus& element_status);
+  void RunAndIncreaseWaitTimer(
+      base::OnceCallback<
+          void(const ElementFinder::Result&,
+               base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)>
+          action,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> done);
   void OnScrollToElementPosition(const ClientStatus& status);
 
   void EndAction(const ClientStatus& status);

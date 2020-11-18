@@ -339,7 +339,7 @@ void ScriptExecutor::WaitUntilElementIsStable(
     int max_rounds,
     base::TimeDelta check_interval,
     const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   delegate_->GetWebController()->WaitUntilElementIsStable(
       element, max_rounds, check_interval, std::move(callback));
 }
@@ -727,7 +727,7 @@ void ScriptExecutor::WaitUntilDocumentIsInReadyState(
     base::TimeDelta max_wait_time,
     DocumentReadyState min_ready_state,
     const ElementFinder::Result& optional_frame_element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   WaitForDocumentReadyState(
       max_wait_time, min_ready_state, optional_frame_element,
       base::BindOnce(&ScriptExecutor::OnWaitForDocumentReadyState,
@@ -735,11 +735,11 @@ void ScriptExecutor::WaitUntilDocumentIsInReadyState(
 }
 
 void ScriptExecutor::OnWaitForDocumentReadyState(
-    base::OnceCallback<void(const ClientStatus&)> callback,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
     const ClientStatus& status,
     DocumentReadyState ready_state,
     base::TimeDelta wait_time) {
-  std::move(callback).Run(status);
+  std::move(callback).Run(status, wait_time);
 }
 
 void ScriptExecutor::LoadURL(const GURL& url) {
@@ -1322,11 +1322,12 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
   if (!main_script_->last_focused_element_selector_.empty()) {
     auto actions =
         std::make_unique<action_delegate_util::ElementActionVector>();
-    actions->emplace_back(
+    action_delegate_util::AddStepIgnoreTiming(
         base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
                        main_script_->GetWeakPtr(),
                        delegate_->GetSettings().document_ready_check_timeout,
-                       DOCUMENT_INTERACTIVE));
+                       DOCUMENT_INTERACTIVE),
+        actions.get());
     actions->emplace_back(base::BindOnce(
         &ActionDelegate::ScrollToElementPosition, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,

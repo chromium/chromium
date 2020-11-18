@@ -75,20 +75,25 @@ void ShowCastAction::OnWaitForElement(const Selector& selector,
 
   auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
   actions->emplace_back(base::BindOnce(
-      &ActionDelegate::WaitUntilDocumentIsInReadyState, delegate_->GetWeakPtr(),
-      delegate_->GetSettings().document_ready_check_timeout,
-      DOCUMENT_INTERACTIVE));
+      &ShowCastAction::RunAndIncreaseWaitTimer, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
+                     delegate_->GetWeakPtr(),
+                     delegate_->GetSettings().document_ready_check_timeout,
+                     DOCUMENT_INTERACTIVE)));
   auto wait_for_stable_element = proto_.show_cast().wait_for_stable_element();
   if (wait_for_stable_element == STEP_UNSPECIFIED) {
     wait_for_stable_element = SKIP_STEP;
   }
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
-      base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                     delegate_->GetWeakPtr(),
-                     proto_.show_cast().stable_check_max_rounds(),
-                     base::TimeDelta::FromMilliseconds(
-                         proto_.show_cast().stable_check_interval_ms())),
+      base::BindOnce(
+          &ShowCastAction::RunAndIncreaseWaitTimer,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
+                         delegate_->GetWeakPtr(),
+                         proto_.show_cast().stable_check_max_rounds(),
+                         base::TimeDelta::FromMilliseconds(
+                             proto_.show_cast().stable_check_interval_ms()))),
       actions.get());
   actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
                                        delegate_->GetWeakPtr(), selector,
@@ -98,6 +103,17 @@ void ShowCastAction::OnWaitForElement(const Selector& selector,
       base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
       base::BindOnce(&ShowCastAction::OnScrollToElementPosition,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShowCastAction::RunAndIncreaseWaitTimer(
+    base::OnceCallback<void(
+        const ElementFinder::Result&,
+        base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> action,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  std::move(action).Run(
+      element, base::BindOnce(&ShowCastAction::OnWaitForElementTimed,
+                              weak_ptr_factory_.GetWeakPtr(), std::move(done)));
 }
 
 void ShowCastAction::OnScrollToElementPosition(const ClientStatus& status) {

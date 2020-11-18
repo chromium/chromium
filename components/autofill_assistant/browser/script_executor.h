@@ -136,7 +136,8 @@ class ScriptExecutor : public ActionDelegate,
       int max_rounds,
       base::TimeDelta check_interval,
       const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
   void CheckOnTop(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
@@ -250,7 +251,8 @@ class ScriptExecutor : public ActionDelegate,
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
 
   void LoadURL(const GURL& url) override;
   void Shutdown() override;
@@ -459,7 +461,7 @@ class ScriptExecutor : public ActionDelegate,
   void OnChosen(UserAction::Callback callback,
                 std::unique_ptr<TriggerContext> context);
   void OnWaitForDocumentReadyState(
-      base::OnceCallback<void(const ClientStatus&)> callback,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& status,
       DocumentReadyState ready_state,
       base::TimeDelta wait_time);
