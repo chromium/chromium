@@ -647,6 +647,7 @@ extern const char kWebAppInstallMetrics[];
 extern const char kWebAppsDailyMetrics[];
 extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
+extern const char kWebAppsAppAgnosticIphState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
 extern const char kWebAppsPreferences[];
 extern const char kWebAppsUserDisplayModeCleanedUp[];

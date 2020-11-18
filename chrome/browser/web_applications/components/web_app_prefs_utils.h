@@ -79,6 +79,10 @@ void RecordInstallIphIgnored(PrefService* pref_service, const AppId& app_id);
 
 void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id);
 
+// Returns whether Web App Install In Product Help should be shown based on
+// previous interactions with this promo.
+bool ShouldShowIph(PrefService* pref_service, const AppId& app_id);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_PREFS_UTILS_H_

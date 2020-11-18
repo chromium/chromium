@@ -8,6 +8,10 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
+namespace banners {
+class AppBannerManager;
+}  // namespace banners
+
 // A plus icon to surface whether a site has passed PWA (progressive web app)
 // installability checks and can be installed.
 class PwaInstallView : public PageActionIconView {
@@ -33,6 +37,10 @@ class PwaInstallView : public PageActionIconView {
 
   // Track whether IPH is closed because of install icon being clicked.
   bool install_icon_clicked_after_iph_shown_ = false;
+
+  // Decide whether IPH promo should be shown based on previous interactions.
+  bool ShouldShowIph(content::WebContents* web_contents,
+                     banners::AppBannerManager* manager);
 
   base::WeakPtrFactory<PwaInstallView> weak_ptr_factory_{this};
 
