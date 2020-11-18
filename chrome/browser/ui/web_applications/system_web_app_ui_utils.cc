@@ -263,7 +263,7 @@ Browser* LaunchSystemWebApp(Profile* profile,
   // inactive (background) desktop (e.g. when multiple users are logged in).
   // Here we move the newly created browser window (or the existing one on the
   // inactive desktop) to the current active (visible) desktop, so the user
-  // always see the launched app.
+  // always sees the launched app.
   multi_user_util::MoveWindowToCurrentDesktop(
       browser->window()->GetNativeWindow());
 #endif
