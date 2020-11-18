@@ -94,7 +94,7 @@ public class ConsoleMessagesForBlockedLoadsTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
         AwConsoleMessage errorMessage = getSingleErrorMessage();
-        assertNotEquals(errorMessage.message().indexOf(iframeUrl), -1);
+        assertNotEquals(errorMessage.message().indexOf(mWebServer.getBaseUrl()), -1);
     }
 
     @Test
