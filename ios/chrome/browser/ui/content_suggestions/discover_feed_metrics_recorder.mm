@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feed/core/v2/common_enums.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using feed::FeedEngagementType;
+using feed::FeedUserActionType;
 
 // Values for the UMA ContentSuggestions.Feed.LoadStreamStatus.LoadMore
 // histogram. These values are persisted to logs. Entries should not be
@@ -43,58 +48,6 @@ enum class FeedLoadStreamStatus {
   kMaxValue = kCannotLoadMoreNoNextPageToken,
 };
 
-// Values for the UMA ContentSuggestions.Feed.UserActions
-// histogram. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused. This must be kept
-// in sync with FeedUserActionType in enums.xml.
-enum class FeedUserActionType {
-  // User tapped on card, opening the article in the same tab.
-  kTappedOnCard = 0,
-  kShownCard = 1,
-  // User tapped on 'Send Feedback' in the back of card menu.
-  kTappedSendFeedback = 2,
-  // Discover feed header menu 'Learn More' tapped.
-  kTappedLearnMore = 3,
-  kTappedHideStory = 4,
-  kTappedNotInterestedIn = 5,
-  // Discover feed header menu 'Manage Interests' tapped.
-  kTappedManageInterests = 6,
-  kTappedDownload = 7,
-  // User opened the article in a new tab from the back of card menu.
-  kTappedOpenInNewTab = 8,
-  // User opened the back of card menu.
-  kOpenedContextMenu = 9,
-  kOpenedFeedSurface = 10,
-  // User opened the article in an incognito tab from the back of card menu.
-  kTappedOpenInNewIncognitoTab = 11,
-  // Ephemeral change, likely due to hide story or not interested in.
-  kEphemeralChange = 12,
-  // Ephemeral change undone, likely due to pressing 'undo' on the snackbar.
-  kEphemeralChangeRejected = 13,
-  // Discover feed visibility toggled from header menu.
-  kTappedTurnOn = 14,
-  kTappedTurnOff = 15,
-  // Discover feed header menu 'Manage Activity' tapped.
-  kTappedManageActivity = 16,
-  // User added article to 'Read Later' list.
-  kAddedToReadLater = 17,
-  // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kAddedToReadLater,
-};
-
-// Values for the UMA ContentSuggestions.Feed.EngagementType
-// histogram. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused. This must be kept
-// in sync with FeedEngagementType in enums.xml.
-enum class FeedEngagementType {
-  kFeedEngaged = 0,
-  kFeedEngagedSimple = 1,
-  kFeedInteracted = 2,
-  kDeprecatedFeedScrolled = 3,
-  kFeedScrolled = 4,
-  kMaxValue = kFeedScrolled,
-};
-
 namespace {
 // Histogram name for the infinite feed trigger.
 const char kDiscoverFeedInfiniteFeedTriggered[] =
@@ -103,6 +56,10 @@ const char kDiscoverFeedInfiniteFeedTriggered[] =
 // Histogram name for the Discover feed user actions.
 const char kDiscoverFeedUserActionHistogram[] =
     "ContentSuggestions.Feed.UserActions";
+
+// Histogram name for the Discover feed user actions commands.
+const char kDiscoverFeedUserActionCommandHistogram[] =
+    "ContentSuggestions.Feed.UserActions.Commands";
 
 // User action names for toggling the feed visibility from the header menu.
 const char kDiscoverFeedUserActionTurnOn[] =
@@ -127,6 +84,14 @@ const char kDiscoverFeedUserActionContextMenuOpened[] =
     "ContentSuggestions.Feed.CardAction.ContextMenu";
 const char kDiscoverFeedUserActionHideStory[] =
     "ContentSuggestions.Feed.CardAction.HideStory";
+const char kDiscoverFeedUserActionCloseContextMenu[] =
+    "ContentSuggestions.Feed.CardAction.ClosedContextMenu";
+const char kDiscoverFeedUserActionNativeContextMenuOpened[] =
+    "ContentSuggestions.Feed.CardAction.NativeContextMenu";
+const char kDiscoverFeedUserActionReportContentOpened[] =
+    "ContentSuggestions.Feed.CardAction.ReportContent";
+const char kDiscoverFeedUserActionReportContentClosed[] =
+    "ContentSuggestions.Feed.CardAction.ClosedReportContent";
 
 // User action names for feed header menu.
 const char kDiscoverFeedUserActionManageActivityTapped[] =
@@ -262,19 +227,31 @@ const int kMinutesBetweenSessions = 5;
 }
 
 - (void)recordCloseBackOfCardMenu {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kClosedContextMenu];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionCloseContextMenu));
 }
 
 - (void)recordOpenNativeBackOfCardMenu {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kOpenedNativeContextMenu];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionNativeContextMenuOpened));
 }
 
 - (void)recordShowDialog {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kOpenedDialog];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionReportContentOpened));
 }
 
 - (void)recordDismissDialog {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kClosedDialog];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionReportContentClosed));
 }
 
 - (void)recordDismissCard {
@@ -289,15 +266,17 @@ const int kMinutesBetweenSessions = 5;
 }
 
 - (void)recordCommittDismissCard {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kEphemeralChangeCommited];
 }
 
 - (void)recordShowSnackbar {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kShowSnackbar];
 }
 
 - (void)recordCommandID:(int)commandID {
-  // TODO(crbug.com/1145379): Create metrics and log them.
+  base::UmaHistogramSparse(kDiscoverFeedUserActionCommandHistogram, commandID);
 }
 
 #pragma mark - Private

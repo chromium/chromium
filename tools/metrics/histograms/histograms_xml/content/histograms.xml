@@ -1210,7 +1210,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Counts of user actions within the feed surface (Feed v2 only).
+    Counts of user actions within the feed surface (Feed v2 only). Recorded
+    whenever a user has taken an explicit action in the Feed. e.g. (Open a Card,
+    Hide the Feed, etc.)
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.UserActions.Commands" units="units"
+    expires_after="2021-09-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded whenever an Elements commands has taken place which wasn't handled
+    explicitly by ContentSuggestions.Feed.UserActions. e.g. A new command to
+    added server side to &quot;Report Content&quot;.(iOS only).
   </summary>
 </histogram>
 

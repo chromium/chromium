@@ -30585,6 +30585,14 @@ Called by update_feature_policy_enum.py.-->
   <int value="15" label="Turn off"/>
   <int value="16" label="Tapped Manage Activity"/>
   <int value="17" label="Added to Read Later"/>
+  <int value="18" label="Close context menu"/>
+  <int value="19"
+      label="Ephemeral change committed, likely due to dismissing the 'undo'
+             snackbar"/>
+  <int value="20" label="Open Dialog e.g. Report Content Dialog"/>
+  <int value="21" label="Close Dialog e.g. Report Content Dialog"/>
+  <int value="22" label="Show Snackbar"/>
+  <int value="23" label="Opened native context menu. (iOS Only)"/>
 </enum>
 
 <enum name="FeedZeroStateShowReason">
