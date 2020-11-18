@@ -79,6 +79,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   uint32_t GetFramebufferCopyTextureFormat() override;
   bool IsDisplayedAsOverlayPlane() const override;
   unsigned GetOverlayTextureId() const override;
+  gpu::Mailbox GetOverlayMailbox() const override;
   bool HasExternalStencilTest() const override;
   void ApplyExternalStencil() override;
   unsigned UpdateGpuFence() override;
@@ -204,6 +205,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   GpuVSyncCallback gpu_vsync_callback_;
   bool is_displayed_as_overlay_ = false;
+  gpu::Mailbox last_swapped_mailbox_;
 
   gfx::Size size_;
   gfx::ColorSpace color_space_;

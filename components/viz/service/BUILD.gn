@@ -566,6 +566,7 @@ viz_source_set("unit_tests") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_processor_ozone_unittest.cc",
       "display/overlay_unittest.cc",
       "display_embedder/software_output_device_ozone_unittest.cc",
     ]

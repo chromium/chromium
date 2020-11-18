@@ -891,6 +891,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     const gfx::Size& pixel_size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(client_);
+  last_swapped_mailbox_ = params.primary_plane_mailbox;
 
   // Reset |damage_of_buffers_|, if buffers are new created.
   if (params.swap_response.result ==
@@ -1056,6 +1057,11 @@ bool SkiaOutputSurfaceImpl::IsDisplayedAsOverlayPlane() const {
 unsigned SkiaOutputSurfaceImpl::GetOverlayTextureId() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return 0;
+}
+
+gpu::Mailbox SkiaOutputSurfaceImpl::GetOverlayMailbox() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return last_swapped_mailbox_;
 }
 
 bool SkiaOutputSurfaceImpl::HasExternalStencilTest() const {

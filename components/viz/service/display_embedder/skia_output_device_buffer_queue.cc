@@ -411,7 +411,8 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   DCHECK(!result.gpu_fence);
   FinishSwapBuffers(std::move(result), size, latency_info,
                     /*damage_area=*/base::nullopt,
-                    std::move(released_overlays));
+                    std::move(released_overlays),
+                    image ? image->skia_representation()->mailbox() : gpu::Mailbox());
   PageFlipComplete(image.get());
 }
 

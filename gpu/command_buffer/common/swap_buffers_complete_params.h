@@ -31,6 +31,11 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
   // next frame.
   base::Optional<gfx::Rect> frame_buffer_damage_area;
 
+  // The mailbox corresponding to the primary plane that was just swapped to
+  // the front buffer. The overlay processor can use it to extract the buffer
+  // for page flip tests.
+  Mailbox primary_plane_mailbox;
+
   // Used only on macOS, for coordinating IOSurface reuse with the system
   // WindowServer.
   gpu::TextureInUseResponses texture_in_use_responses;

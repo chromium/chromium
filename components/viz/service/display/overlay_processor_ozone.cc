@@ -209,9 +209,10 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
   if (!mailbox.IsSharedImage())
     return false;
 
-  candidate->native_pixmap = shared_image_interface_->GetNativePixmap(mailbox);
+  scoped_refptr<gfx::NativePixmap> native_pixmap =
+      shared_image_interface_->GetNativePixmap(mailbox);
 
-  if (!candidate->native_pixmap) {
+  if (!native_pixmap) {
     // SharedImage creation and destruction happens on a different
     // thread so there is no guarantee that we can always look them up
     // successfully. If a SharedImage doesn't exist, ignore the
@@ -221,9 +222,19 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ReportSharedImageExists(false);
     return false;
   }
-
-  candidate->native_pixmap_unique_id = MailboxToUInt32(mailbox);
   ReportSharedImageExists(true);
+
+  if (candidate->buffer_size != native_pixmap->GetBufferSize() ||
+      candidate->format != native_pixmap->GetBufferFormat()) {
+    // If |mailbox| corresponds to the last submitted primary plane, its
+    // parameters may not match those of the current candidate due to a
+    // reshape. If the size and format don't match, skip this candidate for
+    // now, and try again next frame.
+    return false;
+  }
+
+  candidate->native_pixmap = std::move(native_pixmap);
+  candidate->native_pixmap_unique_id = MailboxToUInt32(mailbox);
   return true;
 }
 

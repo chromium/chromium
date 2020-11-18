@@ -164,7 +164,8 @@ class SkiaOutputDevice {
     const gpu::SwapBuffersCompleteParams& Complete(
         gfx::SwapCompletionResult result,
         const base::Optional<gfx::Rect>& damage_area,
-        std::vector<gpu::Mailbox> released_overlays);
+        std::vector<gpu::Mailbox> released_overlays,
+        const gpu::Mailbox& primary_plane_mailbox);
     void CallFeedback();
 
    private:
@@ -204,7 +205,8 @@ class SkiaOutputDevice {
       const gfx::Size& size,
       std::vector<ui::LatencyInfo> latency_info,
       const base::Optional<gfx::Rect>& damage_area = base::nullopt,
-      std::vector<gpu::Mailbox> released_overlays = {});
+      std::vector<gpu::Mailbox> released_overlays = {},
+      const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
   GrDirectContext* const gr_context_;
 
