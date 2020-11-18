@@ -543,7 +543,7 @@ crbug.com/1142023 [ Win10 ] http/tests/eventsource/eventsource-cors-no-server.ht
 crbug.com/1142023 [ Win10 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Slow ]
 crbug.com/1142023 [ Win10 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Slow ]
 
-# Tentatively added here to see if they stop being flaky
+# crbug.com/1095379: These were all added here in an attempt to reduce flakiness.
 crbug.com/983788 http/tests/cookies/same-site/popup-cross-site.https.html [ Slow ]
 crbug.com/1081237 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Slow ]
 crbug.com/1049641 http/tests/devtools/sources/debugger/debugger-disable-enable.js [ Slow ]
