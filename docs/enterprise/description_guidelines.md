@@ -3,7 +3,7 @@ how various product names and the like should be referenced.
 
 * Chrome: `<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>`
 * Chrome OS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>`
-* Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
+* Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
 * Linux: `<ph name="LINUX_OS_NAME">Linux</ph>`
 * Internet Explorer: `<ph name="IE_PRODUCT_NAME">Internet® Explorer®</ph>`
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
