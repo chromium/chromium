@@ -3586,6 +3586,17 @@ message ClientCertificateProvisioningResponse {
     INCONSISTENT_DATA = 4;
     // The backend does not accept the public key sent by the client.
     BAD_PUBLIC_KEY = 5;
+    // The leaf CA certificate specified by the admin is invalid.
+    BAD_CA_CERTIFICATE_SPECIFIED = 6;
+    // The certificate received from the certificate enrollment agent cannot be
+    // parsed or is not issued by the leaf CA certificate specified by the
+    // admin.
+    BAD_CLIENT_CERTIFICATE_RECEIVED = 7;
+    // The CSR signature provided by the client is invalid.
+    INVALID_CSR_SIGNATURE = 8;
+    // A certificate signing request for the same public key has already been
+    // sent.
+    CSR_ALREADY_SENT = 9;
   }
 
   // If filled, the request can currently not be processed and the client
