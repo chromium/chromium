@@ -69,7 +69,6 @@ def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
         ci.overview_console_view(
             name = name,
             branch_selector = branch_selector,
-            header = "//chromium-header.textpb",
             repo = "https://chromium.googlesource.com/chromium/src",
             refs = [milestone_vars.ref],
             title = title,
@@ -103,7 +102,6 @@ def set_defaults(milestone_vars, **kwargs):
         cpu = builders.cpu.X86_64,
         executable = "recipe:chromium",
         execution_timeout = 3 * time.hour,
-        header = "//chromium-header.textpb",
         os = builders.os.LINUX_DEFAULT,
         pool = "luci.chromium.ci",
         project_trigger_overrides = {"chromium": settings.project} if not settings.is_master else None,

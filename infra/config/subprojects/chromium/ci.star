@@ -5,6 +5,7 @@
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "builder_name", "cpu", "goma", "os", "xcode_cache")
 load("//lib/ci.star", "ci")
+load("//console-header.star", "HEADER")
 load("//project.star", "settings")
 
 def main_console_if_on_branch():
@@ -13,7 +14,7 @@ def main_console_if_on_branch():
 ci.set_defaults(
     settings,
     add_to_console_view = True,
-    bucketed_triggers = settings.is_master,
+    header = HEADER,
 )
 
 ci.declare_bucket(settings, branch_selector = branches.ALL_BRANCHES)

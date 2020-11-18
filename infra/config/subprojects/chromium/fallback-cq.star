@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//project.star", "ACTIVE_BRANCHES")
+load("//project.star", "ACTIVE_MILESTONES")
 
 def _trailing_digit_regex(n):
     if n == 0:
@@ -146,14 +146,11 @@ luci.cq_group(
     retry_config = cq.RETRY_ALL_FAILURES,
     watch = cq.refset(
         repo = "https://chromium.googlesource.com/chromium/src",
-        refs = (
-            # \D - non-digit, match any branch that is not entirely numeric
-            [r"^refs/branch-heads/.*\D.*$"] +
-            [
-                "^refs/branch-heads/{}$".format(regex)
-                for regex in _get_fallback_branch_number_regexes()
-            ]
-        ),
+        refs = ["refs/branch-heads/.*"],
+        refs_exclude = [
+            details.ref
+            for details in ACTIVE_MILESTONES.values()
+        ],
     ),
     acls = [
         acl.entry(
