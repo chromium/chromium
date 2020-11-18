@@ -21,7 +21,7 @@ namespace features {
 #if defined(OS_ANDROID)
 // Used to limit GL version to 2.0 for skia raster on Android.
 const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use android SurfaceControl API for managing display compositor's buffer queue
 // and using overlays on Android. Also used by webview to disable surface
