@@ -14,11 +14,27 @@
   # below). MB uses this dict to look up which config to use for a given bot.
   'masters': {
     'chrome': {
+      'chromeos-arm-generic-beta': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-ltc': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-lts': 'official_chromeos_arm-generic',
+      'chromeos-arm-generic-stable': 'official_chromeos_arm-generic',
       'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official',
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official',
       'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-beta': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-ltc': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-lts': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome-stable': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-beta': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-ltc': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-lts': 'chromeos_eve_include_unwind_tables_official',
+      'chromeos-eve-chrome-stable': 'chromeos_eve_include_unwind_tables_official',
       'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-beta': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-ltc': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-lts': 'chromeos_kevin_include_unwind_tables_official',
+      'chromeos-kevin-chrome-stable': 'chromeos_kevin_include_unwind_tables_official',
       'lacros-chrome': 'chromeos_amd64-generic_lacros_official',
       # Don't include unwind tables for the remaining three builders since
       # they monitor binary size growth, which may be affected by the tables.
@@ -26,6 +42,10 @@
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
+      'linux-chromeos-beta': 'official_goma_chromeos',
+      'linux-chromeos-ltc': 'official_goma_chromeos',
+      'linux-chromeos-lts': 'official_goma_chromeos',
+      'linux-chromeos-stable': 'official_goma_chromeos',
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
@@ -35,21 +55,6 @@
       'win64-chrome': 'official_goma_x64',
       'win64-chrome-beta': 'official_goma_x64',
       'win64-chrome-stable': 'official_goma_x64',
-    },
-
-    'chromeos.continuous': {
-      'chromeos-betty-pi-arc-chrome-beta': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-ltc': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-lts': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-chrome-stable': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-eve-chrome-beta': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-ltc': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-lts': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-eve-chrome-stable': 'chromeos_eve_include_unwind_tables_official',
-      'chromeos-kevin-chrome-beta': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-ltc': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-lts': 'chromeos_kevin_include_unwind_tables_official',
-      'chromeos-kevin-chrome-stable': 'chromeos_kevin_include_unwind_tables_official',
     },
 
     'chrome.pgo': {
@@ -2221,6 +2226,10 @@
       'official', 'release_bot', 'minimal_symbols',
     ],
 
+    'official_chromeos_arm-generic': [
+      'chromeos_device', 'arm-generic', 'goma', 'official_optimize',
+    ],
+
     'official_goma': [
       'official', 'goma',
     ],
@@ -2251,6 +2260,10 @@
 
     'official_goma_linux_pgo': [
       'official', 'goma', 'static', 'no_symbols', 'pgo_phase_1',
+    ],
+
+    'official_goma_chromeos': [
+      'official', 'goma', 'chromeos',
     ],
 
     'official_goma_chromeos_include_unwind_tables': [
