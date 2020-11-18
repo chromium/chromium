@@ -647,6 +647,7 @@
 #endif
 
 #if BUILDFLAG(IS_LACROS)
+#include "chrome/browser/chrome_browser_main_parts_lacros.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
@@ -1374,9 +1375,12 @@ ChromeContentBrowserClient::CreateBrowserMainParts(
 #elif defined(OS_MAC)
   main_parts =
       std::make_unique<ChromeBrowserMainPartsMac>(parameters, &startup_data_);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   main_parts = std::make_unique<chromeos::ChromeBrowserMainPartsChromeos>(
       parameters, &startup_data_);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(parameters,
+                                                              &startup_data_);
 #elif defined(OS_LINUX)
   main_parts =
       std::make_unique<ChromeBrowserMainPartsLinux>(parameters, &startup_data_);

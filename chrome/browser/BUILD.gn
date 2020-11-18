@@ -4501,6 +4501,8 @@ static_library("browser") {
   if (is_lacros) {
     assert(enable_native_notifications)
     sources += [
+      "chrome_browser_main_parts_lacros.cc",
+      "chrome_browser_main_parts_lacros.h",
       "feedback/show_feedback_page_lacros.cc",
       "first_run/first_run_internal_lacros.cc",
       "lacros/account_manager_facade_factory_lacros.cc",
