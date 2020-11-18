@@ -57,8 +57,13 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_background_page_first_load_observer.h"
 #include "net/cert/x509_certificate.h"
+#include "net/http/http_status_code.h"
 #include "net/ssl/client_cert_identity.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/ssl/ssl_config.h"
+#include "net/ssl/ssl_server_config.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -75,6 +80,8 @@ using testing::Return;
 using testing::_;
 
 namespace {
+
+constexpr char kClientCertHttpsTestServerUrl[] = "/client-cert";
 
 void StoreDigest(std::vector<uint8_t>* digest,
                  const base::Closure& callback,
@@ -173,13 +180,22 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
     cert_provider_service_ =
         chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             profile());
+  }
 
-    // Start an HTTPS test server that requests a client certificate.
-    net::SpawnedTestServer::SSLOptions ssl_options;
-    ssl_options.request_client_certificate = true;
-    https_server_ = std::make_unique<net::SpawnedTestServer>(
-        net::SpawnedTestServer::TYPE_HTTPS, ssl_options, base::FilePath());
-    ASSERT_TRUE(https_server_->Start());
+  // Starts an HTTPS test server that requests a client certificate.
+  bool StartHttpsServer(uint16_t ssl_protocol_version) {
+    net::SSLServerConfig ssl_server_config;
+    ssl_server_config.client_cert_type =
+        net::SSLServerConfig::REQUIRE_CLIENT_CERT;
+    ssl_server_config.version_max = ssl_protocol_version;
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK,
+                                ssl_server_config);
+    https_server_->RegisterRequestHandler(
+        base::BindRepeating(&CertificateProviderApiTest::OnHttpsServerRequested,
+                            base::Unretained(this)));
+    return https_server_->Start();
   }
 
   void CheckCertificateProvidedByExtension(
@@ -217,12 +233,31 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
     return all_provided_certificates;
   }
 
-  net::SpawnedTestServer* GetHttpsServer() const { return https_server_.get(); }
+  GURL GetHttpsClientCertUrl() const {
+    return https_server_->GetURL(kClientCertHttpsTestServerUrl);
+  }
 
  protected:
-  std::unique_ptr<net::SpawnedTestServer> https_server_;
   policy::MockConfigurationPolicyProvider provider_;
   chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> OnHttpsServerRequested(
+      const net::test_server::HttpRequest& request) const {
+    if (request.relative_url != kClientCertHttpsTestServerUrl)
+      return nullptr;
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (!request.ssl_info || !request.ssl_info->cert) {
+      response->set_code(net::HTTP_FORBIDDEN);
+      return response;
+    }
+    response->set_content("got client cert with fingerprint: " +
+                          GetCertFingerprint1(*request.ssl_info->cert));
+    response->set_content_type("text/plain");
+    return response;
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 // Tests the API with a test extension in place. Tests can cause the extension
@@ -296,7 +331,7 @@ class CertificateProviderApiMockedExtensionTest
     // Navigate to a page which triggers a sign request. Navigation is blocked
     // by completion of this request, so we don't wait for navigation to finish.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GetHttpsServer()->GetURL("client-cert"),
+        browser(), GetHttpsClientCertUrl(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_NONE);
 
@@ -478,6 +513,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
 // onCertificatesUpdateRequested event.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        ResponsiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsCertificateProvider();");
   ExecuteJavascript("registerForSignatureRequests();");
 
@@ -488,6 +524,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // legacy onCertificatesRequested event.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        LegacyResponsiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
   ExecuteJavascript("registerForLegacySignatureRequests();");
 
@@ -498,6 +535,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // onSignDigestRequested event will fail.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        LegacyExtensionSigningTwice) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
   ExecuteJavascript("registerForLegacySignatureRequests();");
 
@@ -515,6 +553,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // setCertificates() and in response to onCertificatesUpdateRequested.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        ProactiveAndResponsiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsCertificateProvider();");
   ExecuteJavascript("registerForSignatureRequests();");
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
@@ -533,6 +572,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // setCertificates() and in response to the legacy onCertificatesRequested.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        ProactiveAndLegacyResponsiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
   ExecuteJavascript("registerForLegacySignatureRequests();");
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
@@ -553,6 +593,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // the non-legacy signature event is used.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        ProactiveAndRedundantLegacyResponsiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerAsCertificateProvider();");
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
   ExecuteJavascript("registerForSignatureRequests();");
@@ -575,6 +616,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // setCertificates().
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        ProactiveExtension) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   ExecuteJavascript("registerForSignatureRequests();");
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
 
@@ -590,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
   EXPECT_TRUE(GetAllProvidedCertificates().empty());
 }
 
-// Tests that all invalid certificates are rejected.
+// Tests that all of invalid certificates are rejected.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        OnlyInvalidCertificates) {
   ExecuteJavascriptAndWaitForCallback("setInvalidCertificates();");
@@ -600,6 +642,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // Test that the certificateProvider events are delivered correctly in the
 // scenario when the event listener is in a lazy background page that gets idle.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
   // Make extension background pages idle immediately.
   extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
   extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(1);
@@ -622,13 +665,12 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
   // Navigate to the page that requests the client authentication. Use the
   // incognito profile in order to force re-authentication in the later request
   // made by the test.
-  const GURL client_cert_url = GetHttpsServer()->GetURL("client-cert");
   const std::string client_cert_fingerprint =
       GetCertFingerprint1(*TestCertificateProviderExtension::GetCertificate());
   Browser* const incognito_browser = CreateIncognitoBrowser(profile());
   ASSERT_TRUE(incognito_browser);
   ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser, client_cert_url,
+      incognito_browser, GetHttpsClientCertUrl(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(test_certificate_provider_extension.certificate_request_count(), 1);
@@ -644,7 +686,8 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
   // Navigate again to the page with the client authentication. The extension
   // gets awakened and handles the request.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), client_cert_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetHttpsClientCertUrl(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(test_certificate_provider_extension.certificate_request_count(), 2);
   EXPECT_EQ(
