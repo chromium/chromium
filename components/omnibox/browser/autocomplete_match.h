@@ -26,6 +26,10 @@
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 class AutocompleteProvider;
 class OmniboxPedal;
 class SuggestionAnswer;
@@ -35,6 +39,10 @@ class TemplateURLService;
 namespace base {
 class Time;
 }  // namespace base
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace gfx {
 struct VectorIcon;
@@ -184,6 +192,14 @@ struct AutocompleteMatch {
   ~AutocompleteMatch();
 
   AutocompleteMatch& operator=(const AutocompleteMatch& match);
+
+#if defined(OS_ANDROID)
+  // Returns a corresponding Java object, creating it if necessary.
+  // NOTE: Android specific methods are defined in autocomplete_match_android.cc
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env,
+      bookmarks::BookmarkModel* model) const;
+#endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   // Gets the vector icon identifier for the icon to be shown for this match. If
@@ -700,6 +716,20 @@ struct AutocompleteMatch {
       const base::string16& text,
       const ACMatchClassifications& classifications,
       const std::string& provider_name = "");
+
+ private:
+#if defined(OS_ANDROID)
+  // Corresponding Java object.
+  // This element should not be copied with the rest of the AutocompleteMatch
+  // object to ensure consistent 1:1 relationship between the objects.
+  // This object should never be accessed directly. To acquire a reference to
+  // java object, call the GetOrCreateJavaObject().
+  // Note that this object is lazily constructed to avoid creating Java matches
+  // for throw away AutocompleteMatch objects, eg. during Classify() or
+  // QualifyPartialUrlQuery() calls.
+  // See AutocompleteControllerAndroid for more details.
+  mutable base::android::ScopedJavaGlobalRef<jobject> java_match_;
+#endif
 };
 
 typedef AutocompleteMatch::ACMatchClassification ACMatchClassification;

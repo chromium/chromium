@@ -10,7 +10,6 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArraySet;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -25,19 +24,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
-import org.chromium.components.omnibox.AutocompleteMatch.NavsuggestTile;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
-import org.chromium.components.omnibox.SuggestionAnswer;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Bridge to the native AutocompleteControllerAndroid.
@@ -347,53 +341,6 @@ public class AutocompleteController {
             int groupId, String headerText, boolean collapsedByDefault) {
         autocompleteResult.getGroupsDetails().put(
                 groupId, new GroupDetails(headerText, collapsedByDefault));
-    }
-
-    @CalledByNative
-    private static AutocompleteMatch buildOmniboxSuggestion(int nativeType, int[] nativeSubtypes,
-            boolean isSearchType, int relevance, int transition, String contents,
-            int[] contentClassificationOffsets, int[] contentClassificationStyles,
-            String description, int[] descriptionClassificationOffsets,
-            int[] descriptionClassificationStyles, SuggestionAnswer answer, String fillIntoEdit,
-            GURL url, GURL imageUrl, String imageDominantColor, boolean isStarred,
-            boolean isDeletable, String postContentType, byte[] postData, int groupId,
-            List<QueryTile> tiles, byte[] clipboardImageData, boolean hasTabMatch,
-            List<NavsuggestTile> navsuggestTiles) {
-        assert contentClassificationOffsets.length == contentClassificationStyles.length;
-        List<MatchClassification> contentClassifications = new ArrayList<>();
-        for (int i = 0; i < contentClassificationOffsets.length; i++) {
-            contentClassifications.add(new MatchClassification(
-                    contentClassificationOffsets[i], contentClassificationStyles[i]));
-        }
-
-        assert descriptionClassificationOffsets.length == descriptionClassificationStyles.length;
-        List<MatchClassification> descriptionClassifications = new ArrayList<>();
-        for (int i = 0; i < descriptionClassificationOffsets.length; i++) {
-            descriptionClassifications.add(new MatchClassification(
-                    descriptionClassificationOffsets[i], descriptionClassificationStyles[i]));
-        }
-
-        Set<Integer> subtypes = new ArraySet(nativeSubtypes.length);
-        for (int i = 0; i < nativeSubtypes.length; i++) {
-            subtypes.add(nativeSubtypes[i]);
-        }
-
-        return new AutocompleteMatch(nativeType, subtypes, isSearchType, relevance, transition,
-                contents, contentClassifications, description, descriptionClassifications, answer,
-                fillIntoEdit, url, imageUrl, imageDominantColor, isStarred, isDeletable,
-                postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch,
-                navsuggestTiles);
-    }
-
-    @CalledByNative
-    private static List<NavsuggestTile> buildOmniboxNavsuggestTileList(int capacity) {
-        return new ArrayList<>(capacity);
-    }
-
-    @CalledByNative
-    private static void addOmniboxNavsuggestTile(
-            List<NavsuggestTile> tiles, String title, GURL url) {
-        tiles.add(new NavsuggestTile(title, url));
     }
 
     /**
