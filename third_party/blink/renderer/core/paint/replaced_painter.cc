@@ -176,7 +176,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
   bool draw_selection_tint =
       local_paint_info.phase == PaintPhase::kForeground &&
       layout_replaced_.IsSelected() && layout_replaced_.CanBeSelectionLeaf() &&
-      !layout_replaced_.GetDocument().Printing();
+      !local_paint_info.IsPrinting();
   if (draw_selection_tint && !DrawingRecorder::UseCachedDrawingIfPossible(
                                  local_paint_info.context, layout_replaced_,
                                  DisplayItem::kSelectionTint)) {

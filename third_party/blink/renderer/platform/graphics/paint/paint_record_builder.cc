@@ -10,22 +10,32 @@
 
 namespace blink {
 
-PaintRecordBuilder::PaintRecordBuilder()
-    : own_paint_controller_(new PaintController(PaintController::kTransient)),
-      paint_controller_(own_paint_controller_.get()),
-      context_(new GraphicsContext(*paint_controller_)) {
+PaintRecordBuilder::PaintRecordBuilder(
+    printing::MetafileSkia* metafile,
+    GraphicsContext* containing_context,
+    PaintController* paint_controller,
+    paint_preview::PaintPreviewTracker* tracker)
+    : paint_controller_(nullptr) {
+  if (paint_controller) {
+    paint_controller_ = paint_controller;
+  } else {
+    own_paint_controller_ =
+        std::make_unique<PaintController>(PaintController::kTransient);
+    paint_controller_ = own_paint_controller_.get();
+  }
+
   paint_controller_->UpdateCurrentPaintChunkProperties(
       nullptr, PropertyTreeState::Root());
-}
 
-PaintRecordBuilder::PaintRecordBuilder(GraphicsContext& containing_context)
-    : PaintRecordBuilder() {
-  context_->CopyConfigFrom(containing_context);
+  context_ =
+      std::make_unique<GraphicsContext>(*paint_controller_, metafile, tracker);
+  if (containing_context) {
+    context_->SetDarkModeEnabled(containing_context->IsDarkModeEnabled());
+    context_->SetDeviceScaleFactor(containing_context->DeviceScaleFactor());
+    context_->SetPrinting(containing_context->Printing());
+    context_->SetIsPaintingPreview(containing_context->IsPaintingPreview());
+  }
 }
-
-PaintRecordBuilder::PaintRecordBuilder(PaintController& paint_controller)
-    : paint_controller_(&paint_controller),
-      context_(new GraphicsContext(*paint_controller_)) {}
 
 PaintRecordBuilder::~PaintRecordBuilder() = default;
 

@@ -241,7 +241,7 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   if (SVGLayoutSupport::IsOverflowHidden(marker))
     canvas->clipRect(marker.Viewport());
 
-  PaintRecordBuilder builder(paint_info.context);
+  PaintRecordBuilder builder(nullptr, &paint_info.context);
   PaintInfo marker_paint_info(builder.Context(), paint_info);
   // It's expensive to track the transformed paint cull rect for each
   // marker so just disable culling. The shape paint call will already

@@ -71,20 +71,11 @@ class PLATFORM_EXPORT GraphicsContext {
   USING_FAST_MALLOC(GraphicsContext);
 
  public:
-  explicit GraphicsContext(PaintController&);
+  explicit GraphicsContext(PaintController&,
+                           printing::MetafileSkia* = nullptr,
+                           paint_preview::PaintPreviewTracker* = nullptr);
+
   ~GraphicsContext();
-
-  // Copy configs such as printing, dark mode, device scale factor etc. from
-  // another GraphicsContext.
-  void CopyConfigFrom(GraphicsContext&);
-
-  void SetPrintingMetafile(printing::MetafileSkia* metafile) {
-    printing_metafile_ = metafile;
-  }
-
-  void SetPaintPreviewTracker(paint_preview::PaintPreviewTracker* tracker) {
-    paint_preview_tracker_ = tracker;
-  }
 
   cc::PaintCanvas* Canvas() { return canvas_; }
   const cc::PaintCanvas* Canvas() const { return canvas_; }
@@ -162,9 +153,24 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetDeviceScaleFactor(float factor) { device_scale_factor_ = factor; }
   float DeviceScaleFactor() const { return device_scale_factor_; }
 
-  // Set to true if context is for printing. Bitmaps won't  be resampled when
-  // printing to keep the best possible quality.
+  // Returns if the context is a printing context instead of a display
+  // context. Bitmap shouldn't be resampled when printing to keep the best
+  // possible quality.
+  bool Printing() const { return printing_; }
   void SetPrinting(bool printing) { printing_ = printing; }
+
+  // Returns if the context is saving a paint preview instead of displaying.
+  // In such cases, clipping should not occur.
+  bool IsPaintingPreview() const { return is_painting_preview_; }
+  void SetIsPaintingPreview(bool is_painting_preview) {
+    is_painting_preview_ = is_painting_preview;
+  }
+
+  // Returns if the context is printing or painting a preview. Many of the
+  // behaviors required for printing and paint previews are shared.
+  bool IsPrintingOrPaintingPreview() const {
+    return Printing() || IsPaintingPreview();
+  }
 
   SkColorFilter* GetColorFilter() const;
   void SetColorFilter(ColorFilter);
@@ -434,7 +440,6 @@ class PLATFORM_EXPORT GraphicsContext {
   // creating a tagged PDF. Callers are responsible for restoring it.
   void SetDOMNodeId(DOMNodeId);
   DOMNodeId GetDOMNodeId() const;
-  bool NeedsDOMNodeId() const { return printing_; }
 
   static sk_sp<SkColorFilter> WebCoreColorFilterToSkiaColorFilter(ColorFilter);
 
@@ -514,7 +519,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  cc::PaintCanvas* canvas_ = nullptr;
+  cc::PaintCanvas* canvas_;
 
   PaintController& paint_controller_;
 
@@ -524,28 +529,29 @@ class PLATFORM_EXPORT GraphicsContext {
   Vector<std::unique_ptr<GraphicsContextState>> paint_state_stack_;
 
   // Current index on the stack. May not be the last thing on the stack.
-  wtf_size_t paint_state_index_ = 0;
+  unsigned paint_state_index_;
 
   // Raw pointer to the current state.
-  GraphicsContextState* paint_state_ = nullptr;
+  GraphicsContextState* paint_state_;
 
   PaintRecorder paint_recorder_;
 
-  printing::MetafileSkia* printing_metafile_ = nullptr;
-  paint_preview::PaintPreviewTracker* paint_preview_tracker_ = nullptr;
+  printing::MetafileSkia* metafile_;
+  paint_preview::PaintPreviewTracker* tracker_;
 
 #if DCHECK_IS_ON()
-  int layer_count_ = 0;
-  bool disable_destruction_checks_ = false;
+  int layer_count_;
+  bool disable_destruction_checks_;
 #endif
 
-  float device_scale_factor_ = 1.0f;
+  float device_scale_factor_;
 
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
-  bool printing_ = false;
-  bool in_drawing_recorder_ = false;
-  bool is_dark_mode_enabled_ = false;
+  unsigned printing_ : 1;
+  unsigned is_painting_preview_ : 1;
+  unsigned in_drawing_recorder_ : 1;
+  unsigned is_dark_mode_enabled_ : 1;
 
   // The current node ID, which is used for marked content in a tagged PDF.
   DOMNodeId dom_node_id_ = kInvalidDOMNodeId;

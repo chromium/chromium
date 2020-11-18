@@ -44,13 +44,18 @@ static inline bool TextShouldBePainted(
 bool SVGInlineTextBoxPainter::ShouldPaintSelection(
     const PaintInfo& paint_info) const {
   // Don't paint selections when printing.
-  if (InlineLayoutObject().GetDocument().Printing())
+  if (paint_info.IsPrinting())
     return false;
   // Don't paint selections when rendering a mask, clip-path (as a mask),
   // pattern or feImage (element reference.)
   if (paint_info.IsRenderingResourceSubtree())
     return false;
   return svg_inline_text_box_.IsSelected();
+}
+
+static bool HasShadow(const PaintInfo& paint_info, const ComputedStyle& style) {
+  // Text shadows are disabled when printing. http://crbug.com/258321
+  return style.TextShadow() && !paint_info.IsPrinting();
 }
 
 LayoutObject& SVGInlineTextBoxPainter::InlineLayoutObject() const {
@@ -205,16 +210,17 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
 
 void SVGInlineTextBoxPainter::PaintSelectionBackground(
     const PaintInfo& paint_info) {
-  auto layout_item = svg_inline_text_box_.GetLineLayoutItem();
-  if (layout_item.StyleRef().Visibility() != EVisibility::kVisible)
+  if (svg_inline_text_box_.GetLineLayoutItem().StyleRef().Visibility() !=
+      EVisibility::kVisible)
     return;
 
-  DCHECK(!layout_item.GetDocument().Printing());
+  DCHECK(!paint_info.IsPrinting());
 
   if (paint_info.phase == PaintPhase::kSelectionDragImage ||
       !ShouldPaintSelection(paint_info))
     return;
 
+  auto layout_item = svg_inline_text_box_.GetLineLayoutItem();
   Color background_color = HighlightPaintingUtils::HighlightBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
       kPseudoIdSelection);
@@ -415,9 +421,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
     return false;
   flags.setAntiAlias(true);
 
-  if (style.TextShadow() &&
-      // Text shadows are disabled when printing. http://crbug.com/258321
-      !InlineLayoutObject().GetDocument().Printing()) {
+  if (HasShadow(paint_info, style)) {
     flags.setLooper(style.TextShadow()->CreateDrawLooper(
         DrawLooperBuilder::kShadowRespectsAlpha,
         style.VisitedDependentColor(GetCSSPropertyColor()),

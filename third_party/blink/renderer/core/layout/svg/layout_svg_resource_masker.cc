@@ -55,7 +55,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
     return cached_paint_record_;
 
   SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecordBuilder builder(context);
+  PaintRecordBuilder builder(nullptr, &context);
 
   ColorFilter mask_content_filter =
       StyleRef().SvgStyle().ColorInterpolation() == CI_LINEARRGB

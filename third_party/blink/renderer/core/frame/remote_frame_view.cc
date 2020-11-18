@@ -225,20 +225,18 @@ void RemoteFrameView::Paint(GraphicsContext& context,
   if (!rect.Intersects(FrameRect()))
     return;
 
-  const auto& owner_layout_object = *GetFrame().OwnerLayoutObject();
-  if (owner_layout_object.GetDocument().IsPrintingOrPaintingPreview()) {
-    DrawingRecorder recorder(context, owner_layout_object,
+  if (context.IsPrintingOrPaintingPreview()) {
+    DrawingRecorder recorder(context, *GetFrame().OwnerLayoutObject(),
                              DisplayItem::kDocumentBackground);
     context.Save();
     context.Translate(paint_offset.Width(), paint_offset.Height());
     DCHECK(context.Canvas());
 
     uint32_t content_id = 0;
-    if (owner_layout_object.GetDocument().Printing()) {
+    if (context.Printing()) {
       // Inform the remote frame to print.
       content_id = Print(FrameRect(), context.Canvas());
-    } else {
-      DCHECK(owner_layout_object.GetDocument().IsPaintingPreview());
+    } else if (context.IsPaintingPreview()) {
       // Inform the remote frame to capture a paint preview.
       content_id = CapturePaintPreview(FrameRect(), context.Canvas());
     }
@@ -251,7 +249,7 @@ void RemoteFrameView::Paint(GraphicsContext& context,
       GetFrame().GetCcLayer()) {
     auto offset = RoundedIntPoint(
         GetLayoutEmbeddedContent()->ReplacedContentRect().offset);
-    RecordForeignLayer(context, owner_layout_object,
+    RecordForeignLayer(context, *GetFrame().OwnerLayoutObject(),
                        DisplayItem::kForeignLayerRemoteFrame,
                        GetFrame().GetCcLayer(), offset);
   }

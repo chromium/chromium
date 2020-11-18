@@ -74,8 +74,9 @@ void FramePainter::PaintContents(GraphicsContext& context,
   FontCachePurgePreventer font_cache_purge_preventer;
 
   PaintLayerFlags root_layer_paint_flags = 0;
-  // This will prevent clipping the root PaintLayer to its visible content rect.
-  if (document->IsPrintingOrPaintingPreview())
+  // This will prevent clipping the root PaintLayer to its visible content
+  // rect when root layer scrolling is enabled.
+  if (document->IsCapturingLayout())
     root_layer_paint_flags = kPaintLayerPaintingOverflowContents;
 
   PaintLayer* root_layer = layout_view->Layer();

@@ -131,8 +131,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   DCHECK(!ShouldPaintSelfOutline(paint_info.phase) &&
          !ShouldPaintDescendantOutlines(paint_info.phase));
 
-  bool is_printing =
-      inline_text_box_.GetLineLayoutItem().GetDocument().Printing();
+  bool is_printing = paint_info.IsPrinting();
 
   // Determine whether or not we're selected.
   bool have_selection = !is_printing &&

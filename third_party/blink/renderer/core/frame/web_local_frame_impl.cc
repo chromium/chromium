@@ -309,13 +309,11 @@ class ChromePrintContext : public PrintContext {
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
     FloatRect bounds(0, 0, printed_page_height_, printed_page_width_);
-    PaintRecordBuilder builder;
-    GraphicsContext& context = builder.Context();
-    context.SetPrintingMetafile(canvas->GetPrintingMetafile());
-    context.SetPrinting(true);
-    context.BeginRecording(bounds);
-    float scale = SpoolPage(context, page_number);
-    canvas->drawPicture(context.EndRecording());
+    PaintRecordBuilder builder(canvas->GetPrintingMetafile());
+    builder.Context().SetPrinting(true);
+    builder.Context().BeginRecording(bounds);
+    float scale = SpoolPage(builder.Context(), page_number);
+    canvas->drawPicture(builder.Context().EndRecording());
     return scale;
   }
 
@@ -338,9 +336,8 @@ class ChromePrintContext : public PrintContext {
     FloatRect all_pages_rect(0, 0, spool_size_in_pixels.Width(),
                              spool_size_in_pixels.Height());
 
-    PaintRecordBuilder builder;
+    PaintRecordBuilder builder(canvas->GetPrintingMetafile());
     GraphicsContext& context = builder.Context();
-    context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
     context.BeginRecording(all_pages_rect);
 
@@ -422,11 +419,13 @@ class ChromePrintContext : public PrintContext {
     auto property_tree_state =
         frame_view->GetLayoutView()->FirstFragment().LocalBorderBoxProperties();
 
-    PaintRecordBuilder builder(context);
+    PaintRecordBuilder builder(context.Canvas()->GetPrintingMetafile(),
+                               &context);
+
     frame_view->PaintContentsOutsideOfLifecycle(
         builder.Context(),
         kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
-            kGlobalPaintAddUrlMetadata,
+            kGlobalPaintPrinting | kGlobalPaintAddUrlMetadata,
         CullRect(page_rect));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -508,7 +507,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   // NativeTheme doesn't play well with scaling. Scaling is done browser side
   // instead. Returns the scale to be applied.
   float SpoolPage(GraphicsContext& context, int page_number) override {
-    PaintRecordBuilder builder(context);
+    PaintRecordBuilder builder(context.Canvas()->GetPrintingMetafile());
     plugin_->PrintPage(page_number, builder.Context());
     context.DrawRecord(builder.EndRecording());
 
@@ -543,8 +542,9 @@ class PaintPreviewContext : public PrintContext {
         !GetFrame()->GetDocument()->GetLayoutView())
       return false;
     FloatRect bounds(0, 0, size.Width(), size.Height());
-    PaintRecordBuilder builder;
-    builder.Context().SetPaintPreviewTracker(canvas->GetPaintPreviewTracker());
+    PaintRecordBuilder builder(nullptr, nullptr, nullptr,
+                               canvas->GetPaintPreviewTracker());
+    builder.Context().SetIsPaintingPreview(true);
 
     LocalFrameView* frame_view = GetFrame()->View();
     DCHECK(frame_view);
@@ -1702,17 +1702,15 @@ bool WebLocalFrameImpl::CapturePaintPreview(const WebRect& bounds,
                                             cc::PaintCanvas* canvas,
                                             bool include_linked_destinations) {
   FloatSize float_bounds(bounds.width, bounds.height);
-  bool success = false;
-  {
-    Document::PaintPreviewScope paint_preview(*GetFrame()->GetDocument());
-    ResourceCacheValidationSuppressor validation_suppressor(
-        GetFrame()->GetDocument()->Fetcher());
-    GetFrame()->View()->ForceLayoutForPagination(float_bounds, float_bounds, 1);
-    PaintPreviewContext* paint_preview_context =
-        MakeGarbageCollected<PaintPreviewContext>(GetFrame());
-    success = paint_preview_context->Capture(canvas, float_bounds,
-                                             include_linked_destinations);
-  }
+  GetFrame()->GetDocument()->SetIsPaintingPreview(true);
+  ResourceCacheValidationSuppressor validation_suppressor(
+      GetFrame()->GetDocument()->Fetcher());
+  GetFrame()->View()->ForceLayoutForPagination(float_bounds, float_bounds, 1);
+  PaintPreviewContext* paint_preview_context =
+      MakeGarbageCollected<PaintPreviewContext>(GetFrame());
+  bool success = paint_preview_context->Capture(canvas, float_bounds,
+                                                include_linked_destinations);
+  GetFrame()->GetDocument()->SetIsPaintingPreview(false);
   GetFrame()->EndPrinting();
   return success;
 }

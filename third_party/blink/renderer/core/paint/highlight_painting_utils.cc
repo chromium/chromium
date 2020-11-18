@@ -309,7 +309,7 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
   }
 
   // Text shadows are disabled when printing. http://crbug.com/258321
-  if (document.Printing())
+  if (paint_info.IsPrinting())
     highlight_style.shadow = nullptr;
 
   return highlight_style;

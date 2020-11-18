@@ -120,6 +120,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
   TextPaintStyle text_style;
   text_style.stroke_width = style.TextStrokeWidth();
   text_style.color_scheme = style.UsedColorScheme();
+  bool is_printing = paint_info.IsPrinting();
 
   if (paint_info.phase == PaintPhase::kTextClip) {
     // When we use the text as a clip, we only care about the alpha, thus we
@@ -141,6 +142,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.shadow = style.TextShadow();
 
     // Adjust text color when printing with a white background.
+    DCHECK_EQ(document.Printing(), is_printing);
     bool force_background_to_white =
         BoxPainterBase::ShouldForceWhiteBackgroundForPrintEconomy(document,
                                                                   style);

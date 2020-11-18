@@ -537,7 +537,7 @@ inline bool PaintFastBottomLayer(Node* node,
   FloatRoundedRect image_border;
   if (info.should_paint_image) {
     // Avoid image shaders when printing (poorly supported in PDF).
-    if (info.is_rounded_fill && node->GetDocument().Printing())
+    if (info.is_rounded_fill && paint_info.IsPrinting())
       return false;
 
     // Compute the dest rect we will be using for images.

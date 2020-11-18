@@ -44,7 +44,8 @@ class BlockPainter {
 
   bool ShouldPaint(const ScopedPaintState&) const;
 
-  CORE_EXPORT PhysicalRect OverflowRectForCullRectTesting() const;
+  CORE_EXPORT PhysicalRect
+  OverflowRectForCullRectTesting(bool is_printing) const;
 
   FRIEND_TEST_ALL_PREFIXES(BlockPainterTest, OverflowRectForCullRectTesting);
   FRIEND_TEST_ALL_PREFIXES(BlockPainterTest,

@@ -329,10 +329,11 @@ void BlockPainter::PaintCarets(const PaintInfo& paint_info,
   }
 }
 
-PhysicalRect BlockPainter::OverflowRectForCullRectTesting() const {
+PhysicalRect BlockPainter::OverflowRectForCullRectTesting(
+    bool is_printing) const {
   PhysicalRect overflow_rect;
-  if (layout_block_.IsAnonymousBlock() && layout_block_.ChildrenInline() &&
-      layout_block_.GetDocument().Printing()) {
+  if (is_printing && layout_block_.IsAnonymousBlock() &&
+      layout_block_.ChildrenInline()) {
     // For case <a href="..."><div>...</div></a>, when layout_block_ is the
     // anonymous container of <a>, the anonymous container's visual overflow is
     // empty, but we need to continue painting to output <a>'s PDF URL rect
@@ -368,7 +369,7 @@ bool BlockPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
     return true;
 
   return paint_state.LocalRectIntersectsCullRect(
-      OverflowRectForCullRectTesting());
+      OverflowRectForCullRectTesting(paint_state.GetPaintInfo().IsPrinting()));
 }
 
 void BlockPainter::PaintContents(const PaintInfo& paint_info,
