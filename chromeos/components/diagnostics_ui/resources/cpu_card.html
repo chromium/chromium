@@ -3,6 +3,8 @@
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('cpuTitle')]]</div>
   <div id="cpuChipInfo" slot="chip">[[cpuChipInfo_]]</div>
+  <!-- TODO(michaelcheco): Replace placeholder icon. -->
+  <iron-icon slot="icon" icon="cr:add"></iron-icon>
   <!-- TODO(michaelcheco): Add i18n string for percent number format -->
   <realtime-cpu-chart slot="left-panel" id="realtimeCpuChart"
     user="[[cpuUsage_.percentUsageUser]]"

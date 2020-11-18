@@ -73,7 +73,7 @@ Polymer({
     /** @private {number} */
     width_: {
       type: Number,
-      value: 350,
+      value: 550,
     },
 
     /** @private {number} */

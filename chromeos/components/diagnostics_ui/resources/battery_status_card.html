@@ -5,6 +5,8 @@
   <div id="batteryStatusChipInfo" slot="chip">
     [[getDesignedFullCharge_(batteryHealth_.chargeFullDesignMilliampHours)]]
   </div>
+  <!-- TODO(michaelcheco): Replace placeholder icon. -->
+  <iron-icon slot="icon" icon="cr:add"></iron-icon>
   <percent-bar-chart slot="left-panel" header="[[i18n('remainingCharge')]]"
     value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
     max="[[batteryHealth_.chargeFullNowMilliampHours]]">
