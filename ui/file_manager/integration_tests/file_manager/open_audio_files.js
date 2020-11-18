@@ -104,7 +104,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -137,7 +138,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -173,7 +175,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -235,7 +238,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -274,7 +278,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -321,7 +326,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -361,7 +367,8 @@
         'openFile', appId, ['Beautiful Song.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('Beautiful Song.ogg');
@@ -415,7 +422,8 @@
         'openFile', appId, ['newly added file.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('newly added file.ogg');
@@ -468,7 +476,8 @@
         'openFile', appId, ['newly added file.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('newly added file.ogg');
@@ -508,7 +517,8 @@
         'openFile', appId, ['newly added file.ogg']));
 
     // Wait for the Audio Player window.
-    const audioAppId = await audioPlayerApp.waitForWindow('audio_player.html');
+    const audioAppId = await audioPlayerApp.waitForWindow(
+        '(audio_player|audio_player_module)\.html');
 
     // Check: Audio Player should automatically play the file.
     const playFile = audioPlayingQuery('newly added file.ogg');

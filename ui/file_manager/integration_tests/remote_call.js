@@ -115,10 +115,11 @@ class RemoteCall {
    */
   waitForWindow(windowIdPrefix) {
     const caller = getCaller();
+    const windowIdRegex = new RegExp(windowIdPrefix);
     return repeatUntil(async () => {
       const windows = await this.callRemoteTestUtil('getWindows', null, []);
       for (const id in windows) {
-        if (id.indexOf(windowIdPrefix) === 0) {
+        if (id.indexOf(windowIdPrefix) === 0 || windowIdRegex.test(id)) {
           return id;
         }
       }
