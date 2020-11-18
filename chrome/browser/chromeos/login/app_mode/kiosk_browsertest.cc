@@ -96,9 +96,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -560,7 +557,7 @@ class KioskTest : public OobeBaseTest {
   void ReloadKioskApps() {
     SetupTestAppUpdateCheck();
 
-    // Remove then add to ensure NOTIFICATION_KIOSK_APPS_LOADED fires.
+    // Remove then add to ensure UI update.
     KioskAppManager::Get()->RemoveApp(test_app_id_,
                                       owner_settings_service_.get());
     KioskAppManager::Get()->AddApp(test_app_id_, owner_settings_service_.get());
@@ -604,11 +601,9 @@ class KioskTest : public OobeBaseTest {
     StartUIForAppLaunch();
 
     // Wait for the Kiosk App configuration to reload.
-    content::WindowedNotificationObserver apps_loaded_signal(
-        chrome::NOTIFICATION_KIOSK_APPS_LOADED,
-        content::NotificationService::AllSources());
+    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
     ReloadKioskApps();
-    apps_loaded_signal.Wait();
+    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 
   void StartAppLaunchFromLoginScreen(
@@ -1243,12 +1238,12 @@ IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableConfirmed) {
   // Wait for the kiosk_enable screen to show and enable kiosk.
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
 
-  // Wait for the signal that indicates Kiosk Mode is enabled.
-  content::WindowedNotificationObserver notification_observer(
-      chrome::NOTIFICATION_KIOSK_ENABLED,
-      content::NotificationService::AllSources());
   test::OobeJS().TapOnPath({"kiosk-enable", "enable"});
-  notification_observer.Wait();
+  // Wait for the signal that indicates Kiosk Mode is enabled.
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath({"kiosk-enable"}) +
+                    ".state_ == 'success'")
+      ->Wait();
 
   EXPECT_EQ(KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED,
             GetConsumerKioskModeStatus());

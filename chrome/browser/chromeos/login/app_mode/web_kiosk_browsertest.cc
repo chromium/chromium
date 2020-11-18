@@ -7,7 +7,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
@@ -27,7 +26,6 @@
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
@@ -75,19 +73,17 @@ class WebKioskTest : public OobeBaseTest {
   const AccountId& account_id() { return account_id_; }
 
   void PrepareAppLaunch() {
-    // Wait for the Kiosk App configuration to reload.
-    content::WindowedNotificationObserver apps_loaded_signal(
-        chrome::NOTIFICATION_KIOSK_APPS_LOADED,
-        content::NotificationService::AllSources());
     std::vector<policy::DeviceLocalAccount> device_local_accounts = {
         policy::DeviceLocalAccount(
             policy::WebKioskAppBasicInfo(kAppInstallUrl, "", ""),
             kAppInstallUrl)};
 
     settings_ = std::make_unique<ScopedDeviceSettings>();
+    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
     policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
                                    device_local_accounts);
-    apps_loaded_signal.Wait();
+    // Wait for the Kiosk App configuration to reload.
+    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 
   void MakeAppAlreadyInstalled() {

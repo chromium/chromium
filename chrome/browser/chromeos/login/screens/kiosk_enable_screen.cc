@@ -5,12 +5,9 @@
 #include "chrome/browser/chromeos/login/screens/kiosk_enable_screen.h"
 
 #include "base/logging.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 
 namespace chromeos {
 namespace {
@@ -90,11 +87,6 @@ void KioskEnableScreen::OnEnableConsumerKioskAutoLaunch(bool success) {
   view_->ShowKioskEnabled(success);
   if (!success) {
     LOG(WARNING) << "Consumer kiosk mode can't be enabled!";
-  } else {
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_KIOSK_ENABLED,
-        content::NotificationService::AllSources(),
-        content::NotificationService::NoDetails());
   }
 }
 

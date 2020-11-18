@@ -6,7 +6,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/fake_cws.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
@@ -32,7 +31,6 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -278,23 +276,12 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
         kWifiServiceName, "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
         shill::kStateOffline, /*visible=*/true);
 
-    apps_loaded_waiter_ =
-        std::make_unique<content::WindowedNotificationObserver>(
-            chrome::NOTIFICATION_KIOSK_APPS_LOADED,
-            content::NotificationService::AllSources());
-
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     network_helper_.reset();
-    apps_loaded_waiter_.reset();
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
-  }
-
- protected:
-  content::WindowedNotificationObserver* apps_loaded_waiter() {
-    return apps_loaded_waiter_.get();
   }
 
  private:
@@ -320,8 +307,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 
-  std::unique_ptr<content::WindowedNotificationObserver> apps_loaded_waiter_;
-
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
   std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
 
@@ -341,7 +326,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 // Verify that certificate manager dialog opens.
 // Disabled for being flaky. See crbug.com/1116058.
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, DISABLED_OpenCertificateConfig) {
-  apps_loaded_waiter()->Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::LaunchApp(kTestKioskAppId));
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();

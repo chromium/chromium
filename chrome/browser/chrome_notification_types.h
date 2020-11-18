@@ -171,12 +171,6 @@ enum NotificationType {
   //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
   NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
 
-  // Send when consumer kiosk has been enabled.
-  NOTIFICATION_KIOSK_ENABLED,
-
-  // Sent when kiosk app list is loaded in UI.
-  NOTIFICATION_KIOSK_APPS_LOADED,
-
   // Sent when the screen lock state has changed. The source is
   // ScreenLocker and the details is a bool specifing that the
   // screen is locked. When details is a false, the source object
