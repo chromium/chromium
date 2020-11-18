@@ -694,11 +694,7 @@ config("compiler") {
 
   if (compiler_timing) {
     if (is_clang && !is_nacl) {
-      if (is_win) {
-        cflags += [ "/clang:-ftime-trace" ]
-      } else {
-        cflags += [ "-ftime-trace" ]
-      }
+      cflags += [ "-ftime-trace" ]
     } else if (is_win) {
       cflags += [
         # "Documented" here:
