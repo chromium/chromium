@@ -29,8 +29,7 @@ class NearbyEndpointFinder;
 // Deleting an instance of this class tears down any active connection and
 // performs cleanup if necessary.
 //
-// TODO(khorimoto): Add the ability to upgrade bandwidth to WebRTC and to
-// receive payloads.
+// TODO(khorimoto): Add the ability to upgrade bandwidth to WebRTC.
 class NearbyConnectionBrokerImpl
     : public NearbyConnectionBroker,
       public location::nearby::connections::mojom::ConnectionLifecycleListener,
@@ -133,10 +132,12 @@ class NearbyConnectionBrokerImpl
   void OnPayloadReceived(
       const std::string& endpoint_id,
       location::nearby::connections::mojom::PayloadPtr payload) override;
+  // Note: Intentionally left empty; SecureChannel messages are always sent as
+  // bytes and do not require transfer updates.
   void OnPayloadTransferUpdate(
       const std::string& endpoint_id,
       location::nearby::connections::mojom::PayloadTransferUpdatePtr update)
-      override;
+      override {}
 
   NearbyEndpointFinder* endpoint_finder_;
   mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
@@ -149,7 +150,6 @@ class NearbyConnectionBrokerImpl
       payload_listener_receiver_{this};
 
   ConnectionStatus connection_status_ = ConnectionStatus::kUninitialized;
-  int64_t next_sent_payload_id_ = 0L;
 
   // Set once an endpoint is discovered.
   std::string remote_endpoint_id_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/rand_util.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
@@ -165,11 +166,22 @@ void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
 
   std::vector<uint8_t> message_as_bytes(message.begin(), message.end());
 
+  // Randomly generate a new payload ID for each message sent. Each payload is
+  // expected to have its own ID, so we randomly generate one each time instead
+  // of starting from 0 for each NearbyConnectionBrokerImpl instance. Note that
+  // payloads are only shared between two devices, so the chance of a collision
+  // in a 64-bit value is negligible.
+  uint64_t unsigned_payload_id = base::RandUint64();
+
+  // Interpret |unsigned_payload_id|'s bytes as a signed value for use in the
+  // SendPayload() API.
+  const int64_t* payload_id_ptr =
+      reinterpret_cast<const int64_t*>(&unsigned_payload_id);
+
   nearby_connections_->SendPayload(
       mojom::kServiceId, std::vector<std::string>{remote_endpoint_id_},
-      Payload::New(
-          next_sent_payload_id_++,
-          PayloadContent::NewBytes(BytesPayload::New(message_as_bytes))),
+      Payload::New(*payload_id_ptr, PayloadContent::NewBytes(
+                                        BytesPayload::New(message_as_bytes))),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnSendPayloadResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -255,19 +267,19 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
     return;
   }
 
-  // TODO(khorimoto): Handle received payloads.
-}
-
-void NearbyConnectionBrokerImpl::OnPayloadTransferUpdate(
-    const std::string& endpoint_id,
-    PayloadTransferUpdatePtr update) {
-  if (remote_endpoint_id_ != endpoint_id) {
-    PA_LOG(WARNING) << "OnPayloadTransferUpdate(): unexpected endpoint ID "
-                    << endpoint_id;
+  if (!payload->content->is_bytes()) {
+    PA_LOG(WARNING) << "OnPayloadReceived(): Received unexpected payload type "
+                    << "(was expecting bytes type). Disconnecting.";
+    TransitionToDisconnected();
     return;
   }
 
-  // TODO(khorimoto): Handle received payload updates.
+  PA_LOG(VERBOSE) << "OnPayloadReceived(): Received message with payload ID "
+                  << payload->id;
+  const std::vector<uint8_t>& message_as_bytes =
+      payload->content->get_bytes()->bytes;
+  NotifyMessageReceived(
+      std::string(message_as_bytes.begin(), message_as_bytes.end()));
 }
 
 std::ostream& operator<<(std::ostream& stream,
