@@ -19,6 +19,6 @@ const base::Feature kNearbySharingDeviceContacts{
 
 // Enables use of WebRTC in Nearby Share.
 const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
