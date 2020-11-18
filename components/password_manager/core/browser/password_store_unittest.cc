@@ -122,8 +122,11 @@ struct MockDatabaseCompromisedCredentialsObserver
 
 class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
  public:
-  MOCK_METHOD1(SubscribeToSigninEvents, void(PasswordStore* store));
-  MOCK_METHOD0(UnsubscribeFromSigninEvents, void());
+  MOCK_METHOD(void,
+              SubscribeToSigninEvents,
+              (PasswordStore * store),
+              (override));
+  MOCK_METHOD(void, UnsubscribeFromSigninEvents, (), (override));
 };
 
 }  // namespace

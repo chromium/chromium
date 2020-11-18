@@ -5175,13 +5175,6 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos)) {
-    sources += [
-      "password_manager/password_store_signin_notifier_impl.cc",
-      "password_manager/password_store_signin_notifier_impl.h",
-    ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "crash_upload_list/crash_upload_list_crashpad.cc",

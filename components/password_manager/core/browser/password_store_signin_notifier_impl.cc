@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
 
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
@@ -18,7 +20,7 @@ PasswordStoreSigninNotifierImpl::~PasswordStoreSigninNotifierImpl() = default;
 
 void PasswordStoreSigninNotifierImpl::SubscribeToSigninEvents(
     PasswordStore* store) {
-  set_store(store);
+  store_ = store;
   identity_manager_->AddObserver(this);
 }
 
@@ -26,12 +28,32 @@ void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
   identity_manager_->RemoveObserver(this);
 }
 
+void PasswordStoreSigninNotifierImpl::NotifySignedOut(
+    const std::string& username,
+    bool primary_account) {
+  if (!store_)
+    return;
+
+  if (primary_account) {
+    metrics_util::LogGaiaPasswordHashChange(
+        metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
+        /*is_sync_password=*/true);
+    store_->ClearAllGaiaPasswordHash();
+  } else {
+    metrics_util::LogGaiaPasswordHashChange(
+        metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
+        /*is_sync_password=*/false);
+    store_->ClearGaiaPasswordHash(username);
+  }
+}
+
+// IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnPrimaryAccountCleared(
     const CoreAccountInfo& account_info) {
   NotifySignedOut(account_info.email, /* primary_account= */ true);
 }
 
-// IdentityManager::Observer implementations.
+// IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only reacts to content area (non-primary) Gaia account sign-out event.

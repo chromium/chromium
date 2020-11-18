@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
 
-// Responsible for subscribing to Chrome sign-in events and passing them to
-// PasswordStore.
+// Responsible for subscribing to Google identity sign-in events and passing
+// them to PasswordStore.
 class PasswordStoreSigninNotifierImpl
     : public PasswordStoreSigninNotifier,
       public signin::IdentityManager::Observer {
@@ -20,6 +22,10 @@ class PasswordStoreSigninNotifierImpl
   explicit PasswordStoreSigninNotifierImpl(
       signin::IdentityManager* identity_manager);
   ~PasswordStoreSigninNotifierImpl() override;
+  PasswordStoreSigninNotifierImpl(const PasswordStoreSigninNotifierImpl&) =
+      delete;
+  PasswordStoreSigninNotifierImpl& operator=(
+      const PasswordStoreSigninNotifierImpl&) = delete;
 
   // PasswordStoreSigninNotifier implementations.
   void SubscribeToSigninEvents(PasswordStore* store) override;
@@ -30,8 +36,14 @@ class PasswordStoreSigninNotifierImpl
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
  private:
+  // Passes signed-out to |store_|.
+  void NotifySignedOut(const std::string& username, bool primary_account);
+
   signin::IdentityManager* identity_manager_ = nullptr;
+
+  PasswordStore* store_ = nullptr;  // weak
 };
 
 }  // namespace password_manager
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
+
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_

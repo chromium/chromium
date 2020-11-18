@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -62,8 +63,10 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Unsubscribed) {
   identity_test_env()->ClearPrimaryAccount();
 }
 
-// Checks that if a notifier is unsubscribed on sign-in events, then
-// a password store receives no sign-in notifications.
+#if !defined(OS_IOS)
+// This test is excluded from iOS since iOS does not support multiple Google
+// accounts. Checks that ClearGaiaPasswordHash() is called when a secondary
+// account is removed.
 TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   PasswordStoreSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(store_.get());
@@ -90,6 +93,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   identity_test_env()->ClearPrimaryAccount();
   notifier.UnsubscribeFromSigninEvents();
 }
+#endif  // !defined(OS_IOS)
 
 }  // namespace
 }  // namespace password_manager

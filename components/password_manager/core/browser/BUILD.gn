@@ -193,7 +193,6 @@ static_library("browser") {
     "password_store_default.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
-    "password_store_signin_notifier.cc",
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
@@ -347,6 +346,13 @@ static_library("browser") {
 
   if (is_win) {
     sources += [ "login_database_win.cc" ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    sources += [
+      "password_store_signin_notifier_impl.cc",
+      "password_store_signin_notifier_impl.h",
+    ]
   }
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
@@ -688,6 +694,10 @@ source_set("unit_tests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "hash_password_manager_unittest.cc" ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    sources += [ "password_store_signin_notifier_impl_unittest.cc" ]
   }
 
   deps = [
