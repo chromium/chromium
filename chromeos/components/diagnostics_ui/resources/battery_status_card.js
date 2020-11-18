@@ -156,4 +156,18 @@ Polymer({
     return loadTimeData.getStringF(
         'batteryChipText', this.batteryHealth_.chargeFullDesignMilliampHours);
   },
+
+  /** @protected */
+  getBatteryHealth_() {
+    const MAX_PERCENTAGE = 100;
+    const batteryWearPercentage =
+        Math.min(this.batteryHealth_.batteryWearPercentage, MAX_PERCENTAGE);
+    return loadTimeData.getStringF('batteryHealthText', batteryWearPercentage);
+  },
+
+  /** @protected */
+  getCurrentNow_() {
+    return loadTimeData.getStringF(
+        'currentNowText', this.batteryChargeStatus_.currentNowMilliamps);
+  },
 });

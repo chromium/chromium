@@ -88,10 +88,6 @@ export function memoryCardTestSuite() {
 
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
-      const dataPoints = dx_utils.getDataPointElements(memoryElement);
-      assertEquals(fakeMemoryUsage[0].totalMemoryKib, dataPoints[0].value);
-      assertEquals(fakeMemoryUsage[0].availableMemoryKib, dataPoints[1].value);
-
       const barChart = dx_utils.getPercentBarChartElement(memoryElement);
       const memInUse = fakeMemoryUsage[0].totalMemoryKib -
           fakeMemoryUsage[0].availableMemoryKib;

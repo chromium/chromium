@@ -92,10 +92,15 @@ export function cpuCardTestSuite() {
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage, fakeSystemInfo).then(() => {
       const dataPoints = dx_utils.getDataPointElements(cpuElement);
-      const currentlyUsingValue =
-          fakeCpuUsage[0].percentUsageUser + fakeCpuUsage[0].percentUsageSystem;
-      assertEquals(currentlyUsingValue, dataPoints[0].value);
-      assertEquals(fakeCpuUsage[0].averageCpuTempCelsius, dataPoints[1].value);
+      dx_utils.assertTextContains(
+          dataPoints[0].value,
+          `${
+              fakeCpuUsage[0].percentUsageUser +
+              fakeCpuUsage[0].percentUsageSystem}`);
+      dx_utils.assertTextContains(
+          dataPoints[1].value, `${fakeCpuUsage[0].averageCpuTempCelsius}`);
+      // TODO(michaelcheco): Replace with value for CPU speed.
+      assertEquals('', dataPoints[2].value);
       dx_utils.assertElementContainsText(
           cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(

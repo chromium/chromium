@@ -588,8 +588,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage." translateable="false">
         CPU
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_LABEL" desc="The label for the percentage of CPU that is currently being used." translateable="false">
-        Currently using
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_LABEL" desc="The label for the percentage of CPU that is currently being used." translateable="true">
+        Current usage
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TEXT" desc="The text displaying the percentage of CPU that is currently being used." translateable="true">
+        <ph name="PERCENTAGE_VALUE">$1<ex>50</ex></ph>%
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_USAGE_SYSTEM_LABEL" desc="The label for the percentage of CPU that is currently being used by the system." translateable="false">
         System
@@ -618,8 +621,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CHARGE_NOW_LABEL" desc="The label for a battery's current battery level represented in milliamps." translateable="false">
         Now charge
       </message>
-      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps." translateable="false">
-        Now current
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps." translateable="true">
+        Current
+      </message>
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TEXT" desc="The text for a battery's current power consumption represented in milliamps." translateable="true">
+        <ph name="CURRENT_VALUE">$1<ex>1123</ex></ph>mA
       </message>
       <message name="IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL" desc="The label for a battery's designed full charge capacity represented in milliamp hours." translateable="false">
         Designed full charge
@@ -644,6 +650,18 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name and thread count." translateable="true">
         <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads)
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health." translateable="true">
+        Battery health
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT" desc="The text for the battery's health percentage." translateable="true">
+        <ph name="PERCENTAGE_VALUE">$1<ex>92</ex></ph>%
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for CPU speed." translateable="true">
+        CPU Speed
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius." translateable="true">
+        <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
 
       <!-- Quick Answers -->

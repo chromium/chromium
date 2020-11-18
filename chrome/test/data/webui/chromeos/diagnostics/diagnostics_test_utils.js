@@ -102,5 +102,15 @@ export function getToggleTestReportButtonFromSection(element) {
  * @throws {Error}
  */
 export function assertElementContainsText(element, text) {
-  assertTrue(element.textContent.trim().indexOf(text) !== -1);
+  assertTextContains(element.textContent, text);
+}
+
+/**
+ * Helper function to check if a substring exists in a string.
+ * @param {string} text
+ * @param {string} subStr substring to check
+ * @throws {Error}
+ */
+export function assertTextContains(text, subStr) {
+  assertTrue(text.trim().indexOf(subStr) !== -1);
 }

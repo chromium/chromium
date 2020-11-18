@@ -95,13 +95,13 @@ Polymer({
     this.cpuUsage_ = cpuUsage;
   },
 
-  /**
-   * @param {number} percentUsageSystem
-   * @param {number} percentUsageUser
-   * @private
-   */
-  computeCurrentlyUsing_(percentUsageSystem, percentUsageUser) {
-    return percentUsageSystem + percentUsageUser;
+  /** @protected */
+  getCurrentlyUsing_() {
+    const MAX_PERCENTAGE = 100;
+    const usagePercentage = Math.min(
+        (this.cpuUsage_.percentUsageSystem + this.cpuUsage_.percentUsageUser),
+        MAX_PERCENTAGE);
+    return loadTimeData.getStringF('cpuUsageText', usagePercentage);
   },
 
   /** @private */
@@ -119,5 +119,11 @@ Polymer({
     // TODO(michaelcheco): Update when number of cores is added to the api.
     this.cpuChipInfo_ = loadTimeData.getStringF(
         'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount);
+  },
+
+  /** @protected */
+  getCpuTemp_() {
+    return loadTimeData.getStringF(
+        'cpuTempText', this.cpuUsage_.averageCpuTempCelsius);
   },
 });

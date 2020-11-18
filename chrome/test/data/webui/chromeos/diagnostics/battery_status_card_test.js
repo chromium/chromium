@@ -70,25 +70,13 @@ export function batteryStatusCardTestSuite() {
         .then(() => {
           const dataPoints =
               dx_utils.getDataPointElements(batteryStatusElement);
-          assertEquals(
-              fakeBatteryChargeStatus[0].currentNowMilliamps,
-              dataPoints[0].value);
-          assertEquals(
-              fakeBatteryHealth[0].chargeFullDesignMilliampHours,
-              dataPoints[1].value);
-          assertEquals(
-              fakeBatteryHealth[0].chargeFullNowMilliampHours,
-              dataPoints[2].value);
-          assertEquals(
-              fakeBatteryChargeStatus[0].chargeNowMilliampHours,
-              dataPoints[3].value);
-          assertEquals(
-              mojoString16ToString(fakeBatteryChargeStatus[0].powerTime),
-              dataPoints[4].value);
-          assertEquals(
-              fakeBatteryChargeStatus[0].powerAdapterStatus,
-              dataPoints[5].value);
-          assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[6].value);
+          dx_utils.assertTextContains(
+              dataPoints[0].value,
+              `${fakeBatteryHealth[0].batteryWearPercentage}`);
+          assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[1].value);
+          dx_utils.assertTextContains(
+              dataPoints[2].value,
+              `${fakeBatteryChargeStatus[0].currentNowMilliamps}`);
           dx_utils.assertElementContainsText(
               batteryStatusElement.$$('#batteryStatusChipInfo'),
               `${fakeBatteryHealth[0].chargeFullDesignMilliampHours}`);

@@ -9,15 +9,17 @@
     user="[[cpuUsage_.percentUsageUser]]"
     system="[[cpuUsage_.percentUsageSystem]]">
   </realtime-cpu-chart>
-  <data-point slot="body" id="cpuUsageUser" header="[[i18n('cpuUsage')]]"
-    value="[[computeCurrentlyUsing_(cpuUsage_.percentUsageSystem,
+  <data-point slot="body" id="cpuUsageUser"
+    header="[[i18n('cpuUsageLabel')]]"
+    value="[[getCurrentlyUsing_(cpuUsage_.percentUsageSystem,
         cpuUsage_.percentUsageUser)]]">
   </data-point>
-  <!-- TODO(michaelcheco): Investigate whether or not temperature can be
-  localized. -->
-  <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTemp')]]"
-    value="[[cpuUsage_.averageCpuTempCelsius]]">
+  <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTempLabel')]]"
+    value="[[getCpuTemp_(cpuUsage_.averageCpuTempCelsius)]]">
   </data-point>
-
+  <!-- TODO(michaelcheco): Add value for CPU speed. -->
+  <data-point slot="body" id="cpuTemp" header="[[i18n('cpuSpeedLabel')]]"
+    value="">
+</data-point>
   <routine-section slot="routines" routines="[[routines_]]"></routine-section>
 </diagnostics-card>
