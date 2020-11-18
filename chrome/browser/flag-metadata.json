@@ -4782,8 +4782,8 @@
   },
   {
     "name": "web-otp-backend",
-    "owners": [ "ayui", "goto" ],
-    "expiry_milestone": 86
+    "owners": [ "yigu", "majidvp" ],
+    "expiry_milestone": 90
   },
   {
     "name": "web-share",
