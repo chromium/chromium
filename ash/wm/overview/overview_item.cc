@@ -187,20 +187,14 @@ OverviewItem::OverviewItem(aura::Window* window,
       overview_session_(overview_session),
       overview_grid_(overview_grid) {
   CreateItemWidget();
-  for (auto* window_iter : WindowTransientDescendantIteratorRange(
-           WindowTransientDescendantIterator(window))) {
-    window_iter->AddObserver(this);
-  }
+  window->AddObserver(this);
   WindowState::Get(window)->AddObserver(this);
 }
 
 OverviewItem::~OverviewItem() {
   aura::Window* window = GetWindow();
   WindowState::Get(window)->RemoveObserver(this);
-  for (auto* window_iter : WindowTransientDescendantIteratorRange(
-           WindowTransientDescendantIterator(window))) {
-    window_iter->RemoveObserver(this);
-  }
+  window->RemoveObserver(this);
 }
 
 aura::Window* OverviewItem::GetWindow() {
@@ -905,10 +899,16 @@ void OverviewItem::OnHighlightedViewClosed() {
 void OverviewItem::OnWindowPropertyChanged(aura::Window* window,
                                            const void* key,
                                            intptr_t old) {
-  if (prepared_for_overview_ && window == GetWindow() &&
-      key == aura::client::kTopViewInset &&
-      window->GetProperty(aura::client::kTopViewInset) !=
-          static_cast<int>(old)) {
+  DCHECK_EQ(GetWindow(), window);
+
+  if (!prepared_for_overview_)
+    return;
+
+  if (key != aura::client::kTopViewInset)
+    return;
+
+  if (window->GetProperty(aura::client::kTopViewInset) !=
+      static_cast<int>(old)) {
     overview_grid_->PositionWindows(/*animate=*/false);
   }
 }
@@ -917,6 +917,8 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
                                          const gfx::Rect& old_bounds,
                                          const gfx::Rect& new_bounds,
                                          ui::PropertyChangeReason reason) {
+  DCHECK_EQ(GetWindow(), window);
+
   // During preparation, window bounds can change. Ignore bounds change
   // notifications in this case; we'll reposition soon.
   if (!prepared_for_overview_)
@@ -929,25 +931,11 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   // The drop target will get its bounds set as opposed to its transform
   // set in |SetItemBounds| so do not position windows again when that
   // particular window has its bounds changed.
-  aura::Window* main_window = GetWindow();
-  if (overview_grid_->IsDropTargetWindow(main_window))
+  if (overview_grid_->IsDropTargetWindow(window))
     return;
 
-  if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION) {
-    if (window == main_window) {
-      overview_item_view_->RefreshPreviewView();
-    } else {
-      // Transient window is repositioned. The new position within the
-      // overview item needs to be recomputed. No need to recompute if the
-      // transient is invisible. It will get placed properly when it reshows on
-      // overview end.
-      if (window->IsVisible())
-        SetBounds(target_bounds_, OVERVIEW_ANIMATION_NONE);
-    }
-  }
-
-  if (window != main_window)
-    return;
+  if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION)
+    overview_item_view_->RefreshPreviewView();
 
   // Immediately finish any active bounds animation.
   window->layer()->GetAnimator()->StopAnimatingProperty(
@@ -957,14 +945,7 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
 }
 
 void OverviewItem::OnWindowDestroying(aura::Window* window) {
-  // Stops observing the window and all of its transient descendents.
-  for (auto* window_iter : WindowTransientDescendantIteratorRange(
-           WindowTransientDescendantIterator(window))) {
-    window_iter->RemoveObserver(this);
-  }
-
-  if (window != GetWindow())
-    return;
+  DCHECK_EQ(GetWindow(), window);
 
   if (is_being_dragged_) {
     DCHECK_EQ(this, overview_session_->window_drag_controller()->item());
