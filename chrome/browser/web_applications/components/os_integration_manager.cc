@@ -9,7 +9,9 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -34,49 +36,44 @@ bool g_suppress_os_hooks_for_testing_ = false;
 
 namespace web_app {
 
+// This barrier is designed to accumulate errors from calls to OS hook
+// operations, and call the completion callback when all OS hook operations
+// have completed. The |callback| is called when all copies of this object and
+// all callbacks created using this object are destroyed.
+class OsIntegrationManager::OsHooksBarrier
+    : public base::RefCounted<OsHooksBarrier> {
+ public:
+  explicit OsHooksBarrier(OsHooksResults results_default,
+                          InstallOsHooksCallback callback)
+      : results_(results_default), callback_(std::move(callback)) {}
+
+  void OnError(OsHookType::Type type) { AddResult(type, false); }
+
+  base::OnceCallback<void(bool)> CreateBarrierCallbackForType(
+      OsHookType::Type type) {
+    return base::BindOnce(&OsHooksBarrier::AddResult, this, type);
+  }
+
+ private:
+  friend class base::RefCounted<OsHooksBarrier>;
+
+  ~OsHooksBarrier() {
+    DCHECK(callback_);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), std::move(results_)));
+  }
+
+  void AddResult(OsHookType::Type type, bool result) {
+    results_[type] = result;
+  }
+
+  OsHooksResults results_;
+  InstallOsHooksCallback callback_;
+};
+
 InstallOsHooksOptions::InstallOsHooksOptions() = default;
 InstallOsHooksOptions::InstallOsHooksOptions(
     const InstallOsHooksOptions& other) = default;
-
-// This is adapted from base/barrier_closure.cc. os_hooks_results is maintained
-// to track install results from different OS hooks callers
-class OsHooksBarrierInfo {
- public:
-  explicit OsHooksBarrierInfo(InstallOsHooksCallback done_callback)
-      : done_callback_(std::move(done_callback)) {}
-
-  void Run(OsHookType::Type os_hook, bool completed) {
-    DCHECK(!os_hooks_called_[os_hook]);
-
-    os_hooks_called_[os_hook] = true;
-    os_hooks_results_[os_hook] = completed;
-
-    if (os_hooks_called_.all()) {
-      std::move(done_callback_).Run(os_hooks_results_);
-    }
-  }
-
- private:
-  OsHooksResults os_hooks_results_{false};
-  OsHooksResults os_hooks_called_{false};
-  InstallOsHooksCallback done_callback_;
-};
-
-class CallbackFactory {
- public:
-  explicit CallbackFactory(BarrierCallback barrier_callback)
-      : barrier_callback_(std::move(barrier_callback)) {}
-  ~CallbackFactory() { DCHECK(callback_created_.all()); }
-
-  base::OnceCallback<void(bool)> CreateCallack(OsHookType::Type os_hook) {
-    callback_created_[os_hook] = true;
-    return base::BindOnce(barrier_callback_, os_hook);
-  }
-
- private:
-  BarrierCallback barrier_callback_;
-  OsHooksResults callback_created_{false};
-};
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
@@ -131,34 +128,25 @@ void OsIntegrationManager::InstallOsHooks(
   }
   MacAppShimOnAppInstalledForProfile(app_id);
 
-  // Note: This barrier protects against multiple calls on the same type, but
-  // it doesn't protect against the case where we fail to call Run / create a
-  // callback for every type. Developers should double check that Run is
-  // called for every OsHookType::Type. If there is any missing type, the
-  // InstallOsHooksCallback will not get run.
-  BarrierCallback barrier = base::BindRepeating(
-      &OsHooksBarrierInfo::Run,
-      base::Owned(new OsHooksBarrierInfo(std::move(callback))));
+  scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
+      options.os_hooks, std::move(callback));
 
   DCHECK(options.os_hooks[OsHookType::kShortcuts] ||
          !options.os_hooks[OsHookType::kShortcutsMenu])
       << "Cannot install shortcuts menu without installing shortcuts.";
 
+  auto shortcuts_callback = base::BindOnce(
+      &OsIntegrationManager::OnShortcutsCreated, weak_ptr_factory_.GetWeakPtr(),
+      app_id, std::move(web_app_info), options, barrier);
+
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
   if (options.os_hooks[OsHookType::kShortcuts] && CanCreateShortcuts()) {
-    const bool add_to_desktop = options.add_to_desktop;
-    CreateShortcutsCallback shortcuts_callback = base::BindOnce(
-        &OsIntegrationManager::OnShortcutsCreated,
-        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(web_app_info),
-        std::move(options), std::move(barrier));
-    CreateShortcuts(app_id, add_to_desktop, std::move(shortcuts_callback));
+    CreateShortcuts(app_id, options.add_to_desktop,
+                    std::move(shortcuts_callback));
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&OsIntegrationManager::OnShortcutsCreated,
-                                  weak_ptr_factory_.GetWeakPtr(), app_id,
-                                  std::move(web_app_info), std::move(options),
-                                  std::move(barrier),
+        FROM_HERE, base::BindOnce(std::move(shortcuts_callback),
                                   /*shortcuts_created=*/false));
   }
 }
@@ -177,24 +165,19 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   DCHECK(shortcut_manager_);
 
   if (g_suppress_os_hooks_for_testing_) {
-    OsHooksResults os_hooks_results{true};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_results));
+        FROM_HERE, base::BindOnce(std::move(callback), os_hooks));
     return;
   }
 
-  BarrierCallback barrier = base::BindRepeating(
-      &OsHooksBarrierInfo::Run,
-      base::Owned(new OsHooksBarrierInfo(std::move(callback))));
-  CallbackFactory callback_factory = CallbackFactory(barrier);
+  scoped_refptr<OsHooksBarrier> barrier =
+      base::MakeRefCounted<OsHooksBarrier>(os_hooks, std::move(callback));
 
   if (os_hooks[OsHookType::kShortcutsMenu] &&
       ShouldRegisterShortcutsMenuWithOs()) {
-    callback_factory.CreateCallack(OsHookType::kShortcutsMenu)
-        .Run(UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath()));
-  } else {
-    callback_factory.CreateCallack(OsHookType::kShortcutsMenu)
-        .Run(/*completed=*/true);
+    bool success = UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath());
+    if (!success)
+      barrier->OnError(OsHookType::kShortcutsMenu);
   }
 
   if (os_hooks[OsHookType::kShortcuts] || os_hooks[OsHookType::kRunOnOsLogin]) {
@@ -207,11 +190,7 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
         base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
       ScheduleUnregisterRunOnOsLogin(
           shortcut_info->profile_path, shortcut_info->title,
-          base::BindOnce(
-              callback_factory.CreateCallack(OsHookType::kRunOnOsLogin)));
-    } else {
-      callback_factory.CreateCallack(OsHookType::kRunOnOsLogin)
-          .Run(/*completed=*/true);
+          barrier->CreateBarrierCallbackForType(OsHookType::kRunOnOsLogin));
     }
 
     if (os_hooks[OsHookType::kShortcuts]) {
@@ -220,24 +199,13 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
           base::BindOnce(
               &OsIntegrationManager::OnShortcutsDeleted,
               weak_ptr_factory_.GetWeakPtr(), app_id,
-              callback_factory.CreateCallack(OsHookType::kShortcuts)));
-    } else {
-      callback_factory.CreateCallack(OsHookType::kShortcuts)
-          .Run(/*completed=*/true);
+              barrier->CreateBarrierCallbackForType(OsHookType::kShortcuts)));
     }
-  } else {
-    callback_factory.CreateCallack(OsHookType::kShortcuts)
-        .Run(/*completed=*/true);
-    callback_factory.CreateCallack(OsHookType::kRunOnOsLogin)
-        .Run(/*completed=*/true);
   }
   // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
   if (os_hooks[OsHookType::kFileHandlers])
     file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
-
-  callback_factory.CreateCallack(OsHookType::kFileHandlers)
-      .Run(/*completed=*/true);
 
   // There is a chance uninstallation point was created with feature flag
   // enabled so we need to clean it up regardless of feature flag state.
@@ -245,8 +213,6 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
       ShouldRegisterUninstallationViaOsSettingsWithOs()) {
     UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
   }
-  callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
-      .Run(/*completed=*/true);
 }
 
 void OsIntegrationManager::UpdateOsHooks(
@@ -447,20 +413,18 @@ void OsIntegrationManager::OnShortcutsCreated(
     const AppId& app_id,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     InstallOsHooksOptions options,
-    BarrierCallback barrier,
+    scoped_refptr<OsHooksBarrier> barrier,
     bool shortcuts_created) {
   DCHECK(file_handler_manager_);
-  CallbackFactory callback_factory = CallbackFactory(barrier);
 
-  callback_factory.CreateCallack(OsHookType::kShortcuts)
-      .Run(/*completed=*/shortcuts_created);
+  bool shortcut_creation_failure =
+      !shortcuts_created && options.os_hooks[OsHookType::kShortcuts];
+  if (shortcut_creation_failure)
+    barrier->OnError(OsHookType::kShortcuts);
 
   if (options.os_hooks[OsHookType::kFileHandlers]) {
-    RegisterFileHandlers(
-        app_id, callback_factory.CreateCallack(OsHookType::kFileHandlers));
-  } else {
-    callback_factory.CreateCallack(OsHookType::kFileHandlers)
-        .Run(/*completed=*/false);
+    RegisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
+                                     OsHookType::kFileHandlers));
   }
 
   if (options.os_hooks[OsHookType::kShortcuts] &&
@@ -471,35 +435,23 @@ void OsIntegrationManager::OnShortcutsCreated(
       base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu)) {
     if (web_app_info) {
-      if (web_app_info->shortcuts_menu_item_infos.empty()) {
-        callback_factory.CreateCallack(OsHookType::kShortcutsMenu)
-            .Run(/*completed=*/false);
-      } else {
-        RegisterShortcutsMenu(
-            app_id, web_app_info->shortcuts_menu_item_infos,
-            web_app_info->shortcuts_menu_icons_bitmaps,
-            callback_factory.CreateCallack(OsHookType::kShortcutsMenu));
-      }
+      RegisterShortcutsMenu(
+          app_id, web_app_info->shortcuts_menu_item_infos,
+          web_app_info->shortcuts_menu_icons_bitmaps,
+          barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
     } else {
       ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-          app_id, callback_factory.CreateCallack(OsHookType::kShortcutsMenu));
+          app_id,
+          barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
     }
-  } else {
-    callback_factory.CreateCallack(OsHookType::kShortcutsMenu)
-        .Run(/*completed=*/false);
   }
 
   if (options.os_hooks[OsHookType::kRunOnOsLogin] &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
     // TODO(crbug.com/897302): Implement Run on OS Login mode selection.
     // Currently it is set to be the default: RunOnOsLoginMode::kWindowed
-    RegisterRunOnOsLogin(app_id, base::BindOnce(callback_factory.CreateCallack(
-                                     OsHookType::kRunOnOsLogin)));
-  } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback_factory.CreateCallack(
-                                      OsHookType::kRunOnOsLogin),
-                                  /*completed=*/false));
+    RegisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
+                                     OsHookType::kRunOnOsLogin));
   }
 
   if (options.os_hooks[OsHookType::kUninstallationViaOsSettings] &&
@@ -508,11 +460,6 @@ void OsIntegrationManager::OnShortcutsCreated(
       ShouldRegisterUninstallationViaOsSettingsWithOs()) {
     RegisterUninstallationViaOsSettingsWithOs(
         app_id, registrar_->GetAppShortName(app_id), profile_);
-    callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
-        .Run(/*completed=*/true);
-  } else {
-    callback_factory.CreateCallack(OsHookType::kUninstallationViaOsSettings)
-        .Run(/*completed=*/false);
   }
 }
 

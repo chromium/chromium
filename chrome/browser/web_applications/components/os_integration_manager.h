@@ -173,10 +173,12 @@ class OsIntegrationManager {
   virtual void AddAppToQuickLaunchBar(const AppId& app_id);
 
  private:
+  class OsHooksBarrier;
+
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebApplicationInfo> web_app_info,
                           InstallOsHooksOptions options,
-                          BarrierCallback barrier,
+                          scoped_refptr<OsHooksBarrier> barrier,
                           bool shortcuts_created);
 
   void OnShortcutsDeleted(const AppId& app_id,
