@@ -250,7 +250,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
           base::BindRepeating(&DownloadItemView::AnnounceAccessibleAlert,
                               base::Unretained(this))) {
   views::InstallRectHighlightPathGenerator(this);
-  observer_.Add(this->model());
+  observation_.Observe(this->model());
 
   // TODO(pkasting): Use bespoke file-scope subclasses for some of these child
   // views to localize functionality and simplify this class.

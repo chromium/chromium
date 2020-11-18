@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -297,7 +297,8 @@ class DownloadItemView : public views::View,
   // Forces reading the current alert text the next time it updates.
   bool announce_accessible_alert_soon_ = false;
 
-  ScopedObserver<DownloadUIModel, DownloadUIModel::Observer> observer_{this};
+  base::ScopedObservation<DownloadUIModel, DownloadUIModel::Observer>
+      observation_{this};
 
   // Method factory used to delay reenabling of the item when opening the
   // downloaded file.
