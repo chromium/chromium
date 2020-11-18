@@ -1674,6 +1674,17 @@ crbug.com/747751 [ Mac ] http/tests/devtools/application-panel/storage-view-repo
 crbug.com/954998 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Pass Timeout ]
 crbug.com/1018064 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Pass Timeout ]
 crbug.com/1034789 [ Mac ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
+crbug.com/1105957 [ Linux Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
+crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
+crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Pass Timeout ]
+crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
+crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
+crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
+crbug.com/867532 [ Linux ] http/tests/workers/worker-usecounter.html [ Pass Timeout ]
+crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Timeout ]
+crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
+crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-periods.html [ Pass Timeout ]
+
 
 # crbug.com/1095379: These three time out 100% of the time across all platforms:
 crbug.com/919789 images/image-click-scale-restore-zoomed-image.html [ Timeout ]
@@ -5991,18 +6002,5 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/debugger-inline-values
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Failure Timeout ]
 crbug.com/1149987 external/wpt/websockets/Create-blocked-port.any.html [ Pass Timeout ]
 crbug.com/1149987 external/wpt/websockets/Create-blocked-port.any.worker.html [ Pass Timeout ]
-
-crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
-crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-periods.html [ Pass Timeout ]
-crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
-crbug.com/867532 [ Linux ] http/tests/workers/worker-usecounter.html [ Pass Timeout ]
-crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Timeout ]
-crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
-crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
-crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Pass Timeout ]
-
-# Sheriff 2020-11-18
 crbug.com/1150518 [ Win ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ Pass Timeout ]
-crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
-crbug.com/1105957 [ Linux Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Pass Failure ]
