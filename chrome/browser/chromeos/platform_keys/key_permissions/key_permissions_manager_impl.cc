@@ -48,10 +48,23 @@ chromeos::platform_keys::KeyPermissionsManager* g_system_token_kpm_for_testing =
 const char kMigrationStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.Migration";
 
+const char kArcUsageUpdateStatusHistogramName[] =
+    "ChromeOS.KeyPermissionsManager.ArcUsageUpdate";
+
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // MigrationStatus in src/tools/metrics/histograms/enums.xml.
 enum class MigrationStatus {
+  kStarted = 0,
+  kSucceeded = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
+
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// MigrationStatus in src/tools/metrics/histograms/enums.xml.
+enum class ArcUsageUpdateStatus {
   kStarted = 0,
   kSucceeded = 1,
   kFailed = 2,
@@ -400,6 +413,9 @@ void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
     return;
   }
 
+  base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
+                                ArcUsageUpdateStatus::kStarted);
+
   key_permissions_in_chaps_updater_ =
       std::make_unique<KeyPermissionsInChapsUpdater>(
           KeyPermissionsInChapsUpdater::Mode::kUpdateArcUsageFlag, this);
@@ -411,10 +427,14 @@ void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
 void KeyPermissionsManagerImpl::OnKeyPermissionsInChapsUpdated(
     Status update_status) {
   if (update_status != Status::kSuccess) {
-    // TODO(crbug.com/1140105): Record the number of times
-    // KeyPermissionsInChapsUpdater fails in UMA.
+    base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
+                                  ArcUsageUpdateStatus::kFailed);
     LOG(ERROR) << "Updating key permissions in chaps failed.";
+    return;
   }
+
+  base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
+                                ArcUsageUpdateStatus::kSucceeded);
 }
 
 void KeyPermissionsManagerImpl::StartOneTimeMigration() {
