@@ -5264,24 +5264,6 @@
             ]
         }
     ],
-    "PdfHonorJsContentSettings": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfHonorJsContentSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PerProcessReclaim": [
         {
             "platforms": [

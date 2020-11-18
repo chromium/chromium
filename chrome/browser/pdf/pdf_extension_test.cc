@@ -1064,36 +1064,12 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */, PDFExtensionJSTest, testing::Bool());
 
 class PDFExtensionContentSettingJSTest
     : public PDFExtensionJSTestBase,
-      public testing::WithParamInterface<std::pair<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   ~PDFExtensionContentSettingJSTest() override = default;
 
  protected:
-  const std::vector<base::Feature> GetEnabledFeatures() const override {
-    std::vector<base::Feature> features;
-    if (ShouldHonorJsContentSettings()) {
-      features.push_back(chrome_pdf::features::kPdfHonorJsContentSettings);
-    }
-    if (ShouldEnablePDFViewerUpdate()) {
-      features.push_back(chrome_pdf::features::kPDFViewerUpdate);
-    }
-    return features;
-  }
-
-  const std::vector<base::Feature> GetDisabledFeatures() const override {
-    std::vector<base::Feature> features;
-    if (!ShouldHonorJsContentSettings()) {
-      features.push_back(chrome_pdf::features::kPdfHonorJsContentSettings);
-    }
-    if (!ShouldEnablePDFViewerUpdate()) {
-      features.push_back(chrome_pdf::features::kPDFViewerUpdate);
-    }
-    return features;
-  }
-
-  bool ShouldEnablePDFViewerUpdate() const override { return GetParam().first; }
-
-  bool ShouldHonorJsContentSettings() const { return GetParam().second; }
+  bool ShouldEnablePDFViewerUpdate() const override { return GetParam(); }
 
   // When blocking JavaScript, block the exact query from pdf/main.js while
   // still allowing enough JavaScript to run in the extension for the test
@@ -1108,10 +1084,6 @@ class PDFExtensionContentSettingJSTest
         ContentSettingsType::JAVASCRIPT,
         enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   }
-
-  std::string GetDisabledJsTestFile() const {
-    return ShouldHonorJsContentSettings() ? "nobeep_test.js" : "beep_test.js";
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
@@ -1120,13 +1092,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeep) {
   SetPdfJavaScript(/*enabled=*/false);
-  RunTestsInJsModule(GetDisabledJsTestFile(), "test-beep.pdf");
+  RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/false);
-  RunTestsInJsModuleNewTab(GetDisabledJsTestFile(), "test-beep.pdf");
+  RunTestsInJsModuleNewTab("nobeep_test.js", "test-beep.pdf");
 
   // Make sure there are two PDFs in the same process.
   const int tab_count = browser()->tab_strip_model()->count();
@@ -1136,7 +1108,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
   SetPdfJavaScript(/*enabled=*/false);
-  RunTestsInJsModule(GetDisabledJsTestFile(), "test-beep.pdf");
+  RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/true);
   RunTestsInJsModuleNewTab("beep_test.js", "test-beep.pdf");
 
@@ -1148,10 +1120,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          PDFExtensionContentSettingJSTest,
-                         testing::ValuesIn({std::make_pair(true, false),
-                                            std::make_pair(false, false),
-                                            std::make_pair(true, true),
-                                            std::make_pair(false, true)}));
+                         testing::Bool());
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.

@@ -555,10 +555,8 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       success =
           base::StringToInt(argv[i], &top_toolbar_height_in_viewport_coords_);
     } else if (strcmp(argn[i], "javascript") == 0) {
-      if (base::FeatureList::IsEnabled(features::kPdfHonorJsContentSettings)) {
-        if (strcmp(argv[i], "allow") != 0)
-          script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
-      }
+      if (strcmp(argv[i], "allow") != 0)
+        script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
     } else if (strcmp(argn[i], "has-edits") == 0) {
       has_edits = true;
     }

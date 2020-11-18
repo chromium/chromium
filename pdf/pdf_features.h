@@ -14,7 +14,6 @@ namespace chrome_pdf {
 namespace features {
 
 extern const base::Feature kAccessiblePDFForm;
-extern const base::Feature kPdfHonorJsContentSettings;
 extern const base::Feature kPdfIncrementalLoading;
 extern const base::Feature kPdfPartialLoading;
 extern const base::Feature kPdfViewerPresentationMode;

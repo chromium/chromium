@@ -2783,9 +2783,6 @@ extern const char kPaintPreviewStartupDescription[];
 extern const char kPdfFormSaveName[];
 extern const char kPdfFormSaveDescription[];
 
-extern const char kPdfHonorJsContentSettingsName[];
-extern const char kPdfHonorJsContentSettingsDescription[];
-
 extern const char kPdfViewerUpdateName[];
 extern const char kPdfViewerUpdateDescription[];
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

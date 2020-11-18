@@ -4741,12 +4741,6 @@ const char kPdfFormSaveName[] = "Save PDF Forms";
 const char kPdfFormSaveDescription[] =
     "Enable saving PDFs with filled form data.";
 
-const char kPdfHonorJsContentSettingsName[] =
-    "Honor JavaScript content settings in PDFs";
-const char kPdfHonorJsContentSettingsDescription[] =
-    "Enable whether an origin's JavaScript content settings are honored in "
-    "PDFs opened from that origin.";
-
 const char kPdfViewerUpdateName[] = "PDF Viewer Update";
 const char kPdfViewerUpdateDescription[] =
     "When enabled, the PDF viewer will display an updated UI with new "
