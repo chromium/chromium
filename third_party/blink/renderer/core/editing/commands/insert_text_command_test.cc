@@ -297,9 +297,8 @@ TEST_F(InsertTextCommandTest, AnchorElementWithBlockCrash) {
   // Crash happens here with when '\n' is inserted.
   GetDocument().execCommand("inserttext", false, "a\n", ASSERT_NO_EXCEPTION);
   EXPECT_EQ(
-      "<i style=\"display: block;\">"
-      "<a href=\"www\" style=\"display: block;\">a</a>"
-      "</i>|",
+      "<a href=\"www\" style=\"display:block\"><i>a</i></a><a href=\"www\" "
+      "style=\"display:block\"><i>|<br></i></a>",
       GetSelectionTextFromBody());
 }
 

@@ -104,7 +104,23 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   if (text.Contains('\t') || text.Contains(' ') || text.Contains('\n'))
     return false;
 
+  // Also if the text is surrounded by a hyperlink and all the contents of the
+  // link are selected, then we shouldn't be retaining the link with just one
+  // character because the user wouldn't be able to edit the link if it has only
+  // one character.
   Position start = EndingVisibleSelection().Start();
+  Element* enclosing_anchor = EnclosingAnchorElement(start);
+  if (enclosing_anchor && text.length() <= 1) {
+    VisiblePosition first_in_anchor =
+        VisiblePosition::FirstPositionInNode(*enclosing_anchor);
+    VisiblePosition last_in_anchor =
+        VisiblePosition::LastPositionInNode(*enclosing_anchor);
+    Position end = EndingVisibleSelection().End();
+    if (first_in_anchor.DeepEquivalent() == start &&
+        last_in_anchor.DeepEquivalent() == end)
+      return false;
+  }
+
   Position end_position = ReplaceSelectedTextInNode(text);
   if (end_position.IsNull())
     return false;
