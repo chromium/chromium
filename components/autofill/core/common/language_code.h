@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/check.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/strong_alias.h"
 
@@ -33,10 +33,11 @@ class LanguageCode
 
  private:
   void Check() {
-    DCHECK(empty() || length() == 2 || value() == "und")
-        << "Invalid language code '" << value() << "'";
-    DCHECK(base::ranges::all_of(value(), &islower))
-        << "Invalid language code '" << value() << "'";
+    LOG_IF(ERROR,
+           !(empty() ||
+             (base::ranges::all_of(value(), &islower) && length() == 2) ||
+             value() == "und" || value() == "zh-CN" || value() == "zh-TW"))
+        << "Unexpected language code '" << value() << "'";
   }
 };
 
