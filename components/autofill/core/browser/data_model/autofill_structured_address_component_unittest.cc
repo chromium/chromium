@@ -51,7 +51,8 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
       const std::string& field_type_name,
       const base::string16& value,
       const VerificationStatus& status) override {
-    if (field_type_name == AutofillType(NAME_MIDDLE_INITIAL).ToString()) {
+    if (field_type_name ==
+        AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
       SetValue(value, status);
       return true;
     }
@@ -61,7 +62,8 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
       const std::string& field_type_name,
       base::string16* value) const override {
-    if (field_type_name == AutofillType(NAME_MIDDLE_INITIAL).ToString()) {
+    if (field_type_name ==
+        AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
       if (value) {
         *value = GetValue().substr(0, 1);
       }

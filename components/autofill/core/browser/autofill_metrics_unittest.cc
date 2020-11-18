@@ -2475,8 +2475,9 @@ TEST_P(QualityMetricsTest, Classification) {
   ServerFieldType predicted_type = GetParam().predicted_field_type;
 
   DVLOG(2) << "Test Case = Predicted: "
-           << AutofillType(predicted_type).ToString() << "; "
-           << "Actual: " << AutofillType(actual_field_type).ToString();
+           << AutofillType::ServerFieldTypeToString(predicted_type) << "; "
+           << "Actual: "
+           << AutofillType::ServerFieldTypeToString(actual_field_type);
 
   // Set up our form data.
   FormData form;

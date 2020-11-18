@@ -63,7 +63,7 @@ void NameMiddle::GetAdditionalSupportedFieldTypes(
 bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
     const std::string& type_name,
     base::string16* value) const {
-  if (type_name == AutofillType(NAME_MIDDLE_INITIAL).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     if (value) {
       // If the stored value has the characteristics of containing only
       // initials, use the value as it is. Otherwise, convert it to a
@@ -84,7 +84,7 @@ bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
     const std::string& type_name,
     const base::string16& value,
     const VerificationStatus& status) {
-  if (type_name == AutofillType(NAME_MIDDLE_INITIAL).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     SetValue(value, status);
     return true;
   }

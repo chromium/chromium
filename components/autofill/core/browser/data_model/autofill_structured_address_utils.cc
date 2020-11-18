@@ -291,9 +291,9 @@ std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
 
   // By adding an "i" in the first group, the capturing is case insensitive.
   // Allow multiple separators to support the ", " case.
-  return base::StrCat({"(?i:", prefix, "(?P<", AutofillType(type).ToString(),
-                       ">", pattern, ")", suffix, "(?:", options.separator,
-                       ")+)", quantifier});
+  return base::StrCat(
+      {"(?i:", prefix, "(?P<", AutofillType::ServerFieldTypeToString(type), ">",
+       pattern, ")", suffix, "(?:", options.separator, ")+)", quantifier});
 }
 
 std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,

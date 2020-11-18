@@ -130,12 +130,13 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
 const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
     ServerFieldType type,
     const LanguageCode& page_language) const {
-  return GetMatchPatterns(AutofillType(type).ToString(), page_language);
+  return GetMatchPatterns(AutofillType::ServerFieldTypeToString(type),
+                          page_language);
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
     ServerFieldType type) const {
-  return GetAllPatternsByType(AutofillType(type).ToString());
+  return GetAllPatternsByType(AutofillType::ServerFieldTypeToString(type));
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(

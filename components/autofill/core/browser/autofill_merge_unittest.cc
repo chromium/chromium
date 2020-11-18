@@ -76,10 +76,9 @@ const std::vector<base::FilePath> GetTestFiles() {
   base::FilePath dir = GetTestDataDir();
   bool structured_names = base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInNames);
-  dir =
-      dir.AppendASCII("autofill")
-          .AppendASCII(structured_names ? "merge_structured_names" : "merge")
-          .AppendASCII("input");
+  dir = dir.AppendASCII("autofill")
+            .AppendASCII(structured_names ? "merge_structured_names" : "merge")
+            .AppendASCII("input");
   base::FileEnumerator input_files(dir, false, base::FileEnumerator::FILES,
                                    kFileNamePattern);
   std::vector<base::FilePath> files;
@@ -104,7 +103,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
       base::string16 value = profiles[i]->GetRawInfo(type);
-      result += AutofillType(type).ToString();
+      result += AutofillType::ServerFieldTypeToString(type);
       result += kFieldSeparator;
       if (!value.empty()) {
         base::ReplaceFirstSubstringAfterOffset(
@@ -208,12 +207,19 @@ class AutofillMergeTest : public DataDrivenTest,
 AutofillMergeTest::AutofillMergeTest() : DataDrivenTest(GetTestDataDir()) {
   CountryNames::SetLocaleString("en-US");
   for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
+    // Some ServerFieldTypes are deprecated and removed from the enum
+    // definition.
+    if ((i >= 15 && i <= 19) || (i >= 25 && i <= 29) || (i >= 44 && i <= 50) ||
+        (i == 94)) {
+      continue;
+    }
     ServerFieldType field_type = static_cast<ServerFieldType>(i);
-    string_to_field_type_map_[AutofillType(field_type).ToString()] = field_type;
+    string_to_field_type_map_[AutofillType::ServerFieldTypeToString(
+        field_type)] = field_type;
   }
 }
 
-AutofillMergeTest::~AutofillMergeTest() {}
+AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
   test::DisableSystemServices(nullptr);

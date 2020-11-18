@@ -61,7 +61,8 @@ class UnitTestPatternProvider : public PatternProvider {
   UnitTestPatternProvider(const std::vector<MatchingPattern>& de_patterns,
                           const std::vector<MatchingPattern>& en_patterns) {
     Map patterns;
-    auto& company_patterns = patterns[AutofillType(COMPANY_NAME).ToString()];
+    auto& company_patterns =
+        patterns[AutofillType::ServerFieldTypeToString(COMPANY_NAME)];
     company_patterns[kLanguageDe] = de_patterns;
     company_patterns[kLanguageEn] = en_patterns;
     SetPatterns(patterns, base::Version(), true);

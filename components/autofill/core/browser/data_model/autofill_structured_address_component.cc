@@ -44,7 +44,7 @@ ServerFieldType AddressComponent::GetStorageType() const {
 }
 
 std::string AddressComponent::GetStorageTypeName() const {
-  return AutofillType(storage_type_).ToString();
+  return AutofillType::ServerFieldTypeToString(storage_type_);
 }
 
 AddressComponent& AddressComponent::operator=(const AddressComponent& right) {
@@ -112,7 +112,8 @@ bool AddressComponent::IsValueForTypeValid(const std::string& field_type_name,
 
 bool AddressComponent::IsValueForTypeValid(ServerFieldType field_type,
                                            bool wipe_if_not) {
-  return IsValueForTypeValid(AutofillType(field_type).ToString(), wipe_if_not);
+  return IsValueForTypeValid(AutofillType::ServerFieldTypeToString(field_type),
+                             wipe_if_not);
 }
 
 bool AddressComponent::GetIsValueForTypeValidIfPossible(
@@ -217,9 +218,9 @@ bool AddressComponent::SetValueForTypeIfPossible(
     const VerificationStatus& verification_status,
     bool invalidate_child_nodes,
     bool invalidate_parent_nodes) {
-  return SetValueForTypeIfPossible(AutofillType(type).ToString(), value,
-                                   verification_status, invalidate_child_nodes,
-                                   invalidate_parent_nodes);
+  return SetValueForTypeIfPossible(
+      AutofillType::ServerFieldTypeToString(type), value, verification_status,
+      invalidate_child_nodes, invalidate_parent_nodes);
 }
 
 bool AddressComponent::SetValueForTypeIfPossible(
@@ -296,8 +297,8 @@ bool AddressComponent::GetValueAndStatusForTypeIfPossible(
     const ServerFieldType& type,
     base::string16* value,
     VerificationStatus* status) const {
-  return GetValueAndStatusForTypeIfPossible(AutofillType(type).ToString(),
-                                            value, status);
+  return GetValueAndStatusForTypeIfPossible(
+      AutofillType::ServerFieldTypeToString(type), value, status);
 }
 
 bool AddressComponent::GetValueAndStatusForTypeIfPossible(
@@ -331,7 +332,7 @@ bool AddressComponent::GetValueAndStatusForTypeIfPossible(
 
 base::string16 AddressComponent::GetValueForType(
     const ServerFieldType& type) const {
-  return GetValueForType(AutofillType(type).ToString());
+  return GetValueForType(AutofillType::ServerFieldTypeToString(type));
 }
 
 base::string16 AddressComponent::GetValueForType(
@@ -339,14 +340,16 @@ base::string16 AddressComponent::GetValueForType(
   base::string16 value;
   bool success = GetValueAndStatusForTypeIfPossible(type_name, &value, nullptr);
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  DCHECK(success || type_name == AutofillType(NAME_HONORIFIC_PREFIX).ToString())
+  DCHECK(success || type_name == AutofillType::ServerFieldTypeToString(
+                                     NAME_HONORIFIC_PREFIX))
       << type_name;
   return value;
 }
 
 VerificationStatus AddressComponent::GetVerificationStatusForType(
     const ServerFieldType& type) const {
-  return GetVerificationStatusForType(AutofillType(type).ToString());
+  return GetVerificationStatusForType(
+      AutofillType::ServerFieldTypeToString(type));
 }
 
 VerificationStatus AddressComponent::GetVerificationStatusForType(
@@ -355,8 +358,8 @@ VerificationStatus AddressComponent::GetVerificationStatusForType(
   bool success =
       GetValueAndStatusForTypeIfPossible(type_name, nullptr, &status);
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  DCHECK(success ||
-         type_name == AutofillType(NAME_HONORIFIC_PREFIX).ToString());
+  DCHECK(success || type_name == AutofillType::ServerFieldTypeToString(
+                                     NAME_HONORIFIC_PREFIX));
   return status;
 }
 
@@ -428,7 +431,8 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
       if (field_type == GetStorageTypeName())
         continue;
       // crbug.com(1113617): Honorifics are temporarily disabled.
-      if (field_type == AutofillType(NAME_HONORIFIC_PREFIX).ToString())
+      if (field_type ==
+          AutofillType::ServerFieldTypeToString(NAME_HONORIFIC_PREFIX))
         continue;
       bool success = SetValueForTypeIfPossible(field_type, field_value,
                                                VerificationStatus::kParsed);

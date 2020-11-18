@@ -208,21 +208,21 @@ bool StreetAddress::IsValueValid() const {
 bool StreetAddress::ConvertAndGetTheValueForAdditionalFieldTypeName(
     const std::string& type_name,
     base::string16* value) const {
-  if (type_name == AutofillType(ADDRESS_HOME_LINE1).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
     if (value) {
       *value =
           address_lines_.size() > 0 ? address_lines_.at(0) : base::string16();
     }
     return true;
   }
-  if (type_name == AutofillType(ADDRESS_HOME_LINE2).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
     if (value) {
       *value =
           address_lines_.size() > 1 ? address_lines_.at(1) : base::string16();
     }
     return true;
   }
-  if (type_name == AutofillType(ADDRESS_HOME_LINE3).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
     if (value) {
       *value =
           address_lines_.size() > 2 ? address_lines_.at(2) : base::string16();
@@ -239,11 +239,13 @@ bool StreetAddress::ConvertAndSetValueForAdditionalFieldTypeName(
     const base::string16& value,
     const VerificationStatus& status) {
   size_t index = 0;
-  if (type_name == AutofillType(ADDRESS_HOME_LINE1).ToString()) {
+  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
     index = 0;
-  } else if (type_name == AutofillType(ADDRESS_HOME_LINE2).ToString()) {
+  } else if (type_name ==
+             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
     index = 1;
-  } else if (type_name == AutofillType(ADDRESS_HOME_LINE3).ToString()) {
+  } else if (type_name ==
+             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
     index = 2;
   } else {
     return false;

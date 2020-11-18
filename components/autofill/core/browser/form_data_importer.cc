@@ -66,8 +66,8 @@ bool IsValidFieldTypeAndValue(const std::set<ServerFieldType>& types_seen,
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Multiple fields of type "
-                         << AutofillType(field_type).ToString() << "."
-                         << CTag{};
+                         << AutofillType::ServerFieldTypeToString(field_type)
+                         << "." << CTag{};
     }
     return false;
   }
@@ -77,7 +77,8 @@ bool IsValidFieldTypeAndValue(const std::set<ServerFieldType>& types_seen,
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                          << "Email address found in field of different type: "
-                         << AutofillType(field_type).ToString() << CTag{};
+                         << AutofillType::ServerFieldTypeToString(field_type)
+                         << CTag{};
     }
     return false;
   }
