@@ -1042,8 +1042,29 @@ class ChromeLauncherControllerLacrosTest : public ChromeLauncherControllerTest {
       const ChromeLauncherControllerLacrosTest&) = delete;
   ~ChromeLauncherControllerLacrosTest() override = default;
 
+  // testing::Test:
+  void SetUp() override {
+    // Checking to see if Lacros is allowed requires a user.
+    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Login a user. The "email" must match the TestingProfile's
+    // GetProfileUserName() so that profile() will be the primary profile.
+    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+
+    // Creates profile().
+    ChromeLauncherControllerTest::SetUp();
+
+    ASSERT_TRUE(chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile()));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 class ChromeLauncherControllerExtendedShelfTest
@@ -1365,20 +1386,6 @@ TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
 }
 
 TEST_F(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
-  // Checking to see if Lacros is allowed requires a user.
-  auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
-  auto* fake_user_manager = user_manager.get();
-  user_manager::ScopedUserManager scoped_user_manager(std::move(user_manager));
-  AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  user_manager::User* user = fake_user_manager->AddUser(account_id);
-  fake_user_manager->LoginUser(account_id);
-
-  TestingProfile::Builder profile_builder;
-  profile_builder.SetProfileName(account_id.GetUserEmail());
-  std::unique_ptr<TestingProfile> testing_profile = profile_builder.Build();
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      user, testing_profile.get());
-
   InitLauncherController();
   EXPECT_EQ("Chrome, Lacros", GetPinnedAppStatus());
 }

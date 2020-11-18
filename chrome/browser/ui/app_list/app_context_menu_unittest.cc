@@ -21,6 +21,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -41,6 +43,7 @@
 #include "components/arc/test/fake_app_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "extensions/common/manifest_constants.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -670,8 +673,28 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
   ~AppContextMenuLacrosTest() override = default;
 
+  // testing::Test:
+  void SetUp() override {
+    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Login a user. The "email" must match the TestingProfile's
+    // GetProfileUserName() so that profile() will be the primary profile.
+    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+
+    // Creates profile().
+    AppContextMenuTest::SetUp();
+
+    ASSERT_TRUE(chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile()));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(AppContextMenuLacrosTest, LacrosApp) {

@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -612,9 +613,11 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(
       helper, syncable_service, GetAppsPinnedByPolicy(helper), &pin_infos);
 
   // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
-  // is pinned.
+  // is pinned. Lacros doesn't support multi-signin, so only add the icon for
+  // the primary user.
   if (chromeos::features::IsLacrosSupportEnabled() &&
-      crosapi::browser_util::IsLacrosAllowed()) {
+      crosapi::browser_util::IsLacrosAllowed() &&
+      chromeos::ProfileHelper::IsPrimaryProfile(helper->profile())) {
     syncer::StringOrdinal lacros_position =
         syncable_service->GetPinPosition(extension_misc::kLacrosAppId);
     if (!lacros_position.IsValid()) {

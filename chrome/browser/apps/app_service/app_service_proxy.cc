@@ -34,6 +34,7 @@
 #include "chrome/browser/apps/app_service/lacros_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_interface.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -179,14 +180,13 @@ void AppServiceProxy::Initialize() {
     if (!g_omit_plugin_vm_apps_for_testing_) {
       plugin_vm_apps_ = std::make_unique<PluginVmApps>(app_service_, profile_);
     }
-    if (chromeos::features::IsLacrosSupportEnabled()) {
-      // LacrosApps uses LacrosManager, which is a singleton. Don't create an
-      // instance of LacrosApps for the lock screen app profile, as we want to
-      // maintain a single instance of LacrosApps.
-      // TODO(jamescook): Multiprofile support. Consider switching to observers.
-      if (!chromeos::ProfileHelper::IsLockScreenAppProfile(profile_)) {
-        lacros_apps_ = std::make_unique<LacrosApps>(app_service_);
-      }
+    // Lacros does not support multi-signin, so only create for the primary
+    // profile. This also avoids creating an instance for the lock screen app
+    // profile and ensures there is only one instance of LacrosApps.
+    if (chromeos::features::IsLacrosSupportEnabled() &&
+        crosapi::browser_util::IsLacrosAllowed() &&
+        chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+      lacros_apps_ = std::make_unique<LacrosApps>(app_service_);
     }
     web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
                                                   &instance_registry_);

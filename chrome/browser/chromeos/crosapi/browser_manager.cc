@@ -197,6 +197,8 @@ bool BrowserManager::IsRunning() const {
 }
 
 void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
+  // We only support one client waiting.
+  DCHECK(!load_complete_callback_);
   load_complete_callback_ = std::move(callback);
 }
 
