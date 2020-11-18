@@ -73,7 +73,7 @@ suite('CellularNetworkList', function() {
     assertEquals(2, tetherNetworkList.networks.length);
   });
   test(
-      'Fire show cellular setup event on eSim/psim no network link click ',
+      'Fire show cellular setup event on eSim/psim no network link click',
       async () => {
         setNetworksForTest(mojom.NetworkType.kCellular, [
           OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -109,4 +109,16 @@ suite('CellularNetworkList', function() {
             pSimCellularEvent.detail.pageName,
             cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
       });
+  test('Show EID and QR code popup', async () => {
+    let eidPopup = cellularNetworkList.$$('.eid-popup');
+    assertFalse(!!eidPopup);
+    const eidPopupBtn = cellularNetworkList.$$('#eidPopupButton');
+    assertTrue(!!eidPopupBtn);
+
+    eidPopupBtn.click();
+    await flushAsync();
+
+    eidPopup = cellularNetworkList.$$('.eid-popup');
+    assertTrue(!!eidPopup);
+  });
 });

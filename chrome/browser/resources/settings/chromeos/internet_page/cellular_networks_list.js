@@ -72,7 +72,17 @@ Polymer({
       value() {
         return [];
       },
+    },
+
+    /**@private */
+    shouldShowEidPopup_: {
+      type: Boolean,
+      value: false,
     }
+  },
+
+  listeners: {
+    'close-eid-popup': 'toggleEidPopup_',
   },
 
   /**
@@ -137,4 +147,16 @@ Polymer({
         'show-cellular-setup',
         {pageName: cellularSetup.CellularSetupPageName.PSIM_FLOW_UI});
   },
+
+
+  /** @private */
+  toggleEidPopup_() {
+    this.shouldShowEidPopup_ = !this.shouldShowEidPopup_;
+
+    if (this.shouldShowEidPopup_) {
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        this.$$('.eid-popup').focus();
+      });
+    }
+  }
 });

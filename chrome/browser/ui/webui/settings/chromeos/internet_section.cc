@@ -701,6 +701,12 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"eSimNetworkNotSetup",
        IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK},
       {"cellularNetworkTetherLabel", IDS_SETTINGS_INTERNET_TETHER_LABEL},
+      {"eidPopupTitle", IDS_SETTINGS_INTERNET_EID_POPUP_TITLE},
+      {"showEidPopupButtonLabel",
+       IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL},
+      {"eidPopupDescription", IDS_SETTINGS_INTERNET_EID_POPUP_DESCRIPTION},
+      {"closeEidPopupButtonLabel",
+       IDS_SETTINGS_INTERNET_CLOSE_EID_POPUP_BUTTON_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
