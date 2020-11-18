@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHost.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostRegistry.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModel.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImpl.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
@@ -56,5 +57,23 @@ android_library_factory("factory_java") {
   sources = [
     "internal/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerFactory.java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

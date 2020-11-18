@@ -51,7 +51,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param asyncTabParamsManager An {@link AsyncTabParamsManager} instance.
      * @param modelDelegate       Delegate to handle external dependencies and interactions.
      */
-    public IncognitoTabModelImplCreator(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
+    IncognitoTabModelImplCreator(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,

@@ -1405,7 +1405,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java",
   "java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java",
-  "java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImplCreator.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelDelegate.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelImpl.java",

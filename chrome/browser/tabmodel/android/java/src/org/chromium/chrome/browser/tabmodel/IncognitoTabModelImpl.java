@@ -26,12 +26,11 @@ import java.util.List;
  * no Tabs remain, the native model will be destroyed and only rebuilt when a new incognito Tab
  * is created.
  */
-public class IncognitoTabModelImpl implements IncognitoTabModel {
+class IncognitoTabModelImpl implements IncognitoTabModel {
     /** Creates TabModels for use in IncognitoModel. */
     public interface IncognitoTabModelDelegate {
         /** Creates a fully working TabModel to delegate calls to. */
         TabModel createTabModel();
-
     }
 
     private final IncognitoTabModelDelegate mDelegate;
@@ -45,7 +44,7 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     /**
      * Constructor for IncognitoTabModel.
      */
-    public IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
+    IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance();
     }
