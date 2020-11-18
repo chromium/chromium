@@ -38,14 +38,12 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -54,10 +52,8 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -85,9 +81,7 @@ import java.util.List;
  * This class represents the location bar where the user types in URLs and
  * search terms.
  */
-public class LocationBarLayout extends FrameLayout
-        implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
-                   VoiceRecognitionHandler.Delegate, AssistantVoiceSearchService.Observer {
+public class LocationBarLayout extends FrameLayout implements OnClickListener {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
     private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
@@ -129,7 +123,7 @@ public class LocationBarLayout extends FrameLayout
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
 
-    private AssistantVoiceSearchService mAssistantVoiceSearchService;
+    private OneshotSupplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
     private Runnable mKeyboardResizeModeTask;
     private Runnable mKeyboardHideTask;
     private ObservableSupplier<Profile> mProfileSupplier;
@@ -190,14 +184,9 @@ public class LocationBarLayout extends FrameLayout
         LayoutInflater.from(context).inflate(layoutId, this, true);
 
         mDeleteButton = findViewById(R.id.delete_button);
-
         mUrlBar = findViewById(R.id.url_bar);
-
         mMicButton = findViewById(R.id.mic_button);
-
         mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
-
-        mVoiceRecognitionHandler = new VoiceRecognitionHandler(this);
     }
 
     /**
@@ -209,11 +198,6 @@ public class LocationBarLayout extends FrameLayout
         if (mAutocompleteCoordinator != null) {
             // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
             mAutocompleteCoordinator = null;
-        }
-
-        if (mAssistantVoiceSearchService != null) {
-            mAssistantVoiceSearchService.destroy();
-            mAssistantVoiceSearchService = null;
         }
 
         if (mCallbackController != null) {
@@ -293,7 +277,9 @@ public class LocationBarLayout extends FrameLayout
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
+            @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
@@ -301,6 +287,8 @@ public class LocationBarLayout extends FrameLayout
         mWindowAndroid = windowAndroid;
         mLocationBarDataProvider = locationBarDataProvider;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
+        mVoiceRecognitionHandler = voiceRecognitionHandler;
+        mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchSupplier;
 
         assert profileSupplier != null;
         assert mProfileSupplier == null;
@@ -312,28 +300,19 @@ public class LocationBarLayout extends FrameLayout
         updateShouldAnimateIconChanges();
     }
 
-    @Override
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public AutocompleteCoordinator getAutocompleteCoordinator() {
         return mAutocompleteCoordinator;
     }
 
     /**
-     * Runs logic that can't be invoked until after native is initialized but shouldn't be on the
-     * critical path, e.g. pre-fetching autocomplete suggestions. Contrast with
-     * onFinishNativeInitialization, which is for logic that should be on the critical path and need
-     * native to be initialized. This method must be called after onFinishNativeInitialization.
+     *  Signals to LocationBarLayout that's it safe to call code that requires native to be loaded,
+     * e.g. OmniboxPrerender.
      */
-    public void onDeferredStartup() {
-        assert mNativeInitialized;
-        startPrefetch();
-    }
-
     public void onFinishNativeInitialization() {
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mNativeInitialized = true;
 
-        mAutocompleteCoordinator.onNativeInitialized();
-        mStatusCoordinator.onNativeInitialized();
         updateMicButtonState();
         mDeleteButton.setOnClickListener(this);
         mMicButton.setOnClickListener(this);
@@ -349,11 +328,6 @@ public class LocationBarLayout extends FrameLayout
 
         updateMicButtonVisibility();
 
-        mAssistantVoiceSearchService = new AssistantVoiceSearchService(getContext(),
-                AppHooks.get().getExternalAuthUtils(), TemplateUrlServiceFactory.get(),
-                GSAState.getInstance(getContext()), this, SharedPreferencesManager.getInstance());
-        mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
-        onAssistantVoiceSearchServiceChanged();
         setProfile(mProfileSupplier.get());
     }
 
@@ -364,16 +338,7 @@ public class LocationBarLayout extends FrameLayout
         mAutocompleteCoordinator.prefetchZeroSuggestResults();
     }
 
-    public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
-        assert profileSupplier != null;
-        assert mProfileSupplier == null;
-        mProfileSupplier = profileSupplier;
-        mProfileSupplierObserver = mCallbackController.makeCancelable(this::setProfile);
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
-    }
-
-    @Override
-    public void clearOmniboxFocus() {
+    /* package */ void clearOmniboxFocus() {
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
     }
 
@@ -397,18 +362,15 @@ public class LocationBarLayout extends FrameLayout
         }
     }
 
-    @Override
-    public void onUrlTextChanged() {
+    /* package */ void onUrlTextChanged() {
         updateButtonVisibility();
     }
 
-    @Override
-    public boolean didFocusUrlFromFakebox() {
+    /* package */ boolean didFocusUrlFromFakebox() {
         return mUrlFocusedFromFakebox;
     }
 
-    @Override
-    public boolean didFocusUrlFromQueryTiles() {
+    /* package */ boolean didFocusUrlFromQueryTiles() {
         return mUrlFocusedFromQueryTiles;
     }
 
@@ -435,11 +397,6 @@ public class LocationBarLayout extends FrameLayout
         mStatusCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
     }
 
-    @Override
-    public final LocationBarDataProvider getLocationBarDataProvider() {
-        return mLocationBarDataProvider;
-    }
-
     /**
      * Updates the security icon displayed in the LocationBar.
      */
@@ -449,18 +406,15 @@ public class LocationBarLayout extends FrameLayout
         setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
-    @Override
-    public boolean isKeyboardActive() {
+    /* package */ boolean isKeyboardActive() {
         return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)
                 || (getContext().getResources().getConfiguration().keyboard
                         == Configuration.KEYBOARD_QWERTY);
     }
 
-    @Override
-    public void onSuggestionsHidden() {}
+    /* package */ void onSuggestionsHidden() {}
 
-    @Override
-    public void onSuggestionsChanged(String autocompleteText) {
+    /* package */ void onSuggestionsChanged(String autocompleteText) {
         String userText = mUrlCoordinator.getTextWithoutAutocomplete();
         if (mUrlCoordinator.shouldAutocomplete()) {
             mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
@@ -489,8 +443,7 @@ public class LocationBarLayout extends FrameLayout
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    @Override
-    public void performSearchQuery(String query, List<String> searchParams) {
+    /* package */ void performSearchQuery(String query, List<String> searchParams) {
         if (TextUtils.isEmpty(query)) return;
 
         String queryUrl = TemplateUrlServiceFactory.get().getUrlForSearchQuery(query, searchParams);
@@ -508,8 +461,7 @@ public class LocationBarLayout extends FrameLayout
      *
      * @param query The query to be set in the omnibox.
      */
-    @Override
-    public void setSearchQuery(final String query) {
+    /* package */ void setSearchQuery(final String query) {
         if (TextUtils.isEmpty(query)) return;
 
         if (!mNativeInitialized) {
@@ -583,8 +535,7 @@ public class LocationBarLayout extends FrameLayout
         return !mLocationBarDataProvider.isIncognito();
     }
 
-    @Override
-    public void setUrlBarFocus(
+    /* package */ void setUrlBarFocus(
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {
             if (!mUrlHasFocus) recordOmniboxFocusReason(reason);
@@ -618,23 +569,19 @@ public class LocationBarLayout extends FrameLayout
         }
     }
 
-    @Override
-    public boolean isUrlBarFocused() {
+    /* package */ boolean isUrlBarFocused() {
         return mUrlHasFocus;
     }
 
-    @Override
-    public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+    protected VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mVoiceRecognitionHandler;
     }
 
-    @Override
-    public void addUrlFocusChangeListener(UrlFocusChangeListener listener) {
+    /* package */ void addUrlFocusChangeListener(UrlFocusChangeListener listener) {
         mUrlFocusChangeListeners.addObserver(listener);
     }
 
-    @Override
-    public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
+    /* package */ void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
         mUrlFocusChangeListeners.removeObserver(listener);
     }
 
@@ -658,9 +605,11 @@ public class LocationBarLayout extends FrameLayout
 
         // This will be called between inflation and initialization. For those calls, using a null
         // ColorStateList should have no visible impact to the user.
-        ColorStateList micColorStateList = mAssistantVoiceSearchService == null
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        ColorStateList micColorStateList = assistantVoiceSearchService == null
                 ? null
-                : mAssistantVoiceSearchService.getMicButtonColorStateList(
+                : assistantVoiceSearchService.getMicButtonColorStateList(
                         primaryColor, getContext());
         ApiCompatibilityUtils.setImageTintList(mMicButton, micColorStateList);
 
@@ -684,9 +633,8 @@ public class LocationBarLayout extends FrameLayout
         }
     }
 
-    public void onTabLoadingNTP(NewTabPage ntp) {
-        ntp.setFakeboxDelegate(this);
-    }
+    @CallSuper
+    /* package */ void onTabLoadingNTP(NewTabPage ntp) {}
 
     public View getContainerView() {
         return this;
@@ -698,14 +646,15 @@ public class LocationBarLayout extends FrameLayout
 
     public void setShowTitle(boolean showTitle) {}
 
-    @Override
-    public WindowAndroid getWindowAndroid() {
+    protected WindowAndroid getWindowAndroid() {
         return mWindowAndroid;
     }
 
-    @Override
-    public void onAssistantVoiceSearchServiceChanged() {
-        Drawable drawable = mAssistantVoiceSearchService.getCurrentMicDrawable();
+    /* package */ void onAssistantVoiceSearchServiceChanged() {
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        assert assistantVoiceSearchService != null;
+        Drawable drawable = assistantVoiceSearchService.getCurrentMicDrawable();
         mMicButton.setImageDrawable(drawable);
 
         final int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(
@@ -713,7 +662,7 @@ public class LocationBarLayout extends FrameLayout
         final int primaryColor =
                 mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
         ColorStateList colorStateList =
-                mAssistantVoiceSearchService.getMicButtonColorStateList(primaryColor, getContext());
+                assistantVoiceSearchService.getMicButtonColorStateList(primaryColor, getContext());
         ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
     }
 
@@ -721,8 +670,7 @@ public class LocationBarLayout extends FrameLayout
      * Call to notify the location bar that the state of the voice search microphone button may
      * need to be updated.
      */
-    @Override
-    public void updateMicButtonState() {
+    /* package */ void updateMicButtonState() {
         mVoiceSearchEnabled = mVoiceRecognitionHandler.isVoiceSearchEnabled();
         updateButtonVisibility();
     }
@@ -758,15 +706,13 @@ public class LocationBarLayout extends FrameLayout
         if (profile != null && mOmniboxPrerender != null) mOmniboxPrerender.clear(profile);
     }
 
-    @Override
-    public void setOmniboxEditingText(String text) {
+    /* package */ void setOmniboxEditingText(String text) {
         mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
                 UrlBarCoordinator.SelectionState.SELECT_END);
         updateButtonVisibility();
     }
 
-    @Override
-    public void loadUrlFromVoice(String url) {
+    /* package */ void loadUrlFromVoice(String url) {
         loadUrl(url, PageTransition.TYPED, 0);
     }
 
@@ -774,13 +720,11 @@ public class LocationBarLayout extends FrameLayout
      * Load the url given with the given transition. Exposed for child classes to overwrite as
      * necessary.
      */
-    @Override
-    public void loadUrl(String url, @PageTransition int transition, long inputStart) {
+    /* package */ void loadUrl(String url, @PageTransition int transition, long inputStart) {
         loadUrlWithPostData(url, transition, inputStart, null, null);
     }
 
-    @Override
-    public void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
+    protected void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
             @Nullable String postDataType, @Nullable byte[] postData) {
         Tab currentTab = getCurrentTab();
 
@@ -849,7 +793,7 @@ public class LocationBarLayout extends FrameLayout
     }
 
     @CallSuper
-    public void setUrlFocusChangeFraction(float fraction) {
+    protected void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
     }
 
@@ -1173,8 +1117,7 @@ public class LocationBarLayout extends FrameLayout
 
     /**
      * Changes the text on the url bar.  The text update will be applied regardless of the current
-     * focus state (comparing to {@link #setUrlToPageUrl(mLocationBarDataProvider.getCurrentUrl())}
-     * which only applies text updates when not focused).
+     * focus state (comparing to {@link #setUrl} which only applies text updates when not focused).
      *
      * @param urlBarData The contents of the URL bar, both for editing and displaying.
      * @param scrollType Specifies how the text should be scrolled in the unfocused state.
@@ -1204,7 +1147,7 @@ public class LocationBarLayout extends FrameLayout
         return mLocationBarDataProvider.getTab();
     }
 
-    public void setUnfocusedWidth(int unfocusedWidth) {
+    protected void setUnfocusedWidth(int unfocusedWidth) {
         mStatusCoordinator.setUnfocusedLocationBarWidth(unfocusedWidth);
     }
 
@@ -1272,12 +1215,11 @@ public class LocationBarLayout extends FrameLayout
      * Controls keyboard visibility.
      * TODO(https://crbug.com/1060729): This should be relocated to UrlBar component.
      *
-     * @param shouldShow Whether the soft keyboard should be shown.
+     * @param showKeyboard Whether the soft keyboard should be shown.
      * @param shouldDelayHiding When true, keyboard hide operation will be delayed slightly to
      *         improve the animation smoothness.
      */
-    @Override
-    public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
+    /* package */ void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
         if (mKeyboardHideTask != null) {
             removeCallbacks(mKeyboardHideTask);

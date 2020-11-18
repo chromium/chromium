@@ -47,27 +47,27 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
      * @param windowDelegate Delegate for accessing and mutating window properties, e.g. soft input
      *         mode.
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
+     * @param focusChangeCallback The callback that will be notified when focus changes on the
+     *         UrlBar.
+     * @param delegate The primary delegate for the UrlBar view.
      */
     public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
-            @NonNull ActionMode.Callback actionModeCallback) {
+            @NonNull ActionMode.Callback actionModeCallback,
+            @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate) {
         mUrlBar = urlBar;
 
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
                         .with(UrlBarProperties.WINDOW_DELEGATE, windowDelegate)
+                        .with(UrlBarProperties.DELEGATE, delegate)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
-        mMediator = new UrlBarMediator(model);
+        mMediator = new UrlBarMediator(model, focusChangeCallback);
     }
 
-    /** @see UrlBarMediator#setDelegate(UrlBarDelegate) */
-    public void setDelegate(UrlBarDelegate delegate) {
-        mMediator.setDelegate(delegate);
-    }
-
-    /** @see UrlBarMediator#setDelegate(UrlBarDelegate) */
+    /** @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener) */
     public void addUrlTextChangeListener(UrlTextChangeListener listener) {
         mMediator.addUrlTextChangeListener(listener);
     }
@@ -101,11 +101,6 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
     /** @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>) */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mMediator.setUrlDirectionListener(listener);
-    }
-
-    /** @see UrlBarMediator#setOnFocusChangedCallback(Callback) */
-    public void setOnFocusChangedCallback(Callback<Boolean> callback) {
-        mMediator.setOnFocusChangedCallback(callback);
     }
 
     /** Selects all of the text of the UrlBar. */

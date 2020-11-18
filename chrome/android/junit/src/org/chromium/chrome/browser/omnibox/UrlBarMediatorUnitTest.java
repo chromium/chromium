@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
@@ -42,6 +43,8 @@ public class UrlBarMediatorUnitTest {
     TextWatcher mMockTextWatcher;
     @Mock
     TextWatcher mAnotherMockTextWatcher;
+    @Mock
+    Callback<Boolean> mFocusChangeCallback;
 
     PropertyModel mModel;
     UrlBarMediator mMediator;
@@ -51,7 +54,7 @@ public class UrlBarMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
-        mMediator = new UrlBarMediator(mModel) {
+        mMediator = new UrlBarMediator(mModel, mFocusChangeCallback) {
             @Override
             protected String sanitizeTextForPaste(String text) {
                 return text.trim();

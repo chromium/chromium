@@ -17,11 +17,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
@@ -119,10 +122,12 @@ class LocationBarTablet extends LocationBarLayout {
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
+            @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
                 locationBarDataProvider, profileSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate);
+                overrideUrlLoadingDelegate, voiceRecognitionHandler, assistantVoiceSearchSupplier);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
         if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
                     mLocationBarDataProvider.isIncognito())) {
@@ -233,13 +238,13 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     @Override
-    public void onSuggestionsHidden() {
+    void onSuggestionsHidden() {
         super.onSuggestionsHidden();
         mStatusCoordinator.setFirstSuggestionIsSearchType(false);
     }
 
     @Override
-    public void onSuggestionsChanged(String autocompleteText) {
+    void onSuggestionsChanged(String autocompleteText) {
         super.onSuggestionsChanged(autocompleteText);
         mStatusCoordinator.setFirstSuggestionIsSearchType(
                 mAutocompleteCoordinator.getSuggestionCount() > 0

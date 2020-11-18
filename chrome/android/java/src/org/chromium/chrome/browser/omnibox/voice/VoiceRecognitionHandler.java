@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -57,7 +58,7 @@ public class VoiceRecognitionHandler {
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
     private WebContentsObserver mVoiceSearchWebContentsObserver;
-    private AssistantVoiceSearchService mAssistantVoiceSearchService;
+    private Supplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
 
     // VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
     // Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
@@ -171,14 +172,10 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    public VoiceRecognitionHandler(Delegate delegate) {
+    public VoiceRecognitionHandler(Delegate delegate,
+            Supplier<AssistantVoiceSearchService> assistantVoiceSearchServiceSupplier) {
         mDelegate = delegate;
-    }
-
-    /** Set the AssistantVoiceSearchService for this class. */
-    public void setAssistantVoiceSearchService(
-            AssistantVoiceSearchService assistantVoiceSearchService) {
-        mAssistantVoiceSearchService = assistantVoiceSearchService;
+        mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchServiceSupplier;
     }
 
     /**
@@ -439,10 +436,12 @@ public class VoiceRecognitionHandler {
      */
     private boolean startAGSAForAssistantVoiceSearch(
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
-        if (mAssistantVoiceSearchService == null) return false;
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        if (assistantVoiceSearchService == null) return false;
 
-        if (mAssistantVoiceSearchService.canRequestAssistantVoiceSearch()
-                && mAssistantVoiceSearchService.needsEnabledCheck()) {
+        if (assistantVoiceSearchService.canRequestAssistantVoiceSearch()
+                && assistantVoiceSearchService.needsEnabledCheck()) {
             mDelegate.clearOmniboxFocus();
             AssistantVoiceSearchConsentUi.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), new SettingsLauncherImpl(),
@@ -462,10 +461,10 @@ public class VoiceRecognitionHandler {
         }
 
         // Report the client's eligibility for Assistant voice search.
-        mAssistantVoiceSearchService.reportUserEligibility();
-        if (!mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
+        assistantVoiceSearchService.reportUserEligibility();
+        if (!assistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
 
-        Intent intent = mAssistantVoiceSearchService.getAssistantVoiceSearchIntent();
+        Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
 
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
             mDelegate.updateMicButtonState();

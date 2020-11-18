@@ -40,7 +40,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -85,9 +85,11 @@ public final class VoiceToolbarButtonControllerTest {
     @Before
     public void setUp() {
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        LocationBarLayout locationBarLayout =
-                (LocationBarLayout) sActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        locationBarLayout.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        ((LocationBarCoordinator) sActivityTestRule.getActivity()
+                        .getToolbarManager()
+                        .getToolbarLayoutForTesting()
+                        .getLocationBar())
+                .setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
 
         // Now that we've replaced the handler with a mock, load another page so the button provider
         // is updated (and shown) based on the mocked isVoiceSearchEnabled().

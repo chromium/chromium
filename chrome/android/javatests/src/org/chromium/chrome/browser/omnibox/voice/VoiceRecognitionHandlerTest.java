@@ -118,7 +118,7 @@ public class VoiceRecognitionHandlerTest {
         private Float mVoiceConfidenceValue;
 
         public TestVoiceRecognitionHandler(Delegate delegate) {
-            super(delegate);
+            super(delegate, () -> mAssistantVoiceSearchService);
         }
 
         @Override
@@ -523,7 +523,6 @@ public class VoiceRecognitionHandlerTest {
         doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
         doReturn(mIntent).when(mAssistantVoiceSearchService).getAssistantVoiceSearchIntent();
-        mHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
     }
 
     @After

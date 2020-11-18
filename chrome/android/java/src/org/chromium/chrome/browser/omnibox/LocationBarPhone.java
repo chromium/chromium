@@ -187,7 +187,7 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    public void onTabLoadingNTP(NewTabPage ntp) {
+    void onTabLoadingNTP(NewTabPage ntp) {
         super.onTabLoadingNTP(ntp);
         updateStatusVisibility();
     }

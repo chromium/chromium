@@ -295,6 +295,8 @@ public class LocationBarLayoutTest {
         updateSearchEngineLogoWithGoogle(locationBar);
         mTestLocationBarModel.setCurrentUrl(GOOGLE_SRP_URL);
         mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
+        mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
+        mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
         setUrlToPageUrl(locationBar);
         setUrlBarTextAndFocus("");
 

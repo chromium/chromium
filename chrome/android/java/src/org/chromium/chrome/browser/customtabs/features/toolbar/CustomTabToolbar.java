@@ -612,9 +612,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 ActionMode.Callback actionModeCallback, UrlBar urlBar) {
             mLocationBarDataProvider = locationBarDataProvider;
             mLocationBarDataProvider.addObserver(this);
-            mUrlCoordinator = new UrlBarCoordinator(urlBar, null, actionModeCallback);
-            mUrlCoordinator.setAllowFocus(false);
-            mUrlCoordinator.setDelegate(this);
+            mUrlCoordinator = new UrlBarCoordinator(
+                    urlBar, null, actionModeCallback, /*focusChangeCallback=*/(unused) -> {}, this);
         }
 
         public void onNativeLibraryReady() {

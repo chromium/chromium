@@ -987,6 +987,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinatorTablet.java",
   "java/src/org/chromium/chrome/browser/omnibox/LocationBarDataProvider.java",
   "java/src/org/chromium/chrome/browser/omnibox/LocationBarLayout.java",
+  "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediator.java",
   "java/src/org/chromium/chrome/browser/omnibox/LocationBarPhone.java",
   "java/src/org/chromium/chrome/browser/omnibox/LocationBarTablet.java",
   "java/src/org/chromium/chrome/browser/omnibox/OmniboxFocusReason.java",
