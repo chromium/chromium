@@ -44,3 +44,21 @@ android_library("junit") {
     "//third_party/mockito:mockito_java",
   ]
 }
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/incognito/interstitial/IncognitoInterstitialTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
