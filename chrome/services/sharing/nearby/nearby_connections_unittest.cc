@@ -461,7 +461,7 @@ TEST_F(NearbyConnectionsTest, StopDiscovery) {
   EXPECT_CALL(*service_controller_ptr_, StopDiscovery(testing::_)).Times(1);
 }
 
-TEST_F(NearbyConnectionsTest, InjectEndpoint) {
+TEST_F(NearbyConnectionsTest, DISABLED_InjectEndpoint) {
   const std::vector<uint8_t> bluetooth_mac_address(
       std::begin(kBluetoothMacAddress), std::end(kBluetoothMacAddress));
   const EndpointData endpoint_data = CreateEndpointData(1);
