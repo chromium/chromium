@@ -202,11 +202,38 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   }
 
+  // Dummy method to be called upon bubble closing.
+  void OnBubbleClosed(const std::string& selected_app_package,
+                      apps::PickerEntryType entry_type,
+                      apps::IntentPickerCloseReason close_reason,
+                      bool should_persist) {
+    bubble_closed_ = true;
+  }
+
+  void ShowBubbleForTesting() {
+    std::vector<apps::IntentPickerAppInfo> app_info;
+    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+                          "package_1", "dank app 1");
+    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+                          "package_2", "dank_app_2");
+
+    browser()->window()->ShowIntentPickerBubble(
+        std::move(app_info), /*show_stay_in_chrome=*/true,
+        /*show_remember_selection=*/true, PageActionIconType::kIntentPicker,
+        base::nullopt,
+        base::BindOnce(
+            &IntentPickerBubbleViewBrowserTestChromeOS::OnBubbleClosed,
+            base::Unretained(this)));
+  }
+
+  bool bubble_closed() { return bubble_closed_; }
+
  private:
   apps::AppServiceProxy* app_service_proxy_ = nullptr;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeIconLoader icon_loader_;
+  bool bubble_closed_ = false;
 };
 
 // Test that the intent picker bubble will pop out for ARC apps.
@@ -410,4 +437,19 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_EQ(1U, launched_arc_apps().size());
   EXPECT_EQ(app_name, launched_arc_apps()[0].activity->package_name);
   EXPECT_EQ(test_url.spec(), launched_arc_apps()[0].intent->data);
+}
+
+// Test that show intent picker bubble twice without closing doesn't
+// crash the browser.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       ShowBubbleTwice) {
+  ShowBubbleForTesting();
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
+  ShowBubbleForTesting();
+  ASSERT_TRUE(bubble_closed());
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
 }
