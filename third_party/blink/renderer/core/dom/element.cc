@@ -5253,9 +5253,16 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     parent_style = style;
 
   if (request.pseudo_id == kPseudoIdFirstLineInherited) {
-    scoped_refptr<ComputedStyle> result =
-        GetDocument().GetStyleResolver().StyleForElement(this, parent_style,
-                                                         parent_style);
+    scoped_refptr<ComputedStyle> result;
+    if (IsPseudoElement()) {
+      result = GetDocument().GetStyleResolver().PseudoStyleForElement(
+          parentElement(),
+          PseudoElementStyleRequest(To<PseudoElement>(this)->GetPseudoId()),
+          parent_style, parent_style);
+    } else {
+      result = GetDocument().GetStyleResolver().StyleForElement(
+          this, parent_style, parent_style);
+    }
     result->SetStyleType(kPseudoIdFirstLineInherited);
     return result;
   }

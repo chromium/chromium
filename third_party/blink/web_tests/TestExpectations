@@ -5252,8 +5252,6 @@ crbug.com/907125 external/wpt/lifecycle/worker-dispay-none.tentative.html [ Time
 # Updated by Sheriff on 2020-05-29: flaky on all platforms.
 crbug.com/1084441 media/controls/video-overlay-cast-dark-rendering.html [ Pass Failure ]
 
-crbug.com/892983 external/wpt/css/css-pseudo/first-line-with-before-after.html [ Failure ]
-
 # Sheriff 2019-11-15
 crbug.com/1025123 external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html [ Pass Failure ]
 crbug.com/1025321 [ Win ] http/tests/devtools/tracing/console-timeline.js [ Pass Failure ]

@@ -3872,7 +3872,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
   // https://github.com/w3c/csswg-drafts/issues/4506
   if (IsMarkerContent())
     return nullptr;
-  if (IsBeforeOrAfterContent() || IsText()) {
+  if (IsText()) {
     if (!Parent())
       return nullptr;
     return Parent()->FirstLineStyleWithoutFallback();
@@ -3950,7 +3950,8 @@ scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
   Element* element = Traversal<Element>::FirstAncestorOrSelf(*GetNode());
   if (!element)
     return nullptr;
-  if (element->IsPseudoElement())
+  if (element->IsPseudoElement() &&
+      request.pseudo_id != kPseudoIdFirstLineInherited)
     return nullptr;
 
   return element->StyleForPseudoElement(request, parent_style);

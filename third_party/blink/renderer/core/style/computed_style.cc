@@ -506,7 +506,8 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
   if (!cached_pseudo_element_styles_ || !cached_pseudo_element_styles_->size())
     return nullptr;
 
-  if (StyleType() != kPseudoIdNone)
+  if (StyleType() != kPseudoIdNone &&
+      StyleType() != kPseudoIdFirstLineInherited)
     return nullptr;
 
   for (const auto& pseudo_style : *cached_pseudo_element_styles_) {
