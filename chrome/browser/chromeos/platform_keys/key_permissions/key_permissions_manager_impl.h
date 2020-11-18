@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -68,6 +69,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     void UpdateWithAllKeys(std::vector<std::string> public_key_spki_der_list,
                            Status keys_retrieval_status);
     void UpdateNextKey();
+    void OnUpdateFinished();
     void UpdatePermissionsForKey(const std::string& public_key_spki_der);
     void UpdatePermissionsForKeyWithCorporateFlag(
         const std::string& public_key_spki_der,
@@ -80,6 +82,9 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     base::queue<std::string> public_key_spki_der_queue_;
     bool update_started_ = false;
     UpdateCallback callback_;
+    // The time when the Update() method was called.
+    base::TimeTicks update_start_time_;
+
     base::WeakPtrFactory<KeyPermissionsInChapsUpdater> weak_ptr_factory_{this};
   };
 

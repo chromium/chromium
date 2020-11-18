@@ -407,6 +407,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime" units="ms"
+    expires_after="2021-06-01">
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Records the time taken to successfully update chaps with the new ARC usage
+    flags.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
     enum="KeyPermissionsManagerMigrationStatus" expires_after="2021-04-01">
   <owner>omorsi@google.com</owner>
@@ -414,6 +424,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Counts the number of times the migration started as well as the number of
     times it succeeded and failed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.KeyPermissionsManager.MigrationTime" units="ms"
+    expires_after="2021-06-01">
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Records the time taken to successfully migrate key permissions to chaps.
   </summary>
 </histogram>
 

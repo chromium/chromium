@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions.pb.h"
@@ -45,11 +46,23 @@ chromeos::platform_keys::KeyPermissionsManager*
 chromeos::platform_keys::KeyPermissionsManager* g_system_token_kpm_for_testing =
     nullptr;
 
+// The name of the histogram that counts the number of times the migration
+// started as well as the number of times it succeeded and failed.
 const char kMigrationStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.Migration";
-
+// The name of the histogram that counts the number of times the arc usage flags
+// update started as well as the number of times it succeeded and failed.
 const char kArcUsageUpdateStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.ArcUsageUpdate";
+
+// The name of the histogram that records the time taken to successfully migrate
+// key permissions to chaps.
+const char kMigrationTimeHistogramName[] =
+    "ChromeOS.KeyPermissionsManager.MigrationTime";
+// The name of the histogram that records the time taken to successfully update
+// chaps with the new ARC usage flags.
+const char kArcUsageUpdateTimeHistogramName[] =
+    "ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime";
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -100,6 +113,8 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::Update(
   DCHECK(!update_started_) << "Update called more than once for the same "
                               "updater instance.";
 
+  update_start_time_ = base::TimeTicks::Now();
+
   update_started_ = true;
   callback_ = std::move(callback);
 
@@ -123,7 +138,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   if (public_key_spki_der_queue_.empty()) {
-    std::move(callback_).Run(Status::kSuccess);
+    OnUpdateFinished();
     return;
   }
 
@@ -131,6 +146,39 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   public_key_spki_der_queue_.pop();
 
   UpdatePermissionsForKey(public_key);
+}
+
+void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
+    OnUpdateFinished() {
+  switch (mode_) {
+    case Mode::kMigratePermissionsFromPrefs: {
+      // For more information about choosing |min| and |max| for the histogram,
+      // please refer to:
+      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/master/metrics/histograms/README.md#count-histograms_choosing-min-and-max
+      //
+      // For more information about choosing the number of |buckets| for the
+      // histogram, please refer to:
+      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/master/metrics/histograms/README.md#count-histograms_choosing-number-of-buckets
+      base::UmaHistogramCustomTimes(
+          kMigrationTimeHistogramName,
+          /*sample=*/base::TimeTicks::Now() - update_start_time_,
+          /*min=*/base::TimeDelta::FromMilliseconds(1),
+          /*max=*/base::TimeDelta::FromMinutes(5),
+          /*buckets=*/50);
+      break;
+    }
+    case Mode::kUpdateArcUsageFlag: {
+      base::UmaHistogramCustomTimes(
+          kArcUsageUpdateTimeHistogramName,
+          /*sample=*/base::TimeTicks::Now() - update_start_time_,
+          /*min=*/base::TimeDelta::FromMilliseconds(1),
+          /*max=*/base::TimeDelta::FromMinutes(5),
+          /*buckets=*/50);
+      break;
+    }
+  }
+
+  std::move(callback_).Run(Status::kSuccess);
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
