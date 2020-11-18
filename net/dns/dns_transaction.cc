@@ -367,6 +367,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     // Send minimal request headers where possible.
     extra_request_headers.SetHeader(HttpRequestHeaders::kAcceptLanguage, "*");
     extra_request_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome");
+    extra_request_headers.SetHeader(HttpRequestHeaders::kAcceptEncoding,
+                                    "identity");
 
     DCHECK(url_request_context);
     request_ = url_request_context->CreateRequest(
