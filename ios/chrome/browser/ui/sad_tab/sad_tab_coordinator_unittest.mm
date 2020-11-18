@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view_controller.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -32,6 +33,7 @@ class SadTabCoordinatorTest : public PlatformTest {
     UILayoutGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
     [base_view_controller_.view addLayoutGuide:guide];
     AddSameConstraints(guide, base_view_controller_.view);
+    WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;
   UIViewController* base_view_controller_;
@@ -179,13 +181,6 @@ TEST_F(SadTabCoordinatorTest, FirstFailureAction) {
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()];
 
-  id mock_browser_commands_handler_ =
-      OCMStrictProtocolMock(@protocol(BrowserCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_browser_commands_handler_
-                   forProtocol:@protocol(BrowserCommands)];
-  OCMExpect([mock_browser_commands_handler_ reload]);
-
   [coordinator sadTabTabHelper:nullptr
       presentSadTabForWebState:&web_state
                repeatedFailure:NO];
@@ -196,10 +191,9 @@ TEST_F(SadTabCoordinatorTest, FirstFailureAction) {
       base_view_controller_.childViewControllers.firstObject;
   ASSERT_EQ([SadTabViewController class], [view_controller class]);
 
-  // Verify dispatcher's message.
+  // Ensure that the action button can be pressed.
   [view_controller.actionButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_OCMOCK_VERIFY(mock_browser_commands_handler_);
   [coordinator stop];
 }
 

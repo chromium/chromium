@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 
+class WebNavigationBrowserAgent;
+
 @protocol KeyCommandsPlumbing <NSObject>
 
 #pragma mark Query information
@@ -25,12 +27,6 @@
 
 // Returns the current number of tabs.
 - (NSUInteger)tabsCount;
-
-// Whether navigation to the previous page is available.
-- (BOOL)canGoBack;
-
-// Whether navigation to the next page is available.
-- (BOOL)canGoForward;
 
 #pragma mark Call for action
 
@@ -57,6 +53,7 @@
                         dispatcher:(id<ApplicationCommands,
                                        BrowserCommands,
                                        FindInPageCommands>)dispatcher
+                   navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
                     omniboxHandler:(id<OmniboxCommands>)omniboxHandler
                        editingText:(BOOL)editingText;
 

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,11 +23,11 @@
 @implementation ToolbarButtonActionsHandler
 
 - (void)backAction {
-  [self.dispatcher goBack];
+  self.navigationAgent->GoBack();
 }
 
 - (void)forwardAction {
-  [self.dispatcher goForward];
+  self.navigationAgent->GoForward();
 }
 
 - (void)tabGridTouchDown {
@@ -46,11 +47,11 @@
 }
 
 - (void)reloadAction {
-  [self.dispatcher reload];
+  self.navigationAgent->Reload();
 }
 
 - (void)stopAction {
-  [self.dispatcher stopLoading];
+  self.navigationAgent->StopLoading();
 }
 
 - (void)bookmarkAction {

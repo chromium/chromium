@@ -124,10 +124,8 @@ ChromeBrowserState* GetCurrentIncognitoBrowserState() {
   return GetBrowserState(true);
 }
 
-id<BrowserCommands> BrowserCommandDispatcherForMainBVC() {
-  Browser* mainBrowser =
-      GetMainController().interfaceProvider.mainInterface.browser;
-  return static_cast<id<BrowserCommands>>(mainBrowser->GetCommandDispatcher());
+Browser* GetMainBrowser() {
+  return GetMainController().interfaceProvider.mainInterface.browser;
 }
 
 UIViewController* GetActiveViewController() {
@@ -154,8 +152,7 @@ UIViewController* GetActiveViewController() {
 
 id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser() {
   return static_cast<id<ApplicationCommands, BrowserCommands>>(
-      GetMainController()
-          .interfaceProvider.currentInterface.browser->GetCommandDispatcher());
+      GetMainBrowser()->GetCommandDispatcher());
 }
 
 void RemoveAllInfoBars() {

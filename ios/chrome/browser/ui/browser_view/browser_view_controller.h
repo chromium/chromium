@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_attacher.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
+#import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
 
 @protocol ActivityServicePositioner;
@@ -31,7 +32,8 @@ class Browser;
                         PageInfoPresentation,
                         SyncPresenter,
                         ThumbStripAttacher,
-                        ToolbarCoordinatorDelegate>
+                        ToolbarCoordinatorDelegate,
+                        WebNavigationNTPDelegate>
 
 // Initializes a new BVC from its nib. |model| must not be nil. The
 // webUsageSuspended property for this BVC will be based on |model|, and future

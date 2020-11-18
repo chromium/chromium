@@ -73,6 +73,7 @@
 #import "ios/chrome/browser/web/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -307,6 +308,8 @@
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
                           dispatcher:self.dispatcher];
+  WebNavigationBrowserAgent::FromBrowser(self.browser)
+      ->SetDelegate(_viewController);
 }
 
 // Shuts down the BrowserViewController.

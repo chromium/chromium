@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -35,6 +36,7 @@ class BrowserCoordinatorTest : public PlatformTest {
         scene_state_([[SceneState alloc] initWithAppState:nil]) {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+    WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
   }
 
   BrowserCoordinator* GetBrowserCoordinator() {

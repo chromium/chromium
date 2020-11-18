@@ -160,6 +160,7 @@
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
@@ -603,11 +604,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Whether the keyboard observer helper is viewed
 @property(nonatomic, strong) KeyboardObserverHelper* observer;
 
-// Helper method to check whether the NewTabPageTabHelper is valid and Active
-// for |self.currentWebState|.
-@property(nonatomic, assign, readonly, getter=isNTPActiveForCurrentWebState)
-    BOOL NTPActiveForCurrentWebState;
-
 // The coordinator that shows the Send Tab To Self UI.
 @property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
 
@@ -1042,15 +1038,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                       : nullptr;
 }
 
-- (BOOL)isNTPActiveForCurrentWebState {
-  if (self.currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(self.currentWebState);
-    return (NTPHelper && NTPHelper->IsActive());
-  }
-  return NO;
-}
-
 #pragma mark - Public methods
 
 - (id<ActivityServicePositioner>)activityServicePositioner {
@@ -1393,11 +1380,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   UIResponder* firstResponder = GetFirstResponder();
-
+  WebNavigationBrowserAgent* navigationAgent =
+      WebNavigationBrowserAgent::FromBrowser(self.browser);
   return [self.keyCommandsProvider
       keyCommandsForConsumer:self
           baseViewController:self
                   dispatcher:self.dispatcher
+             navigationAgent:navigationAgent
               omniboxHandler:self.omniboxHandler
                  editingText:[firstResponder
                                  isKindOfClass:[UITextField class]] ||
@@ -2867,6 +2856,22 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ** Protocol Implementations and Helpers **
 
+#pragma mark - WebNavigationNTPDelegate
+
+- (BOOL)isNTPActiveForCurrentWebState {
+  if (self.currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(self.currentWebState);
+    return (NTPHelper && NTPHelper->IsActive());
+  }
+  return NO;
+}
+
+- (void)reloadNTPForWebState:(web::WebState*)webState {
+  NewTabPageCoordinator* coordinator = _ntpCoordinatorsForWebStates[webState];
+  [coordinator reload];
+}
+
 #pragma mark - ThumbStripAttacher
 
 - (void)setThumbStripPanHandler:
@@ -3827,7 +3832,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       // occurring will cut the animation short.
       DCHECK(self.currentWebState);
       SnapshotTabHelper::FromWebState(self.currentWebState)->IgnoreNextLoad();
-      [self reload];
+      WebNavigationBrowserAgent::FromBrowser(self.browser)->Reload();
       break;
     case OverscrollAction::NONE:
       NOTREACHED();
@@ -4115,16 +4120,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return self.browser->GetWebStateList()->count();
 }
 
-- (BOOL)canGoBack {
-  return self.currentWebState &&
-         self.currentWebState->GetNavigationManager()->CanGoBack();
-}
-
-- (BOOL)canGoForward {
-  return self.currentWebState &&
-         self.currentWebState->GetNavigationManager()->CanGoForward();
-}
-
 - (void)focusTabAtIndex:(NSUInteger)index {
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (webStateList->ContainsIndex(index)) {
@@ -4264,7 +4259,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // On handsets, if a page is currently loading it should be stopped.
   if (![self canShowTabStrip] &&
       [self.helper isToolbarLoading:self.currentWebState]) {
-    [self.dispatcher stopLoading];
+    WebNavigationBrowserAgent::FromBrowser(self.browser)->StopLoading();
     _locationBarEditCancelledLoad = YES;
   }
 }
@@ -4274,33 +4269,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - BrowserCommands
-
-- (void)goBack {
-  if (self.currentWebState)
-    web_navigation_util::GoBack(self.currentWebState);
-}
-
-- (void)goForward {
-  if (self.currentWebState)
-    web_navigation_util::GoForward(self.currentWebState);
-}
-
-- (void)stopLoading {
-  self.currentWebState->Stop();
-}
-
-- (void)reload {
-  if ([self isNTPActiveForCurrentWebState]) {
-    NewTabPageCoordinator* coordinator =
-        _ntpCoordinatorsForWebStates[self.currentWebState];
-    [coordinator reload];
-  } else if (self.currentWebState) {
-    // |check_for_repost| is true because the reload is explicitly initiated
-    // by the user.
-    self.currentWebState->GetNavigationManager()->Reload(
-        web::ReloadType::NORMAL, true /* check_for_repost */);
-  }
-}
 
 - (void)bookmarkCurrentPage {
   [self initializeBookmarkInteractionController];
@@ -5010,7 +4978,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // neeeded. The current solution is to go back in history. This has the
   // advantage of keeping the current browsing session and give a good user
   // experience when the user comes back from incognito.
-  [self goBack];
+  WebNavigationBrowserAgent::FromBrowser(self.browser)->GoBack();
 
   if (url.is_valid()) {
     OpenNewTabCommand* command = [[OpenNewTabCommand alloc]

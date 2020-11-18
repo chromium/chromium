@@ -15,6 +15,7 @@
 @protocol LoadQueryCommands;
 @protocol PopupMenuActionHandlerCommands;
 @protocol TextZoomCommands;
+class WebNavigationBrowserAgent;
 
 // Handles user interactions with the popup menu.
 @interface PopupMenuActionHandler
@@ -33,6 +34,8 @@
                               LoadQueryCommands,
                               TextZoomCommands>
     dispatcher;
+
+@property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 @end
 

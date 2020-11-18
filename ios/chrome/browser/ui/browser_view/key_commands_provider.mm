@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -26,6 +27,7 @@
                                        BrowserCommands,
                                        FindInPageCommands,
                                        OmniboxCommands>)dispatcher
+                   navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
                     omniboxHandler:(id<OmniboxCommands>)omniboxHandler
                        editingText:(BOOL)editingText {
   __weak id<KeyCommandsPlumbing> weakConsumer = consumer;
@@ -48,21 +50,21 @@
   void (^browseRight)();
   if (useRTLLayout) {
     browseLeft = ^{
-      if ([weakConsumer canGoForward])
-        [weakDispatcher goForward];
+      if (navigationAgent->CanGoForward())
+        navigationAgent->GoForward();
     };
     browseRight = ^{
-      if ([weakConsumer canGoBack])
-        [weakDispatcher goBack];
+      if (navigationAgent->CanGoBack())
+        navigationAgent->GoBack();
     };
   } else {
     browseLeft = ^{
-      if ([weakConsumer canGoBack])
-        [weakDispatcher goBack];
+      if (navigationAgent->CanGoBack())
+        navigationAgent->GoBack();
     };
     browseRight = ^{
-      if ([weakConsumer canGoForward])
-        [weakDispatcher goForward];
+      if (navigationAgent->CanGoForward())
+        navigationAgent->GoForward();
     };
   }
 
@@ -239,7 +241,7 @@
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_ACCNAME_RELOAD)
                                     action:^{
-                                      [weakDispatcher reload];
+                                      navigationAgent->Reload();
                                     }],
     ]];
 
@@ -327,7 +329,7 @@
                              modifierFlags:UIKeyModifierCommand
                                      title:nil
                                     action:^{
-                                      [weakDispatcher stopLoading];
+                                      navigationAgent->StopLoading();
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"?"
                              modifierFlags:UIKeyModifierCommand

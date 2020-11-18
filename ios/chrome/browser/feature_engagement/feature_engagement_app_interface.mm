@@ -191,11 +191,11 @@ class ScopedFeatureListHolder {
 }
 
 + (void)showTranslate {
-  [chrome_test_util::BrowserCommandDispatcherForMainBVC() showTranslate];
+  [chrome_test_util::HandlerForActiveBrowser() showTranslate];
 }
 
 + (void)showReadingList {
-  [chrome_test_util::BrowserCommandDispatcherForMainBVC() showReadingList];
+  [chrome_test_util::HandlerForActiveBrowser() showReadingList];
 }
 
 @end

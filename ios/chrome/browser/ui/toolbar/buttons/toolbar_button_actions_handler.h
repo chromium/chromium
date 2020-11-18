@@ -11,6 +11,7 @@
 @protocol BrowserCommands;
 @protocol FindInPageCommands;
 @protocol OmniboxCommands;
+class WebNavigationBrowserAgent;
 
 // Handler for the actions associated with the different toolbar buttons.
 @interface ToolbarButtonActionsHandler : NSObject
@@ -21,6 +22,8 @@
                               FindInPageCommands,
                               OmniboxCommands>
     dispatcher;
+
+@property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 // Whether this handler is created in incognito.
 @property(nonatomic, assign) BOOL incognito;

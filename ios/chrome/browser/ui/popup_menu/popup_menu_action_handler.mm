@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #include "url/gurl.h"
 
@@ -54,11 +55,11 @@ const char kManagementPageURL[] = "chrome://management";
   switch (identifier) {
     case PopupMenuActionReload:
       RecordAction(UserMetricsAction("MobileMenuReload"));
-      [self.dispatcher reload];
+      self.navigationAgent->Reload();
       break;
     case PopupMenuActionStop:
       RecordAction(UserMetricsAction("MobileMenuStop"));
-      [self.dispatcher stopLoading];
+      self.navigationAgent->StopLoading();
       break;
     case PopupMenuActionOpenNewTab:
       RecordAction(UserMetricsAction("MobileMenuNewTab"));

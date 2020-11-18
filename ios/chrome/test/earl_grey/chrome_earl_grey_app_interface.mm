@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/test/app/bookmarks_test_util.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -69,7 +70,6 @@ using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using chrome_test_util::BrowserCommandDispatcherForMainBVC;
 
 namespace {
 
@@ -153,7 +153,8 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 + (void)startReloading {
-  [BrowserCommandDispatcherForMainBVC() reload];
+  WebNavigationBrowserAgent::FromBrowser(chrome_test_util::GetMainBrowser())
+      ->Reload();
 }
 
 + (NamedGuide*)guideWithName:(GuideName*)name view:(UIView*)view {
@@ -286,11 +287,13 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 + (void)startGoingBack {
-  [BrowserCommandDispatcherForMainBVC() goBack];
+  WebNavigationBrowserAgent::FromBrowser(chrome_test_util::GetMainBrowser())
+      ->GoBack();
 }
 
 + (void)startGoingForward {
-  [BrowserCommandDispatcherForMainBVC() goForward];
+  WebNavigationBrowserAgent::FromBrowser(chrome_test_util::GetMainBrowser())
+      ->GoForward();
 }
 
 + (NSString*)currentTabID {
