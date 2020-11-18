@@ -5,6 +5,7 @@
 #include "content/browser/speech/tts_utterance_impl.h"
 
 #include "base/values.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 
 namespace content {
@@ -36,9 +37,23 @@ UtteranceContinuousParameters::UtteranceContinuousParameters()
 // static
 int TtsUtteranceImpl::next_utterance_id_ = 0;
 
+// static
+std::unique_ptr<TtsUtterance> TtsUtterance::Create(WebContents* web_contents) {
+  DCHECK(web_contents);
+  return std::make_unique<TtsUtteranceImpl>(web_contents->GetBrowserContext(),
+                                            web_contents);
+}
+
+// static
 std::unique_ptr<TtsUtterance> TtsUtterance::Create(
     BrowserContext* browser_context) {
+  DCHECK(browser_context);
   return std::make_unique<TtsUtteranceImpl>(browser_context, nullptr);
+}
+
+// static
+std::unique_ptr<TtsUtterance> TtsUtterance::Create() {
+  return std::make_unique<TtsUtteranceImpl>(nullptr, nullptr);
 }
 
 TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,

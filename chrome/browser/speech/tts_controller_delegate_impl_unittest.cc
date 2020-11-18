@@ -40,7 +40,7 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
 
   std::unique_ptr<content::TtsUtterance> utterance1 =
-      content::TtsUtterance::Create(nullptr);
+      content::TtsUtterance::Create();
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance1.get(), &rate, &pitch, &volume);
   // Updated to global defaults.
@@ -59,7 +59,7 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
   tts_controller_delegate->pref_service_ = &pref_service_;
 
   std::unique_ptr<content::TtsUtterance> utterance2 =
-      content::TtsUtterance::Create(nullptr);
+      content::TtsUtterance::Create();
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance2.get(), &rate, &pitch, &volume);
   // Updated to pref values.
@@ -73,7 +73,7 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
   volume = 1.3f;
 
   std::unique_ptr<content::TtsUtterance> utterance3 =
-      content::TtsUtterance::Create(nullptr);
+      content::TtsUtterance::Create();
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance3.get(), &rate, &pitch, &volume);
   // Updated to pref values.
@@ -85,7 +85,7 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
 TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
   MockTtsControllerDelegate delegate;
   std::unique_ptr<content::TtsUtterance> utterance =
-      content::TtsUtterance::Create(nullptr);
+      content::TtsUtterance::Create();
   auto ids = delegate.GetPreferredVoiceIdsForUtterance(utterance.get());
   EXPECT_EQ(nullptr, ids.get());
 

@@ -35,7 +35,8 @@ int GetMetricsBucketIndex(const Profile* profile) {
     return 0;
 
   ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
+  if (!g_browser_process->profile_manager() ||
+      !g_browser_process->profile_manager()
            ->GetProfileAttributesStorage()
            .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
     // This can happen if the profile is deleted.

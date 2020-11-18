@@ -71,7 +71,6 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
-#include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -1399,9 +1398,6 @@ void AccessibilityManager::PostUnloadChromeVox() {
   // In case the user darkened the screen, undarken it now.
   SetDarkenScreen(false);
 
-  // Stop speech.
-  content::TtsController::GetInstance()->Stop();
-
   audio_focus_manager_->SetEnforcementMode(
       media_session::mojom::EnforcementMode::kDefault);
 }
@@ -1434,9 +1430,6 @@ void AccessibilityManager::PostUnloadSelectToSpeak() {
   // Clear the accessibility focus ring and highlight.
   RemoveFocusRings(extension_misc::kSelectToSpeakExtensionId);
   HideHighlights();
-
-  // Stop speech.
-  content::TtsController::GetInstance()->Stop();
 }
 
 void AccessibilityManager::PostLoadSwitchAccess() {

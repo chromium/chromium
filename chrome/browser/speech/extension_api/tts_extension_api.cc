@@ -20,6 +20,8 @@
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_registry.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/process_manager.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -270,8 +272,16 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   // the behavior more predictable and easier to write unit tests for too.
   Respond(NoArguments());
 
-  std::unique_ptr<content::TtsUtterance> utterance =
-      content::TtsUtterance::Create(browser_context());
+  std::unique_ptr<content::TtsUtterance> utterance;
+  if (extension()) {
+    extensions::ExtensionHost* host =
+        extensions::ProcessManager::Get(browser_context())
+            ->GetBackgroundHostForExtension(extension()->id());
+    utterance = content::TtsUtterance::Create(host->host_contents());
+  } else {
+    utterance = content::TtsUtterance::Create(browser_context());
+  }
+
   utterance->SetText(text);
   utterance->SetVoiceName(voice_name);
   utterance->SetSrcId(src_id);

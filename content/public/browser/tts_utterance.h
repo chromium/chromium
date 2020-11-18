@@ -18,6 +18,7 @@ class Value;
 namespace content {
 class BrowserContext;
 class TtsUtterance;
+class WebContents;
 
 // Events sent back from the TTS engine indicating the progress.
 enum TtsEventType {
@@ -59,10 +60,15 @@ class CONTENT_EXPORT UtteranceEventDelegate {
 // One speech utterance.
 class CONTENT_EXPORT TtsUtterance {
  public:
-  // Construct an utterance given a profile and a completion task to call
-  // when the utterance is done speaking. Before speaking this utterance,
-  // its other parameters like text, rate, pitch, etc. should all be set.
+  // Construct an utterance given a WebContents, BrowserContext, or no backing
+  // context. Prefer the more specific WebContents variant if possible. The
+  // utterance's speaking lifetime is tied to their lifetime.
+  // Before speaking this utterance, its other parameters like text, rate,
+  // pitch, etc. should all be set.
+  static std::unique_ptr<TtsUtterance> Create(WebContents* web_contents);
   static std::unique_ptr<TtsUtterance> Create(BrowserContext* browser_context);
+  static std::unique_ptr<TtsUtterance> Create();
+
   virtual ~TtsUtterance() = default;
 
   // Sends an event to the delegate. If the event type is TTS_EVENT_END

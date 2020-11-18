@@ -231,12 +231,12 @@ class TtsControllerTest : public testing::Test {
 };
 
 TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
-  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create(nullptr);
+  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
   utterance1->SetCanEnqueue(true);
   utterance1->SetSrcId(1);
   controller()->SpeakOrEnqueue(std::move(utterance1));
 
-  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create(nullptr);
+  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create();
   utterance2->SetCanEnqueue(true);
   utterance2->SetSrcId(2);
   controller()->SpeakOrEnqueue(std::move(utterance2));
@@ -286,8 +286,7 @@ TEST_F(TtsControllerTest, TestBrowserContextRemoved) {
 }
 #else
 TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
-  std::unique_ptr<TtsUtterance> utterance1 =
-      content::TtsUtterance::Create(nullptr);
+  std::unique_ptr<TtsUtterance> utterance1 = content::TtsUtterance::Create();
   // Initialized to default (unset constant) values.
   EXPECT_EQ(blink::mojom::kSpeechSynthesisDoublePrefNotSet,
             utterance1->GetContinuousParameters().rate);
@@ -312,7 +311,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
 
   {
     // Calling GetMatchingVoice with no voices returns -1.
-    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create(nullptr));
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
     std::vector<VoiceData> voices;
     EXPECT_EQ(-1, controller()->GetMatchingVoice(utterance.get(), voices));
   }
@@ -320,7 +319,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
   {
     // Calling GetMatchingVoice with any voices returns the first one
     // even if there are no criteria that match.
-    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create(nullptr));
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
     std::vector<VoiceData> voices(2);
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
   }
@@ -328,7 +327,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
   {
     // If nothing else matches, the English voice is returned.
     // (In tests the language will always be English.)
-    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create(nullptr));
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
     std::vector<VoiceData> voices;
     VoiceData fr_voice;
     fr_voice.lang = "fr";
@@ -379,7 +378,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     voice8.native = true;
     voices.push_back(voice8);
 
-    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create(nullptr));
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
 
     std::set<TtsEventType> types;
@@ -443,7 +442,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     voice1.name = "voice1";
     voice1.lang = "en-US";
     voices.push_back(voice1);
-    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create(nullptr));
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
 
     // voice1 is matched against the exact default system language.
     TestContentBrowserClient::GetInstance()->set_application_locale("en-US");

@@ -3,7 +3,6 @@ specific_include_rules = {
     "+ash/root_window_controller.h",
     "+ash/shell.h",
     "+ash/sticky_keys/sticky_keys_controller.h",
-    "+content/public/browser/tts_controller.h",
   ],
   "magnification_manager\.cc": [
     "+ash/magnifier/magnification_controller.h",

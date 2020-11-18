@@ -312,6 +312,10 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, PlatformSpeakOptionalArgs) {
       .WillOnce(Return(true));
   EXPECT_CALL(mock_platform_impl_, DoSpeak(_, "Echo", _, _, _))
       .WillOnce(Return());
+
+  // Called when the extension unloads.
+  EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(false));
+
   ASSERT_TRUE(RunExtensionTest("tts/optional_args")) << message_;
 }
 

@@ -141,7 +141,7 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
   json->GetString("extension", &extension_id);
 
   std::unique_ptr<content::TtsUtterance> utterance =
-      content::TtsUtterance::Create((Profile::FromWebUI(web_ui())));
+      content::TtsUtterance::Create(web_ui()->GetWebContents());
   utterance->SetText(text);
   utterance->SetVoiceName(name);
   utterance->SetEngineId(extension_id);

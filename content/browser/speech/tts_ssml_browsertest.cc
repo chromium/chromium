@@ -31,7 +31,7 @@ class TtsSsmlBrowserTest : public ContentBrowserTest {
     std::unique_ptr<MockTtsControllerImpl> controller =
         std::make_unique<MockTtsControllerImpl>();
 
-    std::unique_ptr<TtsUtterance> utterance = TtsUtterance::Create(nullptr);
+    std::unique_ptr<TtsUtterance> utterance = TtsUtterance::Create();
     utterance->SetText(input);
 
     base::RunLoop run_loop;
