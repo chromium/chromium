@@ -49,6 +49,8 @@ bool NavigateFrameToURL(FrameTreeNode* node, const GURL& url) {
   NavigationController::LoadURLParams params(url);
   params.transition_type = ui::PAGE_TRANSITION_LINK;
   params.frame_tree_node_id = node->frame_tree_node_id();
+  FrameTree* frame_tree = node->frame_tree();
+
   node->navigator().GetController()->LoadURLWithParams(params);
   observer.Wait();
 
@@ -56,7 +58,12 @@ bool NavigateFrameToURL(FrameTreeNode* node, const GURL& url) {
     DLOG(WARNING) << "Navigation did not succeed: " << url;
     return false;
   }
-  if (url != node->current_url()) {
+
+  // It's possible for JS handlers triggered during the navigation to remove
+  // the node, so retrieve it by ID again to check if that occurred.
+  node = frame_tree->FindByID(params.frame_tree_node_id);
+
+  if (node && url != node->current_url()) {
     DLOG(WARNING) << "Expected URL " << url << " but observed "
                   << node->current_url();
     return false;
