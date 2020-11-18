@@ -117,11 +117,12 @@ bool SaveBitmap(std::unique_ptr<ImageData> data,
 }
 
 void RunCallbackIfFileMissing(const base::FilePath& file_path,
-                              const base::Closure& callback) {
+                              base::OnceClosure callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   if (!base::PathExists(file_path))
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, callback);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(callback));
 }
 
 // Compares two ProfileAttributesEntry using locale-sensitive comparison of
@@ -468,12 +469,12 @@ void ProfileAttributesStorage::DownloadHighResAvatarIfNeeded(
 
   const base::FilePath& file_path =
       profiles::GetPathOfHighResAvatarAtIndex(icon_index);
-  base::Closure callback =
-      base::Bind(&ProfileAttributesStorage::DownloadHighResAvatar, AsWeakPtr(),
-                 icon_index, profile_path);
+  base::OnceClosure callback =
+      base::BindOnce(&ProfileAttributesStorage::DownloadHighResAvatar,
+                     AsWeakPtr(), icon_index, profile_path);
   file_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RunCallbackIfFileMissing, file_path, callback));
+      FROM_HERE, base::BindOnce(&RunCallbackIfFileMissing, file_path,
+                                std::move(callback)));
 }
 
 void ProfileAttributesStorage::DownloadHighResAvatar(

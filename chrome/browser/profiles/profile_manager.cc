@@ -925,9 +925,10 @@ void ProfileManager::ScheduleProfileForDeletion(
     // deletion is also cancelled. (crbug.com/289390)
     BrowserList::CloseAllBrowsersWithProfile(
         profile,
-        base::Bind(&ProfileManager::EnsureActiveProfileExistsBeforeDeletion,
-                   base::Unretained(this), base::Passed(std::move(callback))),
-        base::Bind(&CancelProfileDeletion), false);
+        base::BindRepeating(
+            &ProfileManager::EnsureActiveProfileExistsBeforeDeletion,
+            base::Unretained(this), base::Passed(std::move(callback))),
+        base::BindRepeating(&CancelProfileDeletion), false);
   } else {
     EnsureActiveProfileExistsBeforeDeletion(std::move(callback), profile_dir);
   }
@@ -1673,7 +1674,7 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
             .get();
     if (password_store.get()) {
       password_store->RemoveLoginsCreatedBetween(
-          base::Time(), base::Time::Max(), base::Closure());
+          base::Time(), base::Time::Max(), base::OnceClosure());
     }
 
     // The Profile Data doesn't get wiped until Chrome closes. Since we promised

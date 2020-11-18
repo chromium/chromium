@@ -127,7 +127,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
 
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
       prefs_, kProfileCountLastUpdatePref, base::TimeDelta::FromHours(24),
-      base::Bind(&ProfileMetrics::LogNumberOfProfiles, this));
+      base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 }

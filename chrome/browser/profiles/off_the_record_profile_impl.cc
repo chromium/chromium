@@ -248,8 +248,8 @@ void OffTheRecordProfileImpl::TrackZoomLevelsFromParent() {
   // Also track changes to the parent profile's default zoom level.
   parent_default_zoom_level_subscription_ =
       profile_->GetZoomLevelPrefs()->RegisterDefaultZoomLevelCallback(
-          base::Bind(&OffTheRecordProfileImpl::UpdateDefaultZoomLevel,
-                     base::Unretained(this)));
+          base::BindRepeating(&OffTheRecordProfileImpl::UpdateDefaultZoomLevel,
+                              base::Unretained(this)));
 }
 #endif  // !defined(OS_ANDROID)
 

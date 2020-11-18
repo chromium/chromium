@@ -110,14 +110,14 @@ class UnittestProfileManager : public ProfileManagerWithoutInit {
   }
 };
 
-void ExpectNullProfile(base::Closure closure, Profile* profile) {
+void ExpectNullProfile(base::OnceClosure closure, Profile* profile) {
   EXPECT_EQ(nullptr, profile);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 void ExpectProfileWithName(const std::string& profile_name,
                            bool incognito,
-                           base::Closure closure,
+                           base::OnceClosure closure,
                            Profile* profile) {
   EXPECT_NE(nullptr, profile);
   EXPECT_EQ(incognito, profile->IsOffTheRecord());
@@ -128,7 +128,7 @@ void ExpectProfileWithName(const std::string& profile_name,
   // can be used in Windows and other platforms.
   EXPECT_EQ(base::FilePath().AppendASCII(profile_name),
             profile->GetPath().BaseName());
-  closure.Run();
+  std::move(closure).Run();
 }
 
 }  // namespace

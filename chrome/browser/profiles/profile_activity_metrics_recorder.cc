@@ -203,8 +203,8 @@ void ProfileActivityMetricsRecorder::OnProfileWillBeDestroyed(
 ProfileActivityMetricsRecorder::ProfileActivityMetricsRecorder() {
   BrowserList::AddObserver(this);
   metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
-  action_callback_ = base::Bind(&ProfileActivityMetricsRecorder::OnUserAction,
-                                base::Unretained(this));
+  action_callback_ = base::BindRepeating(
+      &ProfileActivityMetricsRecorder::OnUserAction, base::Unretained(this));
   base::AddActionCallback(action_callback_);
 }
 

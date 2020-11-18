@@ -625,32 +625,37 @@ void ProfileImpl::DoFinalInit() {
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kSupervisedUserId,
-      base::Bind(&ProfileImpl::UpdateSupervisedUserIdInStorage,
-                 base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateSupervisedUserIdInStorage,
+                          base::Unretained(this)));
 
   // Changes in the profile avatar.
   pref_change_registrar_.Add(
       prefs::kProfileAvatarIndex,
-      base::Bind(&ProfileImpl::UpdateAvatarInStorage, base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateAvatarInStorage,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kProfileUsingDefaultAvatar,
-      base::Bind(&ProfileImpl::UpdateAvatarInStorage, base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateAvatarInStorage,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kProfileUsingGAIAAvatar,
-      base::Bind(&ProfileImpl::UpdateAvatarInStorage, base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateAvatarInStorage,
+                          base::Unretained(this)));
 
   // Changes in the profile name.
   pref_change_registrar_.Add(
       prefs::kProfileUsingDefaultName,
-      base::Bind(&ProfileImpl::UpdateNameInStorage, base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateNameInStorage,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kProfileName,
-      base::Bind(&ProfileImpl::UpdateNameInStorage, base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateNameInStorage,
+                          base::Unretained(this)));
 
   pref_change_registrar_.Add(
       prefs::kForceEphemeralProfiles,
-      base::Bind(&ProfileImpl::UpdateIsEphemeralInStorage,
-                 base::Unretained(this)));
+      base::BindRepeating(&ProfileImpl::UpdateIsEphemeralInStorage,
+                          base::Unretained(this)));
 
   media_device_id_salt_ = new MediaDeviceIDSalt(prefs_.get());
 
@@ -1054,7 +1059,8 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
     OnLocaleReady();
   } else {
     chromeos::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
-        this, base::Bind(&ProfileImpl::OnLocaleReady, base::Unretained(this)));
+        this,
+        base::BindOnce(&ProfileImpl::OnLocaleReady, base::Unretained(this)));
   }
 #else
   OnLocaleReady();

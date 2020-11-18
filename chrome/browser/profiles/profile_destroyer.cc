@@ -160,8 +160,8 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
   // for longer than kTimerDelaySeconds.
   if (num_hosts_) {
     timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kTimerDelaySeconds),
-                 base::Bind(&ProfileDestroyer::DestroyProfile,
-                            weak_ptr_factory_.GetWeakPtr()));
+                 base::BindOnce(&ProfileDestroyer::DestroyProfile,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
