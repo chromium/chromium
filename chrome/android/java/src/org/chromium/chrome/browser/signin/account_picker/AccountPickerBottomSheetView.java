@@ -145,8 +145,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Expands the account list.
      */
     void expandAccountList() {
-        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
-        mAccountPickerTitle.setText(R.string.signin_account_picker_dialog_title);
+        // When the user pressed back from incognito interstitial where logo and title and gone,
+        // we need to set them visible again here.
+        mLogoImage.setVisibility(View.VISIBLE);
+        mAccountPickerTitle.setVisibility(View.VISIBLE);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_bottom_sheet_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);
         mHorizontalDivider.setVisibility(View.VISIBLE);
@@ -202,10 +204,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     void setUpIncognitoInterstitialView() {
-        mLogoImage.setImageResource(R.drawable.ic_incognito_filled_24dp);
-        mAccountPickerTitle.setText(R.string.incognito_interstitial_title);
         mIncognitoInterstitialView.setVisibility(View.VISIBLE);
 
+        mLogoImage.setVisibility(View.GONE);
+        mAccountPickerTitle.setVisibility(View.GONE);
         mAccountPickerSubtitle.setVisibility(View.GONE);
         mHorizontalDivider.setVisibility(View.GONE);
         mAccountListView.setVisibility(View.GONE);
