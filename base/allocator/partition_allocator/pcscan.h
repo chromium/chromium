@@ -88,29 +88,9 @@ class BASE_EXPORT PCScan final {
 };
 
 template <bool thread_safe>
-constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
-
-template <bool thread_safe>
 bool PCScan<thread_safe>::QuarantineData::Account(size_t size) {
   size_t size_before = current_size_.fetch_add(size, std::memory_order_relaxed);
   return size_before + size > size_limit_.load(std::memory_order_relaxed);
-}
-
-template <bool thread_safe>
-void PCScan<thread_safe>::QuarantineData::ResetAndAdvanceEpoch() {
-  last_size_ = current_size_.exchange(0, std::memory_order_relaxed);
-  epoch_.fetch_add(1, std::memory_order_relaxed);
-}
-
-template <bool thread_safe>
-void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
-  static constexpr double kQuarantineSizeFraction = 0.1;
-  // |heap_size| includes the current quarantine size, we intentionally leave
-  // some slack till hitting the limit.
-  size_limit_.store(
-      std::max(kQuarantineSizeMinLimit,
-               static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
-      std::memory_order_relaxed);
 }
 
 template <bool thread_safe>

@@ -389,27 +389,6 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
   }
 }
 
-// TODO(bikineev): Synchronize task execution with destruction of
-// PartitionRoot/PCScan.
-template <bool thread_safe>
-PCScan<thread_safe>::~PCScan() = default;
-
-template <bool thread_safe>
-PCScan<thread_safe>::PCScan(Root* root) : root_(root) {
-  root->lock_.AssertAcquired();
-  // Commit quarantine bitmaps.
-  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
-  for (auto* super_page_extent = root->first_extent; super_page_extent;
-       super_page_extent = super_page_extent->next) {
-    for (char* super_page = super_page_extent->super_page_base;
-         super_page != super_page_extent->super_pages_end;
-         super_page += kSuperPageSize) {
-      SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
-                           quarantine_bitmaps_size_to_commit, PageReadWrite);
-    }
-  }
-}
-
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   TRACE_EVENT0("partition_alloc", "PCScan");
@@ -430,6 +409,47 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
 
   // Check that concurrent task can't be scheduled twice.
   PA_CHECK(pcscan_.in_progress_.exchange(false));
+}
+
+template <bool thread_safe>
+constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
+
+template <bool thread_safe>
+void PCScan<thread_safe>::QuarantineData::ResetAndAdvanceEpoch() {
+  last_size_ = current_size_.exchange(0, std::memory_order_relaxed);
+  epoch_.fetch_add(1, std::memory_order_relaxed);
+}
+
+template <bool thread_safe>
+void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
+  static constexpr double kQuarantineSizeFraction = 0.1;
+  // |heap_size| includes the current quarantine size, we intentionally leave
+  // some slack till hitting the limit.
+  size_limit_.store(
+      std::max(kQuarantineSizeMinLimit,
+               static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
+      std::memory_order_relaxed);
+}
+
+// TODO(bikineev): Synchronize task execution with destruction of
+// PartitionRoot/PCScan.
+template <bool thread_safe>
+PCScan<thread_safe>::~PCScan() = default;
+
+template <bool thread_safe>
+PCScan<thread_safe>::PCScan(Root* root) : root_(root) {
+  root->lock_.AssertAcquired();
+  // Commit quarantine bitmaps.
+  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
+  for (auto* super_page_extent = root->first_extent; super_page_extent;
+       super_page_extent = super_page_extent->next) {
+    for (char* super_page = super_page_extent->super_page_base;
+         super_page != super_page_extent->super_pages_end;
+         super_page += kSuperPageSize) {
+      SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
+                           quarantine_bitmaps_size_to_commit, PageReadWrite);
+    }
+  }
 }
 
 template <bool thread_safe>
