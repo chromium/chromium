@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -565,7 +566,20 @@ public class SigninManager
             SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
                     mSignInState.mCoreAccountInfo.getEmail());
 
-            enableSync(mSignInState.mCoreAccountInfo);
+            // Cache the signed-in account name. This must be done after the native call, otherwise
+            // sync tries to start without being signed in the native code and crashes.
+            mAndroidSyncSettings.updateAccount(
+                    AccountUtils.createAccountFromName(mSignInState.mCoreAccountInfo.getEmail()));
+            boolean atLeastOneDataTypeSynced =
+                    !ProfileSyncService.get().getChosenDataTypes().isEmpty();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                    || atLeastOneDataTypeSynced) {
+                // Turn on sync only when user has at least one data type to sync, this is
+                // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
+                // in which we turn off sync we stop sync service when the user toggles off all the
+                // sync types.
+                mAndroidSyncSettings.enableChromeSync();
+            }
 
             RecordUserAction.record("Signin_Signin_Succeed");
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
@@ -795,14 +809,6 @@ public class SigninManager
 
     private void stopApplyingCloudPolicy() {
         SigninManagerJni.get().stopApplyingCloudPolicy(mNativeSigninManagerAndroid);
-    }
-
-    private void enableSync(CoreAccountInfo accountInfo) {
-        // Cache the signed-in account name. This must be done after the native call, otherwise
-        // sync tries to start without being signed in the native code and crashes.
-        mAndroidSyncSettings.updateAccount(
-                AccountUtils.createAccountFromName(accountInfo.getEmail()));
-        mAndroidSyncSettings.enableChromeSync();
     }
 
     private void disableSyncAndWipeData(
