@@ -314,6 +314,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   is_rounded_fill =
       has_rounded_border && !is_painting_scrolling_background &&
       !(is_border_fill && BleedAvoidanceIsClipping(bleed_avoidance));
+  is_printing = doc.Printing();
 
   should_paint_image = image && image->CanRender();
   should_paint_color =
@@ -539,7 +540,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   FloatRoundedRect image_border;
   if (info.should_paint_image) {
     // Avoid image shaders when printing (poorly supported in PDF).
-    if (info.is_rounded_fill && paint_info.IsPrinting())
+    if (info.is_rounded_fill && info.is_printing)
       return false;
 
     // Compute the dest rect we will be using for images.

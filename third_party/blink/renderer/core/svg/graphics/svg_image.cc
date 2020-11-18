@@ -445,7 +445,7 @@ void SVGImage::DrawPatternForContainer(GraphicsContext& context,
   FloatRect spaced_tile(tile);
   spaced_tile.Expand(FloatSize(repeat_spacing));
 
-  PaintRecordBuilder builder(nullptr, &context);
+  PaintRecordBuilder builder(context);
   {
     DrawingRecorder recorder(builder.Context(), builder,
                              DisplayItem::Type::kSVGImage);
@@ -598,7 +598,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
   }
 
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
-  PaintRecordBuilder builder(nullptr, nullptr, paint_controller_.get());
+  PaintRecordBuilder builder(*paint_controller_);
   view->PaintOutsideOfLifecycle(builder.Context(), kGlobalPaintNormalPhase);
   return builder.EndRecording();
 }

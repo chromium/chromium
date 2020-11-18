@@ -47,10 +47,8 @@ class PLATFORM_EXPORT DisplayItemClient {
 
   virtual String DebugName() const = 0;
 
-  // Needed for paint chunk clients only. Returns the id of the DOM node
-  // associated with this DisplayItemClient, or kInvalidDOMNodeId if there is no
-  // associated DOM node or this DisplayItemClient is never used as a paint
-  // chunk client.
+  // Returns the id of the DOM node associated with this DisplayItemClient, or
+  // kInvalidDOMNodeId if there is no associated DOM node.
   virtual DOMNodeId OwnerNodeId() const { return kInvalidDOMNodeId; }
 
   // The outset will be used to inflate visual rect after the visual rect is

@@ -132,6 +132,7 @@ class BoxPainterBase {
     bool is_border_fill;
     bool is_clipped_with_local_scrolling;
     bool is_rounded_fill;
+    bool is_printing;
     bool should_paint_image;
     bool should_paint_color;
     // True if we paint background color off main thread, design doc here:

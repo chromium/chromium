@@ -22,11 +22,10 @@ void SVGRootInlineBoxPainter::Paint(const PaintInfo& paint_info,
   DCHECK(paint_info.phase == PaintPhase::kForeground ||
          paint_info.phase == PaintPhase::kSelectionDragImage);
 
-  bool has_selection =
-      !paint_info.IsPrinting() && svg_root_inline_box_.IsSelected();
-
   const auto& layout_object = *LineLayoutAPIShim::ConstLayoutObjectFrom(
       svg_root_inline_box_.GetLineLayoutItem());
+  bool has_selection = !layout_object.GetDocument().Printing() &&
+                       svg_root_inline_box_.IsSelected();
   if (has_selection &&
       !DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_object, paint_info.phase)) {

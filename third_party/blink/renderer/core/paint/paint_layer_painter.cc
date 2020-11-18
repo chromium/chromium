@@ -111,7 +111,7 @@ static bool ShouldCreateSubsequence(
     const GraphicsContext& context,
     const PaintLayerPaintingInfo& painting_info) {
   // Caching is not needed during printing or painting previews.
-  if (context.Printing() || context.IsPaintingPreview())
+  if (paint_layer.GetLayoutObject().GetDocument().IsPrintingOrPaintingPreview())
     return false;
 
   if (context.GetPaintController().IsSkippingCache())
@@ -159,8 +159,7 @@ static bool ShouldRepaintSubsequence(
   return false;
 }
 
-static bool ShouldUseInfiniteCullRect(const GraphicsContext& context,
-                                      const PaintLayer& layer,
+static bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
                                       PaintLayerPaintingInfo& painting_info) {
   // Cull rects and clips can't be propagated across a filter which moves
   // pixels, since the input of the filter may be outside the cull rect /
@@ -173,7 +172,7 @@ static bool ShouldUseInfiniteCullRect(const GraphicsContext& context,
       // TODO(crbug.com/1098995): For now we don't adjust cull rect for clips.
       // When we do, we need to check if we are painting under a real clip.
       // This won't be a problem when we use block fragments for printing.
-      !context.Printing())
+      !layer.GetLayoutObject().GetDocument().Printing())
     return true;
 
   // Cull rect mapping doesn't work under perspective in some cases.
@@ -190,7 +189,7 @@ static bool ShouldUseInfiniteCullRect(const GraphicsContext& context,
   if (layer.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
       // The reasons don't apply for printing though, because when we enter and
       // leaving printing mode, full invalidations occur.
-      !context.Printing())
+      !layer.GetLayoutObject().GetDocument().Printing())
     return true;
 
   return false;
@@ -220,7 +219,7 @@ void PaintLayerPainter::AdjustForPaintProperties(
   bool is_unclipped_layout_view = IsUnclippedLayoutView(paint_layer_);
   bool should_use_infinite_cull_rect =
       is_unclipped_layout_view ||
-      ShouldUseInfiniteCullRect(context, paint_layer_, painting_info);
+      ShouldUseInfiniteCullRect(paint_layer_, painting_info);
   if (should_use_infinite_cull_rect) {
     painting_info.cull_rect = CullRect::Infinite();
     // Avoid clipping during CollectFragments.
