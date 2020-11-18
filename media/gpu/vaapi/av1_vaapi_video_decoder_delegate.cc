@@ -580,28 +580,28 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
                     ARRAY_SIZE(va_pic_param.ref_frame_map) ==
                         libgav1::kNumReferenceFrameTypes,
                 "Invalid size of reference frames");
-  // TODO(hiroh): We should start with 1 and set ref_frame_map[0] to
-  // VA_INVALID_SURFACE based on the libva documentation.
-  for (int8_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
-    const auto* ref_pic =
-        static_cast<const VaapiAV1Picture*>(ref_frames[i].get());
-    va_pic_param.ref_frame_map[i] =
-        ref_pic ? ref_pic->reconstruct_va_surface()->id() : VA_INVALID_SURFACE;
-  }
-
   static_assert(libgav1::kNumInterReferenceFrameTypes == 7 &&
                     ARRAY_SIZE(frame_header.reference_frame_index) ==
                         libgav1::kNumInterReferenceFrameTypes &&
                     ARRAY_SIZE(va_pic_param.ref_frame_idx) ==
                         libgav1::kNumInterReferenceFrameTypes,
                 "Invalid size of reference frame indices");
-  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
-    const int8_t index = frame_header.reference_frame_index[i];
-    if (index < 0)
-      continue;
-    CHECK_LT(index, libgav1::kNumReferenceFrameTypes);
-    CHECK_NE(va_pic_param.ref_frame_map[index], VA_INVALID_SURFACE);
-    va_pic_param.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    const auto* ref_pic =
+        static_cast<const VaapiAV1Picture*>(ref_frames[i].get());
+    va_pic_param.ref_frame_map[i] =
+        ref_pic ? ref_pic->reconstruct_va_surface()->id() : VA_INVALID_SURFACE;
+  }
+
+  // |ref_frame_map| doesn't need to be filled in keyframe case.
+  if (frame_header.frame_type != libgav1::FrameType::kFrameKey) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+      const int8_t index = frame_header.reference_frame_index[i];
+      if (index < 0)
+        continue;
+      CHECK_LT(index, libgav1::kNumReferenceFrameTypes);
+      va_pic_param.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
+    }
   }
 
   va_pic_param.primary_ref_frame =
@@ -692,6 +692,8 @@ bool FillAV1SliceParameters(
       return false;
     }
     CHECK(tile_buffers[tile].data >= data.data());
+    va_tile_param.slice_data_offset =
+        base::checked_cast<uint32_t>(tile_buffers[tile].data - data.data());
     base::CheckedNumeric<uint32_t> safe_va_slice_data_end(
         va_tile_param.slice_data_offset);
     safe_va_slice_data_end += va_tile_param.slice_data_size;
