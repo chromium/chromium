@@ -24,6 +24,7 @@
 ./tools/manifest/commands.json
 ./tools/manifest/download.py
 ./tools/manifest/item.py
+./tools/manifest/jsonlib.py
 ./tools/manifest/log.py
 ./tools/manifest/manifest.py
 ./tools/manifest/sourcefile.py

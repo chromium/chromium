@@ -561,7 +561,7 @@ class Chrome(Browser):
         return self.find_nightly_binary(dest)
 
     def install_mojojs(self, dest, channel, browser_binary):
-        if channel == "nightly":
+        if channel == "nightly" or channel == "canary":
             url = self._latest_chromium_snapshot_url() + "mojojs.zip"
         else:
             chrome_version = self.version(binary=browser_binary)
@@ -646,10 +646,10 @@ class Chrome(Browser):
             # No Canary on Linux.
             return find_executable(name)
         if uname[0] == "Darwin":
-            if channel == "canary":
-                return "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-            # All other channels share the same path on macOS.
-            return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            suffix = ""
+            if channel in ("beta", "dev", "canary"):
+                suffix = " " + channel.capitalize()
+            return "/Applications/Google Chrome%s.app/Contents/MacOS/Google Chrome%s" % (suffix, suffix)
         if uname[0] == "Windows":
             path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             if not os.path.exists(path):
@@ -785,8 +785,8 @@ class Chrome(Browser):
 
         try:
             version_string = call(binary, "--version").strip()
-        except subprocess.CalledProcessError:
-            self.logger.warning("Failed to call %s" % binary)
+        except (subprocess.CalledProcessError, OSError) as e:
+            self.logger.warning("Failed to call %s: %s" % (binary, e))
             return None
         m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
         if not m:
@@ -800,8 +800,8 @@ class Chrome(Browser):
 
         try:
             version_string = call(webdriver_binary, "--version").strip()
-        except subprocess.CalledProcessError:
-            self.logger.warning("Failed to call %s" % webdriver_binary)
+        except (subprocess.CalledProcessError, OSError) as e:
+            self.logger.warning("Failed to call %s: %s" % (webdriver_binary, e))
             return None
         m = re.match(r"ChromeDriver ([0-9][0-9.]*)", version_string)
         if not m:
