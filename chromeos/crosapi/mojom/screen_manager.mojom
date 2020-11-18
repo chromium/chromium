@@ -28,8 +28,9 @@ interface SnapshotCapturer {
   // Captures a bitmap snapshot of the specified screen or window. If |success|
   // is false, that may indicate that the specified source no longer exists.
   [Sync]
-  TakeSnapshot@1(uint64 id) => (bool success,
-                                skia.mojom.UnsafeBitmap? snapshot);
+  TakeSnapshot@1(uint64 id) =>
+      (bool success,
+       skia.mojom.BitmapMappedFromTrustedProcess? snapshot);
 };
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to query

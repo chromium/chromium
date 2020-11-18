@@ -107,40 +107,43 @@ bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::Read(
 }
 
 // static
-bool StructTraits<skia::mojom::UnsafeBitmapDataView, SkBitmap>::IsNull(
-    const SkBitmap& b) {
+bool StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
+                  SkBitmap>::IsNull(const SkBitmap& b) {
   return b.isNull();
 }
 
 // static
-void StructTraits<skia::mojom::UnsafeBitmapDataView, SkBitmap>::SetToNull(
-    SkBitmap* b) {
+void StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
+                  SkBitmap>::SetToNull(SkBitmap* b) {
   b->reset();
 }
 
 // static
-const SkImageInfo& StructTraits<skia::mojom::UnsafeBitmapDataView,
-                                SkBitmap>::image_info(const SkBitmap& b) {
+const SkImageInfo&
+StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
+             SkBitmap>::image_info(const SkBitmap& b) {
   return b.info();
 }
 
 // static
-uint64_t StructTraits<skia::mojom::UnsafeBitmapDataView, SkBitmap>::row_bytes(
-    const SkBitmap& b) {
+uint64_t StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
+                      SkBitmap>::row_bytes(const SkBitmap& b) {
   return b.rowBytes();
 }
 
 // static
-mojo_base::BigBufferView StructTraits<skia::mojom::UnsafeBitmapDataView,
-                                      SkBitmap>::pixel_data(const SkBitmap& b) {
+mojo_base::BigBufferView
+StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
+             SkBitmap>::pixel_data(const SkBitmap& b) {
   return mojo_base::BigBufferView(base::make_span(
       static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
 }
 
 // static
-bool StructTraits<skia::mojom::UnsafeBitmapDataView, SkBitmap>::Read(
-    skia::mojom::UnsafeBitmapDataView data,
-    SkBitmap* b) {
+bool StructTraits<
+    skia::mojom::BitmapMappedFromTrustedProcessDataView,
+    SkBitmap>::Read(skia::mojom::BitmapMappedFromTrustedProcessDataView data,
+                    SkBitmap* b) {
   SkImageInfo image_info;
   if (!data.ReadImageInfo(&image_info))
     return false;
