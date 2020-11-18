@@ -65,7 +65,6 @@ class CoreOobeView {
   virtual void SetShelfHeight(int height) = 0;
   virtual void SetDialogPaddingMode(DialogPaddingMode mode) = 0;
   virtual void ShowDeviceResetScreen() = 0;
-  virtual void ShowEnableAdbSideloadingScreen() = 0;
   virtual void UpdateKeyboardState() = 0;
 };
 
@@ -137,7 +136,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void SetShelfHeight(int height) override;
   void SetDialogPaddingMode(CoreOobeView::DialogPaddingMode mode) override;
   void ShowDeviceResetScreen() override;
-  void ShowEnableAdbSideloadingScreen() override;
 
   void UpdateKeyboardState() override;
 

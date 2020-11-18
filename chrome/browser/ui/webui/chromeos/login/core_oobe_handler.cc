@@ -173,12 +173,6 @@ void CoreOobeHandler::ShowDeviceResetScreen() {
   LaunchResetScreen();
 }
 
-void CoreOobeHandler::ShowEnableAdbSideloadingScreen() {
-  DCHECK(LoginDisplayHost::default_host());
-  LoginDisplayHost::default_host()->StartWizard(
-      EnableAdbSideloadingScreenView::kScreenId);
-}
-
 void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
 }
