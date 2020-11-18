@@ -92,23 +92,10 @@ def main():
   #   .minimal.apks, .ssargs}. If .ssargs, then the file is copied to the
   #   staging dir.
 
-  # --size-config-json will replace {--apk-name, --mapping-name}.
   parser.add_argument('--size-config-json',
+                      required=True,
                       help='Path to JSON file with configs for binary size '
                       'measurement.')
-
-  # Deprecated.
-  parser.add_argument(
-      '--apk-name',
-      help='Name of the apk (ex. Name.apk)',
-  )
-  # Deprecated.
-  parser.add_argument(
-      '--mapping-name',
-      action='append',
-      help='Filename of the proguard mapping file.',
-  )
-
   parser.add_argument(
       '--chromium-output-directory',
       required=True,
@@ -122,23 +109,11 @@ def main():
 
   args = parser.parse_args()
 
-  assert bool(args.size_config_json) != bool(
-      args.apk_name), ('Require exactly one of --size-config-json or the'
-                       ' {--apk-name, --mapping-name} group.')
-  assert bool(args.apk_name) == bool(args.mapping_name), (
-      'Require {--apk-name, --mapping-name} to be specified together.')
-
-  if args.size_config_json:
-    with open(args.size_config_json, 'rt') as fh:
-      config = json.load(fh)
-    to_resource_sizes_py = config['to_resource_sizes_py']
-    mapping_files = config['mapping_files']
-    supersize_input_file = config['supersize_input_file']
-  else:
-    # Deprecated flow. Add 'apks/' prefix for compatibility.
-    to_resource_sizes_py = {'apk_name': os.path.join('apks', args.apk_name)}
-    mapping_files = [os.path.join('apks', name) for name in args.mapping_name]
-    supersize_input_file = os.path.join('apks', args.apk_name)
+  with open(args.size_config_json, 'rt') as fh:
+    config = json.load(fh)
+  to_resource_sizes_py = config['to_resource_sizes_py']
+  mapping_files = config['mapping_files']
+  supersize_input_file = config['supersize_input_file']
 
   def make_chromium_output_path(path_rel_to_output=None):
     if path_rel_to_output is None:

@@ -202,18 +202,6 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
                            len(added_symbols) - len(removed_symbols))
 
 
-def _GuessMappingFilename(to_result_path, container_filename):
-  guess = to_result_path(container_filename + '.mapping')
-  if os.path.exists(guess):
-    return guess
-  guess = to_result_path(
-      container_filename.replace('.minimal.apks', '.aab').replace(
-          '.apks', '.aab') + '.mapping')
-  if os.path.exists(guess):
-    return guess
-  return None
-
-
 def _GenerateBinarySizePluginDetails(metrics):
   binary_size_listings = []
   for delta, log_name in metrics:
@@ -255,16 +243,10 @@ def _FormatNumber(number):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
-
-  name_parser = parser.add_mutually_exclusive_group(required=True)
-
-  # --size-config-json-name will replace --apk-name.
-  name_parser.add_argument('--size-config-json-name',
-                           help='Filename of JSON with configs for '
-                           'binary size measurement.')
-  # Deprecated.
-  name_parser.add_argument('--apk-name', help='Name of the apk (ex. Name.apk).')
-
+  parser.add_argument('--size-config-json-name',
+                      required=True,
+                      help='Filename of JSON with configs for '
+                      'binary size measurement.')
   parser.add_argument(
       '--before-dir',
       required=True,
@@ -289,25 +271,12 @@ def main():
 
   to_before_path = lambda p: os.path.join(args.before_dir, os.path.basename(p))
   to_after_path = lambda p: os.path.join(args.after_dir, os.path.basename(p))
-  if args.size_config_json_name:
-    with open(to_after_path(args.size_config_json_name), 'rt') as fh:
-      config = json.load(fh)
-    supersize_input_name = os.path.basename(config['supersize_input_file'])
-    before_mapping_paths = [to_before_path(f) for f in config['mapping_files']]
-    after_mapping_paths = [to_after_path(f) for f in config['mapping_files']]
-  else:
-    supersize_input_name = args.apk_name
-    # Guess separately for "before" and "after" to be robust against naming
-    # glitches as generate_commit_size_analysis.py's renaming scheme change.
-    before_mapping_path = _GuessMappingFilename(to_before_path, args.apk_name)
-    if not before_mapping_path:
-      raise Exception('Cannot find "before" proguard mapping file.')
-    before_mapping_paths = [before_mapping_path]
 
-    after_mapping_path = _GuessMappingFilename(to_after_path, args.apk_name)
-    if not after_mapping_path:
-      raise Exception('Cannot find "after" proguard mapping file.')
-    after_mapping_paths = [after_mapping_path]
+  with open(to_after_path(args.size_config_json_name), 'rt') as fh:
+    config = json.load(fh)
+  supersize_input_name = os.path.basename(config['supersize_input_file'])
+  before_mapping_paths = [to_before_path(f) for f in config['mapping_files']]
+  after_mapping_paths = [to_after_path(f) for f in config['mapping_files']]
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
