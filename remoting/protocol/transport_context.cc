@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/transport_context.h"
 
+#include <sstream>
 #include <utility>
 
 #include "base/bind.h"
@@ -30,26 +31,28 @@ constexpr base::TimeDelta kIceConfigRequestCooldown =
     base::TimeDelta::FromMinutes(2);
 
 void PrintIceConfig(const IceConfig& ice_config) {
-  HOST_LOG << "IceConfig: {";
-  HOST_LOG << "  stun: [";
+  std::stringstream ss;
+  ss << "\nIceConfig: {\n";
+  ss << "  stun: [\n";
   for (auto& stun_server : ice_config.stun_servers) {
-    HOST_LOG << "    " << stun_server.ToString() << ",";
+    ss << "    " << stun_server.ToString() << ",\n";
   }
-  HOST_LOG << "  ]";
-  HOST_LOG << "  turn: [";
+  ss << "  ]\n";
+  ss << "  turn: [\n";
   for (auto& turn_server : ice_config.turn_servers) {
-    HOST_LOG << "    {";
-    HOST_LOG << "      username: " << turn_server.credentials.username;
-    HOST_LOG << "      password: " << turn_server.credentials.password;
+    ss << "    {\n";
+    ss << "      username: " << turn_server.credentials.username << "\n";
+    ss << "      password: " << turn_server.credentials.password << "\n";
     for (auto& port : turn_server.ports) {
-      HOST_LOG << "      port: " << port.address.ToString();
+      ss << "      port: " << port.address.ToString() << "\n";
     }
-    HOST_LOG << "    },";
+    ss << "    },\n";
   }
-  HOST_LOG << "  ]";
-  HOST_LOG << "  expiration time: " << ice_config.expiration_time;
-  HOST_LOG << "  max_bitrate_kbps: " << ice_config.max_bitrate_kbps;
-  HOST_LOG << "}";
+  ss << "  ]\n";
+  ss << "  expiration time: " << ice_config.expiration_time << "\n";
+  ss << "  max_bitrate_kbps: " << ice_config.max_bitrate_kbps << "\n";
+  ss << "}";
+  HOST_LOG << ss.str();
 }
 
 }  // namespace
@@ -129,7 +132,7 @@ void TransportContext::OnIceConfig(const IceConfig& ice_config) {
   ice_config_request_.reset();
   last_request_completion_time_ = base::Time::Now();
 
-  HOST_LOG << "Using newly requested ICE Config:";
+  HOST_LOG << "Using newly requested ICE Config.";
   PrintIceConfig(ice_config);
 
   auto& callback_list = pending_ice_config_callbacks_;
