@@ -23,13 +23,11 @@ namespace ash {
 
 class CaptureModeSession;
 
-// Class to observe the current selected to-be-captured window and update the
-// capture region if applicable.
+// Class to observe the current selected to-be-captured window.
 class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
                                          public ::wm::ActivationChangeObserver {
  public:
-  CaptureWindowObserver(CaptureModeSession* capture_mode_session,
-                        CaptureModeType type);
+  explicit CaptureWindowObserver(CaptureModeSession* capture_mode_session);
   CaptureWindowObserver(const CaptureWindowObserver&) = delete;
   CaptureWindowObserver& operator=(const CaptureWindowObserver&) = delete;
 
@@ -39,10 +37,6 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   // there is an eligible window under the current mouse/touch event location,
   // its bounds will be highlighted.
   void UpdateSelectedWindowAtPosition(const gfx::Point& location_in_screen);
-
-  // Called when capture type changes. The mouse cursor image may update
-  // accordingly.
-  void OnCaptureTypeChanged(CaptureModeType new_type);
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -72,22 +66,11 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   // Repaints the window capture region.
   void RepaintCaptureRegion();
 
-  // Updates the mouse cursor to change it to a capture or record icon when the
-  // mouse hovers over an eligible window.
-  void UpdateMouseCursor();
-
   // Current observed window.
   aura::Window* window_ = nullptr;
 
   // Stores current mouse or touch location in screen coordinate.
   gfx::Point location_in_screen_;
-
-  // Current capture type.
-  CaptureModeType capture_type_;
-
-  // True if the current cursor is locked by this.
-  bool is_cursor_locked_ = false;
-  const gfx::NativeCursor original_cursor_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
   CaptureModeSession* const capture_mode_session_;

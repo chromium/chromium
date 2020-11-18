@@ -97,7 +97,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
  private:
   friend class CaptureModeSessionTestApi;
-  class ScopedCursorSetter;
+  class CursorSetter;
 
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
@@ -121,10 +121,6 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // |location_in_root|.
   FineTunePosition GetFineTunePosition(const gfx::Point& location_in_root,
                                        bool is_touch) const;
-
-  // Returns the expected cursor type.
-  ui::mojom::CursorType GetCursorType(FineTunePosition position,
-                                      bool is_event_on_capture_bar) const;
 
   // Handles updating the select region UI.
   void OnLocatedEventPressed(const gfx::Point& location_in_root,
@@ -191,6 +187,16 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Returns true if we are currently in video recording countdown animation.
   bool IsInCountDownAnimation() const;
 
+  // Updates the current cursor depending on current |location_in_screen| and
+  // current capture type and source. |is_touch| is used when calculating fine
+  // tune position in region capture mode. We'll have a larger hit test region
+  // for the touch events than the mouse events.
+  void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
+
+  // Returns true if we're using custom image capture icon when |type| is
+  // kImage or using custom video capture icon when |type| is kVideo.
+  bool IsUsingCustomCursor(CaptureModeType type) const;
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
@@ -229,7 +235,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   gfx::Point initial_location_in_root_;
   gfx::Point previous_location_in_root_;
   // The position of the last press event during the fine tune phase drag.
-  FineTunePosition fine_tune_position_;
+  FineTunePosition fine_tune_position_ = FineTunePosition::kNone;
   // The points that do not change during a fine tune resize. This is empty
   // when |fine_tune_position_| is kNone or kCenter, or if there is no drag
   // underway.
@@ -247,7 +253,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   base::flat_set<std::unique_ptr<WindowDimmer>> root_window_dimmers_;
 
   // The object to specify the cursor type.
-  std::unique_ptr<ScopedCursorSetter> cursor_setter_;
+  std::unique_ptr<CursorSetter> cursor_setter_;
 
   // True when dragging is in progress.
   bool is_drag_in_progress_ = false;
