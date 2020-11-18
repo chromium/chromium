@@ -264,10 +264,18 @@ void V4L2CaptureDelegate::AllocateAndStart(
 
   ResetUserAndCameraControlsToDefault();
 
+  // In theory, checking for CAPTURE/OUTPUT in caps.capabilities should only
+  // be done if V4L2_CAP_DEVICE_CAPS is not set. However, this was not done
+  // in the past and it is unclear if it breaks with existing devices. And if
+  // a device is accepted incorrectly then it will not have any usable
+  // formats and is skipped anyways.
   v4l2_capability cap = {};
   if (!(DoIoctl(VIDIOC_QUERYCAP, &cap) == 0 &&
-        ((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) &&
-         !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)))) {
+        (((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) &&
+          !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) ||
+         ((cap.capabilities & V4L2_CAP_DEVICE_CAPS) &&
+          (cap.device_caps & V4L2_CAP_VIDEO_CAPTURE) &&
+          !(cap.device_caps & V4L2_CAP_VIDEO_OUTPUT))))) {
     device_fd_.reset();
     SetErrorState(VideoCaptureError::kV4L2ThisIsNotAV4L2VideoCaptureDevice,
                   FROM_HERE, "This is not a V4L2 video capture device");

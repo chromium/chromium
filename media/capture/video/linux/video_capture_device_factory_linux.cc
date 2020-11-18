@@ -205,10 +205,18 @@ void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
     // one supported capture format. Devices that have capture and output
     // capabilities at the same time are memory-to-memory and are skipped, see
     // http://crbug.com/139356.
+    // In theory, checking for CAPTURE/OUTPUT in caps.capabilities should only
+    // be done if V4L2_CAP_DEVICE_CAPS is not set. However, this was not done
+    // in the past and it is unclear if it breaks with existing devices. And if
+    // a device is accepted incorrectly then it will not have any usable
+    // formats and is skipped anyways.
     v4l2_capability cap;
     if ((DoIoctl(fd.get(), VIDIOC_QUERYCAP, &cap) == 0) &&
-        (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE &&
-         !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) &&
+        ((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE &&
+          !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) ||
+         (cap.capabilities & V4L2_CAP_DEVICE_CAPS &&
+          cap.device_caps & V4L2_CAP_VIDEO_CAPTURE &&
+          !(cap.device_caps & V4L2_CAP_VIDEO_OUTPUT))) &&
         HasUsableFormats(fd.get(), cap.capabilities)) {
       const std::string model_id =
           device_provider_->GetDeviceModelId(unique_id);
