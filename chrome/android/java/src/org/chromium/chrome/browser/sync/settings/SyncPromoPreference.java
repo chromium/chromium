@@ -158,6 +158,7 @@ public class SyncPromoPreference
 
     private void setupPersonalizedPromo(@State int state) {
         setState(state);
+        setSelectable(false);
         setVisible(true);
 
         if (mSigninPromoController == null) {
