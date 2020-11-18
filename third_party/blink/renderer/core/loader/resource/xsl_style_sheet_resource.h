@@ -69,7 +69,12 @@ class XSLStyleSheetResource final : public TextResource {
   String sheet_;
 };
 
-DEFINE_RESOURCE_TYPE_CASTS(XSLStyleSheet);
+template <>
+struct DowncastTraits<XSLStyleSheetResource> {
+  static bool AllowFrom(const Resource& resource) {
+    return resource.GetType() == ResourceType::kXSLStyleSheet;
+  }
+};
 
 }  // namespace blink
 

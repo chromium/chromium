@@ -166,7 +166,7 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
     params.SetRequestDestination(network::mojom::RequestDestination::kImage);
   }
 
-  ImageResource* resource = ToImageResource(
+  auto* resource = To<ImageResource>(
       fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
 
   // If the fetch originated from user agent CSS we should mark it as a user

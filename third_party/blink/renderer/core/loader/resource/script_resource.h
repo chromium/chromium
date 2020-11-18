@@ -182,7 +182,12 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
 };
 
-DEFINE_RESOURCE_TYPE_CASTS(Script);
+template <>
+struct DowncastTraits<ScriptResource> {
+  static bool AllowFrom(const Resource& resource) {
+    return resource.GetType() == ResourceType::kScript;
+  }
+};
 
 }  // namespace blink
 

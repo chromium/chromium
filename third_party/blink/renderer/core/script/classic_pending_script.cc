@@ -385,7 +385,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
   }
 
   DCHECK(GetResource()->IsLoaded());
-  ScriptResource* resource = ToScriptResource(GetResource());
+  auto* resource = To<ScriptResource>(GetResource());
   RecordThirdPartyRequestWithCookieIfNeeded(resource->GetResponse());
 
   auto* fetcher = GetElement()->GetExecutionContext()->Fetcher();

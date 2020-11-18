@@ -65,7 +65,7 @@ void StyleRuleImport::NotifyFinished(Resource* resource) {
   if (style_sheet_)
     style_sheet_->ClearOwnerRule();
 
-  CSSStyleSheetResource* cached_style_sheet = ToCSSStyleSheetResource(resource);
+  auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);
   Document* document = nullptr;
 
   // Fallback to an insecure context parser if we don't have a parent style

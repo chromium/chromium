@@ -44,7 +44,7 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
   base::Optional<ModuleScriptCreationParams> params;
-  ScriptResource* script_resource = ToScriptResource(resource);
+  auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
   ModuleScriptCreationParams::ModuleType module_type;
   if (WasModuleLoadSuccessful(script_resource, &error_messages, &module_type)) {

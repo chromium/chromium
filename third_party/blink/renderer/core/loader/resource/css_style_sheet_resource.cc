@@ -48,7 +48,7 @@ CSSStyleSheetResource* CSSStyleSheetResource::Fetch(FetchParameters& params,
                                                     ResourceClient* client) {
   params.SetRequestContext(mojom::blink::RequestContextType::STYLE);
   params.SetRequestDestination(network::mojom::RequestDestination::kStyle);
-  CSSStyleSheetResource* resource = ToCSSStyleSheetResource(
+  auto* resource = To<CSSStyleSheetResource>(
       fetcher->RequestResource(params, CSSStyleSheetResourceFactory(), client));
   return resource;
 }

@@ -54,7 +54,7 @@ FontResource* FontResource::Fetch(FetchParameters& params,
                                   FontResourceClient* client) {
   params.SetRequestContext(mojom::blink::RequestContextType::FONT);
   params.SetRequestDestination(network::mojom::RequestDestination::kFont);
-  return ToFontResource(
+  return To<FontResource>(
       fetcher->RequestResource(params, FontResourceFactory(), client));
 }
 

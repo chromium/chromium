@@ -31,7 +31,7 @@ void DocumentModuleScriptFetcher::Fetch(
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
-  ScriptResource* script_resource = ToScriptResource(resource);
+  auto* script_resource = To<ScriptResource>(resource);
 
   HeapVector<Member<ConsoleMessage>> error_messages;
   ModuleScriptCreationParams::ModuleType module_type;

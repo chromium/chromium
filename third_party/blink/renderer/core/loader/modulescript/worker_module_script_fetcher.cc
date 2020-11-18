@@ -88,7 +88,7 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
   DCHECK(global_scope_->IsContextThread());
   ClearResource();
 
-  ScriptResource* script_resource = ToScriptResource(resource);
+  auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
   ModuleScriptCreationParams::ModuleType module_type;
   if (!WasModuleLoadSuccessful(script_resource, &error_messages,

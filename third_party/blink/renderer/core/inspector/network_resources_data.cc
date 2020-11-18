@@ -121,8 +121,8 @@ size_t NetworkResourcesData::ResourceData::EvictContent() {
 void NetworkResourcesData::ResourceData::SetResource(
     const Resource* cached_resource) {
   cached_resource_ = cached_resource;
-  if (cached_resource && cached_resource->GetType() == ResourceType::kFont)
-    ToFontResource(cached_resource)->AddClearDataObserver(this);
+  if (const auto* font_resource = DynamicTo<FontResource>(cached_resource))
+    font_resource->AddClearDataObserver(this);
 }
 
 void NetworkResourcesData::ResourceData::ProcessCustomWeakness(

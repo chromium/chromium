@@ -63,7 +63,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     return;
   }
 
-  CSSStyleSheetResource* cached_style_sheet = ToCSSStyleSheetResource(resource);
+  auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);
   // See the comment in pending_script.cc about why this check is necessary
   // here, instead of in the resource fetcher. https://crbug.com/500701.
   if ((!cached_style_sheet->ErrorOccurred() &&

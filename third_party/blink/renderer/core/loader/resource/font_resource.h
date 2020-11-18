@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -123,7 +124,12 @@ class CORE_EXPORT FontResource final : public Resource {
   FRIEND_TEST_ALL_PREFIXES(CacheAwareFontResourceTest, CacheAwareFontLoading);
 };
 
-DEFINE_RESOURCE_TYPE_CASTS(Font);
+template <>
+struct DowncastTraits<FontResource> {
+  static bool AllowFrom(const Resource& resource) {
+    return resource.GetType() == ResourceType::kFont;
+  }
+};
 
 class FontResourceClient : public ResourceClient {
  public:

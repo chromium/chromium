@@ -82,7 +82,7 @@ ScriptResource* ScriptResource::Fetch(FetchParameters& params,
                                       StreamingAllowed streaming_allowed) {
   DCHECK(IsRequestContextSupported(
       params.GetResourceRequest().GetRequestContext()));
-  ScriptResource* resource = ToScriptResource(fetcher->RequestResource(
+  auto* resource = To<ScriptResource>(fetcher->RequestResource(
       params, ScriptResourceFactory(streaming_allowed), client));
   return resource;
 }

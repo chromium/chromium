@@ -199,10 +199,10 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
     sheet_ = MakeGarbageCollected<XSLStyleSheet>(
         this, resource->Url(), resource->GetResponse().ResponseUrl(), false);
     To<XSLStyleSheet>(sheet_.Get())
-        ->ParseString(ToXSLStyleSheetResource(resource)->Sheet());
+        ->ParseString(To<XSLStyleSheetResource>(resource)->Sheet());
   } else {
     DCHECK(is_css_);
-    CSSStyleSheetResource* style_resource = ToCSSStyleSheetResource(resource);
+    auto* style_resource = To<CSSStyleSheetResource>(resource);
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         GetDocument(), style_resource->GetResponse().ResponseUrl(),
         style_resource->GetResponse().IsCorsSameOrigin(),

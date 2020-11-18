@@ -127,7 +127,7 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
           context->GetTaskRunner(TaskType::kInternalLoading).get());
     }
   }
-  return *ToFontResource(fetched_->GetResource());
+  return *To<FontResource>(fetched_->GetResource());
 }
 
 void CSSFontFaceSrcValue::RestoreCachedResourceIfNeeded(

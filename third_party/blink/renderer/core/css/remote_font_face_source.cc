@@ -191,7 +191,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   if (window && window->document()->IsDetached())
     return;
 
-  FontResource* font = ToFontResource(resource);
+  auto* font = To<FontResource>(resource);
   histograms_.RecordRemoteFont(font);
 
   custom_font_data_ = font->GetCustomFontData();
@@ -367,7 +367,7 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
 
   SetDisplay(face_->GetFontFace()->GetFontDisplay());
 
-  FontResource* font = ToFontResource(GetResource());
+  auto* font = To<FontResource>(GetResource());
   if (font->StillNeedsLoad()) {
     if (font->IsLowPriorityLoadingAllowedForRemoteFont()) {
       font_selector_->GetExecutionContext()->AddConsoleMessage(
