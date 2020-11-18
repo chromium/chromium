@@ -58,12 +58,9 @@ class CreateMetadataTask : public DatabaseTask {
 
   void InitializeMetadataProto();
 
-  void DidOpenCache(int64_t trace_id,
-                    CacheStorageCacheHandle handle,
-                    blink::mojom::CacheStorageError error);
+  void DidOpenCache(int64_t trace_id, blink::mojom::CacheStorageError error);
 
-  void DidStoreRequests(CacheStorageCacheHandle handle,
-                        blink::mojom::CacheStorageVerboseErrorPtr error);
+  void DidStoreRequests(blink::mojom::CacheStorageVerboseErrorPtr error);
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 

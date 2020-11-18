@@ -115,7 +115,7 @@ class CrossSequenceCacheStorageCache::Inner {
     if (!handle_.value()) {
       std::move(callback).Run(
           MakeErrorStorage(ErrorStorageType::kStorageHandleNull),
-          std::vector<CacheEntry>());
+          std::vector<blink::mojom::CacheEntryPtr>());
       return;
     }
     handle_.value()->GetAllMatchedEntries(std::move(request),

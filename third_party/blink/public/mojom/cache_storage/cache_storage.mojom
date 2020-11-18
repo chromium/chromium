@@ -94,10 +94,21 @@ union MatchResult {
   EagerResponse eager_response;
 };
 
-// Result of MatchAll method |status| is only set if there is a failure.
+// Result of MatchAll. |status| is only set if there is a failure.
 union MatchAllResult {
   CacheStorageError status;
   array<blink.mojom.FetchAPIResponse> responses;
+};
+
+struct CacheEntry {
+  blink.mojom.FetchAPIRequest request;
+  blink.mojom.FetchAPIResponse response;
+};
+
+// Result of GetAllMatchedEntries. |status| is only set if there is a failure.
+union GetAllMatchedEntriesResult {
+  CacheStorageError status;
+  array<CacheEntry> entries;
 };
 
 // Result of CacheStorageCache's Keys method. |status| is only set if there is a
@@ -120,8 +131,17 @@ interface CacheStorageCache {
 
   // Returns all cached responses that match |request| according to options
   // specified on |query_options|.
-  MatchAll(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options, int64 trace_id)
+  MatchAll(blink.mojom.FetchAPIRequest? request,
+           CacheQueryOptions query_options, int64 trace_id)
       => (MatchAllResult result);
+
+  // Returns all pairs of cached (request, response) entries that match
+  // |request| according to options specified on |query_options|.
+  // Only valid to call for internal browser usage cases, and not for general
+  // renderer cache storage web api.
+  GetAllMatchedEntries(blink.mojom.FetchAPIRequest? request,
+                      CacheQueryOptions query_options, int64 trace_id)
+      => (GetAllMatchedEntriesResult result);
 
   // Returns all keys (which are requests) of matching |request| and
   // |query_options|.

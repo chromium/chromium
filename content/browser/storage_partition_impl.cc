@@ -1216,7 +1216,7 @@ void StoragePartitionImpl::Initialize(
       std::move(native_file_system_context), GetIOThreadTaskRunner({}),
       /*task_runner=*/nullptr);
 
-  cache_storage_context_ = new CacheStorageContextImpl();
+  cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
   cache_storage_context_->Init(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 
@@ -1481,6 +1481,12 @@ QuotaContext* StoragePartitionImpl::GetQuotaContext() {
 }
 
 CacheStorageContextImpl* StoragePartitionImpl::GetCacheStorageContext() {
+  DCHECK(initialized_);
+  return cache_storage_context_.get();
+}
+
+CacheStorageContextImpl*
+StoragePartitionImpl::GetCacheStorageContextImplForTesting() {
   DCHECK(initialized_);
   return cache_storage_context_.get();
 }

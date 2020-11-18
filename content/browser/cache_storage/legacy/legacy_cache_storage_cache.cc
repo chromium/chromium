@@ -2201,11 +2201,14 @@ void LegacyCacheStorageCache::GetAllMatchedEntriesDidQueryCache(
     return;
   }
 
-  std::vector<CacheEntry> entries;
+  std::vector<blink::mojom::CacheEntryPtr> entries;
   entries.reserve(query_cache_results->size());
 
   for (auto& result : *query_cache_results) {
-    entries.emplace_back(std::move(result.request), std::move(result.response));
+    auto entry = blink::mojom::CacheEntry::New();
+    entry->request = std::move(result.request);
+    entry->response = std::move(result.response);
+    entries.push_back(std::move(entry));
   }
 
   std::move(callback).Run(CacheStorageError::kSuccess, std::move(entries));

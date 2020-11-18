@@ -120,6 +120,7 @@ class TestStoragePartition : public StoragePartition {
     cache_storage_context_ = context;
   }
   CacheStorageContext* GetCacheStorageContext() override;
+  CacheStorageContextImpl* GetCacheStorageContextImplForTesting() override;
 
   void set_generated_code_cache_context(GeneratedCodeCacheContext* context) {
     generated_code_cache_context_ = context;

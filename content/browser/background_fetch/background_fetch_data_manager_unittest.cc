@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
@@ -462,15 +463,14 @@ class BackgroundFetchDataManagerTest
     bool result = false;
 
     base::RunLoop run_loop;
-    CacheStorageHandle cache_storage =
-        background_fetch_data_manager_->cache_manager()->OpenCacheStorage(
-            origin(), CacheStorageOwner::kBackgroundFetch);
-    cache_storage.value()->HasCache(
-        cache_name,
+    background_fetch_data_manager_->HasCache(
+        origin(), cache_name,
         /* trace_id= */ 0,
-        base::BindOnce(&BackgroundFetchDataManagerTest::DidFindCache,
-                       base::Unretained(this), run_loop.QuitClosure(),
-                       &result));
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorageError error) {
+          result = error == blink::mojom::CacheStorageError::kSuccess;
+          run_loop.Quit();
+        }));
+
     run_loop.Run();
 
     return result;
@@ -478,100 +478,88 @@ class BackgroundFetchDataManagerTest
 
   // Synchronous version of CacheStorageManager::MatchCache().
   bool MatchCache(const blink::mojom::FetchAPIRequestPtr& request) {
-    bool result = false;
+    bool match_result = false;
+    constexpr int64_t trace_id = 0;
 
+    mojo::AssociatedRemote<blink::mojom::CacheStorageCache> cache;
     base::RunLoop run_loop;
-    CacheStorageHandle cache_storage =
-        background_fetch_data_manager_->cache_manager()->OpenCacheStorage(
-            origin(), CacheStorageOwner::kBackgroundFetch);
-    auto match_options = blink::mojom::CacheQueryOptions::New();
-    match_options->ignore_search = true;
-    cache_storage.value()->MatchCache(
-        kExampleUniqueId, BackgroundFetchSettledFetch::CloneRequest(request),
-        std::move(match_options), CacheStorageSchedulerPriority::kNormal,
-        /* trace_id= */ 0,
-        base::BindOnce(&BackgroundFetchDataManagerTest::DidMatchCache,
-                       base::Unretained(this), run_loop.QuitClosure(),
-                       &result));
+    background_fetch_data_manager_->OpenCache(
+        origin(), kExampleUniqueId, trace_id,
+        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
+          EXPECT_FALSE(result->is_status());
+
+          auto match_options = blink::mojom::CacheQueryOptions::New();
+          match_options->ignore_search = true;
+
+          cache.Bind(std::move(result->get_cache()));
+          cache->Match(
+              BackgroundFetchSettledFetch::CloneRequest(request),
+              std::move(match_options),
+              /* in_related_fetch_event= */ false, trace_id,
+              base::BindOnce(&BackgroundFetchDataManagerTest::DidMatchCache,
+                             base::Unretained(this), run_loop.QuitClosure(),
+                             &match_result));
+        }));
     run_loop.Run();
 
-    return result;
+    return match_result;
   }
 
   void DeleteFromCache(const blink::mojom::FetchAPIRequestPtr& request) {
-    CacheStorageCacheHandle handle;
-    {
-      base::RunLoop run_loop;
-      CacheStorageHandle cache_storage =
-          background_fetch_data_manager_->cache_manager()->OpenCacheStorage(
-              origin(), CacheStorageOwner::kBackgroundFetch);
-      cache_storage.value()->OpenCache(
-          /* cache_name= */ kExampleUniqueId,
-          /* trace_id= */ 0,
-          base::BindOnce(&BackgroundFetchDataManagerTest::DidOpenCache,
-                         base::Unretained(this), run_loop.QuitClosure(),
-                         &handle));
-      run_loop.Run();
-    }
+    mojo::AssociatedRemote<blink::mojom::CacheStorageCache> cache;
+    base::RunLoop run_loop;
+    background_fetch_data_manager_->OpenCache(
+        origin(),
+        /* cache_name= */ kExampleUniqueId,
+        /* trace_id= */ 0,
+        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
+          EXPECT_TRUE(result->is_cache());
 
-    DCHECK(handle.value());
+          std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
+          operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
+          operation_ptr_vec[0]->operation_type =
+              blink::mojom::OperationType::kDelete;
+          operation_ptr_vec[0]->request =
+              BackgroundFetchSettledFetch::CloneRequest(request);
+          operation_ptr_vec[0]->match_options =
+              blink::mojom::CacheQueryOptions::New();
+          operation_ptr_vec[0]->match_options->ignore_search = true;
 
-    {
-      base::RunLoop run_loop;
-      std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
-      operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
-      operation_ptr_vec[0]->operation_type =
-          blink::mojom::OperationType::kDelete;
-      operation_ptr_vec[0]->request =
-          BackgroundFetchSettledFetch::CloneRequest(request);
-      operation_ptr_vec[0]->match_options =
-          blink::mojom::CacheQueryOptions::New();
-      operation_ptr_vec[0]->match_options->ignore_search = true;
-      handle.value()->BatchOperation(
-          std::move(operation_ptr_vec), /* trace_id= */ 0,
-          base::BindOnce(&BackgroundFetchDataManagerTest::DidDeleteFromCache,
-                         base::Unretained(this), run_loop.QuitClosure()),
-          base::DoNothing());
-
-      run_loop.Run();
-    }
+          cache.Bind(std::move(result->get_cache()));
+          cache->Batch(
+              std::move(operation_ptr_vec), /* trace_id= */ 0,
+              base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
+                             base::Unretained(this), run_loop.QuitClosure()));
+        }));
+    run_loop.Run();
   }
 
   void PutInCache(const blink::mojom::FetchAPIRequestPtr& request,
                   blink::mojom::FetchAPIResponsePtr response) {
-    CacheStorageCacheHandle handle;
-    {
-      base::RunLoop run_loop;
-      CacheStorageHandle cache_storage =
-          background_fetch_data_manager_->cache_manager()->OpenCacheStorage(
-              origin(), CacheStorageOwner::kBackgroundFetch);
-      cache_storage.value()->OpenCache(
-          /* cache_name= */ kExampleUniqueId,
-          /* trace_id= */ 0,
-          base::BindOnce(&BackgroundFetchDataManagerTest::DidOpenCache,
-                         base::Unretained(this), run_loop.QuitClosure(),
-                         &handle));
-      run_loop.Run();
-    }
+    mojo::AssociatedRemote<blink::mojom::CacheStorageCache> cache;
+    base::RunLoop run_loop;
+    background_fetch_data_manager_->OpenCache(
+        origin(),
+        /* cache_name= */ kExampleUniqueId,
+        /* trace_id= */ 0,
+        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
+          EXPECT_TRUE(result->is_cache());
 
-    DCHECK(handle.value());
+          std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
+          operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
+          operation_ptr_vec[0]->operation_type =
+              blink::mojom::OperationType::kPut;
+          operation_ptr_vec[0]->request =
+              BackgroundFetchSettledFetch::CloneRequest(request);
+          operation_ptr_vec[0]->response = std::move(response);
 
-    {
-      base::RunLoop run_loop;
-      std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
-      operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
-      operation_ptr_vec[0]->operation_type = blink::mojom::OperationType::kPut;
-      operation_ptr_vec[0]->request =
-          BackgroundFetchSettledFetch::CloneRequest(request);
-      operation_ptr_vec[0]->response = std::move(response);
-      handle.value()->BatchOperation(
-          std::move(operation_ptr_vec), /* trace_id= */ 0,
-          base::BindOnce(&BackgroundFetchDataManagerTest::DidDeleteFromCache,
-                         base::Unretained(this), run_loop.QuitClosure()),
-          base::DoNothing());
-
-      run_loop.Run();
-    }
+          cache.Bind(std::move(result->get_cache()));
+          cache->Batch(
+              std::move(operation_ptr_vec), /* trace_id= */ 0,
+              base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
+                             base::Unretained(this), run_loop.QuitClosure()));
+        }));
+    run_loop.Run();
   }
 
   // Returns the title and the icon.
@@ -808,37 +796,25 @@ class BackgroundFetchDataManagerTest
     std::move(quit_closure).Run();
   }
 
-  void DidFindCache(base::OnceClosure quit_closure,
-                    bool* out_result,
-                    bool has_cache,
-                    blink::mojom::CacheStorageError error) {
-    DCHECK_EQ(error, blink::mojom::CacheStorageError::kSuccess);
-    *out_result = has_cache;
-    std::move(quit_closure).Run();
-  }
-
   void DidMatchCache(base::OnceClosure quit_closure,
                      bool* out_result,
-                     blink::mojom::CacheStorageError error,
-                     blink::mojom::FetchAPIResponsePtr response) {
+                     blink::mojom::MatchResultPtr result) {
+    *out_result = false;
+
     // This counts as matched if an entry was found in the cache which
     // also has a non-empty response.
-    *out_result = !response.is_null() && !response->url_list.empty();
+    if (result->is_eager_response()) {
+      auto& response = result->get_eager_response()->response;
+      *out_result = !response.is_null() && !response->url_list.empty();
+    } else if (result->is_response()) {
+      auto& response = result->get_response();
+      *out_result = !response.is_null() && !response->url_list.empty();
+    }
     std::move(quit_closure).Run();
   }
 
-  void DidOpenCache(base::OnceClosure quit_closure,
-                    CacheStorageCacheHandle* out_handle,
-                    CacheStorageCacheHandle handle,
-                    blink::mojom::CacheStorageError error) {
-    DCHECK(out_handle);
-    DCHECK_EQ(error, blink::mojom::CacheStorageError::kSuccess);
-    *out_handle = std::move(handle);
-    std::move(quit_closure).Run();
-  }
-
-  void DidDeleteFromCache(base::OnceClosure quit_closure,
-                          blink::mojom::CacheStorageVerboseErrorPtr error) {
+  void DidBatchOperation(base::OnceClosure quit_closure,
+                         blink::mojom::CacheStorageVerboseErrorPtr error) {
     DCHECK_EQ(error->value, blink::mojom::CacheStorageError::kSuccess);
     std::move(quit_closure).Run();
   }

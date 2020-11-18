@@ -58,6 +58,9 @@ std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
 std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
     const std::vector<base::string16> string_list);
 
+std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
+    const std::vector<blink::mojom::CacheEntryPtr>& entries);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_TRACE_UTILS_H_

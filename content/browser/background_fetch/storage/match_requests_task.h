@@ -42,14 +42,10 @@ class MatchRequestsTask : public DatabaseTask {
   void Start() override;
 
  private:
-  void DidOpenCache(int64_t trace_id,
-                    CacheStorageCacheHandle handle,
-                    blink::mojom::CacheStorageError error);
-
+  void DidOpenCache(int64_t trace_id, blink::mojom::CacheStorageError error);
   void DidGetAllMatchedEntries(
       int64_t trace_id,
-      blink::mojom::CacheStorageError error,
-      std::vector<CacheStorageCache::CacheEntry> entries);
+      blink::mojom::GetAllMatchedEntriesResultPtr result);
 
   // Checks whether |request| shuld be matched given the provided query params.
   bool ShouldMatchRequest(const blink::mojom::FetchAPIRequestPtr& request);
@@ -62,7 +58,6 @@ class MatchRequestsTask : public DatabaseTask {
   std::unique_ptr<BackgroundFetchRequestMatchParams> match_params_;
   SettledFetchesCallback callback_;
 
-  CacheStorageCacheHandle handle_;
   std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> settled_fetches_;
 
   base::WeakPtrFactory<MatchRequestsTask> weak_factory_{this};  // Keep as last.

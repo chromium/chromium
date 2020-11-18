@@ -144,6 +144,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   NativeFileSystemEntryFactory* GetNativeFileSystemEntryFactory() override;
   CacheStorageContextImpl* GetCacheStorageContext() override;
+  // TODO(enne): add CacheStorageControl mojom and remove this
+  CacheStorageContextImpl* GetCacheStorageContextImplForTesting() override;
   ServiceWorkerContextWrapper* GetServiceWorkerContext() override;
   DedicatedWorkerServiceImpl* GetDedicatedWorkerService() override;
   SharedWorkerServiceImpl* GetSharedWorkerService() override;

@@ -33,11 +33,9 @@ namespace content {
 // get cancelled in some circumstances.
 class CONTENT_EXPORT CacheStorageCache {
  public:
-  using CacheEntry = std::pair<blink::mojom::FetchAPIRequestPtr,
-                               blink::mojom::FetchAPIResponsePtr>;
   using CacheEntriesCallback =
       base::OnceCallback<void(blink::mojom::CacheStorageError,
-                              std::vector<CacheEntry>)>;
+                              std::vector<blink::mojom::CacheEntryPtr>)>;
   using ErrorCallback =
       base::OnceCallback<void(blink::mojom::CacheStorageError)>;
   using VerboseErrorCallback =

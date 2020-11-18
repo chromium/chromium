@@ -37,15 +37,12 @@ void MatchRequestsTask::Start() {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "MatchRequestsTask::Start",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-  CacheStorageHandle cache_storage = GetOrOpenCacheStorage(registration_id_);
-  cache_storage.value()->OpenCache(
-      /* cache_name= */ registration_id_.unique_id(), trace_id,
-      base::BindOnce(&MatchRequestsTask::DidOpenCache,
-                     weak_factory_.GetWeakPtr(), trace_id));
+  OpenCache(registration_id_, trace_id,
+            base::BindOnce(&MatchRequestsTask::DidOpenCache,
+                           weak_factory_.GetWeakPtr(), trace_id));
 }
 
 void MatchRequestsTask::DidOpenCache(int64_t trace_id,
-                                     CacheStorageCacheHandle handle,
                                      blink::mojom::CacheStorageError error) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "MatchRequestsTask::DidOpenCache",
                          TRACE_ID_GLOBAL(trace_id),
@@ -55,9 +52,6 @@ void MatchRequestsTask::DidOpenCache(int64_t trace_id,
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
     return;
   }
-
-  handle_ = std::move(handle);
-  DCHECK(handle_.value());
 
   blink::mojom::FetchAPIRequestPtr request;
   if (match_params_->FilterByRequest()) {
@@ -79,7 +73,7 @@ void MatchRequestsTask::DidOpenCache(int64_t trace_id,
   // against is a GET.
   query_options->ignore_method = true;
 
-  handle_.value()->GetAllMatchedEntries(
+  cache_storage_cache_remote()->GetAllMatchedEntries(
       std::move(request), std::move(query_options), trace_id,
       base::BindOnce(&MatchRequestsTask::DidGetAllMatchedEntries,
                      weak_factory_.GetWeakPtr(), trace_id));
@@ -87,17 +81,17 @@ void MatchRequestsTask::DidOpenCache(int64_t trace_id,
 
 void MatchRequestsTask::DidGetAllMatchedEntries(
     int64_t trace_id,
-    blink::mojom::CacheStorageError error,
-    std::vector<CacheStorageCache::CacheEntry> entries) {
+    blink::mojom::GetAllMatchedEntriesResultPtr result) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "MatchRequestsTask::DidGetAllMatchedEntries",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
 
-  if (error != blink::mojom::CacheStorageError::kSuccess) {
+  if (result->is_status()) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
     return;
   }
 
+  auto& entries = result->get_entries();
   // If we tried to match without filtering, there should always be entries.
   if (entries.empty()) {
     if (!match_params_->FilterByRequest())
@@ -109,19 +103,19 @@ void MatchRequestsTask::DidGetAllMatchedEntries(
 
   for (auto& entry : entries) {
     auto settled_fetch = blink::mojom::BackgroundFetchSettledFetch::New();
-    settled_fetch->request = std::move(entry.first);
+    settled_fetch->request = std::move(entry->request);
     settled_fetch->request->url = RemoveUniqueParamFromCacheURL(
         settled_fetch->request->url, registration_id_.unique_id());
 
     if (!ShouldMatchRequest(settled_fetch->request))
       continue;
 
-    if (entry.second && entry.second->url_list.empty()) {
+    if (entry->response && entry->response->url_list.empty()) {
       // We didn't process this empty response, so we should expose it
       // as a nullptr.
       settled_fetch->response = nullptr;
     } else {
-      settled_fetch->response = std::move(entry.second);
+      settled_fetch->response = std::move(entry->response);
     }
 
     settled_fetches_.push_back(std::move(settled_fetch));

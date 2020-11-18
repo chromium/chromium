@@ -91,6 +91,7 @@ class CONTENT_EXPORT CacheStorageContextImpl
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
       const url::Origin& origin,
+      CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
   // If called on the cache_storage target sequence the real manager will be
@@ -157,7 +158,7 @@ class CONTENT_EXPORT CacheStorageContextImpl
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
   // Created and accessed on the target sequence.  Released on the target
-  // sequence in SHutdownOnTaskRunner() or the destructor via
+  // sequence in ShutdownOnTaskRunner() or the destructor via
   // SequencedTaskRunner::ReleaseSoon().
   scoped_refptr<CacheStorageManager> cache_manager_;
 

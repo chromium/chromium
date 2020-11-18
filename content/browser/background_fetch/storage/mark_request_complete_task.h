@@ -45,12 +45,10 @@ class MarkRequestCompleteTask : public DatabaseTask {
 
   void DidOpenCache(base::OnceClosure done_closure,
                     int64_t trace_id,
-                    CacheStorageCacheHandle handle,
                     blink::mojom::CacheStorageError error);
 
-  void DidWriteToCache(CacheStorageCacheHandle handle,
-                       base::OnceClosure done_closure,
-                       blink::mojom::CacheStorageError error);
+  void DidWriteToCache(base::OnceClosure done_closure,
+                       blink::mojom::CacheStorageVerboseErrorPtr result);
 
   void CreateAndStoreCompletedRequest(base::OnceClosure done_closure);
 

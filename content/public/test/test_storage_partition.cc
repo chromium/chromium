@@ -100,6 +100,12 @@ CacheStorageContext* TestStoragePartition::GetCacheStorageContext() {
   return cache_storage_context_;
 }
 
+CacheStorageContextImpl*
+TestStoragePartition::GetCacheStorageContextImplForTesting() {
+  NOTREACHED();
+  return nullptr;
+}
+
 GeneratedCodeCacheContext*
 TestStoragePartition::GetGeneratedCodeCacheContext() {
   return generated_code_cache_context_;

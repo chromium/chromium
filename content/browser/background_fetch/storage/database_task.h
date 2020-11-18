@@ -14,6 +14,7 @@
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
@@ -28,7 +29,6 @@ class Origin;
 namespace content {
 
 class BackgroundFetchDataManager;
-class CacheStorageManager;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
 
@@ -101,7 +101,6 @@ class DatabaseTask : public DatabaseTaskHost {
 
   // Getters.
   ServiceWorkerContextWrapper* service_worker_context();
-  CacheStorageManager* cache_manager();
   std::set<std::string>& ref_counted_unique_ids();
   ChromeBlobStorageContext* blob_storage_context();
   storage::QuotaManagerProxy* quota_manager_proxy();
@@ -125,14 +124,24 @@ class DatabaseTask : public DatabaseTaskHost {
                          const std::string& unique_id,
                          StorageVersionCallback callback);
 
-  CacheStorageHandle GetOrOpenCacheStorage(
-      const BackgroundFetchRegistrationId& registration_id);
-  CacheStorageHandle GetOrOpenCacheStorage(const url::Origin& origin,
-                                           const std::string& unique_id);
+  // Opens a cache and returns the CacheStorageError from doing so.
+  // If the CacheStorageError is kSuccess, then cache_storage_cache_remote()
+  // will have the bound receiver.  Can only be called once per task.
+  // DatabaseTask owns the remote so that callers don't have to chain it
+  // through callbacks to keep it alive.
+  void OpenCache(
+      const BackgroundFetchRegistrationId& registration_id,
+      int64_t trace_id,
+      base::OnceCallback<void(blink::mojom::CacheStorageError)> callback);
+  void DeleteCache(const url::Origin& origin,
+                   const std::string& unique_id,
+                   int64_t trace_id,
+                   blink::mojom::CacheStorage::DeleteCallback callback);
 
-  // Release the CacheStorageHandle for the given |unique_id|, if
-  // it's open.  DoomCache should be called prior to releasing the handle.
-  void ReleaseCacheStorage(const std::string& unique_id);
+  const mojo::AssociatedRemote<blink::mojom::CacheStorageCache>&
+  cache_storage_cache_remote() const {
+    return cache_storage_cache_remote_;
+  }
 
  private:
   // Each task must override this function and perform the following steps:
@@ -147,14 +156,13 @@ class DatabaseTask : public DatabaseTaskHost {
   void DidGetStorageVersion(StorageVersionCallback callback,
                             const std::vector<std::string>& data,
                             blink::ServiceWorkerStatusCode status);
+  void DidOpenCache(
+      base::OnceCallback<void(blink::mojom::CacheStorageError)> callback,
+      blink::mojom::OpenResultPtr result);
 
   base::WeakPtr<DatabaseTaskHost> GetWeakPtr() override;
 
   DatabaseTaskHost* host_;
-
-  // Owns a reference to the CacheStorageManager in case Shutdown was
-  // called and the DatabaseTask needs to finish.
-  scoped_refptr<CacheStorageManager> cache_manager_;
 
   // Map the raw pointer to its unique_ptr, to make lookups easier.
   std::map<DatabaseTask*, std::unique_ptr<DatabaseTask>> active_subtasks_;
@@ -162,6 +170,9 @@ class DatabaseTask : public DatabaseTaskHost {
   // The storage error to report.
   BackgroundFetchStorageError storage_error_ =
       BackgroundFetchStorageError::kNone;
+
+  mojo::AssociatedRemote<blink::mojom::CacheStorageCache>
+      cache_storage_cache_remote_;
 
   base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_{this};
 

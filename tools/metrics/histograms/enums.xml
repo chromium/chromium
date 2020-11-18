@@ -6627,6 +6627,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
   <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
   <int value="237" label="ASGH_RECEIVED_CONTROL_MESSAGE"/>
+  <int value="238" label="CSDH_BAD_OWNER"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

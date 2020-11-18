@@ -1981,7 +1981,7 @@ void RenderProcessHostImpl::BindCacheStorage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_impl_->GetCacheStorageContext()->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter_remote), origin,
-      std::move(receiver));
+      CacheStorageOwner::kCacheAPI, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindIndexedDB(

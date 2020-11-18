@@ -89,6 +89,10 @@ void CacheStorageContextImpl::Shutdown() {
   DCHECK(!shutdown_);
   shutdown_ = true;
 
+  // Break reference cycle with |this|.
+  if (dispatcher_host_)
+    dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::Shutdown);
+
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CacheStorageContextImpl::ShutdownOnTaskRunner, this));
@@ -99,6 +103,7 @@ void CacheStorageContextImpl::AddReceiver(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     const url::Origin& origin,
+    CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!dispatcher_host_) {
@@ -109,7 +114,7 @@ void CacheStorageContextImpl::AddReceiver(
   }
   dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::AddReceiver,
                         cross_origin_embedder_policy, std::move(coep_reporter),
-                        origin, std::move(receiver));
+                        origin, owner, std::move(receiver));
 }
 
 scoped_refptr<CacheStorageManager> CacheStorageContextImpl::CacheManager() {

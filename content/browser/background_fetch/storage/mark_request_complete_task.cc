@@ -159,18 +159,15 @@ void MarkRequestCompleteTask::DidGetIsQuotaAvailable(
     return;
   }
 
-  CacheStorageHandle cache_storage = GetOrOpenCacheStorage(registration_id_);
-  cache_storage.value()->OpenCache(
-      /* cache_name= */ registration_id_.unique_id(), trace_id,
-      base::BindOnce(&MarkRequestCompleteTask::DidOpenCache,
-                     weak_factory_.GetWeakPtr(), std::move(done_closure),
-                     trace_id));
+  OpenCache(registration_id_, trace_id,
+            base::BindOnce(&MarkRequestCompleteTask::DidOpenCache,
+                           weak_factory_.GetWeakPtr(), std::move(done_closure),
+                           trace_id));
 }
 
 void MarkRequestCompleteTask::DidOpenCache(
     base::OnceClosure done_closure,
     int64_t trace_id,
-    CacheStorageCacheHandle handle,
     blink::mojom::CacheStorageError error) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "MarkRequestCompleteTask::DidOpenCache",
@@ -182,8 +179,6 @@ void MarkRequestCompleteTask::DidOpenCache(
     return;
   }
 
-  DCHECK(handle.value());
-
   blink::mojom::FetchAPIRequestPtr request =
       BackgroundFetchSettledFetch::CloneRequest(
           request_info_->fetch_request_ptr());
@@ -191,22 +186,26 @@ void MarkRequestCompleteTask::DidOpenCache(
   request->url = MakeCacheUrlUnique(request->url, registration_id_.unique_id(),
                                     request_info_->request_index());
 
+  auto put = blink::mojom::BatchOperation::New();
+  put->operation_type = blink::mojom::OperationType::kPut;
+  put->request = std::move(request);
+  put->response = BackgroundFetchSettledFetch::CloneResponse(response_);
+
+  std::vector<blink::mojom::BatchOperationPtr> operations;
+  operations.emplace_back(std::move(put));
+
   // TODO(crbug.com/774054): The request blob stored in the cache is being
   // overwritten here, it should be written back.
-  CacheStorageCache* handle_ptr = handle.value();
-  handle_ptr->Put(std::move(request),
-                  BackgroundFetchSettledFetch::CloneResponse(response_),
-                  trace_id,
-                  base::BindOnce(&MarkRequestCompleteTask::DidWriteToCache,
-                                 weak_factory_.GetWeakPtr(), std::move(handle),
-                                 std::move(done_closure)));
+  cache_storage_cache_remote()->Batch(
+      std::move(operations), trace_id,
+      base::BindOnce(&MarkRequestCompleteTask::DidWriteToCache,
+                     weak_factory_.GetWeakPtr(), std::move(done_closure)));
 }
 
 void MarkRequestCompleteTask::DidWriteToCache(
-    CacheStorageCacheHandle handle,
     base::OnceClosure done_closure,
-    blink::mojom::CacheStorageError error) {
-  if (error != blink::mojom::CacheStorageError::kSuccess)
+    blink::mojom::CacheStorageVerboseErrorPtr result) {
+  if (result->value != blink::mojom::CacheStorageError::kSuccess)
     SetStorageError(BackgroundFetchStorageError::kCacheStorageError);
   CreateAndStoreCompletedRequest(std::move(done_closure));
 }

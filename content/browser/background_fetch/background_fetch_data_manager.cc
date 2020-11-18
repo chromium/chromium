@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/background_fetch_constants.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
@@ -57,8 +58,6 @@ BackgroundFetchDataManager::BackgroundFetchDataManager(
 void BackgroundFetchDataManager::InitializeOnCoreThread() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
-  cache_manager_ = cache_storage_context_->CacheManager();
-
   // Delete inactive registrations still in the DB.
   Cleanup();
 }
@@ -79,35 +78,70 @@ void BackgroundFetchDataManager::Cleanup() {
   AddDatabaseTask(std::make_unique<background_fetch::CleanupTask>(this));
 }
 
-CacheStorageHandle BackgroundFetchDataManager::GetOrOpenCacheStorage(
+mojo::Remote<blink::mojom::CacheStorage>&
+BackgroundFetchDataManager::GetOrOpenCacheStorage(
     const url::Origin& origin,
     const std::string& unique_id) {
-  auto it = cache_storage_handle_map_.find(unique_id);
-  if (it != cache_storage_handle_map_.end()) {
-    if (it->second.value()) {
-      DCHECK_EQ(origin, it->second.value()->Origin());
-    } else {
-      // The backing CacheStorage has been forcibly closed due to an external
-      // event. Re-open the CacheStorage and update the handle.
-      it->second = cache_manager()->OpenCacheStorage(
-          origin, CacheStorageOwner::kBackgroundFetch);
-    }
-    return it->second.Clone();
+  auto it = cache_storage_remote_map_.find(unique_id);
+  if (it != cache_storage_remote_map_.end()) {
+    // TODO(enne): should we store the origin so we can DCHECK it matches here?
+    return it->second;
   }
 
-  // This origin and unique_id has never been opened before. Open
-  // the CacheStorage, remember the association in the map, and return the
-  // handle.
-  CacheStorageHandle handle = cache_manager()->OpenCacheStorage(
-      origin, CacheStorageOwner::kBackgroundFetch);
-  cache_storage_handle_map_.emplace(unique_id, handle.Clone());
-  return handle;
+  // This origin and unique_id has never been opened before.
+  mojo::Remote<blink::mojom::CacheStorage> remote;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  DCHECK(cache_storage_context_);
+  cache_storage_context_->AddReceiver(
+      cross_origin_embedder_policy, mojo::NullRemote(), origin,
+      CacheStorageOwner::kBackgroundFetch, remote.BindNewPipeAndPassReceiver());
+
+  auto result = cache_storage_remote_map_.emplace(unique_id, std::move(remote));
+  DCHECK(result.second);
+  return result.first->second;
 }
 
-void BackgroundFetchDataManager::ReleaseCacheStorage(
-    const std::string& unique_id) {
-  bool erased = cache_storage_handle_map_.erase(unique_id);
-  DCHECK(erased);
+void BackgroundFetchDataManager::OpenCache(
+    const url::Origin& origin,
+    const std::string& unique_id,
+    int64_t trace_id,
+    blink::mojom::CacheStorage::OpenCallback callback) {
+  auto& cache_storage = GetOrOpenCacheStorage(origin, unique_id);
+  cache_storage->Open(base::UTF8ToUTF16(unique_id), trace_id,
+                      std::move(callback));
+}
+
+void BackgroundFetchDataManager::DeleteCache(
+    const url::Origin& origin,
+    const std::string& unique_id,
+    int64_t trace_id,
+    blink::mojom::CacheStorage::DeleteCallback callback) {
+  auto& cache_storage = GetOrOpenCacheStorage(origin, unique_id);
+  cache_storage->Delete(
+      base::UTF8ToUTF16(unique_id), trace_id,
+      base::BindOnce(&BackgroundFetchDataManager::DidDeleteCache,
+                     weak_ptr_factory_.GetWeakPtr(), unique_id,
+                     std::move(callback)));
+}
+
+void BackgroundFetchDataManager::DidDeleteCache(
+    const std::string& unique_id,
+    blink::mojom::CacheStorage::DeleteCallback callback,
+    blink::mojom::CacheStorageError result) {
+  // Preserve the lifetime of the cache storage remote until here so that this
+  // DidDeleteCache callback will not be dropped.
+  cache_storage_remote_map_.erase(unique_id);
+  std::move(callback).Run(result);
+}
+
+void BackgroundFetchDataManager::HasCache(
+    const url::Origin& origin,
+    const std::string& unique_id,
+    int64_t trace_id,
+    blink::mojom::CacheStorage::HasCallback callback) {
+  auto& cache_storage = GetOrOpenCacheStorage(origin, unique_id);
+  cache_storage->Has(base::UTF8ToUTF16(unique_id), trace_id,
+                     std::move(callback));
 }
 
 BackgroundFetchDataManager::~BackgroundFetchDataManager() {
@@ -222,10 +256,6 @@ void BackgroundFetchDataManager::GetDeveloperIdsForServiceWorker(
 
 void BackgroundFetchDataManager::ShutdownOnCoreThread() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-
-  // Release reference to CacheStorageManager. DatabaseTasks that need it
-  // hold their own copy, so they can continue their work.
-  cache_manager_ = nullptr;
 
   shutting_down_ = true;
 }

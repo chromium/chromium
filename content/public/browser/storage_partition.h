@@ -57,6 +57,7 @@ class AppCacheService;
 class BackgroundSyncContext;
 class BrowserContext;
 class CacheStorageContext;
+class CacheStorageContextImpl;
 class ContentIndexContext;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
@@ -128,6 +129,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual DedicatedWorkerService* GetDedicatedWorkerService() = 0;
   virtual SharedWorkerService* GetSharedWorkerService() = 0;
   virtual CacheStorageContext* GetCacheStorageContext() = 0;
+  virtual CacheStorageContextImpl* GetCacheStorageContextImplForTesting() = 0;
   virtual GeneratedCodeCacheContext* GetGeneratedCodeCacheContext() = 0;
   virtual DevToolsBackgroundServicesContext*
   GetDevToolsBackgroundServicesContext() = 0;

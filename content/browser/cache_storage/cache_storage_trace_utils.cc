@@ -128,4 +128,19 @@ std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
   return value;
 }
 
+std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
+    const std::vector<blink::mojom::CacheEntryPtr>& entries) {
+  std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
+  value->SetInteger("count", entries.size());
+  if (!entries.empty()) {
+    std::unique_ptr<TracedValue> first = std::make_unique<TracedValue>();
+    first->SetValue("request",
+                    CacheStorageTracedValue(entries.front()->request).get());
+    first->SetValue("response",
+                    CacheStorageTracedValue(entries.front()->response).get());
+    value->SetValue("first", first.get());
+  }
+  return value;
+}
+
 }  // namespace content

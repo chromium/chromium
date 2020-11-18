@@ -162,6 +162,12 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
     result->set_status(error_);
     std::move(callback).Run(std::move(result));
   }
+  void GetAllMatchedEntries(mojom::blink::FetchAPIRequestPtr request,
+                            mojom::blink::CacheQueryOptionsPtr query_options,
+                            int64_t trace_id,
+                            GetAllMatchedEntriesCallback callback) override {
+    NOTREACHED();
+  }
   void Keys(mojom::blink::FetchAPIRequestPtr fetch_api_request,
             mojom::blink::CacheQueryOptionsPtr query_options,
             int64_t trace_id,
