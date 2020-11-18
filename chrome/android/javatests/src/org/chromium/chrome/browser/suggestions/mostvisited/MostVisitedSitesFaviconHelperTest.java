@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -68,6 +69,7 @@ public class MostVisitedSitesFaviconHelperTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1149856")
     public void testSaveFaviconsToFile() {
         // Add sites' URLs into the urlsToUpdate, except the last one.
         Set<GURL> urlsToUpdate = new HashSet<>();
