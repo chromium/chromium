@@ -265,6 +265,7 @@ class CORE_EXPORT WebFrameWidgetBase
       bool request_unadjusted_movement,
       mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback)
       override;
+  void MouseCaptureLost() override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPlugin() override;
   void ImeSetCompositionForPlugin(const String& text,

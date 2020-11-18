@@ -92,8 +92,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   gfx::Size Size() override;
   void Resize(const gfx::Size&) override;
 
-  void MouseCaptureLost() override;
-
   // WebFrameWidget implementation.
   bool ScrollFocusedEditableElementIntoView() override;
 

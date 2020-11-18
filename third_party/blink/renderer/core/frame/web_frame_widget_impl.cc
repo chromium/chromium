@@ -334,12 +334,6 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   return true;
 }
 
-void WebFrameWidgetImpl::MouseCaptureLost() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("input", "capturing mouse",
-                                  TRACE_ID_LOCAL(this));
-  mouse_capture_element_ = nullptr;
-}
-
 void WebFrameWidgetImpl::FocusChanged(bool enable) {
   if (enable)
     GetPage()->GetFocusController().SetActive(true);

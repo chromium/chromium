@@ -529,7 +529,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
   void ThemeChanged();
-  void MouseCaptureLost();
   void SetFocus(bool enable) override;
 
   // Update the target url locally and tell the browser that the target URL has

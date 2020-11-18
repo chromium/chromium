@@ -2019,6 +2019,12 @@ void WebFrameWidgetBase::RequestMouseLock(
   }
 }
 
+void WebFrameWidgetBase::MouseCaptureLost() {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("input", "capturing mouse",
+                                  TRACE_ID_LOCAL(this));
+  mouse_capture_element_ = nullptr;
+}
+
 void WebFrameWidgetBase::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
   widget_base_->UpdateVisualProperties(visual_properties);

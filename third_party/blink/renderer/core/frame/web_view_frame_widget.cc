@@ -92,11 +92,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::MouseCaptureLost() {
-  mouse_capture_element_ = nullptr;
-  web_view_->MouseCaptureLost();
-}
-
 void WebViewFrameWidget::FocusChanged(bool enable) {
   web_view_->SetFocus(enable);
 }
