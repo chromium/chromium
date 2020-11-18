@@ -19,17 +19,31 @@ class ClipboardHistoryItem;
 
 namespace ClipboardHistoryUtil {
 
-// The command id for deletion.
-constexpr int kDeleteCommandId = 0;
-
 // The first available command id for normal clipboard history menu items.
 constexpr int kFirstItemCommandId = 1;
 
+// The maximum available command id for normal clipboard history menu items.
+constexpr int kMaxItemCommandId = 5;
+
 // The max number of items stored in ClipboardHistory.
-constexpr int kMaxClipboardItemsShared = 5;
+constexpr int kMaxClipboardItemsShared =
+    kMaxItemCommandId - kFirstItemCommandId + 1;
 
 // The max command ID, used to record histograms.
 constexpr int kMaxCommandId = kFirstItemCommandId + kMaxClipboardItemsShared;
+
+// The type of the action to take when the clipboard history menu item is
+// activated.
+enum class Action {
+  kEmpty,
+
+  // Pastes the activated item's corresponding clipboard data.
+  kPaste,
+
+  // Deletes the activated item.
+  kDelete
+};
+
 // Used in histograms, each value corresponds with an underlying format
 // displayed by a ClipboardHistoryItemView. Do not reorder entries, if you must
 // add to it, add at the end.

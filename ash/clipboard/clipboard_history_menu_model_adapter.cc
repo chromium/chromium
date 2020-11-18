@@ -28,8 +28,8 @@
 namespace ash {
 
 namespace {
-bool IsDataReadAllowed(ui::DataTransferEndpoint* source,
-                       ui::DataTransferEndpoint* destination) {
+bool IsDataReadAllowed(const ui::DataTransferEndpoint* source,
+                       const ui::DataTransferEndpoint* destination) {
   ui::DataTransferPolicyController* policy_controller =
       ui::DataTransferPolicyController::Get();
   if (!policy_controller)
@@ -69,6 +69,9 @@ void ClipboardHistoryMenuModelAdapter::Run(
   // not shown.
   UMA_HISTOGRAM_COUNTS_100(
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", items.size());
+
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
+                                          /*notify_if_restricted=*/false);
   for (const auto& item : items) {
     model_->AddItem(command_id, base::string16());
 
@@ -76,17 +79,12 @@ void ClipboardHistoryMenuModelAdapter::Run(
     // clipboard history item is allowed to read or not.
     // This clipboard read isn't initiated by the user, that's why it shouldn't
     // notify if the clipboard is restricted.
-    ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
-                                      /*notify_if_restricted=*/false);
     model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
                          IsDataReadAllowed(item.data().source(), &data_dst));
 
     item_snapshots_.emplace(command_id, item);
     ++command_id;
   }
-
-  // Enable the command execution through the model delegate.
-  model_->AddItem(ClipboardHistoryUtil::kDeleteCommandId, base::string16());
 
   // Start async rendering of HTML, if any exists.
   ClipboardImageModelFactory::Get()->Activate();
@@ -145,16 +143,13 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
       selected_menu_item);
 }
 
-void ClipboardHistoryMenuModelAdapter::RemoveSelectedMenuItem() {
-  base::Optional<int> current_selected_command_id =
-      GetSelectedMenuItemCommand();
-  DCHECK(current_selected_command_id.has_value());
-
+void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
+    int command_id) {
   // Calculate `new_selected_command_id` before removing
-  // `current_selected_command_id` from data structures because the latter is
-  // needed in calculation.
+  // the item specified by `command_id` from data structures because the item to
+  // be removed is needed in calculation.
   base::Optional<int> new_selected_command_id =
-      CalculateSelectedCommandIdAfterDeletion();
+      CalculateSelectedCommandIdAfterDeletion(command_id);
 
   // Update the menu item selection.
   if (new_selected_command_id.has_value()) {
@@ -164,17 +159,16 @@ void ClipboardHistoryMenuModelAdapter::RemoveSelectedMenuItem() {
         root_view_);
   }
 
-  auto item_view_to_delete =
-      item_views_by_command_id_.find(*current_selected_command_id);
+  auto item_view_to_delete = item_views_by_command_id_.find(command_id);
   DCHECK(item_view_to_delete != item_views_by_command_id_.cend());
 
   // Disable views to be removed in order to prevent them from handling events.
-  root_view_->GetMenuItemByID(*current_selected_command_id)->SetEnabled(false);
+  root_view_->GetMenuItemByID(command_id)->SetEnabled(false);
   item_view_to_delete->second->SetEnabled(false);
 
   item_views_by_command_id_.erase(item_view_to_delete);
 
-  auto item_to_delete = item_snapshots_.find(*current_selected_command_id);
+  auto item_to_delete = item_snapshots_.find(command_id);
   DCHECK(item_to_delete != item_snapshots_.end());
   item_snapshots_.erase(item_to_delete);
 
@@ -183,8 +177,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveSelectedMenuItem() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistoryMenuModelAdapter::RemoveItemView,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     *current_selected_command_id));
+                     weak_ptr_factory_.GetWeakPtr(), command_id));
 }
 
 void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocus(bool reverse) {
@@ -200,6 +193,14 @@ void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocus(bool reverse) {
   }
 
   AdvancePseudoFocusFromSelectedItem(reverse);
+}
+
+ClipboardHistoryUtil::Action
+ClipboardHistoryMenuModelAdapter::GetActionForCommandId(int command_id) const {
+  auto selected_item_iter = item_views_by_command_id_.find(command_id);
+  DCHECK(selected_item_iter != item_views_by_command_id_.cend());
+
+  return selected_item_iter->second->action();
 }
 
 gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
@@ -267,16 +268,13 @@ void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocusFromSelectedItem(
 }
 
 base::Optional<int>
-ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion()
-    const {
-  base::Optional<int> command_id = GetSelectedMenuItemCommand();
-  DCHECK(command_id.has_value());
-
+ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
+    int command_id) const {
   // If the menu item view to be deleted is the last one, Cancel()
   // should be called so this function should not be hit.
   DCHECK_GT(item_snapshots_.size(), 1u);
 
-  auto start_item = item_snapshots_.find(*command_id);
+  auto start_item = item_snapshots_.find(command_id);
   DCHECK(start_item != item_snapshots_.cend());
 
   // Search in the forward direction.
@@ -322,10 +320,6 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     ui::MenuModel* model,
     int index) {
   const int command_id = model->GetCommandIdAt(index);
-
-  // Do not create the view for the deletion command.
-  if (command_id == ClipboardHistoryUtil::kDeleteCommandId)
-    return nullptr;
 
   views::MenuItemView* container = menu->AppendMenuItem(command_id);
 

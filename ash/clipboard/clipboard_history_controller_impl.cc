@@ -135,8 +135,7 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
 
   void HandleDeleteSelected(int event_flags) {
     DCHECK(controller_->IsMenuShowing());
-    controller_->ExecuteCommand(ClipboardHistoryUtil::kDeleteCommandId,
-                                event_flags);
+    controller_->DeleteSelectedMenuItemIfAny();
   }
 
   void HandleTab() {
@@ -278,21 +277,30 @@ void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
   // If no menu item is currently selected, we'll fallback to the first item.
-  menu_delegate_->ExecuteCommand(
-      command.value_or(ClipboardHistoryUtil::kFirstItemCommandId), event_flags);
+  PasteMenuItemData(command.value_or(ClipboardHistoryUtil::kFirstItemCommandId),
+                    event_flags);
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
                                                     int event_flags) {
   DCHECK(context_menu_);
 
-  if (command_id == ClipboardHistoryUtil::kDeleteCommandId) {
-    DeleteSelectedMenuItemIfAny();
-    return;
-  }
-
   DCHECK_GE(command_id, ClipboardHistoryUtil::kFirstItemCommandId);
-  PasteMenuItemData(command_id, event_flags & ui::EF_SHIFT_DOWN);
+  DCHECK_LE(command_id, ClipboardHistoryUtil::kMaxItemCommandId);
+
+  using Action = ClipboardHistoryUtil::Action;
+  Action action = context_menu_->GetActionForCommandId(command_id);
+  switch (action) {
+    case Action::kPaste:
+      PasteMenuItemData(command_id, event_flags & ui::EF_SHIFT_DOWN);
+      return;
+    case Action::kDelete:
+      DeleteItemWithCommandId(command_id);
+      return;
+    case Action::kEmpty:
+      NOTREACHED();
+      return;
+  }
 }
 
 void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
@@ -375,10 +383,11 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
   if (!selected_command.has_value())
     return;
 
-  DCHECK_GE(*selected_command, ClipboardHistoryUtil::kFirstItemCommandId);
+  DeleteItemWithCommandId(*selected_command);
+}
 
-  const auto& to_be_deleted_item =
-      context_menu_->GetItemFromCommandId(*selected_command);
+void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
+  DCHECK(context_menu_);
 
   // Pressing VKEY_DELETE is handled here via AcceleratorTarget because the
   // contextual menu consumes the key event. Record the "pressing the delete
@@ -386,6 +395,8 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
   // activating the button directly via click/tap. There is no special handling
   // for pasting an item via VKEY_RETURN because in that case the menu does not
   // process the key event.
+  const auto& to_be_deleted_item =
+      context_menu_->GetItemFromCommandId(command_id);
   ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(to_be_deleted_item);
   clipboard_history_->RemoveItemForId(to_be_deleted_item.id());
 
@@ -396,7 +407,7 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
     return;
   }
 
-  context_menu_->RemoveSelectedMenuItem();
+  context_menu_->RemoveMenuItemWithCommandId(command_id);
 }
 
 void ClipboardHistoryControllerImpl::AdvancePseudoFocus(bool reverse) {

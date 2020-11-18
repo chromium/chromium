@@ -25,6 +25,10 @@ class MenuRunner;
 
 namespace ash {
 
+namespace ClipboardHistoryUtil {
+enum class Action;
+}  // namespace ClipboardHistoryUtil
+
 class ClipboardHistory;
 class ClipboardHistoryItem;
 class ClipboardHistoryItemView;
@@ -71,11 +75,14 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Selects the menu item specified by `command_id`.
   void SelectMenuItemWithCommandId(int command_id);
 
-  // Removes the selected menu item.
-  void RemoveSelectedMenuItem();
+  // Removes the menu item specified by `command_id`.
+  void RemoveMenuItemWithCommandId(int command_id);
 
   // Advances the pseudo focus (backward if `reverse` is true).
   void AdvancePseudoFocus(bool reverse);
+
+  // Returns the action to take on the menu item specified by `command_id`.
+  ClipboardHistoryUtil::Action GetActionForCommandId(int command_id) const;
 
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
@@ -98,9 +105,10 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   void AdvancePseudoFocusFromSelectedItem(bool reverse);
 
   // Returns the command id of the menu item to be selected if any after the
-  // current selected item is deleted. If no menu item is selectable
-  // after deletion, an absent value is returned.
-  base::Optional<int> CalculateSelectedCommandIdAfterDeletion() const;
+  // menu item specified by `command_id` is deleted. If no menu item is
+  // selectable after deletion, an absent value is returned.
+  base::Optional<int> CalculateSelectedCommandIdAfterDeletion(
+      int command_id) const;
 
   // Removes the item view specified by `command_id` from the root menu.
   void RemoveItemView(int command_id);
