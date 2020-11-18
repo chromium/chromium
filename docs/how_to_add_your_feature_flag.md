@@ -50,7 +50,8 @@ autoninja -C out/Default unit_tests
 ./out/Default/bin/run_unit_tests --gtest_filter=AboutFlagsHistogramTest.CheckHistograms
 ```
 
-That test will ask you to add several entries to enums.xml.
+That test will ask you to add several entries to enums.xml. After doing so, run `git cl format`
+which will insert the entries in enums.xml in the correct order and run the tests again.
 You can refer to [this CL](https://chromium-review.googlesource.com/c/593707) as an example.
 
 Finally, run the following test.
