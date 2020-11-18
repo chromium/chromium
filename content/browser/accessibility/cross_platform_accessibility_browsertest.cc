@@ -28,6 +28,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -39,6 +40,9 @@
 #include "base/win/scoped_com_initializer.h"
 #include "ui/base/win/atl_module.h"
 #endif
+
+using ::testing::ElementsAre;
+using ::testing::Pair;
 
 #if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&              \
     !defined(LEAK_SANITIZER) && !defined(MEMORY_SANITIZER) &&      \
@@ -274,51 +278,42 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const ui::AXNode* root = tree.root();
 
   // Check properties of thet tree.
-  EXPECT_STREQ(url_str, tree.data().url.c_str());
-  EXPECT_STREQ("Accessibility Test", tree.data().title.c_str());
-  EXPECT_STREQ("html", tree.data().doctype.c_str());
-  EXPECT_STREQ("text/html", tree.data().mimetype.c_str());
+  EXPECT_EQ(url_str, tree.data().url);
+  EXPECT_EQ("Accessibility Test", tree.data().title);
+  EXPECT_EQ("html", tree.data().doctype);
+  EXPECT_EQ("text/html", tree.data().mimetype);
 
   // Check properties of the root element of the tree.
-  EXPECT_STREQ("Accessibility Test",
-               GetAttr(root, ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_EQ("Accessibility Test",
+            GetAttr(root, ax::mojom::StringAttribute::kName));
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
 
   // Check properties of the BODY element.
   ASSERT_EQ(1u, root->GetUnignoredChildCount());
   const ui::AXNode* body = root->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, body->data().role);
-  EXPECT_STREQ("body",
-               GetAttr(body, ax::mojom::StringAttribute::kHtmlTag).c_str());
-  EXPECT_STREQ("block",
-               GetAttr(body, ax::mojom::StringAttribute::kDisplay).c_str());
+  EXPECT_EQ("body", GetAttr(body, ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("block", GetAttr(body, ax::mojom::StringAttribute::kDisplay));
 
   // Check properties of the two children of the BODY element.
   ASSERT_EQ(2u, body->GetUnignoredChildCount());
 
   const ui::AXNode* button = body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
-  EXPECT_STREQ("input",
-               GetAttr(button, ax::mojom::StringAttribute::kHtmlTag).c_str());
-  EXPECT_STREQ("push",
-               GetAttr(button, ax::mojom::StringAttribute::kName).c_str());
-  EXPECT_STREQ("inline-block",
-               GetAttr(button, ax::mojom::StringAttribute::kDisplay).c_str());
-  ASSERT_EQ(2U, button->data().html_attributes.size());
-  EXPECT_STREQ("type", button->data().html_attributes[0].first.c_str());
-  EXPECT_STREQ("button", button->data().html_attributes[0].second.c_str());
-  EXPECT_STREQ("value", button->data().html_attributes[1].first.c_str());
-  EXPECT_STREQ("push", button->data().html_attributes[1].second.c_str());
+  EXPECT_EQ("input", GetAttr(button, ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("push", GetAttr(button, ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("inline-block",
+            GetAttr(button, ax::mojom::StringAttribute::kDisplay));
+  EXPECT_THAT(button->data().html_attributes,
+              ElementsAre(Pair("type", "button"), Pair("value", "push")));
 
   const ui::AXNode* checkbox = body->GetUnignoredChildAtIndex(1);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, checkbox->data().role);
-  EXPECT_STREQ("input",
-               GetAttr(checkbox, ax::mojom::StringAttribute::kHtmlTag).c_str());
-  EXPECT_STREQ("inline-block",
-               GetAttr(checkbox, ax::mojom::StringAttribute::kDisplay).c_str());
-  ASSERT_EQ(1U, checkbox->data().html_attributes.size());
-  EXPECT_STREQ("type", checkbox->data().html_attributes[0].first.c_str());
-  EXPECT_STREQ("checkbox", checkbox->data().html_attributes[0].second.c_str());
+  EXPECT_EQ("input", GetAttr(checkbox, ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("inline-block",
+            GetAttr(checkbox, ax::mojom::StringAttribute::kDisplay));
+  EXPECT_THAT(checkbox->data().html_attributes,
+              ElementsAre(Pair("type", "checkbox")));
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

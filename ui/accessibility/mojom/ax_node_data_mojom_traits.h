@@ -17,22 +17,37 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static ax::mojom::Role role(const ui::AXNodeData& p) { return p.role; }
   static uint32_t state(const ui::AXNodeData& p) { return p.state; }
   static uint64_t actions(const ui::AXNodeData& p) { return p.actions; }
-  static std::unordered_map<ax::mojom::StringAttribute, std::string>
-  string_attributes(const ui::AXNodeData& p);
-  static std::unordered_map<ax::mojom::IntAttribute, int32_t> int_attributes(
-      const ui::AXNodeData& p);
-  static std::unordered_map<ax::mojom::FloatAttribute, float> float_attributes(
-      const ui::AXNodeData& p);
-  static std::unordered_map<ax::mojom::BoolAttribute, bool> bool_attributes(
-      const ui::AXNodeData& p);
-  static std::unordered_map<ax::mojom::IntListAttribute, std::vector<int32_t>>
-  intlist_attributes(const ui::AXNodeData& p);
-  static std::unordered_map<ax::mojom::StringListAttribute,
-                            std::vector<std::string>>
-  stringlist_attributes(const ui::AXNodeData& p);
-  static std::unordered_map<std::string, std::string> html_attributes(
-      const ui::AXNodeData& p);
-  static std::vector<int32_t> child_ids(const ui::AXNodeData& p) {
+  static const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  string_attributes(const ui::AXNodeData& p) {
+    return p.string_attributes;
+  }
+  static const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  int_attributes(const ui::AXNodeData& p) {
+    return p.int_attributes;
+  }
+  static const std::vector<std::pair<ax::mojom::FloatAttribute, float>>&
+  float_attributes(const ui::AXNodeData& p) {
+    return p.float_attributes;
+  }
+  static const std::vector<std::pair<ax::mojom::BoolAttribute, bool>>&
+  bool_attributes(const ui::AXNodeData& p) {
+    return p.bool_attributes;
+  }
+  static const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  intlist_attributes(const ui::AXNodeData& p) {
+    return p.intlist_attributes;
+  }
+  static const std::vector<
+      std::pair<ax::mojom::StringListAttribute, std::vector<std::string>>>&
+  stringlist_attributes(const ui::AXNodeData& p) {
+    return p.stringlist_attributes;
+  }
+  static const std::vector<std::pair<std::string, std::string>>&
+  html_attributes(const ui::AXNodeData& p) {
+    return p.html_attributes;
+  }
+  static const std::vector<int32_t>& child_ids(const ui::AXNodeData& p) {
     return p.child_ids;
   }
   static ui::AXRelativeBounds relative_bounds(const ui::AXNodeData& p) {

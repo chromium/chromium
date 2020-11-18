@@ -33,7 +33,7 @@ struct StructTraits<ax::mojom::AXTreeUpdateDataView, ui::AXTreeUpdate> {
   static ax::mojom::EventFrom event_from(const ui::AXTreeUpdate& p) {
     return p.event_from;
   }
-  static std::vector<ui::AXEventIntent> event_intents(
+  static const std::vector<ui::AXEventIntent>& event_intents(
       const ui::AXTreeUpdate& p) {
     return p.event_intents;
   }
