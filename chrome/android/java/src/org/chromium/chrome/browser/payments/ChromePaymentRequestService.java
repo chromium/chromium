@@ -531,15 +531,11 @@ public class ChromePaymentRequestService
     }
 
     private void disconnectFromClientWithDebugMessage(String debugMessage) {
-        disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
-    }
-
-    private void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
         if (mPaymentRequestService != null) {
-            mPaymentRequestService.disconnectFromClientWithDebugMessage(debugMessage, reason);
+            mPaymentRequestService.disconnectFromClientWithDebugMessage(
+                    debugMessage, PaymentErrorReason.USER_CANCEL);
         }
-        // Either closed before this method or closed by mPaymentRequestService.
-        assert mHasClosed;
+        close();
     }
 
     // Implements BrowserPaymentRequest:
@@ -566,9 +562,10 @@ public class ChromePaymentRequestService
         if (mHasClosed) return;
         mHasClosed = true;
 
-        assert mPaymentRequestService != null;
-        mPaymentRequestService.close();
-        mPaymentRequestService = null;
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.close();
+            mPaymentRequestService = null;
+        }
 
         mPaymentUiService.close();
         SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
