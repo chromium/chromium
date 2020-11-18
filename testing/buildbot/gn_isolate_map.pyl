@@ -151,6 +151,36 @@
     "type": "script",
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
   },
+  "angle_deqp_gles3_rotate180_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles3_rotate180_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles3_rotate270_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles3_rotate270_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles3_rotate90_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles3_rotate90_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles31_rotate180_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles31_rotate180_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles31_rotate270_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles31_rotate270_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles31_rotate90_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles31_rotate90_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
   "angle_end2end_tests": {
     "label": "//third_party/angle/src/tests:angle_end2end_tests",
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",

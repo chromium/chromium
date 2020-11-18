@@ -1904,6 +1904,57 @@
       },
     },
 
+    'gpu_angle_deqp_gles31_vulkan_rotate180_gtests': {
+      'angle_deqp_gles31_vulkan_rotate180_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate180_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'test': 'angle_deqp_gles31_rotate180_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles31_vulkan_rotate270_gtests': {
+      'angle_deqp_gles31_vulkan_rotate270_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate270_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'test': 'angle_deqp_gles31_rotate270_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles31_vulkan_rotate90_gtests': {
+      'angle_deqp_gles31_vulkan_rotate90_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate90_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'test': 'angle_deqp_gles31_rotate90_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
     'gpu_angle_deqp_gles3_d3d11_gtests': {
       'angle_deqp_gles3_d3d11_tests': {
         'args': [
@@ -1989,6 +2040,57 @@
           'shards': 4,
         },
         'test': 'angle_deqp_gles3_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles3_vulkan_rotate180_gtests': {
+      'angle_deqp_gles3_vulkan_rotate180_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate180_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'test': 'angle_deqp_gles3_rotate180_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles3_vulkan_rotate270_gtests': {
+      'angle_deqp_gles3_vulkan_rotate270_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate270_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'test': 'angle_deqp_gles3_rotate270_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles3_vulkan_rotate90_gtests': {
+      'angle_deqp_gles3_vulkan_rotate90_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate90_tests',
+          '--use-angle=vulkan',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'test': 'angle_deqp_gles3_rotate90_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -4341,6 +4443,39 @@
         ],
         'use_isolated_scripts_api': True,
       },
+      'angle_deqp_gles31_rotate180_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate180_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'angle_deqp_gles31_rotate270_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate270_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'angle_deqp_gles31_rotate90_tests': {
+        'args': [
+          'angle_deqp_gles31_rotate90_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
       'angle_deqp_gles31_tests': {
         'args': [
           'angle_deqp_gles31_tests',
@@ -4353,6 +4488,39 @@
         'swarming': {
           'shards': 3,
         },
+        'use_isolated_scripts_api': True,
+      },
+      'angle_deqp_gles3_rotate180_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate180_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'angle_deqp_gles3_rotate270_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate270_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'angle_deqp_gles3_rotate90_tests': {
+        'args': [
+          'angle_deqp_gles3_rotate90_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_tests': {
@@ -5279,8 +5447,14 @@
       'gpu_angle_deqp_gles2_vulkan_gtests',
       'gpu_angle_deqp_gles31_gl_gtests',
       'gpu_angle_deqp_gles31_vulkan_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate90_gtests',
       'gpu_angle_deqp_gles3_gl_gtests',
       'gpu_angle_deqp_gles3_vulkan_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
       'gpu_angle_deqp_khr_gles2_vulkan_gtests',
       'gpu_angle_deqp_khr_gles31_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
@@ -5321,9 +5495,15 @@
       'gpu_angle_deqp_gles31_d3d11_gtests',
       'gpu_angle_deqp_gles31_gl_gtests',
       'gpu_angle_deqp_gles31_vulkan_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate90_gtests',
       'gpu_angle_deqp_gles3_d3d11_gtests',
       'gpu_angle_deqp_gles3_gl_gtests',
       'gpu_angle_deqp_gles3_vulkan_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
       'gpu_angle_deqp_khr_gles2_vulkan_gtests',
       'gpu_angle_deqp_khr_gles31_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
