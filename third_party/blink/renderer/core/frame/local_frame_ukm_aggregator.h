@@ -60,8 +60,8 @@ namespace blink {
 // such that any given frame is equally likely to be the final sample.
 //
 // Sample usage (see also SCOPED_UMA_AND_UKM_TIMER):
-//   std::unique_ptr<UkmHierarchicalTimeAggregator> aggregator(
-//      new UkmHierarchicalTimeAggregator(
+//   std::unique_ptr<LocalFrameUkmAggregator> aggregator(
+//      new LocalFrameUkmAggregator(
 //              GetSourceId(),
 //              GetUkmRecorder());
 //   ...
@@ -94,8 +94,8 @@ namespace blink {
 // and histograms.xml file. Runtime errors indicate missing or mis-named
 // metrics.
 //
-// If the source_id/recorder changes then a new
-// UkmHierarchicalTimeAggregator has to be created.
+// If the source_id/recorder changes then a new  LocalFrameUkmAggregator has to
+// be created.
 
 // Defines a UKM that is part of a hierarchical ukm, recorded in
 // microseconds equal to the duration of the current lexical scope after
@@ -135,6 +135,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kAnimate,
     kUpdateLayers,
     kWaitForCommit,
+    kDisplayLockIntersectionObserver,
+    kJavascriptIntersectionObserver,
+    kLazyLoadIntersectionObserver,
+    kMediaIntersectionObserver,
     kCount,
     kMainFrame
   };
@@ -167,7 +171,11 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"HandleInputEvents", true},
         {"Animate", true},
         {"UpdateLayers", false},
-        {"WaitForCommit", true}};
+        {"WaitForCommit", true},
+        {"DisplayLockIntersectionObserver", true},
+        {"JavascriptIntersectionObserver", true},
+        {"LazyLoadIntersectionObserver", true},
+        {"MediaIntersectionObserver", true}};
     static_assert(base::size(data) == kCount, "Metrics data mismatch");
     return data;
   }

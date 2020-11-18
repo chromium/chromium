@@ -29,6 +29,10 @@ class V8IntersectionObserverDelegate final
 
   void Trace(Visitor*) const override;
 
+  LocalFrameUkmAggregator::MetricId GetUkmMetricId() const override {
+    return LocalFrameUkmAggregator::kJavascriptIntersectionObserver;
+  }
+
   IntersectionObserver::DeliveryBehavior GetDeliveryBehavior() const override {
     return IntersectionObserver::kPostTaskToDeliver;
   }

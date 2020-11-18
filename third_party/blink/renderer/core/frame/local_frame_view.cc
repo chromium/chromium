@@ -1729,7 +1729,7 @@ void LocalFrameView::ComputePostLayoutIntersections(unsigned parent_flags) {
 
   if (auto* controller =
           GetFrame().GetDocument()->GetIntersectionObserverController()) {
-    controller->ComputeIntersections(flags);
+    controller->ComputeIntersections(flags, EnsureUkmAggregator());
   }
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
@@ -4262,7 +4262,8 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     // Notify javascript IntersectionObservers
     if (IntersectionObserverController* controller =
             GetFrame().GetDocument()->GetIntersectionObserverController()) {
-      needs_occlusion_tracking |= controller->ComputeIntersections(flags);
+      needs_occlusion_tracking |=
+          controller->ComputeIntersections(flags, EnsureUkmAggregator());
     }
     intersection_observation_state_ = kNotNeeded;
   }

@@ -123,7 +123,8 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
           element_->GetDocument()))},
       {std::numeric_limits<float>::min()}, &element_->GetDocument(),
       WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
-                         WrapWeakPersistent(this)));
+                         WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   lazy_load_intersection_observer_->observe(element_);
 }
@@ -205,7 +206,8 @@ void LazyLoadFrameObserver::StartTrackingVisibilityMetrics() {
       {}, {std::numeric_limits<float>::min()}, &element_->GetDocument(),
       WTF::BindRepeating(
           &LazyLoadFrameObserver::RecordMetricsOnVisibilityChanged,
-          WrapWeakPersistent(this)));
+          WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   visibility_metrics_observer_->observe(element_);
 }

@@ -137,7 +137,8 @@ void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
         {}, {kIntersectionThreshold}, &video_element_->GetDocument(),
         WTF::BindRepeating(
             &MediaControlsRotateToFullscreenDelegate::OnIntersectionChange,
-            WrapWeakPersistent(this)));
+            WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kMediaIntersectionObserver);
     intersection_observer_->observe(video_element_);
   } else if (!needs_intersection_observer && intersection_observer_) {
     intersection_observer_->disconnect();

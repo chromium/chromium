@@ -43,14 +43,20 @@ class IntersectionObserverDelegateImpl final
   IntersectionObserverDelegateImpl(
       ExecutionContext* context,
       IntersectionObserver::EventCallback callback,
+      LocalFrameUkmAggregator::MetricId ukm_metric_id,
       IntersectionObserver::DeliveryBehavior delivery_behavior)
       : context_(context),
         callback_(std::move(callback)),
+        ukm_metric_id_(ukm_metric_id),
         delivery_behavior_(delivery_behavior) {}
   IntersectionObserverDelegateImpl(const IntersectionObserverDelegateImpl&) =
       delete;
   IntersectionObserverDelegateImpl& operator=(
       const IntersectionObserverDelegateImpl&) = delete;
+
+  LocalFrameUkmAggregator::MetricId GetUkmMetricId() const override {
+    return ukm_metric_id_;
+  }
 
   IntersectionObserver::DeliveryBehavior GetDeliveryBehavior() const override {
     return delivery_behavior_;
@@ -71,6 +77,7 @@ class IntersectionObserverDelegateImpl final
  private:
   WeakMember<ExecutionContext> context_;
   IntersectionObserver::EventCallback callback_;
+  LocalFrameUkmAggregator::MetricId ukm_metric_id_;
   IntersectionObserver::DeliveryBehavior delivery_behavior_;
 };
 
@@ -224,6 +231,7 @@ IntersectionObserver* IntersectionObserver::Create(
     const Vector<float>& thresholds,
     Document* document,
     EventCallback callback,
+    LocalFrameUkmAggregator::MetricId ukm_metric_id,
     DeliveryBehavior behavior,
     ThresholdInterpretation semantics,
     DOMHighResTimeStamp delay,
@@ -233,7 +241,8 @@ IntersectionObserver* IntersectionObserver::Create(
     ExceptionState& exception_state) {
   IntersectionObserverDelegateImpl* intersection_observer_delegate =
       MakeGarbageCollected<IntersectionObserverDelegateImpl>(
-          document->GetExecutionContext(), std::move(callback), behavior);
+          document->GetExecutionContext(), std::move(callback), ukm_metric_id,
+          behavior);
   return MakeGarbageCollected<IntersectionObserver>(
       *intersection_observer_delegate, nullptr, margin, thresholds, semantics,
       delay, track_visibility, always_report_root_bounds, margin_target);
@@ -454,6 +463,10 @@ bool IntersectionObserver::ComputeIntersections(unsigned flags) {
   }
   can_use_cached_rects_ = 1;
   return trackVisibility();
+}
+
+LocalFrameUkmAggregator::MetricId IntersectionObserver::GetUkmMetricId() const {
+  return delegate_->GetUkmMetricId();
 }
 
 void IntersectionObserver::SetNeedsDelivery() {

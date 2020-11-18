@@ -350,7 +350,8 @@ void HTMLVideoElement::OnLoadFinished() {
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
         {}, {IntersectionObserver::kMinimumThreshold}, &GetDocument(),
         WTF::BindRepeating(&HTMLVideoElement::OnIntersectionChangedForLazyLoad,
-                           WrapWeakPersistent(this)));
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kMediaIntersectionObserver);
     lazy_load_intersection_observer_->observe(this);
   }
 
