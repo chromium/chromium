@@ -1,7 +1,7 @@
 <style include="diagnostics-shared">
 </style>
 
-<diagnostics-card>
+<diagnostics-card hide-data-points="true">
   <div id="cardTitle" slot="title">[[i18n('memoryTitle')]]</div>
   <percent-bar-chart slot="left-panel" header="[[i18n('usedMemory')]]"
     value="[[getTotalUsedMemory_(memoryUsage_)]]"

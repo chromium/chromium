@@ -11,7 +11,7 @@ import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://d
 import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isChildVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -88,6 +88,11 @@ export function batteryStatusCardTestSuite() {
           assertEquals(
               fakeBatteryChargeStatus[0].chargeNowMilliampHours,
               barChart.value);
+
+          // Verify that the data points container is visible.
+          const diagnosticsCard =
+              dx_utils.getDiagnosticsCard(batteryStatusElement);
+          assertTrue(isChildVisible(diagnosticsCard, '.data-points'));
         });
   });
 }

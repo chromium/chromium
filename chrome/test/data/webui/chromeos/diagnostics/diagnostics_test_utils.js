@@ -114,3 +114,13 @@ export function assertElementContainsText(element, text) {
 export function assertTextContains(text, subStr) {
   assertTrue(text.trim().indexOf(subStr) !== -1);
 }
+
+/**
+ * Helper function for getting the diagnostics-card from an element.
+ * @param {?Element} element
+ * @return {!DiagnosticsCardElement}
+ */
+export function getDiagnosticsCard(element) {
+  return /** @type {!DiagnosticsCardElement} */ (
+      element.shadowRoot.querySelector('diagnostics-card'));
+}

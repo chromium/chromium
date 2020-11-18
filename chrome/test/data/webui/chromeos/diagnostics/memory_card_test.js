@@ -10,7 +10,7 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isChildVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -98,6 +98,10 @@ export function memoryCardTestSuite() {
       assertTrue(!!getRoutineSection());
       assertTrue(!!getRunTestsButton());
       assertFalse(isRunTestsButtonDisabled());
+
+      // Verify that the data points container is not visible.
+      const diagnosticsCard = dx_utils.getDiagnosticsCard(memoryElement);
+      assertFalse(isChildVisible(diagnosticsCard, '.data-points'));
     });
   });
 }

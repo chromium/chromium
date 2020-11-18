@@ -6,14 +6,6 @@
     padding: 4px 8px;
   }
 
-  .body-container {
-    column-gap: 10px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    justify-content: end;
-    row-gap: 5px;
-  }
-
   .card-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -39,6 +31,14 @@
     margin: 10px 0;
   }
 
+  .data-points {
+    column-gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 100px);
+    justify-content: end;
+    row-gap: 5px;
+  }
+
   .routine-container {
     @apply --diagnostics-default-font;
   }
@@ -59,7 +59,7 @@
       <div>
         <slot name="left-panel"></slot>
       </div>
-      <div id="body" class="body-container">
+      <div id="body" class="data-points" hidden$="[[hideDataPoints]]">
         <slot name="body"></slot>
       </div>
     </div>

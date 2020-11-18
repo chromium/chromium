@@ -17,4 +17,12 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  properties: {
+    /** @type {boolean} */
+    hideDataPoints: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+  },
 });

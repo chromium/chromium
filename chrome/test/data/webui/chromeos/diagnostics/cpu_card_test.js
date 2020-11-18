@@ -10,7 +10,7 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isChildVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -114,6 +114,10 @@ export function cpuCardTestSuite() {
       assertTrue(!!getRoutineSection());
       assertTrue(!!getRunTestsButton());
       assertFalse(isRunTestsButtonDisabled());
+
+      // Verify that the data points container is visible.
+      const diagnosticsCard = dx_utils.getDiagnosticsCard(cpuElement);
+      assertTrue(isChildVisible(diagnosticsCard, '.data-points'));
     });
   });
 }
