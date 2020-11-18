@@ -221,7 +221,10 @@ if (use_allocator == "tcmalloc") {
       configs -= [ "//build/config/compiler:afdo" ]
     }
 
-    deps = [ ":buildflags" ]
+    deps = [
+      ":buildflags",
+      "//build:chromeos_buildflags",
+    ]
 
     if (enable_profiling) {
       sources += [

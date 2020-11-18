@@ -140,6 +140,7 @@ if (enable_java_templates) {
         # cycle, though.
         "//base:debugging_buildflags",
         "//base:logging_buildflags",
+        "//build:chromeos_buildflags",
       ]
     }
 

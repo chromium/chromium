@@ -6,13 +6,14 @@
 
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
 // ASAN moves local variables outside of the stack extents.
 // Test is flaky on ChromeOS. crbug.com/1133434.
-#if defined(ADDRESS_SANITIZER) || defined(OS_CHROMEOS)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_CurrentThreadBase DISABLED_CurrentThreadBase
 #else
 #define MAYBE_CurrentThreadBase CurrentThreadBase
