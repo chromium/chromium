@@ -47,9 +47,10 @@ class RouteRequestResult {
     CANCELLED = 8,
     ROUTE_ALREADY_EXISTS = 9,
     DESKTOP_PICKER_FAILED = 10,
+    ROUTE_ALREADY_TERMINATED = 11,
     // New values must be added here.
 
-    TOTAL_COUNT = 11  // The total number of values.
+    TOTAL_COUNT = 12  // The total number of values.
   };
 
   static std::unique_ptr<RouteRequestResult> FromSuccess(

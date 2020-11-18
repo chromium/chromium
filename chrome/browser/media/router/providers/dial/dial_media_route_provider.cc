@@ -67,7 +67,8 @@ void DialMediaRouteProvider::Init(
 
   // |activity_manager_| might have already been set in tests.
   if (!activity_manager_)
-    activity_manager_ = std::make_unique<DialActivityManager>();
+    activity_manager_ = std::make_unique<DialActivityManager>(
+        media_sink_service_->app_discovery_service());
 
   message_sender_ =
       std::make_unique<BufferedMessageSender>(media_router_.get());
@@ -435,27 +436,43 @@ void DialMediaRouteProvider::HandleStopAppResult(
     TerminateRouteCallback callback,
     const base::Optional<std::string>& message,
     RouteRequestResult::ResultCode result_code) {
-  if (result_code == RouteRequestResult::OK) {
-    media_router_->OnPresentationConnectionStateChanged(
-        route_id, blink::mojom::PresentationConnectionState::TERMINATED);
-    NotifyAllOnRoutesUpdated();
-    DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
-        DialTerminateRouteResult::kSuccess);
-    logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                     "Successfully terminated route.", "",
-                     MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                     MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
-  } else {
-    DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
-        DialTerminateRouteResult::kStopAppFailed);
-    logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        base::StringPrintf(
-            "Failed to terminate route. %s RouteRequestResult: %d",
-            message.value_or("").c_str(), static_cast<int>(result_code)),
-        "", MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-        MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+  switch (result_code) {
+    case RouteRequestResult::OK:
+      DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
+          DialTerminateRouteResult::kSuccess);
+      logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
+                       "Successfully terminated route.", "",
+                       MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
+                       MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+      break;
+    case RouteRequestResult::ROUTE_ALREADY_TERMINATED:
+      DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
+          DialTerminateRouteResult::kRouteAlreadyTerminated);
+      logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
+                       "Tried to stop a session that no longer exists.", "",
+                       MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
+                       MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+      break;
+    default:
+      // In this case, the MediaRoute still exists. but we disconnect the
+      // controller with the OnPresentationConnectionStateChanged() call
+      // below. This results in a local MediaRoute that is not associated with a
+      // PresentationConnection.
+      DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
+          DialTerminateRouteResult::kStopAppFailed);
+      logger_->LogError(
+          mojom::LogCategory::kRoute, kLoggerComponent,
+          base::StringPrintf(
+              "Failed to terminate route. %s RouteRequestResult: %d",
+              message.value_or("").c_str(), static_cast<int>(result_code)),
+          "", MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
+          MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
   }
+  // We set the PresentationConnection state to "terminated" per the API spec:
+  // https://w3c.github.io/presentation-api/#terminating-a-presentation-in-a-controlling-browsing-context
+  media_router_->OnPresentationConnectionStateChanged(
+      route_id, blink::mojom::PresentationConnectionState::TERMINATED);
+  NotifyAllOnRoutesUpdated();
   std::move(callback).Run(message, result_code);
 }
 
