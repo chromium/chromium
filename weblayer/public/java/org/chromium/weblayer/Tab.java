@@ -144,11 +144,13 @@ public class Tab {
      * active in its browser or its Fragment is not started. When a tab in this state loses its
      * renderer process to a crash (or due to system memory reclamation), it will automatically
      * reload next the time it becomes possibly visible.
+     *
+     * @since 87
      */
     public boolean willAutomaticallyReloadAfterCrash() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         try {
