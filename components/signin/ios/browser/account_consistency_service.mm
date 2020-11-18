@@ -165,13 +165,20 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   if (google_util::IsGoogleDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS)) {
-    // Reset boolean that tracks displaying the sign-in notification infobar.
-    // This ensures that only the most recent navigation will trigger an
-    // infobar.
-    gaia_cookies_restored_ = false;
-    account_consistency_service_->SetGaiaCookiesIfDeleted(
-        base::BindOnce(&AccountConsistencyHandler::MarkGaiaCookiesRestored,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // TODO(crbug.com/1131027): Disable GAIA cookie restore on Google URLs that
+    // may display cookie consent in the content area that conflict with the
+    // sign-in notification. This will be removed once we perform cookie
+    // restoration before sending a navigation request.
+    if (!(google_util::IsGoogleHomePageUrl(url) ||
+          google_util::IsGoogleSearchUrl(url))) {
+      // Reset boolean that tracks displaying the sign-in notification infobar.
+      // This ensures that only the most recent navigation will trigger an
+      // infobar.
+      gaia_cookies_restored_ = false;
+      account_consistency_service_->SetGaiaCookiesIfDeleted(
+          base::BindOnce(&AccountConsistencyHandler::MarkGaiaCookiesRestored,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   if (!gaia::IsGaiaSignonRealm(url.GetOrigin())) {
