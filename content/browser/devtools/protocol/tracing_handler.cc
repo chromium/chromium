@@ -63,11 +63,6 @@ const double kMinimumReportingInterval = 250.0;
 
 const char kRecordModeParam[] = "record_mode";
 
-// Settings for |video_consumer_|.
-// Tracing requires a 10ms minimum capture period.
-constexpr base::TimeDelta kMinCapturePeriod =
-    base::TimeDelta::FromMilliseconds(10);
-
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
 
@@ -917,7 +912,6 @@ void TracingHandler::OnRecordingEnabled(
   if (video_consumer_ && screenshot_enabled) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
-    video_consumer_->SetMinCapturePeriod(kMinCapturePeriod);
     video_consumer_->SetMinAndMaxFrameSize(kMinFrameSize, kMaxFrameSize);
     video_consumer_->StartCapture();
   }

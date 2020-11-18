@@ -19,9 +19,8 @@ namespace content {
 
 namespace {
 
-// Frame capture period is 10 frames per second by default.
 constexpr base::TimeDelta kDefaultMinCapturePeriod =
-    base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta::FromMilliseconds(10);
 
 // Frame size can change every frame.
 constexpr base::TimeDelta kDefaultMinPeriod = base::TimeDelta();
