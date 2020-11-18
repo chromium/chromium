@@ -569,12 +569,11 @@
   {
     "name": "content-settings-redesign",
     "owners": [
-      "tchudakov",
       "harrisonsean",
       "msramek",
       "chrome-friendly-settings@google.com"
     ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "context-menu-google-lens-chip",
