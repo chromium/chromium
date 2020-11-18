@@ -614,10 +614,10 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Sets the current page scale factor and minimum / maximum limits. Both
   // limits are initially 1 (no page scale allowed).
-  virtual void SetPageScaleStateAndLimits(float page_scale_factor,
-                                          bool is_pinch_gesture_active,
-                                          float minimum,
-                                          float maximum);
+  void SetPageScaleStateAndLimits(float page_scale_factor,
+                                  bool is_pinch_gesture_active,
+                                  float minimum,
+                                  float maximum);
 
   // The value of the applied battery-savings META element in the document
   // changed.

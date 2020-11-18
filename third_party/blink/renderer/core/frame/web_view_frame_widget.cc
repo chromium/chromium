@@ -319,24 +319,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   return event_result;
 }
 
-void WebViewFrameWidget::SetPageScaleStateAndLimits(
-    float page_scale_factor,
-    bool is_pinch_gesture_active,
-    float minimum,
-    float maximum) {
-  WebFrameWidgetBase::SetPageScaleStateAndLimits(
-      page_scale_factor, is_pinch_gesture_active, minimum, maximum);
-
-  // If page scale hasn't changed, then just return without notifying
-  // the remote frames.
-  if (page_scale_factor == page_scale_factor_in_mainframe_ &&
-      is_pinch_gesture_active == is_pinch_gesture_active_in_mainframe_) {
-    return;
-  }
-
-  NotifyPageScaleFactorChanged(page_scale_factor, is_pinch_gesture_active);
-}
-
 void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
     const gfx::ColorSpace& color_space) {
   // We are changing the device color space from the renderer, so allocate a

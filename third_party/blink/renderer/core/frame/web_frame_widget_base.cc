@@ -3145,6 +3145,18 @@ void WebFrameWidgetBase::SetPageScaleStateAndLimits(
     float maximum) {
   widget_base_->LayerTreeHost()->SetPageScaleFactorAndLimits(page_scale_factor,
                                                              minimum, maximum);
+
+  // Only propagate page scale from the main frame.
+  if (ForMainFrame()) {
+    // If page scale hasn't changed, then just return without notifying
+    // the remote frames.
+    if (page_scale_factor == page_scale_factor_in_mainframe_ &&
+        is_pinch_gesture_active == is_pinch_gesture_active_in_mainframe_) {
+      return;
+    }
+
+    NotifyPageScaleFactorChanged(page_scale_factor, is_pinch_gesture_active);
+  }
 }
 
 bool WebFrameWidgetBase::UpdateScreenRects(

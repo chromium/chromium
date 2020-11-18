@@ -70,10 +70,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   bool ScrollFocusedEditableElementIntoView() override;
 
   // WebFrameWidgetBase overrides:
-  void SetPageScaleStateAndLimits(float page_scale_factor,
-                                  bool is_pinch_gesture_active,
-                                  float minimum,
-                                  float maximum) override;
   void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) override;
 
