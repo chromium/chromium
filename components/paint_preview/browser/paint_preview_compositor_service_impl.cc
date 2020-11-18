@@ -4,27 +4,13 @@
 
 #include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
 
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_compositor_client_impl.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 
 namespace paint_preview {
-
-namespace {
-
-base::OnceClosure BindToTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceClosure closure) {
-  return base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-         base::OnceClosure closure) {
-        task_runner->PostTask(FROM_HERE, std::move(closure));
-      },
-      task_runner, std::move(closure));
-}
-
-}  // namespace
 
 PaintPreviewCompositorServiceImpl::PaintPreviewCompositorServiceImpl(
     mojo::PendingRemote<mojom::PaintPreviewCompositorCollection> pending_remote,
@@ -48,7 +34,7 @@ PaintPreviewCompositorServiceImpl::PaintPreviewCompositorServiceImpl(
             remote->set_disconnect_handler(std::move(disconnect_closure));
           },
           compositor_service_.get(), std::move(pending_remote),
-          BindToTaskRunner(
+          base::BindPostTask(
               default_task_runner_,
               base::BindOnce(
                   &PaintPreviewCompositorServiceImpl::DisconnectHandler,

@@ -6,43 +6,10 @@
 
 #include <utility>
 
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 
 namespace paint_preview {
-
-namespace {
-
-// These methods bind a callback to a task runner. This simplifies situations
-// where a caller provides a callback which should be passed to |compositor_|
-// verbatim, but should be run on the caller's task runner rather than
-// |compositor_task_runner_|.
-//
-// Based on the implementation in: chromecast/base/bind_to_task_runner.h
-
-template <typename Sig>
-struct BindToTaskRunnerTrampoline;
-
-template <typename... Args>
-struct BindToTaskRunnerTrampoline<void(Args...)> {
-  static void Run(base::TaskRunner* task_runner,
-                  base::OnceCallback<void(Args...)> callback,
-                  Args... args) {
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::forward<Args>(args)...));
-  }
-};
-
-template <typename T>
-base::OnceCallback<T> BindToTaskRunner(
-    scoped_refptr<base::TaskRunner> task_runner,
-    base::OnceCallback<T> callback) {
-  return base::BindOnce(&BindToTaskRunnerTrampoline<T>::Run,
-                        base::RetainedRef(std::move(task_runner)),
-                        std::move(callback));
-}
-
-}  // namespace
 
 PaintPreviewCompositorClientImpl::PaintPreviewCompositorClientImpl(
     scoped_refptr<base::SequencedTaskRunner> compositor_task_runner,
@@ -91,7 +58,7 @@ void PaintPreviewCompositorClientImpl::BeginSeparatedFrameComposite(
       base::BindOnce(
           &mojom::PaintPreviewCompositor::BeginSeparatedFrameComposite,
           base::Unretained(compositor_.get()->get()), std::move(request),
-          BindToTaskRunner(default_task_runner_, std::move(callback))));
+          base::BindPostTask(default_task_runner_, std::move(callback))));
 }
 
 void PaintPreviewCompositorClientImpl::BitmapForSeparatedFrame(
@@ -112,7 +79,7 @@ void PaintPreviewCompositorClientImpl::BitmapForSeparatedFrame(
         CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
         std::move(callback).Run(status, bitmap);
       },
-      BindToTaskRunner(default_task_runner_, std::move(callback)));
+      base::BindPostTask(default_task_runner_, std::move(callback)));
 
   compositor_task_runner_->PostTask(
       FROM_HERE,
@@ -130,7 +97,7 @@ void PaintPreviewCompositorClientImpl::BeginMainFrameComposite(
       base::BindOnce(
           &mojom::PaintPreviewCompositor::BeginMainFrameComposite,
           base::Unretained(compositor_.get()->get()), std::move(request),
-          BindToTaskRunner(default_task_runner_, std::move(callback))));
+          base::BindPostTask(default_task_runner_, std::move(callback))));
 }
 
 void PaintPreviewCompositorClientImpl::BitmapForMainFrame(
@@ -143,7 +110,7 @@ void PaintPreviewCompositorClientImpl::BitmapForMainFrame(
       base::BindOnce(
           &mojom::PaintPreviewCompositor::BitmapForMainFrame,
           base::Unretained(compositor_.get()->get()), clip_rect, scale_factor,
-          BindToTaskRunner(default_task_runner_, std::move(callback))));
+          base::BindPostTask(default_task_runner_, std::move(callback))));
 }
 
 void PaintPreviewCompositorClientImpl::SetRootFrameUrl(const GURL& url) {
@@ -183,7 +150,7 @@ PaintPreviewCompositorClientImpl::BuildCompositorCreatedCallback(
     base::OnceClosure user_closure,
     OnCompositorCreatedCallback service_callback) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  return BindToTaskRunner(
+  return base::BindPostTask(
       default_task_runner_,
       base::BindOnce(&PaintPreviewCompositorClientImpl::OnCompositorCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(user_closure),
@@ -203,7 +170,7 @@ void PaintPreviewCompositorClientImpl::OnCompositorCreated(
       base::BindOnce(
           &mojo::Remote<mojom::PaintPreviewCompositor>::set_disconnect_handler,
           base::Unretained(compositor_.get()),
-          BindToTaskRunner(
+          base::BindPostTask(
               default_task_runner_,
               base::BindOnce(
                   &PaintPreviewCompositorClientImpl::DisconnectHandler,
