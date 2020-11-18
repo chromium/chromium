@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 
   scoped_refptr<net::X509Certificate> certificate = GetCertificate();
   CheckCertificateProvidedByExtension(*certificate, *extension());
-  EXPECT_EQ(GetAllProvidedCertificates().size(), 1);
+  EXPECT_EQ(GetAllProvidedCertificates().size(), 1U);
 
   TestNavigationToCertificateRequestingWebPage(
       "RSASSA_PKCS1_v1_5_SHA1", SSL_SIGN_RSA_PKCS1_SHA1, /*is_raw_data=*/true);
