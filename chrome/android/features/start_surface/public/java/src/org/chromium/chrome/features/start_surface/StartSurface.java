@@ -158,10 +158,15 @@ public interface StartSurface {
         void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
 
         /**
-         * @return Whether the Start surface is currently showing with a state of
-         * {@link OverviewModeState.SHOWN_HOMEPAGE}.
+         * @return Whether the current {@link StartSurfaceState}.
          */
-        boolean isHomePageShowing();
+        @StartSurfaceState
+        int getStartSurfaceState();
+
+        /**
+         * @return Whether the Start surface or the Tab switcher is shown or showing.
+         */
+        boolean inShowState();
     }
 
     /**

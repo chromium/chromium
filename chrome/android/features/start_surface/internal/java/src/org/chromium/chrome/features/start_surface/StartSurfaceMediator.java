@@ -542,12 +542,10 @@ class StartSurfaceMediator
         }
     }
 
-    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
-    // two different things, audit the wording usage and see if we can rename this method to
-    // getStartSurfaceState.
     @VisibleForTesting
+    @Override
     @StartSurfaceState
-    public int getOverviewState() {
+    public int getStartSurfaceState() {
         return mStartSurfaceState;
     }
 
@@ -661,8 +659,9 @@ class StartSurfaceMediator
     }
 
     @Override
-    public boolean isHomePageShowing() {
-        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+    public boolean inShowState() {
+        return mStartSurfaceState != StartSurfaceState.NOT_SHOWN
+                && mStartSurfaceState != StartSurfaceState.DISABLED;
     }
 
     // Implements TabSwitcher.OverviewModeObserver.

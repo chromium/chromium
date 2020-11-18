@@ -112,6 +112,7 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -1384,6 +1385,39 @@ public class StartSurfaceTest {
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onView(withId(R.id.voice_search_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_BottomSheet() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        BottomSheetTestSupport bottomSheetTestSupport = new BottomSheetTestSupport(
+                cta.getRootUiCoordinatorForTesting().getBottomSheetController());
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
+
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
+
+        TabUiTestHelper.enterTabSwitcher(cta);
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
     }
 
     private static Matcher<View> isView(final View targetView) {

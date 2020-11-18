@@ -108,4 +108,11 @@ public class BottomSheetTestSupport {
     private BottomSheet getBottomSheet() {
         return (BottomSheet) mController.getBottomSheetViewForTesting();
     }
+
+    /**
+     * @return Whether has any token to suppress the bottom sheet.
+     */
+    public boolean hasSuppressionTokens() {
+        return mController.hasSuppressionTokensForTesting();
+    }
 }
