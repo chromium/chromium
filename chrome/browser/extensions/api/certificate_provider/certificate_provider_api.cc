@@ -75,6 +75,7 @@ const char kCertificateProviderErrorTimeout[] =
 const char kCertificateProviderErrorInvalidId[] = "Invalid requestId";
 const char kCertificateProviderErrorUnexpectedError[] =
     "Error supplied with non-empty data.";
+const char kCertificateProviderErrorNoAlgorithms[] = "Algorithm list is empty.";
 
 // requestPin constants.
 const char kCertificateProviderNoActiveDialog[] =
@@ -208,6 +209,10 @@ bool ParseCertificateInfo(
         return false;
     }
   }
+  if (out_info->supported_algorithms.empty()) {
+    *out_error_message = kCertificateProviderErrorNoAlgorithms;
+    return false;
+  }
   return true;
 }
 
@@ -251,6 +256,10 @@ bool ParseClientCertificateInfo(
         NOTREACHED();
         return false;
     }
+  }
+  if (out_info->supported_algorithms.empty()) {
+    *out_error_message = kCertificateProviderErrorNoAlgorithms;
+    return false;
   }
   return true;
 }

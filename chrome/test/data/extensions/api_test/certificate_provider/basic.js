@@ -17,6 +17,38 @@ const callbackPass = chrome.test.callbackPass;
 let l1LeafCert = null;
 const INVALID_CERT = new Uint8Array([1, 2, 3, 4, 5]);
 
+function getInvalidClientCertificateInfos() {
+  const badDer = {
+    certificateChain: [INVALID_CERT.buffer],
+    supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
+  };
+  const emptyChain = {
+    certificateChain: [],
+    supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
+  };
+  const noAlgorithms = {
+    certificateChain: [l1LeafCert.buffer],
+    supportedAlgorithms: []
+  };
+  return [
+    badDer,
+    emptyChain,
+    noAlgorithms,
+  ];
+}
+
+function getInvalidLegacyCertificateInfos() {
+  const badDer = {
+    certificate: INVALID_CERT.buffer,
+    supportedHashes: ['SHA256']
+  };
+  const noHashes = {certificate: l1LeafCert.buffer, supportedHashes: []};
+  return [
+    badDer,
+    noHashes,
+  ];
+}
+
 function registerAsCertificateProvider() {
   function reportCertificates(request) {
     assertTrue(Number.isInteger(request.certificatesRequestId));
@@ -24,25 +56,10 @@ function registerAsCertificateProvider() {
       certificateChain: [l1LeafCert.buffer],
       supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA1']
     };
-    const invalidCertBadDer = {
-      certificateChain: [INVALID_CERT.buffer],
-      supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
-    };
-    const invalidCertEmpty = {
-      certificateChain: [],
-      supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
-    };
-    const invalidCertNoAlgorithms = {
-      certificateChain: [l1LeafCert.buffer],
-      supportedAlgorithms: []
-    };
     chrome.certificateProvider.setCertificates(
         {
           certificatesRequestId: request.certificatesRequestId,
-          clientCertificates: [
-            validCert, invalidCertBadDer, invalidCertEmpty,
-            invalidCertNoAlgorithms
-          ]
+          clientCertificates: [validCert, ...getInvalidClientCertificateInfos()]
         },
         () => {
           chrome.test.succeed();
@@ -64,11 +81,9 @@ function registerAsLegacyCertificateProvider() {
       certificate: l1LeafCert.buffer,
       supportedHashes: ['SHA1']
     };
-    const invalidCertInfo = {
-      certificate: INVALID_CERT.buffer,
-      supportedHashes: ['SHA256']
-    };
-    reportCallback([validCertInfo, invalidCertInfo], callbackPass(checkResult));
+    reportCallback(
+        [validCertInfo, ...getInvalidLegacyCertificateInfos()],
+        callbackPass(checkResult));
   }
 
   chrome.certificateProvider.onCertificatesRequested.addListener(
@@ -83,26 +98,18 @@ function setCertificates() {
     certificateChain: [l1LeafCert.buffer],
     supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA1']
   };
-  const invalidCertBadDer = {
-    certificateChain: [INVALID_CERT.buffer],
-    supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
-  };
-  const invalidCertEmpty = {
-    certificateChain: [],
-    supportedAlgorithms: ['RSASSA_PKCS1_v1_5_SHA256']
-  };
-  const invalidCertNoAlgorithms = {
-    certificateChain: [l1LeafCert.buffer],
-    supportedAlgorithms: []
-  };
   chrome.certificateProvider.setCertificates(
-      {
-        clientCertificates: [
-          validCert, invalidCertBadDer, invalidCertEmpty,
-          invalidCertNoAlgorithms
-        ]
-      },
+      {clientCertificates: [validCert, ...getInvalidClientCertificateInfos()]},
       () => {
+        const success = !chrome.runtime.lastError;
+        domAutomationController.send(success);
+      });
+}
+
+// Similar to `setCertificates()`, but only provides invalid certificates.
+function setInvalidCertificates() {
+  chrome.certificateProvider.setCertificates(
+      {clientCertificates: getInvalidClientCertificateInfos()}, () => {
         const success = !chrome.runtime.lastError;
         domAutomationController.send(success);
       });

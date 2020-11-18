@@ -22,7 +22,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/certificate_provider/test_certificate_provider_extension.h"
@@ -55,6 +57,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_background_page_first_load_observer.h"
 #include "net/cert/x509_certificate.h"
+#include "net/ssl/client_cert_identity.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -196,6 +199,22 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
     cert_provider_service_->LookUpCertificate(
         certificate, &is_currently_provided, &provider_extension_id);
     EXPECT_FALSE(is_currently_provided);
+  }
+
+  std::vector<scoped_refptr<net::X509Certificate>>
+  GetAllProvidedCertificates() {
+    base::RunLoop run_loop;
+    std::unique_ptr<chromeos::CertificateProvider> cert_provider =
+        cert_provider_service_->CreateCertificateProvider();
+    std::vector<scoped_refptr<net::X509Certificate>> all_provided_certificates;
+    auto callback = base::BindLambdaForTesting(
+        [&](net::ClientCertIdentityList cert_identity_list) {
+          for (const auto& cert_identity : cert_identity_list)
+            all_provided_certificates.push_back(cert_identity->certificate());
+        });
+    cert_provider->GetCertificates(callback.Then(run_loop.QuitClosure()));
+    run_loop.Run();
+    return all_provided_certificates;
   }
 
   net::SpawnedTestServer* GetHttpsServer() const { return https_server_.get(); }
@@ -561,12 +580,21 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 
   scoped_refptr<net::X509Certificate> certificate = GetCertificate();
   CheckCertificateProvidedByExtension(*certificate, *extension());
+  EXPECT_EQ(GetAllProvidedCertificates().size(), 1);
 
   TestNavigationToCertificateRequestingWebPage(/*is_raw_data=*/true);
 
   // Remove the certificate.
   ExecuteJavascriptAndWaitForCallback("unsetCertificates();");
   CheckCertificateAbsent(*certificate);
+  EXPECT_TRUE(GetAllProvidedCertificates().empty());
+}
+
+// Tests that all invalid certificates are rejected.
+IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
+                       OnlyInvalidCertificates) {
+  ExecuteJavascriptAndWaitForCallback("setInvalidCertificates();");
+  EXPECT_TRUE(GetAllProvidedCertificates().empty());
 }
 
 // Test that the certificateProvider events are delivered correctly in the
