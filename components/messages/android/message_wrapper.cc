@@ -27,11 +27,28 @@ MessageWrapper::~MessageWrapper() {
   CHECK(message_dismissed_);
 }
 
+base::string16 MessageWrapper::GetTitle() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jtitle =
+      Java_MessageWrapper_getTitle(env, java_message_wrapper_);
+  return jtitle.is_null() ? base::string16()
+                          : base::android::ConvertJavaStringToUTF16(jtitle);
+}
+
 void MessageWrapper::SetTitle(const base::string16& title) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jtitle =
       base::android::ConvertUTF16ToJavaString(env, title);
   Java_MessageWrapper_setTitle(env, java_message_wrapper_, jtitle);
+}
+
+base::string16 MessageWrapper::GetDescription() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jdescription =
+      Java_MessageWrapper_getDescription(env, java_message_wrapper_);
+  return jdescription.is_null()
+             ? base::string16()
+             : base::android::ConvertJavaStringToUTF16(jdescription);
 }
 
 void MessageWrapper::SetDescription(const base::string16& description) {
@@ -41,6 +58,15 @@ void MessageWrapper::SetDescription(const base::string16& description) {
   Java_MessageWrapper_setDescription(env, java_message_wrapper_, jdescription);
 }
 
+base::string16 MessageWrapper::GetPrimaryButtonText() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jprimary_button_text =
+      Java_MessageWrapper_getPrimaryButtonText(env, java_message_wrapper_);
+  return jprimary_button_text.is_null()
+             ? base::string16()
+             : base::android::ConvertJavaStringToUTF16(jprimary_button_text);
+}
+
 void MessageWrapper::SetPrimaryButtonText(
     const base::string16& primary_button_text) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -48,6 +74,11 @@ void MessageWrapper::SetPrimaryButtonText(
       base::android::ConvertUTF16ToJavaString(env, primary_button_text);
   Java_MessageWrapper_setPrimaryButtonText(env, java_message_wrapper_,
                                            jprimary_button_text);
+}
+
+int MessageWrapper::GetIconResourceId() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_getIconResourceId(env, java_message_wrapper_);
 }
 
 void MessageWrapper::SetIconResourceId(int resource_id) {

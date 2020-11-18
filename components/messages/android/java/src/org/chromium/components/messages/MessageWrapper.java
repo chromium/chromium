@@ -46,8 +46,18 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    String getTitle() {
+        return mMessageProperties.get(MessageBannerProperties.TITLE);
+    }
+
+    @CalledByNative
     void setTitle(String title) {
         mMessageProperties.set(MessageBannerProperties.TITLE, title);
+    }
+
+    @CalledByNative
+    String getDescription() {
+        return mMessageProperties.get(MessageBannerProperties.DESCRIPTION);
     }
 
     @CalledByNative
@@ -56,8 +66,19 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    String getPrimaryButtonText() {
+        return mMessageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT);
+    }
+
+    @CalledByNative
     void setPrimaryButtonText(String primaryButtonText) {
         mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText);
+    }
+
+    @CalledByNative
+    @DrawableRes
+    int getIconResourceId() {
+        return mMessageProperties.get(MessageBannerProperties.ICON_RESOURCE_ID);
     }
 
     @CalledByNative
