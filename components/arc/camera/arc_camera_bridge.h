@@ -35,8 +35,11 @@ class ArcCameraBridge : public KeyedService, public mojom::CameraHost {
 
   // mojom::CameraHost overrides:
   void StartCameraService(StartCameraServiceCallback callback) override;
-  void RegisterCameraHalClient(
+  void RegisterCameraHalClientLegacy(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client) override;
+  void RegisterCameraHalClient(
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      RegisterCameraHalClientCallback callback) override;
 
  private:
   class PendingStartCameraServiceResult;

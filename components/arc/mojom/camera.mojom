@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module arc.mojom;
 
@@ -92,15 +92,22 @@ interface CameraService {
   GetCameraDeviceInfos@7() => (array<CameraDeviceInfo> device_infos);
 };
 
-// Next method ID: 2
+// Next method ID: 3
 interface CameraHost {
   // Notifies Chrome that CameraService is requested and returns an interface
   // pointer bound to a newly created service. Used by camera HAL v1.
   StartCameraService@0() => (pending_remote<CameraService> service);
 
+  // [Deprecated in version 3]
   // Registers the camera HAL client. Used by camera HAL v3.
-  [MinVersion=2] RegisterCameraHalClient@1(
+  [MinVersion=2] RegisterCameraHalClientLegacy@1(
       pending_remote<cros.mojom.CameraHalClient> client);
+
+  // Registers the camera HAL client. Used by camera HAL v3. This method
+  // registers the camera HAL client with a token-based authentication mechanism
+  // and thus can fail when an authentication failure is encountered.
+  [MinVersion=3] RegisterCameraHalClient@2(
+      pending_remote<cros.mojom.CameraHalClient> client) => (int32 result);
 };
 
 // Next method ID: 1

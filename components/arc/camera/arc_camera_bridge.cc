@@ -136,10 +136,20 @@ void ArcCameraBridge::StartCameraService(StartCameraServiceCallback callback) {
       fd.get(), token, base::BindOnce([](bool success) {}));
 }
 
-void ArcCameraBridge::RegisterCameraHalClient(
+void ArcCameraBridge::RegisterCameraHalClientLegacy(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
   media::CameraHalDispatcherImpl::GetInstance()->RegisterClient(
       std::move(client));
+}
+
+void ArcCameraBridge::RegisterCameraHalClient(
+    mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+    RegisterCameraHalClientCallback callback) {
+  auto* dispatcher = media::CameraHalDispatcherImpl::GetInstance();
+  auto type = cros::mojom::CameraClientType::ANDROID;
+  dispatcher->RegisterClientWithToken(
+      std::move(client), type, dispatcher->GetTokenForTrustedClient(type),
+      std::move(callback));
 }
 
 }  // namespace arc
