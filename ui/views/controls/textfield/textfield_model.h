@@ -242,6 +242,8 @@ class VIEWS_EXPORT TextfieldModel {
   // to be able to undo this change if needed.
   bool SetAutocorrectRange(const base::string16& autocorrect_text,
                            const gfx::Range& range);
+
+  void ClearAutocorrectRange();
 #endif
 
   // Puts the text in the specified range into composition mode.

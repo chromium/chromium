@@ -1876,7 +1876,7 @@ bool Textfield::SetAutocorrectRange(const base::string16& autocorrect_text,
 }
 
 void Textfield::ClearAutocorrectRange() {
-  model_->SetAutocorrectRange(base::string16(), gfx::Range());
+  model_->ClearAutocorrectRange();
 }
 #endif
 

@@ -1524,6 +1524,9 @@ gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
 bool RenderWidgetHostViewAura::SetAutocorrectRange(
     const base::string16& autocorrect_text,
     const gfx::Range& range) {
+  if (autocorrect_text.empty() || range.is_empty())
+    return false;
+
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.Autocorrect.Count",
       TextInputClient::SubClass::kRenderWidgetHostViewAura);
@@ -1531,11 +1534,7 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler)
     return false;
-  if (autocorrect_text.empty()) {
-    input_handler->ClearImeTextSpansByType(range.start(), range.end(),
-                                           ui::ImeTextSpan::Type::kAutocorrect);
-    return true;
-  }
+
   ui::ImeTextSpan ui_ime_text_span;
   ui_ime_text_span.type = ui::ImeTextSpan::Type::kAutocorrect;
   ui_ime_text_span.start_offset = 0;

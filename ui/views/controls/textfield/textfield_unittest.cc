@@ -3130,22 +3130,15 @@ TEST_F(TextfieldTest, DoesNotSetAutocorrectRangeWhenRangeGivenIsInvalid) {
   EXPECT_EQ(composition.text, text);
 }
 
-TEST_F(TextfieldTest,
-       ClearsAutocorrectRangeWhenSetAutocorrectRangeWithEmptyText) {
+TEST_F(TextfieldTest, ReturnsFalseWhenSetAutocorrectRangeWithEmptyText) {
   InitTextfield();
 
   ui::CompositionText composition;
   composition.text = UTF8ToUTF16("Initial");
   textfield_->SetCompositionText(composition);
 
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       textfield_->SetAutocorrectRange(base::EmptyString16(), gfx::Range(0, 2)));
-  EXPECT_EQ(gfx::Range(0, 0), textfield_->GetAutocorrectRange());
-  gfx::Range range;
-  textfield_->GetTextRange(&range);
-  base::string16 text;
-  textfield_->GetTextFromRange(range, &text);
-  EXPECT_EQ(composition.text, text);
 }
 
 TEST_F(TextfieldTest,
@@ -3156,14 +3149,8 @@ TEST_F(TextfieldTest,
   composition.text = UTF8ToUTF16("Initial");
   textfield_->SetCompositionText(composition);
 
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       textfield_->SetAutocorrectRange(UTF8ToUTF16("Test"), gfx::Range(0, 0)));
-  EXPECT_EQ(gfx::Range(0, 0), textfield_->GetAutocorrectRange());
-  gfx::Range range;
-  textfield_->GetTextRange(&range);
-  base::string16 text;
-  textfield_->GetTextFromRange(range, &text);
-  EXPECT_EQ(composition.text, text);
 }
 
 TEST_F(TextfieldTest, ClearAutocorrectRange) {

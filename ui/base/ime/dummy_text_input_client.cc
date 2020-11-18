@@ -165,13 +165,10 @@ gfx::Rect DummyTextInputClient::GetAutocorrectCharacterBounds() const {
 bool DummyTextInputClient::SetAutocorrectRange(
     const base::string16& autocorrect_text,
     const gfx::Range& range) {
-  // Clears autocorrect range if text is empty.
-  // autocorrect_text content is ignored.
-  if (autocorrect_text.empty()) {
-    autocorrect_range_ = gfx::Range();
-  } else {
-    autocorrect_range_ = range;
-  }
+  if (autocorrect_text.empty() || range.is_empty())
+    return false;
+
+  autocorrect_range_ = range;
   return true;
 }
 
