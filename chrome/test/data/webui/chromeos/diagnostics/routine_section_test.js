@@ -91,6 +91,14 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * Returns the learn more help button.
+   * @return {!CrButtonElement}
+   */
+  function getLearnMoreButton() {
+    return dx_utils.getLearnMoreButtonFromSection(routineSectionElement);
+  }
+
+  /**
    * Returns the status badge.
    * @return {!TextBadgeElement}
    */
@@ -173,6 +181,7 @@ export function routineSectionTestSuite() {
       RoutineName.kFloatingPoint,
     ];
 
+    // TODO(joonbug): Use visibility assert over testing .hidden attr.
     return initializeRoutineSection(routines)
         .then(() => {
           // Hidden by default.
@@ -190,11 +199,13 @@ export function routineSectionTestSuite() {
           // Report is visible when button is clicked.
           assertFalse(getResultList().hidden);
           assertFalse(getToggleTestReportButton().hidden);
+          assertFalse(getLearnMoreButton().hidden);
           return clickToggleTestReportButton();
         })
         .then(() => {
           // Report is hidden when button is clicked again.
           assertTrue(getResultList().hidden);
+          assertTrue(getLearnMoreButton().hidden);
           assertFalse(getToggleTestReportButton().hidden);
         });
   });

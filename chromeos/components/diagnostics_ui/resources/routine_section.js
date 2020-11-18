@@ -6,7 +6,9 @@ import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_list.js';
 import './text_badge.js';
+import './strings.m.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,6 +28,8 @@ Polymer({
   is: 'routine-section',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /**
    * @private {?RoutineListExecutor}
@@ -125,6 +129,12 @@ Polymer({
   onToggleReportClicked_() {
     // Toggle report list visibility
     this.isReportListHidden_ = !this.isReportListHidden_;
+  },
+
+  /** @private */
+  onLearnMoreClicked_() {
+    // TODO(joonbug): Update this link with a p-link
+    window.open('https://support.google.com/chromebook/answer/6309225');
   },
 
   /** @protected */

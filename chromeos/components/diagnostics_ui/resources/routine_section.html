@@ -1,4 +1,10 @@
 <style include="diagnostics-shared">
+.learn-more-button {
+  background-color: rgba(var(--google-blue-600), .06);
+  border-radius: 5x;
+  height: 40px;
+  padding: 5px 10px;
+}
 </style>
 
 <div id="routineSection">
@@ -19,4 +25,8 @@
     [[getTextStatus_(executionStatus_, currentTestName_)]]
   </span>
   <routine-result-list id="resultList" hidden="[[isReportListHidden_]]"></routine-result-list>
+  <cr-button id="learnMoreButton" class="learn-more-button" on-click="onLearnMoreClicked_"
+      hidden="[[isReportListHidden_]]">
+      [[i18n('learnMore')]]
+  </cr-button>
 </div>

@@ -663,6 +663,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius." translateable="true">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
+      <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run." translateable="true">
+        Learn more in the Help Center
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">

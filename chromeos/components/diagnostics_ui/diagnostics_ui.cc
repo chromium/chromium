@@ -54,6 +54,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"currentNowText", IDS_DIAGNOSTICS_CURRENT_NOW_TEXT},
       {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
+      {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},

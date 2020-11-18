@@ -96,6 +96,19 @@ export function getToggleTestReportButtonFromSection(element) {
 }
 
 /**
+ * Helper function for getting the Show/Hide Tests Report button from a
+ * routine-section.
+ * @param {?RoutineSectionElement} element
+ * @return {!CrButtonElement}
+ */
+export function getLearnMoreButtonFromSection(element) {
+  const button =
+      /** @type {!CrButtonElement} */ (element.$$('#learnMoreButton'));
+  assertTrue(!!button);
+  return button;
+}
+
+/**
  * Helper function to check if a substring exists in an element.
  * @param {?Element} element
  * @param {string} text substring to check
