@@ -564,26 +564,36 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   canvas->save();
   canvas->scale(internal_contents_scale_, internal_contents_scale_);
 
-  if (debug_state.ShowHudRects()) {
+  if (debug_state.ShowDebugRects()) {
     DrawDebugRects(canvas, layer_tree_impl()->debug_rect_history());
     if (IsAnimatingHUDContents()) {
       layer_tree_impl()->SetNeedsRedraw();
     }
   }
 
-  if (!debug_state.show_fps_counter) {
+  if (!debug_state.ShouldDrawHudInfo()) {
     canvas->restore();
     return;
   }
 
-  SkRect area = DrawFrameThroughputDisplay(
-      canvas, layer_tree_impl()->dropped_frame_counter(), 0, 0);
-  area = DrawGpuRasterizationStatus(canvas, 0, area.bottom(),
-                                    std::max<SkScalar>(area.width(), 150));
+  SkRect area = SkRect::MakeXYWH(0, 0, 0, 0);
 
-  if (debug_state.ShowMemoryStats() && memory_entry_.total_bytes_used)
-    DrawMemoryDisplay(canvas, 0, area.bottom(),
-                      std::max<SkScalar>(area.width(), 150));
+  if (debug_state.show_fps_counter) {
+    area = DrawFrameThroughputDisplay(
+        canvas, layer_tree_impl()->dropped_frame_counter(), 0, 0);
+    area = DrawGpuRasterizationStatus(canvas, 0, area.bottom(),
+                                      std::max<SkScalar>(area.width(), 150));
+  }
+
+  if (debug_state.ShowMemoryStats() && memory_entry_.total_bytes_used) {
+    area = DrawMemoryDisplay(canvas, 0, area.bottom(),
+                             std::max<SkScalar>(area.width(), 150));
+  }
+
+  if (debug_state.show_web_vital_metrics) {
+    area = DrawWebVitalMetrics(canvas, 0, area.bottom(),
+                               std::max<SkScalar>(area.width(), 150));
+  }
 
   canvas->restore();
 }
@@ -1020,6 +1030,35 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
           DebugColors::LayoutShiftRectBorderWidth(), "");
     }
   }
+}
+
+SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
+                                                    int right,
+                                                    int top,
+                                                    int width) const {
+  std::string loading_status = "-";
+  // TODO(weiliangc): Update loading status with actual number.
+
+  const int kPadding = 4;
+  const int kTitleFontHeight = 13;
+  const int kFontHeight = 12;
+
+  const int height = kTitleFontHeight + kFontHeight + 3 * kPadding;
+  const int left = 0;
+  const SkRect area = SkRect::MakeXYWH(left, top, width, height);
+
+  PaintFlags flags;
+  DrawGraphBackground(canvas, &flags, area);
+
+  SkPoint metrics_pos = SkPoint::Make(left + width - kPadding,
+                                      top + 2 * kFontHeight + 2 * kPadding);
+  flags.setColor(DebugColors::HUDTitleColor());
+  DrawText(canvas, flags, "Load time", TextAlign::kLeft, kTitleFontHeight,
+           left + kPadding, top + kFontHeight + kPadding);
+  DrawText(canvas, flags, loading_status, TextAlign::kRight, kFontHeight,
+           metrics_pos);
+
+  return area;
 }
 
 const char* HeadsUpDisplayLayerImpl::LayerTypeAsString() const {

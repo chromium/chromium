@@ -97,5 +97,22 @@ class HeadsUpDisplaySizeWithFPS : public LayerTreeTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithFPS);
 
+class HeadsUpDisplaySizeWithMetrics : public LayerTreeTest {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->initial_debug_state.show_web_vital_metrics = true;
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommit() override {
+    ASSERT_TRUE(layer_tree_host()->hud_layer());
+    EXPECT_EQ(gfx::Size(256, 256), layer_tree_host()->hud_layer()->bounds());
+    EndTest();
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithMetrics);
+
 }  // namespace
 }  // namespace cc
