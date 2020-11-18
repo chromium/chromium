@@ -153,9 +153,9 @@ class InputMethodManagerImpl : public InputMethodManager,
     // The list of enabled extension IMEs.
     std::vector<std::string> enabled_extension_imes;
 
-    // Extra input methods that have been explicitly added to the menu, such as
-    // those created by extension.
-    std::map<std::string, InputMethodDescriptor> extra_input_methods;
+    // All input methods that have been registered by InputMethodEngines.
+    // The key is the input method ID.
+    std::map<std::string, InputMethodDescriptor> available_input_methods;
 
     InputMethodManagerImpl* const manager_;
 

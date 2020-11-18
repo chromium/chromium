@@ -145,7 +145,7 @@ void InputMethodManagerImpl::StateImpl::InitFrom(const StateImpl& other) {
   pending_input_method_id = other.pending_input_method_id;
 
   enabled_extension_imes = other.enabled_extension_imes;
-  extra_input_methods = other.extra_input_methods;
+  available_input_methods = other.available_input_methods;
   menu_activated = other.menu_activated;
   input_view_url = other.input_view_url;
   input_view_url_overridden = other.input_view_url_overridden;
@@ -187,8 +187,9 @@ std::string InputMethodManagerImpl::StateImpl::Dump() const {
     os << " '" << enabled_extension_ime << "'\n";
   }
   os << "\n";
-  os << "extra_input_methods (size=" << extra_input_methods.size() << "):";
-  for (const auto& entry : extra_input_methods) {
+  os << "available_input_methods (size=" << available_input_methods.size()
+     << "):";
+  for (const auto& entry : available_input_methods) {
     os << " '" << entry.first << "' => '" << entry.second.id() << "',\n";
   }
   os << "menu_activated: '" << menu_activated << "'\n";
@@ -217,8 +218,8 @@ InputMethodManagerImpl::StateImpl::GetActiveInputMethods() const {
     if (descriptor) {
       result->push_back(*descriptor);
     } else {
-      const auto ix = extra_input_methods.find(input_method_id);
-      if (ix != extra_input_methods.end())
+      const auto ix = available_input_methods.find(input_method_id);
+      if (ix != available_input_methods.end())
         result->push_back(ix->second);
       else
         DVLOG(1) << "Descriptor is not found for: " << input_method_id;
@@ -248,8 +249,8 @@ InputMethodManagerImpl::StateImpl::GetInputMethodFromId(
   const InputMethodDescriptor* ime =
       manager_->util_.GetInputMethodDescriptorFromId(input_method_id);
   if (!ime) {
-    const auto ix = extra_input_methods.find(input_method_id);
-    if (ix != extra_input_methods.end())
+    const auto ix = available_input_methods.find(input_method_id);
+    if (ix != available_input_methods.end())
       ime = &ix->second;
   }
   return ime;
@@ -602,7 +603,7 @@ void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
   bool contain = false;
   for (const auto& descriptor : descriptors) {
     const std::string& id = descriptor.id();
-    extra_input_methods[id] = descriptor;
+    available_input_methods[id] = descriptor;
     if (base::Contains(enabled_extension_imes, id)) {
       if (!base::Contains(active_input_method_ids, id)) {
         active_input_method_ids.push_back(id);
@@ -642,14 +643,14 @@ void InputMethodManagerImpl::StateImpl::RemoveInputMethodExtension(
   }
   active_input_method_ids.swap(new_active_input_method_ids);
 
-  // Remove the extra input methods with |extension_id|.
-  std::map<std::string, InputMethodDescriptor> new_extra_input_methods;
-  for (const auto& entry : extra_input_methods) {
+  // Remove the input methods registered by `extension_id`.
+  std::map<std::string, InputMethodDescriptor> new_available_input_methods;
+  for (const auto& entry : available_input_methods) {
     if (extension_id !=
         extension_ime_util::GetExtensionIDFromInputMethodID(entry.first))
-      new_extra_input_methods[entry.first] = entry.second;
+      new_available_input_methods[entry.first] = entry.second;
   }
-  extra_input_methods.swap(new_extra_input_methods);
+  available_input_methods.swap(new_available_input_methods);
 
   if (IsActive()) {
     if (ui::IMEBridge::Get()->GetCurrentEngineHandler() ==
@@ -667,9 +668,9 @@ void InputMethodManagerImpl::StateImpl::RemoveInputMethodExtension(
 
 void InputMethodManagerImpl::StateImpl::GetInputMethodExtensions(
     InputMethodDescriptors* result) {
-  // Build the extension input method descriptors from the extra input
-  // methods cache |extra_input_methods|.
-  for (const auto& entry : extra_input_methods) {
+  // Build the extension input method descriptors from the input methods cache
+  // `available_input_methods`.
+  for (const auto& entry : available_input_methods) {
     if (extension_ime_util::IsExtensionIME(entry.first) ||
         extension_ime_util::IsArcIME(entry.first)) {
       result->push_back(entry.second);
@@ -685,7 +686,7 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
   bool active_imes_changed = false;
   bool switch_to_pending = false;
 
-  for (const auto& entry : extra_input_methods) {
+  for (const auto& entry : available_input_methods) {
     if (extension_ime_util::IsComponentExtensionIME(entry.first))
       continue;  // Do not filter component extension.
 
@@ -1067,9 +1068,9 @@ const InputMethodDescriptor* InputMethodManagerImpl::LookupInputMethod(
   const InputMethodDescriptor* descriptor = NULL;
   if (extension_ime_util::IsExtensionIME(input_method_id_to_switch) ||
       extension_ime_util::IsArcIME(input_method_id_to_switch)) {
-    DCHECK(state->extra_input_methods.find(input_method_id_to_switch) !=
-           state->extra_input_methods.end());
-    descriptor = &(state->extra_input_methods[input_method_id_to_switch]);
+    DCHECK(state->available_input_methods.find(input_method_id_to_switch) !=
+           state->available_input_methods.end());
+    descriptor = &(state->available_input_methods[input_method_id_to_switch]);
   } else {
     descriptor =
         util_.GetInputMethodDescriptorFromId(input_method_id_to_switch);
