@@ -198,6 +198,11 @@ DnsResourceRecord BuildTestDnsRecord(
     std::string rdata,
     base::TimeDelta ttl = base::TimeDelta::FromDays(1));
 
+DnsResourceRecord BuildTestCnameRecord(
+    std::string name,
+    base::StringPiece canonical_name,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+
 DnsResourceRecord BuildTestAddressRecord(
     std::string name,
     const IPAddress& ip,

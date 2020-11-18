@@ -7,7 +7,9 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -17,6 +19,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -33,6 +37,7 @@ namespace net {
 
 namespace {
 
+using AliasMap = std::map<std::string, std::string, DomainNameComparator>;
 using ExtractionError = DnsResponseResultExtractor::ExtractionError;
 
 void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
@@ -122,6 +127,35 @@ std::vector<HostPortPair> SortServiceTargets(
   return sorted_targets;
 }
 
+ExtractionError ValidateNamesAndAliases(
+    base::StringPiece query_name,
+    const AliasMap& aliases,
+    const std::vector<std::unique_ptr<const RecordParsed>>& results) {
+  // Validate that all aliases form a single non-looping chain, starting from
+  // `query_name`.
+  size_t aliases_in_chain = 0;
+  base::StringPiece final_chain_name = query_name;
+  auto alias = aliases.find(std::string(query_name));
+  while (alias != aliases.end() && aliases_in_chain <= aliases.size()) {
+    aliases_in_chain++;
+    final_chain_name = alias->second;
+    alias = aliases.find(alias->second);
+  }
+
+  if (aliases_in_chain != aliases.size())
+    return ExtractionError::kBadAliasChain;
+
+  // All results must match final alias name.
+  for (const auto& result : results) {
+    DCHECK_NE(result->type(), dns_protocol::kTypeCNAME);
+    if (!base::EqualsCaseInsensitiveASCII(final_chain_name, result->name())) {
+      return ExtractionError::kNameMismatch;
+    }
+  }
+
+  return ExtractionError::kOk;
+}
+
 ExtractionError ExtractResponseRecords(
     const DnsResponse& response,
     uint16_t result_qtype,
@@ -130,36 +164,49 @@ ExtractionError ExtractResponseRecords(
   DCHECK(out_records);
   DCHECK(out_response_ttl);
 
-  out_records->clear();
-  out_response_ttl->reset();
+  std::vector<std::unique_ptr<const RecordParsed>> records;
+  base::Optional<base::TimeDelta> response_ttl;
 
   DnsRecordParser parser = response.Parser();
 
   // Expected to be validated by DnsTransaction.
   DCHECK_EQ(result_qtype, response.qtype());
 
+  AliasMap aliases;
   for (unsigned i = 0; i < response.answer_count(); ++i) {
     std::unique_ptr<const RecordParsed> record =
         RecordParsed::CreateFrom(&parser, base::Time::Now());
 
     if (!record)
       return ExtractionError::kMalformedRecord;
-    if (!base::EqualsCaseInsensitiveASCII(record->name(),
-                                          response.GetDottedName())) {
-      return ExtractionError::kNameMismatch;
-    }
 
-    // Ignore any records that are not class Internet and type
-    // |filter_dns_type|.
+    DCHECK_NE(result_qtype, dns_protocol::kTypeCNAME);
     if (record->klass() == dns_protocol::kClassIN &&
-        record->type() == result_qtype) {
-      base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
-      *out_response_ttl =
-          std::min(out_response_ttl->value_or(base::TimeDelta::Max()), ttl);
+        record->type() == dns_protocol::kTypeCNAME) {
+      // Per RFC2181, multiple CNAME records are not allowed for the same name.
+      if (aliases.find(record->name()) != aliases.end())
+        return ExtractionError::kMultipleCnames;
 
-      out_records->push_back(std::move(record));
+      const CnameRecordRdata* cname_data = record->rdata<CnameRecordRdata>();
+      if (!cname_data)
+        return ExtractionError::kMalformedCname;
+
+      bool added = aliases.emplace(record->name(), cname_data->cname()).second;
+      DCHECK(added);
+    } else if (record->klass() == dns_protocol::kClassIN &&
+               record->type() == result_qtype) {
+      base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
+      response_ttl =
+          std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
+
+      records.push_back(std::move(record));
     }
   }
+
+  ExtractionError name_and_alias_validation_error =
+      ValidateNamesAndAliases(response.GetDottedName(), aliases, records);
+  if (name_and_alias_validation_error != ExtractionError::kOk)
+    return name_and_alias_validation_error;
 
   // For NXDOMAIN or NODATA (NOERROR with 0 answers), attempt to find a TTL
   // via an SOA record.
@@ -172,15 +219,15 @@ ExtractionError ExtractResponseRecords(
       if (parser.ReadRecord(&record) && record.type == dns_protocol::kTypeSOA) {
         soa_found = true;
         base::TimeDelta ttl = base::TimeDelta::FromSeconds(record.ttl);
-        *out_response_ttl =
-            std::min(out_response_ttl->value_or(base::TimeDelta::Max()), ttl);
+        response_ttl =
+            std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
       }
     }
 
     // Per RFC2308, section 5, never cache negative results unless an SOA
     // record is found.
     if (!soa_found)
-      out_response_ttl->reset();
+      response_ttl.reset();
   }
 
   for (unsigned i = 0; i < response.additional_answer_count(); ++i) {
@@ -192,6 +239,9 @@ ExtractionError ExtractResponseRecords(
       SaveMetricsForAdditionalHttpsRecord(*record, is_unsolicited);
     }
   }
+
+  *out_records = std::move(records);
+  *out_response_ttl = response_ttl;
 
   return ExtractionError::kOk;
 }

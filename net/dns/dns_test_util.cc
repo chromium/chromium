@@ -93,6 +93,19 @@ DnsResourceRecord BuildTestDnsRecord(std::string name,
   return record;
 }
 
+DnsResourceRecord BuildTestCnameRecord(std::string name,
+                                       base::StringPiece canonical_name,
+                                       base::TimeDelta ttl) {
+  DCHECK(!name.empty());
+  DCHECK(!canonical_name.empty());
+
+  std::string rdata;
+  CHECK(DNSDomainFromDot(canonical_name, &rdata));
+
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeCNAME,
+                            std::move(rdata), ttl);
+}
+
 DnsResourceRecord BuildTestAddressRecord(std::string name,
                                          const IPAddress& ip,
                                          base::TimeDelta ttl) {

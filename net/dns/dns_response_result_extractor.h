@@ -30,6 +30,10 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
     kMalformedResult,
     // CNAME record after a result record
     kCnameAfterResult,
+    // Multiple CNAME records for the same owner name.
+    kMultipleCnames,
+    // Invalid alias chain, e.g. contains loops or disjoint aliases.
+    kBadAliasChain,
     // Not expected. Used for DCHECKs.
     kUnexpected,
   };

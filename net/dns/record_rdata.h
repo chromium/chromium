@@ -132,7 +132,7 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
 
-  std::string cname() const { return cname_; }
+  const std::string& cname() const { return cname_; }
 
  private:
   CnameRecordRdata();

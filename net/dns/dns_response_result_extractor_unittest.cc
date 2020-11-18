@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
@@ -474,6 +475,229 @@ TEST(DnsResponseResultExtractorTest, IgnoresUnsolicitedHttpsRecords) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.text_records(),
               testing::Optional(testing::ElementsAre("foo")));
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChain) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("first.test", "second.test"),
+                            BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestTextRecord("fourth.test", {"bar"})});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.text_records(),
+              testing::Optional(testing::UnorderedElementsAre("foo", "bar")));
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.text_records(),
+              testing::Optional(testing::ElementsAre("foo")));
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.text_records(),
+              testing::Optional(testing::ElementsAre("foo")));
+}
+
+TEST(DnsResponseResultExtractorTest, IgnoresNonResultTypesMixedWithCnameChain) {
+  DnsResponse response = BuildTestDnsResponse(
+      "first.test", dns_protocol::kTypeTXT,
+      {BuildTestCnameRecord("second.test", "third.test"),
+       BuildTestTextRecord("fourth.test", {"foo"}),
+       BuildTestCnameRecord("third.test", "fourth.test"),
+       BuildTestAddressRecord("third.test", IPAddress(1, 2, 3, 4)),
+       BuildTestCnameRecord("first.test", "second.test"),
+       BuildTestAddressRecord("fourth.test", IPAddress(2, 3, 4, 5))});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.text_records(),
+              testing::Optional(testing::ElementsAre("foo")));
+  EXPECT_FALSE(results.addresses());
+}
+
+TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithLoop) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("third.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "second.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kBadAliasChain);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithLoopToBeginning) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("third.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "first.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kBadAliasChain);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest,
+     RejectsCnameChainWithLoopToBeginningWithoutResult) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestCnameRecord("third.test", "first.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kBadAliasChain);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithWrongStart) {
+  DnsResponse response =
+      BuildTestDnsResponse("test.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kBadAliasChain);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithWrongResultName) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("third.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kNameMismatch);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsCnameSharedWithResult) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("first.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kNameMismatch);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsDisjointCnameChain) {
+  DnsResponse response = BuildTestDnsResponse(
+      "first.test", dns_protocol::kTypeTXT,
+      {BuildTestCnameRecord("second.test", "third.test"),
+       BuildTestTextRecord("fourth.test", {"foo"}),
+       BuildTestCnameRecord("third.test", "fourth.test"),
+       BuildTestCnameRecord("other1.test", "other2.test"),
+       BuildTestCnameRecord("first.test", "second.test"),
+       BuildTestCnameRecord("other2.test", "other3.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kBadAliasChain);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsDoubledCnames) {
+  DnsResponse response =
+      BuildTestDnsResponse("first.test", dns_protocol::kTypeTXT,
+                           {BuildTestCnameRecord("second.test", "third.test"),
+                            BuildTestTextRecord("fourth.test", {"foo"}),
+                            BuildTestCnameRecord("third.test", "fourth.test"),
+                            BuildTestCnameRecord("third.test", "fifth.test"),
+                            BuildTestCnameRecord("first.test", "second.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::TXT, &results),
+            DnsResponseResultExtractor::ExtractionError::kMultipleCnames);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
 }
 
 }  // namespace

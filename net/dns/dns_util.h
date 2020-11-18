@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
@@ -159,6 +160,15 @@ NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromNameserver(
 
 NET_EXPORT_PRIVATE std::string SecureDnsModeToString(
     const SecureDnsMode secure_dns_mode);
+
+// std::map-compliant Compare for two dotted-format domain names. Returns true
+// iff `lhs` is before `rhs` in strict weak ordering.
+class NET_EXPORT_PRIVATE DomainNameComparator {
+ public:
+  bool operator()(base::StringPiece lhs, base::StringPiece rhs) const {
+    return base::CompareCaseInsensitiveASCII(lhs, rhs) < 0;
+  }
+};
 
 }  // namespace net
 
