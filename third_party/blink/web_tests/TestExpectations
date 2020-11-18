@@ -74,20 +74,12 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 # ====== Synchronous, budgeted HTML parser tests from here ======
 
 ### virtual/synchronous_html_parser/http/tests/preload/
+# An extra line ("linear_memory_inspector") appears in the output in some cases.
+crbug.com/901056 http/tests/devtools/modules-load-source.js [ Failure Pass ]
+# Extra line info appears in the output in some cases.
+crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-csp.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-viewport-device-width-link-headers.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Timeout Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-css.js [ Timeout ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-iframe.js [ Timeout ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js.js [ Timeout ]
-# Minor issues, need rebaselining
-crbug.com/901056 virtual/synchronous_html_parser/fast/css/focus-display-block-inline.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/fast/css/fontfaceset-multiple-families.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/initiator-minified.js [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Failure Timeout ]
-
 # ====== Site Isolation failures from here ======
 # See also third_party/blink/web_tests/virtual/not-site-per-process/README.md
 # Tests temporarily disabled with Site Isolation - uninvestigated bugs:

@@ -4,13 +4,8 @@
 # File containing known test issues under the synchronous, budgeted foreground HTML parser
 # Ordered from most to least serious.
 
-# This set of test crashes comes because response_document_ is unexpectedly nullptr in DCHECK builds.
-### external/wpt/service-workers/service-worker/
-crbug.com/901056 external/wpt/service-workers/service-worker/xhr-response-url.https.html [ Crash ]
-
 ### virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/
 crbug.com/901056 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/xhr-response-url.https.html [ Crash ]
-
 #
 # Timeouts
 #
@@ -18,29 +13,13 @@ crbug.com/901056 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 ### http/tests/loading/sxg/
 crbug.com/901056 http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Timeout Failure ]
 
-### http/tests/preload/
-crbug.com/901056 http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Timeout ]
-
 ### http/tests/inspector-protocol/issues/
 crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
-
-### virtual/gpu/fast/canvas/
-crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Timeout ]
-
-### external/wpt/signed-exchange/subresource/
-crbug.com/901056 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Timeout ]
-
-### http/tests/inspector-protocol/issues/
-crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-css.js [ Timeout ]
-crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-iframe.js [ Timeout ]
-crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js.js [ Timeout ]
 
 #
 # Harness failures
 #
 # Most of these failures are due to layout viewport issues
-### external/wpt/preload/
-crbug.com/901056 external/wpt/preload/link-header-preload-imagesrcset.html [ Failure ]
 
 ### http/tests/preload/
 # This one happens because HTMLPreloadSanner discards all scanned preloads whenever it sees a <meta> CSP token.
@@ -57,27 +36,11 @@ crbug.com/901056 media/controls/rotated-video-has-right-panel-width.html [ Failu
 
 ### virtual/plz-dedicated-worker/external/wpt/resource-timing/
 crbug.com/901056 virtual/plz-dedicated-worker/external/wpt/resource-timing/nested-context-navigations-object.html [ Failure ]
-
-#
-# Image failures
-#
-### css1/pseudo/
-# Line-wrapping is slightly different
-crbug.com/901056 css1/pseudo/pseudo_elements_in_selectors.html [ Failure ]
-
-### fast/hidpi/
-# Document width is different
-crbug.com/901056 fast/hidpi/image-srcset-png-canvas.html [ Failure ]
-
 #
 # Text failures
 #
 ### fast/block/float
 crbug.com/901056 fast/block/float/4145535Crash.html [ Failure Pass ]
-
-### fast/preloader/
-# Two new subtests fail (investigation required)
-crbug.com/901056 fast/preloader/is-preloaded-after-load.html [ Failure ]
 
 ### http/tests/devtools/console
 # An extra "VM" is printed in front of the page name.
@@ -104,10 +67,6 @@ crbug.com/901056 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-re
 ### paint/invalidation/overflow/
 # Probably a viewport sizing issue (investigation needed).
 crbug.com/901056 paint/invalidation/overflow/resize-child-within-overflow.html [ Failure ]
-
-### tables/mozilla_expected_failures/bugs/
-# Blocked access message no longer emitted (investigation needed).
-crbug.com/901056 tables/mozilla_expected_failures/bugs/bug128876.html [ Failure ]
 
 ### virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/
 # WontFix (AppCache will be removed at some point.)

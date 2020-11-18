@@ -151,7 +151,8 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   // The bytes are forwarded to the tokenizer.
   HTMLParserScriptRunnerHost* script_runner_host =
       parser->AsHTMLParserScriptRunnerHostForTesting();
-  EXPECT_FALSE(script_runner_host->HasPreloadScanner());
+  EXPECT_EQ(script_runner_host->HasPreloadScanner(),
+            testing::get<0>(GetParam()) == kAllowDeferredParsing);
   EXPECT_EQ(HTMLTokenizer::kTagNameState, parser->Tokenizer()->GetState());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
