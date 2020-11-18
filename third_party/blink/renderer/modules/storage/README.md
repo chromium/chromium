@@ -4,11 +4,6 @@ This directory contains the renderer side implementation of the DOM Storage API.
 
 The browser side code for this lives in `content/browser/dom_storage/`.
 
-*TODO(dmurph): Delete this paragraph after onion-souping is complete.
-https://crbug.com/781870*
-This file describes only the post-onion-souped version of the code, where
-`features::kOnionSoupDOMStorage` is turned on. This is not yet the default.
-
 ## Class Responsibilities
 ### [`DOMWindowStorage`](dom_window_storage.h)
 This implements the partial `Window` interface in
@@ -47,7 +42,7 @@ This class is responsible for
  [`SessionStorageNamespace`](../../../public/mojom/dom_storage/session_storage_namespace.mojom)
  mojo interfaces to create `StorageArea` mojo ptrs for the `CachedStorageArea`s
  and clone namespaces for SessionStorage.
-* accounting for all storage used in it's cached areas, and
+* accounting for all storage used in its cached areas, and
 * cleaning up unused caches areas on demand.
 
 There are two versions of this class - one version is the SessionStorage
@@ -60,7 +55,7 @@ to open the `StorageAreas`, and is owned by the `StorageController`.
 
 ### [`StorageController`](storage_controller.h)
 This is a singleton that is responsible for keeping track of all
-`StorageNamespace`s and provide access to the functionality of it's single
+`StorageNamespace`s and provide access to the functionality of its single
 LocalStorage `StorageNamespace` that it owns. It holds weak references to all
 of the SessionStorage `StorageNamespace`s so it can account for the total
 amount of memory used by all of DOMStorage. If this gets too high, it can ask
