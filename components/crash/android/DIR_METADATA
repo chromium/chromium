@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>CrashReporting"
+}
+os: ANDROID
