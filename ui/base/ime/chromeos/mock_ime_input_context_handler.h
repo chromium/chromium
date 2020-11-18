@@ -100,6 +100,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   std::vector<ui::KeyEvent> sent_key_events_;
   UpdateCompositionTextArg last_update_composition_arg_;
   DeleteSurroundingTextArg last_delete_surrounding_text_arg_;
+  gfx::Range autocorrect_range_;
 };
 }  // namespace ui
 

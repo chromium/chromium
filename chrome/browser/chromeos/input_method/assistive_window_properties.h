@@ -14,6 +14,11 @@ struct AssistiveWindowProperties {
   AssistiveWindowProperties();
   ~AssistiveWindowProperties();
 
+  AssistiveWindowProperties(const AssistiveWindowProperties& other);
+  AssistiveWindowProperties& operator=(const AssistiveWindowProperties& other);
+
+  bool operator==(const AssistiveWindowProperties& other) const;
+
   ui::ime::AssistiveWindowType type = ui::ime::AssistiveWindowType::kNone;
   bool visible = false;
   std::string announce_string;

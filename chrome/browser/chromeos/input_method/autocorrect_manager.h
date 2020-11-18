@@ -8,20 +8,19 @@
 #include <string>
 
 #include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
+#include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
 
 namespace chromeos {
 
 // Implements functionality for chrome.input.ime.autocorrect() extension API.
 // This function shows UI to indicate that autocorrect has happened and allows
 // it to be undone easily.
-// TODO(b/171920749): Add unit tests.
 class AutocorrectManager {
  public:
-  // Engine is used to interact with the text field, and is assumed to be
-  // valid for the entire lifetime of the autocorrect manager.
-  explicit AutocorrectManager(InputMethodEngine* engine);
+  // `suggestion_handler_` must be alive for the duration of the lifetime of
+  // this instance.
+  explicit AutocorrectManager(SuggestionHandlerInterface* suggestion_handler);
 
   AutocorrectManager(const AutocorrectManager&) = delete;
   AutocorrectManager& operator=(const AutocorrectManager&) = delete;
@@ -32,24 +31,28 @@ class AutocorrectManager {
   void MarkAutocorrectRange(const std::string& corrected_word,
                             const std::string& typed_word,
                             int start_index);
+
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes. Returns whether the keypress has now been handled.
   bool OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
+
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);
+
   // To show the undo window when cursor is in an autocorrected word, this class
   // is notified of surrounding text changes.
   void OnSurroundingTextChanged(const base::string16& text,
                                 int cursor_pos,
                                 int anchor_pos);
+
   void UndoAutocorrect();
 
  private:
   void ClearUnderline();
 
+  SuggestionHandlerInterface* suggestion_handler_;
+  int context_id_ = 0;
   int key_presses_until_underline_hide_ = 0;
-  int context_id_ = -1;
-  InputMethodEngine* const engine_;
   std::string last_typed_word_;
   std::string last_corrected_word_;
   bool window_visible = false;
