@@ -1191,7 +1191,9 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   DCHECK_EQ(6u, orders.size());
   DCHECK_EQ(3u, order.size());
 
-  const std::vector<std::string> escaped_chars = {"\\", "\"", ";"};
+  // Previous values for indexes 0 and 1 were '\' and '"', temporarily removed
+  // because of compat issues
+  const std::vector<std::string> escaped_chars = {" ", " ", ";"};
   std::string greasey_brand =
       base::StrCat({escaped_chars[order[0]], "Not", escaped_chars[order[1]],
                     "A", escaped_chars[order[2]], "Brand"});
