@@ -2737,6 +2737,7 @@ ci.updater_builder(
     ),
     os = os.WINDOWS_DEFAULT,
     cpu = cpu.X86,
+    builderless = True,
 )
 
 ci.updater_builder(
