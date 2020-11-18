@@ -14,27 +14,19 @@ if (is_android) {
   import("//build/config/android/extract_unwind_tables.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
-}
-
-if (is_fuchsia) {
+} else if (is_fuchsia) {
   import("//build/config/chromecast_build.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//build/config/fuchsia/package.gni")
-}
-
-if (is_chromeos) {
+} else if (is_chromeos) {
   import("//build/config/chromeos/rules.gni")
+  import("//build/config/sanitizers/sanitizers.gni")
   import("//build/util/generate_wrapper.gni")
-}
-
-if (is_ios) {
+} else if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
   import("//build/config/ios/ios_test_runner_wrapper.gni")
   import("//build/config/ios/rules.gni")
-}
-
-if ((is_linux && !is_chromeos) || is_mac || is_win ||
-    chromeos_is_browser_only) {
+} else {
   import("//build/config/sanitizers/sanitizers.gni")
   import("//build/util/generate_wrapper.gni")
 }
@@ -382,17 +374,6 @@ template("test") {
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
     }
-  } else if (is_chromeos && cros_board == "") {
-    # TODO(crbug.com/816629) - Make use_xvfb work right in this situation.
-    not_needed([ "use_xvfb" ])
-    executable(target_name) {
-      forward_variables_from(invoker, "*", [ "use_xvfb" ])
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      testonly = true
-    }
   } else if (chromeos_is_browser_only) {
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
     _executable = target_name
@@ -472,54 +453,52 @@ template("test") {
             [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
       }
     }
-  } else {
+  } else if (!is_nacl) {
     if (is_mac || is_win) {
       assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
     }
 
-    if ((is_linux && !is_chromeos) || is_mac || is_win) {
-      _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
-      _executable = target_name
-      _gen_runner_target = "${target_name}__runner"
+    _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
+    _executable = target_name
+    _gen_runner_target = "${target_name}__runner"
 
-      if ((is_linux || is_chromeos) && defined(invoker.use_xvfb)) {
-        _use_xvfb = invoker.use_xvfb
+    if ((is_linux || is_chromeos) && defined(invoker.use_xvfb)) {
+      _use_xvfb = invoker.use_xvfb
+    } else {
+      _use_xvfb = false
+    }
+
+    generate_wrapper(_gen_runner_target) {
+      testonly = true
+      wrapper_script = "$root_build_dir/bin/run_" + _executable
+
+      data = []
+      if (_use_xvfb) {
+        executable = "//testing/xvfb.py"
+        data += [ "//testing/xvfb.py" ]
       } else {
-        _use_xvfb = false
+        executable = "//testing/test_env.py"
+        data += [ "//testing/test_env.py" ]
       }
 
-      generate_wrapper(_gen_runner_target) {
-        testonly = true
-        wrapper_script = "$root_build_dir/bin/run_" + _executable
-
-        data = []
-        if (_use_xvfb) {
-          executable = "//testing/xvfb.py"
-          data += [ "//testing/xvfb.py" ]
-        } else {
-          executable = "//testing/test_env.py"
-          data += [ "//testing/test_env.py" ]
-        }
-
-        executable_args = [
-          "@WrappedPath(./${_executable})",
-          "--test-launcher-bot-mode",
-        ]
-        if (is_asan) {
-          executable_args += [ "--asan=true" ]
-        }
-        if (is_msan) {
-          executable_args += [ "--msan=true" ]
-        }
-        if (is_tsan) {
-          executable_args += [ "--tsan=true" ]
-        }
-        if (use_cfi_diag) {
-          executable_args += [ "--cfi-diag=true" ]
-        }
-
-        data += [ "//.vpython" ]
+      executable_args = [
+        "@WrappedPath(./${_executable})",
+        "--test-launcher-bot-mode",
+      ]
+      if (is_asan) {
+        executable_args += [ "--asan=true" ]
       }
+      if (is_msan) {
+        executable_args += [ "--msan=true" ]
+      }
+      if (is_tsan) {
+        executable_args += [ "--tsan=true" ]
+      }
+      if (use_cfi_diag) {
+        executable_args += [ "--cfi-diag=true" ]
+      }
+
+      data += [ "//.vpython" ]
     }
 
     executable(target_name) {
@@ -534,10 +513,22 @@ template("test") {
         "//build/win:default_exe_manifest",
       ]
 
-      if (is_linux || is_chromeos || is_mac || is_win) {
-        write_runtime_deps = _runtime_deps_file
-        deps += [ ":$_gen_runner_target" ]
+      write_runtime_deps = _runtime_deps_file
+      deps += [ ":$_gen_runner_target" ]
+    }
+  } else {
+    # This is a catch-all clause for NaCl toolchains and other random
+    # configurations that might define tests; test() in these configs
+    # will just define the underlying executables.
+    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
+           "use_xvfb should not be defined for a non-linux configuration")
+    executable(target_name) {
+      forward_variables_from(invoker, "*")
+      if (!defined(deps)) {
+        deps = []
       }
+
+      testonly = true
     }
   }
 }
