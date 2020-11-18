@@ -439,6 +439,7 @@ void BubbleDialogModelHost::AddOrUpdateCheckbox(
     const int line_height = label->GetLineHeight();
     checkbox = std::make_unique<CheckboxControl>(std::move(label), line_height);
   }
+  checkbox->SetChecked(model_field->is_checked());
 
   checkbox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCheckbox* model_field,
