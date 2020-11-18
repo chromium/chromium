@@ -38,9 +38,9 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             String directoryKey, @NonNull CompositorListener compositorListener,
             Callback<Integer> compositorErrorCallback) {
         mCompositorListener = compositorListener;
-        if (service != null && service.getNativeService() != 0) {
+        if (service != null && service.getNativeBaseService() != 0) {
             mNativePlayerCompositorDelegate = PlayerCompositorDelegateImplJni.get().initialize(this,
-                    service.getNativeService(), url.getSpec(), directoryKey,
+                    service.getNativeBaseService(), url.getSpec(), directoryKey,
                     compositorErrorCallback,
                     SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
         }

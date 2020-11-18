@@ -116,6 +116,11 @@ PaintPreviewTestService::PaintPreviewTestService(const base::FilePath& path)
 
 PaintPreviewTestService::~PaintPreviewTestService() = default;
 
+jlong PaintPreviewTestService::GetBaseService(JNIEnv* env) {
+  return reinterpret_cast<intptr_t>(
+      static_cast<PaintPreviewBaseService*>(this));
+}
+
 base::android::ScopedJavaLocalRef<jintArray>
 PaintPreviewTestService::CreateSingleSkp(
     JNIEnv* env,

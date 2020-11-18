@@ -15,15 +15,18 @@ import org.chromium.components.paintpreview.browser.NativePaintPreviewServicePro
 @JNINamespace("paint_preview")
 public class PaintPreviewTestService implements NativePaintPreviewServiceProvider {
     private static final String TAG = "PPTestService";
+    private long mNativePaintPreviewBaseService;
     private long mNativePaintPreviewTestService;
 
     public PaintPreviewTestService(String path) {
         mNativePaintPreviewTestService = PaintPreviewTestServiceJni.get().getInstance(path);
+        mNativePaintPreviewBaseService =
+                PaintPreviewTestServiceJni.get().getBaseService(mNativePaintPreviewTestService);
     }
 
     @Override
-    public long getNativeService() {
-        return mNativePaintPreviewTestService;
+    public long getNativeBaseService() {
+        return mNativePaintPreviewBaseService;
     }
 
     public boolean createFramesForKey(String key, String url, FrameData rootFrameData) {
@@ -59,6 +62,7 @@ public class PaintPreviewTestService implements NativePaintPreviewServiceProvide
     @NativeMethods
     interface Natives {
         long getInstance(String path);
+        long getBaseService(long nativePaintPreviewTestService);
         int[] createSingleSkp(long nativePaintPreviewTestService, int id, int width, int height,
                 int[] flattenedLinkRects, String[] links, int[] flattenedChildRects);
         boolean serializeFrames(long nativePaintPreviewTestService, String key, String url);

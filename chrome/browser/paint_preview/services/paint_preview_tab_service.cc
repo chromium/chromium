@@ -80,7 +80,8 @@ PaintPreviewTabService::PaintPreviewTabService(
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ref_.Reset(Java_PaintPreviewTabService_Constructor(
-      env, reinterpret_cast<intptr_t>(this)));
+      env, reinterpret_cast<intptr_t>(this),
+      reinterpret_cast<intptr_t>(static_cast<PaintPreviewBaseService*>(this))));
 #endif  // defined(OS_ANDROID)
 }
 

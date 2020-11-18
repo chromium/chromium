@@ -35,6 +35,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     private static final long AUDIT_START_DELAY_MS = 2 * 60 * 1000; // Two minutes;
 
     private Runnable mAuditRunnable;
+    private long mNativePaintPreviewBaseService;
     private long mNativePaintPreviewTabService;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     @VisibleForTesting
@@ -79,8 +80,10 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     }
 
     @CalledByNative
-    private PaintPreviewTabService(long nativePaintPreviewTabService) {
+    private PaintPreviewTabService(
+            long nativePaintPreviewTabService, long nativePaintPreviewBaseService) {
         mNativePaintPreviewTabService = nativePaintPreviewTabService;
+        mNativePaintPreviewBaseService = nativePaintPreviewBaseService;
         if (!isNativeCacheInitialized()) {
             createPreNativeCache(getPath());
         }
@@ -89,11 +92,12 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     @CalledByNative
     private void onNativeDestroyed() {
         mNativePaintPreviewTabService = 0;
+        mNativePaintPreviewBaseService = 0;
     }
 
     @Override
-    public long getNativeService() {
-        return mNativePaintPreviewTabService;
+    public long getNativeBaseService() {
+        return mNativePaintPreviewBaseService;
     }
 
     /**

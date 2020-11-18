@@ -8,4 +8,6 @@ package org.chromium.components.paintpreview.browser;
  * The Java-side implementations of paint_preview_base_service.cc should implement this interface.
  * Provides a method for accessing the native PaintPreviewBaseService.
  */
-public interface NativePaintPreviewServiceProvider { long getNativeService(); }
+public interface NativePaintPreviewServiceProvider {
+    long getNativeBaseService();
+}
