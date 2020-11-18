@@ -1746,13 +1746,15 @@ ImageData* BaseRenderingContext2D::getImageData(
   }
 
   // Read pixels into |contents|.
-  bool read_pixels_successful =
-      snapshot->PaintImageForCurrentFrame().readPixels(
-          image_info, contents.Data(), image_info.minRowBytes(), sx, sy);
-  if (!read_pixels_successful) {
-    SkIRect bounds =
-        snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
-    DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
+  if (snapshot) {
+    const bool read_pixels_successful =
+        snapshot->PaintImageForCurrentFrame().readPixels(
+            image_info, contents.Data(), image_info.minRowBytes(), sx, sy);
+    if (!read_pixels_successful) {
+      SkIRect bounds =
+          snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
+      DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
+    }
   }
 
   // Wrap |contents| in an ImageData.
