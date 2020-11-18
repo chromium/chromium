@@ -573,10 +573,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_SetSystemFont,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
                      std::vector<ExtensionMsg_Loaded_Params>)
 
-// Notifies the renderer that an extension was unloaded in the browser.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_Unloaded,
-                     std::string)
-
 // Updates the scripting allowlist for extensions in the render process. This is
 // only used for testing.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_SetScriptingAllowlist,

@@ -216,6 +216,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
+  void UnloadExtension(const std::string& extension_id) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -250,7 +251,6 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnShouldSuspend(const std::string& extension_id, uint64_t sequence_id);
   void OnSuspend(const std::string& extension_id);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
-  void OnUnloaded(const std::string& id);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
   void OnUpdateDefaultPolicyHostRestrictions(
       const ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params& params);

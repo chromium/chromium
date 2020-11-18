@@ -291,7 +291,7 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
       extension_process_map_[extension.id()];
   for (content::RenderProcessHost* process : loaded_process_set) {
     DCHECK(base::Contains(process_mojo_map_, process));
-    process->Send(new ExtensionMsg_Unloaded(extension.id()));
+    GetRenderer(process)->UnloadExtension(extension.id());
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.

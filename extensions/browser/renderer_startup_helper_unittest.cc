@@ -30,6 +30,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
 
   size_t num_activated_extensions() { return activated_extensions_.size(); }
 
+  size_t num_unloaded_extensions() { return unloaded_extensions_.size(); }
+
  protected:
   mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
       content::RenderProcessHost* process) override {
@@ -45,7 +47,12 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   }
   void SetActivityLoggingEnabled(bool enabled) override {}
 
+  void UnloadExtension(const std::string& extension_id) override {
+    unloaded_extensions_.push_back(extension_id);
+  }
+
   std::vector<std::string> activated_extensions_;
+  std::vector<std::string> unloaded_extensions_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 
@@ -210,9 +217,8 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
   RemoveExtensionFromRegistry(extension_);
   helper_->OnExtensionUnloaded(*extension_);
   EXPECT_FALSE(IsExtensionLoaded(*extension_));
-  ASSERT_EQ(1u, sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Unloaded::ID),
-            sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_unloaded_extensions());
 
   // Extension enabled again.
   sink.ClearMessages();
@@ -359,11 +365,10 @@ TEST_F(RendererStartupHelperTest, ExtensionInIncognitoRenderer) {
             incognito_sink.GetMessageAt(0)->type());
   // The extension would be first unloaded and then loaded from the normal
   // renderer.
-  ASSERT_EQ(2u, sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Unloaded::ID),
-            sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_unloaded_extensions());
   EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_Loaded::ID),
-            sink.GetMessageAt(1)->type());
+            sink.GetMessageAt(0)->type());
 }
 
 // Tests that platform apps are always loaded in an incognito renderer.

@@ -79,6 +79,7 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
+  void UnloadExtension(const std::string& extension_id) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };

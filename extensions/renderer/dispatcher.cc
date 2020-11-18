@@ -881,7 +881,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_Unloaded, OnUnloaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateDefaultPolicyHostRestrictions,
                       OnUpdateDefaultPolicyHostRestrictions)
@@ -955,6 +954,57 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   InitOriginPermissions(extension);
 
   UpdateActiveExtensions();
+}
+
+void Dispatcher::UnloadExtension(const std::string& extension_id) {
+  // See comment in OnLoaded for why it would be nice, but perhaps incorrect,
+  // to CHECK here rather than guarding.
+  // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
+  // consider making this a release CHECK.
+  if (!RendererExtensionRegistry::Get()->Remove(extension_id)) {
+    NOTREACHED();
+    return;
+  }
+
+  ExtensionsRendererClient::Get()->OnExtensionUnloaded(extension_id);
+
+  bindings_system_->OnExtensionRemoved(extension_id);
+
+  active_extension_ids_.erase(extension_id);
+
+  script_injection_manager_->OnExtensionUnloaded(extension_id);
+
+  // If the extension is later reloaded with a different set of permissions,
+  // we'd like it to get a new isolated world ID, so that it can pick up the
+  // changed origin whitelist.
+  ScriptInjection::RemoveIsolatedWorld(extension_id);
+
+  // Inform the bindings system that the contexts will be removed to allow time
+  // to clear out context-specific data, and then remove the contexts
+  // themselves.
+  script_context_set_->ForEach(
+      extension_id, nullptr,
+      base::Bind(&NativeExtensionBindingsSystem::WillReleaseScriptContext,
+                 base::Unretained(bindings_system_.get())));
+  script_context_set_->OnExtensionUnloaded(extension_id);
+
+  // Update the available bindings for the remaining contexts. These may have
+  // changed if an externally_connectable extension is unloaded and a webpage
+  // is no longer accessible.
+  UpdateAllBindings();
+
+  // Invalidates the messages map for the extension in case the extension is
+  // reloaded with a new messages map.
+  EraseL10nMessagesMap(extension_id);
+
+  // Update the origin access map so that any content scripts injected no longer
+  // have dedicated allow/block lists for extra origins.
+  WebSecurityPolicy::ClearOriginAccessListForOrigin(
+      Extension::GetBaseURLFromExtensionId(extension_id));
+
+  // We don't do anything with existing platform-app stylesheets. They will
+  // stay resident, but the URL pattern corresponding to the unloaded
+  // extension's URL just won't match anything anymore.
 }
 
 void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
@@ -1158,57 +1208,6 @@ void Dispatcher::OnSuspend(const std::string& extension_id) {
 
 void Dispatcher::OnTransferBlobs(const std::vector<std::string>& blob_uuids) {
   RenderThread::Get()->Send(new ExtensionHostMsg_TransferBlobsAck(blob_uuids));
-}
-
-void Dispatcher::OnUnloaded(const std::string& id) {
-  // See comment in OnLoaded for why it would be nice, but perhaps incorrect,
-  // to CHECK here rather than guarding.
-  // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
-  // consider making this a release CHECK.
-  if (!RendererExtensionRegistry::Get()->Remove(id)) {
-    NOTREACHED();
-    return;
-  }
-
-  ExtensionsRendererClient::Get()->OnExtensionUnloaded(id);
-
-  bindings_system_->OnExtensionRemoved(id);
-
-  active_extension_ids_.erase(id);
-
-  script_injection_manager_->OnExtensionUnloaded(id);
-
-  // If the extension is later reloaded with a different set of permissions,
-  // we'd like it to get a new isolated world ID, so that it can pick up the
-  // changed origin whitelist.
-  ScriptInjection::RemoveIsolatedWorld(id);
-
-  // Inform the bindings system that the contexts will be removed to allow time
-  // to clear out context-specific data, and then remove the contexts
-  // themselves.
-  script_context_set_->ForEach(
-      id, nullptr,
-      base::Bind(&NativeExtensionBindingsSystem::WillReleaseScriptContext,
-                 base::Unretained(bindings_system_.get())));
-  script_context_set_->OnExtensionUnloaded(id);
-
-  // Update the available bindings for the remaining contexts. These may have
-  // changed if an externally_connectable extension is unloaded and a webpage
-  // is no longer accessible.
-  UpdateAllBindings();
-
-  // Invalidates the messages map for the extension in case the extension is
-  // reloaded with a new messages map.
-  EraseL10nMessagesMap(id);
-
-  // Update the origin access map so that any content scripts injected no longer
-  // have dedicated allow/block lists for extra origins.
-  WebSecurityPolicy::ClearOriginAccessListForOrigin(
-      Extension::GetBaseURLFromExtensionId(id));
-
-  // We don't do anything with existing platform-app stylesheets. They will
-  // stay resident, but the URL pattern corresponding to the unloaded
-  // extension's URL just won't match anything anymore.
 }
 
 void Dispatcher::OnUpdateDefaultPolicyHostRestrictions(

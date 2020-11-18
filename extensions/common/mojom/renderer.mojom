@@ -17,4 +17,7 @@ interface Renderer {
   // sent if logging is or was previously enabled; not being enabled is assumed
   // otherwise.
   SetActivityLoggingEnabled(bool enabled);
+
+  // Notifies the renderer that an extension was unloaded in the browser.
+  UnloadExtension(string extension_id);
 };
