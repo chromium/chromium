@@ -60,8 +60,8 @@ const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
 const base::Feature kSystemKeyboardLock{"SystemKeyboardLock",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kNotificationIndicator = {
-    "EnableNotificationIndicator", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNotificationIndicator = {"EnableNotificationIndicator",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsNotificationIndicatorEnabled() {
   return base::FeatureList::IsEnabled(kNotificationIndicator);
