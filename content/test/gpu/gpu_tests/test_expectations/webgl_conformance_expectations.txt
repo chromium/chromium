@@ -9,8 +9,8 @@
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
-#             android-nexus-9 android-pixel-2 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
+#             android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
@@ -136,7 +136,6 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 [ android android-nexus-5x ] WebglExtension_WEBGL_depth_texture [ Skip ]
 [ android android-nexus-5x no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 [ android android-nexus-6 no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
-[ android android-nexus-6p no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 
 # Fuchsia specific
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]
@@ -679,20 +678,16 @@ crbug.com/1135785 [ android android-nexus-5x no-passthrough ] conformance/textur
 crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 
-# Nexus 6 (Adreno 420) and 6P (Adreno 430)
+# Nexus 6 (Adreno 420)
 crbug.com/499555 [ android android-nexus-6 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/611945 [ android angle-disabled android-nexus-6 ] conformance/context/context-size-change.html [ Failure ]
 crbug.com/499555 [ android android-nexus-6 ] conformance/context/premultiplyalpha-test.html [ Failure ]
 crbug.com/611945 [ android android-nexus-6 ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Failure ]
 crbug.com/611945 [ android android-nexus-6 ] conformance/glsl/bugs/qualcomm-crash.html [ Failure ]
 crbug.com/611945 [ android-nexus-6 android ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
-crbug.com/611945 [ android-nexus-6p android ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
 crbug.com/951628 [ android android-nexus-6 no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1002997 [ android android-nexus-6p no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1083320 [ android android-nexus-6 ] conformance/misc/uninitialized-test.html [ Skip ]
 crbug.com/1056830 [ android android-nexus-6 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/1083320 [ android android-nexus-6p ] conformance/misc/uninitialized-test.html [ Skip ]
-crbug.com/1056830 [ android android-nexus-6p ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1122644 [ android android-nexus-6 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 crbug.com/1127140 [ android android-nexus-6 ] conformance/extensions/webgl-draw-buffers-framebuffer-unsupported.html [ Skip ]
 
@@ -714,7 +709,6 @@ crbug.com/499555 [ android android-nexus-6 ] conformance/rendering/gl-scissor-te
 crbug.com/611945 [ android android-nexus-6 ] conformance/rendering/gl-viewport-test.html [ Failure ]
 crbug.com/847222 [ android android-nexus-6 ] conformance/rendering/line-rendering-quality.html [ Failure ]
 crbug.com/499555 [ android android-nexus-6 no-passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
-crbug.com/663071 [ android android-nexus-6p ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
 crbug.com/693135 [ android android-nexus-6 ] conformance/offscreencanvas/context-attribute-preserve-drawing-buffer.html [ Failure ]
 crbug.com/angleproject/5015 [ android android-nexus-6 ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
 

@@ -20,8 +20,8 @@ TAG_HEADER = """\
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
-#             android-nexus-9 android-pixel-2 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
+#             android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform

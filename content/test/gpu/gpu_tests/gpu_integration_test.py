@@ -589,7 +589,6 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-330',  # android-nexus-5
         'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-420',  # android-nexus-6
-        'qualcomm-adreno-(tm)-430',  # android-nexus-6p
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
         'vmware',  # VMs
