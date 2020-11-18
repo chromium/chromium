@@ -117,7 +117,7 @@ void ForEachLocalFrameControlledByWidget(
 }
 
 // Iterate the remote children that will be controlled by the widget. Skip over
-// any RemoteFrames have have another LocalFrame as their parent.
+// any RemoteFrames have have another LocalFrame root as their parent.
 void ForEachRemoteFrameChildrenControlledByWidget(
     Frame* frame,
     const base::RepeatingCallback<void(RemoteFrame*)>& callback) {
@@ -126,13 +126,16 @@ void ForEachRemoteFrameChildrenControlledByWidget(
     if (auto* remote_frame = DynamicTo<RemoteFrame>(child)) {
       callback.Run(remote_frame);
       ForEachRemoteFrameChildrenControlledByWidget(remote_frame, callback);
+    } else if (auto* local_frame = DynamicTo<LocalFrame>(child)) {
+      // If iteration arrives at a local root then don't descend as it will be
+      // controlled by another widget.
+      if (!local_frame->IsLocalRoot()) {
+        ForEachRemoteFrameChildrenControlledByWidget(local_frame, callback);
+      }
     }
   }
 
-  // The first call to ForEachRemoteFrameChildrenControlledByWidget will be
-  // with a LocalFrame. Iterate on any portals owned by that frame. Portals
-  // on descendant LocalFrame will be owned by that widget so we don't need
-  // to descend into LocalFrames.
+  // Iterate on any portals owned by a local frame.
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (Document* document = local_frame->GetDocument()) {
       for (PortalContents* portal :
