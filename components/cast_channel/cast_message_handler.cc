@@ -479,7 +479,7 @@ void CastMessageHandler::OnMessageSent(int result) {
   DVLOG_IF(2, result < 0) << "SendMessage failed with code: " << result;
 }
 
-CastMessageHandler::PendingRequests::PendingRequests() {}
+CastMessageHandler::PendingRequests::PendingRequests() = default;
 CastMessageHandler::PendingRequests::~PendingRequests() {
   for (auto& request : pending_app_availability_requests_) {
     std::move(request->callback)
@@ -523,8 +523,12 @@ bool CastMessageHandler::PendingRequests::AddAppAvailabilityRequest(
 bool CastMessageHandler::PendingRequests::AddLaunchRequest(
     std::unique_ptr<LaunchSessionRequest> request,
     base::TimeDelta timeout) {
-  if (pending_launch_session_request_)
+  if (pending_launch_session_request_) {
+    std::move(request->callback)
+        .Run(cast_channel::GetLaunchSessionResponseError(
+            "There already exists a launch request for the channel"));
     return false;
+  }
 
   int request_id = request->request_id;
   request->timeout_timer.Start(
@@ -538,8 +542,10 @@ bool CastMessageHandler::PendingRequests::AddLaunchRequest(
 
 bool CastMessageHandler::PendingRequests::AddStopRequest(
     std::unique_ptr<StopSessionRequest> request) {
-  if (pending_stop_session_request_)
+  if (pending_stop_session_request_) {
+    std::move(request->callback).Run(cast_channel::Result::kFailed);
     return false;
+  }
 
   int request_id = request->request_id;
   request->timeout_timer.Start(
