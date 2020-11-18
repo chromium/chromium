@@ -104,7 +104,10 @@ Polymer({
       observer: 'onAppStateChange_',
     },
 
-    /** @private {!Array<string>} */
+    /**
+     * The object URLs of the scanned images.
+     * @private {!Array<string>}
+     */
     objectUrls_: {
       type: Array,
       value: () => [],
@@ -207,6 +210,7 @@ Polymer({
    * @param {number} progressPercent
    */
   onPageProgress(pageNumber, progressPercent) {
+    assert(this.appState_ === AppState.SCANNING);
     this.pageNumber_ = pageNumber;
     this.progressPercent_ = progressPercent;
   },
@@ -216,8 +220,7 @@ Polymer({
    * @param {!Array<number>} pageData
    */
   onPageComplete(pageData) {
-    // TODO(jschettler): Display the scanned images in the preview area when the
-    // scan is complete.
+    assert(this.appState_ === AppState.SCANNING);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     this.push('objectUrls_', URL.createObjectURL(blob));
   },
@@ -315,7 +318,6 @@ Polymer({
     }
 
     this.statusText_ = '';
-    this.objectUrls_ = [];
 
     const settings = {
       'sourceName': this.selectedSource,
@@ -404,6 +406,17 @@ Polymer({
   onCancelComplete(success) {},
 
   /**
+   * Revokes and removes all of the object URLs.
+   * @private
+   */
+  clearObjectUrls_() {
+    for (const url of this.objectUrls_) {
+      URL.revokeObjectURL(url);
+    }
+    this.objectUrls_ = [];
+  },
+
+  /**
    * Sets the app state if the state transition is allowed.
    * @param {!AppState} newState
    * @private
@@ -426,6 +439,7 @@ Polymer({
             this.appState_ === AppState.GETTING_CAPS ||
             this.appState_ === AppState.SCANNING ||
             this.appState_ === AppState.DONE);
+        this.clearObjectUrls_();
         break;
       case (AppState.SCANNING):
         assert(this.appState_ === AppState.READY);
@@ -445,12 +459,4 @@ Polymer({
     this.showCancelButton_ = this.appState_ === AppState.SCANNING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
   },
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onChangeAppState_(event) {
-    this.setAppState_(event.detail);
-  }
 });

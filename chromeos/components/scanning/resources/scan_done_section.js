@@ -38,6 +38,6 @@ Polymer({
 
   /** @private */
   onDoneClick_() {
-    this.fire('change-app-state', AppState.READY);
+    this.fire('done-click');
   },
 });

@@ -80,7 +80,7 @@
   <div class="panel-container">
     <div class="left-panel">
       <scan-preview id="scanPreview" app-state="[[appState_]]"
-          page-number="[[pageNumber_]]"
+          object-urls="[[objectUrls_]]" page-number="[[pageNumber_]]"
           progress-percent="[[progressPercent_]]"></scan-preview>
     </div>
     <div class="right-panel">
@@ -140,7 +140,7 @@
       </template>
       <template is="dom-if" if="[[showDoneSection_]]">
         <scan-done-section page-number="[[pageNumber_]]"
-            on-change-app-state="onChangeAppState_"></scan-done-section>
+            on-done-click="onDoneClick_"></scan-done-section>
       </template>
     </div>
   </div>

@@ -27,6 +27,12 @@ Polymer({
     /** @type {!AppState} */
     appState: Number,
 
+    /**
+     * The object URLs of the scanned images.
+     * @type {!Array<string>}
+     */
+    objectUrls: Array,
+
     /** @type {number} */
     pageNumber: Number,
 
@@ -68,5 +74,13 @@ Polymer({
    */
   shouldHideProgress_() {
     return this.appState !== AppState.SCANNING;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowScannedImages_() {
+    return this.appState === AppState.DONE && this.objectUrls.length > 0;
   },
 });

@@ -326,6 +326,8 @@ export function scanningAppTest() {
     let progressText;
     /** @type {!HTMLElement} */
     let progressBar;
+    /** @type {!HTMLElement} */
+    let scannedImages;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -345,6 +347,7 @@ export function scanningAppTest() {
           scanProgress = scanningApp.$$('#scanPreview').$$('#scanProgress');
           progressText = scanningApp.$$('#scanPreview').$$('#progressText');
           progressBar = scanningApp.$$('#scanPreview').$$('paper-progress');
+          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
           return fakeScanService_.whenCalled('getScannerCapabilities');
         })
         .then(() => {
@@ -441,6 +444,8 @@ export function scanningAppTest() {
           return fakeScanService_.simulateScanComplete(true);
         })
         .then(() => {
+          assertTrue(isVisible(scannedImages));
+          assertEquals(2, scannedImages.querySelectorAll('img').length);
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
@@ -470,6 +475,8 @@ export function scanningAppTest() {
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
+          assertFalse(isVisible(scannedImages));
+          assertEquals(0, scannedImages.querySelectorAll('img').length);
         });
   });
 

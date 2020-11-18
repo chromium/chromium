@@ -7,6 +7,7 @@
   #helperText {
     @apply --scanning-helper-text-font;
     color: var(--scanning-helper-text-color);
+    margin: auto;
     text-align: center;
     width: 60%;
   }
@@ -17,19 +18,30 @@
   }
 
   #scanProgress {
+    margin: auto;
     text-align: center;
     width: 60%;
   }
 
   .preview {
-    align-items: center;
     border: 1px solid var(--google-grey-200);
     border-radius: 4px;
     display: flex;
     /* TODO(michaelcheco): Replace with correct height for
      * preview container. */
     height: 420px;
-    justify-content: center;
+    overflow-y: scroll;
+  }
+
+  /* TODO(jschettler): Check with UX about adding a border around each image. */
+  .scanned-image {
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  /* Add top margin to all but the first scanned image. */
+  .scanned-image:nth-of-type(n+2) {
+    margin-top: 8px;
   }
 
   paper-progress {
@@ -48,5 +60,10 @@
   <div id="scanProgress" hidden$="[[shouldHideProgress_(appState)]]">
     <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
     <paper-progress value="[[progressPercent]]"></paper-progress>
+  </div>
+  <div id="scannedImages" hidden$="[[!shouldShowScannedImages_(appState)]]">
+    <template is="dom-repeat" items="[[objectUrls]]" as="url">
+      <img class="scanned-image" src="[[url]]">
+    </template>
   </div>
 </div>
