@@ -200,10 +200,6 @@ static uint64_t Rotate(uint64_t val, int shift) {
 
 static uint64_t ShiftMix(uint64_t val) { return val ^ (val >> 47); }
 
-static uint64_t HashLen16(uint64_t u, uint64_t v) {
-  return Hash128to64(uint128(u, v));
-}
-
 static uint64_t HashLen16(uint64_t u, uint64_t v, uint64_t mul) {
   // Murmur-inspired hashing.
   uint64_t a = (u ^ v) * mul;
@@ -212,6 +208,11 @@ static uint64_t HashLen16(uint64_t u, uint64_t v, uint64_t mul) {
   b ^= (b >> 47);
   b *= mul;
   return b;
+}
+
+static uint64_t HashLen16(uint64_t u, uint64_t v) {
+  const uint64_t kMul = 0x9ddfea08eb382d69ULL;
+  return HashLen16(u, v, kMul);
 }
 
 static uint64_t HashLen0to16(const char *s, size_t len) {

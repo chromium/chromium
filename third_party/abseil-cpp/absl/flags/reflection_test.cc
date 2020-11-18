@@ -70,7 +70,7 @@ TEST_F(ReflectionTest, TestGetAllFlags) {
 
   auto all_flags = absl::GetAllFlags();
   EXPECT_NE(all_flags.find("int_flag"), all_flags.end());
-  EXPECT_NE(all_flags.find("bool_retired_flag"), all_flags.end());
+  EXPECT_EQ(all_flags.find("bool_retired_flag"), all_flags.end());
   EXPECT_NE(all_flags.find("help"), all_flags.end());
   EXPECT_EQ(all_flags.find("some_undefined_flag"), all_flags.end());
 

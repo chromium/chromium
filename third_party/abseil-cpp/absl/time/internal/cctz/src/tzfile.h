@@ -108,15 +108,15 @@ struct tzhead {
 #ifndef TZ_MAX_TYPES
 /* This must be at least 17 for Europe/Samara and Europe/Vilnius.  */
 #define TZ_MAX_TYPES 256 /* Limited by what (unsigned char)'s can hold */
-#endif /* !defined TZ_MAX_TYPES */
+#endif                   /* !defined TZ_MAX_TYPES */
 
 #ifndef TZ_MAX_CHARS
 #define TZ_MAX_CHARS 50 /* Maximum number of abbreviation characters */
-/* (limited by what unsigned chars can hold) */
-#endif /* !defined TZ_MAX_CHARS */
+                        /* (limited by what unsigned chars can hold) */
+#endif                  /* !defined TZ_MAX_CHARS */
 
 #ifndef TZ_MAX_LEAPS
 #define TZ_MAX_LEAPS 50 /* Maximum number of leap second corrections */
-#endif /* !defined TZ_MAX_LEAPS */
+#endif                  /* !defined TZ_MAX_LEAPS */
 
 #endif /* !defined TZFILE_H */

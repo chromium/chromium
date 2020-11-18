@@ -736,22 +736,26 @@ TEST(OverheadTest, Storage) {
   // In particular, ensure that std::allocator doesn't cost anything to store.
   // The union should be absorbing some of the allocation bookkeeping overhead
   // in the larger vectors, leaving only the size_ field as overhead.
-  EXPECT_EQ(2 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 1>) - 1 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 2>) - 2 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 3>) - 3 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 4>) - 4 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 5>) - 5 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 6>) - 6 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 7>) - 7 * sizeof(int*));
-  EXPECT_EQ(1 * sizeof(int*),
-            sizeof(absl::InlinedVector<int*, 8>) - 8 * sizeof(int*));
+
+  struct T { void* val; };
+  size_t expected_overhead = sizeof(T);
+
+  EXPECT_EQ((2 * expected_overhead),
+            sizeof(absl::InlinedVector<T, 1>) - sizeof(T[1]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 2>) - sizeof(T[2]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 3>) - sizeof(T[3]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 4>) - sizeof(T[4]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 5>) - sizeof(T[5]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 6>) - sizeof(T[6]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 7>) - sizeof(T[7]));
+  EXPECT_EQ(expected_overhead,
+            sizeof(absl::InlinedVector<T, 8>) - sizeof(T[8]));
 }
 
 TEST(IntVec, Clear) {

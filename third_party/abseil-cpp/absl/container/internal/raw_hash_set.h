@@ -472,17 +472,7 @@ inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 //   DELETED -> EMPTY
 //   EMPTY -> EMPTY
 //   FULL -> DELETED
-inline void ConvertDeletedToEmptyAndFullToDeleted(
-    ctrl_t* ctrl, size_t capacity) {
-  assert(ctrl[capacity] == kSentinel);
-  assert(IsValidCapacity(capacity));
-  for (ctrl_t* pos = ctrl; pos != ctrl + capacity + 1; pos += Group::kWidth) {
-    Group{pos}.ConvertSpecialToEmptyAndFullToDeleted(pos);
-  }
-  // Copy the cloned ctrl bytes.
-  std::memcpy(ctrl + capacity + 1, ctrl, Group::kWidth);
-  ctrl[capacity] = kSentinel;
-}
+void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity);
 
 // Rounds up the capacity to the next power of 2 minus 1, with a minimum of 1.
 inline size_t NormalizeCapacity(size_t n) {
@@ -521,6 +511,64 @@ inline void AssertIsValid(ctrl_t* ctrl) {
   ABSL_HARDENING_ASSERT((ctrl == nullptr || IsFull(*ctrl)) &&
                         "Invalid operation on iterator. The element might have "
                         "been erased, or the table might have rehashed.");
+}
+
+struct FindInfo {
+  size_t offset;
+  size_t probe_length;
+};
+
+// The representation of the object has two modes:
+//  - small: For capacities < kWidth-1
+//  - large: For the rest.
+//
+// Differences:
+//  - In small mode we are able to use the whole capacity. The extra control
+//  bytes give us at least one "empty" control byte to stop the iteration.
+//  This is important to make 1 a valid capacity.
+//
+//  - In small mode only the first `capacity()` control bytes after the
+//  sentinel are valid. The rest contain dummy kEmpty values that do not
+//  represent a real slot. This is important to take into account on
+//  find_first_non_full(), where we never try ShouldInsertBackwards() for
+//  small tables.
+inline bool is_small(size_t capacity) { return capacity < Group::kWidth - 1; }
+
+inline probe_seq<Group::kWidth> probe(ctrl_t* ctrl, size_t hash,
+                                      size_t capacity) {
+  return probe_seq<Group::kWidth>(H1(hash, ctrl), capacity);
+}
+
+// Probes the raw_hash_set with the probe sequence for hash and returns the
+// pointer to the first empty or deleted slot.
+// NOTE: this function must work with tables having both kEmpty and kDelete
+// in one group. Such tables appears during drop_deletes_without_resize.
+//
+// This function is very useful when insertions happen and:
+// - the input is already a set
+// - there are enough slots
+// - the element with the hash is not in the table
+inline FindInfo find_first_non_full(ctrl_t* ctrl, size_t hash,
+                                    size_t capacity) {
+  auto seq = probe(ctrl, hash, capacity);
+  while (true) {
+    Group g{ctrl + seq.offset()};
+    auto mask = g.MatchEmptyOrDeleted();
+    if (mask) {
+#if !defined(NDEBUG)
+      // We want to add entropy even when ASLR is not enabled.
+      // In debug build we will randomly insert in either the front or back of
+      // the group.
+      // TODO(kfm,sbenza): revisit after we do unconditional mixing
+      if (!is_small(capacity) && ShouldInsertBackwards(hash, ctrl)) {
+        return {seq.offset(mask.HighestBitSet()), seq.index()};
+      }
+#endif
+      return {seq.offset(mask.LowestBitSet()), seq.index()};
+    }
+    seq.next();
+    assert(seq.index() < capacity && "full table!");
+  }
 }
 
 // Policy: a policy defines how to perform different operations on
@@ -750,7 +798,6 @@ class raw_hash_set {
       : ctrl_(EmptyGroup()), settings_(0, hash, eq, alloc) {
     if (bucket_count) {
       capacity_ = NormalizeCapacity(bucket_count);
-      reset_growth_left();
       initialize_slots();
     }
   }
@@ -856,7 +903,7 @@ class raw_hash_set {
     // than a full `insert`.
     for (const auto& v : that) {
       const size_t hash = PolicyTraits::apply(HashElement{hash_ref()}, v);
-      auto target = find_first_non_full(hash);
+      auto target = find_first_non_full(ctrl_, hash, capacity_);
       set_ctrl(target.offset, H2(hash));
       emplace_at(target.offset, v);
       infoz_.RecordInsert(hash, target.probe_length);
@@ -1278,7 +1325,12 @@ class raw_hash_set {
     }
   }
 
-  void reserve(size_t n) { rehash(GrowthToLowerboundCapacity(n)); }
+  void reserve(size_t n) {
+    size_t m = GrowthToLowerboundCapacity(n);
+    if (m > capacity_) {
+      resize(NormalizeCapacity(m));
+    }
+  }
 
   // Extension API: support for heterogeneous keys.
   //
@@ -1303,7 +1355,7 @@ class raw_hash_set {
   void prefetch(const key_arg<K>& key) const {
     (void)key;
 #if defined(__GNUC__)
-    auto seq = probe(hash_ref()(key));
+    auto seq = probe(ctrl_, hash_ref()(key), capacity_);
     __builtin_prefetch(static_cast<const void*>(ctrl_ + seq.offset()));
     __builtin_prefetch(static_cast<const void*>(slots_ + seq.offset()));
 #endif  // __GNUC__
@@ -1318,7 +1370,7 @@ class raw_hash_set {
   // called heterogeneous key support.
   template <class K = key_type>
   iterator find(const key_arg<K>& key, size_t hash) {
-    auto seq = probe(hash);
+    auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
       for (int i : g.Match(H2(hash))) {
@@ -1540,7 +1592,7 @@ class raw_hash_set {
       if (IsFull(old_ctrl[i])) {
         size_t hash = PolicyTraits::apply(HashElement{hash_ref()},
                                           PolicyTraits::element(old_slots + i));
-        auto target = find_first_non_full(hash);
+        auto target = find_first_non_full(ctrl_, hash, capacity_);
         size_t new_i = target.offset;
         total_probe_length += target.probe_length;
         set_ctrl(new_i, H2(hash));
@@ -1559,7 +1611,7 @@ class raw_hash_set {
 
   void drop_deletes_without_resize() ABSL_ATTRIBUTE_NOINLINE {
     assert(IsValidCapacity(capacity_));
-    assert(!is_small());
+    assert(!is_small(capacity_));
     // Algorithm:
     // - mark all DELETED slots as EMPTY
     // - mark all FULL slots as DELETED
@@ -1584,7 +1636,7 @@ class raw_hash_set {
       if (!IsDeleted(ctrl_[i])) continue;
       size_t hash = PolicyTraits::apply(HashElement{hash_ref()},
                                         PolicyTraits::element(slots_ + i));
-      auto target = find_first_non_full(hash);
+      auto target = find_first_non_full(ctrl_, hash, capacity_);
       size_t new_i = target.offset;
       total_probe_length += target.probe_length;
 
@@ -1592,7 +1644,8 @@ class raw_hash_set {
       // If they do, we don't need to move the object as it falls already in the
       // best probe we can.
       const auto probe_index = [&](size_t pos) {
-        return ((pos - probe(hash).offset()) & capacity_) / Group::kWidth;
+        return ((pos - probe(ctrl_, hash, capacity_).offset()) & capacity_) /
+               Group::kWidth;
       };
 
       // Element doesn't move.
@@ -1636,7 +1689,7 @@ class raw_hash_set {
 
   bool has_element(const value_type& elem) const {
     size_t hash = PolicyTraits::apply(HashElement{hash_ref()}, elem);
-    auto seq = probe(hash);
+    auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
       for (int i : g.Match(H2(hash))) {
@@ -1649,41 +1702,6 @@ class raw_hash_set {
       assert(seq.index() < capacity_ && "full table!");
     }
     return false;
-  }
-
-  // Probes the raw_hash_set with the probe sequence for hash and returns the
-  // pointer to the first empty or deleted slot.
-  // NOTE: this function must work with tables having both kEmpty and kDelete
-  // in one group. Such tables appears during drop_deletes_without_resize.
-  //
-  // This function is very useful when insertions happen and:
-  // - the input is already a set
-  // - there are enough slots
-  // - the element with the hash is not in the table
-  struct FindInfo {
-    size_t offset;
-    size_t probe_length;
-  };
-  FindInfo find_first_non_full(size_t hash) {
-    auto seq = probe(hash);
-    while (true) {
-      Group g{ctrl_ + seq.offset()};
-      auto mask = g.MatchEmptyOrDeleted();
-      if (mask) {
-#if !defined(NDEBUG)
-        // We want to add entropy even when ASLR is not enabled.
-        // In debug build we will randomly insert in either the front or back of
-        // the group.
-        // TODO(kfm,sbenza): revisit after we do unconditional mixing
-        if (!is_small() && ShouldInsertBackwards(hash, ctrl_)) {
-          return {seq.offset(mask.HighestBitSet()), seq.index()};
-        }
-#endif
-        return {seq.offset(mask.LowestBitSet()), seq.index()};
-      }
-      seq.next();
-      assert(seq.index() < capacity_ && "full table!");
-    }
   }
 
   // TODO(alkis): Optimize this assuming *this and that don't overlap.
@@ -1702,7 +1720,7 @@ class raw_hash_set {
   template <class K>
   std::pair<size_t, bool> find_or_prepare_insert(const K& key) {
     auto hash = hash_ref()(key);
-    auto seq = probe(hash);
+    auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
       Group g{ctrl_ + seq.offset()};
       for (int i : g.Match(H2(hash))) {
@@ -1719,11 +1737,11 @@ class raw_hash_set {
   }
 
   size_t prepare_insert(size_t hash) ABSL_ATTRIBUTE_NOINLINE {
-    auto target = find_first_non_full(hash);
+    auto target = find_first_non_full(ctrl_, hash, capacity_);
     if (ABSL_PREDICT_FALSE(growth_left() == 0 &&
                            !IsDeleted(ctrl_[target.offset]))) {
       rehash_and_grow_if_necessary();
-      target = find_first_non_full(hash);
+      target = find_first_non_full(ctrl_, hash, capacity_);
     }
     ++size_;
     growth_left() -= IsEmpty(ctrl_[target.offset]);
@@ -1756,10 +1774,6 @@ class raw_hash_set {
  private:
   friend struct RawHashSetTestOnlyAccess;
 
-  probe_seq<Group::kWidth> probe(size_t hash) const {
-    return probe_seq<Group::kWidth>(H1(hash, ctrl_), capacity_);
-  }
-
   // Reset all ctrl bytes back to kEmpty, except the sentinel.
   void reset_ctrl() {
     std::memset(ctrl_, kEmpty, capacity_ + Group::kWidth);
@@ -1788,22 +1802,6 @@ class raw_hash_set {
   }
 
   size_t& growth_left() { return settings_.template get<0>(); }
-
-  // The representation of the object has two modes:
-  //  - small: For capacities < kWidth-1
-  //  - large: For the rest.
-  //
-  // Differences:
-  //  - In small mode we are able to use the whole capacity. The extra control
-  //  bytes give us at least one "empty" control byte to stop the iteration.
-  //  This is important to make 1 a valid capacity.
-  //
-  //  - In small mode only the first `capacity()` control bytes after the
-  //  sentinel are valid. The rest contain dummy kEmpty values that do not
-  //  represent a real slot. This is important to take into account on
-  //  find_first_non_full(), where we never try ShouldInsertBackwards() for
-  //  small tables.
-  bool is_small() const { return capacity_ < Group::kWidth - 1; }
 
   hasher& hash_ref() { return settings_.template get<1>(); }
   const hasher& hash_ref() const { return settings_.template get<1>(); }
@@ -1848,7 +1846,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
                              const typename Set::key_type& key) {
     size_t num_probes = 0;
     size_t hash = set.hash_ref()(key);
-    auto seq = set.probe(hash);
+    auto seq = probe(set.ctrl_, hash, set.capacity_);
     while (true) {
       container_internal::Group g{set.ctrl_ + seq.offset()};
       for (int i : g.Match(container_internal::H2(hash))) {

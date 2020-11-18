@@ -43,6 +43,19 @@ bool ShouldInsertBackwards(size_t hash, ctrl_t* ctrl) {
   return (H1(hash, ctrl) ^ RandomSeed()) % 13 > 6;
 }
 
+void ConvertDeletedToEmptyAndFullToDeleted(
+    ctrl_t* ctrl, size_t capacity) {
+  assert(ctrl[capacity] == kSentinel);
+  assert(IsValidCapacity(capacity));
+  for (ctrl_t* pos = ctrl; pos != ctrl + capacity + 1; pos += Group::kWidth) {
+    Group{pos}.ConvertSpecialToEmptyAndFullToDeleted(pos);
+  }
+  // Copy the cloned ctrl bytes.
+  std::memcpy(ctrl + capacity + 1, ctrl, Group::kWidth);
+  ctrl[capacity] = kSentinel;
+}
+
+
 }  // namespace container_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -196,7 +196,7 @@ typename random_internal::make_unsigned_bits<IntType>::type
 uniform_int_distribution<IntType>::Generate(
     URBG& g,  // NOLINT(runtime/references)
     typename random_internal::make_unsigned_bits<IntType>::type R) {
-    random_internal::FastUniformBits<unsigned_type> fast_bits;
+  random_internal::FastUniformBits<unsigned_type> fast_bits;
   unsigned_type bits = fast_bits(g);
   const unsigned_type Lim = R + 1;
   if ((R & Lim) == 0) {

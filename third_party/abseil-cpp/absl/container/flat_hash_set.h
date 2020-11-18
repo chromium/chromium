@@ -324,7 +324,7 @@ class flat_hash_set
 
   // flat_hash_set::merge()
   //
-  // Extracts elements from a given `source` flat hash map into this
+  // Extracts elements from a given `source` flat hash set into this
   // `flat_hash_set`. If the destination `flat_hash_set` already contains an
   // element with an equivalent key, that element is not extracted.
   using Base::merge;

@@ -27,6 +27,12 @@
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"
 
+#if defined(_AIX)
+extern "C" {
+extern long altzone;
+}
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace time_internal {
@@ -44,7 +50,7 @@ auto tm_zone(const std::tm& tm) -> decltype(_tzname[0]) {
   const bool is_dst = tm.tm_isdst > 0;
   return _tzname[is_dst];
 }
-#elif defined(__sun)
+#elif defined(__sun) || defined(_AIX)
 // Uses the globals: 'timezone', 'altzone' and 'tzname'.
 auto tm_gmtoff(const std::tm& tm) -> decltype(timezone) {
   const bool is_dst = tm.tm_isdst > 0;

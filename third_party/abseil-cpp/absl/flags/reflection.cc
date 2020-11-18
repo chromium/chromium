@@ -328,7 +328,7 @@ CommandLineFlag* FindCommandLineFlag(absl::string_view name) {
 absl::flat_hash_map<absl::string_view, absl::CommandLineFlag*> GetAllFlags() {
   absl::flat_hash_map<absl::string_view, absl::CommandLineFlag*> res;
   flags_internal::ForEachFlag([&](CommandLineFlag& flag) {
-    res.insert({flag.Name(), &flag});
+    if (!flag.IsRetired()) res.insert({flag.Name(), &flag});
   });
   return res;
 }

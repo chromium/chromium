@@ -933,6 +933,7 @@ EXPORTS
     ??0FormatConversionSpecImpl@str_format_internal@absl@@QAE@XZ
     ??0FormatSinkImpl@str_format_internal@absl@@QAE@VFormatRawSinkImpl@12@@Z
     ??0GraphCycles@synchronization_internal@absl@@QAE@XZ
+    ??0GroupSse2Impl@container_internal@absl@@QAE@PBC@Z
     ??0HashtablezInfo@container_internal@absl@@QAE@XZ
     ??0HashtablezSampler@container_internal@absl@@QAE@XZ
     ??0Impl@time_zone@cctz@time_internal@absl@@AAE@ABV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
@@ -1488,10 +1489,12 @@ EXPORTS
     ?Contains@str_format_internal@absl@@YA_NW4FormatConversionCharSet@2@W4FormatConversionChar@2@@Z
     ?ControlWord@base_internal@absl@@YAPAU?$atomic@I@__1@std@@PAVonce_flag@2@@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
+    ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPACI@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NMABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertOne@ParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@QAE_NABUUnboundConversion@34@Vstring_view@4@@Z
+    ?ConvertSpecialToEmptyAndFullToDeleted@GroupSse2Impl@container_internal@absl@@QBEXPAC@Z
     ?CopyCordToString@absl@@YAXABVCord@1@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?CopyTo@InlineRep@Cord@absl@@QBEXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?CopyToArraySlowPath@Cord@absl@@ABEXPAD@Z
@@ -1781,7 +1784,6 @@ EXPORTS
     ?HasBeenNotifiedInternal@Notification@absl@@CA_NPBU?$atomic@_N@__1@std@@@Z
     ?HasEdge@GraphCycles@synchronization_internal@absl@@QBE_NUGraphId@23@0@Z
     ?HasNode@GraphCycles@synchronization_internal@absl@@QAE_NUGraphId@23@@Z
-    ?Hash128to64@hash_internal@absl@@YA_KABU?$pair@_K_K@__1@std@@@Z
     ?HashSeed@container_internal@absl@@YAIPBC@Z
     ?HexStringToBytes@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@@Z
     ?HideMask@base_internal@absl@@YAIXZ
@@ -1836,6 +1838,7 @@ EXPORTS
     ?IsUnavailable@absl@@YA_NABVStatus@1@@Z
     ?IsUnimplemented@absl@@YA_NABVStatus@1@@Z
     ?IsUnknown@absl@@YA_NABVStatus@1@@Z
+    ?IsValidCapacity@container_internal@absl@@YA_NI@Z
     ?Iterate@HashtablezSampler@container_internal@absl@@QAE_JABV?$function@$$A6AXABUHashtablezInfo@container_internal@absl@@@Z@__1@std@@@Z
     ?LengthModToString@str_format_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@W4LengthMod@12@@Z
     ?LengthToTag@CordTestAccess@strings_internal@absl@@SAEI@Z
@@ -2198,9 +2201,7 @@ EXPORTS
     ?UTCImpl@Impl@time_zone@cctz@time_internal@absl@@CAPBV12345@XZ
     ?UTCTimeZone@absl@@YA?AVTimeZone@1@XZ
     ?Uint128High64@absl@@YA_KVuint128@1@@Z
-    ?Uint128High64@hash_internal@absl@@YA_KABU?$pair@_K_K@__1@std@@@Z
     ?Uint128Low64@absl@@YA_KVuint128@1@@Z
-    ?Uint128Low64@hash_internal@absl@@YA_KABU?$pair@_K_K@__1@std@@@Z
     ?Uint128Max@absl@@YA?AVuint128@1@XZ
     ?UnalignedLoad16@base_internal@absl@@YAGPBX@Z
     ?UnalignedLoad32@base_internal@absl@@YAIPBX@Z
@@ -2489,6 +2490,7 @@ EXPORTS
     ?__vallocate@?$vector@PAUCordRep@cord_internal@absl@@V?$allocator@PAUCordRep@cord_internal@absl@@@__1@std@@@__1@std@@AAEXI@Z
     ?__vallocate@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__1@std@@@__1@std@@AAEXI@Z
     ?__vdeallocate@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__1@std@@@__1@std@@AAEXXZ
+    ?_mm_cmpgt_epi8_fixed@container_internal@absl@@YA?AT__m128i@@T3@0@Z
     ?align@detail@cctz@time_internal@absl@@YA?AUfields@1234@Uday_tag@1234@U51234@@Z
     ?align@detail@cctz@time_internal@absl@@YA?AUfields@1234@Uhour_tag@1234@U51234@@Z
     ?align@detail@cctz@time_internal@absl@@YA?AUfields@1234@Uminute_tag@1234@U51234@@Z
