@@ -186,16 +186,7 @@ def main():
     return 0
 
   parser = argparse.ArgumentParser(description='Download hermetic Xcode.')
-  parser.add_argument('--xcode-version', help='deprecated, do not use')
   args = parser.parse_args()
-
-  # Users in other repositories (v8, pdfium, webrtc) borrow Chromium's toolchain
-  # and depend on this script. Tolerate --xcode-version until all dependents are
-  # weaned.
-  if args.xcode_version is not None:
-    PrintError(
-        '%s: warning: --xcode-version is deprecated and will be removed' %
-        os.path.basename(__file__))
 
   if not PlatformMeetsHermeticXcodeRequirements():
     print('OS version does not support toolchain.')
