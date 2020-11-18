@@ -186,8 +186,15 @@
   {
     "prefix": "composite-bgcolor-animation",
     "bases": ["external/wpt/css/css-backgrounds"],
-    "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=CompositeBGColorAnimation"]
+    "args": ["--enable-blink-features=CompositeBGColorAnimation",
+             "--enable-threaded-compositing"]
+  },
+  {
+    "prefix": "composite-bgcolor-animation-hidpi",
+    "bases": ["external/wpt/css/css-backgrounds/hidpi"],
+    "args": ["--enable-blink-features=CompositeBGColorAnimation",
+             "--enable-threaded-compositing",
+             "--force-device-scale-factor=2"]
   },
   {
     "prefix": "composite-after-paint",

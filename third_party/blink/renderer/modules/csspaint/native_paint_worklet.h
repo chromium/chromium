@@ -15,16 +15,46 @@
 
 namespace blink {
 
-class MODULES_EXPORT NativePaintWorklet {
- public:
-  explicit NativePaintWorklet();
-  virtual ~NativePaintWorklet();
+class LocalFrame;
+class NativePaintWorkletProxyClient;
+class PaintWorkletPaintDispatcher;
+class SingleThreadTaskRunner;
+class Thread;
 
-  // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size, SkColor color);
-
- private:
+// NativePaintWorklet contains the shared information by all kinds of native
+// paint worklet. We allow the instance creation of its subclasses, but not this
+// class. Each subclass would have its own implementation of the Paint function.
+// For example, the BackgroundColorPaintWorklet takes a SkColor in its Paint
+// function.
+class MODULES_EXPORT NativePaintWorklet
+    : public GarbageCollected<NativePaintWorklet> {
   DISALLOW_COPY_AND_ASSIGN(NativePaintWorklet);
+
+ public:
+  virtual ~NativePaintWorklet() = default;
+
+  int WorkletId() const { return worklet_id_; }
+
+  // Register the NativePaintWorkletProxyClient to the compositor thread that
+  // will hold a cross thread persistent pointer to it. This should be called
+  // during the construction of native paint worklets, to ensure that the proxy
+  // client is ready on the compositor thread when dispatching a paint job.
+  void RegisterProxyClient(NativePaintWorkletProxyClient*);
+
+  // Unregister the painter to ensure that there is no memory leakage on the
+  // compositor thread.
+  void UnregisterProxyClient();
+
+  virtual void Trace(Visitor*) const {}
+
+ protected:
+  explicit NativePaintWorklet(LocalFrame& local_root);
+
+  int worklet_id_;
+  base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue_;
+  // The worker thread that does the paint work.
+  std::unique_ptr<Thread> worker_thread_;
 };
 
 }  // namespace blink

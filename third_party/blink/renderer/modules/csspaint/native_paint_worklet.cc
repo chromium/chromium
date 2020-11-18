@@ -4,26 +4,53 @@
 
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet.h"
 
-#include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
-#include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
+#include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
-NativePaintWorklet::NativePaintWorklet() = default;
+NativePaintWorklet::NativePaintWorklet(LocalFrame& local_root)
+    : worklet_id_(PaintWorkletIdGenerator::NextId()) {
+  DCHECK(local_root.IsLocalRoot());
+  paint_dispatcher_ =
+      WebLocalFrameImpl::FromFrame(local_root)
+          ->FrameWidgetImpl()
+          ->EnsureCompositorPaintDispatcher(&compositor_host_queue_);
+  DCHECK(IsMainThread());
+  ThreadCreationParams params(ThreadType::kDedicatedWorkerThread);
+  // TODO(crbug.com/1143407): We don't need this thread if we can make the
+  // compositor thread support GC.
+  worker_thread_ = Thread::CreateThread(params.SetSupportsGC(true));
+}
 
-NativePaintWorklet::~NativePaintWorklet() = default;
+void NativePaintWorklet::RegisterProxyClient(
+    NativePaintWorkletProxyClient* client) {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      worker_thread_->GetTaskRunner();
+  // At this moment, we are in the paint phase which is before commit, we queue
+  // a task to the compositor thread to register the |paint_dispatcher_|. When
+  // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
+  // which is after commit, the |paint_dispatcher_| should have been registerted
+  // and ready to use.
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
+          paint_dispatcher_, WrapCrossThreadPersistent(client), task_runner));
+}
 
-scoped_refptr<Image> NativePaintWorklet::Paint(const FloatSize& container_size,
-                                               SkColor color) {
-  PaintRenderingContext2DSettings* context_settings =
-      PaintRenderingContext2DSettings::Create();
-  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      RoundedIntSize(container_size), context_settings, 1, 1);
-  rendering_context->GetPaintCanvas()->drawColor(color);
-  sk_sp<PaintRecord> paint_record = rendering_context->GetRecord();
-  if (!paint_record)
-    return nullptr;
-  return PaintGeneratedImage::Create(paint_record, container_size);
+void NativePaintWorklet::UnregisterProxyClient() {
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
+          paint_dispatcher_, worklet_id_));
 }
 
 }  // namespace blink

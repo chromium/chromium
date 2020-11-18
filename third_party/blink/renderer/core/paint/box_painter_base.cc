@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -489,13 +489,14 @@ void DrawTiledBackground(GraphicsContext& context,
                          respect_orientation);
 }
 
-void FillRectWithPaintWorklet(const BoxPainterBase::FillLayerInfo& info,
+void FillRectWithPaintWorklet(const Document* document,
+                              const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
                               const FloatRoundedRect& dest_rect,
                               GraphicsContext& context) {
   FloatRect src_rect = dest_rect.Rect();
-  std::unique_ptr<NativePaintImageGenerator> generator =
-      NativePaintImageGenerator::Create();
+  BackgroundColorPaintImageGenerator* generator =
+      document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image =
       generator->Paint(src_rect.Size(), SkColor(info.color));
   context.DrawImageRRect(
@@ -504,7 +505,8 @@ void FillRectWithPaintWorklet(const BoxPainterBase::FillLayerInfo& info,
       SkBlendMode::kSrcOver, info.respect_image_orientation);
 }
 
-inline bool PaintFastBottomLayer(Node* node,
+inline bool PaintFastBottomLayer(const Document* document,
+                                 Node* node,
                                  const PaintInfo& paint_info,
                                  const BoxPainterBase::FillLayerInfo& info,
                                  const PhysicalRect& rect,
@@ -591,7 +593,7 @@ inline bool PaintFastBottomLayer(Node* node,
   // Paint the color if needed.
   if (info.should_paint_color) {
     if (info.should_paint_color_with_paint_worklet_image) {
-      FillRectWithPaintWorklet(info, node, color_border, context);
+      FillRectWithPaintWorklet(document, info, node, color_border, context);
     } else {
       context.FillRoundedRect(color_border, info.color);
     }
@@ -754,7 +756,8 @@ FloatRoundedRect RoundedBorderRectForClip(
   return border;
 }
 
-void PaintFillLayerBackground(GraphicsContext& context,
+void PaintFillLayerBackground(const Document* document,
+                              GraphicsContext& context,
                               const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
                               Image* image,
@@ -769,8 +772,8 @@ void PaintFillLayerBackground(GraphicsContext& context,
   if (info.is_bottom_layer && info.color.Alpha() && info.should_paint_color) {
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
     if (info.should_paint_color_with_paint_worklet_image) {
-      FillRectWithPaintWorklet(info, node, FloatRoundedRect(background_rect),
-                               context);
+      FillRectWithPaintWorklet(document, info, node,
+                               FloatRoundedRect(background_rect), context);
     } else {
       context.FillRect(background_rect, info.color);
     }
@@ -900,8 +903,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       (bleed_avoidance == kBackgroundBleedShrinkBackground ||
        did_adjust_paint_rect);
   if (!disable_fast_path &&
-      PaintFastBottomLayer(node_, paint_info, info, rect, border_rect, geometry,
-                           image.get(), composite_op)) {
+      PaintFastBottomLayer(document_, node_, paint_info, info, rect,
+                           border_rect, geometry, image.get(), composite_op)) {
     return;
   }
 
@@ -941,8 +944,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       break;
   }
 
-  PaintFillLayerBackground(context, info, node_, image.get(), composite_op,
-                           geometry, scrolled_paint_rect);
+  PaintFillLayerBackground(document_, context, info, node_, image.get(),
+                           composite_op, geometry, scrolled_paint_rect);
 }
 
 void BoxPainterBase::PaintFillLayerTextFillBox(
@@ -966,8 +969,9 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   context.Clip(mask_rect);
   context.BeginLayer(1, composite_op);
 
-  PaintFillLayerBackground(context, info, node_, image, SkBlendMode::kSrcOver,
-                           geometry, scrolled_paint_rect);
+  PaintFillLayerBackground(document_, context, info, node_, image,
+                           SkBlendMode::kSrcOver, geometry,
+                           scrolled_paint_rect);
 
   // Create the text mask layer and draw the text into the mask. We do this by
   // painting using a special paint phase that signals to InlineTextBoxes that

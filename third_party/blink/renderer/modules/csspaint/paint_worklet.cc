@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet.h"
 
-#include "base/atomic_sequence_num.h"
 #include "base/rand_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
@@ -16,19 +15,11 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 
 namespace blink {
-
-namespace {
-base::AtomicSequenceNumber g_next_worklet_id;
-int NextId() {
-  // Start id from 1. This way it safe to use it as key in hashmap with default
-  // key traits.
-  return g_next_worklet_id.GetNext() + 1;
-}
-}  // namespace
 
 const wtf_size_t PaintWorklet::kNumGlobalScopesPerThread = 2u;
 const size_t kMaxPaintCountToSwitch = 30u;
@@ -49,7 +40,7 @@ PaintWorklet::PaintWorklet(LocalDOMWindow& window)
       Supplement<LocalDOMWindow>(window),
       pending_generator_registry_(
           MakeGarbageCollected<PaintWorkletPendingGeneratorRegistry>()),
-      worklet_id_(NextId()),
+      worklet_id_(PaintWorkletIdGenerator::NextId()),
       is_paint_off_thread_(
           RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled() &&
           Thread::CompositorThread()) {}

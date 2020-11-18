@@ -61,3 +61,6 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
 
 crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Failure ]
+
+crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/* [ Skip ]
+crbug.com/1150468 virtual/composite-bgcolor-animation-hidpi/external/wpt/css/css-backgrounds/hidpi/* [ Skip ]

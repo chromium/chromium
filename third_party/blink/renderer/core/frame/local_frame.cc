@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
+#include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
@@ -506,6 +507,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(text_fragment_selector_generator_);
   visitor->Trace(saved_scroll_offsets_);
+  visitor->Trace(background_color_paint_image_generator_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -584,6 +586,10 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
     performance_monitor_->Shutdown();
     if (ad_tracker_)
       ad_tracker_->Shutdown();
+    // Unregister only if this is LocalRoot because the paint_image_generator_
+    // was created on LocalRoot.
+    if (background_color_paint_image_generator_)
+      background_color_paint_image_generator_->Shutdown();
   }
   idleness_detector_->Shutdown();
   if (inspector_issue_reporter_)
@@ -678,6 +684,17 @@ bool LocalFrame::DetachDocument() {
 
 void LocalFrame::CheckCompleted() {
   GetDocument()->CheckCompleted();
+}
+
+BackgroundColorPaintImageGenerator*
+LocalFrame::GetBackgroundColorPaintImageGenerator() {
+  LocalFrame& local_root = LocalFrameRoot();
+  // One background color paint worklet per root frame.
+  if (!local_root.background_color_paint_image_generator_) {
+    local_root.background_color_paint_image_generator_ =
+        BackgroundColorPaintImageGenerator::Create(local_root);
+  }
+  return local_root.background_color_paint_image_generator_.Get();
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {

@@ -127,6 +127,7 @@ class LayoutView;
 class LocalDOMWindow;
 class LocalWindowProxy;
 class LocalFrameClient;
+class BackgroundColorPaintImageGenerator;
 class Node;
 class NodeTraversal;
 class PerformanceMonitor;
@@ -235,6 +236,7 @@ class CORE_EXPORT LocalFrame final
   TextSuggestionController& GetTextSuggestionController() const;
   SpellChecker& GetSpellChecker() const;
   FrameConsole& Console() const;
+  BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
 
   // A local root is the root of a connected subtree that contains only
   // LocalFrames. The local root is responsible for coordinating input, layout,
@@ -935,6 +937,9 @@ class CORE_EXPORT LocalFrame final
   Member<SystemClipboard> system_clipboard_;
   // Access to the global raw/unsanitized system clipboard
   Member<RawSystemClipboard> raw_system_clipboard_;
+
+  Member<BackgroundColorPaintImageGenerator>
+      background_color_paint_image_generator_;
 
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;

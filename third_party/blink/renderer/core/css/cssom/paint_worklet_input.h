@@ -31,6 +31,8 @@ class CORE_EXPORT PaintWorkletInput : public cc::PaintWorkletInput {
   const FloatSize& ContainerSize() const { return container_size_; }
 
  protected:
+  PaintWorkletInput(const FloatSize& container_size, int worklet_id)
+      : container_size_(container_size), worklet_id_(worklet_id) {}
   PaintWorkletInput(const FloatSize& container_size,
                     int worklet_id,
                     cc::PaintWorkletInput::PropertyKeys property_keys)

@@ -6,6 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("csspaint") {
   sources = [
+    "background_color_paint_image_generator_impl.cc",
+    "background_color_paint_image_generator_impl.h",
+    "background_color_paint_worklet.cc",
+    "background_color_paint_worklet.h",
     "css_paint_definition.cc",
     "css_paint_definition.h",
     "css_paint_image_generator_impl.cc",
@@ -14,10 +18,9 @@ blink_modules_sources("csspaint") {
     "css_paint_worklet.h",
     "document_paint_definition.cc",
     "document_paint_definition.h",
-    "native_paint_image_generator_impl.cc",
-    "native_paint_image_generator_impl.h",
     "native_paint_worklet.cc",
     "native_paint_worklet.h",
+    "native_paint_worklet_proxy_client.h",
     "paint_rendering_context_2d.cc",
     "paint_rendering_context_2d.h",
     "paint_size.h",
@@ -27,6 +30,8 @@ blink_modules_sources("csspaint") {
     "paint_worklet_global_scope.h",
     "paint_worklet_global_scope_proxy.cc",
     "paint_worklet_global_scope_proxy.h",
+    "paint_worklet_id_generator.cc",
+    "paint_worklet_id_generator.h",
     "paint_worklet_messaging_proxy.cc",
     "paint_worklet_messaging_proxy.h",
     "paint_worklet_pending_generator_registry.cc",
