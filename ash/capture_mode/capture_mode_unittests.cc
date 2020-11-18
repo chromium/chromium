@@ -23,7 +23,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -108,10 +107,6 @@ class CaptureModeSessionTestApi {
 
   const MagnifierGlass& magnifier_glass() const {
     return session_->magnifier_glass_;
-  }
-
-  bool IsUsingCustomCursor(CaptureModeType type) const {
-    return session_->IsUsingCustomCursor(type);
   }
 
  private:
@@ -1011,9 +1006,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
   event_generator->ClickLeftButton();
   ASSERT_EQ(CaptureModeSource::kWindow, controller->source());
-  // The event on the capture bar to change capture source will still keep the
-  // cursor locked.
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
 
   // Tests that on changing back to region capture mode, the cursor becomes
@@ -1030,143 +1023,6 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
 
   // Tests that when exiting capture mode that the cursor is restored to its
   // original state.
-  controller->Stop();
-  EXPECT_FALSE(controller->IsActive());
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
-}
-
-TEST_F(CaptureModeTest, FullscreenCursorStates) {
-  using ui::mojom::CursorType;
-
-  auto* cursor_manager = Shell::Get()->cursor_manager();
-  CursorType original_cursor_type = cursor_manager->GetCursor().type();
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(CursorType::kPointer, original_cursor_type);
-
-  auto* event_generator = GetEventGenerator();
-  CaptureModeController* controller = StartCaptureSession(
-      CaptureModeSource::kFullscreen, CaptureModeType::kImage);
-  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  event_generator->MoveMouseTo(gfx::Point(175, 175));
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-
-  // Use image capture icon as the mouse cursor icon in image capture mode.
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
-
-  // Move the mouse over to capture label widget won't change the cursor since
-  // it's a label not a label button.
-  event_generator->MoveMouseTo(
-      test_api.capture_label_widget()->GetWindowBoundsInScreen().CenterPoint());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
-
-  // Use pointer mouse if the event is on the capture bar.
-  ClickOnView(GetVideoToggleButton(), event_generator);
-  EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-
-  // Use video record icon as the mouse cursor icon in video recording mode.
-  event_generator->MoveMouseTo(gfx::Point(175, 175));
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-
-  // Enter tablet mode, the cursor should be hidden.
-  TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_FALSE(cursor_manager->IsCursorVisible());
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-
-  // Exit tablet mode, the cursor should appear again.
-  TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-
-  // Stop capture mode, the cursor should be restored to its original state.
-  controller->Stop();
-  EXPECT_FALSE(controller->IsActive());
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
-}
-
-TEST_F(CaptureModeTest, WindowCursorStates) {
-  using ui::mojom::CursorType;
-
-  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
-
-  auto* cursor_manager = Shell::Get()->cursor_manager();
-  CursorType original_cursor_type = cursor_manager->GetCursor().type();
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(CursorType::kPointer, original_cursor_type);
-
-  auto* event_generator = GetEventGenerator();
-  CaptureModeController* controller =
-      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
-
-  // If the mouse is above the window, use the image capture icon.
-  event_generator->MoveMouseTo(gfx::Point(150, 150));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
-
-  // If the mouse is not above the window, use the original mouse cursor.
-  event_generator->MoveMouseTo(gfx::Point(300, 300));
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
-
-  // Use pointer mouse if the event is on the capture bar.
-  ClickOnView(GetVideoToggleButton(), event_generator);
-  EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-
-  // Use video record icon as the mouse cursor icon in video recording mode.
-  event_generator->MoveMouseTo(gfx::Point(150, 150));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
-
-  // If the mouse is not above the window, use the original mouse cursor.
-  event_generator->MoveMouseTo(gfx::Point(300, 300));
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
-
-  // Move above the window again, the cursor should change back to the video
-  // record icon.
-  event_generator->MoveMouseTo(gfx::Point(150, 150));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
-
-  // Enter tablet mode, the cursor should be hidden.
-  TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_FALSE(cursor_manager->IsCursorVisible());
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-
-  // Exit tablet mode, the cursor should appear again.
-  TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
-  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-
-  // Stop capture mode, the cursor should be restored to its original state.
   controller->Stop();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
