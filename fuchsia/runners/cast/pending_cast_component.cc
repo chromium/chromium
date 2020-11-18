@@ -44,42 +44,9 @@ PendingCastComponent::PendingCastComponent(
   // API and remove the AgentManager.
   params_.agent_manager = std::make_unique<cr_fuchsia::AgentManager>(
       params_.startup_context->component_context()->svc().get());
-
-  RequestCorsExemptHeaders();
 }
 
 PendingCastComponent::~PendingCastComponent() = default;
-
-std::vector<std::vector<uint8_t>>
-PendingCastComponent::TakeCorsExemptHeaders() {
-  std::vector<std::vector<uint8_t>> headers;
-  cors_exempt_headers_->swap(headers);
-  return headers;
-}
-
-void PendingCastComponent::RequestCorsExemptHeaders() {
-  params_.startup_context->svc()->Connect(
-      cors_exempt_headers_provider_.NewRequest());
-
-  cors_exempt_headers_provider_.set_error_handler([this](zx_status_t status) {
-    if (status != ZX_ERR_PEER_CLOSED) {
-      ZX_LOG(ERROR, status) << "CorsExemptHeaderProvider disconnected.";
-      delegate_->CancelPendingComponent(this);
-      return;
-    }
-
-    ZX_LOG(WARNING, status) << "CorsExemptHeaderProvider unsupported.";
-    cors_exempt_headers_.emplace();  // Set an empty header list.
-    MaybeLaunchComponent();
-  });
-
-  cors_exempt_headers_provider_->GetCorsExemptHeaderNames(
-      [this](std::vector<std::vector<uint8_t>> header_names) {
-        cors_exempt_headers_provider_.Unbind();
-        cors_exempt_headers_ = header_names;
-        MaybeLaunchComponent();
-      });
-}
 
 void PendingCastComponent::OnApplicationConfigReceived(
     chromium::cast::ApplicationConfig application_config) {
@@ -156,7 +123,7 @@ void PendingCastComponent::OnApiBindingsInitialized() {
 }
 
 void PendingCastComponent::MaybeLaunchComponent() {
-  if (!params_.AreComplete() || !cors_exempt_headers_)
+  if (!params_.AreComplete())
     return;
 
   // Clear the error handlers on InterfacePtr<>s before passing them, to avoid

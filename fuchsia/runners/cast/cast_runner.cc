@@ -76,22 +76,24 @@ const uint16_t kEphemeralRemoteDebuggingPort = 0;
 class FrameHostComponent : public fuchsia::sys::ComponentController {
  public:
   // Creates a FrameHostComponent with lifetime managed by |controller_request|.
-  static void Start(fuchsia::sys::StartupInfo startup_info,
-                    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                        controller_request,
-                    fuchsia::web::FrameHost* frame_host_impl) {
-    new FrameHostComponent(std::move(startup_info),
+  static void Start(
+      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+          controller_request,
+      fuchsia::web::FrameHost* frame_host_impl) {
+    new FrameHostComponent(std::move(startup_context),
                            std::move(controller_request), frame_host_impl);
   }
 
  private:
-  FrameHostComponent(fuchsia::sys::StartupInfo startup_info,
-                     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                         controller_request,
-                     fuchsia::web::FrameHost* frame_host_impl)
-      : startup_context_(std::move(startup_info)),
-        frame_host_binding_(startup_context_.outgoing(), frame_host_impl) {
-    startup_context_.ServeOutgoingDirectory();
+  FrameHostComponent(
+      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+          controller_request,
+      fuchsia::web::FrameHost* frame_host_impl)
+      : startup_context_(std::move(startup_context)),
+        frame_host_binding_(startup_context_->outgoing(), frame_host_impl) {
+    startup_context_->ServeOutgoingDirectory();
     binding_.Bind(std::move(controller_request));
     binding_.set_error_handler([this](zx_status_t) { Kill(); });
   }
@@ -104,7 +106,7 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
     delete this;
   }
 
-  base::fuchsia::StartupContext startup_context_;
+  const std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
   const base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>
       frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
@@ -166,27 +168,48 @@ void CastRunner::StartComponent(
     return;
   }
 
-  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
-  // used to route fuchsia.web.FrameHost capabilities cleanly.
-  if (enable_frame_host_component_ &&
-      (cast_url.spec() == kFrameHostComponentName)) {
-    FrameHostComponent::Start(std::move(startup_info),
-                              std::move(controller_request),
-                              main_context_.get());
+  auto startup_context =
+      std::make_unique<base::fuchsia::StartupContext>(std::move(startup_info));
+
+  if (cors_exempt_headers_) {
+    StartComponentInternal(cast_url, std::move(startup_context),
+                           std::move(controller_request));
     return;
   }
 
-  pending_components_.emplace(std::make_unique<PendingCastComponent>(
-      this,
-      std::make_unique<base::fuchsia::StartupContext>(std::move(startup_info)),
-      std::move(controller_request), cast_url.GetContent()));
+  // Start a request for the CORS-exempt headers list via the component's
+  // incoming service-directory, unless a request is already in-progress.
+  // This assumes that the set of CORS-exempt headers is the same for all
+  // components hosted by this Runner.
+  if (!cors_exempt_headers_provider_) {
+    startup_context->svc()->Connect(cors_exempt_headers_provider_.NewRequest());
+
+    cors_exempt_headers_provider_.set_error_handler([this](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "CorsExemptHeaderProvider disconnected.";
+      // Clearing queued callbacks closes resources associated with those
+      // component launch requests, effectively causing them to fail.
+      on_have_cors_exempt_headers_.clear();
+    });
+
+    cors_exempt_headers_provider_->GetCorsExemptHeaderNames(
+        [this](std::vector<std::vector<uint8_t>> header_names) {
+          cors_exempt_headers_provider_.Unbind();
+          cors_exempt_headers_ = std::move(header_names);
+          for (auto& callback : on_have_cors_exempt_headers_)
+            std::move(callback).Run();
+          on_have_cors_exempt_headers_.clear();
+        });
+  }
+
+  // Queue the component launch to be resumed once the header list is available.
+  on_have_cors_exempt_headers_.push_back(base::BindOnce(
+      &CastRunner::StartComponentInternal, base::Unretained(this), cast_url,
+      std::move(startup_context), std::move(controller_request)));
 }
 
 void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                                         CastComponent::Params params) {
-  // Save the list of CORS exemptions so that they can be used in Context
-  // creation parameters.
-  cors_exempt_headers_ = pending_component->TakeCorsExemptHeaders();
+  DCHECK(cors_exempt_headers_);
 
   // TODO(crbug.com/1082821): Remove |web_content_url| once the Cast Streaming
   // Receiver component has been implemented.
@@ -290,8 +313,9 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
 
   // If there is a list of headers to exempt from CORS checks, pass the list
   // along to the Context.
-  if (!cors_exempt_headers_.empty())
-    params.set_cors_exempt_headers(cors_exempt_headers_);
+  CHECK(cors_exempt_headers_);
+  if (!cors_exempt_headers_->empty())
+    params.set_cors_exempt_headers(*cors_exempt_headers_);
 
   return params;
 }
@@ -430,4 +454,23 @@ void CastRunner::OnMetricsRecorderServiceRequest(
   DCHECK(component);
 
   component->startup_context()->svc()->Connect(std::move(request));
+}
+
+void CastRunner::StartComponentInternal(
+    const GURL& url,
+    std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+        controller_request) {
+  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
+  // used to route fuchsia.web.FrameHost capabilities cleanly.
+  if (enable_frame_host_component_ && (url.spec() == kFrameHostComponentName)) {
+    FrameHostComponent::Start(std::move(startup_context),
+                              std::move(controller_request),
+                              main_context_.get());
+    return;
+  }
+
+  pending_components_.emplace(std::make_unique<PendingCastComponent>(
+      this, std::move(startup_context), std::move(controller_request),
+      url.GetContent()));
 }

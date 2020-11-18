@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"
+#include "base/optional.h"
 #include "fuchsia/runners/cast/cast_component.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
 
@@ -102,6 +103,14 @@ class CastRunner : public fuchsia::sys::Runner,
   void OnMetricsRecorderServiceRequest(
       fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request);
 
+  // Internal implementation of StartComponent(), called after validating the
+  // component URL and ensuring that CORS-exempt headers have been fetched.
+  void StartComponentInternal(
+      const GURL& url,
+      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+          controller_request);
+
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;
 
@@ -128,8 +137,11 @@ class CastRunner : public fuchsia::sys::Runner,
   // True if this Runner should offer the fuchsia.web.FrameHost component.
   bool enable_frame_host_component_ = false;
 
-  // List of HTTP headers to exempt from CORS checks.
-  std::vector<std::vector<uint8_t>> cors_exempt_headers_;
+  // Used to fetch & cache the list of CORS exempt HTTP headers to configure
+  // each web.Context with.
+  base::Optional<std::vector<std::vector<uint8_t>>> cors_exempt_headers_;
+  chromium::cast::CorsExemptHeaderProviderPtr cors_exempt_headers_provider_;
+  std::vector<base::OnceClosure> on_have_cors_exempt_headers_;
 
   // Last component that was created with permission to access MICROPHONE.
   CastComponent* audio_capturer_component_ = nullptr;
