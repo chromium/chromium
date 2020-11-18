@@ -165,16 +165,20 @@ DialogModelBodyText::DialogModelBodyText(util::PassKey<DialogModel> pass_key,
 
 DialogModelBodyText::~DialogModelBodyText() = default;
 
-DialogModelCheckbox::DialogModelCheckbox(util::PassKey<DialogModel> pass_key,
-                                         DialogModel* model,
-                                         int unique_id,
-                                         const DialogModelLabel& label)
+DialogModelCheckbox::DialogModelCheckbox(
+    util::PassKey<DialogModel> pass_key,
+    DialogModel* model,
+    int unique_id,
+    const DialogModelLabel& label,
+
+    const DialogModelCheckbox::Params& params)
     : DialogModelField(pass_key,
                        model,
                        kCheckbox,
                        unique_id,
                        base::flat_set<Accelerator>()),
-      label_(label) {}
+      label_(label),
+      is_checked_(params.is_checked_) {}
 
 DialogModelCheckbox::~DialogModelCheckbox() = default;
 

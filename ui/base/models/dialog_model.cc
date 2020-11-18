@@ -88,9 +88,11 @@ void DialogModel::AddBodyText(const DialogModelLabel& label) {
   AddField(std::make_unique<DialogModelBodyText>(GetPassKey(), this, label));
 }
 
-void DialogModel::AddCheckbox(int unique_id, const DialogModelLabel& label) {
+void DialogModel::AddCheckbox(int unique_id,
+                              const DialogModelLabel& label,
+                              const DialogModelCheckbox::Params& params) {
   AddField(std::make_unique<DialogModelCheckbox>(GetPassKey(), this, unique_id,
-                                                 label));
+                                                 label, params));
 }
 
 void DialogModel::AddCombobox(base::string16 label,

@@ -219,12 +219,31 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelBodyText : public DialogModelField {
 // Field class representing a checkbox with descriptive text.
 class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
  public:
+  class COMPONENT_EXPORT(UI_BASE) Params {
+   public:
+    Params() = default;
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+    ~Params() = default;
+
+    Params& SetIsChecked(bool is_checked) {
+      is_checked_ = is_checked;
+      return *this;
+    }
+
+   private:
+    friend class DialogModelCheckbox;
+
+    bool is_checked_ = false;
+  };
+
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
   DialogModelCheckbox(util::PassKey<DialogModel> pass_key,
                       DialogModel* model,
                       int unique_id,
-                      const DialogModelLabel& label);
+                      const DialogModelLabel& label,
+                      const Params& params);
   DialogModelCheckbox(const DialogModelCheckbox&) = delete;
   DialogModelCheckbox& operator=(const DialogModelCheckbox&) = delete;
   ~DialogModelCheckbox() override;
@@ -238,7 +257,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
 
  private:
   const DialogModelLabel label_;
-  bool is_checked_ = false;
+  bool is_checked_;
 };
 
 // Field class representing a combobox and corresponding label to describe the

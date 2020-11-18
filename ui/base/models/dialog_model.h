@@ -191,8 +191,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     }
 
     // Adds a checkbox. See DialogModel::AddCheckbox().
-    Builder& AddCheckbox(int unique_id, const DialogModelLabel& label) {
-      model_->AddCheckbox(unique_id, label);
+    Builder& AddCheckbox(int unique_id,
+                         const DialogModelLabel& label,
+                         const DialogModelCheckbox::Params& params =
+                             DialogModelCheckbox::Params()) {
+      model_->AddCheckbox(unique_id, label, params);
       return *this;
     }
 
@@ -238,7 +241,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void AddBodyText(const DialogModelLabel& label);
 
   // Adds a checkbox ([checkbox] label) at the end of the dialog model.
-  void AddCheckbox(int unique_id, const DialogModelLabel& label);
+  void AddCheckbox(int unique_id,
+                   const DialogModelLabel& label,
+                   const DialogModelCheckbox::Params& params =
+                       DialogModelCheckbox::Params());
 
   // Adds a labeled combobox (label: [model]) at the end of the dialog model.
   void AddCombobox(base::string16 label,
