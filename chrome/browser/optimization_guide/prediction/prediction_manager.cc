@@ -26,11 +26,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
-#include "chrome/browser/optimization_guide/prediction/remote_decision_tree_predictor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/services/machine_learning/public/cpp/service_connection.h"
-#include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
-#include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/optimization_guide_constants.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
@@ -528,148 +524,6 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
   return target_decision;
 }
 
-void PredictionManager::ShouldTargetNavigationAsync(
-    content::NavigationHandle* navigation_handle,
-    proto::OptimizationTarget optimization_target,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        override_client_model_feature_values,
-    OptimizationTargetDecisionCallback callback) {
-  SEQUENCE_CHECKER(sequence_checker_);
-  DCHECK(navigation_handle->GetURL().SchemeIsHTTPOrHTTPS());
-
-  OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
-          navigation_handle);
-  if (navigation_data) {
-    base::Optional<optimization_guide::OptimizationTargetDecision>
-        optimization_target_decision =
-            navigation_data->GetDecisionForOptimizationTarget(
-                optimization_target);
-    if (optimization_target_decision.has_value() &&
-        ShouldUseCurrentOptimizationTargetDecision(
-            *optimization_target_decision)) {
-      std::move(callback).Run(*optimization_target_decision);
-      return;
-    }
-  }
-
-  if (!registered_optimization_targets_.contains(optimization_target)) {
-    std::move(callback).Run(OptimizationTargetDecision::kUnknown);
-    return;
-  }
-
-  // Use the synchronous code path if ML Service is not enabled.
-  if (!features::ShouldUseMLServiceForPrediction()) {
-    std::move(callback).Run(
-        ShouldTargetNavigation(navigation_handle, optimization_target,
-                               override_client_model_feature_values));
-    return;
-  }
-
-  ScopedPredictionManagerModelStatusRecorder model_status_recorder(
-      optimization_target);
-  auto it =
-      optimization_target_remote_model_predictor_map_.find(optimization_target);
-  if (it == optimization_target_remote_model_predictor_map_.end()) {
-    if (store_is_ready_ && model_and_features_store_) {
-      OptimizationGuideStore::EntryKey model_entry_key;
-      if (model_and_features_store_->FindPredictionModelEntryKey(
-              optimization_target, &model_entry_key)) {
-        model_status_recorder.set_status(
-            PredictionManagerModelStatus::kStoreAvailableModelNotLoaded);
-      } else {
-        model_status_recorder.set_status(
-            PredictionManagerModelStatus::kStoreAvailableNoModelForTarget);
-      }
-    } else {
-      model_status_recorder.set_status(
-          PredictionManagerModelStatus::kStoreUnavailableModelUnknown);
-    }
-    std::move(callback).Run(
-        OptimizationTargetDecision::kModelNotAvailableOnClient);
-    return;
-  }
-
-  RemoteDecisionTreePredictor* predictor = it->second.get();
-
-  if (!predictor->Get() || !predictor->IsConnected()) {
-    // Connection to remote model is no longer valid.
-    model_status_recorder.set_status(
-        optimization_guide::PredictionManagerModelStatus::
-            kStoreAvailableModelNotLoaded);
-    optimization_target_remote_model_predictor_map_.erase(it);
-    std::move(callback).Run(
-        OptimizationTargetDecision::kModelNotAvailableOnClient);
-    return;
-  }
-
-  model_status_recorder.set_status(
-      PredictionManagerModelStatus::kModelAvailable);
-
-  base::flat_map<std::string, float> feature_map =
-      BuildFeatureMap(navigation_handle, predictor->model_features(),
-                      override_client_model_feature_values);
-
-  predictor->Get()->Predict(
-      feature_map,
-      base::BindOnce(&PredictionManager::OnModelEvaluated,
-                     ui_weak_ptr_factory_.GetWeakPtr(),
-                     std::make_unique<PredictionDecisionParams>(
-                         navigation_data->GetWeakPtr(), optimization_target,
-                         std::move(callback), predictor->version(),
-                         base::TimeTicks::Now())));
-}
-
-void PredictionManager::OnModelEvaluated(
-    std::unique_ptr<PredictionDecisionParams> params,
-    machine_learning::mojom::DecisionTreePredictionResult result,
-    double prediction_score) {
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  if (result !=
-      machine_learning::mojom::DecisionTreePredictionResult::kUnknown) {
-    UmaHistogramTimes(
-        "OptimizationGuide.PredictionModelEvaluationLatency." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                params->optimization_target),
-        base::TimeTicks::Now() - params->model_evaluation_start_time);
-  }
-
-  if (params->navigation_data) {
-    params->navigation_data->SetModelVersionForOptimizationTarget(
-        params->optimization_target, params->version);
-    params->navigation_data->SetModelPredictionScoreForOptimizationTarget(
-        params->optimization_target, prediction_score);
-  }
-
-  if (optimization_guide::features::
-          ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
-              params->optimization_target)) {
-    std::move(params->callback)
-        .Run(optimization_guide::OptimizationTargetDecision::
-                 kModelPredictionHoldback);
-    return;
-  }
-
-  optimization_guide::OptimizationTargetDecision target_decision;
-  switch (result) {
-    case machine_learning::mojom::DecisionTreePredictionResult::kTrue:
-      target_decision =
-          optimization_guide::OptimizationTargetDecision::kPageLoadMatches;
-      break;
-    case machine_learning::mojom::DecisionTreePredictionResult::kFalse:
-      target_decision =
-          optimization_guide::OptimizationTargetDecision::kPageLoadDoesNotMatch;
-      break;
-    case machine_learning::mojom::DecisionTreePredictionResult::kUnknown:
-      target_decision =
-          optimization_guide::OptimizationTargetDecision::kUnknown;
-      break;
-  }
-
-  std::move(params->callback).Run(target_decision);
-}
-
 void PredictionManager::OnEffectiveConnectionTypeChanged(
     net::EffectiveConnectionType effective_connection_type) {
   SEQUENCE_CHECKER(sequence_checker_);
@@ -680,16 +534,6 @@ PredictionModel* PredictionManager::GetPredictionModelForTesting(
     proto::OptimizationTarget optimization_target) const {
   auto it = optimization_target_prediction_model_map_.find(optimization_target);
   if (it != optimization_target_prediction_model_map_.end())
-    return it->second.get();
-  return nullptr;
-}
-
-RemoteDecisionTreePredictor*
-PredictionManager::GetRemoteDecisionTreePredictorForTesting(
-    proto::OptimizationTarget optimization_target) const {
-  auto it =
-      optimization_target_remote_model_predictor_map_.find(optimization_target);
-  if (it != optimization_target_remote_model_predictor_map_.end())
     return it->second.get();
   return nullptr;
 }
@@ -978,14 +822,7 @@ void PredictionManager::LoadPredictionModels(
   for (const auto& optimization_target : optimization_targets) {
     // The prediction model for this optimization target has already been
     // loaded.
-    if (features::ShouldUseMLServiceForPrediction() &&
-        optimization_target_remote_model_predictor_map_.contains(
-            optimization_target)) {
-      continue;
-    }
-
-    if (!features::ShouldUseMLServiceForPrediction() &&
-        optimization_target_prediction_model_map_.contains(
+    if (optimization_target_prediction_model_map_.contains(
             optimization_target)) {
       continue;
     }
@@ -1005,14 +842,6 @@ void PredictionManager::OnLoadPredictionModel(
   SEQUENCE_CHECKER(sequence_checker_);
   if (!model)
     return;
-
-  if (features::ShouldUseMLServiceForPrediction()) {
-    SendPredictionModelToMLService(
-        std::move(model),
-        base::BindOnce(&PredictionManager::OnProcessOrSendPredictionModel,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
 
   bool success = ProcessAndStorePredictionModel(*model);
   OnProcessOrSendPredictionModel(std::move(model), success);
@@ -1073,69 +902,6 @@ bool PredictionManager::ProcessAndStorePredictionModel(
     return true;
   }
   return false;
-}
-
-bool PredictionManager::SendPredictionModelToMLService(
-    std::unique_ptr<proto::PredictionModel> model,
-    PostModelLoadCallback callback) {
-  SEQUENCE_CHECKER(sequence_checker_);
-  if (!model->model_info().has_optimization_target())
-    return false;
-  if (!model->has_model())
-    return false;
-  if (!registered_optimization_targets_.contains(
-          model->model_info().optimization_target())) {
-    return false;
-  }
-
-  // The Decision Tree model type is currently the only supported model type.
-  if (model->model_info().supported_model_types(0) ==
-      optimization_guide::proto::ModelType::MODEL_TYPE_DECISION_TREE) {
-    auto predictor_handle =
-        std::make_unique<RemoteDecisionTreePredictor>(*model);
-
-    auto* service_connection =
-        machine_learning::ServiceConnection::GetInstance();
-    auto pending_receiver = predictor_handle->BindNewPipeAndPassReceiver();
-    std::string model_string = model->SerializeAsString();
-    service_connection->LoadDecisionTreeModel(
-        machine_learning::mojom::DecisionTreeModelSpec::New(model_string),
-        std::move(pending_receiver),
-        base::BindOnce(&PredictionManager::OnPredictionModelSentToMLService,
-                       ui_weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(model), std::move(predictor_handle)));
-    return true;
-  }
-  return false;
-}
-
-void PredictionManager::OnPredictionModelSentToMLService(
-    PostModelLoadCallback callback,
-    std::unique_ptr<proto::PredictionModel> model,
-    std::unique_ptr<RemoteDecisionTreePredictor> predictor_handle,
-    machine_learning::mojom::LoadModelResult result) {
-  SEQUENCE_CHECKER(sequence_checker_);
-  proto::OptimizationTarget target = model->model_info().optimization_target();
-  ScopedPredictionModelConstructionAndValidationRecorder
-      prediction_model_recorder(target);
-
-  if (result != machine_learning::mojom::LoadModelResult::kOk) {
-    prediction_model_recorder.set_is_valid(false);
-    std::move(callback).Run(std::move(model), false);
-    return;
-  }
-
-  auto it = optimization_target_remote_model_predictor_map_.find(target);
-  if (it == optimization_target_remote_model_predictor_map_.end()) {
-    optimization_target_remote_model_predictor_map_.emplace(
-        target, std::move(predictor_handle));
-  } else if (it->second->version() != model->model_info().version()) {
-    it->second = std::move(predictor_handle);
-  } else {
-    return;
-  }
-
-  std::move(callback).Run(std::move(model), true);
 }
 
 bool PredictionManager::ProcessAndStoreHostModelFeatures(

@@ -203,11 +203,11 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
     return;
   }
 
-  prediction_manager_->ShouldTargetNavigationAsync(
-      navigation_handle, optimization_target, client_model_feature_values,
-      base::BindOnce(
-          &LogOptimizationTargetDecisionAndPassOptimizationGuideDecision,
-          optimization_target, std::move(callback)));
+  optimization_guide::OptimizationTargetDecision target_decision =
+      prediction_manager_->ShouldTargetNavigation(
+          navigation_handle, optimization_target, client_model_feature_values);
+  LogOptimizationTargetDecisionAndPassOptimizationGuideDecision(
+      optimization_target, std::move(callback), target_decision);
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
