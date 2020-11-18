@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2107021941795971877">Підтримка друку</translation>
 <translation id="2108755909498034140">Перезавантажте комп’ютер</translation>
+<translation id="2111166930115883695">Щоб почати гру, натисніть пробіл</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Картка</translation>
 <translation id="2114841414352855701">Правило ігнорується, оскільки його замінено правилом <ph name="POLICY_NAME" />.</translation>
@@ -520,6 +521,7 @@
 <translation id="3010559122411665027">Елемент списку "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
 <translation id="3016780570757425217">Бачити ваше місцезнаходження</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />; натисніть Tab, а потім – Enter, щоб видалити підказку.</translation>
 <translation id="3023071826883856138">You4 (конверт)</translation>
 <translation id="3024663005179499861">Неправильний тип правила</translation>
 <translation id="3037605927509011580">От халепа!</translation>
@@ -762,6 +764,7 @@
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (конверт)</translation>
+<translation id="4067669230157909013">Зйомку екрана відновлено.</translation>
 <translation id="4067947977115446013">Додайте дійсну адресу</translation>
 <translation id="4072486802667267160">Не вдалось обробити ваше замовлення. Повторіть спробу.</translation>
 <translation id="4075732493274867456">Клієнт і сервер підтримують різні версії протоколу SSL або набору шифрів.</translation>
@@ -846,6 +849,7 @@
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4300675098767811073">Пробити кілька отворів праворуч</translation>
+<translation id="4302514097724775343">Щоб почати гру, натисніть динозавра</translation>
 <translation id="4302965934281694568">Chou3 (конверт)</translation>
 <translation id="4305666528087210886">Не вдалося отримати доступ до файлу</translation>
 <translation id="4305817255990598646">Перейти</translation>
@@ -1258,6 +1262,7 @@
 <translation id="5963413905009737549">Розділ</translation>
 <translation id="5967592137238574583">Змініть контактну інформацію</translation>
 <translation id="5967867314010545767">Видалити з історії</translation>
+<translation id="5968793460449681917">Щоразу</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5979084224081478209">Перевірити паролі</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1473,6 +1478,7 @@
 <translation id="6895330447102777224">Дані картки підтверджено</translation>
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
+<translation id="6907293445143367439">Дозвольте сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> хоче повністю контролювати ваші пристрої MIDI</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
@@ -1909,6 +1915,7 @@
 <translation id="858637041960032120">Додати тел.номер
 </translation>
 <translation id="8589998999637048520">Найкраща якість</translation>
+<translation id="8600271352425265729">Лише цього разу</translation>
 <translation id="860043288473659153">Ім’я та прізвище власника картки</translation>
 <translation id="8606726445206553943">Використовувати ваші пристрої MIDI</translation>
 <translation id="8612761427948161954">Вітаємо, <ph name="USERNAME" />!
@@ -2066,6 +2073,7 @@
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="945855313015696284">Перевірте дані нижче й видаліть недійсні картки.</translation>
 <translation id="950736567201356821">Пробити три отвори вгорі</translation>
+<translation id="951941430552851965">Адміністратор призупинив зйомку екрана через характер контенту.</translation>
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="962484866189421427">Ця сторінка може намагатися встановлювати оманливі додатки, які видають себе за інший вміст, або збирати дані для відстеження ваших дій. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Розробка</translation>

@@ -24,8 +24,10 @@
 <translation id="1126928665165112660">Qiya emas</translation>
 <translation id="113582498867142724">“<ph name="TAG" />” to‘plamidagi elementlar soni: <ph name="NUM" /></translation>
 <translation id="1161762950103988776">O‘tish</translation>
+<translation id="1164857107703583584">Oʻtish buyruqlaridan veb-sahifalarga oson oʻtishda foydalanish mumkin.</translation>
 <translation id="1175914831232945926">Raqamlar</translation>
 <translation id="1188858454923323853">qo‘shimcha</translation>
+<translation id="1189258430971676908">Mashq hududi: Pastga ochiladigan roʻyxatlar</translation>
 <translation id="1195238899008218998">Xotima</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
@@ -67,11 +69,13 @@
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">Och yashil</translation>
+<translation id="1411043317877497323">Mashq qilish maydoni</translation>
 <translation id="141454040365657399">Sahifa sarlavhasi</translation>
 <translation id="1417889266572670458">Toʻq koʻk</translation>
 <translation id="1431911867058218151">Och binafsha</translation>
 <translation id="1439316808600711881">rgn</translation>
 <translation id="146450394670219700">Grafik obyekt</translation>
+<translation id="1465097259579587977">Qisqa kursni qayta ishga tushirish</translation>
 <translation id="1480046233931937785">Mualliflar</translation>
 <translation id="1487494366197411587">Chromebook qurilmasida Search tugmasi chapdagi Shift tugmasi ustida joylashgan.</translation>
 <translation id="1498498210836053409">Matn tahrirlanayotganda yopishqoq rejim faolsizlantirilsin (Smart yopishqoq rejim)</translation>
@@ -82,6 +86,7 @@
 <translation id="1524531499102321782">Keyingi qatorga o‘tish</translation>
 <translation id="1542513807034338907">Avvalgi sahifaga varaqlash</translation>
 <translation id="1546370775711804143">Siljitish dastagi</translation>
+<translation id="1551572888042734032">Yoz</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1559739829547075274">Avvalgi elementga o‘tish</translation>
 <translation id="1565432156062359693">Bundan keyin boshqa roʻyxat mavjud emas.</translation>
@@ -109,6 +114,7 @@
 <translation id="1714116687360794776">Hisoblagich</translation>
 <translation id="1722567105086139392">Havola</translation>
 <translation id="1727806147743597030">ftr</translation>
+<translation id="1730447754326314349">ChromeVox qoʻllanmasiga xush kelibsiz. Istalgan vaqtda bu qoʻllanmadan chiqish uchun klaviaturaning yuqori oʻng burchagidan Esc tugmasini bosing. ChromeVox funksiyasini faolsizlantirish uchun Ctrl va Alt tugmalarini bosgancha Z tugmasini bosing. Keyingi darsga oʻtish uchun boʻsh joy tugmasidan foydalaning.</translation>
 <translation id="174268867904053074">Keyingi diagramma</translation>
 <translation id="1756785467854861272">Siyohrang</translation>
 <translation id="1765245556747822181">Bitta barmoq bilan tepaga suring</translation>
@@ -153,9 +159,11 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Bu element matnsiz</translation>
 <translation id="2127747486437921899">Qiya</translation>
+<translation id="2152179395627233441">Mashq hududini yopish</translation>
 <translation id="2163782704988363449">Xatolar</translation>
 <translation id="2169714232367507776">Joriy element ustiga bosing</translation>
 <translation id="2179452035581866348">ChromeVox muhim va qo‘shimcha axborotni yuborishda ovozlardan foydalanadi. Har bir ovoz nimani ifodalashini bilganingizda, ular yordamida sahifani o‘tkazish, kerak bo‘lganda batafsil ohanglarni o‘chirib qo‘yish mumkin. Quyidagi to‘liq ro‘yxatda ovozlar va ularning tavsifi berilgan.</translation>
+<translation id="2183409941723714159">Varaqlarga oʻtish</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{yopuvchi qavs belgisi}other{ # ta yopuvchi qavs belgisi}}</translation>
 <translation id="2197863150503783129">Achchiq shokoladrang</translation>
 <translation id="2199994615414171367">Avvalgi matematik ifoda</translation>
@@ -175,6 +183,7 @@
 <translation id="2318372665160196757">Asosiy</translation>
 <translation id="2329324941084714723">Tablar paneli</translation>
 <translation id="2347456970887948350">Havola</translation>
+<translation id="2365384324219615024">Elementlarni faollashtirish uchun Enter tugmasini bosishingiz mumkin. Masalan, Enter tugmasidan shaklga matn kiritishuchun foydalanish mumkin. Davom etish uchun Enter tugmasini bosing.</translation>
 <translation id="2381733276052567791">Ovozli bildirgilarni yoqish yoki o‘chirib qo‘yish</translation>
 <translation id="2390264819538553347">Davom etish uchun “Enter” tugmasini, ortga qaytish uchun esa “Backspace” tugmasini bosing.</translation>
 <translation id="2398579267367951220">Sahifada qidirish uchun soʻrovni kiriting. Natijaga sakrash uchun Enter tugmasini, natijalarni qarab chiqish uchun yuqoriga yoki pastga strelkalarini bosing. Qidiruvni oʻzgartirish uchun soʻrovni kiritishda davom eting yoki bekor qilish uchun escape tugmasini bosing.</translation>
@@ -198,6 +207,8 @@
 <translation id="2523609930580546572">ChromeVox qo‘llanmasi</translation>
 <translation id="2525706221823668172">Chromebook tezkor tugmalari</translation>
 <translation id="2553108862507765288">grammatik xato</translation>
+<translation id="2556326187583116255">Matnni oʻqishni toʻxtatish uchun ekranni ikkita barmogʻingiz bilan bosing.</translation>
+<translation id="2573256689920773241">Asosiy navigatsiya</translation>
 <translation id="257674075312929031">Guruh</translation>
 <translation id="2582407057977008361">Aside</translation>
 <translation id="2592212930811759050">Tahrirlashni boshlash uchun ikki marta bosing</translation>
@@ -209,6 +220,7 @@
 <translation id="2638785836053527382">Yuklab olish davom ettirildi: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox modifikatori</translation>
 <translation id="2644542693584024604">misspelled</translation>
+<translation id="2651441758640020174">Roʻyxatdan sevimli faslingizni tanlang.</translation>
 <translation id="2654172656519784359">Bitta oldindagi soʻzga oʻtish</translation>
 <translation id="2661530546602071611">Eslatma</translation>
 <translation id="2673280813984708147">tahrirlamoqda</translation>
@@ -234,6 +246,7 @@
 <translation id="2808001342598757276">Ekranni yoritish</translation>
 <translation id="2811019999044652585">Asboblar yoki tizim panellari kabi ekranning boshqa qismlariga o‘tish uchun “Control + Forward” tugmalarini bosing. Chromebook qurilmalarida “Forward” tugmasi “2” tugmasining tepasida joylashgan.</translation>
 <translation id="2811204574343810641">Qator</translation>
+<translation id="2816868829355607410">Amaliy mashqlar: oʻtish buyruqlari</translation>
 <translation id="2841013758207633010">Vaqt</translation>
 <translation id="2843432675592278677">Bundan oldin boshqa ARIA belgisi mavjud emas</translation>
 <translation id="2843814945404750166">Toʻq yashilroq</translation>
@@ -269,6 +282,7 @@
 <translation id="3060756054951570867">“<ph name="TITLE" />” menyusi ochildi</translation>
 <translation id="3060880924447482063">Elementlarni barmoq bilan chapga va oʻngga surish orqali varaqlang</translation>
 <translation id="3070245424257836917">Uchta barmoq bilan tepaga suring</translation>
+<translation id="307516670110542567">Qisqa kurs</translation>
 <translation id="3078345202707391975">Keyingi ikkinchi darajali sarlavha</translation>
 <translation id="3078740164268491126">jadval</translation>
 <translation id="3082249673510793544">Orqaga varaqlash</translation>
@@ -297,6 +311,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{bo‘shliq}other{# ta bo‘shliq}}</translation>
 <translation id="3179119189286472195">Havola emas</translation>
 <translation id="320041337977930740">Ekranni ustma-ust uslubiga oʻtkazish</translation>
+<translation id="3206698050650195442">Qoʻllanmadan chiqish</translation>
 <translation id="3208346789712025453">Keyingi boshqaruv elementi mavjud emas</translation>
 <translation id="321072937702597574">Orxideyarang</translation>
 <translation id="3218691001991391708">joylash: <ph name="TEXT" />.</translation>
@@ -325,6 +340,8 @@
 <translation id="335581015389089642">Ovoz berish</translation>
 <translation id="3356951775008366684">Soʻzning fonetik talaffuzi aytilsin</translation>
 <translation id="3359142382821736686">seprtr</translation>
+<translation id="3363015957057974366">Ekrandagi keyingi interaktiv elementga oʻtish uchun Tab tugmasidan ham foydalanish mumkin. U Qidiruv tugmasi ustida joylashgan. Davom etish uchun Tab tugmasini bosing.</translation>
+<translation id="3366946046494222386"><ph name="TOPIC" /> Qoʻllanma, <ph name="LESSONS" /> Darslar</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{plyus}other{# ta plyus belgisi}}</translation>
 <translation id="338583716107319301">Ajratuvchi</translation>
 <translation id="3389259863310851658">Avvalgi shakl maydoni</translation>
@@ -332,6 +349,7 @@
 <translation id="3406283310380167331">Shakllari ro‘yxatini ko‘rsatish</translation>
 <translation id="3414400929511680526">Oqimtir osmonrang</translation>
 <translation id="3418936350470374046">Pastda hech qanday katak mavjud emas</translation>
+<translation id="3435494200763325275">Varaqlar boʻyicha navigatsiyani davom ettirish</translation>
 <translation id="344800400831402066">Qumrang</translation>
 <translation id="3457000393508828486">Qisman bosilgan</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, o‘chiq</translation>
@@ -347,6 +365,7 @@
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">kesib olish: <ph name="TEXT" />.</translation>
 <translation id="3564729643041517261">Joriy ekran – yonma-yon uslubida</translation>
+<translation id="3570904478351465021">Qish</translation>
 <translation id="3573145950452451508">Sahifa kolontituli</translation>
 <translation id="3587482841069643663">Barchasi</translation>
 <translation id="3589661172894441357">Lug‘at</translation>
@@ -354,12 +373,15 @@
 <translation id="3594207934078151302">Xira dengizrang</translation>
 <translation id="3599054940393788245">Matematik bo‘lmagan belgi</translation>
 <translation id="360241989769010433">Tashakkurnoma</translation>
+<translation id="3616016838842055984">Kerakli obyektni tanlash uchun Qidiruv + Boʻsh joy tugmachalarini bosing. Buni hoziroq sinab koʻring.</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622350485154495700">Bitta barmoq bilan ikki marta tegining</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{teskari tutuq belgisi}other{# ta teskari tutuq belgisi}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar belgisi}other{# ta dollar belgisi}}</translation>
 <translation id="3659787053479271466">alrt</translation>
+<translation id="366419593095697301">Maslahat: Bu qoʻllanmadan chiqish uchun Esc tugmasini bosing.</translation>
+<translation id="3676062394766691318">Qurilmani sozlaganingizdan keyin qaytishingiz va avval Qidiruv + O, keyin esa T tugmasini bosish orqali yana qoʻllanmalarni koʻrish mumkin.</translation>
 <translation id="3681531118904532409">Pardozrang</translation>
 <translation id="3692274950075847560">Q: <ph name="RESULT" /></translation>
 <translation id="370367311675896712">Chizilgan qator</translation>
@@ -381,6 +403,7 @@
 <translation id="3856075812838139784">Faqat o‘qish</translation>
 <translation id="3857141338659865495">Feruzarangli</translation>
 <translation id="3870295413168340326">Bundan oldin boshqa 4-darajali sarlavha mavjud emas</translation>
+<translation id="3887399638190992181">Asosiy tugmalar</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
@@ -400,6 +423,7 @@
 <translation id="4004802134384979325">belgilangan</translation>
 <translation id="4006140876663370126">tasvir</translation>
 <translation id="4021716437419160885">Pastga tushish</translation>
+<translation id="4035381225449278841">Bahor</translation>
 <translation id="4047216625641135770">Belgilash</translation>
 <translation id="4053520724192563562">Yashil laym</translation>
 <translation id="4054936709456751127">sts</translation>
@@ -505,6 +529,7 @@
 <translation id="4846428657345567687">ChromeVoxga xush kelibsiz!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Avvalgi media vidjet mavjud emas</translation>
+<translation id="4855927945655956315">Asosiy tugmalar: Ctrl</translation>
 <translation id="4862744964787595316">Qalin emas</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">“Matndan-ovozga” jurnalini yoqish</translation>
@@ -520,6 +545,7 @@
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Avvalgi tugma mavjud emas</translation>
 <translation id="4979404613699303341">Avvalgi tugma</translation>
+<translation id="4982917827052020884">Muntazam ishlatiladigan tugmalardan boshlaymiz. Ctrl tugmasidan har qanday matnni oʻqishni toʻxtatish uchun foydalanish mumkin. Ctrl tugmasini klaviaturaning pastki chap burchagidan topish mumkin. Davom etish uchun Ctrl tugmasini bosing.</translation>
 <translation id="4983588134362688868">Sahifaning boshiga o‘tish</translation>
 <translation id="4986606102545753256"><ph name="NAME" /> oynasi</translation>
 <translation id="4993152509206108683">Nutq tezligi: <ph name="PERCENT" />%</translation>
@@ -531,6 +557,7 @@
 <translation id="5041394372352067729">Breyl ekranini sahifa tepasiga joylash</translation>
 <translation id="5042770794184672516">Nutq ovozini ko‘tarish</translation>
 <translation id="5042992464904238023">Veb-kontent</translation>
+<translation id="5045870649377683106">Endi Ctrl tugmasi tepasida turgan chap Shift tugmasini toping. Davom etish uchun uni bosing.</translation>
 <translation id="5050015258024679800">Avvalgi 4-darajali sarlavha</translation>
 <translation id="5054047268577924192">Avvalgi ro‘yxat bandi</translation>
 <translation id="5085453135206054947">Xira pushti</translation>
@@ -541,9 +568,11 @@
 <translation id="5111640677200759579">Ustun sarlavhasi</translation>
 <translation id="5115892389597951922">ChromeVox jurnali</translation>
 <translation id="5119330972669454698">Yogʻochrang</translation>
+<translation id="5130133513489020984">Avvalgi dars</translation>
 <translation id="513774504516943387">lnk</translation>
 <translation id="5138912041966667164">Koʻkimtir pushti</translation>
 <translation id="5140016802771803559">Toʻq siyohrang</translation>
+<translation id="5142101052131610456">Barcha darslar</translation>
 <translation id="5158275234811857234">Muqova</translation>
 <translation id="5170206230005240598">Brayl yozuvidagi taglavhalar yoniq</translation>
 <translation id="5183440668879371625">Avvalgi qator</translation>
@@ -552,6 +581,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Tugatish</translation>
 <translation id="5302089807023311274">Bibliografiya havolasi</translation>
+<translation id="530391007967514163">Sarlavhalarga oʻtishni mashq qilib koʻramiz.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, varaq</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5310788376443009632">olib tashlandi:</translation>
@@ -582,10 +612,12 @@
 <translation id="5452267669091857717">Bundan keyin boshqa 2-darajali sarlavha mavjud emas</translation>
 <translation id="5455441614648621694">Qo‘shimcha</translation>
 <translation id="5462510922370980473">Sahifalar ro‘yxati</translation>
+<translation id="5495517933067991341">Asosiy tugmalar: Shift</translation>
 <translation id="549602578321198708">So‘z</translation>
 <translation id="5513242761114685513">Kontekst menyusi</translation>
 <translation id="551361796444814639">Koʻm-koʻk</translation>
 <translation id="552195134157544755">Tanlash tugmasi</translation>
+<translation id="5522423213731659107">Qisqa kurs tugadi!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Och kulrang</translation>
 <translation id="5549179427201066174">Ovoz signallarini (earcons) yoqish yoki faolsizlantirish</translation>
@@ -599,6 +631,7 @@
 <translation id="5598905979683743333">“<ph name="NAME" />” tanlash tugmasi belgilanmadi</translation>
 <translation id="5601172225407283979">Standart amalni bajarish</translation>
 <translation id="5608798115546226984">Avto-to‘ldirish qatori</translation>
+<translation id="5616029807486814372">Keyingi dars</translation>
 <translation id="561939826962581046">vaqt</translation>
 <translation id="5623778242535476823">rbtn</translation>
 <translation id="5623842676595125836">Jurnal</translation>
@@ -607,6 +640,7 @@
 <translation id="5653397561111110475">Chromebook sensorli ekranidan maxsus imkoniyatlar rejimida foydalanish</translation>
 <translation id="5655682562155942719">O‘tish buyruqlari</translation>
 <translation id="56637627897541303">Matn maydoni</translation>
+<translation id="5669637233317991674">Dars bilan tanishish uchun Qidiruv + Oʻngga yoki Qidiruv + Chapga strelkasini bosing</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Mo‘ljal</translation>
@@ -630,9 +664,11 @@
 <translation id="5850707923114094062">Ortga</translation>
 <translation id="5851548754964597211">Ichki oynalar ro‘yxati</translation>
 <translation id="5866042630553435010">Qisman belgilandi</translation>
+<translation id="5866210856231860256">Bu mavzu uchun darslar bilan tanishish uchun Qidiruv + Oʻngga yoki Qidiruv + Chapga strelkalarini bosing</translation>
 <translation id="5867591286054666064">Ushbu qo‘llanma ochiqligida istalgan tugmani bosib, uning nomini eshitishingiz mumkin.</translation>
 <translation id="5869546221129391014">Setka</translation>
 <translation id="5876817486144482042">Ovoz balandligini pasaytirish</translation>
+<translation id="5878206664863390311">Mavzular bilan tanishish uchun Qidiruv + Oʻngga yoki Qidiruv + Chapga strelkalarini bosing</translation>
 <translation id="5878908838135392163">Och koʻkimtir</translation>
 <translation id="588108970619830498">Matndan nutqqa sintez sozlamalarini asliga qaytarish</translation>
 <translation id="5891934789323004067">Jadval</translation>
@@ -679,6 +715,7 @@
 <translation id="6254901459154107917">Keyingi matn tahrirlash qatori</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> konteyneridan chiqish.</translation>
 <translation id="6282062888058716985">nav</translation>
+<translation id="6295699829709583154">Asosiy tugmalar: Qidiruv</translation>
 <translation id="6305702903308659374">ChromeVox ekrandan o‘qiyotgan bo‘lsa ham ovoz balandligi o‘zgartirilmasin</translation>
 <translation id="6307969636681130414">Bosilgan</translation>
 <translation id="6315652249189065725">Tezkor tugmalar menyusini ochish</translation>
@@ -697,6 +734,7 @@
 <translation id="6385591741672306837">ustun</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Barcha hodisalar filtrlarini faolsizlashtirish</translation>
+<translation id="6411569524720229058">Kuz</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ikki nuqta}other{# ta ikki nuqta}}</translation>
 <translation id="6444046323172968959">Ogohlantirish muloqot oynasi</translation>
@@ -732,6 +770,7 @@
 <translation id="6730312624811567147">Home yoki End tugmalari oʻrniga Search va Chapga yoki Oʻngga, Control Home yoki End tugmalari oʻrniga Search Control va Chapga yoki Oʻngga, Page Up yoki Down tugmalari oʻrniga Search va Tepaga yoki Pastga strelkalardan foydalaning</translation>
 <translation id="6736510033526053669">yangi ichki oyna ochildi</translation>
 <translation id="675895815784134693">pgbar</translation>
+<translation id="6759710362319508545">Resurslar</translation>
 <translation id="67862343314499040">Siyohrang</translation>
 <translation id="6786800275320335305">Maqola</translation>
 <translation id="6793101435925451627">lstbx</translation>
@@ -743,6 +782,7 @@
 <translation id="6858047746862060282">Muqaddima</translation>
 <translation id="6859876496651143278">Bitta barmoq bilan chapga suring</translation>
 <translation id="6865519907510167493">imloviy xato</translation>
+<translation id="6873188295213080042">Maslahat: Oʻtish uchun Qidiruv tugmasini bosib turib, strelka tugmalarini bosing.</translation>
 <translation id="6894148351896207544">Hozirgi sana va vaqt aytilsin</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
 <translation id="6897341342232909480">Chapga ko‘chirish</translation>
@@ -808,14 +848,17 @@
 <translation id="7308519659008003150">Avvalgi shakl maydoni mavjud emas</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">qisman belgilangan</translation>
+<translation id="7344012264516629579">Havolalar, tugmalar, belgilash katakchalari kabilarga oʻtish uchun siz ushbu turdagi qoʻshimcha buyruqlardan foydalanishingiz mumkin. Oʻtish buyruqlarining toʻliq roʻyxatini Qidiruv + . (Nuqta) tugmalarini bosish bilan ochiladigan ChromeVox menyularidan topish mumkin.</translation>
 <translation id="7356165926712028380">8 nuqtali yozuvga o‘tkazish</translation>
 <translation id="7356610683936413584">Tavsif roʻyxat elementi</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}other{# ta ampersand}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Koʻkimtir kulrang</translation>
+<translation id="7393979322571982935">Tovushlar va sozlamalar</translation>
 <translation id="739763518212184081">Avvalgi qator</translation>
 <translation id="7400575256015741911">Imlo xatoligi topildi</translation>
 <translation id="7408482676469142474">tbl</translation>
+<translation id="7419264136822406994">Keyingi interaktiv elementga oʻtish uchun Shift + Tab tugmalarini bosing. Davom etish uchun Shift + Tab tugmalarini bosing.</translation>
 <translation id="7425395583360211003">keyingi qator</translation>
 <translation id="7429415133937917139">Ekranning yuqori qismidagi ChromeVox panelida 
     yangilanib turuvchi brayl ekranini koʻrsatib turadi.</translation>
@@ -843,6 +886,7 @@
 <translation id="762020119231868829">Multimediya vidjetlarida ijroni vaqtincha to‘xtatish</translation>
 <translation id="7625690649919402823">Keyingi jadval</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />-daraja</translation>
+<translation id="7637342083105831460">Mashq hududini yoki keyingi dars tugmasini topish uchun Qidiruv + Oʻngga strelkasini bosing. Keyin esa faollashtirish uchun Qidiruv + Boʻsh joy tugmalarini bosing.</translation>
 <translation id="7639968568612851608">Toʻq kulrang</translation>
 <translation id="7663318257180412551">Sarlavha 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{soat}other{soat}}</translation>
@@ -882,6 +926,7 @@
 <translation id="794091007957014205">{COUNT,plural, =1{elektron manzil belgisi}other{# ta elektron manzil belgisi}}</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7948364528129376623">Keyingi bosilgan havola mavjud emas</translation>
+<translation id="7952460583030260752">Buyruqlar tavsifi</translation>
 <translation id="7965147473449754028">menyu yopildi</translation>
 <translation id="7968340748835037139">Toʻq yashil</translation>
 <translation id="7972507042926081808">Shokoladrang</translation>
@@ -911,6 +956,8 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> faylini yuklab olish toʻxtatildi</translation>
 <translation id="8129445297241948503">Tepada katak mavjud emas</translation>
 <translation id="8138880386467279117">Teginish</translation>
+<translation id="8146613869421949343">Endi esa Qidiruv tugmasini oʻrganasiz. Qdiiruv tugmasi ChromeVox buyruqlari uchun boshqa tugmalari bilgan birga ishlatish uchun foydalaniladi. Qidiruv tugmasi chap Shift tugmasi ustida joylashgan. Davom etish uchun Qidiruv tugmasini bosing.</translation>
+<translation id="816818801578874684">Bu birinchi sarlavha. Keyingi sarlavhaga oʻtish uchun Qidiruv + H tugmalarini bosing.</translation>
 <translation id="8173092779156526980">Toʻrtta barmoq bilan chapga suring</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{tagiga chizish belgisi}other{# ta tagiga chizish belgisi}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -951,6 +998,7 @@
 <translation id="8473540203671727883">Sichqoncha ostidagi matnni ovoz chiqarib oʻqish</translation>
 <translation id="8476408756881832830">ChromeVox ekrandan o‘qiyotganda media fayllar ijrosi vaqtincha to‘xtatilsin</translation>
 <translation id="8476508772960940536">umumiy rejimi</translation>
+<translation id="8480873377842220259">Endi siz ayrim asosiy navigatsiya qoidalari bilan tanishasiz. Ekran boʻylab siljish uchun Qidiruv va strelka tugmalarini bosib turing. Davom etish uchun Qidiruv + Oʻngga strelkasini bosing</translation>
 <translation id="8503360654911991865">Navigatsiya aniqligini kamaytirish</translation>
 <translation id="8520472399088452386">Hisoblagich</translation>
 <translation id="8534394844575788431">Formati</translation>
@@ -965,6 +1013,7 @@
 <translation id="8603071050456974042">ChromeVox boshqaruv paneli</translation>
 <translation id="8606621670302093223">Sana tanlash</translation>
 <translation id="8613709718990529335">Och jigarrang</translation>
+<translation id="8614129468475308349">Juda soz! Siz ChromeVox asoslarini oʻrgandingiz. Qoʻllanma bilan yana bir marta tanishing yoki pastdagi tugmani topib, ustiga bosib undan chiqing.</translation>
 <translation id="8625173877182443267">Bundan keyin boshqa 2-darajali sarlavha mavjud emas.</translation>
 <translation id="8628186274519446680">Qizgʻish</translation>
 <translation id="8638532244051952400">Joriy katakcha koordinatlarini e’lon qilish</translation>
@@ -972,15 +1021,19 @@
 <translation id="8651481478098336970">ovozni o‘chirib qo‘yish</translation>
 <translation id="8653646212587894517">Havolalar ro‘yxatini ko‘rsatish</translation>
 <translation id="8656888282555543604">Breyl jurnalini yoqish</translation>
+<translation id="8659501358298941449">Pastga ochiladigan roʻyxatlar</translation>
 <translation id="867187640362843212">5-darajali sarlavha</translation>
+<translation id="8693391540059827073">Sevimli faslim</translation>
 <translation id="8696284982970258155">Musaffo moviy</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{vertikal chiziq}other{ # ta vertikal chiziq}}</translation>
+<translation id="8741370088760768424">Maslahat: Joriy elementni faollashtirish uchun Qidiruv + Boʻsh joy tugmalarini bosing.</translation>
 <translation id="8743786158317878347">jadval kabi tartiblangan ma’lumot kiritish</translation>
 <translation id="8747966237988593539">Tartibli ro‘yxat</translation>
 <translation id="8749988712346667988">Kumushrang</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> fayli yuklab olindi</translation>
 <translation id="8767968232364267681">Keyingi 4-darajali sarlavha</translation>
 <translation id="8770473310765924354">jadval kabi tartiblangan kontent kiritishni yakunlash</translation>
+<translation id="8775203254697638994">Ayrim hollarda pastga ochiladigan roʻyxatdan obyektni tanlashingiz kerak boʻladi. Buning uchun Qidiruv + Boʻsh joy tugmalarini bosish orqali roʻyxatni kengaytiring. Keyin esa obyektlarni tanlash uchun yuqoriga va pastga strelkalarini bosing. Oxirida esa Qidiruv + Boʻsh joy tugmalarini bosib, roʻyxatni yigʻing.</translation>
 <translation id="8779057862865475116">Avvalgi havola mavjud emas</translation>
 <translation id="8796411681063377102">Keyingi 3-chi darajali sarlavha</translation>
 <translation id="8823311177246872527">Sahifa: <ph name="CURRENTPAGE" /> / <ph name="TOTALPAGES" /></translation>
@@ -1002,6 +1055,8 @@
 <translation id="89720367119469899">O‘chirib qo‘yish</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Olib tashlash</translation>
+<translation id="8989104346085848538">ChromeVox orqali matni oʻqilishini toʻxtatish uchun Ctrl tugmasini bosing.</translation>
+<translation id="9014206344398081366">ChromeVox qoʻllanmasi</translation>
 <translation id="9040132695316389094">Sarlavha 1</translation>
 <translation id="9061884144798498064">8 nuqtalik brayl yozuvidagi jadvalni tanlash:</translation>
 <translation id="9065283790526219006">+popup</translation>

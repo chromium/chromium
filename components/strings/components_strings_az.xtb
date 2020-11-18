@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android tətbiqləri</translation>
 <translation id="2107021941795971877">Çap dəstəyi</translation>
 <translation id="2108755909498034140">Kompüteri yenidən başladın</translation>
+<translation id="2111166930115883695">Oxutmaq üçün boşluq düyməsini basın</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kart</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> tərəfindən əvəzləndiyi üçün iqnor edin.</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />" giriş siyahısı: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
 <translation id="3016780570757425217">Məkanınızı bilin</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, Təklifi ləğv etmək üçün Tab, sonra Enter düyməsini basın.</translation>
 <translation id="3023071826883856138">You4 (Zərf)</translation>
 <translation id="3024663005179499861">Yanlış siyasət növü</translation>
 <translation id="3037605927509011580">Yapon xalq musiqisi dinləmisiniz?</translation>
@@ -760,6 +762,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Açar "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zərf)</translation>
+<translation id="4067669230157909013">Ekranın çəkilməsi davam etdirilib.</translation>
 <translation id="4067947977115446013">Düzgün Ünvan Əlavə Edin</translation>
 <translation id="4072486802667267160">Sifariş hazırlanarkən xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="4075732493274867456">Klient və server ümumi SSL protokol versiyasını və ya şifrə dəstini dəstəkləmir.</translation>
@@ -843,6 +846,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
 <translation id="4300675098767811073">Sağdan çoxsaylı deşik açın</translation>
+<translation id="4302514097724775343">Oxutmaq üçün dinozavra toxunun</translation>
 <translation id="4302965934281694568">Chou3 (Zərf)</translation>
 <translation id="4305666528087210886">Faylınıza giriş mümkün olmadı</translation>
 <translation id="4305817255990598646">Dəyişin</translation>
@@ -1255,6 +1259,7 @@
 <translation id="5963413905009737549">Bölmə</translation>
 <translation id="5967592137238574583">Kontakt Məlumatını Redaktə Edin</translation>
 <translation id="5967867314010545767">Tarixçədən silin</translation>
+<translation id="5968793460449681917">Hər dəfə ziyarət etdikdə</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5979084224081478209">Parolları yoxlayın</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1470,6 +1475,7 @@
 <translation id="6895330447102777224">Kartınız təsdiqləndi</translation>
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
 <translation id="6898699227549475383">Təşkilat (T)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> tətbiqinə icazə verin:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI cihazlarda tam nəzarət əldə etmək istəyir</translation>
 <translation id="6915804003454593391">İstifadəçi:</translation>
 <translation id="6934672428414710184">Bu ad Sizin Google Hesabınızdandır.</translation>
@@ -1905,6 +1911,7 @@
 <translation id="8574899947864779331">Kartları daha sürətli təsdiqləmək üçün Toxunuş İD'si istifadə edin</translation>
 <translation id="858637041960032120">Telefon nömrəsi əlavə edin</translation>
 <translation id="8589998999637048520">Ən yüksək keyfiyyət</translation>
+<translation id="8600271352425265729">Yalnız bu dəfə</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
 <translation id="8606726445206553943">MIDI cihazlarınızı istifadə edin</translation>
 <translation id="8612761427948161954">Salam, <ph name="USERNAME" />,
@@ -2062,6 +2069,7 @@
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="945855313015696284">Aşağıdakı məlumatı yoxlayın və yanlış kartları silin</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>
+<translation id="951941430552851965">Ekranınızdakı məzmun ilə əlaqədar olaraq ekranın çəkilməsinə administratorunuz tərəfindən pauza verilib.</translation>
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
 <translation id="962484866189421427">Bu kontent başqa tətbiqə oxşayan və ya Sizi izləmək məqsədilə data əldə edən aldadıcı tətbiqləri quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />İstənilən halda göstərin<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Rəsmi Quruluş</translation>

@@ -98,6 +98,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1838895407229022812">A función Luz nocturna está desactivada.</translation>
 <translation id="1850504506766569011">A wifi está desactivada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porto posterior)</translation>
+<translation id="1882814835921407042">Non hai ningunha rede de telefonía móbil</translation>
 <translation id="1882897271359938046">Proxectando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear coa impresión dixital</translation>
 <translation id="1888656773939766144">O dispositivo (<ph name="DISPLAY_NAME" />) non é compatible cunha resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para conservar este cambio, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2049240716062114887">Cambiouse o nome do escritorio por <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
+<translation id="2078034614700056995">Para cambiar ao escritorio seguinte, pasa catro dedos cara á dereita</translation>
 <translation id="2083190527011054446">Boas noites, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
@@ -126,6 +128,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
+<translation id="2170530631236737939">Para saír do modo Visión xeral, pasa tres dedos cara abaixo</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222338659135520253">É obrigatorio iniciar sesión</translation>
@@ -235,6 +238,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3236488194889173876">Non hai ningunha rede móbil dispoñible</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
+<translation id="3289674678944039601">Cargando cun adaptador</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
@@ -294,6 +298,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3799080171973636491">Premiches o atallo de teclado para a lupa de pantalla completa. Queres activala?</translation>
 <translation id="380165613292957338">Ola! Como podo axudarche?</translation>
 <translation id="3826099427150913765">Cambiar ao contrasinal</translation>
+<translation id="383058930331066723">Está activado o modo de aforro de batería</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
 <translation id="3846214748874656680">Saír da pantalla completa</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
@@ -339,6 +344,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
+<translation id="425364040945105958">Sen SIM</translation>
 <translation id="4261870227682513959">Mostrar a configuración de notificacións. Están desactivadas</translation>
 <translation id="4267383818855338811">Unha máquina virtual está usando a cámara</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
@@ -471,14 +477,17 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5465662442746197494">Precisas axuda?</translation>
 <translation id="5496819745535887422">O administrador está instalando unha versión anterior no teu dispositivo. Ao reinicialo, eliminaranse todos os datos.</translation>
+<translation id="5516420770350073386">O teu administrador detivo a gravación da pantalla debido ao contido que se mostraba nela.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
+<translation id="5532994612895037630">Toca calquera parte para realizar unha gravación da pantalla completa</translation>
 <translation id="553675580533261935">Pechando sesión</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="554893713779400387">Activar ou desactivar ditado</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Seguinte parágrafo</translation>
+<translation id="55808498489107691">O teu administrador bloqueou o modo de captura de pantalla debido ao contido que se mostraba nela.</translation>
 <translation id="558849140439112033">Arrastra para seleccionar a zona que queiras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Preme Ctrl + Alt + Z para desactivar os comentarios de voz.</translation>
@@ -529,6 +538,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6030495522958826102">O menú moveuse á esquina inferior esquerda da pantalla.</translation>
+<translation id="6032620807120418574">Fai clic en calquera parte para realizar unha gravación da pantalla completa</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
@@ -537,6 +547,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Os dispositivos Bluetooth situados nas proximidades poderán detectar o teu dispositivo, que aparecerá como "<ph name="NAME" />" co enderezo <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de invitado.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
@@ -551,6 +562,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6283712521836204486">Está desactivado o modo Non molestar.</translation>
 <translation id="6284232397434400372">Cambiouse a resolución</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>
+<translation id="6291221004442998378">Non está cargando</translation>
 <translation id="6297287540776456956">Utiliza o lapis óptico para seleccionar unha área</translation>
 <translation id="6310121235600822547">A rotación de <ph name="DISPLAY_NAME" /> cambiou a <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -579,6 +591,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6537924328260219877">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pedirllo ao administrador</translation>
+<translation id="6570902864550063460">Cargando por USB</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
@@ -656,6 +669,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7377169924702866686">O bloqueo de maiúsculas está activado.</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
+<translation id="7378889811480108604">Está desactivado o modo de aforro de batería</translation>
 <translation id="7392563512730092880">Tamén podes configurar esta función máis tarde desde Configuración.</translation>
 <translation id="7398254312354928459">Cambiouse a conexión de rede</translation>
 <translation id="7405710164030118432">Para desbloquear o dispositivo, introduce o código de acceso parental de Family Link</translation>
@@ -705,6 +719,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7837740436429729974">Acabouse o tempo</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
+<translation id="7860671499921112077">Para acceder ao modo Visión xeral, pasa tres dedos cara arriba</translation>
 <translation id="7868900307798234037">Desbloqueo con impresión dixital</translation>
 <translation id="7872786842639831132">Desactivado</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
@@ -746,6 +761,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8152092012181020186">Preme Ctrl+W para pechar.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8167567890448493835">Usando: <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Rede de telefonía móbil. Intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">As notificacións están ocultas.</translation>
 <translation id="8196787716797768628">Utiliza xestos para cambiar de aplicación rapidamente e interactuar co teu Chromebook no modo de tableta.</translation>
 <translation id="8200772114523450471">Retomar</translation>
@@ -755,6 +771,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Preme Intro se queres desbloquear o dispositivo para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8284362522226889623">Para cambiar ao escritorio anterior, pasa catro dedos cara á esquerda</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
@@ -811,6 +828,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>
+<translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>

@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android Колдонмолору</translation>
 <translation id="2107021941795971877">Басып чыгарууну колдоо</translation>
 <translation id="2108755909498034140">Компьютериңизди өчүрүп-күйгүзүңүз</translation>
+<translation id="2111166930115883695">Ойноп баштоо үчүн боштук баскычын басыңыз</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Карта</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> кайра аныктагандыктан этибарга алынган жок.</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">Тизмедеги жазуу "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматтык түрдө бөгөттөлдү</translation>
 <translation id="3016780570757425217">Жайгашкан жериңизди билүү</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, Сунушту өчүрүү үчүн Tab, андан кийин Enter баскычын басыңыз.</translation>
 <translation id="3023071826883856138">You4 (Конверт)</translation>
 <translation id="3024663005179499861">Туура эмес саясат түрү</translation>
 <translation id="3037605927509011580">Атаңдын көрү!</translation>
@@ -763,6 +765,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Ачкыч "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Конверт)</translation>
+<translation id="4067669230157909013">Экранды тартуу улантылды.</translation>
 <translation id="4067947977115446013">Дарегин туура көрсөтүңүз</translation>
 <translation id="4072486802667267160">Буйрутмаңызды иштетүү учурунда ката кетти. Кайталап көрүңүз.</translation>
 <translation id="4075732493274867456">Кардар менен серверде ар кандай SSL протоколунун версиялары же шифрлер топтому колдоого алынат.</translation>
@@ -847,6 +850,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> барагынын эскизи</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
 <translation id="4300675098767811073">Оң жагын бир нече жолу тешүү</translation>
+<translation id="4302514097724775343">Ойноп баштоо үчүн динозаврды таптап коюңуз</translation>
 <translation id="4302965934281694568">Chou3 (Конверт)</translation>
 <translation id="4305666528087210886">Файл ачылбай койду</translation>
 <translation id="4305817255990598646">Которулуу</translation>
@@ -1259,6 +1263,7 @@
 <translation id="5963413905009737549">Бөлүм</translation>
 <translation id="5967592137238574583">Байланыш маалыматын түзөтүү</translation>
 <translation id="5967867314010545767">Таржымалдан алып салуу</translation>
+<translation id="5968793460449681917">Баш баккан сайын</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5979084224081478209">Сырсөздөрдү текшерүү</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1474,6 +1479,7 @@
 <translation id="6895330447102777224">Карточкаңыз текшерилди</translation>
 <translation id="6897140037006041989">Колдонуучунун агенти</translation>
 <translation id="6898699227549475383">Уюм (У)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> үчүн төмөнкү уруксаттар керек:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI түзмөктөрүңүздү толугу менен көзөмөлдөгөнү жатат</translation>
 <translation id="6915804003454593391">Колдонуучу:</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
@@ -1909,6 +1915,7 @@
 <translation id="8574899947864779331">Карталарды тезирээк ырастоо үчүн Touch ID функциясын колдонуу</translation>
 <translation id="858637041960032120">Телефон номерин кошуу</translation>
 <translation id="8589998999637048520">Мыкты сапат</translation>
+<translation id="8600271352425265729">Ушул жолу гана</translation>
 <translation id="860043288473659153">Карта ээсинин аты</translation>
 <translation id="8606726445206553943">MIDI түзмөктөрүңүздү колдонуңуз</translation>
 <translation id="8612761427948161954">Салам, <ph name="USERNAME" />,
@@ -2066,6 +2073,7 @@
 <translation id="939736085109172342">Жаңы папка</translation>
 <translation id="945855313015696284">Төмөнкү маалыматты текшерип, жараксыз карталарды өчүрүңүз</translation>
 <translation id="950736567201356821">Жогорку жагын үч жолу тешүү</translation>
+<translation id="951941430552851965">Экранда көрүнүп турган мазмунга байланыштуу андан видео жаздырып алууну администраторуңуз токтотуп койду.</translation>
 <translation id="961663415146723894">Төмөн жагын байлоо</translation>
 <translation id="962484866189421427">Бул мазмун башка колдонмолорго окшош жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир көрсөтүлсүн<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Расмий курама</translation>

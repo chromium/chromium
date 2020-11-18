@@ -305,6 +305,7 @@
 <translation id="2102495993840063010">Android қолданбалары</translation>
 <translation id="2107021941795971877">Баспаны қолдау</translation>
 <translation id="2108755909498034140">Компьютерді қайта іске қосу</translation>
+<translation id="2111166930115883695">Ойнау үшін бос орын пернесін басыңыз.</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Карта</translation>
 <translation id="2114841414352855701">Еленбейді, себебі оны <ph name="POLICY_NAME" /> қайта анықтаған.</translation>
@@ -522,6 +523,7 @@
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />" тізім жазбасы: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматты түрде бөгелген</translation>
 <translation id="3016780570757425217">Орналасқан жеріңізді білу</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ұсынысты өшіру үшін Tab пернесін, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Қате саясат түрі</translation>
 <translation id="3037605927509011580">Қап!</translation>
@@ -763,6 +765,7 @@
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" кілті: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
+<translation id="4067669230157909013">Экранды суретке түсіру жалғасты.</translation>
 <translation id="4067947977115446013">Жарамды мекенжайды енгізу</translation>
 <translation id="4072486802667267160">Төлем жасау кезінде қате кетті. Әрекетті қайталаңыз.</translation>
 <translation id="4075732493274867456">Клиент пен сервер ортақ SSL протоколының нұсқасын немесе шифрлар жиынтығын қолдамайды.</translation>
@@ -847,6 +850,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> бетіне арналған нобай</translation>
 <translation id="42981349822642051">Жаю</translation>
 <translation id="4300675098767811073">Оң жақтан бірнеше рет тесу</translation>
+<translation id="4302514097724775343">Ойнау үшін динозаврды басыңыз.</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
 <translation id="4305817255990598646">Ауысу</translation>
@@ -1259,6 +1263,7 @@
 <translation id="5963413905009737549">Бөлім</translation>
 <translation id="5967592137238574583">Байланыс ақпаратын өңдеу</translation>
 <translation id="5967867314010545767">Тарихтан алып тастау</translation>
+<translation id="5968793460449681917">Кірген сайын</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1474,6 +1479,7 @@
 <translation id="6895330447102777224">Картаңыз расталды</translation>
 <translation id="6897140037006041989">Пайдаланушы агенті</translation>
 <translation id="6898699227549475383">Ұйым (O)</translation>
+<translation id="6907293445143367439"><ph name="SITE_NAME" /> сайтына мына әрекеттерді орындауға рұқсат етіңіз:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> беті MIDI құрылғыларыңызды толық бақылағысы келеді</translation>
 <translation id="6915804003454593391">Пайдаланушы:</translation>
 <translation id="6934672428414710184">Бұл атау Google есептік жазбаңызда бар.</translation>
@@ -1909,6 +1915,7 @@
 <translation id="8574899947864779331">Карталарыңызды жылдам растау үшін Touch ID пайдаланыңыз.</translation>
 <translation id="858637041960032120">Телефон нөмірін қосу</translation>
 <translation id="8589998999637048520">Ең жақсы сапа</translation>
+<translation id="8600271352425265729">Тек осы жолы</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
 <translation id="8606726445206553943">MIDI құрылғыларыңызды пайдалану</translation>
 <translation id="8612761427948161954">Сәлеметсіз бе, <ph name="USERNAME" />!
@@ -2066,6 +2073,7 @@
 <translation id="939736085109172342">Жаңа қалта</translation>
 <translation id="945855313015696284">Төмендегі ақпаратты тексеріп, жарамсыз карталарды жойыңыз</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
+<translation id="951941430552851965">Экраныңыздағы мазмұнға байланысты әкімші экранды суретке түсіру процесін уақытша тоқтатты.</translation>
 <translation id="961663415146723894">Төменгі жағын байлау</translation>
 <translation id="962484866189421427">Бұл мазмұн жалған қолданбалар орнатуы мүмкін, олар басқа біреудің атын жамылуы немесе сізді бақылау үшін пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ресми жинақ</translation>

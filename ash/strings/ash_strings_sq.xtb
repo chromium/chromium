@@ -98,6 +98,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
 <translation id="1850504506766569011">Wi-Fi është i çaktivizuar.</translation>
 <translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
+<translation id="1882814835921407042">Nuk ka rrjet celular</translation>
 <translation id="1882897271359938046">Po pasqyron në <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Shkyçe me gjurmën e gishtit</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucioni ndryshoi në <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliko "Konfirmo" për të ruajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
+<translation id="2078034614700056995">Rrëshqit shpejt djathtas me katër gishta për të kaluar te tavolina tjetër e punës</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -126,6 +128,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
+<translation id="2170530631236737939">Rrëshqit shpejt poshtë me tre gishta për të dalë nga "Përmbledhja"</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222338659135520253">Kërkohet identifikimi</translation>
@@ -235,6 +238,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3236488194889173876">Nuk disponohet asnjë rrjet celular</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
+<translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3294437725009624529">Vizitor</translation>
 <translation id="3307642347673023554">Kaloi në modalitetin e laptopit</translation>
@@ -293,6 +297,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3799080171973636491">Ke shtypur shkurtoren e tastierës për zmadhuesin në ekran të plotë. Dëshiron ta aktivizosh?</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
+<translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="3846214748874656680">Dil nga ekrani i plotë</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
@@ -338,6 +343,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
+<translation id="425364040945105958">Nuk ka kartë SIM</translation>
 <translation id="4261870227682513959">Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive</translation>
 <translation id="4267383818855338811">Një pajisje virtuale po përdor kamerën tënde</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
@@ -470,14 +476,17 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5465662442746197494">Ke nevojë për ndihmë?</translation>
 <translation id="5496819745535887422">Administratori po e kthen prapa pajisjen tënde. Të gjitha të dhënat do të fshihen kur të riniset pajisja.</translation>
+<translation id="5516420770350073386">Regjistrimi i ekranit u ndalua nga administratori yt për shkak të përmbajtjes në ekranin tënd.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> po lidhet.</translation>
+<translation id="5532994612895037630">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="553675580533261935">Po del nga seanca</translation>
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5571066253365925590">Bluetooth-i u aktivizua</translation>
 <translation id="557563299383177668">Paragrafi tjetër</translation>
+<translation id="55808498489107691">Regjistrimi i ekranit u bllokua nga administratori yt për shkak të përmbajtjes në ekranin tënd.</translation>
 <translation id="558849140439112033">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Shtyp Ctrl + Alt + Z për të çaktivizuar komentet me zë.</translation>
@@ -528,6 +537,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6030495522958826102">Menyja u zhvendos në këndin poshtë majtas të ekranit.</translation>
+<translation id="6032620807120418574">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
 <translation id="6043994281159824495">Dil tani</translation>
@@ -536,6 +546,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Kompjuteri është i zbulueshëm për pajisjet me Bluetooth në afërsi dhe do të shfaqet si "<ph name="NAME" />" me adresën <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">"Asistenti i Google" nuk ofrohet në një sesion për vizitorët.</translation>
 <translation id="6137566720514957455">Hap dialogun e heqjes për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Shfaq tastierën në ekran</translation>
@@ -550,6 +561,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6283712521836204486">Modaliteti "Mos shqetëso" është joaktiv.</translation>
 <translation id="6284232397434400372">Rezolucioni u ndryshua</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> mund të rishtohet më vonë me lejen e prindit.</translation>
+<translation id="6291221004442998378">Nuk po karikohet</translation>
 <translation id="6297287540776456956">Përdor stilolapsin për të zgjedhur një sektorin</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> u rrotullua në <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -578,6 +590,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6537924328260219877">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pyet administratorin</translation>
+<translation id="6570902864550063460">Po karikohet përmes USB-së</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
@@ -655,6 +668,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
+<translation id="7378889811480108604">Modaliteti i "Kursyesit të baterisë" është joaktiv</translation>
 <translation id="7392563512730092880">Mund ta konfigurosh gjithmonë më vonë nga "Cilësimet".</translation>
 <translation id="7398254312354928459">Lidhja e rrjetit u ndërrua</translation>
 <translation id="7405710164030118432">Për të shkyçur pajisjen, fut kodin e qasjes së prindit për Family Link</translation>
@@ -704,6 +718,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7837740436429729974">Koha mbaroi</translation>
 <translation id="7842569679327885685">Paralajmërim: Funksion eksperimental</translation>
 <translation id="7846634333498149051">Tastiera</translation>
+<translation id="7860671499921112077">Rrëshqit shpejt lart me tre gishta për të hyrë te "Përmbledhja"</translation>
 <translation id="7868900307798234037">Po shkyçet me gjurmën e gishtit</translation>
 <translation id="7872786842639831132">Joaktive</translation>
 <translation id="7886169021410746335">Të rregullojë cilësimet e privatësisë</translation>
@@ -745,6 +760,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8152092012181020186">Shtyp Ctrl + W për ta mbyllur</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Rrjeti celular. Fuqia e sinjalit prej <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Njoftimet janë të fshehura.</translation>
 <translation id="8196787716797768628">Përdor gjestet për të kaluar me shpejtësi mes aplikacioneve dhe bashkëvepro me pajisjen tënde Chromebook në modalitetin e tabletit.</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
@@ -754,6 +770,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Shtyp "Enter" për ta shkyçur për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Fshi</translation>
+<translation id="8284362522226889623">Rrëshqit shpejt majtas me katër gishta për të kaluar te tavolina e mëparshme e punës</translation>
 <translation id="828708037801473432">Joaktiv</translation>
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8308637677604853869">Menyja e mëparshme</translation>
@@ -810,6 +827,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8785070478575117577">Lidhu me <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Cilësimet e metodave të hyrjes</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>

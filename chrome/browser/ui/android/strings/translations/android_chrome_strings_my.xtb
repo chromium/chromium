@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">စာမျက်နှာမှ မထွက်ဘဲ ဝဘ်ဆိုက်များရှိ အကြောင်းအရာများအကြောင်း လေ့လာနိုင်သည်။ 'ထိ၍ ရှာဖွေခြင်း' က စကားလုံးနှင့် ၎င်း၏ဝန်းကျင်ရှိ အကြောင်းအရာများကို Google Search သို့ ပို့ပေးပြီး အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ရုပ်ပုံ၊ ရှာဖွေမှု ရလဒ်နှင့် အခြားအသေးစိတ်များကို ဖော်ပြပေးပါသည်။
 
 ရှာဖွေရန် နှစ်သက်ရာစကားလုံးကို တို့ထိ၍ ဖိထားပါ။ သင်၏ရှာဖွေမှု ပိုမိုတိကျစေရန် စကားလုံးများ ပိုပြီး သို့မဟုတ် လျှော့ပြီး ရွေးချယ်ပါ။ သင်၏ရှာဖွေမှု တည်းဖြတ်ရန် အကန့်ကိုဖွင့်ပါ၊ တဘ်အသစ်တွင်ဖွင့်ရန် သင်္ကေတကို တို့ပါ၊ ထို့နောက် ရှာဖွေစာလုံးဖြည့်ရန် ကွက်လပ်တွင် ပြောင်းလဲမှုများ ထည့်ပါ။</translation>
+<translation id="2459390580524506445">အဆင့်မြင့် အသံဖြင့်ရှာဖွေခြင်း</translation>
 <translation id="246532703174860178">မျှဝေရန်</translation>
 <translation id="2478076885740497414">အက်ပ် ထည့်သွင်းရန်</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
 <translation id="2942036813789421260">အစမ်းကြည့်ရှုမှုတဘ်ကို ပိတ်ထားသည်</translation>
 <translation id="2956410042958133412">ဤအကောင့်အား <ph name="PARENT_NAME_1" /> နှင့် <ph name="PARENT_NAME_2" /> မှ စီမံ၏။</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
 <translation id="2962095958535813455">ကိုယ်ဖျောက်တဘ်များအဖြစ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="2987620471460279764">အခြားစက်ပစ္စည်းမှ မျှဝေထားသော စာတို</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">အကြောင်းကြားချက်များ ခွင့်ပြုထားသည်</translation>
 <translation id="3290991969712132877">ဤနေရာသို့အမြန်ဝင်ကြည့်ရန် ဤစာမျက်နှာကို 'နောက်ထပ်' ရွေးစရာများခလုတ်မှ သင့် 'ပင်မစာမျက်နှာ' သို့ ထည့်ပါ</translation>
 <translation id="3295530008794733555">ပိုမိုမြန်ဆန်စွာ ရှာဖွေပါ။ ဒေတာ လျှော့၍သုံးပါ။</translation>
+<translation id="3297344142967351106">အသံ အကူအညီ</translation>
 <translation id="3298243779924642547">အပေါ့စား</translation>
 <translation id="3303414029551471755">အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် ရှေ့ဆက်မလား?</translation>
 <translation id="3315103659806849044">သင်သည် လောလောဆယ် သင့် 'စင့်ခ်လုပ်ခြင်းနှင့် Google ဝန်ဆောင်မှု' ဆက်တင်များကို စိတ်ကြိုက်ပြုလုပ်နေသည်။ စင့်ခ်ဖွင့်ခြင်း အပြီးသတ်ရန် မျက်နှာပြင်အောက်ခြေနားရှိ 'အတည်ပြုရန်' ခလုတ်ကို တို့ပါ။ အပေါ်သို့ သွားရန်</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်။</translation>
 <translation id="5527082711130173040">Chrome သည် စက်ပစ္စည်းများကို ရှာဖွေနိုင်ရန်အတွက် တည်နေရာအားအသုံးပြုခွင့်ရှိရန် လိုအပ်ပါသည်။ <ph name="BEGIN_LINK1" />ခွင့်ပြုချက်များကို အပ်ဒိတ်လုပ်ပါ<ph name="END_LINK1" />။ တည်နေရာအသုံးပြုခွင့်ကို <ph name="BEGIN_LINK2" />ဤစက်ပစ္စည်းအတွက်လည်း ပိတ်ထားပါသည်<ph name="END_LINK2" />။</translation>
 <translation id="5530766185686772672">လျှို့ဝှက်သုံးတဘ်များပိတ်ပါ</translation>
+<translation id="5530920986376047241">စာမျက်နှာများကို နောက်တစ်ကြိမ်ရှာရန် သင့်ဖတ်ရန်စာရင်းတွင် သိမ်းနိုင်သည်</translation>
 <translation id="5534640966246046842">ဝဘ်ဆိုက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5561549206367097665">ကွန်ရက်ကို စောင့်နေသည်…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
 <translation id="6000066717592683814">Google ကို ဆက်သုံးရန်</translation>
 <translation id="6005538289190791541">အကြံပြုထားသည့် စကားဝှက်</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> မျက်နှာ ရှိသည်}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> မျက်နှာ ရှိသည်}}</translation>
 <translation id="6014293228235665243">မဖတ်ရသေးသည်များ</translation>
 <translation id="6036057147555329831">အပိုဆောင်း ICU</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
@@ -937,6 +942,7 @@
 <translation id="756809126120519699">Chrome ဒေတာကို ရှင်းလင်းလိုက်ပါပြီ</translation>
 <translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{<ph name="FILES_DOWNLOADED_MANY" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}}</translation>
+<translation id="7583262514280211622">သင့်ဖတ်ရန်စာရင်းကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="7588219262685291874">သင့်စက်ပစ္စည်း၏ 'ဘက်ထရီ အားထိန်း' ဖွင့်ထားလျှင် မှောင်သည့် အပြင်အဆင်ကို ဖွင့်သည်</translation>
 <translation id="7593557518625677601">Chrome စင့်ခ်ပြုလုပ်ခြင်းကို စတင်ရန် Android ဆက်တင်ကို ဖွင့်ပြီး Android စနစ်စင့်ခ်ပြုလုပ်ခြင်းကို ပြန်ဖွင့်ပါ</translation>
 <translation id="7596558890252710462">လည်ပတ်မှု စနစ်</translation>
@@ -968,6 +974,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ကိုပိတ်ပါ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
+<translation id="7786595606756654269">ဝဘ်တွင်ရှာဖွေခြင်းနှင့် သင်ဖွင့်ထားသော ဝဘ်ဆိုက်များအသုံးပြုခြင်းတို့အတွက် ပိုကောင်းမွန်သော အသံအသုံးပြုမှုကို Google Assistant က ပေးပါသည်။ Google Assistant သည် ၎င်းနှင့် အသုံးပြုသောဝဘ်ဆိုက်၏ အကြောင်းအရာများနှင့် URL တို့ကို ရရှိပါမည်။</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7798392620021911922">တဘ် <ph name="TAB_COUNT" /> ခု ပြန်ယူထားသည်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
@@ -993,6 +1000,7 @@
 <translation id="7961926449547174351">'သိုလှောင်ခန်း' အသုံးပြုခွင့်ကို သင် ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် 'ဆက်တင်များ' သို့သွားပါ။</translation>
 <translation id="7963646190083259054">လုပ်ကိုင်ပေးသူ:</translation>
 <translation id="7967911570373677897">QR ကုဒ်စကင်ဖတ်ရန် သင့်ဆက်တင်များ ပြောင်းပါ၊ သို့မှသာ Chrome က သင့်ကင်မရာကို အသုံးပြုနိုင်သည်</translation>
+<translation id="7968014550143838305">ဖတ်ရန်စာရင်းသို့ ထည့်လိုက်ပါပြီ</translation>
 <translation id="7971136598759319605">ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်</translation>
 <translation id="7975379999046275268">စာမျက်နှာ အစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ပိုမိုမြန်ဆန်စွာဖွင့်ခြင်းနှင့် ရှာဖွေခြင်းအတွက် စာမျက်နှာများကို ကြိုဖွင့်ရန်</translation>
@@ -1054,6 +1062,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8407396331882458341">၁။ <ph name="APP_NAME" /> ကို ရွေးပါ\n၂။ “အမြဲတန်း” ကို တို့ပါ</translation>
+<translation id="8410695015584479363">ဈေးနှုန်းများ ခြေရာခံရန်</translation>
 <translation id="8413126021676339697">မှတ်တမ်း အပြည့် ပြရန်</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8427875596167638501">အစမ်းကြည့်ရှုမှုတဘ်ကို တစ်ဝက်ဖွင့်ထားသည်</translation>
@@ -1161,7 +1170,6 @@
 <translation id="9155898266292537608">စာလုံးပေါ်ကို အမြန်တို့၍လည်း ရှာနိုင်သည်</translation>
 <translation id="9169507124922466868">လမ်းညွှန်မှု မှတ်တမ်း တစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="9191031968346938109">ထည့်မည့်နေရာ…</translation>
-<translation id="919615279147764192">သင်၏လုပ်ဆောင်စရာများ ပြီးမြောက်အောင် ကူညီရန် Assistant ကို အသုံးပြုထားသည့် ဝဘ်ဆိုက်များ၏ URL နှင့် အကြောင်းအရာများအပြင် Assistant ဖြင့် ပေးပို့ထားသည့် အချက်အလက်များကို Google က ရရှိပါမည်။ ဤအချက်အလက်များကို သင်၏ Google အကောင့်တွင် သိမ်းနိုင်သည်။ Assistant ကို Chrome ဆက်တင်များတွင် ပိတ်နိုင်သည်။</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{လွန်ခဲ့သော ၁ မိနစ်က စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # မိနစ်က စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="9204836675896933765">ဖိုင် ၁ ဖိုင် ကျန်ပါသည်</translation>
 <translation id="9206873250291191720">A</translation>

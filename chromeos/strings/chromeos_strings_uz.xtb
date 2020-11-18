@@ -9,6 +9,7 @@
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1337912285145772892">Skaner hududi boʻyicha</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
 <translation id="1398634363027580500">HTTPS kechikishi juda yuqori</translation>
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
@@ -17,6 +18,7 @@
 <translation id="1482734542997480527">Bu qurilma <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
+<translation id="1641857168437328880">Hujjat tasmasi (Bir tomonlama)</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1662989795263954667">Toʻxtatildi – Siyoh tugadi</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -45,6 +47,7 @@
 <translation id="3083667275341675831">Aloqa diagnostikasi</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
+<translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
@@ -73,6 +76,7 @@
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4421943235406860811">Skanerlangan fayllar saqlandi!</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos chiptasi amal qilish muddati tezda tugaydi</translation>
 <translation id="445059817448385655">Eski parol</translation>
@@ -128,6 +132,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
+<translation id="65587193855025101">Planshetli</translation>
 <translation id="6564646048574748301">Bajarilmadi - Printer ulanmagan</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
@@ -136,6 +141,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
 <translation id="6768237774506518020">DNS manzil ajratilmasligi juda yuqori</translation>
+<translation id="6839141349259399400">Skanerlarga ulanmadimi?</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7162487448488904999">Galereya</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -146,9 +152,11 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
 <translation id="7805768142964895445">Holat</translation>
+<translation id="7855434858642800953">Skanerlangan fayl saqlandi!</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
+<translation id="8160445423316272678">Hujjatni skanerga joylang va boshlash uchun <ph name="SPAN_BEGIN" />Skanerlash<ph name="SPAN_END" /> tugmasini bosing</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8294431847097064396">Manba</translation>
@@ -169,5 +177,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
+<translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
 </translationbundle>

@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
 <translation id="1204296502688602597">Kependaman DNS</translation>
+<translation id="1238612778414822719">Kependaman HTTPS</translation>
 <translation id="1290331692326790741">Isyarat lemah</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Muatkan mengikut kawasan imbasan</translation>
 <translation id="1397738625398125236">Get laluan boleh Ping</translation>
+<translation id="1398634363027580500">Kependaman HTTPS sangat tinggi</translation>
 <translation id="1413240736185167732">Gagal - Penapis gagal</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="ENROLLMENT_DOMAIN" />. Pentadbir boleh mengkonfigurasi peranti dari jauh.</translation>
 <translation id="4034824040120875894">Pencetak</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
+<translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
 <translation id="467510802200863975">Kata laluan tidak sepadan</translation>
+<translation id="467715984478005772">Disyaki tembok api</translation>
 <translation id="4691278870498629773">Dihentikan - Dulang tiada</translation>
 <translation id="469379815867856270">Kekuatan Isyarat</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
@@ -115,6 +120,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6048107060512778456">Gagal - Kertas tersangkut</translation>
 <translation id="6050189528197190982">Skala Kelabu</translation>
 <translation id="6058625436358447366">Untuk menyelesaikan proses ini, masukkan kata laluan lama dan baharu</translation>
+<translation id="6061772781719867950">Permintaan HTTP gagal</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>
@@ -133,6 +139,8 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
+<translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
+<translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="6839141349259399400">Tidak dapat menyambung kepada pengimbas?</translation>
 <translation id="714876143603641390">Kesambungan LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
@@ -140,6 +148,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +160,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8208861521865154048">Manfaat</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8294431847097064396">Sumber</translation>
+<translation id="8302368968391049045">Tembok Api HTTPS</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
 <translation id="8364946094152050673">Pelayan tiada nama</translation>

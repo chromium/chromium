@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1018656279737460067">Geannuleerd</translation>
+<translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1204296502688602597">DNS-wachttijd</translation>
+<translation id="1238612778414822719">HTTPS-wachttijd</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
+<translation id="1398634363027580500">Zeer lange HTTPS-wachttijd</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="ENROLLMENT_DOMAIN" />. Beheerders kunnen het apparaat op afstand configureren.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
+<translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
+<translation id="467715984478005772">Vermoedelijke firewall</translation>
 <translation id="4691278870498629773">Gestopt: lade ontbreekt</translation>
 <translation id="469379815867856270">Signaalsterkte</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
@@ -115,6 +120,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6048107060512778456">Mislukt - Papierstoring</translation>
 <translation id="6050189528197190982">Grijstinten</translation>
 <translation id="6058625436358447366">Geef je oude en nieuwe wachtwoord op om te voltooien</translation>
+<translation id="6061772781719867950">Mislukte HTTP-verzoeken</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
@@ -133,6 +139,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
+<translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
+<translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6839141349259399400">Kun je geen verbinding maken met scanners?</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7162487448488904999">Galerij</translation>
@@ -140,6 +148,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Lage HTTPS-wachttijd</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -151,6 +160,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8294431847097064396">Bron</translation>
+<translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>

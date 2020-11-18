@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1018656279737460067">Operazione annullata</translation>
+<translation id="1071587090247825784">Firewall rilevato</translation>
 <translation id="1075811647922107217">Dimensioni pagina</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1204296502688602597">Latenza DNS</translation>
+<translation id="1238612778414822719">Latenza HTTPS</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
 <translation id="1397738625398125236">È possibile inviare un ping al gateway</translation>
+<translation id="1398634363027580500">Latenza HTTPS molto elevata</translation>
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
 <translation id="1468664791493211953">Offerte</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="ENROLLMENT_DOMAIN" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
+<translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
+<translation id="467715984478005772">Il sistema sospetta la presenza di un firewall</translation>
 <translation id="4691278870498629773">Operazione interrotta - Vassoio mancante</translation>
 <translation id="469379815867856270">Intensità segnale</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
@@ -115,6 +120,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6048107060512778456">Operazione non riuscita - Fogli bloccati nella stampante</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
 <translation id="6058625436358447366">Per terminare, inserisci la password vecchia e quella nuova</translation>
+<translation id="6061772781719867950">Richieste HTTP non riuscite</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
 <translation id="6108689792487843350">gateway non raggiungibile</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
@@ -133,6 +139,8 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
+<translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
+<translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6839141349259399400">Non riesci a collegare gli scanner?</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -140,6 +148,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
 <translation id="7805768142964895445">Stato</translation>
@@ -151,6 +160,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8294431847097064396">Origine</translation>
+<translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8352772353338965963">Aggiungi un account per l'accesso simultaneo. Poiché gli account che hanno effettuato l'accesso sono tutti accessibili senza password, devi utilizzare questa funzione solo con gli account attendibili.</translation>
 <translation id="8364946094152050673">il campo dei server dei nomi è vuoto</translation>

@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Барактан кетпестен темалар жөнүндө желе аркылуу билип алыңыз. Ыкчам издөө мүмкүнчүлүгү сөздү жана анын контекстин Google Издөөгө жөнөтүп, аныктамаларды, сүрөттөрдү, издөө жыйынтыктарын жана башка чоо-жайларды кайтарып берет.
 
 Издөө үчүн бир сөздү коё бербей басып туруңуз. Издөөнү тактоо үчүн көбүрөөк же азыраак сөздөрдү тандаңыз. Издөөнү түзөтүү үчүн панелди ачып, жаңы өтмөктү ачуу сүрөтчөсүн таптап, издөө кутучасына өзгөртүүлөрдү киргизиңиз.</translation>
+<translation id="2459390580524506445">Жакшыртылган оозеки издөө</translation>
 <translation id="246532703174860178">Бөлүшүү</translation>
 <translation id="2478076885740497414">Колдонмону орнотуу</translation>
 <translation id="2479148705183875116">Жөндөөлөргө өтүү</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сактагычы</translation>
 <translation id="2942036813789421260">Алдын ала көрүү өтмөгү жабылды</translation>
 <translation id="2956410042958133412">Бул аккаунтту <ph name="PARENT_NAME_1" /> менен <ph name="PARENT_NAME_2" /> башкарат.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> окула элек барак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> окула элек барак}}</translation>
 <translation id="2962095958535813455">Жашыруун өтмөктөргө которулду</translation>
 <translation id="2979025552038692506">Жашыруун режимде тандалган өтмөк</translation>
 <translation id="2987620471460279764">Текст башка түзмөктөн бөлүшүлдү</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Эскертмелерге уруксат берилди</translation>
 <translation id="3290991969712132877">Бул баракты тезирээк ачуу үчүн "Дагы параметрлер" баскычынын жардамы менен аны башкы экранга кошуңуз</translation>
 <translation id="3295530008794733555">Ылдамыраак серептеңиз. Интернетти үнөмдөңүз.</translation>
+<translation id="3297344142967351106">Үн жардамчысы</translation>
 <translation id="3298243779924642547">Жөнөкөй</translation>
 <translation id="3303414029551471755">Мазмун жүктөлүп алына берсинби?</translation>
 <translation id="3315103659806849044">Учурда Шайкештирүүнү жана Google кызматынын жөндөөлөрүн ыңгайлаштырып жатасыз. Шайкештирүүнү күйүгүзүү үчүн, экрандын ылдый жагында жайгашкан "Ырастоо" баскычын таптап коюңуз. Жогору чабыттоо</translation>
@@ -625,6 +628,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5524843473235508879">Багыттоо бөгөттөлгөн.</translation>
 <translation id="5527082711130173040">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. <ph name="BEGIN_LINK1" />Уруксаттарды жаңыртыңыз<ph name="END_LINK1" />. Жайгашкан жерди колдонуу функциясы да <ph name="BEGIN_LINK2" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Жашыруун кыстармаларды жабуу</translation>
+<translation id="5530920986376047241">Барактарды кайра табуу үчүн аларды окуу тизмеңизге сактап койсоңуз болот</translation>
 <translation id="5534640966246046842">Сайт көчүрүлдү</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="5561549206367097665">Тармак күтүлүүдө…</translation>
@@ -704,6 +708,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5982307838673692400">Жашыруун өтмөктү ачуу</translation>
 <translation id="6000066717592683814">Google калсын</translation>
 <translation id="6005538289190791541">Сунушталган сырсөз</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Сизде <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> бет бар}other{Сизде <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> бет бар}}</translation>
 <translation id="6014293228235665243">Окулбагандар</translation>
 <translation id="6036057147555329831">Кошумча ICU</translation>
 <translation id="6039379616847168523">Кийинки өтмөккө секирүү</translation>
@@ -938,6 +943,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="756809126120519699">Chrome дайындары тазаланды</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктөлүп алынды}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктөлүп алынды}}</translation>
+<translation id="7583262514280211622">Окуу тизмеңизди ушул жерден табасыз</translation>
 <translation id="7588219262685291874">Түзмөгүңүз кубатты үнөмдөө режиминде иштегенде, Батареяны үнөмдөгүчтү күйгүзүңүз</translation>
 <translation id="7593557518625677601">Android жөнд. ачып, Chrome шайк. баштоого Android тутумунун шайк. кайра иштетиңз</translation>
 <translation id="7596558890252710462">Иштөө тутуму</translation>
@@ -969,6 +975,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Жаңы окуяларды көрүү үчүн мезгил-мезгили менен баш багып туруңуз</translation>
+<translation id="7786595606756654269">Google Жардамчы менен Интернетте оозеки издеп, ачкан сайттарыңызда иштегенде жакшыраак натыйжаларды аласыз. Google Жардамчы ал аркылуу ачкан сайттарыңыздын URL даректерин жана мазмундарын алып турат.</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> өтмөк калыбына келтирилди</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
@@ -994,6 +1001,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7961926449547174351">Сактагычты колдонуу мүмкүнчүлүгүн өчүрүп койдуңуз. Жөндөөлөргө өтүп, аны иштетиңиз.</translation>
 <translation id="7963646190083259054">Жөнөтүүчү:</translation>
 <translation id="7967911570373677897">QR кодун скандоо үчүн жөндөөлөрдү өзгөртүп, Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
+<translation id="7968014550143838305">Окуу тизмесине кошулду</translation>
 <translation id="7971136598759319605">Акыркы аракеттер: 1 күн мурун</translation>
 <translation id="7975379999046275268">Баракты алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Тезирээк серептөө жана издөө үчүн барактарды алдын ала жүктөп алыңыз</translation>
@@ -1055,6 +1063,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8372925856448695381">Төмөнкү тил жүктөлүп алынды: <ph name="LANG" /></translation>
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> колдонмосун тандаңыз\n2. "Ар дайымды" таптаңыз</translation>
+<translation id="8410695015584479363">Бааларга көз салуу</translation>
 <translation id="8413126021676339697">Таржымалды толугу менен көрсөтүү</translation>
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8427875596167638501">Алдын ала көрүү өтмөгүнүн жарымы жабык</translation>
@@ -1162,7 +1171,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="9155898266292537608">Ошондой эле сөзду таптап коюп, издесеңиз болот</translation>
 <translation id="9169507124922466868">Чабыттоо таржымалынын жарымы жабык</translation>
 <translation id="9191031968346938109">Кошуу…</translation>
-<translation id="919615279147764192">Тапшырмаларды аткарууга жардам берүү үчүн Google Жардамчыны колдонгон сайттардын URL даректерин жана мазмунун, ошондой эле Жардамчы аркылуу тапшырган маалыматты алат. Бул маалымат Google аккаунтуңузда сакталышы мүмкүн. Жардамчыны Chrome'дун жөндөөлөрүнөн өчүрсөңүз болот.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 мүнөт мурда текшерилди}other{# мүнөт мурда текшерилди}}</translation>
 <translation id="9204836675896933765">1 файл калды</translation>
 <translation id="9206873250291191720">А</translation>

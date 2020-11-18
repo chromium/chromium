@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">Функцията за нощно осветление е изключена.</translation>
 <translation id="1850504506766569011">Wi-Fi е изключен.</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
+<translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="1885785240814121742">Отключване с отпечатък</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Хц). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
+<translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
+<translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222338659135520253">Изисква се вход в профила</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">Няма мобилни мрежи</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
+<translation id="3289674678944039601">Зарежда се през адаптера</translation>
 <translation id="3290356915286466215">незащитена</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3307642347673023554">Превключихте към режима на лаптоп</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">Използвахте клавишната комбинация за увеличаване на целия екран. Искате ли да включите функцията?</translation>
 <translation id="380165613292957338">Здравейте, как мога да помогна?</translation>
 <translation id="3826099427150913765">Превключване към парола</translation>
+<translation id="383058930331066723">Режимът за запазване на батерията е включен</translation>
 <translation id="383629559565718788">Показване на настройките на клавиатурата</translation>
 <translation id="3846214748874656680">Изход от цял екран</translation>
 <translation id="3846575436967432996">Не е налице информация за мрежата</translation>
@@ -338,6 +343,7 @@
 <translation id="4217571870635786043">Диктуване</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
+<translation id="425364040945105958">Няма SIM карта</translation>
 <translation id="4261870227682513959">Показване на настройките за известия. Известията са изключени</translation>
 <translation id="4267383818855338811">Виртуална машина използва камерата ви</translation>
 <translation id="4269883910223712419">Администраторът на това устройство може:</translation>
@@ -470,14 +476,17 @@
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5465662442746197494">Нужна ви е помощ?</translation>
 <translation id="5496819745535887422">Администраторът връща устройството ви към по-ранна версия. Всички данни ще бъдат изтрити след рестартирането му.</translation>
+<translation id="5516420770350073386">Записването на екрана бе спряно от администратора ви заради съдържанието на екрана.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">Функцията „<ph name="FEATURE_NAME" />“ установява връзка.</translation>
+<translation id="5532994612895037630">Докоснете произволно място, за да се записва целият екран</translation>
 <translation id="553675580533261935">Излизане от сесията</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="554893713779400387">Превключване на режима на диктуване</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5571066253365925590">Bluetooth е активиран</translation>
 <translation id="557563299383177668">Следващ абзац</translation>
+<translation id="55808498489107691">Заснемането на екрана бе блокирано от администратора ви заради съдържанието на екрана ви.</translation>
 <translation id="558849140439112033">С плъзгане изберете областта, която да се заснеме</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Натиснете Ctrl + Alt + Z, за да деактивирате обратната връзка с говор.</translation>
@@ -528,6 +537,7 @@
 <translation id="602001110135236999">Превъртане наляво</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6030495522958826102">Менюто е преместено в долния ляв ъгъл на екрана.</translation>
+<translation id="6032620807120418574">Кликнете върху произволно място, за да се записва целият екран</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6043212731627905357">Този монитор не се поддържа от вашия <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Изход сега</translation>
@@ -536,6 +546,7 @@
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6062360702481658777">Ще излезете автоматично след <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Компютърът ви е откриваем за устройства с Bluetooth наблизо и ще се показва като „<ph name="NAME" />“ с адрес <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Показване на екранната клавиатура</translation>
@@ -550,6 +561,7 @@
 <translation id="6283712521836204486">Режимът „Не безпокойте“ е изключен.</translation>
 <translation id="6284232397434400372">Разделителната способност е променена</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>
+<translation id="6291221004442998378">Не се зарежда</translation>
 <translation id="6297287540776456956">Използвайте писалката, за да изберете област</translation>
 <translation id="6310121235600822547">Завъртяхте „<ph name="DISPLAY_NAME" />“ на <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -578,6 +590,7 @@
 <translation id="6537924328260219877">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6559976592393364813">Попитайте администратора</translation>
+<translation id="6570902864550063460">Зарежда се през USB</translation>
 <translation id="6585808820553845416">Сесията приключва след <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
@@ -655,6 +668,7 @@
 <translation id="7377169924702866686">„Caps Lock“ е включен.</translation>
 <translation id="7378203170292176219">С плъзгане изберете областта, която да бъде записана</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
+<translation id="7378889811480108604">Режимът за запазване на батерията е изключен</translation>
 <translation id="7392563512730092880">Винаги можете да настроите функцията по-късно от „Настройки“.</translation>
 <translation id="7398254312354928459">Преминахте към друга мрежа</translation>
 <translation id="7405710164030118432">За да отключите устройството, въведете кода си за достъп на родител от Family Link</translation>
@@ -704,6 +718,7 @@
 <translation id="7837740436429729974">Времето изтече</translation>
 <translation id="7842569679327885685">Предупреждение: Експериментална функция</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
+<translation id="7860671499921112077">Прекарайте три пръста нагоре, за да влезете в общия преглед</translation>
 <translation id="7868900307798234037">Отключване с отпечатък</translation>
 <translation id="7872786842639831132">Изкл.</translation>
 <translation id="7886169021410746335">да коригира настройките за поверителност.</translation>
@@ -745,6 +760,7 @@
 <translation id="8152092012181020186">Натиснете Ctrl + W за затваряне.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Тази настройка се управлява от администратора ви.</translation>
 <translation id="8167567890448493835">Използвате <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Мобилна мрежа. Сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Известията са скрити.</translation>
 <translation id="8196787716797768628">Използвайте жестове за бързо превключване между приложения и за взаимодействие с вашия Chromebook в режим на таблет.</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
@@ -754,6 +770,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Натиснете Enter за отключване за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Изтриване</translation>
+<translation id="8284362522226889623">Прекарайте четири пръста наляво, за да превключите към предишния работен кът</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Предишно меню</translation>
@@ -810,6 +827,7 @@
 <translation id="8785070478575117577">Свързване със <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Настройки на методите на въвеждане</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>

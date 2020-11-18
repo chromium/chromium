@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">पेज न सोडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. शोधण्यासाठी स्पर्श करा हे शब्द आणि त्याच्या आसपासचा संदर्भ Google Search ला पाठवते आणि व्याख्या, पिक्चर, शोध परिणाम आणि इतर तपशील मिळवते.
 
 शोधण्यासाठी कोणत्याही शब्दाला स्पर्श करा आणि धरून ठेवा. तुमचा शोध रिफाइन करण्यासाठी, जास्त किंवा कमी शब्द निवडा. तुमचा शोध संपादित करण्यासाठी, पॅनल उघडा, नवीन टॅबमध्ये उघडण्यासाठी आयकनवर टॅप करा आणि सर्च बॉक्समध्ये तुमचे बदल करा.</translation>
+<translation id="2459390580524506445">वर्धित व्हॉइस शोध</translation>
 <translation id="246532703174860178">शेअर करा</translation>
 <translation id="2478076885740497414">अ‍ॅप इंस्टॉल करा</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> स्टोरेज</translation>
 <translation id="2942036813789421260">पूर्वावलोकन टॅब बंद आहे</translation>
 <translation id="2956410042958133412">हे खाते <ph name="PARENT_NAME_1" /> आणि <ph name="PARENT_NAME_2" /> द्वारे व्यवस्थापित केले आहे.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
 <translation id="2962095958535813455">गुप्त टॅबवर स्विच केले</translation>
 <translation id="2979025552038692506">निवडलेला गुप्त टॅब</translation>
 <translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">सूचनांना अनुमती आहे</translation>
 <translation id="3290991969712132877">येथे झटपट येण्यासाठी, आणखी पर्याय बटणावरून हे पेज तुमच्या होम स्क्रीनवर जोडा</translation>
 <translation id="3295530008794733555">आणखी जलद ब्राउझ करा. कमी डेटा वापरा.</translation>
+<translation id="3297344142967351106">व्हॉइस साहाय्य</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
 <translation id="3315103659806849044">तुम्ही सध्या तुमचे सिंक आणि Google सेवा सेटिंग्ज कस्टमाइझ करत आहात. सिंक सुरू करणे पूर्ण करण्यासाठी, स्क्रीनच्या खालच्या बाजूला निश्चित करा बटणावर टॅप करा. वर नेव्‍हिगेट करा</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">रीडिरेक्‍ट ब्लॉक केले.</translation>
 <translation id="5527082711130173040">डिव्हाइस स्कॅन करण्‍यासाठी Chrome ला स्थान ॲक्सेसची आवश्यकता असते. <ph name="BEGIN_LINK1" />परवानग्या अपडेट करा<ph name="END_LINK1" />. स्थान ॲक्सेस देखील <ph name="BEGIN_LINK2" />या डिव्हाइसाठी बंद केला आहे<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">गुप्त टॅब बंद करा</translation>
+<translation id="5530920986376047241">पेज पुन्हा सापडण्यासाठी तुम्ही तुमच्या वाचन सूचीमध्ये ती सेव्ह करू शकता</translation>
 <translation id="5534640966246046842">साइट कॉपी केली</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5561549206367097665">नेटवर्कची वाट पाहत आहे…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">गुप्त टॅब उघडा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज आहे}other{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज आहेत}}</translation>
 <translation id="6014293228235665243">न वाचलेले</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
 <translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
+<translation id="7583262514280211622">तुम्हाला तुमची वाचन सूची येथे आढळेल</translation>
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
 <translation id="7593557518625677601">Chrome सिंक सुरू करण्यासाठी Android सेटिंग्ज उघडा आणि Android सिस्टम सिंक पुन्हा सक्षम करा</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> बंद करा</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}}</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
+<translation id="7786595606756654269">वेबवर शोधण्यासाठी आणि तुम्ही उघडलेल्या साइटसह गुंतण्यासाठी Google Assistant आणखी चांगला व्हॉइस अनुभव देते. Google Assistant ला URL आणि तुम्ही त्यासह वापरत असलेल्या साइटचा आशय मिळेल.</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780301667611848630">नाही, नको</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">तुम्ही स्टोरेज चा ॲक्सेस बंद केला आहे, तो सुरू करण्यासाठी कृपया सेटिंग्ज मध्ये जा.</translation>
 <translation id="7963646190083259054">विक्रेता:</translation>
 <translation id="7967911570373677897">QR कोड स्कॅन करण्‍यासाठी, Chrome ला तुमचा कॅमेरा वापरता येईल अशा प्रकारे सेटिंग्ज बदला</translation>
+<translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7971136598759319605">एका दिवसापूर्वी ॲक्टिव्ह होते</translation>
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="7981313251711023384">जलद ब्राउझिंग आणि शोधाकरता पेज आधीच लोड करा</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> तयार आहे.</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8407396331882458341">१. <ph name="APP_NAME" /> निवडा\n2. “नेहमी” वर टॅप करा</translation>
+<translation id="8410695015584479363">किमती ट्रॅक करा</translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>
@@ -1162,7 +1171,6 @@
 <translation id="9155898266292537608">तुम्ही शब्दावर जलद टॅप करूनदेखील शोधू शकता</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
 <translation id="9191031968346938109">यात जोडा…</translation>
-<translation id="919615279147764192">तुम्हाला टास्क पूर्ण करण्यात मदत करण्यासाठी, तुम्ही ज्या साइटवर Assistant वापरता त्यांच्या URL आणि आशय, तसेच तुम्ही Assistant द्वारे सबमिट करता ती माहिती Google मिळवेल. ही माहिती कदाचित तुमच्या Google खात्यामध्ये स्टोअर केली जाईल. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>
 <translation id="9206873250291191720">A</translation>

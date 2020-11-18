@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Իմացեք ավելին կայքի բովանդակության մասին՝ առանց էջից դուրս գալու։ Հպեք անհրաժեշտ բառին․ Google Որոնումը կփնտրի այն իր համատեքստով և կցուցադրի սահմանումներ, նկարներ, որոնման արդյունքներ և այլ տվյալներ։
 
 Որոնելու համար հպեք որևէ բառի և պահեք։ Հարցումը հստակեցնելու համար ընտրեք ավելի շատ կամ քիչ բառեր։ Որոնումը փոփոխելու համար բացեք վահանակը, բացեք հավելվածը նոր ներդիրում՝ սեղմելով պատկերակին, այնուհետև կատարեք ձեր փոփոխությունները որոնման դաշտում։</translation>
+<translation id="2459390580524506445">Բարելավված ձայնային որոնում</translation>
 <translation id="246532703174860178">Կիսվել</translation>
 <translation id="2478076885740497414">Տեղադրել հավելվածը</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ի օգտագործած տարածքը</translation>
 <translation id="2942036813789421260">Նախադիտման ներդիրը փակված է</translation>
 <translation id="2956410042958133412">Այս հաշիվը կառավարվում է <ph name="PARENT_NAME_1" /> և <ph name="PARENT_NAME_2" /> հաշիվների կողմից:</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> չկարդացված էջ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}}</translation>
 <translation id="2962095958535813455">Դուք անցում կատարեցիք ինկոգնիտո ներդիրների ռեժիմին</translation>
 <translation id="2979025552038692506">Ընտրված ինկոգնիտո ներդիր</translation>
 <translation id="2987620471460279764">Այլ սարքից ուղարկված տեքստ</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Ծանուցումները թույլատրված են</translation>
 <translation id="3290991969712132877">Այս էջն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին «Այլ ընտրանքներ» կոճակի օգնությամբ։</translation>
 <translation id="3295530008794733555">Որոնեք ավելի արագ: Օգտագործեք ավելի քիչ թրաֆիկ:</translation>
+<translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
 <translation id="3315103659806849044">Դուք ներկայումս անհատականացնում եք համաժամացման և Google-ի ծառայությունների կարգավորումները: Անհատականացումն ավարտելու և համաժամացումը միացնելու համար հպեք «Հաստատել» կոճակին էկրանի ներքևի հատվածում: Անցնել վերև</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">Վերահասցեավորումն արգելափակված է:</translation>
 <translation id="5527082711130173040">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: <ph name="BEGIN_LINK1" />Թարմացնել թույլտվությունները<ph name="END_LINK1" />: Տեղադրության հասանելիությունն <ph name="BEGIN_LINK2" />այս սարքում ևս անջատված է<ph name="END_LINK2" />:</translation>
 <translation id="5530766185686772672">Փակել ինկոգնիտո ներդիրները</translation>
+<translation id="5530920986376047241">Դուք կարող եք ձեր ընթերցանության ցանկում պահել էջեր՝ դրանք նորից գտնելու համար</translation>
 <translation id="5534640966246046842">Կայքը պատճենվեց</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5561549206367097665">Ցանցի որոնում…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> էջ}one{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> էջ}other{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> էջ}}</translation>
 <translation id="6014293228235665243">Չկարդացված</translation>
 <translation id="6036057147555329831">Լրացուցիչ ICU մոդուլ</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Chrome-ի տվյալները ջնջվեցին</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Ներբեռնվեց <ph name="FILES_DOWNLOADED_ONE" /> ֆայլ}one{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}other{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}}</translation>
+<translation id="7583262514280211622">Ձեր ընթերցանության ցանկը կգտնեք այստեղ</translation>
 <translation id="7588219262685291874">Միացնել մուգ թեման, երբ սարքի մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="7593557518625677601">Բացեք Android կարգավորումները և նորից միացրեք Android համակարգի համաժամացումը՝ Chrome Sync-ը գործարկելու համար</translation>
 <translation id="7596558890252710462">Օպերացիոն համակարգ</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">Փակել <ph name="APP_NAME" />-ը</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
+<translation id="7786595606756654269">Google Օգնականն առաջարկում է ավելի հարմար ձայնային որոնում համացանցում և փոխազդեցություն բացված կայքերի հետ։ Google Օգնականը կստանա այն կայքերի հասցեներն ու բովանդակությունը, որոնցից օգտվում եք իր միջոցով։</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">Դուք անջատել եք հիշողության հասանելիությունը։ Միացնելու համար անցեք կարգավորումներ։</translation>
 <translation id="7963646190083259054">Մատակարար՝</translation>
 <translation id="7967911570373677897">QR կոդը սկանավորելու համար բացեք կարգավորումները և թույլ տվեք Chrome-ին օգտագործել ձեր տեսախցիկը</translation>
+<translation id="7968014550143838305">Ավելացվեց ընթերցանության ցանկում</translation>
 <translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Նախաբեռնել էջերը ավելի արագ դիտարկման և որոնման համար</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> լեզուն պատրաստ է։</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8407396331882458341">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Միշտ»</translation>
+<translation id="8410695015584479363">Հետևել գներին</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
@@ -1162,7 +1171,6 @@
 <translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>
 <translation id="9169507124922466868">Նավարկման պատմության թերթը կիսաբացված է</translation>
 <translation id="9191031968346938109">Ավելացնել…</translation>
-<translation id="919615279147764192">Ձեր աշխատանքը հեշտացնելու համար Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։ Այս տեղեկությունները կարող են պահվել ձեր Google հաշվում։ Օգնականը կարող եք անջատել Chrome-ի կարգավորումներում։</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>
 <translation id="9206873250291191720">Ա</translation>

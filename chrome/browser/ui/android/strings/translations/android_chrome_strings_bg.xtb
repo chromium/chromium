@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">Научавайте за теми от уебсайтовете, без да излизате от страницата. Функцията за търсене чрез докосване изпраща до Google Търсене дума и заобикалящия я текст, след което извежда определения, снимки, резултати и други подробности.
 
 Докоснете и задръжте дума, за да търсите. За да прецизирате търсенето, изберете повече или по-малко думи. За да редактирате търсенето, отворете панела, докоснете иконата за отваряне в нов раздел и извършете промените в полето за търсене.</translation>
+<translation id="2459390580524506445">Подобрено гласово търсене</translation>
 <translation id="246532703174860178">Споделяне</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="2479148705183875116">Към настройките</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2962095958535813455">Превключихте към разделите в режим „инкогнито“</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">Известията са разрешени</translation>
 <translation id="3290991969712132877">За да отваряте тази страница по-бързо, добавете я към началния екран чрез бутона „Още опции“</translation>
 <translation id="3295530008794733555">Сърфирайте по-бързо. Използвайте по-малко данни.</translation>
+<translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3298243779924642547">Олекотена</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3315103659806849044">Понастоящем персонализирате настройките си за синхронизиране и за услугите на Google. За да включите синхронизирането, докоснете бутона „Потвърждаване“ в долната част на екрана. Навигиране нагоре</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">Блокирано бе пренасочване.</translation>
 <translation id="5527082711130173040">Chrome се нуждае от достъп до местоположението, за да сканира за устройства. <ph name="BEGIN_LINK1" />Актуализирайте разрешенията<ph name="END_LINK1" />. Също така услугите за местоположение са <ph name="BEGIN_LINK2" />изключени за това устройство<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Раздели „инкогнито“: Затв.</translation>
+<translation id="5530920986376047241">Можете да запазвате страници в списъка си за четене, за да ги намирате отново</translation>
 <translation id="5534640966246046842">Сайтът е копиран</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5561549206367097665">Изчаква се връзка с мрежата…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
 <translation id="6005538289190791541">Предложена парола</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{В него има <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница}other{В него има <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страници}}</translation>
 <translation id="6014293228235665243">Непрочетени</translation>
 <translation id="6036057147555329831">допълнителният ICU модул</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Данните в Chrome са изчистени</translation>
 <translation id="7577900504646297215">Управление на интересите</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл бе изтеглен}other{<ph name="FILES_DOWNLOADED_MANY" /> файла бяха изтеглени}}</translation>
+<translation id="7583262514280211622">Тук ще се показва списъкът ви за четене</translation>
 <translation id="7588219262685291874">Включване на тъмната тема, когато режимът за запазване на батерията на устройството ви е включен</translation>
 <translation id="7593557518625677601">За старт на синхронизирането активирайте системното синхронизиране на Android</translation>
 <translation id="7596558890252710462">Операционна система</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092">Затваряне на <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
+<translation id="7786595606756654269">Google Асистент предлага по-добра практическа работа с глас при търсене в мрежата и взаимодействие с отворени от вас сайтове. Google Асистент ще получава URL адресите и съдържанието на сайтовете, с които го използвате.</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">Деактивирахте достъпа до хранилището. Моля, отворете настройките, за да го активирате.</translation>
 <translation id="7963646190083259054">Доставчик:</translation>
 <translation id="7967911570373677897">За да сканирате QR код, променете настройките, така че Chrome да може да използва камерата.</translation>
+<translation id="7968014550143838305">Добавено към списъка за четене</translation>
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Предварително зареждане на страниците с цел по-бързо сърфиране и търсене</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8407396331882458341">1. Изберете <ph name="APP_NAME" />\n2. Докоснете „Винаги“</translation>
+<translation id="8410695015584479363">Следене на цени</translation>
 <translation id="8413126021676339697">Цялата история</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8427875596167638501">Разделът за визуализация е наполовина отворен</translation>
@@ -1162,7 +1171,6 @@
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9191031968346938109">Добавяне към…</translation>
-<translation id="919615279147764192">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата. Тази информация може да се съхранява в профила ви в Google. Имате възможност да изключите Асистент от настройките на Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9206873250291191720">А</translation>

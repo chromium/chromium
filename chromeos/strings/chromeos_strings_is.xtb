@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1018656279737460067">Hætt við</translation>
+<translation id="1071587090247825784">Eldveggur greindist</translation>
 <translation id="1075811647922107217">Síðustærð</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
+<translation id="1238612778414822719">HTTPS-biðtími</translation>
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
+<translation id="1398634363027580500">Mjög langur HTTPS-biðtími</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1478594628797167447">Skanni</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> er stjórnað af <ph name="ENROLLMENT_DOMAIN" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="4034824040120875894">Prentari</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
+<translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
 <translation id="4646949265910132906">Örugg Wi-Fi tenging</translation>
 <translation id="467510802200863975">Aðgangsorð stemma ekki</translation>
+<translation id="467715984478005772">Grunur um eldvegg</translation>
 <translation id="4691278870498629773">Stöðvað – bakka vantar</translation>
 <translation id="469379815867856270">Sendistyrkur</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
@@ -115,6 +120,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6048107060512778456">Mistókst – pappírsstífla</translation>
 <translation id="6050189528197190982">Grátónar</translation>
 <translation id="6058625436358447366">Sláðu inn gamla aðgangsorðið og það nýja til að ganga frá þessu</translation>
+<translation id="6061772781719867950">HTTP-beiðnir mistókust</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6108689792487843350">Ekki næst í gátt</translation>
 <translation id="6146993107019042706">Sláðu inn nýja aðgangsorðið til að ljúka þessu</translation>
@@ -133,6 +139,8 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
+<translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
+<translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>
 <translation id="6839141349259399400">Er ekki hægt að tengjast skönnum?</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
 <translation id="7162487448488904999">Gallerí</translation>
@@ -140,6 +148,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7359657277149375382">Skráargerð</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7805768142964895445">Staða</translation>
@@ -151,6 +160,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8294431847097064396">Uppruni</translation>
+<translation id="8302368968391049045">HTTPS-eldveggur</translation>
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="8352772353338965963">Bæta reikningi við innskráningu á marga reikninga. Hægt er að fá aðgang að öllum innskráðum reikningum án aðgangsorðs og því ætti aðeins að nota þennan eiginleika með traustum reikningum.</translation>
 <translation id="8364946094152050673">Auðir nafnaþjónar</translation>

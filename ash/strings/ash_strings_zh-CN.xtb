@@ -323,6 +323,7 @@
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4121728057981832179">有一台虚拟机正在使用您的麦克风</translation>
+<translation id="4126167871198063089">退出“随选朗读”功能</translation>
 <translation id="4129129681837227511">要想在锁定屏幕上看到通知，请解锁设备以更改设置</translation>
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4149156641122542261">此 <ph name="DEVICE_TYPE" /> 由 <ph name="DOMAIN" /> 管理</translation>
@@ -382,6 +383,7 @@
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4570957409596482333">随选朗读按钮</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
+<translation id="4577990005084629481">显示预览</translation>
 <translation id="4585337515783392668">停止投射至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4623167406982293031">验证帐号</translation>
@@ -429,11 +431,13 @@
 <translation id="4961318399572185831">投射屏幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小时 <ph name="MINUTES" /> 分 <ph name="SECONDS" /> 秒</translation>
 <translation id="4975771730019223894">应用通知数量标志</translation>
+<translation id="5003993274120026347">下一句</translation>
 <translation id="5019169674188023236">您的 <ph name="DEVICE_TYPE" /> 好像关闭了蓝牙或 Wi-Fi。请检查您的网络连接状况，以便能够使用 Phone Hub。</translation>
 <translation id="5030687792513154421">时间到</translation>
 <translation id="5033299697334913360">点击任意位置即可截取整个屏幕</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />已连接到新手机</translation>
 <translation id="5035389544768382859">确认显示屏配置</translation>
+<translation id="504465286040788597">上一个段落</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
@@ -473,6 +477,7 @@
 <translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5571066253365925590">蓝牙已启用</translation>
+<translation id="557563299383177668">下一个段落</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
@@ -723,6 +728,7 @@
 <translation id="8029247720646289474">热点连接失败</translation>
 <translation id="8029629653277878342">需要输入 PIN 码或密码以增强安全性</translation>
 <translation id="8030169304546394654">连接已断开</translation>
+<translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">打开无障碍功能设置菜单</translation>
 <translation id="8048123526339889627">蓝牙设置</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
@@ -861,6 +867,7 @@
 <translation id="921989828232331238">您的家长已全天锁定您的设备</translation>
 <translation id="9220525904950070496">移除帐号</translation>
 <translation id="923686485342484400">连按两次Ctrl+Shift+Q即可退出。</translation>
+<translation id="925832987464884575">隐藏预览</translation>
 <translation id="938963181863597773">我的日历中有哪些活动？</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="98515147261107953">横向</translation>

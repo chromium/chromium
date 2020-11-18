@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1018656279737460067">キャンセルされました</translation>
+<translation id="1071587090247825784">ファイアウォールが検出されました</translation>
 <translation id="1075811647922107217">ページサイズ</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
+<translation id="1238612778414822719">HTTPS レイテンシ</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
+<translation id="1398634363027580500">HTTPS レイテンシが非常に高くなっています</translation>
 <translation id="1413240736185167732">失敗 - フィルタエラー</translation>
 <translation id="1468664791493211953">クーポン</translation>
 <translation id="1478594628797167447">スキャナ</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">この <ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4131410914670010031">白黒</translation>
+<translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="4646949265910132906">安全な Wi-Fi 接続</translation>
 <translation id="467510802200863975">パスワードが一致しません</translation>
+<translation id="467715984478005772">ファイアウォールの可能性があります</translation>
 <translation id="4691278870498629773">停止 - トレイなし</translation>
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
@@ -115,6 +120,7 @@
 <translation id="6048107060512778456">失敗 - 紙詰まりです</translation>
 <translation id="6050189528197190982">グレースケール</translation>
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
+<translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
@@ -133,6 +139,8 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
+<translation id="6766275201586212568">DNS 解決に失敗しました</translation>
+<translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6839141349259399400">スキャナに接続できない場合</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
@@ -140,6 +148,7 @@
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7805768142964895445">ステータス</translation>
@@ -151,6 +160,7 @@
 <translation id="8208861521865154048">特典</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8294431847097064396">ソース</translation>
+<translation id="8302368968391049045">HTTPS ファイアウォール</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>

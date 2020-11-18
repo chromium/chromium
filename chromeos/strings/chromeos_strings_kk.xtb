@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1018656279737460067">Бас тартылды</translation>
+<translation id="1071587090247825784">Брандмаэур анықталды.</translation>
 <translation id="1075811647922107217">Бет өлшемі</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
+<translation id="1238612778414822719">HTTPS кідірісі</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
+<translation id="1398634363027580500">HTTPS кідірісі өте жоғары.</translation>
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="ENROLLMENT_DOMAIN" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
+<translation id="4145784616224233563">HTTP брандмауэрі</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="4646949265910132906">Қорғалған Wi-Fi байланысы</translation>
 <translation id="467510802200863975">Құпия сөздер сәйкес келмейді.</translation>
+<translation id="467715984478005772">Брандмауэр болуы мүмкін.</translation>
 <translation id="4691278870498629773">Тоқтатылды: науа жоқ</translation>
 <translation id="469379815867856270">Сигнал күші</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
@@ -114,6 +119,7 @@
 <translation id="6048107060512778456">Сәтсіз: қағаз кептеліп қалды</translation>
 <translation id="6050189528197190982">Сұр шкаласы</translation>
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
+<translation id="6061772781719867950">HTTP сұраулары сәтсіз аяқталды.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
@@ -132,6 +138,8 @@
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
+<translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
+<translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары</translation>
 <translation id="6839141349259399400">Сканерлерге қосыла алмадыңыз ба?</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -139,6 +147,7 @@
 <translation id="7359657277149375382">Файл түрі</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7805768142964895445">Күйі</translation>
@@ -150,6 +159,7 @@
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
+<translation id="8302368968391049045">HTTPS брандмауэрі</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>

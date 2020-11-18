@@ -24,7 +24,8 @@
 <translation id="1126928665165112660">ترچھا نہیں ہے</translation>
 <translation id="113582498867142724"><ph name="NUM" /> آئٹمز کے ساتھ <ph name="TAG" /> مجموعہ</translation>
 <translation id="1161762950103988776">جمپ</translation>
-<translation id="1164857107703583584">جمپ کمانڈز کو کسی ویب صفحے کے ذریعے سلیقے سے نیویگیٹ کرنے کیلئے استعمال کیا جا سکتا ہے۔</translation>
+<translation id="1164857107703583584">جمپ کمانڈز کو کسی ویب صفحے کو مؤثر طریقے سے نیویگیٹ کرنے کیلئے استعمال کیا
+جا سکتا ہے۔</translation>
 <translation id="1175914831232945926">ہندسے</translation>
 <translation id="1188858454923323853">اعزازی</translation>
 <translation id="1189258430971676908">پریکٹیس کرنے کی جگہ: ڈراپ ڈاؤن فہرستیں</translation>
@@ -115,7 +116,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="1714116687360794776">میٹر</translation>
 <translation id="1722567105086139392">لنک</translation>
 <translation id="1727806147743597030">ftr</translation>
-<translation id="1730447754326314349">‏ChromeVox ٹیوٹوریل میں خوش آمدید۔ کسی بھی وقت اس ٹیوٹوریل سے باہر نکلنے کیلئے، کی بورڈ کے اوپری بائیں کونے میں Escape کلید دبائیں۔ ChromeVox کو آف کرنے کیلئے، Control اور Alt کو دبا کر رکھیں اور Z دبائیں۔ جب آپ تیار ہوں تو اگلے اسباق میں جانے کیلئے spacebar کا استعمال کریں۔</translation>
+<translation id="1730447754326314349">‏ChromeVox ٹیوٹوریل میں خوش آمدید۔ کسی بھی وقت اس ٹیوٹوریل سے باہر نکلنے کیلئے، کی بورڈ کے اوپری بائیں کونے میں Escape کلید دبائیں۔ ChromeVox کو آف کرنے کیلئے، Control اور Alt کو دبا کر رکھیں اور Z دبائیں۔ جب آپ تیار ہوں تو اگلے سبق میں جانے کیلئے spacebar کا استعمال کریں۔</translation>
 <translation id="174268867904053074">اگلا گرافک</translation>
 <translation id="1756785467854861272">گہرا میجنٹا</translation>
 <translation id="1765245556747822181">ایک انگلی سے اوپر کی طرف سوائپ کریں</translation>
@@ -184,7 +185,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2318372665160196757">اصل</translation>
 <translation id="2329324941084714723">ٹیب پینل</translation>
 <translation id="2347456970887948350">ایک لنک</translation>
-<translation id="2365384324219615024">‏آپ آئٹمز کو فعال کرنے کیلئے بھی Enter دبا سکتے ہیں۔ مثال کے طور پر، کسی فارم میں متن جمع کرنے کیلئے Enter کو استعمال کیا جا سکتا ہے۔ جاری رکھنے کیلئے Enter دبائیں۔</translation>
+<translation id="2365384324219615024">‏آپ آئٹمز کو فعال کرنے کیلئے بھی Enter دبا سکتے ہیں۔ مثال کے طور پر، کسی فارم میں ٹیکسٹ جمع کروانے کیلئے Enter کو استعمال کیا جا سکتا ہے۔ جاری رکھنے کیلئے Enter دبائیں۔</translation>
 <translation id="2381733276052567791">ٹوگل کر کے اسپیچ کو آن یا آف کریں</translation>
 <translation id="2390264819538553347">آگے جانے کیلئے، انٹر کو دبائیں؛ واپس جانے کیلئے، بیک اسپیس کو دبائیں۔</translation>
 <translation id="2398579267367951220">‏صفحے میں تلاش کرنے کے لئے ٹائپ کریں۔ نتیجے تک جانے کے لیے enter دبائیں، نتائج براؤز کرنے کے لئے اوپر یا نیچے تیر والے بٹن دبائیں، اپنی تلاش کو تبدیل کرنے کے لئے ٹائپنگ جاری رکھیں، یا منسوخ کرنے کے لئے escape دبائیں۔</translation>
@@ -381,7 +382,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ڈالر}other{# ڈالر کے نشانات}}</translation>
 <translation id="3659787053479271466">الرٹ</translation>
-<translation id="366419593095697301">‏اشارہ: اگر آپ اس ٹیوٹوریل سے باہر نکلنا چاہتے ہیں تو Escape دبائیں۔</translation>
+<translation id="366419593095697301">‏تجویز: اگر آپ اس ٹیوٹوریل سے باہر نکلنا چاہتے ہیں تو Escape دبائیں۔</translation>
 <translation id="3676062394766691318">‏اپنے آلے کو سیٹ اپ کرنے کے بعد، آپ O + Search پھر T دبا کر واپس آ سکتے ہیں اور مزید ٹیوٹوریلز ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="3681531118904532409">بھورا مائل ہلکا نارنجی</translation>
 <translation id="3692274950075847560">‎S:<ph name="RESULT" />‎</translation>
@@ -582,7 +583,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">اختتام</translation>
 <translation id="5302089807023311274">کتابیات کا حوالہ</translation>
-<translation id="530391007967514163">نیچے متن کو نیویگیٹ کرنے کیلئے سرخی کے ذریعے جمپنگ آزمائیں۔</translation>
+<translation id="530391007967514163">نیچے ٹیکسٹ کو نیویگیٹ کرنے کیلئے سرخی کے لحاظ سے جمپنگ آزمائیں۔</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />، ٹیب</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5310788376443009632">ہٹا دیا گیا:</translation>
@@ -783,7 +784,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6858047746862060282">تمہید</translation>
 <translation id="6859876496651143278">ایک انگلی سے بائیں طرف سوائپ کریں</translation>
 <translation id="6865519907510167493">غلط ہجے</translation>
-<translation id="6873188295213080042">‏نیویگیٹ کرنے کیلئے Search کو ہولڈ کریں اور تیر کے نشان والی کلیدوں کو دبائیں۔</translation>
+<translation id="6873188295213080042">‏تجویز: نیویگیٹ کرنے کیلئے Search کو ہولڈ کریں اور تیر کے نشان والی کلیدوں کو دبائیں۔</translation>
 <translation id="6894148351896207544">موجودہ وقت اور تاریخ بولیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6897341342232909480">بائیں منتقل ہوں</translation>
@@ -887,7 +888,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="762020119231868829">فی الحال چل رہے سبھی میڈیا ویجیٹس کو موقوف کرتا ہے</translation>
 <translation id="7625690649919402823">اگلا ٹیبل</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، گریڈ <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">‏پریکٹس کرنے کی جگہ یا اگلے سبق کے بٹن کو تلاش کرنے کیلئے تلاش + دائیں تیر کے نشان کو دبائیں۔ پھر فعال کرنے کیلئے Search + Space دبائیں۔</translation>
+<translation id="7637342083105831460">‏پریکٹس کرنے کی جگہ یا اگلے سبق کے بٹن کو تلاش کرنے کیلئے Search + دائیں تیر کے نشان کو دبائیں۔ پھر فعال کرنے کیلئے Search + Space دبائیں۔</translation>
 <translation id="7639968568612851608">گہرا خاکستری</translation>
 <translation id="7663318257180412551">سرخی 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{گھنٹہ}other{گھنٹے}}</translation>
@@ -957,7 +958,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="812886159861361726">ڈاؤن لوڈ رک گیا <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">اوپر کوئی سیل نہیں ہے</translation>
 <translation id="8138880386467279117">ٹچ کریں</translation>
-<translation id="8146613869421949343">‏آگے، آپ تلاش کی کلید کے بارے میں جانیں گے۔ تلاش کی کلید ChromeVox کمانڈز کیلئے دوسری کلیدوں کے ساتھ استعمال کی جاتی ہے۔ تلاش کی کلید بالکل بائیں Shift کلید کے اوپر ہوتی ہے۔ جاری رکھنے کیلئے، تلاش کی کلید دبائیں۔</translation>
+<translation id="8146613869421949343">‏آگے، آپ Search کلید کے بارے میں جانیں گے۔ Search کلید ChromeVox کمانڈز کیلئے دوسری کلیدوں کے ساتھ استعمال کی جاتی ہے۔ Search کلید بالکل بائیں Shift کلید کے اوپر ہوتی ہے۔ جاری رکھنے کیلئے، Search کلید دبائیں۔</translation>
 <translation id="816818801578874684">‏یہ پہلی سرخی ہے۔ دوسری سرخی پر جانے کیلئے Search + H دبائیں۔</translation>
 <translation id="8173092779156526980">چار انگلیوں سے بائیں طرف سوائپ کریں</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{انڈر اسکور}other{# انڈر اسکورز}}</translation>
@@ -1014,7 +1015,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="8603071050456974042">‏ChromeVox پینل</translation>
 <translation id="8606621670302093223">تاریخ کنٹرول</translation>
 <translation id="8613709718990529335">بِسک</translation>
-<translation id="8614129468475308349">‏بہت خوب! آپ نے ChromeVox کی بنیادی باتیں جان لی ہیں۔ آپ دوبارہ ٹیوٹوریل دیکھ سکتے ہیں یا نیچے دیئے گئے بٹن کو تلاش اور کلک کر کے اس ٹیوٹوریل سے باہر نکل سکتے ہیں۔</translation>
+<translation id="8614129468475308349">‏بہت خوب! آپ نے ChromeVox کی بنیادی باتیں جان لی ہیں۔ آپ دوبارہ ٹیوٹوریل دیکھ سکتے ہیں یا نیچے دیے گئے بٹن کو تلاش اور کلک کر کے اس ٹیوٹوریل سے باہر نکل سکتے ہیں۔</translation>
 <translation id="8625173877182443267">اگلی سطح 6 کی کوئی ہیڈنگ نہیں ہے</translation>
 <translation id="8628186274519446680">ٹماٹر</translation>
 <translation id="8638532244051952400">موجودہ سیل کے کوآرڈینیٹس بتائیں</translation>
@@ -1027,7 +1028,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="8693391540059827073">میرا پسندیدہ موسم</translation>
 <translation id="8696284982970258155">ہنی ڈیو</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{پائپ}other{# عمودی پائپس}}</translation>
-<translation id="8741370088760768424">‏اشارہ: موجودہ آئٹم کو فعال کرنے کیلئے Search + Space دبائیں۔</translation>
+<translation id="8741370088760768424">‏تجویز: موجودہ آئٹم کو فعال کرنے کیلئے Search + Space دبائیں۔</translation>
 <translation id="8743786158317878347">منظم مواد، جیسے ٹیبلز درج کریں</translation>
 <translation id="8747966237988593539">نمبر وار فہرست</translation>
 <translation id="8749988712346667988">سلور</translation>

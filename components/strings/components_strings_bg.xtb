@@ -303,6 +303,7 @@
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2107021941795971877">Опори при отпечатване</translation>
 <translation id="2108755909498034140">Рестартирайте компютъра си.</translation>
+<translation id="2111166930115883695">Натиснете интервал, за да играете</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Карта</translation>
 <translation id="2114841414352855701">Бе пренебрегнато, защото бе отменено от <ph name="POLICY_NAME" />.</translation>
@@ -518,6 +519,7 @@
 <translation id="3010559122411665027">Списъчен запис „<ph name="ENTRY_INDEX" />“: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
 <translation id="3016780570757425217">Достъп до местоположението ви.</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, натиснете Tab и след това Enter, за да премахнете предложението.</translation>
 <translation id="3023071826883856138">You4 (плик)</translation>
 <translation id="3024663005179499861">Грешен тип на правилото</translation>
 <translation id="3037605927509011580">Ужас!</translation>
@@ -760,6 +762,7 @@
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">Ключ „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (плик)</translation>
+<translation id="4067669230157909013">Заснемането на екрана бе възобновено.</translation>
 <translation id="4067947977115446013">Добавяне на валиден адрес</translation>
 <translation id="4072486802667267160">При обработването на поръчката ви възникна грешка. Моля, опитайте отново.</translation>
 <translation id="4075732493274867456">Клиентът и сървърът не поддържат обща версия или пакет за шифроване за протокола SSL.</translation>
@@ -844,6 +847,7 @@
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Разгъване</translation>
 <translation id="4300675098767811073">Няколко перфорации отдясно</translation>
+<translation id="4302514097724775343">Докоснете динозавъра, за да играете</translation>
 <translation id="4302965934281694568">Chou3 (плик)</translation>
 <translation id="4305666528087210886">Няма достъп до файла</translation>
 <translation id="4305817255990598646">Превключване</translation>
@@ -1256,6 +1260,7 @@
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
 <translation id="5967867314010545767">Премахване от историята</translation>
+<translation id="5968793460449681917">При всяко посещение</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5980920751713728343">Index-3 x 5</translation>
@@ -1471,6 +1476,7 @@
 <translation id="6895330447102777224">Картата ви е потвърдена</translation>
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
+<translation id="6907293445143367439">Разрешаване на <ph name="SITE_NAME" /> да:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> иска да получи пълен контрол над MIDI устройствата ви</translation>
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
@@ -1906,6 +1912,7 @@
 <translation id="8574899947864779331">Използвайте Touch ID, за да потвърждавате картите по-бързо</translation>
 <translation id="858637041960032120">+ тел. номер</translation>
 <translation id="8589998999637048520">Най-добро качество</translation>
+<translation id="8600271352425265729">Само този път</translation>
 <translation id="860043288473659153">Име на титуляря на картата</translation>
 <translation id="8606726445206553943">Да използва MIDI устройствата ви.</translation>
 <translation id="8612761427948161954">Здравейте, <ph name="USERNAME" />,
@@ -2063,6 +2070,7 @@
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="945855313015696284">Проверете информацията по-долу и изтрийте невалидните карти</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
+<translation id="951941430552851965">Заснемането на екрана бе поставено на пауза от администратора ви заради съдържанието на екрана ви.</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Официално издание</translation>

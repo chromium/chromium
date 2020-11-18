@@ -76,4 +76,5 @@
 <translation id="840168496893712993">Bizonyos bővítmények a Chrome összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
 <translation id="8459495907675268833">A kiválasztott adatokat eltávolítottuk a Chrome-ból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="9135668017386497357">Ha engedélyezi a Chrome számára a helyadatok használatát, akkor a böngésző továbbítja az adatokat az alapértelmezett keresőmotornak, valamint azoknak a webhelyeknek is, amelyeket Ön engedélyez. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 </translationbundle>

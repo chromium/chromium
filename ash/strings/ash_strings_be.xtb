@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">Начная падсветка выключана.</translation>
 <translation id="1850504506766569011">Wi-Fi выключаны.</translation>
 <translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
+<translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Зададзена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Кніжная</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
+<translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
 <translation id="2126242104232412123">Новы стол</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">Запіс усяго экрана</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Паўтарыць спробу</translation>
+<translation id="2170530631236737939">Каб выйсці з Агляду, правядзіце трыма пальцамі ўніз</translation>
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222338659135520253">Трэба выканаць уваход</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">Няма даступных мабільных сетак</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
+<translation id="3289674678944039601">Ідзе зарадка праз адаптар</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3307642347673023554">Уключаны рэжым ноўтбука</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">Вы націснулі спалучэнне клавіш для поўнаэкраннай лупы. Уключыць яе?</translation>
 <translation id="380165613292957338">Вітаю! Чым магу дапамагчы?</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
+<translation id="383058930331066723">Уключаны рэжым эканоміі зараду</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
@@ -338,6 +343,7 @@
 <translation id="4217571870635786043">Дыктаванне</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
+<translation id="425364040945105958">Няма SIM-карты</translation>
 <translation id="4261870227682513959">Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны</translation>
 <translation id="4267383818855338811">Віртуальная машына выкарыстоўвае камеру</translation>
 <translation id="4269883910223712419">Адміністратар гэтай прылады мае наступныя магчымасці:</translation>
@@ -470,14 +476,17 @@
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5465662442746197494">Патрабуецца дапамога?</translation>
 <translation id="5496819745535887422">Адміністратар робіць адкат вашай прылады. Калі прылада перазапусціцца, усе даныя будуць выдалены.</translation>
+<translation id="5516420770350073386">Запіс экрана быў прыпынены адміністратарам з-за характару змесціва, якое знаходзілася на экране.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> падключаецца.</translation>
+<translation id="5532994612895037630">Каб запісаць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="553675580533261935">Выконваецца выхад з сеанса</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="554893713779400387">Уключыць або выключыць дыктаванне</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5571066253365925590">Bluetooth уключаны</translation>
 <translation id="557563299383177668">Наступны абзац</translation>
+<translation id="55808498489107691">Здымка экрана была заблакіравана адміністратарам з-за характару змесціва, якое знаходзілася на экране.</translation>
 <translation id="558849140439112033">Выберыце вобласць здымкі з дапамогай перацягвання</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
@@ -528,6 +537,7 @@
 <translation id="602001110135236999">Прагартаць улева</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6030495522958826102">Меню перамешчана ў левы ніжні вугал экрана.</translation>
+<translation id="6032620807120418574">Каб запісаць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6043212731627905357">Гэты манітор не падыходзіць да прылады <ph name="DEVICE_TYPE" /> (манітор не падтрымліваецца).</translation>
 <translation id="6043994281159824495">Выйсці</translation>
@@ -536,6 +546,7 @@
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
 <translation id="607652042414456612">Ваш камп'ютар бачны для прылад Bluetooth паблізу, ён будзе адлюстроўвацца як "<ph name="NAME" />" з адрасам <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
 <translation id="6137566720514957455">Адкрыць дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>
@@ -550,6 +561,7 @@
 <translation id="6283712521836204486">Рэжым "Не турбаваць" выключаны.</translation>
 <translation id="6284232397434400372">Раздзяляльнасць зменена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>
+<translation id="6291221004442998378">Не зараджаецца</translation>
 <translation id="6297287540776456956">Выкарыстоўвайце стыло для выбару рэгіёна</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> павернуты на <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
@@ -578,6 +590,7 @@
 <translation id="6537924328260219877">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Вядзецца трансляцыя на прыладу "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6559976592393364813">Спытайце адміністратара</translation>
+<translation id="6570902864550063460">Ідзе зарадка праз USB</translation>
 <translation id="6585808820553845416">Сеанс скончыцца праз <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
@@ -655,6 +668,7 @@
 <translation id="7377169924702866686">Уключаны Caps Lock.</translation>
 <translation id="7378203170292176219">Выберыце вобласць запісу з дапамогай перацягвання</translation>
 <translation id="7378594059915113390">Элементы кіравання мультымедыйным змесцівам</translation>
+<translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
 <translation id="7392563512730092880">Гэта можна зрабіць пазней у Наладах.</translation>
 <translation id="7398254312354928459">Пераключана падключэнне да сеткі</translation>
 <translation id="7405710164030118432">Каб разблакіраваць прыладу, увядзіце бацькоўскі код доступу Family Link.</translation>
@@ -704,6 +718,7 @@
 <translation id="7837740436429729974">Час выйшаў</translation>
 <translation id="7842569679327885685">Увага! Эксперыментальная функцыя</translation>
 <translation id="7846634333498149051">Клавіятура</translation>
+<translation id="7860671499921112077">Правядзіце трыма пальцамі ўверх, каб увайсці ў Агляд</translation>
 <translation id="7868900307798234037">Разблакіроўка па адбітку пальца</translation>
 <translation id="7872786842639831132">Выключана</translation>
 <translation id="7886169021410746335">Змяняць налады прыватнасці</translation>
@@ -745,6 +760,7 @@
 <translation id="8152092012181020186">Каб закрыць, націсніце Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="8167567890448493835">Выкарыстоўваецца <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Мабільная сетка. Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Апавяшчэнні схаваны.</translation>
 <translation id="8196787716797768628">З дапамогай жэстаў можна хутка пераключацца паміж праграмамі і выкарыстоўваць Chromebook у планшэтным рэжыме.</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
@@ -754,6 +770,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Націсніце Enter, каб разблакіраваць для карыстальніка <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Выдаліць</translation>
+<translation id="8284362522226889623">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўлева, каб перайсці на папярэдні працоўны стол</translation>
 <translation id="828708037801473432">Выключана</translation>
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
@@ -810,6 +827,7 @@
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Налады метадаў уводу</translation>
 <translation id="8825863694328519386">Каб вярнуцца назад, правядзіце пальцам з левага краю</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>

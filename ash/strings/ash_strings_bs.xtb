@@ -120,7 +120,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2049240716062114887">Naziv radne površine je promijenjen u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
-<translation id="2078034614700056995">Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno</translation>
+<translation id="2078034614700056995">Prevucite udesno s četiri prsta da prebacite na sljedeću radnu površinu</translation>
 <translation id="2083190527011054446">Laku noć <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2126242104232412123">Novi sto</translation>
@@ -128,7 +128,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2132302418721800944">Snimanje cijelog ekrana</translation>
 <translation id="2135456203358955318">Priključeno povećalo</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Pokušaj ponovo</translation>
-<translation id="2170530631236737939">Prijeđite s tri prsta prema dolje da biste zatvorili Pregled</translation>
+<translation id="2170530631236737939">Prevucite nadolje s tri prsta da izađete iz Pregleda</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222338659135520253">Potrebna je prijava</translation>
@@ -297,7 +297,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3799080171973636491">Pritisnite prečicu na tastaturi za povećalo preko cijelog ekrana. Želite li ga uključiti?</translation>
 <translation id="380165613292957338">Zdravo, kako vam mogu pomoći?</translation>
 <translation id="3826099427150913765">Prebaci na lozinku</translation>
-<translation id="383058930331066723">Uključen je način štednje baterije</translation>
+<translation id="383058930331066723">Način rada uštede baterije je uključen</translation>
 <translation id="383629559565718788">Prikaži postavke tastature</translation>
 <translation id="3846214748874656680">Izađi iz prikaza cijelog ekrana</translation>
 <translation id="3846575436967432996">Informacije o mreži nisu dostupne</translation>
@@ -476,17 +476,17 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5465662442746197494">Trebate pomoć?</translation>
 <translation id="5496819745535887422">Vaš administrator vraća uređaj na prethodnu verziju sustava. Svi će se podaci izbrisati kada se uređaj ponovo pokrene.</translation>
-<translation id="5516420770350073386">Administrator je zaustavio snimanje zaslona zbog sadržaja na vašem zaslonu.</translation>
+<translation id="5516420770350073386">Administrator je zaustavio snimanje ekrana zbog sadržaja na vašem ekranu.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">Povezivanje funkcije <ph name="FEATURE_NAME" />.</translation>
-<translation id="5532994612895037630">Dodirnite bilo gdje da biste snimili cijeli zaslon</translation>
+<translation id="5532994612895037630">Dodirnite bilo gdje da snimate cijeli ekran</translation>
 <translation id="553675580533261935">Izlazak iz sesije</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5571066253365925590">Bluetooth je omogućen</translation>
 <translation id="557563299383177668">Sljedeći pasus</translation>
-<translation id="55808498489107691">Administrator je blokirao snimanje zaslona zbog sadržaja na zaslonu.</translation>
+<translation id="55808498489107691">Administrator je blokirao snimanje ekrana zbog sadržaja na vašem ekranu.</translation>
 <translation id="558849140439112033">Prevucite da odaberete oblast za snimanje</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da onemogućite izgovaranje povratnih informacija.</translation>
@@ -537,7 +537,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="602001110135236999">Listaj ulijevo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="6030495522958826102">Meni je pomjeren u donji lijevi ugao ekrana.</translation>
-<translation id="6032620807120418574">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
+<translation id="6032620807120418574">Kliknite bilo gdje da snimate cijeli ekran</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj monitor i vaš <ph name="DEVICE_TYPE" /> ne funkcioniraju skupa (monitor nije podržan).</translation>
 <translation id="6043994281159824495">Odjavi se sada</translation>
@@ -668,7 +668,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7377169924702866686">Uključena su velika slova.</translation>
 <translation id="7378203170292176219">Prevucite da odaberete oblast za snimanje</translation>
 <translation id="7378594059915113390">Upravljanje medijima</translation>
-<translation id="7378889811480108604">Način štednje baterije je isključen</translation>
+<translation id="7378889811480108604">Način rada uštede baterije je isključen</translation>
 <translation id="7392563512730092880">Uvijek ga možete postaviti kasnije u Postavkama.</translation>
 <translation id="7398254312354928459">Mrežna veza je promijenjena</translation>
 <translation id="7405710164030118432">Da otključate uređaj, unesite kôd za pristup roditelja za Family Link</translation>
@@ -718,7 +718,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7837740436429729974">Vrijeme je isteklo</translation>
 <translation id="7842569679327885685">Upozorenje: Eksperimentalna funkcija</translation>
 <translation id="7846634333498149051">Tastatura</translation>
-<translation id="7860671499921112077">Prijeđite s tri prsta prema gore da biste otvorili Pregled</translation>
+<translation id="7860671499921112077">Prevucite nagore s tri prsta da pristupite Pregledu</translation>
 <translation id="7868900307798234037">Otključavanje otiskom prsta</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7886169021410746335">Podesite postavke privatnosti</translation>
@@ -770,7 +770,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Pritisnite Enter da otključate za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>
-<translation id="8284362522226889623">Da biste prešli na prethodnu radnu površinu, prijeđite s četiri prsta ulijevo</translation>
+<translation id="8284362522226889623">Prevucite ulijevo s četiri prsta da prebacite na prethodnu radnu površinu</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slabo</translation>
 <translation id="8308637677604853869">Prethodni meni</translation>

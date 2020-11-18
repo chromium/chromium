@@ -115,7 +115,7 @@
 <translation id="1714116687360794776">Instrument de măsurare</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">notă subsol</translation>
-<translation id="1730447754326314349">Bun venit la tutorialul ChromeVox. Pentru a închide oricând tutorialul, apasă tasta Escape în colțul din stânga sus al tastaturii. Pentru a dezactiva ChromeVox, ține apăsate tastele Control și Alt și apasă tasta Z. Când ești gata, folosește bara de spațiu pentru a trece la lecția următoare.</translation>
+<translation id="1730447754326314349">Bun venit la tutorialul ChromeVox! Pentru a închide oricând tutorialul, apasă tasta Escape în colțul din stânga sus al tastaturii. Pentru a dezactiva ChromeVox, ține apăsate tastele Control și Alt și apasă tasta Z. Când ești gata, folosește bara de spațiu pentru a trece la lecția următoare.</translation>
 <translation id="174268867904053074">Graficul următor</translation>
 <translation id="1756785467854861272">Magenta închis</translation>
 <translation id="1765245556747822181">Glisează cu un deget în sus</translation>
@@ -341,7 +341,7 @@
 <translation id="335581015389089642">Voce</translation>
 <translation id="3356951775008366684">Anunță transcrierea fonetică a cuvântului</translation>
 <translation id="3359142382821736686">separator</translation>
-<translation id="3363015957057974366">Poți folosi tasta Tab și pentru a trece la următorul element interactiv de pe ecran. Caută tasta Tab, care se află chiar deasupra tastei de căutare. Pentru a continua, apasă tasta Tab.</translation>
+<translation id="3363015957057974366">Poți folosi și tasta Tab pentru a trece la următorul element interactiv de pe ecran. Caută tasta Tab, care se află chiar deasupra tastei de căutare. Pentru a continua, apasă tasta Tab.</translation>
 <translation id="3366946046494222386">Tutorialul <ph name="TOPIC" />, <ph name="LESSONS" /> lecții</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}few{# semne plus}other{# de semne plus}}</translation>
 <translation id="338583716107319301">Separator</translation>

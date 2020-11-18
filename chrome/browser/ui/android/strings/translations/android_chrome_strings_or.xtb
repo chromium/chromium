@@ -103,7 +103,7 @@
 <translation id="1749561566933687563">ନିଜର ବୁକ୍‌ମାର୍କ୍ସ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="17513872634828108">ଟାବ୍‌ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="1754404134430936718">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
-<translation id="1772137089884020309">ବୁକମାର୍କ ଫୋଲ୍ଡରଗୁଡ଼ିକର ତାଲିକାକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="1772137089884020309">ବୁକମାର୍କ ଫୋଲ୍ଡରଗୁଡ଼ିକର ତାଲିକା ବନ୍ଦ ଅଛି</translation>
 <translation id="1782483593938241562">ଶେଷ ତାରିଖ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="1792959175193046959">ଯେକୌଣସି ସମୟରେ ଡିଫଲ୍ଟ ଡାଉନ୍‌ଲୋଡ୍ ଲୋକେସନ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -207,6 +207,7 @@
 <translation id="2450907520913474542">ପୃଷ୍ଠାରେ ରହି ୱେବସାଇଟରେ ବିଷୟଗୁଡ଼ିକ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ। ’ଟଚ୍ ଟୁ ସର୍ଚ୍ଚ’ ସୁବିଧା, କୌଣସି ଶବ୍ଦ ଏବଂ ଏହାର ପାରିପାର୍ଶ୍ଵିକ ପ୍ରସଙ୍ଗକୁ Google Searchକୁ ପଠାଏ ଏବଂ ସଂଜ୍ଞା, ଛବି, ସନ୍ଧାନ ଫଳାଫଳଗୁଡ଼ିକ ଓ ଅନ୍ୟ ବିବରଣୀ ଦେଖାଇଥାଏ।
 
 ସନ୍ଧାନ କରିବା ପାଇଁ ଯେ କୌଣସି ଶବ୍ଦକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ। ଆପଣଙ୍କ ସନ୍ଧାନକୁ ରିଫାଇନ୍ କରିବା ପାଇଁ ଅଧିକ କିମ୍ବା କମ୍ ସଂଖ୍ୟକ ଶବ୍ଦ ଚୟନ କରନ୍ତୁ। ଆପଣଙ୍କ ସନ୍ଧାନ ସମ୍ପାଦନ କରିବା ନିମନ୍ତେ ପ୍ୟାନେଲକୁ ଖୋଲନ୍ତୁ, ଏକ ନୂଆ ଟାବରେ ଖୋଲିବା ପାଇଁ ଆଇକନକୁ ଟାପ୍ କରନ୍ତୁ ଏବଂ ସନ୍ଧାନ ବାକ୍ସରେ ଆପଣଙ୍କର ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କରନ୍ତୁ।</translation>
+<translation id="2459390580524506445">ଉନ୍ନତ ଭଏସ୍ ସନ୍ଧାନ</translation>
 <translation id="246532703174860178">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="2478076885740497414">ଆପକୁ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -275,6 +276,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ଷ୍ଟୋରେଜ୍</translation>
 <translation id="2942036813789421260">ପ୍ରିଭ୍ୟୁ ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="2956410042958133412">ଏହି ଆକାଉଣ୍ଟ <ph name="PARENT_NAME_1" /> ଏବଂ <ph name="PARENT_NAME_2" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}}</translation>
 <translation id="2962095958535813455">ଇନ୍‍କଗ୍ନିଟୋ ଟାବ୍‍କୁ ସ୍ଵିଚ୍ କରନ୍ତୁ</translation>
 <translation id="2979025552038692506">ଚୟନିତ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="2987620471460279764">ଅନ୍ୟ ଡିଭାଇସ୍ ଠାରୁ ଟେକ୍ସଟ୍ ସେୟାର୍ କରାଯାଇଛି</translation>
@@ -324,6 +326,7 @@
 <translation id="32895400574683172">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="3290991969712132877">ଏଠାକୁ ଶୀଘ୍ର ଯିବା ପାଇଁ, ଅଧିକ ବିକଳ୍ପ ବଟନରୁ ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ ଏହି ପୃଷ୍ଠାକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3295530008794733555">ଦ୍ରୁତତର ବ୍ରାଉଜ୍ କରନ୍ତୁ। କମ୍ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="3297344142967351106">ଭଏସ୍ ସହାୟତା</translation>
 <translation id="3298243779924642547">ଲାଇଟ୍‌</translation>
 <translation id="3303414029551471755">ବିଷୟବସ୍ତୁ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବା ପାଇଁ ଆଗକୁ ବଢ଼ିବେ?</translation>
 <translation id="3315103659806849044">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ସିଙ୍କ ଏବଂ Google ସେବାର ସେଟିଂସ୍‌ଗୁଡ଼ିକ କଷ୍ଟମାଇଜ୍ କରୁଛନ୍ତି। ସିଙ୍କ ଚାଲୁ କରିବା ଶେଷ କରିବା ପାଇଁ, ସ୍କ୍ରିନ୍‌ର ତଳ ପାର୍ଶ୍ୱରେ ଥିବା ନିଶ୍ଚିତ ବଟନ୍‌ରେ ଟାପ୍ କରନ୍ତୁ। ଉପରକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
@@ -625,6 +628,7 @@
 <translation id="5524843473235508879">ରିଡାଇରେକ୍ଟ ଅବରୋଧ କରାଯାଇଛି।</translation>
 <translation id="5527082711130173040">ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ Chrome ଲୋକେସନ୍ ଆକ୍‌ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="BEGIN_LINK1" />ଅପ୍‌ଡେଟ୍ ଅନୁମତି<ph name="END_LINK1" />। ଲୋକେସନ୍‍ ଆକ୍ସେସ୍‍ ମଧ୍ୟ <ph name="BEGIN_LINK2" />ଏହି ଡିଭାଇସ୍‍ ପାଇଁ ବନ୍ଦ ଅଛି<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍ସ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5530920986376047241">ଆପଣ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରିପାରିବେ ଯାହା ଫଳରେ ଆପଣ ପୁଣି ସେଗୁଡ଼ିକୁ ପାଇପାରିବେ</translation>
 <translation id="5534640966246046842">ସାଇଟ୍‍କୁ କପି କରାଯାଇଛି</translation>
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5561549206367097665">ନେଟ୍‌ୱର୍କ ପାଇଁ ଅପେକ୍ଷାରତ…</translation>
@@ -704,6 +708,7 @@
 <translation id="5982307838673692400">ଏକ ଇନକଗ୍ନିଟୋ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
 <translation id="6005538289190791541">ପ୍ରସ୍ତାବିତ ପାସ୍‌ୱାର୍ଡ</translation>
+<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ଆପଣଙ୍କ ପାଖରେ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />ଟି ପୃଷ୍ଠା ଅଛି}other{ଆପଣଙ୍କ ପାଖରେ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />ଟି ପୃଷ୍ଠା ଅଛି}}</translation>
 <translation id="6014293228235665243">ପଢ଼ାଯାଇନଥିବା</translation>
 <translation id="6036057147555329831">ଅତିରିକ୍ତ ICU</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
@@ -938,6 +943,7 @@
 <translation id="756809126120519699">Chrome ଡାଟା ଖାଲି କରାଯାଇଛି</translation>
 <translation id="7577900504646297215">ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}other{<ph name="FILES_DOWNLOADED_MANY" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}}</translation>
+<translation id="7583262514280211622">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ପାଇବେ</translation>
 <translation id="7588219262685291874">ଯେତେବେଳେ ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ବ୍ୟାଟେରୀ ସେଭର୍ ଚାଲୁ ଅବସ୍ଥାରେ ଥାଏ ସେତେବେଳେ ଗାଢ଼ା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7593557518625677601">Android ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ ଏବଂ Chrome ସିଙ୍କ୍‌ ଆରମ୍ଭ କରିବାକୁ Android ସିଷ୍ଟମ୍‍ ସିଙ୍କ୍‍ ପୁନଃସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7596558890252710462">ଅପରେଟିଂ ସିଷ୍ଟମ୍</translation>
@@ -969,6 +975,7 @@
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}}</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
+<translation id="7786595606756654269">Google Assistant ୱେବରେ ସନ୍ଧାନ କରିବାକୁ ଏବଂ ଆପଣ ଖୋଲିଥିବା ସାଇଟଗୁଡ଼ିକୁ ବ୍ୟସ୍ତ ରଖିବା ପାଇଁ ଏକ ଉନ୍ନତ ଭଏସ୍ ଅନୁଭୂତି ପ୍ରଦାନ କରେ। ଆପଣ Google Assistant, ମାଧ୍ୟମରେ ବ୍ୟବହାର କରିଥିବା ସାଇଟଗୁଡ଼ିକର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Assistant ପ୍ରାପ୍ତ କରିବ।</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
@@ -994,6 +1001,7 @@
 <translation id="7961926449547174351">ଆପଣ ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଛନ୍ତି, ଦୟାକରି ଏହାକୁ ସକ୍ଷମ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="7963646190083259054">ବିକ୍ରେତା:</translation>
 <translation id="7967911570373677897">ଏକ QR କୋଡ୍ ସ୍କାନ୍ କରିବାକୁ ଆପଣଙ୍କର ସେଟିଂସ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ ଯାହା ଫଳରେ Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ</translation>
+<translation id="7968014550143838305">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7971136598759319605">1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ପୃଷ୍ଠାର ପୂର୍ବାବଲୋକନ କରନ୍ତୁ</translation>
 <translation id="7981313251711023384">ଦ୍ରୁତତର ବ୍ରାଉଜିଂ ଓ ସନ୍ଧାନ ପାଇଁ ପୃଷ୍ଠା ପ୍ରିଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1055,6 +1063,7 @@
 <translation id="8372925856448695381"><ph name="LANG" /> ପ୍ରସ୍ତୁତ ଅଛି।</translation>
 <translation id="8393700583063109961">ମେସେଜ୍‌ ପଠାନ୍ତୁ</translation>
 <translation id="8407396331882458341">1. <ph name="APP_NAME" /> ବାଛନ୍ତୁ\n2. “ସର୍ବଦା”ରେ ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="8410695015584479363">ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ୍ କରନ୍ତୁ</translation>
 <translation id="8413126021676339697">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8427875596167638501">ପ୍ରିଭ୍ୟୁ ଟାବ୍ ଅଧା ଖୋଲା ଅଛି</translation>
@@ -1162,7 +1171,6 @@
 <translation id="9155898266292537608">ଆପଣ ଏକ ଶଦ୍ଦ ଉପରେ କେବଳ ଏକ ଟାପ୍‌ କରି ଶୀଘ୍ର ଖୋଜିପାରିବେ</translation>
 <translation id="9169507124922466868">ନାଭିଗେସନ୍ ଇତିହାସ ଅଧା ଖୋଲା ଅଛି</translation>
 <translation id="9191031968346938109">ଏଥିରେ ଯୋଗ କରନ୍ତୁ…</translation>
-<translation id="919615279147764192">କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ନିମନ୍ତେ, ଆପଣ Assistant ବ୍ୟବହାର କରିଥିବା ସାଇଟଗୁଡ଼ିକର URL ଏବଂ ବିଷୟବସ୍ତୁଗୁଡ଼ିକ ସହିତ Assistant ମାଧ୍ୟମରେ ଆପଣ ଦାଖଲ କରିଥିବା ସୂଚନା Google ପ୍ରାପ୍ତ କରିବ। ଏହି ସୂଚନା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଷ୍ଟୋର୍ ହୋଇପାରେ। ଆପଣ Chrome ସେଟିଂସରେ Assistantକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
 <translation id="9204836675896933765">1 ଫାଇଲ୍‌ ବାକି ଅଛି</translation>
 <translation id="9206873250291191720">ଅ</translation>

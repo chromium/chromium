@@ -341,7 +341,7 @@
 <translation id="335581015389089642">Mowa</translation>
 <translation id="3356951775008366684">Przedstawiaj fonetyczną wymowę słowa</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">Możesz też użyć klawisza Tab, by przejść do następnego interaktywnego elementu na ekranie. Znajdź klawisz Tab, który znajduje się bezpośrednio nad klawiszem Wyszukaj. Aby przejść dalej, naciśnij klawisz Tab.</translation>
+<translation id="3363015957057974366">Możesz też użyć klawisza Tab, by przejść do następnego interaktywnego elementu na ekranie. Znajdź klawisz Tab, który znajduje się bezpośrednio nad klawiszem wyszukiwania. Aby przejść dalej, naciśnij klawisz Tab.</translation>
 <translation id="3366946046494222386">Samouczek <ph name="TOPIC" />, lekcje: <ph name="LESSONS" /></translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{znak plus}few{# znaki plus}many{# znaków plus}other{# plus signs}}</translation>
 <translation id="338583716107319301">Separator</translation>
@@ -374,7 +374,7 @@
 <translation id="3594207934078151302">Średni zielony morski</translation>
 <translation id="3599054940393788245">Nie w środku wyrażenia matematycznego</translation>
 <translation id="360241989769010433">Podziękowania</translation>
-<translation id="3616016838842055984">Gdy dotrzesz do elementu, który chcesz kliknąć, naciśnij Wyszukaj + spacja. Spróbuj teraz, by przejść dalej.</translation>
+<translation id="3616016838842055984">Gdy dotrzesz do elementu, który chcesz kliknąć, naciśnij klawisz wyszukiwania + spacja. Spróbuj teraz, by przejść dalej.</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3622350485154495700">Kliknij dwukrotnie jednym palcem</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{grawis}few{# grawisy}many{# grawisów}other{# backticks}}</translation>
@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar}few{# znaki dolara}many{# znaków dolara}other{# dollar signs}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">Wskazówka: jeśli zechcesz zamknąć ten samouczek, naciśnij klawisz Esc.</translation>
-<translation id="3676062394766691318">Gdy już skonfigurujesz swoje urządzenie, możesz tu wrócić i wyświetlić kolejne samouczki, naciskając najpierw klawisze Wyszukaj + O, a następnie T.</translation>
+<translation id="3676062394766691318">Gdy już skonfigurujesz swoje urządzenie, możesz tu wrócić i wyświetlić kolejne samouczki, naciskając najpierw klawisz wyszukiwania + O, a następnie T.</translation>
 <translation id="3681531118904532409">Papaja</translation>
 <translation id="3692274950075847560">W:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Przekreślenie</translation>
@@ -641,7 +641,7 @@
 <translation id="5653397561111110475">Korzystanie z ułatwień dostępu na ekranie dotykowym Chromebooka</translation>
 <translation id="5655682562155942719">Polecenia nawigacyjne</translation>
 <translation id="56637627897541303">Obszar tekstu</translation>
-<translation id="5669637233317991674">Aby poruszać się po modułach tej lekcji, naciśnij Wyszukaj i strzałkę w prawo lub Wyszukaj i strzałkę w lewo</translation>
+<translation id="5669637233317991674">Aby poruszać się po modułach tej lekcji, naciśnij klawisz wyszukiwania i strzałkę w prawo lub klawisz wyszukiwania i strzałkę w lewo</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">Punkt orientacyjny</translation>
@@ -665,11 +665,11 @@
 <translation id="5850707923114094062">Przesuń do tyłu</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5866042630553435010">Częściowo zaznaczony</translation>
-<translation id="5866210856231860256">Aby przejrzeć lekcje w tym temacie, naciśnij Wyszukaj i strzałkę w prawo lub Wyszukaj i strzałkę w lewo</translation>
+<translation id="5866210856231860256">Aby przejrzeć lekcje w tym temacie, naciśnij klawisz wyszukiwania i strzałkę w prawo lub klawisz wyszukiwania i strzałkę w lewo</translation>
 <translation id="5867591286054666064">Jeśli podczas korzystania z tego samouczka chcesz usłyszeć nazwę jakiegoś przycisku, wystarczy go nacisnąć.</translation>
 <translation id="5869546221129391014">Siatka</translation>
 <translation id="5876817486144482042">Zmniejsz głośność mowy</translation>
-<translation id="5878206664863390311">Aby przejrzeć tematy, naciśnij Wyszukaj i strzałkę w prawo lub Wyszukaj i strzałkę w lewo</translation>
+<translation id="5878206664863390311">Aby przejrzeć tematy, naciśnij klawisz wyszukiwania i strzałkę w prawo lub klawisz wyszukiwania i strzałkę w lewo</translation>
 <translation id="5878908838135392163">Bladoniebieski</translation>
 <translation id="588108970619830498">Przywróć domyślne ustawienia zamiany tekstu na mowę</translation>
 <translation id="5891934789323004067">Tabela</translation>
@@ -716,7 +716,7 @@
 <translation id="6254901459154107917">Następny obszar tekstowy do edytowania</translation>
 <translation id="6259464875943891919">Zamknięto <ph name="TYPE" />.</translation>
 <translation id="6282062888058716985">nav</translation>
-<translation id="6295699829709583154">Klawisze podstawowe: Wyszukaj</translation>
+<translation id="6295699829709583154">Klawisze podstawowe: klawisz wyszukiwania</translation>
 <translation id="6305702903308659374">Nie zmieniaj głośności odtwarzania, gdy ChromeVox mówi</translation>
 <translation id="6307969636681130414">Naciśnięty</translation>
 <translation id="6315652249189065725">Otwórz menu skrótów klawiszowych</translation>
@@ -783,7 +783,7 @@
 <translation id="6858047746862060282">Prolog</translation>
 <translation id="6859876496651143278">Przesuń jednym palcem w lewo</translation>
 <translation id="6865519907510167493">Błędny zapis</translation>
-<translation id="6873188295213080042">Wskazówka: przytrzymaj klawisz Wyszukaj i naciskaj klawisze strzałek, by poruszać się po ekranie.</translation>
+<translation id="6873188295213080042">Wskazówka: przytrzymaj klawisz wyszukiwania i naciskaj klawisze strzałek, by poruszać się po ekranie.</translation>
 <translation id="6894148351896207544">Powiedz bieżącą godzinę i datę</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6897341342232909480">Przejdź w lewo</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">Nie ma poprzedniego pola formularza</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">częściowo wybrano</translation>
-<translation id="7344012264516629579">Dodatkowe polecenia nawigacyjne obejmują na przykład przejście za pomocą linku, przycisku lub pola wyboru. Pełną listę poleceń nawigacyjnych znajdziesz w różnych menu programu ChromeVox, które otworzysz, naciskając jednocześnie klawisz Wyszukaj i kropkę.</translation>
+<translation id="7344012264516629579">Dodatkowe polecenia nawigacyjne obejmują na przykład przejście za pomocą linku, przycisku lub pola wyboru. Pełną listę poleceń nawigacyjnych znajdziesz w różnych menu programu ChromeVox, które otworzysz, naciskając jednocześnie klawisz wyszukiwania i kropkę.</translation>
 <translation id="7356165926712028380">Przełącz na pismo 8-punktowe Braille'a</translation>
 <translation id="7356610683936413584">Szczegół z listy opisu</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et}few{# znaki et}many{# znaków et}other{# ampersands}}</translation>
@@ -886,7 +886,7 @@
 <translation id="762020119231868829">Wstrzymuje odtwarzanie we wszystkich aktywnych widżetach multimedialnych</translation>
 <translation id="7625690649919402823">Następna tabela</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klasa <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Naciśnij Wyszukaj + strzałka w prawo, by znaleźć obszar ćwiczenia lub przycisk Następna lekcja. Następnie naciśnij Wyszukaj + spacja, by aktywować element.</translation>
+<translation id="7637342083105831460">Naciśnij klawisz wyszukiwania + strzałka w prawo, by znaleźć obszar ćwiczenia lub przycisk Następna lekcja. Następnie naciśnij klawisz wyszukiwania + spacja, by aktywować element.</translation>
 <translation id="7639968568612851608">Ciemnoszary</translation>
 <translation id="7663318257180412551">Nagłówek 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{godzina}few{godziny}many{godzin}other{godziny}}</translation>
@@ -956,8 +956,8 @@
 <translation id="812886159861361726">Zatrzymano pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
 <translation id="8138880386467279117">Kliknij</translation>
-<translation id="8146613869421949343">Teraz zajmiemy się klawiszem Wyszukaj. Klawisza Wyszukaj używa się w połączeniu z innymi klawiszami do wydawania poleceń w ChromeVox. Klawisz Wyszukaj znajduje się tuż nad lewym klawiszem Shift. Aby przejść dalej, naciśnij klawisz Wyszukaj.</translation>
-<translation id="816818801578874684">To jest pierwszy nagłówek. Aby przejść do następnego, naciśnij Wyszukaj + H.</translation>
+<translation id="8146613869421949343">Teraz zajmiemy się klawiszem wyszukiwania Klawisza wyszukiwania używa się w połączeniu z innymi klawiszami do wydawania poleceń w ChromeVox. Klawisz wyszukiwania znajduje się tuż nad lewym klawiszem Shift. Aby przejść dalej, naciśnij klawisz wyszukiwania.</translation>
+<translation id="816818801578874684">To jest pierwszy nagłówek. Aby przejść do następnego, naciśnij klawisz wyszukiwania + H.</translation>
 <translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -998,7 +998,7 @@
 <translation id="8473540203671727883">Przeczytaj na głos tekst wskazany myszą</translation>
 <translation id="8476408756881832830">Wstrzymaj odtwarzanie, gdy ChromeVox mówi</translation>
 <translation id="8476508772960940536">przegląd okien</translation>
-<translation id="8480873377842220259">Teraz zajmiemy się podstawami nawigacji. Możesz przytrzymać klawisz Wyszukaj i naciskać klawisze strzałek, by poruszać się po ekranie. Aby przejść dalej, naciśnij Wyszukaj + strzałka w prawo.</translation>
+<translation id="8480873377842220259">Teraz zajmiemy się podstawami nawigacji. Możesz przytrzymać klawisz wyszukiwania i naciskać klawisze strzałek, by poruszać się po ekranie. Aby przejść dalej, naciśnij klawisz wyszukiwania + strzałka w prawo.</translation>
 <translation id="8503360654911991865">Zmniejsz dokładność nawigacji</translation>
 <translation id="8520472399088452386">Przycisk przewijany</translation>
 <translation id="8534394844575788431">Formatowanie</translation>
@@ -1026,14 +1026,14 @@
 <translation id="8693391540059827073">Moja ulubiona pora roku</translation>
 <translation id="8696284982970258155">Spadziowy</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{kreska pionowa}few{# kreski pionowe}many{# kresek pionowych}other{# vertical pipes}}</translation>
-<translation id="8741370088760768424">Wskazówka: naciśnij Wyszukaj i spację, by aktywować bieżący element.</translation>
+<translation id="8741370088760768424">Wskazówka: naciśnij klawisz wyszukiwania i spację, by aktywować bieżący element.</translation>
 <translation id="8743786158317878347">otwórz treści strukturalne, na przykład tabele</translation>
 <translation id="8747966237988593539">Lista numerowana</translation>
 <translation id="8749988712346667988">Srebrny</translation>
 <translation id="875769700429317857">Zakończono pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8767968232364267681">Następny nagłówek poziomu 4</translation>
 <translation id="8770473310765924354">zamknij treści strukturalne, na przykład tabele</translation>
-<translation id="8775203254697638994">Czasem trzeba wybrać element z listy. Aby to zrobić, najpierw rozwiń listę, naciskając klawisze Wyszukaj + spacja. Następnie użyj klawiszy strzałek w górę i w dół, by wybrać element. Na koniec zwiń listę, naciskając klawisze Wyszukaj + spacja.</translation>
+<translation id="8775203254697638994">Czasem trzeba wybrać element z listy. Aby to zrobić, najpierw rozwiń listę, naciskając klawisz wyszukiwania + spacja. Następnie użyj klawiszy strzałek w górę i w dół, by wybrać element. Na koniec zwiń listę, naciskając klawisz wyszukiwania + spacja.</translation>
 <translation id="8779057862865475116">Nie ma poprzedniego linku</translation>
 <translation id="8796411681063377102">Następny nagłówek poziomu 3</translation>
 <translation id="8823311177246872527">Strona <ph name="CURRENTPAGE" /> z <ph name="TOTALPAGES" /></translation>

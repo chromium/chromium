@@ -98,6 +98,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1838895407229022812">Yövalo on pois päältä.</translation>
 <translation id="1850504506766569011">Wi-Fi on pois päältä</translation>
 <translation id="1864454756846565995">C-tyypin USB-laite (takaportti)</translation>
+<translation id="1882814835921407042">Ei mobiiliverkkoa</translation>
 <translation id="1882897271359938046">Peilataan näyttöön: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Avaa sormenjäljellä</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Pidä muutokset voimassa valitsemalla Vahvista. Aiemman asetuksen palauttamiseen menee <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
+<translation id="2078034614700056995">Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella</translation>
 <translation id="2083190527011054446">Hyvää yötä <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
@@ -126,6 +128,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
+<translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222338659135520253">Sisäänkirjautuminen vaaditaan</translation>
@@ -235,6 +238,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3236488194889173876">Mobiiliverkkoja ei ole käytettävissä</translation>
 <translation id="3249513730522716925">Ikkuna <ph name="WINDOW_TITLE" /> siirretty työpöydältä <ph name="ACTIVE_DESK" /> työpöydälle <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
+<translation id="3289674678944039601">Ladataan virtalähteen kautta</translation>
 <translation id="3290356915286466215">Suojaamaton</translation>
 <translation id="3294437725009624529">Vierailja</translation>
 <translation id="3307642347673023554">Siirrytty tietokonetilaan</translation>
@@ -293,6 +297,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3799080171973636491">Painoit koko näytön suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="380165613292957338">Hei. Kuinka voin auttaa?</translation>
 <translation id="3826099427150913765">Vaihda salasanan käyttöön</translation>
+<translation id="383058930331066723">Virransäästötila on päällä</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
 <translation id="3846214748874656680">Sulje koko näytön tila.</translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
@@ -338,6 +343,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
+<translation id="425364040945105958">Ei SIM-korttia</translation>
 <translation id="4261870227682513959">Näytä ilmoitusasetukset. Ilmoitukset ovat pois päältä</translation>
 <translation id="4267383818855338811">Virtuaalikone käyttää kameraa</translation>
 <translation id="4269883910223712419">Tämän laitteen ylläpitäjä voi</translation>
@@ -470,14 +476,17 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5465662442746197494">Tarvitsetko apua?</translation>
 <translation id="5496819745535887422">Järjestelmänvalvoja palauttaa laitetta. Kaikki data poistetaan laitteen käynnistyessä uudelleen.</translation>
+<translation id="5516420770350073386">Järjestelmänvalvoja lopetti näytön tallennuksen näytöllä olevan sisällön vuoksi.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> muodostaa yhteyttä.</translation>
+<translation id="5532994612895037630">Tallenna koko näytön sisältö napauttamalla mitä tahansa kohtaa</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5571066253365925590">Bluetooth käytössä</translation>
 <translation id="557563299383177668">Seuraava kappale</translation>
+<translation id="55808498489107691">Järjestelmänvalvoja esti näytön tallennuksen näytöllä olevan sisällön vuoksi.</translation>
 <translation id="558849140439112033">Valitse kuvakaappauksen alue vetämällä</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
@@ -528,6 +537,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
+<translation id="6032620807120418574">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>
@@ -536,6 +546,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6059276912018042191">Viimeaikaiset Chrome-välilehdet</translation>
 <translation id="6062360702481658777">Sinut kirjataan ulos automaattisesti, aikaa jäljellä <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Lähellä olevat Bluetooth-laitteet voivat löytää tietokoneesi. Tietokoneesi nimi on <ph name="NAME" /> ja osoite <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Näytä ruutunäppäimistö</translation>
@@ -552,6 +563,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6283712521836204486">Älä häiritse ‑tila on pois päältä</translation>
 <translation id="6284232397434400372">Resoluutio vaihdettu</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> voidaan lisätä myöhemmin uudelleen vanhemman luvalla.</translation>
+<translation id="6291221004442998378">Ei ladata</translation>
 <translation id="6297287540776456956">Valitse alue näyttökynällä.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> käännettiin asentoon <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Ääni</translation>
@@ -580,6 +592,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6537924328260219877">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Suoratoistetaan: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pyydä apua järjestelmänvalvojalta</translation>
+<translation id="6570902864550063460">Ladataan USB:n kautta</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6614169507485700968">Näytönsuoja on päällä</translation>
@@ -657,6 +670,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
 <translation id="7378594059915113390">Mediaohjaimet</translation>
+<translation id="7378889811480108604">Virransäästötila on poissa päältä</translation>
 <translation id="7392563512730092880">Voit ottaa tämän käyttöön myöhemmin asetuksista.</translation>
 <translation id="7398254312354928459">Verkko vaihdettu</translation>
 <translation id="7405710164030118432">Avaa laitteen lukitus vanhemman Family Link ‑käyttökoodilla</translation>
@@ -706,6 +720,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7837740436429729974">Aika loppui</translation>
 <translation id="7842569679327885685">Varoitus: Kokeellinen ominaisuus</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
+<translation id="7860671499921112077">Siirry Viimeisimmät-osioon pyyhkäisemällä kolmella sormella ylöspäin</translation>
 <translation id="7868900307798234037">Avataan sormenjäljellä</translation>
 <translation id="7872786842639831132">Pois päältä</translation>
 <translation id="7886169021410746335">muuttaa tietosuoja-asetuksia</translation>
@@ -747,6 +762,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8152092012181020186">Sulje painamalla Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> käytössä</translation>
+<translation id="8170567869359129153">Mobiiliverkko. Signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Ilmoitukset on piilotettu.</translation>
 <translation id="8196787716797768628">Eleillä voit siirtyä nopeasti sovelluksesta toiseen ja käyttää Chromebookia tablettitilassa.</translation>
 <translation id="8200772114523450471">Jatka</translation>
@@ -756,6 +772,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>
+<translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
@@ -812,6 +829,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8825863694328519386">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>

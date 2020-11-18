@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
 <translation id="1850504506766569011">Wi-Fi өшірілді.</translation>
 <translation id="1864454756846565995">USB-C құрылғысы (артқы ұяшық)</translation>
+<translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
 <translation id="1885785240814121742">Құлыпты саусақ ізімен ашыңыз</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығын қолдамайды. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">Жұмыс үстелінің атауы <ph name="DESK_NAME" /> деп өзгертілді.</translation>
 <translation id="2050339315714019657">Портреттік</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
+<translation id="2078034614700056995">Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Қайталау</translation>
+<translation id="2170530631236737939">Үш саусақпен төмен сырғытып, "Шолу" бөлімінен шығыңыз.</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222338659135520253">Есептік жазбаға кіру керек</translation>
@@ -235,6 +238,7 @@
 <translation id="3236488194889173876">Ешқандай мобильдік желі қолжетімді емес</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезесі <ph name="ACTIVE_DESK" /> үстелінен <ph name="TARGET_DESK" /> үстеліне көшірілді.</translation>
 <translation id="3255483164551725916">Сен не істей аласың?</translation>
+<translation id="3289674678944039601">Адаптер арқылы зарядталып жатыр.</translation>
 <translation id="3290356915286466215">Қорғалмаған</translation>
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3307642347673023554">Ноутбук режиміне ауысты.</translation>
@@ -293,6 +297,7 @@
 <translation id="3799080171973636491">Толық экран ұлғайтқышына арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="380165613292957338">Сәлеметсіз бе, сізге қандай көмек қажет?</translation>
 <translation id="3826099427150913765">Құпия сөзге ауысу</translation>
+<translation id="383058930331066723">Батареяны үнемдеу режимі қосулы.</translation>
 <translation id="383629559565718788">Пернетақта параметрлерін көрсету</translation>
 <translation id="3846214748874656680">Толық экраннан шығу</translation>
 <translation id="3846575436967432996">Қолжетімді желі мәліметтері жоқ</translation>
@@ -338,6 +343,7 @@
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Скриншот</translation>
+<translation id="425364040945105958">SIM картасы жоқ.</translation>
 <translation id="4261870227682513959">Хабарландыру параметрлерін көрсету. Хабарландырулар өшірулі</translation>
 <translation id="4267383818855338811">Виртуалды құрылғы камераңызды пайдалануда.</translation>
 <translation id="4269883910223712419">Құрылғының әкімшісі мына әрекеттерді орындай алады:</translation>
@@ -470,14 +476,17 @@
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5465662442746197494">Көмек керек пе?</translation>
 <translation id="5496819745535887422">Әкімші құрылғыны алдыңғы нұсқаға қайтаруда. Құрылғы қайта қосылған кезде, барлық деректер жойылады.</translation>
+<translation id="5516420770350073386">Құпия мазмұнның болуына байланысты әкімші экранды бейнеге жазуды тоқтатты.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
+<translation id="5532994612895037630">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
 <translation id="553675580533261935">Сеанстан шығу</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Дауыстап оқуды қосу/өшіру</translation>
 <translation id="556042886152191864">Түйме</translation>
 <translation id="5571066253365925590">Bluetooth қосылды</translation>
 <translation id="557563299383177668">Келесі абзац</translation>
+<translation id="55808498489107691">Экраныңыздағы мазмұнға байланысты әкімші экранды суретке түсіру процесін бөгеді.</translation>
 <translation id="558849140439112033">Түсіруге керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Айтылған пікірді өшіру үшін Ctrl + Alt + Z пернелерін басыңыз.</translation>
@@ -528,6 +537,7 @@
 <translation id="602001110135236999">Солға айналдыру</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6030495522958826102">Мәзір экранның төменгі сол жақ бұрышына жылжытылды.</translation>
+<translation id="6032620807120418574">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6043212731627905357">Бұл монитор <ph name="DEVICE_TYPE" /> құрылғысымен үйлеспейді (мониторға қолдау көрсетілмейді).</translation>
 <translation id="6043994281159824495">Қазір шығу</translation>
@@ -536,6 +546,7 @@
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
 <translation id="607652042414456612">Компьютеріңізді жақын жердегі Bluetooth құрылғылары анықтай алады. <ph name="ADDRESS" /> мекенжайымен және "<ph name="NAME" />" атауымен көрсетіледі</translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогтік терезесін ашу</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
@@ -550,6 +561,7 @@
 <translation id="6283712521836204486">"Мазаламау" режимі өшірулі.</translation>
 <translation id="6284232397434400372">Ажыратымдылық өзгертілді</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасы ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>
+<translation id="6291221004442998378">Зарядталып жатқан жоқ.</translation>
 <translation id="6297287540776456956">Бөлікті таңдау үшін стилусты таңдаңыз</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> дисплейі <ph name="ROTATION" /> бағытында бұрылды</translation>
 <translation id="6315170314923504164">Микрофон</translation>
@@ -578,6 +590,7 @@
 <translation id="6537924328260219877">Сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефон батареясы: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="6559976592393364813">Әкімшіден сұраңыз.</translation>
+<translation id="6570902864550063460">USB арқылы зарядталып жатыр.</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
@@ -655,6 +668,7 @@
 <translation id="7377169924702866686">Caps Lock қосулы.</translation>
 <translation id="7378203170292176219">Жазуға керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="7378594059915113390">Медианы басқару элементтері</translation>
+<translation id="7378889811480108604">Қуатты үнемдеу режимі өшірулі.</translation>
 <translation id="7392563512730092880">Мұны кейінірек "Параметрлер" бөлімінде реттей аласыз.</translation>
 <translation id="7398254312354928459">Желі ауысты</translation>
 <translation id="7405710164030118432">Құрылғының құлпын ашу үшін Family Link ата-анаға арналған кіру кодын енгізіңіз.</translation>
@@ -704,6 +718,7 @@
 <translation id="7837740436429729974">Уақыт бітті</translation>
 <translation id="7842569679327885685">Ескерту: эксперименттік функция</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
+<translation id="7860671499921112077">Үш саусақпен жоғары сырғытып, "Шолу" бөліміне кіріңіз.</translation>
 <translation id="7868900307798234037">Саусақ ізімен ашылуда</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7886169021410746335">Құпиялылық параметрлерін реттеу</translation>
@@ -745,6 +760,7 @@
 <translation id="8152092012181020186">Жабу үшін Ctrl + W пернелер тіркесімін басыңыз.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
+<translation id="8170567869359129153">Мобильдік желі. Сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Хабарландырулар жасырулы.</translation>
 <translation id="8196787716797768628">Қолданбалар арасында жылдам ауысып, Chromebook-ті планшет режимінде қолдану үшін қимылдарды пайдаланыңыз.</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
@@ -754,6 +770,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефонның батарея заряды: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Enter пернесін басып, <ph name="USER_EMAIL_ADDRESS" /> үшін құрылғының құлпын ашыңыз.</translation>
 <translation id="8261506727792406068">Жою</translation>
+<translation id="8284362522226889623">Алдыңғы жұмыс үстеліне ауысу үшін төрт саусақпен солға қарай сырғытыңыз.</translation>
 <translation id="828708037801473432">Өшірулі</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>
@@ -810,6 +827,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Енгізу әдістерінің параметрлері</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>

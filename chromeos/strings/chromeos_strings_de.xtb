@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
+<translation id="1238612778414822719">HTTPS-Latenz</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
+<translation id="1398634363027580500">Sehr hohe HTTPS-Latenz</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -67,6 +70,7 @@
 <translation id="4027485274696301677">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="4034824040120875894">Drucker</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
+<translation id="4145784616224233563">HTTP-Firewall</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
@@ -83,6 +87,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
+<translation id="467715984478005772">Verdacht auf Firewall</translation>
 <translation id="4691278870498629773">Angehalten – Fach fehlt</translation>
 <translation id="469379815867856270">Signalstärke</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
@@ -115,6 +120,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
+<translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
@@ -133,13 +139,16 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
-<translation id="6839141349259399400">Scanner verbinden nicht möglich?</translation>
+<translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
+<translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
+<translation id="6839141349259399400">Verbindung mit Scanner nicht möglich?</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -147,10 +156,11 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
-<translation id="8160445423316272678">Legen Sie zuerst das Dokument in den Scanner und wählen Sie <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> aus</translation>
+<translation id="8160445423316272678">Legen Sie das Dokument in den Scanner und wählen Sie <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> aus</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8294431847097064396">Quelle</translation>
+<translation id="8302368968391049045">HTTPS-Firewall</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
