@@ -4,6 +4,7 @@
 
 #include "components/sync/engine_impl/loopback_server/persistent_tombstone_entity.h"
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 
 using std::string;

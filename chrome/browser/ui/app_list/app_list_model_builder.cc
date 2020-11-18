@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "components/sync/protocol/sync.pb.h"
 

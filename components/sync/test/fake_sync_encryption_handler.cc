@@ -5,6 +5,7 @@
 #include "components/sync/test/fake_sync_encryption_handler.h"
 
 #include "base/base64.h"
+#include "base/logging.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 

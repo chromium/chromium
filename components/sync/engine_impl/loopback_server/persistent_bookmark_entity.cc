@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/guid.h"
+#include "base/logging.h"
 
 using std::string;
 

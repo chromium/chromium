@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 
+#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"

@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_SYNC_BASE_MODEL_TYPE_H_
 #define COMPONENTS_SYNC_BASE_MODEL_TYPE_H_
 
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <ostream>
-#include <set>
 #include <string>
 
-#include "base/logging.h"
 #include "components/sync/base/enum_set.h"
 
 namespace base {

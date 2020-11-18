@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/containers/adapters.h"
+#include "base/logging.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"

@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/logging.h"
+
 namespace syncer {
 
 TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types) {
