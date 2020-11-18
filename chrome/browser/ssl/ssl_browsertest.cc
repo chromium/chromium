@@ -4415,7 +4415,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, InterstitialNotAffectedByHideShow) {
 // through the interstitial, the decision to proceed is initially remembered.
 // However, if this is followed by another visit, and a good certificate
 // is seen for the same host, the original exception is forgotten.
-IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCert) {
+// TODO(crbug.com/1150592): flaky.
+IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_BadCertFollowedByGoodCert) {
   // It is necessary to use |https_server_expired_| rather than
   // |https_server_mismatched| because the former shares a host with
   // |https_server_| and cert exceptions are per host.
