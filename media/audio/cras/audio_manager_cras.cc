@@ -149,6 +149,27 @@ std::string AudioManagerCras::GetGroupIDOutput(const std::string& device_id) {
   return "";
 }
 
+std::string AudioManagerCras::GetAssociatedOutputDeviceID(
+    const std::string& input_device_id) {
+  if (AudioDeviceDescription::IsDefaultDevice(input_device_id)) {
+    // Note: the default input should not be associated to any output, as this
+    // may lead to accidental uses of a pinned stream.
+    return "";
+  }
+
+  std::string device_name = GetGroupIDInput(input_device_id);
+
+  if (device_name.empty())
+    return "";
+
+  // Now search for an output device with the same device name.
+  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+    if (device.dev_name == device_name)
+      return base::NumberToString(device.id);
+  }
+  return "";
+}
+
 AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
