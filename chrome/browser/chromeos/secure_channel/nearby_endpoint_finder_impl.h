@@ -65,7 +65,6 @@ class NearbyEndpointFinderImpl
   void OnInjectBluetoothEndpointResult(
       location::nearby::connections::mojom::Status status);
   void OnStopDiscoveryResult(
-      const std::string& endpoint_id,
       location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
       location::nearby::connections::mojom::Status status);
 
@@ -76,6 +75,8 @@ class NearbyEndpointFinderImpl
       location::nearby::connections::mojom::EndpointDiscoveryListener>
       endpoint_discovery_listener_receiver_{this};
   bool is_discovery_active_ = false;
+  std::string endpoint_id_;
+  std::vector<uint8_t> endpoint_info_;
 
   base::WeakPtrFactory<NearbyEndpointFinderImpl> weak_ptr_factory_{this};
 };

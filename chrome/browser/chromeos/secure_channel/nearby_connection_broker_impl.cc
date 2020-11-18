@@ -112,7 +112,7 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
                                                   /*ble=*/false,
                                                   /*webrtc=*/true,
                                                   /*wifi_lan=*/false),
-                             bluetooth_public_address()),
+                             /*remote_bluetooth_mac_address=*/base::nullopt),
       connection_lifecycle_listener_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnRequestConnectionResult,
                      weak_ptr_factory_.GetWeakPtr()));

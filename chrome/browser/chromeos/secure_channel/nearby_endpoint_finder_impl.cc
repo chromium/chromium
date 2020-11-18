@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/rand_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
@@ -20,9 +21,17 @@ using location::nearby::connections::mojom::Strategy;
 
 NearbyEndpointFinderImpl::Factory* g_test_factory = nullptr;
 
+const size_t kEndpointIdLength = 4u;
+const size_t kEndpointInfoLength = 4u;
+
 void OnStopDiscoveryDestructorResult(Status status) {
   if (status != Status::kSuccess)
     PA_LOG(WARNING) << "Failed to stop discovery as part of destructor";
+}
+
+std::vector<uint8_t> GenerateEndpointInfo() {
+  std::string endpoint_info = base::RandBytesAsString(kEndpointInfoLength);
+  return std::vector<uint8_t>(endpoint_info.begin(), endpoint_info.end());
 }
 
 }  // namespace
@@ -48,7 +57,9 @@ NearbyEndpointFinderImpl::NearbyEndpointFinderImpl(
     const mojo::SharedRemote<
         location::nearby::connections::mojom::NearbyConnections>&
         nearby_connections)
-    : nearby_connections_(nearby_connections) {}
+    : nearby_connections_(nearby_connections),
+      endpoint_id_(base::RandBytesAsString(kEndpointIdLength)),
+      endpoint_info_(GenerateEndpointInfo()) {}
 
 NearbyEndpointFinderImpl::~NearbyEndpointFinderImpl() {
   if (is_discovery_active_) {
@@ -75,13 +86,17 @@ void NearbyEndpointFinderImpl::PerformFindEndpoint() {
 
 void NearbyEndpointFinderImpl::OnEndpointFound(const std::string& endpoint_id,
                                                DiscoveredEndpointInfoPtr info) {
-  PA_LOG(VERBOSE) << "Found endpoint with ID " << endpoint_id
+  // Only look for endpoints whose endpoint metadata field matches the
+  // parameters passed to the InjectEndpoint() call.
+  if (endpoint_id_ != endpoint_id || endpoint_info_ != info->endpoint_info)
+    return;
+
+  PA_LOG(VERBOSE) << "Found endpoint with ID " << endpoint_id_
                   << ", stopping discovery";
   nearby_connections_->StopDiscovery(
       mojom::kServiceId,
       base::BindOnce(&NearbyEndpointFinderImpl::OnStopDiscoveryResult,
-                     weak_ptr_factory_.GetWeakPtr(), endpoint_id,
-                     std::move(info)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(info)));
 }
 
 void NearbyEndpointFinderImpl::OnStartDiscoveryResult(Status status) {
@@ -95,7 +110,8 @@ void NearbyEndpointFinderImpl::OnStartDiscoveryResult(Status status) {
   PA_LOG(VERBOSE) << "Started Nearby discovery";
 
   nearby_connections_->InjectBluetoothEndpoint(
-      mojom::kServiceId, remote_device_bluetooth_address(),
+      mojom::kServiceId, endpoint_id_, endpoint_info_,
+      remote_device_bluetooth_address(),
       base::BindOnce(&NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -111,7 +127,6 @@ void NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult(Status status) {
 }
 
 void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
-    const std::string& endpoint_id,
     location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
     Status status) {
   is_discovery_active_ = false;
@@ -122,7 +137,7 @@ void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
     return;
   }
 
-  NotifyEndpointFound(endpoint_id, std::move(info));
+  NotifyEndpointFound(endpoint_id_, std::move(info));
 }
 
 }  // namespace secure_channel
