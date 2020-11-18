@@ -2168,6 +2168,14 @@ android_library("base_module_java") {
     deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
   }
 
+  # The arcore manifest needs to be merged into the base module because the Play
+  # Store verifies the com.google.ar.core.min_apk_version meta-data tag is in
+  # the base manifest.
+  if (enable_arcore) {
+    deps +=
+        [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
+  }
+
   srcjar_deps = [ ":chrome_product_config" ]
 
   # Add the actual implementation where necessary so that downstream targets
