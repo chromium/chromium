@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_controller.h"
@@ -15,7 +14,6 @@
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/test/ash_test_base.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -66,16 +64,8 @@ class AmbientAshTestBase : public AshTestBase {
   void SimulateSystemSuspendAndWait(
       power_manager::SuspendImminent::Reason reason);
 
-  // Return all media string view text containers. There is one per display.
-  std::vector<views::View*> GetMediaStringViewTextContainers();
-  // Return the media string view text container for the ambient mode container
-  // on the default display.
   views::View* GetMediaStringViewTextContainer();
 
-  // Return all media string view text labels. There is one per display.
-  std::vector<views::Label*> GetMediaStringViewTextLabels();
-  // Return the media string view text label for the ambient mode container on
-  // the default display.
   views::Label* GetMediaStringViewTextLabel();
 
   // Simulates the system starting to resume.
@@ -85,6 +75,9 @@ class AmbientAshTestBase : public AshTestBase {
   // Simulates a screen idle state event.
   // Wait until the event has been processed.
   void SetScreenIdleStateAndWait(bool is_screen_dimmed, bool is_off);
+
+  // Simulates a screen brightness changed event.
+  void SetScreenBrightnessAndWait(double percent);
 
   void SimulateMediaMetadataChanged(media_session::MediaMetadata metadata);
 
@@ -127,24 +120,17 @@ class AmbientAshTestBase : public AshTestBase {
 
   base::TimeDelta GetRefreshTokenDelay();
 
-  // Returns the ambient image view for each display.
-  std::vector<AmbientBackgroundImageView*> GetAmbientBackgroundImageViews();
-  // Returns the AmbientBackgroundImageView for the default display.
   AmbientBackgroundImageView* GetAmbientBackgroundImageView();
 
-  // Returns the media string views for displaying ongoing media info.
-  std::vector<MediaStringView*> GetMediaStringViews();
-  // Returns the media string view for the default display.
+  // Returns the media string view for displaying ongoing media info.
   MediaStringView* GetMediaStringView();
 
   AmbientController* ambient_controller();
 
   AmbientPhotoController* photo_controller();
 
-  // Returns the top-level views which contains all the ambient components.
-  std::vector<AmbientContainerView*> GetContainerViews();
-  // Returns the top level ambient container view for the primary root window.
-  AmbientContainerView* GetContainerView();
+  // Returns the top-level view which contains all the ambient components.
+  AmbientContainerView* container_view();
 
   AmbientAccessTokenController* token_controller();
 

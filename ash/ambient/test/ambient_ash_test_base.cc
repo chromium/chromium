@@ -20,13 +20,11 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
-#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -35,11 +33,9 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -216,23 +212,16 @@ void AmbientAshTestBase::SetScreenIdleStateAndWait(bool is_screen_dimmed,
   base::RunLoop().RunUntilIdle();
 }
 
-std::vector<views::View*>
-AmbientAshTestBase::GetMediaStringViewTextContainers() {
-  std::vector<views::View*> result;
-  for (auto* view : GetMediaStringViews())
-    result.push_back(view->media_text_container_for_testing());
-  return result;
+void AmbientAshTestBase::SetScreenBrightnessAndWait(double percent) {
+  power_manager::BacklightBrightnessChange change;
+  change.set_percent(percent);
+
+  chromeos::FakePowerManagerClient::Get()->SendScreenBrightnessChanged(change);
+  base::RunLoop().RunUntilIdle();
 }
 
 views::View* AmbientAshTestBase::GetMediaStringViewTextContainer() {
   return GetMediaStringView()->media_text_container_for_testing();
-}
-
-std::vector<views::Label*> AmbientAshTestBase::GetMediaStringViewTextLabels() {
-  std::vector<views::Label*> result;
-  for (auto* view : GetMediaStringViews())
-    result.push_back(view->media_text_label_for_testing());
-  return result;
 }
 
 views::Label* AmbientAshTestBase::GetMediaStringViewTextLabel() {
@@ -241,21 +230,18 @@ views::Label* AmbientAshTestBase::GetMediaStringViewTextLabel() {
 
 void AmbientAshTestBase::SimulateMediaMetadataChanged(
     media_session::MediaMetadata metadata) {
-  for (auto* view : GetMediaStringViews())
-    view->MediaSessionMetadataChanged(metadata);
+  GetMediaStringView()->MediaSessionMetadataChanged(metadata);
 }
 
 void AmbientAshTestBase::SimulateMediaPlaybackStateChanged(
     media_session::mojom::MediaPlaybackState state) {
-  for (auto* media_string_view : GetMediaStringViews()) {
-    // Creates media session info.
-    media_session::mojom::MediaSessionInfoPtr session_info(
-        media_session::mojom::MediaSessionInfo::New());
-    session_info->playback_state = state;
+  // Creates media session info.
+  media_session::mojom::MediaSessionInfoPtr session_info(
+      media_session::mojom::MediaSessionInfo::New());
+  session_info->playback_state = state;
 
-    // Simulate media session info changed.
-    media_string_view->MediaSessionInfoChanged(std::move(session_info));
-  }
+  // Simulate media session info changed.
+  GetMediaStringView()->MediaSessionInfoChanged(std::move(session_info));
 }
 
 void AmbientAshTestBase::SetPhotoViewImageSize(int width, int height) {
@@ -265,36 +251,17 @@ void AmbientAshTestBase::SetPhotoViewImageSize(int width, int height) {
   image_decoder->SetImageSize(width, height);
 }
 
-std::vector<AmbientBackgroundImageView*>
-AmbientAshTestBase::GetAmbientBackgroundImageViews() {
-  std::vector<AmbientBackgroundImageView*> result;
-  for (auto* view : GetContainerViews()) {
-    auto* background_image_view =
-        view->GetViewByID(AmbientViewID::kAmbientBackgroundImageView);
-    result.push_back(
-        static_cast<AmbientBackgroundImageView*>(background_image_view));
-  }
-  return result;
-}
-
 AmbientBackgroundImageView*
 AmbientAshTestBase::GetAmbientBackgroundImageView() {
-  return static_cast<AmbientBackgroundImageView*>(
-      GetContainerView()->GetViewByID(kAmbientBackgroundImageView));
-}
-
-std::vector<MediaStringView*> AmbientAshTestBase::GetMediaStringViews() {
-  std::vector<MediaStringView*> result;
-  for (auto* view : GetContainerViews()) {
-    auto* media_string_view = view->GetViewByID(kAmbientMediaStringView);
-    result.push_back(static_cast<MediaStringView*>(media_string_view));
-  }
-  return result;
+  DCHECK(container_view());
+  return static_cast<AmbientBackgroundImageView*>(container_view()->GetViewByID(
+      AmbientViewID::kAmbientBackgroundImageView));
 }
 
 MediaStringView* AmbientAshTestBase::GetMediaStringView() {
+  DCHECK(container_view());
   return static_cast<MediaStringView*>(
-      GetContainerView()->GetViewByID(kAmbientMediaStringView));
+      container_view()->GetViewByID(AmbientViewID::kAmbientMediaStringView));
 }
 
 void AmbientAshTestBase::FastForwardToLockScreenTimeout() {
@@ -400,30 +367,8 @@ AmbientPhotoController* AmbientAshTestBase::photo_controller() {
   return ambient_controller()->ambient_photo_controller();
 }
 
-std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
-  std::vector<AmbientContainerView*> result;
-  for (auto* ctrl : RootWindowController::root_window_controllers()) {
-    auto* widget = ctrl->ambient_widget_for_testing();
-    if (widget) {
-      auto* view = widget->GetContentsView();
-      DCHECK(view && view->GetID() == kAmbientContainerView);
-      result.push_back(static_cast<AmbientContainerView*>(view));
-    }
-  }
-  return result;
-}
-
-AmbientContainerView* AmbientAshTestBase::GetContainerView() {
-  auto* widget =
-      Shell::GetPrimaryRootWindowController()->ambient_widget_for_testing();
-
-  if (widget) {
-    auto* container_view = widget->GetContentsView();
-    DCHECK(container_view && container_view->GetID() == kAmbientContainerView);
-    return static_cast<AmbientContainerView*>(container_view);
-  }
-
-  return nullptr;
+AmbientContainerView* AmbientAshTestBase::container_view() {
+  return ambient_controller()->get_container_view_for_testing();
 }
 
 AmbientAccessTokenController* AmbientAshTestBase::token_controller() {

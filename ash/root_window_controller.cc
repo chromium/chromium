@@ -12,7 +12,6 @@
 #include "ash/accessibility/accessibility_panel_layout_manager.h"
 #include "ash/accessibility/touch_exploration_controller.h"
 #include "ash/accessibility/touch_exploration_manager.h"
-#include "ash/ambient/ambient_controller.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/focus_cycler.h"
 #include "ash/high_contrast/high_contrast_controller.h"
@@ -97,7 +96,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/visibility_controller.h"
@@ -651,7 +649,6 @@ void RootWindowController::Shutdown() {
 
   touch_exploration_manager_.reset();
   wallpaper_widget_controller_.reset();
-  CloseAmbientWidget(/*immediately=*/true);
 
   CloseChildWindows();
   aura::Window* root_window = GetRootWindow();
@@ -818,27 +815,6 @@ void RootWindowController::UpdateAfterLoginStatusChange(LoginStatus status) {
     status_area_widget->UpdateAfterLoginStatusChange(status);
 }
 
-void RootWindowController::CreateAmbientWidget() {
-  DCHECK(!ambient_widget_);
-
-  auto* ambient_controller = Shell::Get()->ambient_controller();
-  if (ambient_controller && ambient_controller->IsShown()) {
-    ambient_widget_ = ambient_controller->CreateWidget(
-        GetRootWindow()->GetChildById(kShellWindowId_AmbientModeContainer));
-  }
-}
-
-void RootWindowController::CloseAmbientWidget(bool immediately) {
-  if (ambient_widget_) {
-    if (immediately)
-      ambient_widget_->CloseNow();
-    else
-      ambient_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
-  }
-
-  ambient_widget_.reset();
-}
-
 AccessibilityPanelLayoutManager*
 RootWindowController::GetAccessibilityPanelLayoutManagerForTest() {
   return GetAccessibilityPanelLayoutManager();
@@ -906,8 +882,6 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   wallpaper_widget_controller_->Init(
       Shell::Get()->session_controller()->IsUserSessionBlocked());
   root_window_layout_manager_->OnWindowResized();
-
-  CreateAmbientWidget();
 
   // Explicitly update the desks controller before notifying the ShellObservers.
   // This is to make sure the desks' states are correct before clients are

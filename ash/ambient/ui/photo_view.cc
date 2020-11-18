@@ -44,7 +44,9 @@ PhotoView::PhotoView(AmbientViewDelegate* delegate) : delegate_(delegate) {
   Init();
 }
 
-PhotoView::~PhotoView() = default;
+PhotoView::~PhotoView() {
+  delegate_->GetAmbientBackendModel()->RemoveObserver(this);
+}
 
 const char* PhotoView::GetClassName() const {
   return "PhotoView";
@@ -80,7 +82,7 @@ void PhotoView::Init() {
   image_views_[1]->layer()->SetOpacity(0.0f);
 
   auto* model = delegate_->GetAmbientBackendModel();
-  scoped_backend_model_observer_.Observe(model);
+  model->AddObserver(this);
 
   UpdateImage(model->GetCurrentImage());
 }

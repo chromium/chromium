@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_container_view.h"
@@ -23,7 +22,6 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
@@ -46,6 +44,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -75,6 +74,11 @@ std::unique_ptr<AmbientBackendController> CreateAmbientBackendController() {
 #else
   return std::make_unique<FakeAmbientBackendControllerImpl>();
 #endif  // BUILDFLAG(ENABLE_CROS_AMBIENT_MODE_BACKEND)
+}
+
+aura::Window* GetWidgetContainer() {
+  return Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                             kShellWindowId_AmbientModeContainer);
 }
 
 // Returns the name of the ambient widget.
@@ -186,7 +190,10 @@ AmbientController::AmbientController(
       fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-AmbientController::~AmbientController() = default;
+AmbientController::~AmbientController() {
+  if (container_view_)
+    container_view_->GetWidget()->CloseNow();
+}
 
 void AmbientController::OnAmbientUiVisibilityChanged(
     AmbientUiVisibility visibility) {
@@ -221,7 +228,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       break;
     case AmbientUiVisibility::kHidden:
     case AmbientUiVisibility::kClosed:
-      CloseAllWidgets(/*immediately=*/false);
+      CloseWidget(/*immediately=*/false);
 
       // TODO(wutao): This will clear the image cache currently. It will not
       // work with `kHidden` if the token has expired and ambient mode is shown
@@ -279,6 +286,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
 void AmbientController::OnAutoShowTimeOut() {
   DCHECK(IsUiHidden(ambient_ui_model_.ui_visibility()));
+  DCHECK(!container_view_);
 
   // Show ambient screen after time out.
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
@@ -380,6 +388,48 @@ void AmbientController::OnPowerStatusChanged() {
   }
 }
 
+void AmbientController::ScreenBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  DVLOG(1) << "ScreenBrightnessChanged: "
+           << (change.has_percent() ? change.percent() : -1);
+
+  if (!change.has_percent())
+    return;
+
+  constexpr double kMinBrightness = 0.01;
+  if (change.percent() < kMinBrightness) {
+    if (is_screen_off_)
+      return;
+
+    DVLOG(1) << "Screen is off, close ambient mode.";
+    is_screen_off_ = true;
+    // If screen is off, turn everything off. This covers:
+    //   1. Manually turn screen off.
+    //   2. Clicking tablet power button.
+    //   3. Close lid.
+    // Need to specially close the widget immediately here to be able to close
+    // the UI before device goes to suspend. Otherwise when opening lid after
+    // lid closed, there may be a flash of the old window before previous
+    // closing finished.
+    CloseWidget(/*immediately=*/true);
+    CloseUi();
+    return;
+  }
+
+  // change.percent() > kMinBrightness
+  if (!is_screen_off_)
+    return;
+  is_screen_off_ = false;
+
+  // Reset image failures to allow retrying ambient mode because screen has
+  // turned back on.
+  GetAmbientBackendModel()->ResetImageFailures();
+
+  // If screen is back on, turn on ambient mode for lock screen.
+  if (LockScreen::HasInstance())
+    ShowHiddenUi();
+}
+
 void AmbientController::ScreenIdleStateChanged(
     const power_manager::ScreenIdleState& idle_state) {
   DVLOG(1) << "ScreenIdleStateChanged: dimmed(" << idle_state.dimmed()
@@ -388,48 +438,25 @@ void AmbientController::ScreenIdleStateChanged(
   if (!IsAmbientModeEnabled())
     return;
 
-  if (idle_state.off()) {
-    DVLOG(1) << "Screen is off, close ambient mode.";
+  // "off" state should already be handled by the screen brightness handler.
+  if (idle_state.off())
+    return;
 
-    CloseAllWidgets(/*immediately=*/true);
-    CloseUi();
+  if (!idle_state.dimmed())
+    return;
+
+  // Do not show the UI if lockscreen is active. The inactivity monitor should
+  // have activated ambient mode.
+  if (LockScreen::HasInstance())
+    return;
+
+  // Do not show UI if loading images was unsuccessful.
+  if (GetAmbientBackendModel()->ImageLoadingFailed()) {
+    VLOG(1) << "Skipping ambient mode activation due to prior failure";
     return;
   }
 
-  if (idle_state.dimmed()) {
-    // Do not show the UI if lockscreen is active. The inactivity monitor should
-    // have activated ambient mode.
-    if (LockScreen::HasInstance())
-      return;
-
-    // Do not show UI if loading images was unsuccessful.
-    if (GetAmbientBackendModel()->ImageLoadingFailed()) {
-      VLOG(1) << "Skipping ambient mode activation due to prior failure";
-      return;
-    }
-
-    ShowUi();
-    return;
-  }
-
-  if (LockScreen::HasInstance() &&
-      ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
-    // Restart hidden ui if the screen is back on and lockscreen is shown.
-    ShowHiddenUi();
-  }
-}
-
-void AmbientController::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  // If about to suspend, turn everything off. This covers:
-  //   1. Clicking power button.
-  //   2. Close lid.
-  // Need to specially close the widget immediately here to be able to close
-  // the UI before device goes to suspend. Otherwise when opening lid after
-  // lid closed, there may be a flash of the old window before previous
-  // closing finished.
-  CloseAllWidgets(/*immediately=*/true);
-  CloseUi();
+  ShowUi();
 }
 
 void AmbientController::OnAuthScanDone(
@@ -480,7 +507,6 @@ void AmbientController::CloseUi() {
   DVLOG(1) << __func__;
 
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
-  GetAmbientBackendModel()->ResetImageFailures();
 }
 
 void AmbientController::ToggleInSessionUi() {
@@ -491,7 +517,7 @@ void AmbientController::ToggleInSessionUi() {
 }
 
 bool AmbientController::IsShown() const {
-  return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown;
+  return container_view_ && container_view_->IsDrawn();
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -532,11 +558,16 @@ void AmbientController::ReleaseWakeLock() {
   delayed_lock_timer_.Stop();
 }
 
-void AmbientController::CloseAllWidgets(bool immediately) {
-  for (auto* root_window_controller :
-       RootWindowController::root_window_controllers()) {
-    root_window_controller->CloseAmbientWidget(immediately);
-  }
+void AmbientController::CloseWidget(bool immediately) {
+  if (!container_view_)
+    return;
+
+  if (immediately)
+    container_view_->GetWidget()->CloseNow();
+  else
+    container_view_->GetWidget()->Close();
+
+  container_view_ = nullptr;
 }
 
 void AmbientController::OnLockScreenInactivityTimeoutPrefChanged() {
@@ -600,7 +631,7 @@ AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
 }
 
 void AmbientController::OnImagesReady() {
-  CreateAndShowWidgets();
+  CreateAndShowWidget();
 }
 
 void AmbientController::OnImagesFailed() {
@@ -608,24 +639,27 @@ void AmbientController::OnImagesFailed() {
   CloseUi();
 }
 
-std::unique_ptr<views::Widget> AmbientController::CreateWidget(
-    aura::Window* container) {
-  auto container_view = std::make_unique<AmbientContainerView>(&delegate_);
-  auto* widget_delegate = new AmbientWidgetDelegate();
-  widget_delegate->SetInitiallyFocusedView(container_view.get());
+std::unique_ptr<AmbientContainerView> AmbientController::CreateContainerView() {
+  DCHECK(!container_view_);
+
+  auto container = std::make_unique<AmbientContainerView>(&delegate_);
+  container_view_ = container.get();
+  return container;
+}
+
+void AmbientController::CreateAndShowWidget() {
+  DCHECK(!container_view_);
 
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = GetWidgetName();
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
-  params.parent = container;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.delegate = widget_delegate;
-  params.visible_on_all_workspaces = true;
+  params.parent = GetWidgetContainer();
+  params.delegate = new AmbientWidgetDelegate();
 
-  auto widget = std::make_unique<views::Widget>();
+  views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
-  widget->SetContentsView(std::move(container_view));
+  widget->SetContentsView(CreateContainerView());
 
   widget->SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_BOTH);
@@ -635,16 +669,11 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   widget->Show();
 
-  return widget;
-}
-
-void AmbientController::CreateAndShowWidgets() {
   // Hide cursor.
   Shell::Get()->cursor_manager()->HideCursor();
-  for (auto* root_window_controller :
-       RootWindowController::root_window_controllers()) {
-    root_window_controller->CreateAmbientWidget();
-  }
+
+  // Requests keyboard focus for |container_view_| to receive keyboard events.
+  container_view_->RequestFocus();
 }
 
 void AmbientController::StartRefreshingImages() {

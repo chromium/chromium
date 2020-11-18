@@ -6,7 +6,6 @@
 #define ASH_AMBIENT_AMBIENT_CONTROLLER_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
@@ -71,9 +70,10 @@ class ASH_EXPORT AmbientController
   void OnPowerStatusChanged() override;
 
   // chromeos::PowerManagerClient::Observer:
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& idle_state) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
   // fingerprint::mojom::FingerprintObserver:
   void OnAuthScanDone(
@@ -100,16 +100,12 @@ class ASH_EXPORT AmbientController
 
   void ToggleInSessionUi();
 
-  // Returns true if ambient mode containers are visible or are being
-  // constructed.
+  // Returns true if the |container_view_| is currently visible.
   bool IsShown() const;
 
   void RequestAccessToken(
       AmbientAccessTokenController::AccessTokenCallback callback,
       bool may_refresh_token_on_lock = false);
-
-  // Creates a widget and |AmbientContainerView| for the container.
-  std::unique_ptr<views::Widget> CreateWidget(aura::Window* container);
 
   AmbientBackendModel* GetAmbientBackendModel();
 
@@ -133,9 +129,14 @@ class ASH_EXPORT AmbientController
   void OnImagesReady() override;
   void OnImagesFailed() override;
 
-  // Creates and shows a full-screen widget for each root window to show the
-  // ambient UI.
-  void CreateAndShowWidgets();
+  // Initializes the |container_view_|. Called in |CreateWidget()| to create the
+  // contents view.
+  std::unique_ptr<AmbientContainerView> CreateContainerView();
+
+  // TODO(meilinw): reuses the lock-screen widget: b/156531168, b/157175030.
+  // Creates and shows a full-screen widget responsible for showing
+  // the ambient UI.
+  void CreateAndShowWidget();
 
   void StartRefreshingImages();
   void StopRefreshingImages();
@@ -154,16 +155,23 @@ class ASH_EXPORT AmbientController
   // Release |wake_lock_|. Unbalanced release call will have no effect.
   void ReleaseWakeLock();
 
-  void CloseAllWidgets(bool immediately);
+  void CloseWidget(bool immediately);
 
   // Invoked when the Ambient mode prefs state changes.
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
 
+  AmbientContainerView* get_container_view_for_testing() {
+    return container_view_;
+  }
+
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;
   }
+
+  // Owned by |RootView| of its parent widget.
+  AmbientContainerView* container_view_ = nullptr;
 
   AmbientViewDelegateImpl delegate_{this};
   AmbientUiModel ambient_ui_model_;
@@ -191,6 +199,8 @@ class ASH_EXPORT AmbientController
       power_manager_client_observer_{this};
   ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_{this};
+
+  bool is_screen_off_ = false;
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
