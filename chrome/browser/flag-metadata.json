@@ -4280,6 +4280,12 @@
     "expiry_milestone": 88
   },
   {
+    "name": "show-performance-metrics-hud",
+    "owners": [ "weiliangc", "sadrul", "chrome-gpu-metrics@google.com" ],
+    // This is a debug flag to show performance metrics in a heads up display.
+    "expiry_milestone": -1
+  },
+  {
     "name": "show-taps",
     "owners": [ "//ash/OWNERS" ],
     // This is a debug flag, so that video bug reports can show input taps to

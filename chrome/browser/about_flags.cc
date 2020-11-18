@@ -6717,6 +6717,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionPredictionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPermissionPredictions)},
 
+    {"show-performance-metrics-hud",
+     flag_descriptions::kShowPerformanceMetricsHudName,
+     flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kHudDisplayForPerformanceMetrics)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -1215,6 +1215,9 @@ extern const char kShowAutofillSignaturesDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+extern const char kShowPerformanceMetricsHudName[];
+extern const char kShowPerformanceMetricsHudDescription[];
+
 extern const char kShowOverdrawFeedbackName[];
 extern const char kShowOverdrawFeedbackDescription[];
 

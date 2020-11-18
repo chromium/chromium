@@ -84,6 +84,7 @@
   "set-market-url-for-testing",
   "show-autofill-type-predictions",
   "show-bluetooth-debug-log-toggle",
+  "show-performance-metrics-hud",
   "show-taps",
   "show-touch-hud",
   "tint-composited-content",

@@ -43123,6 +43123,7 @@ from previous Chrome versions.
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
+  <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
   <int value="-1001837588" label="EnableAppReinstallZeroState:enabled"/>
   <int value="-1000671573" label="TemporaryUnexpireFlagsM80:enabled"/>
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
@@ -46193,6 +46194,7 @@ from previous Chrome versions.
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
+  <int value="2020898714" label="HudDisplayForPerformanceMetrics:enabled"/>
   <int value="2022294878" label="WifiSyncAndroid:enabled"/>
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
