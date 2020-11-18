@@ -1271,7 +1271,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       policy_->UsesStyleHashAlgorithms(style_src_elem_->HashAlgorithmsUsed());
       return;
     case ContentSecurityPolicy::DirectiveType::kTreatAsPublicAddress:
-      SetCSPDirective<SourceListDirective>(name, value, worker_src_);
+      ApplyTreatAsPublicAddress();
       return;
     case ContentSecurityPolicy::DirectiveType::kTrustedTypes:
       AddTrustedTypes(name, value);
