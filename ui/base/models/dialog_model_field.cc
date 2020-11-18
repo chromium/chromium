@@ -209,12 +209,6 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
   return *this;
 }
 
-DialogModelCombobox::Params& DialogModelCombobox::Params::SetAccessibleName(
-    base::string16 accessible_name) {
-  accessible_name_ = std::move(accessible_name);
-  return *this;
-}
-
 DialogModelCombobox::DialogModelCombobox(
     util::PassKey<DialogModel> pass_key,
     DialogModel* model,
@@ -257,12 +251,6 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::SetUniqueId(
 DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
     Accelerator accelerator) {
   accelerators_.insert(std::move(accelerator));
-  return *this;
-}
-
-DialogModelTextfield::Params& DialogModelTextfield::Params::SetAccessibleName(
-    base::string16 accessible_name) {
-  accessible_name_ = accessible_name;
   return *this;
 }
 

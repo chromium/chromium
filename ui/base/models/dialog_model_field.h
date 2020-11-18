@@ -159,7 +159,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     Params& SetUniqueId(int unique_id);
 
     Params& AddAccelerator(Accelerator accelerator);
-    Params& SetAccessibleName(base::string16 accessible_name);
 
    private:
     friend class DialogModelButton;
@@ -277,7 +276,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     Params& SetUniqueId(int unique_id);
 
     Params& AddAccelerator(Accelerator accelerator);
-    Params& SetAccessibleName(base::string16 accessible_name);
+
+    Params& SetAccessibleName(base::string16 accessible_name) {
+      accessible_name_ = std::move(accessible_name);
+      return *this;
+    }
 
     // The combobox callback is invoked when an item has been selected. This
     // nominally happens when selecting an item in the combobox menu. The
@@ -348,7 +351,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
     Params& SetUniqueId(int unique_id);
 
     Params& AddAccelerator(Accelerator accelerator);
-    Params& SetAccessibleName(base::string16 accessible_name);
+
+    Params& SetAccessibleName(base::string16 accessible_name) {
+      accessible_name_ = std::move(accessible_name);
+      return *this;
+    }
 
    private:
     friend class DialogModelTextfield;
