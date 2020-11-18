@@ -878,24 +878,20 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   sql::Statement smt, del_smt;
-  // TODO(chlily): These are out of order with respect to the schema
-  // declaration. Fix this.
   if (restore_old_session_cookies_) {
     smt.Assign(db()->GetCachedStatement(
         SQL_FROM_HERE,
-        "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
-        "expires_utc, is_secure, is_httponly, samesite, "
-        "last_access_utc, has_expires, is_persistent, priority, "
-        "source_scheme, source_port, is_same_party "
-        "FROM cookies WHERE host_key = ?"));
+        "SELECT creation_utc, host_key, name, value, path, expires_utc, "
+        "is_secure, is_httponly, last_access_utc, has_expires, is_persistent, "
+        "priority, encrypted_value, samesite, source_scheme, source_port, "
+        "is_same_party FROM cookies WHERE host_key = ?"));
   } else {
     smt.Assign(db()->GetCachedStatement(
         SQL_FROM_HERE,
-        "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
-        "expires_utc, is_secure, is_httponly, samesite, last_access_utc, "
-        "has_expires, is_persistent, priority, source_scheme, source_port, "
-        "is_same_party "
-        "FROM cookies WHERE host_key = ? AND is_persistent = 1"));
+        "SELECT creation_utc, host_key, name, value, path, expires_utc, "
+        "is_secure, is_httponly, last_access_utc, has_expires, is_persistent, "
+        "priority, encrypted_value, samesite, source_scheme, source_port, "
+        "is_same_party FROM cookies WHERE host_key = ? AND is_persistent = 1"));
   }
   del_smt.Assign(db()->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM cookies WHERE host_key = ?"));
@@ -946,7 +942,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
   bool ok = true;
   while (smt.Step()) {
     std::string value;
-    std::string encrypted_value = smt.ColumnString(4);
+    std::string encrypted_value = smt.ColumnString(12);
     if (!encrypted_value.empty() && crypto_) {
       scoped_refptr<TimeoutTracker> timeout_tracker =
           TimeoutTracker::Begin(client_task_runner());
@@ -962,19 +958,19 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     }
     // Returns nullptr if the resulting cookie is not canonical.
     std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
-        smt.ColumnString(2),                           // name
-        value,                                         // value
-        smt.ColumnString(1),                           // domain
-        smt.ColumnString(5),                           // path
-        Time::FromInternalValue(smt.ColumnInt64(0)),   // creation_utc
-        Time::FromInternalValue(smt.ColumnInt64(6)),   // expires_utc
-        Time::FromInternalValue(smt.ColumnInt64(10)),  // last_access_utc
-        smt.ColumnBool(7),                             // secure
-        smt.ColumnBool(8),                             // http_only
+        smt.ColumnString(2),                          // name
+        value,                                        // value
+        smt.ColumnString(1),                          // domain
+        smt.ColumnString(4),                          // path
+        Time::FromInternalValue(smt.ColumnInt64(0)),  // creation_utc
+        Time::FromInternalValue(smt.ColumnInt64(5)),  // expires_utc
+        Time::FromInternalValue(smt.ColumnInt64(8)),  // last_access_utc
+        smt.ColumnBool(6),                            // secure
+        smt.ColumnBool(7),                            // http_only
         DBCookieSameSiteToCookieSameSite(
-            static_cast<DBCookieSameSite>(smt.ColumnInt(9))),  // samesite
+            static_cast<DBCookieSameSite>(smt.ColumnInt(13))),  // samesite
         DBCookiePriorityToCookiePriority(
-            static_cast<DBCookiePriority>(smt.ColumnInt(13))),  // priority
+            static_cast<DBCookiePriority>(smt.ColumnInt(11))),  // priority
         smt.ColumnBool(16),                                     // is_same_party
         DBToCookieSourceScheme(smt.ColumnInt(14)),              // source_scheme
         smt.ColumnInt(15));                                     // source_port
@@ -1236,12 +1232,10 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
 
   sql::Statement add_smt(db()->GetCachedStatement(
       SQL_FROM_HERE,
-      // TODO(chlily): These are out of order with respect to the schema
-      // declaration. Fix this.
-      "INSERT INTO cookies (creation_utc, host_key, name, value, "
-      "encrypted_value, path, expires_utc, is_secure, is_httponly, "
-      "samesite, last_access_utc, has_expires, is_persistent, priority,"
-      "source_scheme, source_port, is_same_party) "
+      "INSERT INTO cookies (creation_utc, host_key, name, value, path, "
+      "expires_utc, is_secure, is_httponly, last_access_utc, has_expires, "
+      "is_persistent, priority, encrypted_value, samesite, source_scheme, "
+      "source_port, is_same_party) "
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   if (!add_smt.is_valid())
     return;
@@ -1283,23 +1277,24 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
             }
             add_smt.BindCString(3, "");  // value
             // BindBlob() immediately makes an internal copy of the data.
-            add_smt.BindBlob(4, encrypted_value.data(),
+            add_smt.BindBlob(12, encrypted_value.data(),
                              static_cast<int>(encrypted_value.length()));
           } else {
             add_smt.BindString(3, po->cc().Value());
-            add_smt.BindBlob(4, "", 0);  // encrypted_value
+            add_smt.BindBlob(12, "", 0);  // encrypted_value
           }
-          add_smt.BindString(5, po->cc().Path());
-          add_smt.BindInt64(6, po->cc().ExpiryDate().ToInternalValue());
-          add_smt.BindBool(7, po->cc().IsSecure());
-          add_smt.BindBool(8, po->cc().IsHttpOnly());
+          add_smt.BindString(4, po->cc().Path());
+          add_smt.BindInt64(5, po->cc().ExpiryDate().ToInternalValue());
+          add_smt.BindBool(6, po->cc().IsSecure());
+          add_smt.BindBool(7, po->cc().IsHttpOnly());
+          add_smt.BindInt64(8, po->cc().LastAccessDate().ToInternalValue());
+          add_smt.BindBool(9, po->cc().IsPersistent());
+          add_smt.BindBool(10, po->cc().IsPersistent());
           add_smt.BindInt(
-              9, CookieSameSiteToDBCookieSameSite(po->cc().SameSite()));
-          add_smt.BindInt64(10, po->cc().LastAccessDate().ToInternalValue());
-          add_smt.BindBool(11, po->cc().IsPersistent());
-          add_smt.BindBool(12, po->cc().IsPersistent());
+              11, CookiePriorityToDBCookiePriority(po->cc().Priority()));
+          // 12, encrypted_value, inserted above.
           add_smt.BindInt(
-              13, CookiePriorityToDBCookiePriority(po->cc().Priority()));
+              13, CookieSameSiteToDBCookieSameSite(po->cc().SameSite()));
           add_smt.BindInt(14, static_cast<int>(po->cc().SourceScheme()));
           add_smt.BindInt(15, po->cc().SourcePort());
           add_smt.BindBool(16, po->cc().IsSameParty());
