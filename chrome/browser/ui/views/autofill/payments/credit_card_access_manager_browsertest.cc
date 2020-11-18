@@ -54,7 +54,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
                          card_number.substr(0, 12));
     server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
     server_card.set_server_id("full_id_" + card_number);
-    AddTestServerCreditCard(browser(), server_card);
+    AddTestServerCreditCard(browser()->profile(), server_card);
     return server_card;
   }
 

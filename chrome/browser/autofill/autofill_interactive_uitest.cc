@@ -356,7 +356,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                          "4120 Freidrich Lane", "Basement", "Austin", "Texas",
                          "78744", "US", "15125551234");
     profile.set_use_count(9999999);  // We want this to be the first profile.
-    AddTestProfile(browser(), profile);
+    AddTestProfile(browser()->profile(), profile);
   }
 
   void CreateSecondTestProfile() {
@@ -365,14 +365,14 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                          "alice@wonderland.com", "Magic", "333 Cat Queen St.",
                          "Rooftop", "Liliput", "CA", "10003", "US",
                          "15166900292");
-    AddTestProfile(browser(), profile);
+    AddTestProfile(browser()->profile(), profile);
   }
 
   void CreateTestCreditCart() {
     CreditCard card;
     test::SetCreditCardInfo(&card, "Milton Waddams", "4111111111111111", "09",
                             "2999", "");
-    AddTestCreditCard(browser(), card);
+    AddTestCreditCard(browser()->profile(), card);
   }
 
   // Populates a webpage form using autofill data and keypress events.
@@ -2027,7 +2027,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ComparePhoneNumbers) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1-408-555-4567"));
-  SetTestProfile(browser(), profile);
+  SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL("/autofill/form_phones.html");
   ui_test_utils::NavigateToURL(browser(), url);
@@ -2081,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
   profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
   profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16(company_name));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
-  SetTestProfile(browser(), profile);
+  SetTestProfile(browser()->profile(), profile);
 
   GURL url =
       embedded_test_server()->GetURL("/autofill/read_only_field_test.html");
@@ -2140,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForReadOnlyFields) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
   profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Company X"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
-  SetTestProfile(browser(), profile);
+  SetTestProfile(browser()->profile(), profile);
 
   GURL url =
       embedded_test_server()->GetURL("/autofill/read_only_field_test.html");
@@ -2214,7 +2214,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16(email));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("4088714567"));
-  SetTestProfile(browser(), profile);
+  SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL(
       "/autofill/autofill_confirmemail_form.html");
@@ -2265,7 +2265,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
     profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
     profiles.push_back(profile);
   }
-  SetTestProfiles(browser(), &profiles);
+  SetTestProfiles(browser()->profile(), &profiles);
 
   GURL url = embedded_test_server()->GetURL(
       "/autofill/latency_after_submit_test.html");

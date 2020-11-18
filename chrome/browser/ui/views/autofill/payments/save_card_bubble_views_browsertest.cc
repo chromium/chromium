@@ -2170,7 +2170,7 @@ IN_PROC_BROWSER_TEST_F(
   // Set card number to match the number to be filled in the form.
   card.SetNumber(base::ASCIIToUTF16("5454545454545454"));
   card.SetNickname(base::ASCIIToUTF16("nickname"));
-  AddTestCreditCard(browser(), card);
+  AddTestCreditCard(browser()->profile(), card);
 
   // Start sync.
   harness_->SetupSync();
@@ -2189,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
   card.SetNumber(base::ASCIIToUTF16("5454545454545454"));
-  AddTestCreditCard(browser(), card);
+  AddTestCreditCard(browser()->profile(), card);
 
   // Start sync.
   harness_->SetupSync();

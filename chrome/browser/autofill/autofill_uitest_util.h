@@ -7,22 +7,23 @@
 
 #include <vector>
 
-class Browser;
+class Profile;
 
 namespace autofill {
 
 class AutofillProfile;
 class CreditCard;
 
-void AddTestProfile(Browser* browser, const AutofillProfile& profile);
-void SetTestProfile(Browser* browser, const AutofillProfile& profile);
-void SetTestProfiles(Browser* browser, std::vector<AutofillProfile>* profiles);
-void AddTestCreditCard(Browser* browser, const CreditCard& card);
-void AddTestServerCreditCard(Browser* browser, const CreditCard& card);
-void AddTestAutofillData(Browser* browser,
+void AddTestProfile(Profile* base_profile, const AutofillProfile& profile);
+void SetTestProfile(Profile* base_profile, const AutofillProfile& profile);
+void SetTestProfiles(Profile* base_profile,
+                     std::vector<AutofillProfile>* profiles);
+void AddTestCreditCard(Profile* base_profile, const CreditCard& card);
+void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card);
+void AddTestAutofillData(Profile* base_profile,
                          const AutofillProfile& profile,
                          const CreditCard& card);
-void WaitForPersonalDataChange(Browser* browser);
+void WaitForPersonalDataChange(Profile* base_profile);
 
 }  // namespace autofill
 

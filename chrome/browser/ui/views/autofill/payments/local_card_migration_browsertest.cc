@@ -306,7 +306,7 @@ class LocalCardMigrationBrowserTest
     if (set_nickname)
       local_card.SetNickname(base::ASCIIToUTF16("card nickname"));
 
-    AddTestCreditCard(browser(), local_card);
+    AddTestCreditCard(browser()->profile(), local_card);
     return local_card;
   }
 
@@ -318,7 +318,7 @@ class LocalCardMigrationBrowserTest
                          card_number.substr(0, 12));
     server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
     server_card.set_server_id("full_id_" + card_number);
-    AddTestServerCreditCard(browser(), server_card);
+    AddTestServerCreditCard(browser()->profile(), server_card);
     return server_card;
   }
 
@@ -505,7 +505,9 @@ class LocalCardMigrationBrowserTest
     return &test_url_loader_factory_;
   }
 
-  void WaitForCardDeletion() { WaitForPersonalDataChange(browser()); }
+  void WaitForCardDeletion() {
+    WaitForPersonalDataChange(browser()->profile());
+  }
 
   void WaitForAnimationToComplete() {
     if (base::FeatureList::IsEnabled(

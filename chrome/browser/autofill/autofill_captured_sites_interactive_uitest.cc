@@ -167,7 +167,7 @@ class AutofillCapturedSitesInteractiveTest
   }
 
   bool SetupAutofillProfile() override {
-    AddTestAutofillData(browser(), profile(), credit_card());
+    AddTestAutofillData(browser()->profile(), profile(), credit_card());
     return true;
   }
 

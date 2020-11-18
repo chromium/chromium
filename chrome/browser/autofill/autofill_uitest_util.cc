@@ -6,8 +6,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -20,10 +19,11 @@ namespace autofill {
 // to complete.
 class PdmChangeWaiter : public PersonalDataManagerObserver {
  public:
-  explicit PdmChangeWaiter(Browser* browser)
-      : alerted_(false), has_run_message_loop_(false), browser_(browser) {
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        AddObserver(this);
+  explicit PdmChangeWaiter(Profile* base_profile)
+      : alerted_(false),
+        has_run_message_loop_(false),
+        base_profile_(base_profile) {
+    PersonalDataManagerFactory::GetForProfile(base_profile_)->AddObserver(this);
   }
 
   ~PdmChangeWaiter() override {}
@@ -44,14 +44,14 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
       has_run_message_loop_ = true;
       content::RunMessageLoop();
     }
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        RemoveObserver(this);
+    PersonalDataManagerFactory::GetForProfile(base_profile_)
+        ->RemoveObserver(this);
   }
 
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Browser* browser_;
+  Profile* base_profile_;
 
   DISALLOW_COPY_AND_ASSIGN(PdmChangeWaiter);
 };
@@ -60,56 +60,57 @@ static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
   return PersonalDataManagerFactory::GetForProfile(profile);
 }
 
-void AddTestProfile(Browser* browser, const AutofillProfile& profile) {
-  PdmChangeWaiter observer(browser);
-  GetPersonalDataManager(browser->profile())->AddProfile(profile);
+void AddTestProfile(Profile* base_profile, const AutofillProfile& profile) {
+  PdmChangeWaiter observer(base_profile);
+  GetPersonalDataManager(base_profile)->AddProfile(profile);
 
   // AddProfile is asynchronous. Wait for it to finish before continuing the
   // tests.
   observer.Wait();
 }
 
-void SetTestProfile(Browser* browser, const AutofillProfile& profile) {
+void SetTestProfile(Profile* base_profile, const AutofillProfile& profile) {
   std::vector<AutofillProfile> profiles;
   profiles.push_back(profile);
-  SetTestProfiles(browser, &profiles);
+  SetTestProfiles(base_profile, &profiles);
 }
 
-void SetTestProfiles(Browser* browser, std::vector<AutofillProfile>* profiles) {
-  PdmChangeWaiter observer(browser);
-  GetPersonalDataManager(browser->profile())->SetProfiles(profiles);
+void SetTestProfiles(Profile* base_profile,
+                     std::vector<AutofillProfile>* profiles) {
+  PdmChangeWaiter observer(base_profile);
+  GetPersonalDataManager(base_profile)->SetProfiles(profiles);
   observer.Wait();
 }
 
-void AddTestCreditCard(Browser* browser, const CreditCard& card) {
-  PdmChangeWaiter observer(browser);
-  GetPersonalDataManager(browser->profile())->AddCreditCard(card);
+void AddTestCreditCard(Profile* base_profile, const CreditCard& card) {
+  PdmChangeWaiter observer(base_profile);
+  GetPersonalDataManager(base_profile)->AddCreditCard(card);
 
   // AddCreditCard is asynchronous. Wait for it to finish before continuing the
   // tests.
   observer.Wait();
 }
 
-void AddTestServerCreditCard(Browser* browser, const CreditCard& card) {
-  PdmChangeWaiter observer(browser);
-  GetPersonalDataManager(browser->profile())->AddFullServerCreditCard(card);
+void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card) {
+  PdmChangeWaiter observer(base_profile);
+  GetPersonalDataManager(base_profile)->AddFullServerCreditCard(card);
 
   // AddCreditCard is asynchronous. Wait for it to finish before continuing the
   // tests.
   observer.Wait();
 }
 
-void AddTestAutofillData(Browser* browser,
+void AddTestAutofillData(Profile* base_profile,
                          const AutofillProfile& profile,
                          const CreditCard& card) {
-  AddTestProfile(browser, profile);
-  PdmChangeWaiter observer(browser);
-  GetPersonalDataManager(browser->profile())->AddCreditCard(card);
+  AddTestProfile(base_profile, profile);
+  PdmChangeWaiter observer(base_profile);
+  GetPersonalDataManager(base_profile)->AddCreditCard(card);
   observer.Wait();
 }
 
-void WaitForPersonalDataChange(Browser* browser) {
-  PdmChangeWaiter observer(browser);
+void WaitForPersonalDataChange(Profile* base_profile) {
+  PdmChangeWaiter observer(base_profile);
   observer.Wait();
 }
 

@@ -43,7 +43,7 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
-class Browser;
+class Profile;
 class PrefService;
 class RemoveAutofillTester;
 
@@ -517,7 +517,7 @@ class PersonalDataManager : public KeyedService,
   friend void autofill_helper::SetCreditCards(
       int,
       std::vector<autofill::CreditCard>*);
-  friend void SetTestProfiles(Browser* browser,
+  friend void SetTestProfiles(Profile* base_profile,
                               std::vector<AutofillProfile>* profiles);
 
   // Sets |web_profiles_| to the contents of |profiles| and updates the web
