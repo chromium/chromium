@@ -89,7 +89,7 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
   void CreateAndExecuteUdpProber(base::span<const uint8_t> data,
                                  UdpProber::UdpProbeCompleteCallback callback) {
     ASSERT_TRUE(fake_network_context_);
-    udp_prober_ = std::make_unique<UdpProber>(
+    udp_prober_ = UdpProber::Start(
         base::BindRepeating(
             [](network::mojom::NetworkContext* network_context) {
               return network_context;
