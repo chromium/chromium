@@ -98,7 +98,9 @@
           [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
         </template>
       </div>
-      <nearby-progress share-target="[[shareTarget]]"></nearby-progress>
+      <nearby-progress share-target="[[shareTarget]]"
+          has-error="[[errorTitle_]]">
+      </nearby-progress>
     </div>
 
     <template is="dom-if" if="[[contactName_(shareTarget)]]">

@@ -1,12 +1,13 @@
 <style>
   :host {
-    background-color: rgb(232, 240, 254);
+    background-color: var(--nearby-device-icon-background-color,
+                          var(--google-blue-50));
     border-radius: 50%;
     display: flex;
   }
 
   #icon {
-    color: rgb(26, 115, 232);
+    color: var(--nearby-device-icon-color, var(--google-blue-600));
     height: var(--nearby-device-icon-size, 24px);
     margin: auto;
     width: var(--nearby-device-icon-size, 24px);

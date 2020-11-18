@@ -17,6 +17,11 @@
     width: 70px;
   }
 
+  .has-error #icon {
+    --nearby-device-icon-color: var(--google-grey-600);
+    --nearby-device-icon-background-color: var(--google-grey-200);
+  }
+
   #progress-container {
     display: flex;
     height: 80px;
@@ -25,36 +30,56 @@
     width: 80px;
   }
 
-  #spinner {
-    animation: 1.4s ease-in-out infinite both spinner-animation;
+  #wheel {
     fill: none;
     stroke: var(--google-blue-600);
-    stroke-dasharray: 283;
+    stroke-dasharray: 100;
+    stroke-dashoffset: calc(100 - var(--progress-percentage, 0));
     stroke-linecap: round;
     stroke-width: 2px;
+    transform: rotate(-90deg);
     transform-origin: 50% 50%;
+    transition: stroke-dashoffset 400ms ease;
+  }
+
+  .unknown-progress #wheel {
+    animation: 1.4s ease-in-out infinite both unknown-progress-animation;
+    stroke-dasharray: 116;
+  }
+
+  .has-error #wheel {
+    animation: none;
+    stroke: var(--google-red-600);
+    stroke-dashoffset: 0;
   }
 
   #svg {
-    animation: 2s linear infinite svg-animation;
     left: 0;
     position: absolute;
     top: 0;
   }
 
-  @keyframes spinner-animation {
+  .unknown-progress #svg {
+    animation: 2s linear infinite svg-animation;
+  }
+
+  .has-error #svg {
+    animation: none;
+  }
+
+  @keyframes unknown-progress-animation {
     0%,
     25% {
-      stroke-dashoffset: 280;
+      stroke-dashoffset: 115;
       transform: rotate(0);
     }
     50%,
     75% {
-      stroke-dashoffset: 75;
+      stroke-dashoffset: 30;
       transform: rotate(45deg);
     }
     100% {
-      stroke-dashoffset: 280;
+      stroke-dashoffset: 115;
       transform: rotate(360deg);
     }
   }
@@ -65,9 +90,14 @@
   }
 </style>
 
-<div id="progress-container">
+<div id="progress-container"
+    class$="[[getProgressWheelClass_(progress, hasError)]]">
+  <!-- This svg is inlined so that it can be styled with css; otherwise,
+       it would be better to put it in an iron-icon. -->
   <svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-    <circle id="spinner" cx="40" cy="40" r="39"></circle>
+    <circle id="wheel"
+        cx="40" cy="40" r="39" pathLength="100">
+    </circle>
   </svg>
   <nearby-device-icon id="icon" share-target="[[shareTarget]]">
   </nearby-device-icon>
