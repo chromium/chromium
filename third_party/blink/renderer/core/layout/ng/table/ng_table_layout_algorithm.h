@@ -38,16 +38,26 @@ class CORE_EXPORT NGTableLayoutAlgorithm
                    const NGTableBorders& table_borders,
                    const LogicalSize& border_spacing,
                    const NGBoxStrut& table_border_padding,
+                   const LayoutUnit captions_block_size,
                    bool is_fixed_layout,
                    NGTableTypes::Rows* rows,
                    NGTableTypes::CellBlockConstraints* cell_block_constraints,
                    NGTableTypes::Sections* sections,
                    LayoutUnit* minimal_table_grid_block_size);
 
-  void GenerateCaptionFragments(const NGTableGroupedChildren& grouped_children,
-                                LayoutUnit table_inline_size,
-                                ECaptionSide caption_side,
-                                LayoutUnit* table_block_offset);
+  // In order to correctly determine the available block-size given to the
+  // table-grid, we need to layout all the captions ahead of time. This struct
+  // stores the necessary information to add them to the fragment later.
+  struct CaptionResult {
+    NGBlockNode node;
+    scoped_refptr<const NGLayoutResult> layout_result;
+    const NGBoxStrut margins;
+  };
+
+  void ComputeCaptionFragments(const NGTableGroupedChildren& grouped_children,
+                               LayoutUnit table_inline_size,
+                               Vector<CaptionResult>& captions,
+                               LayoutUnit& captions_block_size);
 
   void ComputeTableSpecificFragmentData(
       const NGTableGroupedChildren& grouped_children,
@@ -66,6 +76,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const NGTableTypes::Rows& rows,
       const NGTableTypes::CellBlockConstraints& cell_block_constraints,
       const NGTableTypes::Sections& sections,
+      const Vector<CaptionResult>& captions,
       const NGTableBorders& table_borders,
       const LogicalSize& border_spacing);
 };

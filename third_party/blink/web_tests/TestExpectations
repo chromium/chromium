@@ -773,6 +773,10 @@ crbug.com/1111708 external/wpt/css/css-flexbox/flexbox_justifycontent-center-ove
 crbug.com/1111128 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-min-height-auto-002b.html [ Failure ]
 crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-specified-width.html [ Failure ]
 
+# Both fixed by TableNG.
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-flex-cross-size.html [ Failure ]
+
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-horiz-001a.xhtml [ Failure ]
 crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-horiz-001b.xhtml [ Failure ]

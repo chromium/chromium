@@ -167,15 +167,18 @@ LayoutUnit ResolveBlockLengthInternal(
     const NGBoxStrut& border_padding,
     const Length& length,
     LayoutUnit intrinsic_size,
+    LayoutUnit available_block_size_adjustment,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
-      LayoutUnit content_size = constraint_space.AvailableSize().block_size;
+      LayoutUnit available_size = (constraint_space.AvailableSize().block_size -
+                                   available_block_size_adjustment)
+                                      .ClampNegativeToZero();
       NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.BlockSum(),
-                      content_size - margins.BlockSum());
+                      available_size - margins.BlockSum());
     }
     case Length::kPercent:
     case Length::kFixed:
@@ -497,15 +500,16 @@ MinMaxSizes ComputeMinMaxBlockSize(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
+    LayoutUnit available_block_size_adjustment,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max) {
   MinMaxSizes result;
   result.min_size = ResolveMinBlockLength(
       constraint_space, style, border_padding, style.LogicalMinHeight(),
-      LengthResolvePhase::kLayout,
+      LengthResolvePhase::kLayout, available_block_size_adjustment,
       opt_percentage_resolution_block_size_for_min_max);
   result.max_size = ResolveMaxBlockLength(
       constraint_space, style, border_padding, style.LogicalMaxHeight(),
-      LengthResolvePhase::kLayout,
+      LengthResolvePhase::kLayout, available_block_size_adjustment,
       opt_percentage_resolution_block_size_for_min_max);
   return result;
 }
@@ -562,10 +566,12 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     base::Optional<LayoutUnit> inline_size,
+    LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   MinMaxSizes min_max =
       ComputeMinMaxBlockSize(space, style, border_padding, intrinsic_size,
+                             available_block_size_adjustment,
                              opt_percentage_resolution_block_size_for_min_max);
   Length logical_height = style.LogicalHeight();
   // Scrollable percentage-sized children of table cells, in the table
@@ -593,10 +599,10 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   }
   // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
   // they need to respect aspect ratio.
-  LayoutUnit extent =
-      ResolveMainBlockLength(space, style, border_padding, logical_height,
-                             intrinsic_size, LengthResolvePhase::kLayout,
-                             opt_percentage_resolution_block_size_for_min_max);
+  LayoutUnit extent = ResolveMainBlockLength(
+      space, style, border_padding, logical_height, intrinsic_size,
+      LengthResolvePhase::kLayout, available_block_size_adjustment,
+      opt_percentage_resolution_block_size_for_min_max);
   if (UNLIKELY((extent == kIndefiniteSize || is_logical_height_auto) &&
                !style.AspectRatio().IsAuto() && inline_size)) {
     extent =
@@ -628,12 +634,20 @@ LayoutUnit ComputeBlockSizeForFragment(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    base::Optional<LayoutUnit> inline_size) {
+    base::Optional<LayoutUnit> inline_size,
+    LayoutUnit available_block_size_adjustment) {
+  // The |available_block_size_adjustment| should only be used for <table>s.
+  DCHECK(available_block_size_adjustment == LayoutUnit() ||
+         style.IsDisplayTableBox());
+
   if (constraint_space.IsLegacyTableCell() && intrinsic_size != kIndefiniteSize)
     return intrinsic_size;
 
-  if (constraint_space.IsFixedBlockSize())
-    return constraint_space.AvailableSize().block_size;
+  if (constraint_space.IsFixedBlockSize()) {
+    return (constraint_space.AvailableSize().block_size -
+            available_block_size_adjustment)
+        .ClampNegativeToZero();
+  }
 
   if (constraint_space.IsTableCell() && !constraint_space.IsLegacyTableCell() &&
       intrinsic_size != kIndefiniteSize)
@@ -643,7 +657,8 @@ LayoutUnit ComputeBlockSizeForFragment(
     return intrinsic_size;
 
   return ComputeBlockSizeForFragmentInternal(
-      constraint_space, style, border_padding, intrinsic_size, inline_size);
+      constraint_space, style, border_padding, intrinsic_size, inline_size,
+      available_block_size_adjustment);
 }
 
 // Computes size for a replaced element.
@@ -1350,7 +1365,9 @@ LayoutUnit CalculateChildPercentageBlockSizeForMinMax(
   const ComputedStyle& style = node.Style();
   LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
       space, style, border_padding,
-      CalculateDefaultBlockSize(space, node, border_padding), base::nullopt,
+      CalculateDefaultBlockSize(space, node, border_padding),
+      /* inline_size */ base::nullopt,
+      /* available_block_size_adjustment */ LayoutUnit(),
       &input_percentage_block_size);
 
   if (style.LogicalMinHeight().IsPercentOrCalc() ||
@@ -1379,6 +1396,8 @@ LayoutUnit ClampIntrinsicBlockSize(
     const NGBoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
     base::Optional<LayoutUnit> body_margin_block_sum) {
+  // Tables don't respect size containment, or apply the "fill viewport" quirk.
+  DCHECK(!node.IsTable());
   const ComputedStyle& style = node.Style();
 
   // Apply the "fills viewport" quirk if needed.

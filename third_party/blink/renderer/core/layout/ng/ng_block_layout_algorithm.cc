@@ -2523,7 +2523,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
                             child_writing_direction.GetWritingMode())) {
     if (!child.GetLayoutBox()->AutoWidthShouldFitContent() &&
-        !child.IsReplaced())
+        !child.IsReplaced() && !child.IsTable())
       builder.SetStretchInlineSizeIfAuto(true);
   }
 
