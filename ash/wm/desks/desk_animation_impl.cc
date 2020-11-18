@@ -83,6 +83,11 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   if (source != switch_source_)
     return false;
 
+  // Do not log any EndSwipeAnimation smoothness metrics if the animation has
+  // been canceled midway by an Replace call.
+  if (is_continuous_gesture_animation_)
+    throughput_tracker_.Cancel();
+
   // If any of the animators are still taking either screenshot, do not replace
   // the animation.
   for (const auto& animator : desk_switch_animators_) {
@@ -134,10 +139,6 @@ bool DeskActivationAnimation::Replace(bool moving_left,
 bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
   if (!is_continuous_gesture_animation_)
     return false;
-
-  // Do not log any EndSwipeAnimation smoothness metrics if the animation has
-  // been canceled midway by an UpdateSwipeAnimation call.
-  throughput_tracker_.Cancel();
 
   presentation_time_recorder_->RequestNext();
 
