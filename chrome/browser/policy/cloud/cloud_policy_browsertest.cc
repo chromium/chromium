@@ -138,7 +138,7 @@ std::string GetTestPolicy(const char* homepage, int key_version) {
       "    \"mandatory\": {"
       "      \"ShowHomeButton\": true,"
       "      \"RestoreOnStartup\": 4,"
-      "      \"URLBlacklist\": [ \"dev.chromium.org\", \"youtube.com\" ],"
+      "      \"URLBlocklist\": [ \"dev.chromium.org\", \"youtube.com\" ],"
       "      \"MaxInvalidationFetchDelay\": 1000"
       "    },"
       "    \"recommended\": {"
@@ -167,7 +167,7 @@ void GetExpectedTestPolicy(PolicyMap* expected, const char* homepage) {
   base::ListValue list;
   list.AppendString("dev.chromium.org");
   list.AppendString("youtube.com");
-  expected->Set(key::kURLBlacklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+  expected->Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                 POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
   expected->Set(key::kMaxInvalidationFetchDelay, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1000),
