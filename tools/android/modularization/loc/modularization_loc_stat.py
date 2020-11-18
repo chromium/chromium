@@ -15,6 +15,14 @@ import subprocess
 import sys
 from collections import OrderedDict
 from collections import defaultdict
+from typing import Tuple
+
+# Output json keys
+KEY_LOC_MODULARIZED = 'loc_modularized'
+KEY_LOC_LEGACY = 'loc_legacy'
+KEY_RANKINGS = 'rankings'
+KEY_START_DATE = 'start_date'
+KEY_END_DATE = 'end_date'
 
 _M12N_DIRS = [
     'chrome/browser',
@@ -120,11 +128,11 @@ def GenerateLOCStats(start_date,
 
   if json_format:
     return json.dumps({
-        'loc_modularized': total_m12n,
-        'loc_legacy': total_legacy,
-        'rankings': rankings,
-        'start_date': start_date,
-        'end_date': end_date,
+        KEY_LOC_MODULARIZED: total_m12n,
+        KEY_LOC_LEGACY: total_legacy,
+        KEY_RANKINGS: rankings,
+        KEY_START_DATE: start_date,
+        KEY_END_DATE: end_date,
     })
   else:
     output = []
@@ -169,12 +177,13 @@ def _print_progress(msg, prev_msg_len):
   print(msg, end='\r')
 
 
-def _get_date_range(args):
-  if args.date:
-    return args.date
+def GetDateRange(*, past_days: int) -> Tuple[str, str]:
+  """Returns start and end date for a period of past days.
 
+  Use the results as start_date and end_date of GenerateLOCStats.
+  """
   today = datetime.date.today()
-  delta = datetime.timedelta(days=args.past_days)
+  delta = datetime.timedelta(days=past_days)
   past = datetime.datetime(today.year, today.month, today.day) - delta
   return (past.date().isoformat(), today.isoformat())
 
@@ -215,7 +224,11 @@ if __name__ == "__main__":
   if args.past_days and args.past_days < 0:
     raise parser.error('--past-days must be non-negative.')
 
-  start_date, end_date = _get_date_range(args)
+  if args.date:
+    start_date, end_date = args.date
+  else:
+    start_date, end_date = GetDateRange(past_days=args.past_days)
+
   result = GenerateLOCStats(start_date,
                             end_date,
                             quiet=args.quiet,

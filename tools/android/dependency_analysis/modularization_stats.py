@@ -11,9 +11,19 @@ from typing import Dict, List
 import class_dependency
 import count_cycles
 import graph
+import os
 import package_dependency
 import print_dependencies_helper
 import serialization
+import sys
+
+_SRC_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+sys.path.append(
+    os.path.join(_SRC_PATH, 'tools', 'android', 'modularization', 'loc'))
+
+import modularization_loc_stat as loc_stat
 
 CLASSES_TO_COUNT_INBOUND = ['ChromeActivity', 'ChromeTabbedActivity']
 
@@ -75,6 +85,30 @@ def _generate_chrome_java_size(
     return {'chrome_java_class_count': count}
 
 
+def _generate_loc_stats(git_dir: str) -> Dict[str, object]:
+    start_date, end_date = loc_stat.GetDateRange(past_days=7)
+    loc_result_json: str = loc_stat.GenerateLOCStats(start_date,
+                                                     end_date,
+                                                     quiet=True,
+                                                     json_format=True,
+                                                     git_dir=git_dir)
+
+    loc_result: Dict = json.loads(loc_result_json)
+
+    loc_modularized = loc_result.get(loc_stat.KEY_LOC_MODULARIZED, 0)
+    loc_chrome_android = loc_result.get(loc_stat.KEY_LOC_LEGACY, 0)
+    total = loc_modularized + loc_chrome_android
+    percentage_modularized: float = loc_modularized / total if total > 0 else 0
+
+    return {
+        'loc_modularized': loc_modularized,
+        'loc_chrome_android': loc_chrome_android,
+        'loc_modularized_percentage': percentage_modularized,
+        'loc_start_date': loc_result.get(loc_stat.KEY_START_DATE, ''),
+        'loc_end_date': loc_result.get(loc_stat.KEY_END_DATE, ''),
+    }
+
+
 def main():
     arg_parser = argparse.ArgumentParser(
         description='Given a JSON dependency graph, output a JSON with a '
@@ -86,8 +120,6 @@ def main():
         required=True,
         help='Path to the JSON file containing the dependency graph. '
         'See the README on how to generate this file.')
-    # TODO(crbug.com/1146478): --git-dir is currently unused, but will be used
-    # to calculate % LoCs in modularized files.
     arg_parser.add_argument(
         '--git-dir',
         type=str,
@@ -110,6 +142,7 @@ def main():
                                          CLASSES_TO_COUNT_INBOUND))
     stats.update(_generate_package_cycle_stats(package_graph))
     stats.update(_generate_chrome_java_size(class_graph))
+    stats.update(_generate_loc_stats(arguments.git_dir))
 
     if arguments.output:
         with open(arguments.output, 'w') as f:
