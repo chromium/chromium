@@ -10,9 +10,10 @@ namespace quic {
 
 namespace {
 
+template <typename UniqueBufferPtr>
 class QuicIOBuffer : public net::IOBuffer {
  public:
-  QuicIOBuffer(QuicUniqueBufferPtr buffer, size_t size)
+  QuicIOBuffer(UniqueBufferPtr buffer, size_t size)
       : buffer_(std::move(buffer)) {
     AssertValidBufferSize(size);
     data_ = buffer_.get();
@@ -21,7 +22,7 @@ class QuicIOBuffer : public net::IOBuffer {
  private:
   ~QuicIOBuffer() override { data_ = nullptr; }
 
-  QuicUniqueBufferPtr buffer_;
+  UniqueBufferPtr buffer_;
 };
 
 }  // namespace
@@ -29,7 +30,15 @@ class QuicIOBuffer : public net::IOBuffer {
 QuicMemSliceImpl::QuicMemSliceImpl() = default;
 
 QuicMemSliceImpl::QuicMemSliceImpl(QuicUniqueBufferPtr buffer, size_t length) {
-  io_buffer_ = base::MakeRefCounted<QuicIOBuffer>(std::move(buffer), length);
+  io_buffer_ = base::MakeRefCounted<QuicIOBuffer<QuicUniqueBufferPtr>>(
+      std::move(buffer), length);
+  length_ = length;
+}
+
+QuicMemSliceImpl::QuicMemSliceImpl(std::unique_ptr<char[]> buffer,
+                                   size_t length) {
+  io_buffer_ = base::MakeRefCounted<QuicIOBuffer<std::unique_ptr<char[]>>>(
+      std::move(buffer), length);
   length_ = length;
 }
 
