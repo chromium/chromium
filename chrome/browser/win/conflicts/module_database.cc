@@ -197,7 +197,7 @@ void ModuleDatabase::OnModuleLoad(content::ProcessType process_type,
 
   DCHECK(process_type == content::PROCESS_TYPE_BROWSER ||
          process_type == content::PROCESS_TYPE_RENDERER)
-      << "The current logic in ModuleBlocklistCacheUpdater does not support "
+      << "The current logic in ModuleBlacklistCacheUpdater does not support "
          "other process types yet. See https://crbug.com/662084 for details.";
 
   ModuleInfo* module_info = nullptr;
@@ -256,7 +256,7 @@ void ModuleDatabase::OnModuleBlocked(const base::FilePath& module_path,
   module_info->second.module_properties |= ModuleInfoData::kPropertyBlocked;
 }
 
-void ModuleDatabase::OnModuleAddedToBlocklist(const base::FilePath& module_path,
+void ModuleDatabase::OnModuleAddedToBlacklist(const base::FilePath& module_path,
                                               uint32_t module_size,
                                               uint32_t module_time_date_stamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -264,10 +264,10 @@ void ModuleDatabase::OnModuleAddedToBlocklist(const base::FilePath& module_path,
   auto iter = modules_.find(
       ModuleInfoKey(module_path, module_size, module_time_date_stamp));
 
-  // Only known modules should be added to the blocklist.
+  // Only known modules should be added to the blacklist.
   DCHECK(iter != modules_.end());
 
-  iter->second.module_properties |= ModuleInfoData::kPropertyAddedToBlocklist;
+  iter->second.module_properties |= ModuleInfoData::kPropertyAddedToBlacklist;
 }
 
 void ModuleDatabase::AddObserver(ModuleDatabaseObserver* observer) {
@@ -426,7 +426,7 @@ void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager(
     return;
 
   if (IncompatibleApplicationsUpdater::IsWarningEnabled() ||
-      ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
+      ModuleBlacklistCacheUpdater::IsBlockingEnabled()) {
     DCHECK(base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine));
 
     third_party_conflicts_manager_ =

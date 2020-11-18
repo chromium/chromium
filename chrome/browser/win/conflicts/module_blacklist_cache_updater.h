@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLOCKLIST_CACHE_UPDATER_H_
-#define CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLOCKLIST_CACHE_UPDATER_H_
+#ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLACKLIST_CACHE_UPDATER_H_
+#define CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLACKLIST_CACHE_UPDATER_H_
 
 #include <vector>
 
@@ -26,7 +26,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-// This class is responsible for maintaining the module blocklist cache, which
+// This class is responsible for maintaining the module blacklist cache, which
 // is used by chrome_elf.dll to determine which module to block from loading
 // into the process.
 //
@@ -34,7 +34,7 @@ class SequencedTaskRunner;
 // one module must be added to the cache.
 //
 //
-// Additional implementation details about the module blocklist cache file:
+// Additional implementation details about the module blacklist cache file:
 //
 // Because the file is written under the User Data directory, it is not possible
 // for chrome_elf to find it by itself (see https://crbug.com/748949). So the
@@ -42,7 +42,7 @@ class SequencedTaskRunner;
 // making the already expanded path available.
 //
 // A consequence of this solution is that in some circumstances, multiple
-// browser process will race to write the path to their blocklist file into a
+// browser process will race to write the path to their blacklist file into a
 // single registry key because the same registry key is shared between all User
 // Data directories.
 //
@@ -53,8 +53,8 @@ class SequencedTaskRunner;
 // This is acceptable given that all the caches contains more or less the same
 // information and are interchangeable. Also, updates to the cache file and to
 // the registry are atomic, guaranteeing that chrome_elf always reads a valid
-// blocklist.
-class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
+// blacklist.
+class ModuleBlacklistCacheUpdater : public ModuleDatabaseObserver {
  public:
   // A decision that explains whether or not a module is to be blocked. This
   // decision is made with respect to the logic in the currently running
@@ -110,7 +110,7 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
     // startups.
 
     // The module will be blocked because it is explicitly listed in the module
-    // blocklist.
+    // blacklist.
     kDisallowedExplicit,
     // The module will be implicitly blocked because it is not otherwise
     // allowed.
@@ -119,9 +119,9 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
   };
 
   struct ModuleBlockingState {
-    // Whether or not the module was in the blocklist cache that existed at
+    // Whether or not the module was in the blacklist cache that existed at
     // startup.
-    bool was_in_blocklist_cache = false;
+    bool was_in_blacklist_cache = false;
 
     // Whether or not the module was ever actively blocked from loading during
     // this session.
@@ -149,27 +149,27 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
   // The parameters must outlive the lifetime of this class.
   // The ModuleListFilter is taken by scoped_refptr since it will be used in a
   // background sequence.
-  ModuleBlocklistCacheUpdater(
+  ModuleBlacklistCacheUpdater(
       ModuleDatabaseEventSource* module_database_event_source,
       const CertificateInfo& exe_certificate_info,
       scoped_refptr<ModuleListFilter> module_list_filter,
       const std::vector<third_party_dlls::PackedListModule>&
-          initial_blocklisted_modules,
+          initial_blacklisted_modules,
       OnCacheUpdatedCallback on_cache_updated_callback,
       bool module_analysis_disabled);
-  ~ModuleBlocklistCacheUpdater() override;
+  ~ModuleBlacklistCacheUpdater() override;
 
   // Returns true if the blocking of third-party modules is enabled. Can be
   // called on any thread. Notably does not check the ThirdPartyBlockingEnabled
   // group policy.
   static bool IsBlockingEnabled();
 
-  // Returns the path to the module blocklist cache.
-  static base::FilePath GetModuleBlocklistCachePath();
+  // Returns the path to the module blacklist cache.
+  static base::FilePath GetModuleBlacklistCachePath();
 
-  // Deletes the module blocklist cache. This disables the blocking of third-
+  // Deletes the module blacklist cache. This disables the blocking of third-
   // party modules for the next browser launch.
-  static void DeleteModuleBlocklistCache();
+  static void DeleteModuleBlacklistCache();
 
   // ModuleDatabaseObserver:
   void OnNewModuleFound(const ModuleInfoKey& module_key,
@@ -191,46 +191,46 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
   enum class ModuleListState {
     // The module is not in the module list at all.
     kUnlisted,
-    // The module is in the module list and is explicitly allowlisted.
-    kAllowlisted,
-    // The module is in the module list and "blocklisted", but loading is
+    // The module is in the module list and is explicitly whitelisted.
+    kWhitelisted,
+    // The module is in the module list and "blacklisted", but loading is
     // tolerated.
     kTolerated,
-    // The module is explicitly blocklisted.
-    kBlocklisted,
+    // The module is explicitly blacklisted.
+    kBlacklisted,
   };
 
   // Gets the state of a module with respect to the module list.
   ModuleListState DetermineModuleListState(const ModuleInfoKey& module_key,
                                            const ModuleInfoData& module_data);
 
-  // Determines whether or not a module *should* be allowlisted or blocklisted
+  // Determines whether or not a module *should* be whitelisted or blacklisted
   // on the next startup. Returns a ModuleBlockingDecision.
   ModuleBlockingDecision DetermineModuleBlockingDecision(
       const ModuleInfoKey& module_key,
       const ModuleInfoData& module_data);
 
   // Posts the task to update the cache on |background_sequence_|.
-  void StartModuleBlocklistCacheUpdate();
+  void StartModuleBlacklistCacheUpdate();
 
   // Invoked on the sequence that owns this instance when the cache is updated.
-  void OnModuleBlocklistCacheUpdated(const CacheUpdateResult& result);
+  void OnModuleBlacklistCacheUpdated(const CacheUpdateResult& result);
 
   ModuleDatabaseEventSource* const module_database_event_source_;
 
   const CertificateInfo& exe_certificate_info_;
   scoped_refptr<ModuleListFilter> module_list_filter_;
   const std::vector<third_party_dlls::PackedListModule>&
-      initial_blocklisted_modules_;
+      initial_blacklisted_modules_;
 
   OnCacheUpdatedCallback on_cache_updated_callback_;
 
-  // The sequence on which the module blocklist cache file is updated.
+  // The sequence on which the module blacklist cache file is updated.
   scoped_refptr<base::SequencedTaskRunner> background_sequence_;
 
-  // Temporarily holds newly blocklisted modules before they are added to the
-  // module blocklist cache.
-  std::vector<third_party_dlls::PackedListModule> newly_blocklisted_modules_;
+  // Temporarily holds newly blacklisted modules before they are added to the
+  // module blacklist cache.
+  std::vector<third_party_dlls::PackedListModule> newly_blacklisted_modules_;
 
   // Temporarily holds modules that were blocked from loading into the browser
   // until they are used to update the cache.
@@ -245,9 +245,9 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModuleBlocklistCacheUpdater> weak_ptr_factory_;
+  base::WeakPtrFactory<ModuleBlacklistCacheUpdater> weak_ptr_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUpdater);
+  DISALLOW_COPY_AND_ASSIGN(ModuleBlacklistCacheUpdater);
 };
 
-#endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLOCKLIST_CACHE_UPDATER_H_
+#endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLACKLIST_CACHE_UPDATER_H_

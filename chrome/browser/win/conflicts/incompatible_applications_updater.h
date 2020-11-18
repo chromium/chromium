@@ -31,7 +31,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   // incompatibility warning or not.
   //
   // Note that this enum is very similar to the ModuleBlockingDecision in
-  // ModuleBlocklistCacheUpdater. This is done so that it is easier to keep the
+  // ModuleBlacklistCacheUpdater. This is done so that it is easier to keep the
   // 2 features separate, as they can be independently enabled/disabled.
   enum ModuleWarningDecision {
     // No decision was taken yet for the module.
@@ -55,14 +55,14 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
     // Allowed because it is signed by Microsoft. The certificate is not
     // validated.
     kAllowedMicrosoft,
-    // Explicitly allowlisted by the Module List component.
-    kAllowedAllowlisted,
+    // Explicitly whitelisted by the Module List component.
+    kAllowedWhitelisted,
     // Module analysis was interrupted using DisableModuleAnalysis(). No warning
     // will be emitted for that module.
     kNotAnalyzed,
     // This module is already going to be blocked on next browser launch, so
     // don't warn about it.
-    kAddedToBlocklist,
+    kAddedToBlacklist,
     // Unwanted, but can't tie back to an installed application.
     kNoTiedApplication,
     // An incompatibility warning will be shown because of this module.
@@ -72,7 +72,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   struct IncompatibleApplication {
     IncompatibleApplication(
         InstalledApplications::ApplicationInfo info,
-        std::unique_ptr<chrome::conflicts::BlocklistAction> blocklist_action);
+        std::unique_ptr<chrome::conflicts::BlacklistAction> blacklist_action);
     ~IncompatibleApplication();
 
     // Needed for std::remove_if().
@@ -81,7 +81,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
         IncompatibleApplication&& incompatible_application);
 
     InstalledApplications::ApplicationInfo info;
-    std::unique_ptr<chrome::conflicts::BlocklistAction> blocklist_action;
+    std::unique_ptr<chrome::conflicts::BlacklistAction> blacklist_action;
   };
 
   // Creates an instance of the updater.
