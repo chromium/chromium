@@ -242,13 +242,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class StyleCascade;
   friend class css_longhand::Appearance;
   // Editing has to only reveal unvisited info.
-  friend class ApplyStyleCommand;
-  // Editing has to only reveal unvisited info.
   friend class EditingStyle;
-  // Needs to be able to see visited and unvisited colors for devtools.
-  friend class ComputedStyleCSSValueMapping;
-  // Sets color styles
-  friend class StyleBuilderFunctions;
   // Saves Border/Background information for later comparison.
   friend class CachedUAStyle;
   // Accesses visited and unvisited colors.
@@ -257,12 +251,10 @@ class ComputedStyle : public ComputedStyleBase,
   friend class StyleAdjuster;
   // Access to private SetFontInternal().
   friend class FontBuilder;
-
-  // FIXME: When we stop resolving currentColor at style time, these can be
-  // removed.
-  friend class CSSToStyleMap;
+  // Access to GetCurrentColor(). (drop-shadow() does not resolve 'currentcolor'
+  // at use-time.)
   friend class FilterOperationResolver;
-  friend class StyleResolverState;
+  // Access to SetInitialData() and GetCurrentColor().
   friend class StyleResolver;
 
  protected:
