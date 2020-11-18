@@ -5917,7 +5917,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames" units="%"
-    expires_after="2020-12-31">
+    expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -5938,7 +5938,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllAnimations"
-    units="%" expires_after="2021-05-09">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -5959,7 +5959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllInteractions"
-    units="%" expires_after="2021-05-09">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -5980,7 +5980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllSequences"
-    units="%" expires_after="2021-05-09">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -5999,7 +5999,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"
-    units="%" expires_after="2020-12-31">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6018,7 +6018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations"
-    units="%" expires_after="2020-12-31">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6038,7 +6038,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions"
-    units="%" expires_after="2020-12-31">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6057,7 +6057,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences"
-    units="%" expires_after="2021-03-28">
+    units="%" expires_after="2021-09-30">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
