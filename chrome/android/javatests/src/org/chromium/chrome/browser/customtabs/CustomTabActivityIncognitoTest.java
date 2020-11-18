@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -123,15 +122,6 @@ public class CustomTabActivityIncognitoTest {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             CustomTabToolbar toolbar = activity.findViewById(R.id.toolbar);
             return toolbar.getBackground().getColor();
-        });
-    }
-
-    private static boolean getTitleBarVisibility(CustomTabActivity activity)
-            throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CustomTabToolbar toolbar = activity.findViewById(R.id.toolbar);
-            TextView titleBar = toolbar.findViewById(R.id.title_bar);
-            return titleBar.getVisibility() == View.VISIBLE;
         });
     }
 
@@ -400,15 +390,4 @@ public class CustomTabActivityIncognitoTest {
         View bottomBarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.bottom_bar);
         assertTrue(bottomBarView == null);
     }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    public void ensureTitleBarIsVisibile() throws Exception {
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        intent.putExtra(
-                CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        CustomTabActivity activity = launchIncognitoCustomTab(intent);
-        Assert.assertTrue(getTitleBarVisibility(activity));
     }
-}
