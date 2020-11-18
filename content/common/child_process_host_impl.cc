@@ -167,10 +167,10 @@ void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
   child_process_->BindReceiver(std::move(receiver));
 }
 
-void ChildProcessHostImpl::RunService(
+void ChildProcessHostImpl::RunServiceDeprecated(
     const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
-  child_process_->RunService(service_name, std::move(receiver));
+    mojo::ScopedMessagePipeHandle service_pipe) {
+  child_process_->RunServiceDeprecated(service_name, std::move(service_pipe));
 }
 
 void ChildProcessHostImpl::ForceShutdown() {

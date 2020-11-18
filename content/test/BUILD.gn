@@ -229,8 +229,6 @@ static_library("test_support") {
     "../public/test/test_notification_tracker.h",
     "../public/test/test_renderer_host.cc",
     "../public/test/test_renderer_host.h",
-    "../public/test/test_service.cc",
-    "../public/test/test_service.h",
     "../public/test/test_storage_partition.cc",
     "../public/test/test_storage_partition.h",
     "../public/test/test_utils.cc",

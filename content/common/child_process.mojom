@@ -7,7 +7,6 @@ module content.mojom;
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
-import "services/service_manager/public/mojom/service.mojom";
 import "services/tracing/public/mojom/background_tracing_agent.mojom";
 
 // The primordial interface child processes use to push requests to their
@@ -50,8 +49,7 @@ interface ChildProcess {
   //
   // DEPRECATED: |BindServiceInterface()| should be used instead. This will be
   // removed soon.
-  RunService(string service_name,
-             pending_receiver<service_manager.mojom.Service> receiver);
+  RunServiceDeprecated(string service_name, handle<message_pipe> service_pipe);
 
   // Requests that the process bind a receiving pipe targeting the service
   // interface named by |receiver|.

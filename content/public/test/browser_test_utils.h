@@ -1776,10 +1776,6 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url);
 // cookies flushed to disk.
 void EnsureCookiesFlushed(BrowserContext* browser_context);
 
-// Returns true if there is a valid process for |process_group_name|. Must be
-// called on the IO thread.
-bool HasValidProcessForProcessGroup(const std::string& process_group_name);
-
 // Performs a simple auto-resize flow and ensures that the embedder gets a
 // single response messages back from the guest, with the expected values.
 bool TestGuestAutoresize(RenderProcessHost* embedder_rph,

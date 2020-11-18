@@ -90,9 +90,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
     virtual void BindInterface(
         const std::string& interface_name,
         mojo::ScopedMessagePipeHandle interface_pipe) = 0;
-    virtual void RunService(
-        const std::string& service_name,
-        mojo::PendingReceiver<service_manager::mojom::Service> receiver) = 0;
 #if defined(USE_OZONE)
     virtual void TerminateGpuProcess(const std::string& message) = 0;
 #endif
@@ -179,9 +176,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
 
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe);
-  void RunService(
-      const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 
   mojom::GpuService* gpu_service();
 

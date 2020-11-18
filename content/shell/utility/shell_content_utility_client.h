@@ -9,7 +9,6 @@
 #include "content/public/test/audio_service_test_helper.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -20,9 +19,6 @@ class ShellContentUtilityClient : public ContentUtilityClient {
 
   // ContentUtilityClient:
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
-  bool HandleServiceRequest(
-      const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver) override;
   void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;

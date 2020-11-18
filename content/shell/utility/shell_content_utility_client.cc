@@ -22,7 +22,6 @@
 #include "components/services/storage/test_api/test_api.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_service.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/utility/utility_thread.h"
 #include "content/shell/common/power_monitor_test_impl.h"
@@ -151,25 +150,6 @@ void ShellContentUtilityClient::ExposeInterfacesToBrowser(
         base::ThreadTaskRunnerHandle::Get());
   }
 #endif
-}
-
-bool ShellContentUtilityClient::HandleServiceRequest(
-    const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
-  std::unique_ptr<service_manager::Service> service;
-  if (service_name == kTestServiceUrl) {
-    service = std::make_unique<TestService>(std::move(receiver));
-  }
-
-  if (service) {
-    service_manager::Service::RunAsyncUntilTermination(
-        std::move(service), base::BindOnce([] {
-          content::UtilityThread::Get()->ReleaseProcess();
-        }));
-    return true;
-  }
-
-  return false;
 }
 
 void ShellContentUtilityClient::RegisterIOThreadServices(

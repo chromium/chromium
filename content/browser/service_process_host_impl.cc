@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -208,6 +209,27 @@ void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&LaunchServiceProcessOnIOThread,
                                 std::move(receiver), std::move(options)));
+}
+
+void LaunchUtilityProcessServiceDeprecated(
+    const std::string& service_name,
+    const base::string16& display_name,
+    sandbox::policy::SandboxType sandbox_type,
+    mojo::ScopedMessagePipeHandle service_pipe,
+    base::OnceCallback<void(base::ProcessId)> callback) {
+  UtilityProcessHost* host = new UtilityProcessHost();
+  host->SetName(display_name);
+  host->SetMetricsName(service_name);
+  host->SetSandboxType(sandbox_type);
+  host->Start();
+  host->RunServiceDeprecated(
+      service_name, std::move(service_pipe),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::ProcessId)> callback,
+             const base::Optional<base::ProcessId> pid) {
+            std::move(callback).Run(pid.value_or(base::kNullProcessId));
+          },
+          std::move(callback)));
 }
 
 }  // namespace content

@@ -106,16 +106,17 @@ bool UtilityProcessHost::Start() {
   return StartProcess();
 }
 
-void UtilityProcessHost::RunService(
+void UtilityProcessHost::RunServiceDeprecated(
     const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver,
-    service_manager::Service::CreatePackagedServiceInstanceCallback callback) {
+    mojo::ScopedMessagePipeHandle service_pipe,
+    RunServiceDeprecatedCallback callback) {
   if (launch_state_ == LaunchState::kLaunchFailed) {
     std::move(callback).Run(base::nullopt);
     return;
   }
 
-  process_->GetHost()->RunService(service_name, std::move(receiver));
+  process_->GetHost()->RunServiceDeprecated(service_name,
+                                            std::move(service_pipe));
   if (launch_state_ == LaunchState::kLaunchComplete) {
     std::move(callback).Run(process_->GetProcess().Pid());
   } else {
@@ -130,11 +131,6 @@ void UtilityProcessHost::SetMetricsName(const std::string& metrics_name) {
 
 void UtilityProcessHost::SetName(const base::string16& name) {
   name_ = name;
-}
-
-void UtilityProcessHost::SetServiceIdentity(
-    const service_manager::Identity& identity) {
-  service_identity_ = identity;
 }
 
 void UtilityProcessHost::SetExtraCommandLineSwitches(
@@ -362,9 +358,7 @@ void UtilityProcessHost::OnProcessCrashed(int exit_code) {
 }
 
 base::Optional<std::string> UtilityProcessHost::GetServiceName() {
-  if (!service_identity_)
-    return metrics_name_;
-  return service_identity_->name();
+  return metrics_name_;
 }
 
 }  // namespace content

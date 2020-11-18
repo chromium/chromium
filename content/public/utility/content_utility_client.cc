@@ -10,9 +10,9 @@ bool ContentUtilityClient::OnMessageReceived(const IPC::Message& message) {
   return false;
 }
 
-bool ContentUtilityClient::HandleServiceRequest(
+bool ContentUtilityClient::HandleServiceRequestDeprecated(
     const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+    mojo::ScopedMessagePipeHandle service_pipe) {
   return false;
 }
 

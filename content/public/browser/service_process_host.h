@@ -10,10 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
@@ -157,6 +159,16 @@ class CONTENT_EXPORT ServiceProcessHost {
   // to a Remote of the same interface type.
   static void Launch(mojo::GenericPendingReceiver receiver, Options options);
 };
+
+// DEPRECATED. DO NOT USE THIS. This is a helper for any remaining service
+// launching code which uses an older code path to launch services in a utility
+// process. All new code must use ServiceProcessHost instead of this API.
+void CONTENT_EXPORT LaunchUtilityProcessServiceDeprecated(
+    const std::string& service_name,
+    const base::string16& display_name,
+    sandbox::policy::SandboxType sandbox_type,
+    mojo::ScopedMessagePipeHandle service_pipe,
+    base::OnceCallback<void(base::ProcessId)> callback);
 
 }  // namespace content
 

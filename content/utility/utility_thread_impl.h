@@ -57,16 +57,16 @@ class UtilityThreadImpl : public UtilityThread,
 
   // ChildThreadImpl:
   bool OnControlMessageReceived(const IPC::Message& msg) override;
-  void RunService(
+  void RunServiceDeprecated(
       const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver) override;
+      mojo::ScopedMessagePipeHandle service_pipe) override;
 
   // blink::Platform implementation if needed.
   std::unique_ptr<blink::Platform> blink_platform_impl_;
 
-  // Helper to handle incoming RunService calls. Note that this is deprecated
-  // and only remains in support of some embedders which haven't migrated away
-  // from Service Manager-based services yet.
+  // Helper to handle incoming RunServiceDeprecated calls. Note that this is
+  // deprecated and only remains in support of some embedders which haven't
+  // migrated away from Service Manager-based services yet.
   std::unique_ptr<UtilityServiceFactory> service_factory_;
 
   // The ServiceFactory used to handle incoming service requests from a

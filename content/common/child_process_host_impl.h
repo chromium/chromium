@@ -75,9 +75,9 @@ class CONTENT_EXPORT ChildProcessHostImpl
   bool IsChannelOpening() override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
-  void RunService(
+  void RunServiceDeprecated(
       const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver) override;
+      mojo::ScopedMessagePipeHandle service_pipe) override;
 
   base::Process& peer_process() { return peer_process_; }
   mojom::ChildProcess* child_process() { return child_process_.get(); }

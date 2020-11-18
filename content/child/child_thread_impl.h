@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
@@ -130,9 +130,8 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
     return child_process_host_;
   }
 
-  virtual void RunService(
-      const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+  virtual void RunServiceDeprecated(const std::string& service_name,
+                                    mojo::ScopedMessagePipeHandle service_pipe);
 
   virtual void BindServiceInterface(mojo::GenericPendingReceiver receiver);
 

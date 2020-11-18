@@ -9,5 +9,19 @@ namespace shell {
 
 CastContentUtilityClient::CastContentUtilityClient() = default;
 
+bool CastContentUtilityClient::HandleServiceRequestDeprecated(
+    const std::string& service_name,
+    mojo::ScopedMessagePipeHandle service_pipe) {
+  return HandleServiceRequest(
+      service_name, mojo::PendingReceiver<service_manager::mojom::Service>(
+                        std::move(service_pipe)));
+}
+
+bool CastContentUtilityClient::HandleServiceRequest(
+    const std::string& service_name,
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+  return false;
+}
+
 }  // namespace shell
 }  // namespace chromecast

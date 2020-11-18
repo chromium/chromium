@@ -26,11 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "content/browser/browser_main_loop.h"
-#include "content/browser/child_process_launcher.h"
-#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/system_connector_impl.h"
-#include "content/browser/utility_process_host.h"
 #include "content/common/service_manager/service_manager_connection_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -67,9 +63,6 @@ namespace {
 
 base::LazyInstance<std::unique_ptr<service_manager::Connector>>::Leaky
     g_io_thread_connector = LAZY_INSTANCE_INITIALIZER;
-
-base::LazyInstance<std::map<std::string, base::WeakPtr<UtilityProcessHost>>>::
-    Leaky g_active_process_groups;
 
 const service_manager::Manifest& GetContentBrowserManifest() {
   static base::NoDestructor<service_manager::Manifest> manifest{
@@ -109,9 +102,7 @@ service_manager::Manifest GetContentSystemManifest() {
 void DestroyConnectorOnIOThread() { g_io_thread_connector.Get().reset(); }
 
 // A ServiceProcessHost implementation which delegates to Content-managed
-// processes, either via a new UtilityProcessHost to launch new service
-// processes, or the existing GpuProcessHost to run service instances in the GPU
-// process.
+// processes via a new UtilityProcessHost.
 class ContentChildServiceProcessHost
     : public service_manager::ServiceProcessHost {
  public:
@@ -124,24 +115,12 @@ class ContentChildServiceProcessHost
       sandbox::policy::SandboxType sandbox_type,
       const base::string16& display_name,
       LaunchCallback callback) override {
-    mojo::PendingRemote<service_manager::mojom::Service> remote;
-    auto receiver = remote.InitWithNewPipeAndPassReceiver();
-
     // Start a new process for this service.
-    UtilityProcessHost* process_host = new UtilityProcessHost();
-    process_host->SetName(display_name);
-    process_host->SetMetricsName(identity.name());
-    process_host->SetServiceIdentity(identity);
-    process_host->SetSandboxType(sandbox_type);
-    process_host->Start();
-    process_host->RunService(
-        identity.name(), std::move(receiver),
-        base::BindOnce(
-            [](LaunchCallback callback,
-               const base::Optional<base::ProcessId> pid) {
-              std::move(callback).Run(pid.value_or(base::kNullProcessId));
-            },
-            std::move(callback)));
+    mojo::PendingRemote<service_manager::mojom::Service> remote;
+    LaunchUtilityProcessServiceDeprecated(
+        identity.name(), display_name, sandbox_type,
+        remote.InitWithNewPipeAndPassReceiver().PassPipe(),
+        std::move(callback));
     return remote;
   }
 
@@ -377,15 +356,6 @@ void ServiceManagerContext::ShutDown() {
 service_manager::Connector* ServiceManagerContext::GetConnectorForIOThread() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
   return g_io_thread_connector.Get().get();
-}
-
-// static
-bool ServiceManagerContext::HasValidProcessForProcessGroup(
-    const std::string& process_group_name) {
-  auto iter = g_active_process_groups.Get().find(process_group_name);
-  if (iter == g_active_process_groups.Get().end() || !iter->second)
-    return false;
-  return iter->second->GetData().GetProcess().IsValid();
 }
 
 void ServiceManagerContext::RunServiceInstance(

@@ -13,7 +13,6 @@
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
 #include "content/utility/utility_thread_impl.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace content {
 
@@ -23,7 +22,7 @@ UtilityServiceFactory::~UtilityServiceFactory() = default;
 
 void UtilityServiceFactory::RunService(
     const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+    mojo::ScopedMessagePipeHandle service_pipe) {
   auto* trace_log = base::trace_event::TraceLog::GetInstance();
   if (trace_log->IsProcessNameEmpty())
     trace_log->set_process_name("Service: " + service_name);
@@ -32,10 +31,8 @@ void UtilityServiceFactory::RunService(
       "service-name", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(service_name_crash_key, service_name);
 
-  std::unique_ptr<service_manager::Service> service;
-
-  if (GetContentClient()->utility()->HandleServiceRequest(
-          service_name, std::move(receiver))) {
+  if (GetContentClient()->utility()->HandleServiceRequestDeprecated(
+          service_name, std::move(service_pipe))) {
     return;
   }
 

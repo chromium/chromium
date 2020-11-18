@@ -254,11 +254,11 @@ bool UtilityThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   return GetContentClient()->utility()->OnMessageReceived(msg);
 }
 
-void UtilityThreadImpl::RunService(
+void UtilityThreadImpl::RunServiceDeprecated(
     const std::string& service_name,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+    mojo::ScopedMessagePipeHandle service_pipe) {
   DCHECK(service_factory_);
-  service_factory_->RunService(service_name, std::move(receiver));
+  service_factory_->RunService(service_name, std::move(service_pipe));
 }
 
 }  // namespace content
