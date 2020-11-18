@@ -3232,14 +3232,23 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
     if (screen && screen->GetDisplayWithDisplayId(display_id, &display)) {
-      const gfx::Rect& current_bounds = frame_->GetWindowBoundsInScreen();
+      const gfx::Rect current_bounds = frame_->GetWindowBoundsInScreen();
+      const bool is_maximized = frame_->IsMaximized();
       restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
-          [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds) {
-            if (view && view->frame())
+          [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
+             bool maximize) {
+            if (view && view->frame()) {
               view->frame()->SetBounds(bounds);
+              if (maximize)
+                view->frame()->Maximize();
+            }
           },
-          weak_ptr_factory_.GetWeakPtr(), current_bounds);
-      frame_->SetBounds({display.work_area().origin(), current_bounds.size()});
+          weak_ptr_factory_.GetWeakPtr(), current_bounds, is_maximized);
+      // Maximized windows must be restored to actually move between displays.
+      if (is_maximized)
+        frame_->Restore();
+      frame_->SetBounds({display.work_area().origin(),
+                         frame_->GetWindowBoundsInScreen().size()});
     }
   }
 
