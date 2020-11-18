@@ -7687,6 +7687,24 @@
             ]
         }
     ],
+    "WebRTC-TaskQueuePacer": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux",
+                "ios",
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-VP8-Postproc-Config": [
         {
             "platforms": [
