@@ -3051,6 +3051,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
+    expires_after="M95">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time between a conversion and its reporting. This is emitted
+    whenever a conversion report is sent.
+  </summary>
+</histogram>
+
 <histogram name="CopylessPaste.CacheHit" enum="CopylessCacheHit"
     expires_after="2020-03-01">
   <owner>wychen@chromium.org</owner>

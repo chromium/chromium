@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* report_time */,
-      1 /* conversion_id */);
+      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
+      base::Time::Now() /* report_time */, 1 /* conversion_id */);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 
@@ -243,8 +243,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* report_time */,
-      1 /* conversion_id */);
+      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
+      base::Time::Now() /* report_time */, 1 /* conversion_id */);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 
@@ -283,8 +283,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* report_time */,
-      1 /* conversion_id */);
+      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
+      base::Time::Now() /* report_time */, 1 /* conversion_id */);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -56,13 +57,17 @@ void LogMetricsOnReportSend(ConversionReport* report) {
   // time since the report was originally scheduled, for reports at startup
   // whose |report_time| changes due to additional startup delay.
   base::Time now = base::Time::Now();
-  base::TimeDelta delay = (now - report->report_time) + report->extra_delay;
-  base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay", delay,
+  base::TimeDelta time_since_original_report_time =
+      (now - report->report_time) + report->extra_delay;
+  base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay",
+                                time_since_original_report_time,
                                 base::TimeDelta::FromSeconds(1),
                                 base::TimeDelta::FromDays(7), /*buckets=*/100);
 
-  // TODO(csharrison): We should thread the conversion time alongside the
-  // ConversionReport to log the effective time since conversion.
+  base::TimeDelta time_from_conversion_to_report_send =
+      report->report_time - report->conversion_time;
+  UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
+                            time_from_conversion_to_report_send.InHours());
 }
 
 GURL GetReportUrl(const content::ConversionReport& report) {

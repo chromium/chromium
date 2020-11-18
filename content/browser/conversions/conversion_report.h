@@ -23,6 +23,7 @@ struct CONTENT_EXPORT ConversionReport {
   // The conversion_id may not be set for a conversion report.
   ConversionReport(const StorableImpression& impression,
                    const std::string& conversion_data,
+                   base::Time conversion_time,
                    base::Time report_time,
                    const base::Optional<int64_t>& conversion_id);
   ConversionReport(const ConversionReport& other);
@@ -34,6 +35,9 @@ struct CONTENT_EXPORT ConversionReport {
   // Data provided at reporting time by the reporting origin. String
   // representing a valid hexadecimal number.
   const std::string conversion_data;
+
+  // The time the conversion occurred.
+  const base::Time conversion_time;
 
   // The time this conversion report should be sent.
   base::Time report_time;

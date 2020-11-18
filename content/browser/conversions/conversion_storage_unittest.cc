@@ -64,10 +64,11 @@ class ConversionStorageTest : public testing::Test {
   ConversionReport GetExpectedReport(const StorableImpression& impression,
                                      const StorableConversion& conversion,
                                      int attribution_credit = 0) {
-    ConversionReport report(
-        impression, conversion.conversion_data(),
-        clock_.Now() + base::TimeDelta::FromMilliseconds(kReportTime),
-        base::nullopt /* conversion_id */);
+    ConversionReport report(impression, conversion.conversion_data(),
+                            /*conversion_time=*/clock_.Now(),
+                            /*report_time=*/clock_.Now() +
+                                base::TimeDelta::FromMilliseconds(kReportTime),
+                            base::nullopt /* conversion_id */);
     report.attribution_credit = attribution_credit;
     return report;
   }

@@ -179,9 +179,11 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   auto conversion = DefaultConversion();
   conversion_manager_->HandleConversion(conversion);
 
-  ConversionReport expected_report(impression, conversion.conversion_data(),
-                                   clock().Now() + kFirstReportingWindow,
-                                   base::nullopt /* conversion_id */);
+  ConversionReport expected_report(
+      impression, conversion.conversion_data(),
+      /*conversion_time=*/clock().Now(),
+      /*report_time=*/clock().Now() + kFirstReportingWindow,
+      base::nullopt /* conversion_id */);
   expected_report.attribution_credit = 100;
 
   base::RunLoop run_loop;

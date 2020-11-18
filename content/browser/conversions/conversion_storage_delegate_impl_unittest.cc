@@ -21,9 +21,10 @@ constexpr base::TimeDelta kDefaultExpiry = base::TimeDelta::FromDays(30);
 ConversionReport GetReport(base::Time impression_time,
                            base::Time conversion_time,
                            base::TimeDelta expiry = kDefaultExpiry) {
+  base::Time report_time = conversion_time;
   return ConversionReport(
       ImpressionBuilder(impression_time).SetExpiry(expiry).Build(),
-      /*conversion_data=*/"123", conversion_time,
+      /*conversion_data=*/"123", conversion_time, report_time,
       /*conversion_id=*/base::nullopt);
 }
 

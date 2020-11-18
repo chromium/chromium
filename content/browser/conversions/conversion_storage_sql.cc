@@ -199,7 +199,9 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
                                   impression_time, expiry_time, impression_id);
 
     ConversionReport report(std::move(impression), conversion.conversion_data(),
-                            current_time, /*conversion_id=*/base::nullopt);
+                            /*conversion_time=*/current_time,
+                            /*report_time=*/current_time,
+                            /*conversion_id=*/base::nullopt);
     new_reports.push_back(std::move(report));
   }
 
@@ -279,10 +281,10 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   // Get all entries in the conversions table with a |report_time| less than
   // |expired_at| and their matching information from the impression table.
   const char kGetExpiredConversionsSql[] =
-      "SELECT C.conversion_data, C.attribution_credit, C.report_time, "
-      "C.conversion_id, I.impression_origin, I.conversion_origin, "
-      "I.reporting_origin, I.impression_data, I.impression_time, "
-      "I.expiry_time, I.impression_id "
+      "SELECT C.conversion_data, C.attribution_credit, C.conversion_time, "
+      "C.report_time, C.conversion_id, I.impression_origin, "
+      "I.conversion_origin, I.reporting_origin, I.impression_data, "
+      "I.impression_time, I.expiry_time, I.impression_id "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.report_time <= ?";
   sql::Statement statement(
@@ -293,17 +295,18 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   while (statement.Step()) {
     std::string conversion_data = statement.ColumnString(0);
     int attribution_credit = statement.ColumnInt(1);
-    base::Time report_time = DeserializeTime(statement.ColumnInt64(2));
-    int64_t conversion_id = statement.ColumnInt64(3);
+    base::Time conversion_time = DeserializeTime(statement.ColumnInt64(2));
+    base::Time report_time = DeserializeTime(statement.ColumnInt64(3));
+    int64_t conversion_id = statement.ColumnInt64(4);
     url::Origin impression_origin =
-        DeserializeOrigin(statement.ColumnString(4));
-    url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(5));
-    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(6));
-    std::string impression_data = statement.ColumnString(7);
-    base::Time impression_time = DeserializeTime(statement.ColumnInt64(8));
-    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(9));
-    int64_t impression_id = statement.ColumnInt64(10);
+    url::Origin conversion_origin =
+        DeserializeOrigin(statement.ColumnString(6));
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(7));
+    std::string impression_data = statement.ColumnString(8);
+    base::Time impression_time = DeserializeTime(statement.ColumnInt64(9));
+    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(10));
+    int64_t impression_id = statement.ColumnInt64(11);
 
     // Ensure origins are valid before continuing. This could happen if there is
     // database corruption.
@@ -320,8 +323,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
                                   conversion_origin, reporting_origin,
                                   impression_time, expiry_time, impression_id);
 
-    ConversionReport report(std::move(impression), conversion_data, report_time,
-                            conversion_id);
+    ConversionReport report(std::move(impression), conversion_data,
+                            conversion_time, report_time, conversion_id);
     report.attribution_credit = attribution_credit;
 
     conversions.push_back(std::move(report));
