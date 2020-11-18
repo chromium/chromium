@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS fetch() in Worker should be intercepted after the client is claimed.
+PASS fetch() in nested Worker should be intercepted after the client is claimed.
+FAIL fetch() in blob URL Worker should be intercepted after the client is claimed. assert_equals: fetch() in the worker should be intercepted. expected "Intercepted!" but got "a simple text file\n"
+Harness: the test ran to completion.
+
