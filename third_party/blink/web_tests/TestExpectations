@@ -5841,9 +5841,6 @@ crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/
 crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
 crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ Pass Failure Timeout ]
 
-# TODO(robertphillips) - Remove after Skia roll and rebaseline
-crbug.com/1149931 virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Pass Failure ]
-
 # TODO(michaelludwig) - Remove after Skia roll and rebaseline
 crbug.com/1135225 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Pass Failure ]
 # TODO(michaelludwig) - Remove after Skia roll and rebaseline
