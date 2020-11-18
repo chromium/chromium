@@ -1804,9 +1804,7 @@ void AutofillManager::FillOrPreviewDataModelForm(
     // is empty and its initial value (= cached value) was empty as well. A
     // similar check is done in ForEachMatchingFormFieldCommon(), which
     // frequently has false negatives.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillSkipFillingFieldsWithChangedValues) &&
-        ((form.fields[i].properties_mask & kUserTyped)) &&
+    if ((form.fields[i].properties_mask & kUserTyped) &&
         (!form.fields[i].value.empty() ||
          !form_structure->field(i)->value.empty()) &&
         !cached_field->SameFieldAs(field)) {

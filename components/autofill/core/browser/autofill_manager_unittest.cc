@@ -3806,14 +3806,6 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPartlyAutofilledForm) {
 
 // Test that we correctly fill a previously partly auto-filled form.
 TEST_P(AutofillManagerStructuredProfileTest, FillPartlyManuallyFilledForm) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled
-      {features::kAutofillSkipFillingFieldsWithChangedValues},
-      // Disabled
-      // We want to query the legacy server rather than the API server.
-      {});
-
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);

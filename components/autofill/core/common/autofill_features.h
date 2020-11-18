@@ -64,7 +64,6 @@ extern const base::Feature kAutofillSectionUponRedundantNameInfo;
 extern const base::Feature kAutofillServerCommunication;
 extern const base::Feature kAutofillShowTypePredictions;
 extern const base::Feature kAutofillSkipComparingInferredLabels;
-extern const base::Feature kAutofillSkipFillingFieldsWithChangedValues;
 extern const base::Feature kAutofillTokenPrefixMatching;
 extern const base::Feature kAutofillUploadThrottling;
 extern const base::Feature kAutofillUseAlternativeStateNameMap;
