@@ -53,11 +53,11 @@ class CORE_EXPORT PageWidgetEventHandler {
       const WebMouseEvent&,
       const std::vector<std::unique_ptr<WebInputEvent>>&,
       const std::vector<std::unique_ptr<WebInputEvent>>&);
-  virtual void HandleMouseLeave(LocalFrame& main_frame, const WebMouseEvent&);
-  virtual void HandleMouseDown(LocalFrame& main_frame, const WebMouseEvent&);
-  virtual WebInputEventResult HandleMouseUp(LocalFrame& main_frame,
+  virtual void HandleMouseLeave(LocalFrame& local_root, const WebMouseEvent&);
+  virtual void HandleMouseDown(LocalFrame& local_root, const WebMouseEvent&);
+  virtual WebInputEventResult HandleMouseUp(LocalFrame& local_root,
                                             const WebMouseEvent&);
-  virtual WebInputEventResult HandleMouseWheel(LocalFrame& main_frame,
+  virtual WebInputEventResult HandleMouseWheel(LocalFrame& local_root,
                                                const WebMouseWheelEvent&);
   virtual WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) = 0;
   virtual WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) = 0;

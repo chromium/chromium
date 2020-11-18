@@ -380,13 +380,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
   }
 }
 
-void WebFrameWidgetImpl::HandleMouseLeave(LocalFrame& main_frame,
-                                          const WebMouseEvent& event) {
-  // FIXME: WebWidget doesn't have the method below.
-  // m_client->setMouseOverURL(WebURL());
-  PageWidgetEventHandler::HandleMouseLeave(main_frame, event);
-}
-
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   DCHECK(Client());

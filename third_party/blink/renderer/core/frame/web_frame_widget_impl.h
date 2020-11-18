@@ -56,10 +56,8 @@ class Layer;
 
 namespace blink {
 class Element;
-class LocalFrame;
 class PaintLayerCompositor;
 class WebFrameWidget;
-class WebMouseEvent;
 class WebFrameWidgetImpl;
 
 // Implements WebFrameWidget for a child local root frame (OOPIF). This object
@@ -115,7 +113,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   friend class WebFrameWidget;  // For WebFrameWidget::create.
 
   // PageWidgetEventHandler functions
-  void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
 
   // Finds the parameters required for scrolling the focused editable |element|

@@ -768,6 +768,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // PageWidgetEventHandler methods:
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
   void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
+  void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame&,
                                        const WebMouseWheelEvent&) override;

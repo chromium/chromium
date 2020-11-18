@@ -211,60 +211,60 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
 // Default handlers for PageWidgetEventHandler
 
 void PageWidgetEventHandler::HandleMouseMove(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebMouseEvent& event,
     const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events,
     const std::vector<std::unique_ptr<WebInputEvent>>& predicted_events) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMouseMoveEvent(
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMouseMoveEvent(
       transformed_event,
-      TransformWebMouseEventVector(main_frame.View(), coalesced_events),
-      TransformWebMouseEventVector(main_frame.View(), predicted_events));
+      TransformWebMouseEventVector(local_root.View(), coalesced_events),
+      TransformWebMouseEventVector(local_root.View(), predicted_events));
 }
 
-void PageWidgetEventHandler::HandleMouseLeave(LocalFrame& main_frame,
+void PageWidgetEventHandler::HandleMouseLeave(LocalFrame& local_root,
                                               const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMouseLeaveEvent(transformed_event);
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMouseLeaveEvent(transformed_event);
 }
 
-void PageWidgetEventHandler::HandleMouseDown(LocalFrame& main_frame,
+void PageWidgetEventHandler::HandleMouseDown(LocalFrame& local_root,
                                              const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMousePressEvent(transformed_event);
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMousePressEvent(transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandleMouseUp(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  return main_frame.GetEventHandler().HandleMouseReleaseEvent(
+      TransformWebMouseEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandleMouseReleaseEvent(
       transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandleMouseWheel(
-    LocalFrame& frame,
+    LocalFrame& local_root,
     const WebMouseWheelEvent& event) {
   WebMouseWheelEvent transformed_event =
-      TransformWebMouseWheelEvent(frame.View(), event);
-  return frame.GetEventHandler().HandleWheelEvent(transformed_event);
+      TransformWebMouseWheelEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandleWheelEvent(transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandlePointerEvent(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebPointerEvent& event,
     const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events,
     const std::vector<std::unique_ptr<WebInputEvent>>& predicted_events) {
   WebPointerEvent transformed_event =
-      TransformWebPointerEvent(main_frame.View(), event);
-  return main_frame.GetEventHandler().HandlePointerEvent(
+      TransformWebPointerEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandlePointerEvent(
       transformed_event,
-      TransformWebPointerEventVector(main_frame.View(), coalesced_events),
-      TransformWebPointerEventVector(main_frame.View(), predicted_events));
+      TransformWebPointerEventVector(local_root.View(), coalesced_events),
+      TransformWebPointerEventVector(local_root.View(), predicted_events));
 }
 
 }  // namespace blink

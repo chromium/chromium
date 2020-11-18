@@ -124,12 +124,6 @@ void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
   web_view_->DidChangeRootLayer(!!root_layer);
 }
 
-void WebViewFrameWidget::HandleMouseLeave(LocalFrame& main_frame,
-                                          const WebMouseEvent& event) {
-  web_view_->SetMouseOverURL(WebURL());
-  PageWidgetEventHandler::HandleMouseLeave(main_frame, event);
-}
-
 WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     const WebGestureEvent& event) {
   if (!web_view_->Client() || !web_view_->Client()->CanHandleGestureEvent()) {

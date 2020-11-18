@@ -623,7 +623,7 @@ WebInputEventResult WebFrameWidgetBase::HandleKeyEvent(
   return WebInputEventResult::kNotHandled;
 }
 
-void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
+void WebFrameWidgetBase::HandleMouseDown(LocalFrame& local_root,
                                          const WebMouseEvent& event) {
   WebViewImpl* view_impl = View();
   // If there is a popup open, close it as the user is clicking on the page
@@ -659,7 +659,7 @@ void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
     }
   }
 
-  PageWidgetEventHandler::HandleMouseDown(main_frame, event);
+  PageWidgetEventHandler::HandleMouseDown(local_root, event);
   // PageWidgetEventHandler may have detached the frame.
   if (!LocalRootImpl())
     return;
@@ -683,6 +683,13 @@ void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
       MouseContextMenu(event);
 #endif
   }
+}
+
+void WebFrameWidgetBase::HandleMouseLeave(LocalFrame& local_root,
+                                          const WebMouseEvent& event) {
+  View()->SetMouseOverURL(WebURL());
+  PageWidgetEventHandler::HandleMouseLeave(local_root, event);
+  // PageWidgetEventHandler may have detached the frame.
 }
 
 void WebFrameWidgetBase::MouseContextMenu(const WebMouseEvent& event) {
@@ -719,10 +726,10 @@ void WebFrameWidgetBase::MouseContextMenu(const WebMouseEvent& event) {
 }
 
 WebInputEventResult WebFrameWidgetBase::HandleMouseUp(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebMouseEvent& event) {
   WebInputEventResult result =
-      PageWidgetEventHandler::HandleMouseUp(main_frame, event);
+      PageWidgetEventHandler::HandleMouseUp(local_root, event);
   // PageWidgetEventHandler may have detached the frame.
   if (!LocalRootImpl())
     return result;
