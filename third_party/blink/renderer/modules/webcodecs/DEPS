@@ -19,6 +19,7 @@ include_rules = [
     "+ui/gfx/color_space.h",
     "+ui/gfx/geometry/rect.h",
     "+ui/gfx/geometry/size.h",
+    "+ui/gfx/gpu_memory_buffer.h",
 ]
 
 specific_include_rules = {
