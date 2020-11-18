@@ -895,11 +895,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [self.commandHandler openAccountSettings];
       break;
     case ManageGoogleAccountItemType:
-      if (base::FeatureList::IsEnabled(kEnableMyGoogle)) {
-        [self.commandHandler openManageGoogleAccount];
-      } else {
-        [self.commandHandler openManageGoogleAccountWebPage];
-      }
+      [self.commandHandler openManageGoogleAccount];
       break;
     case SignInItemType:
       [self.commandHandler showSignIn];

@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -23,8 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
@@ -34,12 +31,6 @@ namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
 const NSTimeInterval kSyncOperationTimeout = 10.0;
-
-// Returns a matcher for a button that matches the userEmail in the given
-// |fakeIdentity|.
-id<GREYMatcher> ButtonWithFakeIdentity(FakeChromeIdentity* fakeIdentity) {
-  return ButtonWithAccessibilityLabel(fakeIdentity.userEmail);
-}
 
 // Returns a matcher for when there are no bookmarks saved.
 id<GREYMatcher> NoBookmarksLabel() {
@@ -130,16 +121,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  // Remove |fakeIdentity2| from the device.
-  if (base::FeatureList::IsEnabled(kEnableMyGoogle)) {
-    [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
-  } else {
-    [[EarlGrey selectElementWithMatcher:ButtonWithFakeIdentity(fakeIdentity2)]
-        performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                            @"Remove account")]
-        performAction:grey_tap()];
-  }
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
 
   // Check that |fakeIdentity2| isn't available anymore on the Account Settings.
   [[EarlGrey
@@ -163,16 +145,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  // Remove |fakeIdentity| from the device.
-  if (base::FeatureList::IsEnabled(kEnableMyGoogle)) {
-    [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
-  } else {
-    [[EarlGrey selectElementWithMatcher:ButtonWithFakeIdentity(fakeIdentity)]
-        performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                            @"Remove account")]
-        performAction:grey_tap()];
-  }
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
+
   // Check that the user is signed out and the Main Settings screen is shown.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       assertWithMatcher:grey_sufficientlyVisible()];

@@ -301,16 +301,6 @@ using signin_metrics::PromoAction;
           self.googleServicesSettingsViewController, /*animated=*/YES);
 }
 
-- (void)openManageGoogleAccountWebPage {
-  GURL url = google_util::AppendGoogleLocaleParam(
-      GURL(kManageYourGoogleAccountURL),
-      GetApplicationContext()->GetApplicationLocale());
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
-}
-
 #pragma mark - GoogleServicesSettingsViewControllerPresentationDelegate
 
 - (void)googleServicesSettingsViewControllerDidRemove:

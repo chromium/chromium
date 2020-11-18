@@ -20,10 +20,6 @@
 // Opens the "Manage Your Google Account" view.
 - (void)openManageGoogleAccount;
 
-// Opens the "Manage Your Google Account" web page.
-// TODO(crbug.com/1043080): Remove web page API once MyGoogle UI is launched.
-- (void)openManageGoogleAccountWebPage;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_COMMAND_HANDLER_H_
