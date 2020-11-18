@@ -236,17 +236,19 @@ uint32_t GetConstraintAdjustment(MenuType menu_type, bool stable) {
 
   switch (menu_type) {
     case MenuType::TYPE_RIGHT_CLICK:
-      constraint = WlConstraintAdjustment::SlideX |
-                   WlConstraintAdjustment::SlideY |
-                   WlConstraintAdjustment::FlipY;
+      constraint =
+          WlConstraintAdjustment::SlideX | WlConstraintAdjustment::SlideY |
+          WlConstraintAdjustment::FlipY | WlConstraintAdjustment::ResizeY;
       break;
     case MenuType::TYPE_3DOT_PARENT_MENU:
-      constraint =
-          WlConstraintAdjustment::SlideX | WlConstraintAdjustment::FlipY;
+      constraint = WlConstraintAdjustment::SlideX |
+                   WlConstraintAdjustment::FlipY |
+                   WlConstraintAdjustment::ResizeY;
       break;
     case MenuType::TYPE_3DOT_CHILD_MENU:
-      constraint =
-          WlConstraintAdjustment::SlideY | WlConstraintAdjustment::FlipX;
+      constraint = WlConstraintAdjustment::SlideY |
+                   WlConstraintAdjustment::FlipX |
+                   WlConstraintAdjustment::ResizeY;
       break;
     case MenuType::TYPE_UNKNOWN:
       NOTREACHED() << "Unsupported menu type";
