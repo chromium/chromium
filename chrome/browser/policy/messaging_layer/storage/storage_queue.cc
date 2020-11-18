@@ -54,8 +54,8 @@ const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 constexpr size_t FRAME_SIZE = 16u;
 
 // Size of the buffer to read data to. Must be multiple of FRAME_SIZE
-constexpr size_t BUFFER_SIZE = 1024u * 1024u;  // 1 MiB
-static_assert(BUFFER_SIZE % FRAME_SIZE == 0u,
+constexpr size_t MAX_BUFFER_SIZE = 1024u * 1024u;  // 1 MiB
+static_assert(MAX_BUFFER_SIZE % FRAME_SIZE == 0u,
               "Buffer size not multiple of frame size");
 
 // Helper functions for FRAME_SIZE alignment support.
@@ -512,7 +512,7 @@ Status StorageQueue::WriteMetadata() {
 Status StorageQueue::RestoreMetadata(
     base::flat_set<base::FilePath>* used_files_set) {
   // Enumerate all meta-files into a map seq_number->file_path.
-  std::map<uint64_t, base::FilePath> meta_files_paths;
+  std::map<uint64_t, std::pair<base::FilePath, size_t>> meta_files;
   base::FileEnumerator dir_enum(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
@@ -529,12 +529,14 @@ Status StorageQueue::RestoreMetadata(
     if (!success) {
       continue;
     }
-    meta_files_paths.emplace(seq_number, full_name);  // Ignore the result.
+    // Record file name and size. Ignore the result.
+    meta_files.emplace(seq_number,
+                       std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
   }
   // See whether we have a match for next_seq_number_ - 1.
   DCHECK_GT(next_seq_number_, 0u);
-  auto it = meta_files_paths.find(next_seq_number_ - 1);
-  if (it == meta_files_paths.end()) {
+  auto it = meta_files.find(next_seq_number_ - 1);
+  if (it == meta_files.end()) {
     // For now we fail in this case. Later on we will provide a generation
     // switch.
     return Status(error::DATA_LOSS,
@@ -542,11 +544,9 @@ Status StorageQueue::RestoreMetadata(
                                 base::NumberToString(next_seq_number_ - 1)}));
   }
   // Match found. Load the metadata.
-  const base::FilePath meta_file_path =
-      options_.directory()
-          .Append(METADATA_NAME)
-          .AddExtensionASCII(base::NumberToString(next_seq_number_ - 1));
-  auto meta_file = base::MakeRefCounted<SingleFile>(meta_file_path, /*size=*/0);
+  const base::FilePath meta_file_path = it->second.first;
+  auto meta_file = base::MakeRefCounted<SingleFile>(meta_file_path,
+                                                    /*size=*/it->second.second);
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
   // Read generation id.
   auto read_result = meta_file->Read(/*pos=*/0, sizeof(generation_id_));
@@ -1309,14 +1309,20 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(uint32_t pos,
   if (!handle_) {
     return Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()}));
   }
-  if (size > BUFFER_SIZE) {
+  if (size > MAX_BUFFER_SIZE) {
     return Status(error::RESOURCE_EXHAUSTED, "Too much data to read");
   }
+  if (size_ == 0) {
+    // Empty file, return EOF right away.
+    return Status(error::OUT_OF_RANGE, "End of file");
+  }
+  const size_t buffer_size =
+      std::min(MAX_BUFFER_SIZE, RoundUpToFrameSize(size_));
   // If no buffer yet, allocate.
   // TODO(b/157943192): Add buffer management - consider adding an UMA for
   // tracking the average + peak memory the Storage module is consuming.
   if (!buffer_) {
-    buffer_ = std::make_unique<char[]>(BUFFER_SIZE);
+    buffer_ = std::make_unique<char[]>(buffer_size);
     data_start_ = data_end_ = 0;
     file_position_ = 0;
   }
@@ -1327,7 +1333,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(uint32_t pos,
   }
   // If expected data size does not fit into the buffer, move what's left to the
   // start.
-  if (data_start_ + size > BUFFER_SIZE) {
+  if (data_start_ + size > buffer_size) {
     DCHECK_GT(data_start_, 0u);  // Cannot happen if 0.
     memmove(buffer_.get(), buffer_.get() + data_start_,
             data_end_ - data_start_);
@@ -1339,7 +1345,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(uint32_t pos,
     // Read as much as possible.
     const int32_t result =
         handle_->Read(pos, reinterpret_cast<char*>(buffer_.get() + data_end_),
-                      BUFFER_SIZE - data_end_);
+                      buffer_size - data_end_);
     if (result < 0) {
       return Status(
           error::DATA_LOSS,
@@ -1352,7 +1358,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(uint32_t pos,
     }
     pos += result;
     data_end_ += result;
-    DCHECK_LE(data_end_, BUFFER_SIZE);
+    DCHECK_LE(data_end_, buffer_size);
     actual_size += result;
   }
   if (actual_size > size) {
