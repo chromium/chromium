@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_controller.h"
+#include "ash/public/cpp/external_arc/overlay/arc_overlay_controller_impl.h"
 #include "base/logging.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -37,14 +37,19 @@ ArcOverlayManager* ArcOverlayManager::instance() {
   return singleton;
 }
 
+std::unique_ptr<ArcOverlayController> ArcOverlayManager::CreateController(
+    aura::Window* host_window) {
+  return std::make_unique<ArcOverlayControllerImpl>(host_window);
+}
+
 base::ScopedClosureRunner ArcOverlayManager::RegisterHostWindow(
     std::string overlay_token,
     aura::Window* host_window) {
   DCHECK_EQ(0u, token_to_controller_map_.count(overlay_token));
   DCHECK(host_window);
 
-  token_to_controller_map_.emplace(
-      overlay_token, std::make_unique<ArcOverlayController>(host_window));
+  token_to_controller_map_.emplace(overlay_token,
+                                   CreateController(host_window));
 
   return base::ScopedClosureRunner(
       base::BindOnce(&ArcOverlayManager::DeregisterHostWindow,

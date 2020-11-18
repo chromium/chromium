@@ -49,6 +49,9 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
   ArcOverlayManager& operator=(const ArcOverlayManager&) = delete;
   ArcOverlayManager& operator=(ArcOverlayManager&&) = delete;
 
+  virtual std::unique_ptr<ArcOverlayController> CreateController(
+      aura::Window* host_window);
+
   // The host window must be registered before the overlay window.
   // The returned closure should be destroyed when the overlay window is
   // destroyed.
