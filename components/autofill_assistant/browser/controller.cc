@@ -1179,18 +1179,27 @@ bool Controller::Start(const GURL& deeplink_url,
 }
 
 void Controller::ShowFirstMessageAndStart() {
-  // Only show default status message if necessary. Scripts started by lite
-  // scripts that also showed the onboarding do not show the loading message.
-  if (status_message_.empty() &&
-      !(GetTriggerContext()->is_onboarding_shown() &&
-        GetTriggerContext()->WasStartedByTriggerScript())) {
+  if (!status_message_.empty()) {
+    // A status message may have been set prior to calling |Start|.
+    SetStatusMessage(status_message_);
+  } else if (!(GetTriggerContext()->is_onboarding_shown() &&
+               GetTriggerContext()->WasStartedByLegacyTriggerScript())) {
     SetStatusMessage(
         l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
                                   base::UTF8ToUTF16(GetCurrentURL().host())));
+  } else {
+    // Only show default status message if necessary. Scripts started by lite
+    // scripts that also showed the onboarding do not show the loading message.
   }
   if (step_progress_bar_configuration_.has_value() &&
       step_progress_bar_configuration_->use_step_progress_bar()) {
-    SetProgressActiveStep(0);
+    if (!progress_active_step_.has_value()) {
+      // Set default progress unless already specified in
+      // |progress_active_step_|.
+      progress_active_step_ = 0;
+    }
+    SetStepProgressBarConfiguration(*step_progress_bar_configuration_);
+    SetProgressActiveStep(*progress_active_step_);
   } else {
     SetProgress(kAutostartInitialProgress);
   }

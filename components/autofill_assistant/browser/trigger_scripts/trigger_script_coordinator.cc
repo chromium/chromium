@@ -115,6 +115,11 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
     return;
   }
+  if (trigger_scripts_.empty()) {
+    Stop(Metrics::LiteScriptFinishedState::
+             LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
+    return;
+  }
   trigger_condition_check_interval_ =
       base::TimeDelta::FromMilliseconds(check_interval_ms);
   if (timeout_ms.has_value()) {

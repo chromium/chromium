@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/android/jni_android.h"
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/metrics.h"
@@ -57,6 +58,12 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   bool OnBackButtonPressed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
 
+  // Access to the last shown trigger script.
+  base::Optional<TriggerScriptUIProto> GetLastShownTriggerScript() const;
+
+  // Clears the last shown trigger script.
+  void ClearLastShownTriggerScript();
+
   // Called by the UI when the keyboard was shown or hidden.
   void OnKeyboardVisibilityChanged(
       JNIEnv* env,
@@ -72,6 +79,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   ClientSettings client_settings_;
+  base::Optional<TriggerScriptUIProto> last_shown_trigger_script_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
 };
 

@@ -16,6 +16,7 @@ const char kOverlayColorParameterName[] = "OVERLAY_COLORS";
 // TODO(b/151401974): Eliminate duplicate parameter definitions.
 const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
 
+// Legacy, remove as soon as possible.
 // Parameter that contains the path of the lite script that was used to trigger
 // this flow (may be empty).
 const char kLiteScriptPathParamaterName[] = "TRIGGER_SCRIPT_USED";
@@ -49,7 +50,7 @@ base::Optional<std::string> TriggerContext::GetPasswordChangeUsername() const {
   return GetParameter(kPasswordChangeUsernameParameterName);
 }
 
-bool TriggerContext::WasStartedByTriggerScript() const {
+bool TriggerContext::WasStartedByLegacyTriggerScript() const {
   return GetParameter(kLiteScriptPathParamaterName).has_value();
 }
 

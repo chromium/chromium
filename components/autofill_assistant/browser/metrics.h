@@ -253,6 +253,9 @@ class Metrics {
     LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE = 19,
     // Since Chrome M-88. The tab was closed while the prompt was invisible.
     LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE = 20,
+    // Since Chrome M-88. The RPC to fetch the trigger scripts returned with an
+    // empty response.
+    LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE = 21,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -283,7 +286,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE
+    kMaxValue = LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE
   };
 
   // The different ways a user who has successfully completed a light script may
