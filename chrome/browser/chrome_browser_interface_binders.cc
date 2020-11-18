@@ -178,6 +178,7 @@
 #include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
+#include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/help_app_ui.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service_proxy.mojom.h"
@@ -759,6 +760,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::SystemDataProvider,
+      chromeos::DiagnosticsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::diagnostics::mojom::SystemRoutineController,
       chromeos::DiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
