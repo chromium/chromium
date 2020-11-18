@@ -50,7 +50,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 /**
- * This class tests the {@link AccountPickerDelegate}.
+ * This class tests the {@link AccountPickerDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountPickerDelegateTest {
@@ -89,7 +89,7 @@ public class AccountPickerDelegateTest {
 
     private FragmentActivity mActivity;
 
-    private AccountPickerDelegate mDelegate;
+    private AccountPickerDelegateImpl mDelegate;
 
     private CoreAccountInfo mCoreAccountInfo;
 
@@ -108,7 +108,7 @@ public class AccountPickerDelegateTest {
         mCoreAccountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
-        mDelegate = new AccountPickerDelegate(
+        mDelegate = new AccountPickerDelegateImpl(
                 mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
         when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), eq(mDelegate)))
                 .thenReturn(mWebSigninBridgeMock);

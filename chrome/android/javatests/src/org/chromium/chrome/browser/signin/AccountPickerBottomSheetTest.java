@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
@@ -32,7 +33,6 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -52,7 +52,6 @@ import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -130,14 +129,9 @@ public class AccountPickerBottomSheetTest {
     @Before
     public void setUp() {
         initMocks(this);
-        IncognitoUtils.setEnabledForTesting(true);
+        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
-    }
-
-    @After
-    public void tearDown() {
-        IncognitoUtils.setEnabledForTesting(null);
     }
 
     @Test
@@ -168,7 +162,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testExpandedSheetWithIncognitoModeDisabled() {
-        IncognitoUtils.setEnabledForTesting(false);
+        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(false);
         buildAndShowExpandedBottomSheet();
         onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
         onVisibleView(withText(PROFILE_DATA1.getFullName())).check(matches(isDisplayed()));

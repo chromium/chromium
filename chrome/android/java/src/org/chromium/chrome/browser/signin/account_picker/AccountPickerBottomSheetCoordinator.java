@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialCoordinator;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -69,7 +68,7 @@ public class AccountPickerBottomSheetCoordinator {
         mView = new AccountPickerBottomSheetView(activity, mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
                 mAccountPickerBottomSheetMediator, /* selectedAccountName= */ null,
-                /* showIncognitoRow= */ IncognitoUtils.isIncognitoModeEnabled());
+                /* showIncognitoRow= */ accountPickerDelegate.isIncognitoModeEnabled());
         IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
                 new IncognitoInterstitialCoordinator(
                         mView.getIncognitoInterstitialView(), incognitoInterstitialDelegate, () -> {

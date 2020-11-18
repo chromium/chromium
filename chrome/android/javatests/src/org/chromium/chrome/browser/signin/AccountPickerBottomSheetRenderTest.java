@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
@@ -41,7 +42,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -116,14 +116,13 @@ public class AccountPickerBottomSheetRenderTest {
     @Before
     public void setUp() {
         initMocks(this);
-        IncognitoUtils.setEnabledForTesting(true);
+        when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
     public void tearDown() throws Exception {
         ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
-        IncognitoUtils.setEnabledForTesting(null);
     }
 
     @AfterClass

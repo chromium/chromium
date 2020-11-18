@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegateImpl;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -120,7 +121,7 @@ public class SigninUtils {
 
         AccountPickerBottomSheetCoordinator coordinator =
                 new AccountPickerBottomSheetCoordinator(activity, bottomSheetController,
-                        new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
+                        new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
                                 new WebSigninBridge.Factory(), continueUrl),
                         incognitoInterstitialDelegate);
     }
