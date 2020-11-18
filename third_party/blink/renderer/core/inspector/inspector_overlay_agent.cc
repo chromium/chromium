@@ -1533,20 +1533,44 @@ InspectorOverlayAgent::ToFlexContainerHighlightConfig(
   highlight_config->item_separator =
       InspectorOverlayAgent::ToLineStyle(config->getItemSeparator(nullptr));
 
+  highlight_config->main_distributed_space = InspectorOverlayAgent::ToBoxStyle(
+      config->getMainDistributedSpace(nullptr));
+  highlight_config->cross_distributed_space = InspectorOverlayAgent::ToBoxStyle(
+      config->getCrossDistributedSpace(nullptr));
+  highlight_config->row_gap_space =
+      InspectorOverlayAgent::ToBoxStyle(config->getRowGapSpace(nullptr));
+  highlight_config->column_gap_space =
+      InspectorOverlayAgent::ToBoxStyle(config->getColumnGapSpace(nullptr));
+
   return highlight_config;
 }
 
 // static
-std::unique_ptr<LineStyle> InspectorOverlayAgent::ToLineStyle(
+base::Optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
     protocol::Overlay::LineStyle* config) {
   if (!config) {
-    return nullptr;
+    return base::nullopt;
   }
-  std::unique_ptr<LineStyle> line_style = std::make_unique<LineStyle>();
+  base::Optional<LineStyle> line_style = LineStyle();
   line_style->color = InspectorDOMAgent::ParseColor(config->getColor(nullptr));
   line_style->pattern = config->getPattern("solid");
 
   return line_style;
+}
+
+// static
+base::Optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
+    protocol::Overlay::BoxStyle* config) {
+  if (!config) {
+    return base::nullopt;
+  }
+  base::Optional<BoxStyle> box_style = BoxStyle();
+  box_style->fill_color =
+      InspectorDOMAgent::ParseColor(config->getFillColor(nullptr));
+  box_style->hatch_color =
+      InspectorDOMAgent::ParseColor(config->getHatchColor(nullptr));
+
+  return box_style;
 }
 
 // static

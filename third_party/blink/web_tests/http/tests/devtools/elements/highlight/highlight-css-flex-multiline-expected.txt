@@ -221,6 +221,22 @@ flex-container{
         "itemSeparator": {
           "color": "rgba(255, 0, 0, 0)",
           "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
         }
       }
     }

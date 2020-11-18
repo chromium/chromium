@@ -25,8 +25,25 @@ struct CORE_EXPORT LineStyle {
  public:
   LineStyle();
 
+  bool IsTransparent() const { return color == Color::kTransparent; }
+
   Color color;
   String pattern;
+};
+
+struct CORE_EXPORT BoxStyle {
+  USING_FAST_MALLOC(BoxStyle);
+
+ public:
+  BoxStyle();
+
+  bool IsTransparent() const {
+    return fill_color == Color::kTransparent &&
+           hatch_color == Color::kTransparent;
+  }
+
+  Color fill_color;
+  Color hatch_color;
 };
 
 struct CORE_EXPORT InspectorSourceOrderConfig {
@@ -72,9 +89,14 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
  public:
   InspectorFlexContainerHighlightConfig();
 
-  std::unique_ptr<LineStyle> container_border;
-  std::unique_ptr<LineStyle> line_separator;
-  std::unique_ptr<LineStyle> item_separator;
+  base::Optional<LineStyle> container_border;
+  base::Optional<LineStyle> line_separator;
+  base::Optional<LineStyle> item_separator;
+
+  base::Optional<BoxStyle> main_distributed_space;
+  base::Optional<BoxStyle> cross_distributed_space;
+  base::Optional<BoxStyle> row_gap_space;
+  base::Optional<BoxStyle> column_gap_space;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {
@@ -189,6 +211,7 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
   void AddLayoutBoxToDistanceInfo(LayoutObject* layout_object);
 
   static LineStyle DefaultLineStyle();
+  static BoxStyle DefaultBoxStyle();
 
   std::unique_ptr<protocol::Array<protocol::Array<double>>> boxes_;
   std::unique_ptr<protocol::DictionaryValue> computed_style_;

@@ -354,17 +354,35 @@ std::unique_ptr<protocol::DictionaryValue> BuildTextNodeInfo(Text* text_node) {
 }
 
 void AppendLineStyleConfig(
-    const std::unique_ptr<LineStyle>& line_style,
+    const base::Optional<LineStyle>& line_style,
     std::unique_ptr<protocol::DictionaryValue>& parent_config,
     String line_name) {
-  if (line_style && line_style->color != Color::kTransparent) {
-    std::unique_ptr<protocol::DictionaryValue> config =
-        protocol::DictionaryValue::create();
-    config->setString("color", line_style->color.Serialized());
-    config->setString("pattern", line_style->pattern);
-
-    parent_config->setValue(line_name, std::move(config));
+  if (!line_style || line_style->IsTransparent()) {
+    return;
   }
+
+  std::unique_ptr<protocol::DictionaryValue> config =
+      protocol::DictionaryValue::create();
+  config->setString("color", line_style->color.Serialized());
+  config->setString("pattern", line_style->pattern);
+
+  parent_config->setValue(line_name, std::move(config));
+}
+
+void AppendBoxStyleConfig(
+    const base::Optional<BoxStyle>& box_style,
+    std::unique_ptr<protocol::DictionaryValue>& parent_config,
+    String box_name) {
+  if (!box_style || box_style->IsTransparent()) {
+    return;
+  }
+
+  std::unique_ptr<protocol::DictionaryValue> config =
+      protocol::DictionaryValue::create();
+  config->setString("fillColor", box_style->fill_color.Serialized());
+  config->setString("hatchColor", box_style->hatch_color.Serialized());
+
+  parent_config->setValue(box_name, std::move(config));
 }
 
 std::unique_ptr<protocol::DictionaryValue>
@@ -379,6 +397,15 @@ BuildFlexContainerHighlightConfigInfo(
                         "lineSeparator");
   AppendLineStyleConfig(flex_config.item_separator, flex_config_info,
                         "itemSeparator");
+
+  AppendBoxStyleConfig(flex_config.main_distributed_space, flex_config_info,
+                       "mainDistributedSpace");
+  AppendBoxStyleConfig(flex_config.cross_distributed_space, flex_config_info,
+                       "crossDistributedSpace");
+  AppendBoxStyleConfig(flex_config.row_gap_space, flex_config_info,
+                       "rowGapSpace");
+  AppendBoxStyleConfig(flex_config.column_gap_space, flex_config_info,
+                       "columnGapSpace");
 
   return flex_config_info;
 }
@@ -1190,6 +1217,8 @@ InspectorSourceOrderConfig::InspectorSourceOrderConfig() = default;
 
 LineStyle::LineStyle() = default;
 
+BoxStyle::BoxStyle() = default;
+
 InspectorGridHighlightConfig::InspectorGridHighlightConfig()
     : show_grid_extension_lines(false),
       grid_border_dash(false),
@@ -1839,11 +1868,19 @@ InspectorFlexContainerHighlightConfig
 InspectorHighlight::DefaultFlexContainerConfig() {
   InspectorFlexContainerHighlightConfig config;
   config.container_border =
-      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+      base::Optional<LineStyle>(InspectorHighlight::DefaultLineStyle());
   config.line_separator =
-      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+      base::Optional<LineStyle>(InspectorHighlight::DefaultLineStyle());
   config.item_separator =
-      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+      base::Optional<LineStyle>(InspectorHighlight::DefaultLineStyle());
+  config.main_distributed_space =
+      base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
+  config.cross_distributed_space =
+      base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
+  config.row_gap_space =
+      base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
+  config.column_gap_space =
+      base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
   return config;
 }
 
@@ -1852,6 +1889,14 @@ LineStyle InspectorHighlight::DefaultLineStyle() {
   LineStyle style;
   style.color = Color(255, 0, 0, 0);
   style.pattern = "solid";
+  return style;
+}
+
+// static
+BoxStyle InspectorHighlight::DefaultBoxStyle() {
+  BoxStyle style;
+  style.fill_color = Color(255, 0, 0, 0);
+  style.hatch_color = Color(255, 0, 0, 0);
   return style;
 }
 
