@@ -612,11 +612,11 @@ void EntryActionRequest::RunCallbackOnPrematureFailure(DriveApiErrorCode code) {
 
 InitiateUploadRequestBase::InitiateUploadRequestBase(
     RequestSender* sender,
-    const InitiateUploadCallback& callback,
+    InitiateUploadCallback callback,
     const std::string& content_type,
     int64_t content_length)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(callback),
+      callback_(std::move(callback)),
       content_type_(content_type),
       content_length_(content_length) {
   DCHECK(!callback_.is_null());
@@ -637,13 +637,13 @@ void InitiateUploadRequestBase::ProcessURLFetchResults(
                                             &upload_location);
   }
 
-  callback_.Run(GetErrorCode(), GURL(upload_location));
+  std::move(callback_).Run(GetErrorCode(), GURL(upload_location));
   OnProcessURLFetchResultsComplete();
 }
 
 void InitiateUploadRequestBase::RunCallbackOnPrematureFailure(
     DriveApiErrorCode code) {
-  callback_.Run(code, GURL());
+  std::move(callback_).Run(code, GURL());
 }
 
 std::vector<std::string>

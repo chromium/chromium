@@ -150,13 +150,13 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
       const std::string& parent_resource_id,
       const std::string& title,
       const drive::UploadNewFileOptions& options,
-      const google_apis::InitiateUploadCallback& callback) override;
+      google_apis::InitiateUploadCallback callback) override;
   google_apis::CancelCallback InitiateUploadExistingFile(
       const std::string& content_type,
       int64_t content_length,
       const std::string& resource_id,
       const drive::UploadExistingFileOptions& options,
-      const google_apis::InitiateUploadCallback& callback) override;
+      google_apis::InitiateUploadCallback callback) override;
   google_apis::CancelCallback ResumeUpload(
       const GURL& upload_url,
       int64_t start_position,

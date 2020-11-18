@@ -658,14 +658,14 @@ CancelCallback DriveAPIService::InitiateUploadNewFile(
     const std::string& parent_resource_id,
     const std::string& title,
     const UploadNewFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!callback.is_null());
 
   std::unique_ptr<InitiateUploadNewFileRequest> request =
       std::make_unique<InitiateUploadNewFileRequest>(
           sender_.get(), url_generator_, content_type, content_length,
-          parent_resource_id, title, callback);
+          parent_resource_id, title, std::move(callback));
   request->set_modified_date(options.modified_date);
   request->set_last_viewed_by_me_date(options.last_viewed_by_me_date);
   request->set_properties(options.properties);
@@ -677,14 +677,14 @@ CancelCallback DriveAPIService::InitiateUploadExistingFile(
     int64_t content_length,
     const std::string& resource_id,
     const UploadExistingFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!callback.is_null());
 
   std::unique_ptr<InitiateUploadExistingFileRequest> request =
       std::make_unique<InitiateUploadExistingFileRequest>(
           sender_.get(), url_generator_, content_type, content_length,
-          resource_id, options.etag, callback);
+          resource_id, options.etag, std::move(callback));
   request->set_parent_resource_id(options.parent_resource_id);
   request->set_title(options.title);
   request->set_modified_date(options.modified_date);

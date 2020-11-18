@@ -365,7 +365,7 @@ google_apis::CancelCallback DriveServiceOnWorker::InitiateUploadNewFile(
     const std::string& parent_resource_id,
     const std::string& title,
     const drive::UploadNewFileOptions& options,
-    const google_apis::InitiateUploadCallback& callback) {
+    google_apis::InitiateUploadCallback callback) {
   NOTREACHED();
   return google_apis::CancelCallback();
 }
@@ -375,7 +375,7 @@ google_apis::CancelCallback DriveServiceOnWorker::InitiateUploadExistingFile(
     int64_t content_length,
     const std::string& resource_id,
     const drive::UploadExistingFileOptions& options,
-    const google_apis::InitiateUploadCallback& callback) {
+    google_apis::InitiateUploadCallback callback) {
   NOTREACHED();
   return google_apis::CancelCallback();
 }

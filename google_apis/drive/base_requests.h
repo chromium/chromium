@@ -351,8 +351,9 @@ class EntryActionRequest : public UrlFetchRequestBase {
 //=========================== InitiateUploadRequestBase=======================
 
 // Callback type for DriveServiceInterface::InitiateUpload.
-typedef base::Callback<void(DriveApiErrorCode error,
-                            const GURL& upload_url)> InitiateUploadCallback;
+typedef base::OnceCallback<void(DriveApiErrorCode error,
+                                const GURL& upload_url)>
+    InitiateUploadCallback;
 
 // This class provides base implementation for performing the request for
 // initiating the upload of a file.
@@ -372,7 +373,7 @@ class InitiateUploadRequestBase : public UrlFetchRequestBase {
   // |content_type| and |content_length| should be the attributes of the
   // uploading file.
   InitiateUploadRequestBase(RequestSender* sender,
-                            const InitiateUploadCallback& callback,
+                            InitiateUploadCallback callback,
                             const std::string& content_type,
                             int64_t content_length);
   ~InitiateUploadRequestBase() override;
@@ -386,7 +387,7 @@ class InitiateUploadRequestBase : public UrlFetchRequestBase {
   std::vector<std::string> GetExtraRequestHeaders() const override;
 
  private:
-  const InitiateUploadCallback callback_;
+  InitiateUploadCallback callback_;
   const std::string content_type_;
   const int64_t content_length_;
 

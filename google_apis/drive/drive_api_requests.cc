@@ -715,8 +715,11 @@ InitiateUploadNewFileRequest::InitiateUploadNewFileRequest(
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
-    const InitiateUploadCallback& callback)
-    : InitiateUploadRequestBase(sender, callback, content_type, content_length),
+    InitiateUploadCallback callback)
+    : InitiateUploadRequestBase(sender,
+                                std::move(callback),
+                                content_type,
+                                content_length),
       url_generator_(url_generator),
       parent_resource_id_(parent_resource_id),
       title_(title) {}
@@ -769,8 +772,11 @@ InitiateUploadExistingFileRequest::InitiateUploadExistingFileRequest(
     int64_t content_length,
     const std::string& resource_id,
     const std::string& etag,
-    const InitiateUploadCallback& callback)
-    : InitiateUploadRequestBase(sender, callback, content_type, content_length),
+    InitiateUploadCallback callback)
+    : InitiateUploadRequestBase(sender,
+                                std::move(callback),
+                                content_type,
+                                content_length),
       url_generator_(url_generator),
       resource_id_(resource_id),
       etag_(etag) {}

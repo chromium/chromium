@@ -443,7 +443,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
       const std::string& parent_resource_id,
       const std::string& title,
       const UploadNewFileOptions& options,
-      const google_apis::InitiateUploadCallback& callback) = 0;
+      google_apis::InitiateUploadCallback callback) = 0;
 
   // Initiates uploading of an existing document/file.
   // |content_type| and |content_length| should be the ones of the file to be
@@ -454,7 +454,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
       int64_t content_length,
       const std::string& resource_id,
       const UploadExistingFileOptions& options,
-      const google_apis::InitiateUploadCallback& callback) = 0;
+      google_apis::InitiateUploadCallback callback) = 0;
 
   // Resumes uploading of a document/file on the calling thread.
   // |callback| must not be null. |progress_callback| may be null.

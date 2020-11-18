@@ -1064,20 +1064,21 @@ CancelCallback FakeDriveService::InitiateUploadNewFile(
     const std::string& parent_resource_id,
     const std::string& title,
     const UploadNewFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(callback);
+  DCHECK(!callback.is_null());
 
   if (offline_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, DRIVE_NO_CONNECTION, GURL()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
     return CancelCallback();
   }
 
   if (parent_resource_id != GetRootResourceId() &&
       !entries_.count(parent_resource_id)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, HTTP_NOT_FOUND, GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), HTTP_NOT_FOUND, GURL()));
     return CancelCallback();
   }
 
@@ -1094,7 +1095,8 @@ CancelCallback FakeDriveService::InitiateUploadNewFile(
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, HTTP_SUCCESS, session_url));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), HTTP_SUCCESS, session_url));
   return CancelCallback();
 }
 
@@ -1103,33 +1105,35 @@ CancelCallback FakeDriveService::InitiateUploadExistingFile(
     int64_t content_length,
     const std::string& resource_id,
     const UploadExistingFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(callback);
+  DCHECK(!callback.is_null());
 
   if (offline_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, DRIVE_NO_CONNECTION, GURL()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
     return CancelCallback();
   }
 
   EntryInfo* entry = FindEntryByResourceId(resource_id);
   if (!entry) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, HTTP_NOT_FOUND, GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), HTTP_NOT_FOUND, GURL()));
     return CancelCallback();
   }
 
   if (!UserHasWriteAccess(entry->user_permission)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, HTTP_FORBIDDEN, GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), HTTP_FORBIDDEN, GURL()));
     return CancelCallback();
   }
 
   FileResource* file = entry->change_resource.mutable_file();
   if (!options.etag.empty() && options.etag != file->etag()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, HTTP_PRECONDITION, GURL()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), HTTP_PRECONDITION, GURL()));
     return CancelCallback();
   }
   // TODO(hashimoto): Update |file|'s metadata with |options|.
@@ -1143,7 +1147,8 @@ CancelCallback FakeDriveService::InitiateUploadExistingFile(
                     "" /* title */);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, HTTP_SUCCESS, session_url));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), HTTP_SUCCESS, session_url));
   return CancelCallback();
 }
 

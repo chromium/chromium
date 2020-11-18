@@ -197,7 +197,7 @@ CancelCallback DummyDriveService::InitiateUploadNewFile(
     const std::string& parent_resource_id,
     const std::string& title,
     const UploadNewFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   return CancelCallback();
 }
 
@@ -206,7 +206,7 @@ CancelCallback DummyDriveService::InitiateUploadExistingFile(
     int64_t content_length,
     const std::string& resource_id,
     const UploadExistingFileOptions& options,
-    const InitiateUploadCallback& callback) {
+    InitiateUploadCallback callback) {
   return CancelCallback();
 }
 

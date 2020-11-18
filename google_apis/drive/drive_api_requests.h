@@ -843,7 +843,7 @@ class InitiateUploadNewFileRequest : public InitiateUploadRequestBase {
                                int64_t content_length,
                                const std::string& parent_resource_id,
                                const std::string& title,
-                               const InitiateUploadCallback& callback);
+                               InitiateUploadCallback callback);
   ~InitiateUploadNewFileRequest() override;
 
   // Optional parameters.
@@ -898,7 +898,7 @@ class InitiateUploadExistingFileRequest : public InitiateUploadRequestBase {
                                     int64_t content_length,
                                     const std::string& resource_id,
                                     const std::string& etag,
-                                    const InitiateUploadCallback& callback);
+                                    InitiateUploadCallback callback);
   ~InitiateUploadExistingFileRequest() override;
 
   // Optional parameters.
