@@ -96,7 +96,7 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp.id);
-  req.set_user_entity(
+  req.set_user_id(
       std::string(request.user.id.begin(), request.user.id.end()));
   req.set_resident_credential(request.resident_key_required);
   DCHECK(generate_request_id_callback_);
