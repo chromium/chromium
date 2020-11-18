@@ -2476,13 +2476,14 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
     if (!IsInlineWithOutlineAndContinuation(o))
       continue;
 
+    const ComputedStyle& style = o.StyleRef();
     Vector<PhysicalRect> outline_rects;
     To<LayoutInline>(o).AddOutlineRectsForContinuations(
         outline_rects, PhysicalOffset(),
-        o.OutlineRectsShouldIncludeBlockVisualOverflow());
+        style.OutlineRectsShouldIncludeBlockVisualOverflow());
     if (!outline_rects.IsEmpty()) {
       PhysicalRect outline_bounds = UnionRect(outline_rects);
-      outline_bounds.Inflate(LayoutUnit(o.StyleRef().OutlineOutsetExtent()));
+      outline_bounds.Inflate(LayoutUnit(style.OutlineOutsetExtent()));
       outline_bounds_of_all_continuations.Unite(outline_bounds);
     }
   }

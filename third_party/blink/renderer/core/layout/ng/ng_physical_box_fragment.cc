@@ -657,24 +657,22 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
   CheckCanUpdateInkOverflow();
   const ComputedStyle& style = Style();
-  PhysicalRect ink_overflow({}, Size().ToLayoutSize());
+  if (!style.HasVisualOverflowingEffect())
+    return LocalRect();
 
   DCHECK(GetLayoutObject());
-  if (style.HasVisualOverflowingEffect()) {
-    ink_overflow.Expand(style.BoxDecorationOutsets());
-    if (NGOutlineUtils::HasPaintedOutline(style,
-                                          GetLayoutObject()->GetNode()) &&
-        NGOutlineUtils::ShouldPaintOutline(*this)) {
-      Vector<PhysicalRect> outline_rects;
-      // The result rects are in coordinates of this object's border box.
-      AddSelfOutlineRects(
-          PhysicalOffset(),
-          GetLayoutObject()->OutlineRectsShouldIncludeBlockVisualOverflow(),
-          &outline_rects);
-      PhysicalRect rect = UnionRect(outline_rects);
-      rect.Inflate(LayoutUnit(style.OutlineOutsetExtent()));
-      ink_overflow.Unite(rect);
-    }
+  PhysicalRect ink_overflow(LocalRect());
+  ink_overflow.Expand(style.BoxDecorationOutsets());
+  if (NGOutlineUtils::HasPaintedOutline(style, GetNode()) &&
+      NGOutlineUtils::ShouldPaintOutline(*this)) {
+    Vector<PhysicalRect> outline_rects;
+    // The result rects are in coordinates of this object's border box.
+    AddSelfOutlineRects(PhysicalOffset(),
+                        style.OutlineRectsShouldIncludeBlockVisualOverflow(),
+                        &outline_rects);
+    PhysicalRect rect = UnionRect(outline_rects);
+    rect.Inflate(LayoutUnit(style.OutlineOutsetExtent()));
+    ink_overflow.Unite(rect);
   }
   return ink_overflow;
 }
