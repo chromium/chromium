@@ -29,11 +29,21 @@ void UserAuthenticationServiceProvider::Start(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&UserAuthenticationServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
+
   exported_object->ExportMethod(
       chromeos::kUserAuthenticationServiceInterface,
       chromeos::kUserAuthenticationServiceCancelMethod,
       base::BindRepeating(&UserAuthenticationServiceProvider::Cancel,
                           weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&UserAuthenticationServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  exported_object->ExportMethod(
+      chromeos::kUserAuthenticationServiceInterface,
+      chromeos::kUserAuthenticationServiceIsAuthenticatorAvailableMethod,
+      base::BindRepeating(
+          &UserAuthenticationServiceProvider::IsAuthenticatorAvailable,
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&UserAuthenticationServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -106,6 +116,26 @@ void UserAuthenticationServiceProvider::Cancel(
   InSessionAuthDialogController::Get()->Cancel();
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
+  std::move(response_sender).Run(std::move(response));
+}
+
+void UserAuthenticationServiceProvider::IsAuthenticatorAvailable(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  auto* auth_dialog_controller = InSessionAuthDialogController::Get();
+  auth_dialog_controller->CheckAvailability(base::BindOnce(
+      &UserAuthenticationServiceProvider::OnAvailabilityChecked,
+      weak_ptr_factory_.GetWeakPtr(), method_call, std::move(response_sender)));
+}
+
+void UserAuthenticationServiceProvider::OnAvailabilityChecked(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender,
+    bool available) {
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  writer.AppendBool(available);
   std::move(response_sender).Run(std::move(response));
 }
 

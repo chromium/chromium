@@ -47,6 +47,7 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
       base::OnceCallback<void(bool, FingerprintState)> callback) override;
   void OpenInSessionAuthHelpPage() override;
   void Cancel() override;
+  void CheckAvailability(FinishCallback on_availability_checked) const override;
 
  private:
   bool IsFingerprintAvailable(const AccountId& account_id);

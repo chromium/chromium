@@ -51,6 +51,17 @@ class UserAuthenticationServiceProvider
   void Cancel(dbus::MethodCall* method_call,
               dbus::ExportedObject::ResponseSender response_sender);
 
+  // Called on UI thread in response to D-Bus requests.
+  void IsAuthenticatorAvailable(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
+  // Called when authenticator availability is checked.
+  void OnAvailabilityChecked(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender,
+      bool available);
+
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<UserAuthenticationServiceProvider> weak_ptr_factory_{

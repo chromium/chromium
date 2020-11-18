@@ -51,6 +51,8 @@ class FakeInSessionAuthDialogController
   }
   void OpenInSessionAuthHelpPage() override {}
   void Cancel() override {}
+  void CheckAvailability(
+      FinishCallback on_availability_checked) const override {}
 };
 
 class InSessionAuthDialogClientTest : public testing::Test {

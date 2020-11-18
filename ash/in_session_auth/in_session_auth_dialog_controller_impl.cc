@@ -196,4 +196,19 @@ void InSessionAuthDialogControllerImpl::OpenInSessionAuthHelpPage() {
   client_->OpenInSessionAuthHelpPage();
 }
 
+void InSessionAuthDialogControllerImpl::CheckAvailability(
+    FinishCallback on_availability_checked) const {
+  // Assumes the requests are for the active user (no teleported window).
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+
+  if (client_->IsFingerprintAuthAvailable(account_id)) {
+    std::move(on_availability_checked).Run(true);
+    return;
+  }
+
+  client_->CheckPinAuthAvailability(account_id,
+                                    std::move(on_availability_checked));
+}
+
 }  // namespace ash

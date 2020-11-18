@@ -56,6 +56,10 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // Cancels all operations and destroys the dialog.
   virtual void Cancel() = 0;
 
+  // Checks whether there's at least one authentication method.
+  virtual void CheckAvailability(
+      FinishCallback on_availability_checked) const = 0;
+
  protected:
   InSessionAuthDialogController();
   virtual ~InSessionAuthDialogController();
