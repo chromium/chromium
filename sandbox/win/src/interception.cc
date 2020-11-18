@@ -352,16 +352,6 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
     return SBOX_ALL_OK;
 
   if (hot_patch_needed) {
-#if defined(SANDBOX_EXPORTS)
-// Make sure the functions are not excluded by the linker.
-#if defined(_WIN64)
-#pragma comment(linker, "/include:TargetNtMapViewOfSection64")
-#pragma comment(linker, "/include:TargetNtUnmapViewOfSection64")
-#else
-#pragma comment(linker, "/include:_TargetNtMapViewOfSection@44")
-#pragma comment(linker, "/include:_TargetNtUnmapViewOfSection@12")
-#endif
-#endif  // defined(SANDBOX_EXPORTS)
     ADD_NT_INTERCEPTION(NtMapViewOfSection, MAP_VIEW_OF_SECTION_ID, 44);
     ADD_NT_INTERCEPTION(NtUnmapViewOfSection, UNMAP_VIEW_OF_SECTION_ID, 12);
   }
@@ -433,13 +423,6 @@ ResultCode InterceptionManager::PatchClientFunctions(
   if (!ntdll_base)
     return SBOX_ERROR_NO_HANDLE;
 
-  char* interceptor_base = nullptr;
-
-#if defined(SANDBOX_EXPORTS)
-  interceptor_base = reinterpret_cast<char*>(child_.MainModule());
-  base::ScopedNativeLibrary local_interceptor(::LoadLibrary(child_.Name()));
-#endif  // defined(SANDBOX_EXPORTS)
-
   std::unique_ptr<ServiceResolverThunk> thunk;
 #if defined(_WIN64)
   thunk.reset(new ServiceResolverThunk(child_.Process(), relaxed_));
@@ -468,26 +451,8 @@ ResultCode InterceptionManager::PatchClientFunctions(
     if (INTERCEPTION_SERVICE_CALL != interception.type)
       return SBOX_ERROR_BAD_PARAMS;
 
-#if defined(SANDBOX_EXPORTS)
-    // We may be trying to patch by function name.
-    if (!interception.interceptor_address) {
-      const char* address;
-      NTSTATUS ret = thunk->ResolveInterceptor(
-          local_interceptor.get(), interception.interceptor.c_str(),
-          reinterpret_cast<const void**>(&address));
-      if (!NT_SUCCESS(ret)) {
-        ::SetLastError(GetLastErrorFromNtStatus(ret));
-        return SBOX_ERROR_CANNOT_RESOLVE_INTERCEPTION_THUNK;
-      }
-
-      // Translate the local address to an address on the child.
-      interception.interceptor_address =
-          interceptor_base +
-          (address - reinterpret_cast<char*>(local_interceptor.get()));
-    }
-#endif  // defined(SANDBOX_EXPORTS)
     NTSTATUS ret = thunk->Setup(
-        ntdll_base, interceptor_base, interception.function.c_str(),
+        ntdll_base, nullptr, interception.function.c_str(),
         interception.interceptor.c_str(), interception.interceptor_address,
         &thunks->thunks[dll_data->num_thunks],
         thunk_bytes - dll_data->used_bytes, nullptr);

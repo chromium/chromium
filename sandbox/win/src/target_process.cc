@@ -235,26 +235,8 @@ ResultCode TargetProcess::TransferVariable(const char* name,
   if (!sandbox_process_info_.IsValid())
     return SBOX_ERROR_UNEXPECTED_CALL;
 
-  void* child_var = address;
-
-#if SANDBOX_EXPORTS
-  HMODULE module = ::LoadLibrary(exe_name_.get());
-  if (!module)
-    return SBOX_ERROR_CANNOT_LOADLIBRARY_EXECUTABLE;
-
-  child_var = ::GetProcAddress(module, name);
-  ::FreeLibrary(module);
-
-  if (!child_var)
-    return SBOX_ERROR_CANNOT_FIND_VARIABLE_ADDRESS;
-
-  size_t offset =
-      reinterpret_cast<char*>(child_var) - reinterpret_cast<char*>(module);
-  child_var = reinterpret_cast<char*>(MainModule()) + offset;
-#endif
-
   SIZE_T written;
-  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(), child_var,
+  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(), address,
                             address, size, &written))
     return SBOX_ERROR_CANNOT_WRITE_VARIABLE_VALUE;
 

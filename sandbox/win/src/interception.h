@@ -235,32 +235,6 @@ class InterceptionManager {
 // Note that num_params is the number of bytes to pop out of the stack for
 // the exported interceptor, following the calling convention of a service call
 // (WINAPI = with the "C" underscore).
-#if SANDBOX_EXPORTS
-#if defined(_WIN64)
-#define MAKE_SERVICE_NAME(service, params) "Target" #service "64"
-#else
-#define MAKE_SERVICE_NAME(service, params) "_Target" #service "@" #params
-#endif
-
-#define ADD_NT_INTERCEPTION(service, id, num_params)        \
-  AddToPatchedFunctions(kNtdllName, #service,               \
-                        sandbox::INTERCEPTION_SERVICE_CALL, \
-                        MAKE_SERVICE_NAME(service, num_params), id)
-
-#define INTERCEPT_NT(manager, service, id, num_params)                        \
-  ((&Target##service) ? manager->ADD_NT_INTERCEPTION(service, id, num_params) \
-                      : false)
-
-// When intercepting the EAT it is important that the patched version of the
-// function not call any functions imported from system libraries unless
-// |TargetServices::InitCalled()| returns true, because it is only then that
-// we are guaranteed that our IAT has been initialized.
-#define INTERCEPT_EAT(manager, dll, function, id, num_params)             \
-  ((&Target##function) ? manager->AddToPatchedFunctions(                  \
-                             dll, #function, sandbox::INTERCEPTION_EAT,   \
-                             MAKE_SERVICE_NAME(function, num_params), id) \
-                       : false)
-#else  // SANDBOX_EXPORTS
 #if defined(_WIN64)
 #define MAKE_SERVICE_NAME(service) &Target##service##64
 #else
@@ -283,7 +257,6 @@ class InterceptionManager {
   manager->AddToPatchedFunctions(                             \
       dll, #function, sandbox::INTERCEPTION_EAT,              \
       reinterpret_cast<void*>(MAKE_SERVICE_NAME(function)), id)
-#endif  // SANDBOX_EXPORTS
 
 }  // namespace sandbox
 
