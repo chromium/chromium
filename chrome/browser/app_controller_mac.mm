@@ -1265,7 +1265,12 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // manager is still shown).
     UserManager::Show(base::FilePath(),
                       profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-  } else if (ProfilePicker::ShouldShowAtLaunch()) {
+  } else if (ProfilePicker::ShouldShowAtLaunch(
+                 // Pass an empty command line, because this is not application
+                 // startup. The original arguments (e.g. --incognito) are no
+                 // longer relevant.
+                 base::CommandLine(base::CommandLine::NO_PROGRAM),
+                 /*urls_to_launch=*/std::vector<GURL>())) {
     ProfilePicker::Show(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
   } else {

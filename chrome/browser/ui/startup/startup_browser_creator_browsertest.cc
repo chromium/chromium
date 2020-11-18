@@ -1871,8 +1871,7 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
   ~StartupBrowserCreatorPickerTest() override = default;
 
  protected:
-  void StartWithTwoProfiles(const base::CommandLine& command_line,
-                            bool set_last_opened_profiles = false) {
+  void StartWithTwoProfiles(const base::CommandLine& command_line) {
     Profile* profile = browser()->profile();
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     // Create another profile.
@@ -1887,13 +1886,8 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
     ASSERT_TRUE(other_profile);
 
     StartupBrowserCreator launch;
-    std::vector<Profile*> last_opened_profiles;
-    if (set_last_opened_profiles) {
-      last_opened_profiles.push_back(profile);
-      last_opened_profiles.push_back(other_profile);
-    }
     ASSERT_TRUE(launch.Start(command_line, profile_manager->user_data_dir(),
-                             profile, last_opened_profiles));
+                             profile, {}));
   }
 
  private:
@@ -1972,16 +1966,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithAppId) {
   command_line.AppendSwitch(switches::kAppId);
 
   StartWithTwoProfiles(command_line);
-
-  // Skips the picker and creates a new browser window.
-  Browser* new_browser = FindOneOtherBrowser(browser());
-  EXPECT_TRUE(new_browser);
-}
-
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
-                       SkipsPickerWithLastOpenedProfiles) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  StartWithTwoProfiles(command_line, /*set_last_opened_profiles=*/true);
 
   // Skips the picker and creates a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
