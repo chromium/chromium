@@ -70,7 +70,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
 
   void OnGetVshSession(const std::string& user_id_hash,
                        base::CommandLine cmdline,
-                       int32_t vsh_pid,
+                       const std::string& terminal_id,
                        bool success,
                        const std::string& failure_reason,
                        int32_t container_shell_pid);

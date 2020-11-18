@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/process_proxy/process_proxy_registry.h"
+#include "base/strings/string_number_conversions.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -72,6 +73,14 @@ void ProcessProxyRegistry::ShutDown() {
 ProcessProxyRegistry* ProcessProxyRegistry::Get() {
   DCHECK(ProcessProxyRegistry::GetTaskRunner()->RunsTasksInCurrentSequence());
   return g_process_proxy_registry.Pointer();
+}
+
+// static
+int ProcessProxyRegistry::ConvertToSystemPID(const std::string& id) {
+  // The `id` is <pid>-<guid>. `base::StringToInt()` will parse until the '-'.
+  int out;
+  base::StringToInt(id, &out);
+  return out;
 }
 
 // static

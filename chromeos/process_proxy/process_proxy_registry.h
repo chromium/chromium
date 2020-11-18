@@ -44,6 +44,9 @@ class CHROMEOS_EXPORT ProcessProxyRegistry {
 
   static ProcessProxyRegistry* Get();
 
+  // Converts the id returned by OpenProcess() to the system pid.
+  static int ConvertToSystemPID(const std::string& id);
+
   // Returns a SequencedTaskRunner where the singleton instance of
   // ProcessProxyRegistry lives.
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
