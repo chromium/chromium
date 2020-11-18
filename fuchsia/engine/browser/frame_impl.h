@@ -119,6 +119,9 @@ class FrameImpl : public fuchsia::web::Frame,
   // Cleans up the MediaPlayerImpl on disconnect.
   void OnMediaPlayerDisconnect();
 
+  // An error handler for |accessibility_bridge_|.
+  void OnAccessibilityError(zx_status_t error);
+
   // Initializes WindowTreeHost for the view with the specified |view_token|.
   // |view_token| may be uninitialized in headless mode.
   void InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
@@ -288,6 +291,8 @@ class FrameImpl : public fuchsia::web::Frame,
   media_control::MediaBlocker media_blocker_;
 
   ThemeManager theme_manager_;
+
+  base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_H_

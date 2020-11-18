@@ -493,6 +493,14 @@ void FrameImpl::OnMediaPlayerDisconnect() {
   media_player_ = nullptr;
 }
 
+void FrameImpl::OnAccessibilityError(zx_status_t error) {
+  // The task is posted so |accessibility_bridge_| does not tear |this| down
+  // while events are still being processed.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&FrameImpl::CloseAndDestroyFrame,
+                                weak_factory_.GetWeakPtr(), error));
+}
+
 bool FrameImpl::MaybeHandleCastStreamingMessage(
     std::string* origin,
     fuchsia::web::WebMessage* message,
@@ -572,7 +580,7 @@ void FrameImpl::CreateViewWithViewRef(
       semantics_manager_for_test_ ? semantics_manager_for_test_
                                   : semantics_manager.get(),
       window_tree_host_->CreateViewRef(), web_contents_.get(),
-      base::BindOnce(&FrameImpl::CloseAndDestroyFrame, base::Unretained(this)));
+      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)));
 }
 
 void FrameImpl::GetMediaPlayer(
@@ -775,7 +783,7 @@ void FrameImpl::EnableHeadlessRendering() {
     accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
         semantics_manager_for_test_, window_tree_host_->CreateViewRef(),
         web_contents_.get(),
-        base::BindOnce(&FrameImpl::CloseAndDestroyFrame,
+        base::BindOnce(&FrameImpl::OnAccessibilityError,
                        base::Unretained(this)));
 
     // Set bounds for testing hit testing.
