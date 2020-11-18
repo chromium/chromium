@@ -49,7 +49,6 @@ class AnimationWorkletMutatorDispatcherImpl;
 class FloatPoint;
 class HitTestResult;
 class HTMLPlugInElement;
-class LocalFrameView;
 class Page;
 class PageWidgetEventHandler;
 class PaintWorkletPaintDispatcher;
@@ -689,11 +688,6 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // The fullscreen granted status from the most recent VisualProperties update.
   bool IsFullscreenGranted();
-
-  // Return the LocalFrameView used for animation scrolling. This is overridden
-  // by WebViewFrameWidget and should eventually be removed once null does not
-  // need to be passed for the main frame.
-  virtual LocalFrameView* GetLocalFrameViewForAnimationScrolling() = 0;
 
   void NotifyPageScaleFactorChanged(float page_scale_factor,
                                     bool is_pinch_gesture_active);

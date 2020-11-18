@@ -458,10 +458,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
   return event_result;
 }
 
-LocalFrameView* WebFrameWidgetImpl::GetLocalFrameViewForAnimationScrolling() {
-  return LocalRootImpl()->GetFrame()->View();
-}
-
 PaintLayerCompositor* WebFrameWidgetImpl::Compositor() const {
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   if (!frame || !frame->GetDocument() || !frame->GetDocument()->GetLayoutView())

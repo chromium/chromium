@@ -106,7 +106,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
 
-  LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;

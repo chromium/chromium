@@ -1440,8 +1440,19 @@ cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(
   widget_base_->InitializeCompositing(
       main_thread_scheduler, task_graph_runner, for_child_local_root_frame,
       screen_info, std::move(ukm_recorder_factory), settings);
-  GetPage()->AnimationHostInitialized(*AnimationHost(),
-                                      GetLocalFrameViewForAnimationScrolling());
+
+  LocalFrameView* frame_view;
+  if (for_child_local_root_frame) {
+    frame_view = LocalRootImpl()->GetFrame()->View();
+  } else {
+    // Scrolling for the root frame is special we need to pass null indicating
+    // we are at the top of the tree when setting up the Animation. Which will
+    // cause ownership of the timeline and animation host.
+    // See ScrollingCoordinator::AnimationHostInitialized.
+    frame_view = nullptr;
+  }
+
+  GetPage()->AnimationHostInitialized(*AnimationHost(), frame_view);
   return widget_base_->LayerTreeHost();
 }
 

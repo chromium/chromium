@@ -126,8 +126,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
 
-  LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
-
   // Finds the parameters required for scrolling the focused editable |element|
   // into view. |rect_to_scroll| is used for recursive scrolling of the element
   // into view and contains all or part of element's bounding box and always

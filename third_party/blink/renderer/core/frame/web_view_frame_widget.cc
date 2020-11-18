@@ -319,14 +319,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   return event_result;
 }
 
-LocalFrameView* WebViewFrameWidget::GetLocalFrameViewForAnimationScrolling() {
-  // Scrolling for the root frame is special we need to pass null indicating
-  // we are at the top of the tree when setting up the Animation. Which will
-  // cause ownership of the timeline and animation host.
-  // See ScrollingCoordinator::AnimationHostInitialized.
-  return nullptr;
-}
-
 void WebViewFrameWidget::SetAutoResizeMode(bool auto_resize,
                                            const gfx::Size& min_window_size,
                                            const gfx::Size& max_window_size,
