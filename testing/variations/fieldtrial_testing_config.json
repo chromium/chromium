@@ -1354,6 +1354,27 @@
             ]
         }
     ],
+    "ChangeExtensionEventPageSuspendDelay": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ChangeExtensionEventPageSuspendDelay",
+                    "params": {
+                        "event-page-suspend-delay-ms": "61000"
+                    },
+                    "enable_features": [
+                        "ChangeExtensionEventPageSuspendDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "CheckOfflineCapability": [
         {
             "platforms": [
