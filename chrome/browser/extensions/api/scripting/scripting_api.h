@@ -31,11 +31,33 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  ~ScriptingExecuteScriptFunction() override;
+
+  // Invoked when script execution is complete.
   void OnScriptExecuted(const std::string& error,
                         const GURL& frame_url,
                         const base::ListValue& result);
+};
 
-  ~ScriptingExecuteScriptFunction() override;
+class ScriptingInsertCSSFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.insertCSS", SCRIPTING_INSERTCSS)
+
+  ScriptingInsertCSSFunction();
+  ScriptingInsertCSSFunction(const ScriptingInsertCSSFunction&) = delete;
+  ScriptingInsertCSSFunction& operator=(const ScriptingInsertCSSFunction&) =
+      delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingInsertCSSFunction() override;
+
+  // Called when the CSS insertion is complete.
+  void OnCSSInserted(const std::string& error,
+                     const GURL& frame_url,
+                     const base::ListValue& result);
 };
 
 }  // namespace extensions

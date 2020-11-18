@@ -78,6 +78,51 @@ void ExecuteScript(ScriptExecutor* script_executor,
       std::move(callback));
 }
 
+// Returns true if the `target` can be accessed with the given `permissions`.
+// If the target can be accessed, populates `script_executor_out` with the
+// associated ScriptExecutor and `frame_scope_out` with the appropriate scope;
+// if the target cannot be accessed, populates `error_out`.
+bool CanAccessTarget(const PermissionsData& permissions,
+                     const api::scripting::InjectionTarget& target,
+                     content::BrowserContext* browser_context,
+                     bool include_incognito_information,
+                     ScriptExecutor** script_executor_out,
+                     ScriptExecutor::FrameScope* frame_scope_out,
+                     std::string* error_out) {
+  content::WebContents* tab = nullptr;
+  TabHelper* tab_helper = nullptr;
+  if (!ExtensionTabUtil::GetTabById(target.tab_id, browser_context,
+                                    include_incognito_information, &tab) ||
+      !(tab_helper = TabHelper::FromWebContents(tab))) {
+    // TODO(devlin): Add a constant for this in a centrally-consumable location.
+    *error_out = base::StringPrintf("No tab with id: %d", target.tab_id);
+    return false;
+  }
+
+  ScriptExecutor* script_executor = tab_helper->script_executor();
+  DCHECK(script_executor);
+
+  ScriptExecutor::FrameScope frame_scope =
+      target.all_frames && *target.all_frames == true
+          ? ScriptExecutor::INCLUDE_SUB_FRAMES
+          : ScriptExecutor::SINGLE_FRAME;
+
+  // TODO(devlin): It'd be best to do all the permission checks for the frames
+  // on the browser side, including child frames. Today, we only check the
+  // main frame, and then let the ScriptExecutor inject into all child frames
+  // (there's a permission check at the time of the injection in the renderer).
+  // TODO(devlin): We error out if the extension doesn't have access to the top
+  // frame, even if it may inject in child frames. This is inconsistent with
+  // content scripts (which can execute on child frames), but consistent with
+  // the old tabs.executeScript() API.
+  if (!HasPermissionToInject(permissions, target.tab_id, tab, error_out))
+    return false;
+
+  *frame_scope_out = frame_scope;
+  *script_executor_out = script_executor;
+  return true;
+}
+
 }  // namespace
 
 ScriptingExecuteScriptFunction::ScriptingExecuteScriptFunction() = default;
@@ -89,38 +134,20 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const api::scripting::ScriptInjection& injection = params->injection;
 
-  content::WebContents* tab = nullptr;
-  TabHelper* tab_helper = nullptr;
-  if (!ExtensionTabUtil::GetTabById(
-          injection.target.tab_id, browser_context(),
-          include_incognito_information(), nullptr /* browser */,
-          nullptr /* tab_strip */, &tab, nullptr /* tab_index */) ||
-      !(tab_helper = TabHelper::FromWebContents(tab))) {
-    return RespondNow(Error(
-        base::StringPrintf("No tab with id: %d", injection.target.tab_id)));
-  }
-
-  ScriptExecutor* script_executor = tab_helper->script_executor();
-  DCHECK(script_executor);
+  // TODO(devlin): Add support for specifying a file.
+  if (!injection.function)
+    return RespondNow(Error("'css' must be specified"));
 
   std::string error;
-
-  ScriptExecutor::FrameScope frame_scope =
-      injection.target.all_frames && *injection.target.all_frames == true
-          ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SINGLE_FRAME;
-  // TODO(devlin): It'd be best to do all the permission checks for the frames
-  // on the browser side, including child frames. Today, we only check the
-  // parent frame, and then let the ScriptExecutor inject into all child frames
-  // (there's a permission check at the time of the injection).
-  if (frame_scope == ScriptExecutor::SINGLE_FRAME) {
-    if (!HasPermissionToInject(*extension()->permissions_data(),
-                               injection.target.tab_id, tab, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SINGLE_FRAME;
+  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
+                       browser_context(), include_incognito_information(),
+                       &script_executor, &frame_scope, &error)) {
+    return RespondNow(Error(std::move(error)));
   }
 
-  EXTENSION_FUNCTION_VALIDATE(injection.function);
+  DCHECK(script_executor);
 
   // TODO(devlin): This (wrapping a function to create an IIFE) is pretty hacky,
   // and won't work well when we support currying arguments. Add support to the
@@ -140,6 +167,11 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
     const std::string& error,
     const GURL& frame_url,
     const base::ListValue& result) {
+  if (!error.empty()) {
+    Respond(Error(error));
+    return;
+  }
+
   std::vector<api::scripting::InjectionResult> injection_results;
 
   // TODO(devlin): This results in a few copies of values. It'd be better if our
@@ -152,6 +184,71 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
 
   Respond(ArgumentList(
       api::scripting::ExecuteScript::Results::Create(injection_results)));
+}
+
+ScriptingInsertCSSFunction::ScriptingInsertCSSFunction() = default;
+ScriptingInsertCSSFunction::~ScriptingInsertCSSFunction() = default;
+
+ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
+  std::unique_ptr<api::scripting::InsertCSS::Params> params(
+      api::scripting::InsertCSS::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  api::scripting::CSSInjection injection = std::move(params->injection);
+
+  // TODO(https://crbug.com/1148880): Add support for specifying a file.
+  if (!injection.css)
+    return RespondNow(Error("'css' must be specified"));
+
+  std::string error;
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SINGLE_FRAME;
+  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
+                       browser_context(), include_incognito_information(),
+                       &script_executor, &frame_scope, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+  DCHECK(script_executor);
+
+  // TODO(devlin): Pull the default argument for CSSOrigin up to here, and
+  // pass it through ScriptExecutor and friends, rather than having it
+  // defined in the renderer.
+  base::Optional<CSSOrigin> origin;
+  switch (injection.origin) {
+    case api::scripting::STYLE_ORIGIN_USER:
+      origin = CSS_ORIGIN_USER;
+      break;
+    case api::scripting::STYLE_ORIGIN_AUTHOR:
+      origin = CSS_ORIGIN_AUTHOR;
+      break;
+    case api::scripting::STYLE_ORIGIN_NONE:
+      break;
+  }
+
+  // Note: CSS always injects as soon as possible, so we default to
+  // document_start. Because of tab loading, there's no guarantee this will
+  // *actually* inject before page load, but it will at least inject "soon".
+  constexpr UserScript::RunLocation kRunLocation = UserScript::DOCUMENT_START;
+  script_executor->ExecuteScript(
+      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
+      *injection.css, frame_scope, ExtensionApiFrameIdMap::kTopFrameId,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kRunLocation,
+      ScriptExecutor::DEFAULT_PROCESS,
+      /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture(), origin,
+      ScriptExecutor::NO_RESULT,
+      base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
+
+  return RespondLater();
+}
+
+void ScriptingInsertCSSFunction::OnCSSInserted(const std::string& error,
+                                               const GURL& frame_url,
+                                               const base::ListValue& result) {
+  DCHECK(result.GetList().empty());
+  if (!error.empty()) {
+    Respond(Error(error));
+    return;
+  }
+  Respond(NoArguments());
 }
 
 }  // namespace extensions

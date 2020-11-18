@@ -1595,6 +1595,7 @@ enum HistogramValue {
   SCRIPTING_EXECUTESCRIPT = 1532,
   DECLARATIVENETREQUEST_UPDATESESSIONRULES = 1533,
   DECLARATIVENETREQUEST_GETSESSIONRULES = 1534,
+  SCRIPTING_INSERTCSS = 1535,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
