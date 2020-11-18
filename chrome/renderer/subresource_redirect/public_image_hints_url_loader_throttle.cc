@@ -47,7 +47,9 @@ PublicImageHintsURLLoaderThrottle::GetSubresourceRedirectHintsAgent() {
       GetRenderFrame());
 }
 
-bool PublicImageHintsURLLoaderThrottle::ShouldRedirectImage(const GURL& url) {
+base::Optional<bool> PublicImageHintsURLLoaderThrottle::ShouldRedirectImage(
+    const GURL& url,
+    SubresourceRedirectURLLoaderThrottle::RedirectDecisionCallback callback) {
   if (redirect_result_ !=
       SubresourceRedirectHintsAgent::RedirectResult::kRedirectable) {
     return false;

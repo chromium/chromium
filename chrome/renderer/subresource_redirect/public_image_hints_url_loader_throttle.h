@@ -13,8 +13,7 @@
 
 namespace subresource_redirect {
 
-// This class handles internal redirects for public subresouces on HTTPS sites
-// to compressed versions of subresources.
+// This class allows image compression based on public image hints received.
 class PublicImageHintsURLLoaderThrottle
     : public SubresourceRedirectURLLoaderThrottle {
  public:
@@ -23,8 +22,16 @@ class PublicImageHintsURLLoaderThrottle
 
   ~PublicImageHintsURLLoaderThrottle() override;
 
+  PublicImageHintsURLLoaderThrottle(const PublicImageHintsURLLoaderThrottle&) =
+      delete;
+  PublicImageHintsURLLoaderThrottle& operator=(
+      const PublicImageHintsURLLoaderThrottle&) = delete;
+
   // SubresourceRedirectURLLoaderThrottle:
-  bool ShouldRedirectImage(const GURL& url) override;
+  base::Optional<bool> ShouldRedirectImage(
+      const GURL& url,
+      SubresourceRedirectURLLoaderThrottle::RedirectDecisionCallback callback)
+      override;
   void OnRedirectedLoadCompleteWithError() override;
   void RecordMetricsOnLoadFinished(const GURL& url,
                                    int64_t content_length) override;

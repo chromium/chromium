@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_URL_LOADER_THROTTLE_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -22,11 +23,18 @@ namespace subresource_redirect {
 // should implement the decider logic if an URL should be compressed.
 class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
+  using RedirectDecisionCallback = base::OnceCallback<void(bool)>;
+
   static std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
   MaybeCreateThrottle(const blink::WebURLRequest& request, int render_frame_id);
 
   explicit SubresourceRedirectURLLoaderThrottle(int render_frame_id);
   ~SubresourceRedirectURLLoaderThrottle() override;
+
+  SubresourceRedirectURLLoaderThrottle(
+      const SubresourceRedirectURLLoaderThrottle&) = delete;
+  SubresourceRedirectURLLoaderThrottle& operator=(
+      const SubresourceRedirectURLLoaderThrottle&) = delete;
 
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
@@ -50,12 +58,17 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Overridden to do nothing as the default implementation is NOT_REACHED()
   void DetachFromCurrentSequence() override;
 
-  // Return whether the image url should be redirected.
-  virtual bool ShouldRedirectImage(const GURL& url) = 0;
+  // Determine whether the image url should be redirected. When the
+  // determination can be made immediately, the decision should be returned.
+  // Otherwise base::nullopt should be returned and the callback should be
+  // invoked with the decision asynchronously.
+  virtual base::Optional<bool> ShouldRedirectImage(
+      const GURL& url,
+      RedirectDecisionCallback callback) = 0;
 
   // Indicates the subresource redirect failed, and the image will be fetched
-  // directly from the  origin instead. The failures can be due to non-2xx http
-  // responses or other net errors
+  // directly from the  origin instead. The failures can be due to non-2xx
+  // http responses or other net errors
   virtual void OnRedirectedLoadCompleteWithError() = 0;
 
   // Notifies the image load finished.
@@ -67,7 +80,32 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   }
 
  private:
+  // Different states the subresource redirection can be in.
+  enum class RedirectState {
+    kNone,
+
+    // The redirect decision is pending from the underlying decider.
+    kDeciderDecisionPending,
+
+    // Redirect was disallowed by the underlying decider e.g., robots rules
+    // decider.
+    kDeciderDisallowed,
+
+    // The decider allowed redirect, and was attempted.
+    kRedirectAttempted,
+
+    // Failed due to http response codes, net errors, and the subresource was
+    // fetched from original origin.
+    kRedirectFailed
+  };
+
   friend class TestPublicImageHintsURLLoaderThrottle;
+
+  // Callback to notify the decision of decider subclasses.
+  void NotifyRedirectDeciderDecision(bool is_allowed);
+
+  // Start the timer for redirect fetch timeout.
+  void StartRedirectTimeoutTimer();
 
   // Callback invoked when the redirect fetch times out.
   void OnRedirectTimeout();
@@ -75,17 +113,15 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Render frame id to get the hints agent of the render frame.
   const int render_frame_id_;
 
-  // Whether this resource was actually redirected to compressed server origin.
-  // This will be true when the redirect was attempted. Will be false when
-  // redirect failed due to neterrors, or redirect was not attempted (but
-  // coverage metrics recorded), or redirect was not needed when the initial URL
-  // itself is compressed origin.
-  bool did_redirect_compressed_origin_ = false;
+  // The current state of redirect.
+  RedirectState redirect_state_ = RedirectState::kNone;
 
   // Timer to detect whether the response from compression server has timed out.
   std::unique_ptr<base::OneShotTimer> redirect_timeout_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(SubresourceRedirectURLLoaderThrottle);
+  // Used to get a weak pointer to |this|.
+  base::WeakPtrFactory<SubresourceRedirectURLLoaderThrottle> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace subresource_redirect

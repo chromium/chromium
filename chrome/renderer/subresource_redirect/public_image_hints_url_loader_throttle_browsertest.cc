@@ -183,7 +183,7 @@ TEST_F(SubresourceRedirectPublicImageHintsURLLoaderThrottleTest,
     bool defer = true;
     throttle->WillStartRequest(&request, &defer);
 
-    EXPECT_EQ(defer, test_case.redirected_subresource_url.is_empty());
+    EXPECT_FALSE(defer);
     if (!test_case.redirected_subresource_url.is_empty()) {
       EXPECT_EQ(request.url, test_case.redirected_subresource_url);
     } else {
