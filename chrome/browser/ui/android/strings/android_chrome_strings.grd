@@ -3115,6 +3115,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_READING_LIST_INTRO_TEXT" desc="The text on the reading list in product help bubble and other UIs to introduce the feature to the user.">
         Save this page for later and get a reminder
       </message>
+      <message name="IDS_READING_LIST_SAVE_PAGES_FOR_LATER" desc="The text on the reading list in product help bubble to introduce the feature to the user.">
+        Save pages for later and get a reminder
+      </message>
       <message name="IDS_READING_LIST_FIND_IN_BOOKMARKS" desc="The text to inform the user to find the reading list in bookmarks UI.">
         Find your reading list in Bookmarks
       </message>
