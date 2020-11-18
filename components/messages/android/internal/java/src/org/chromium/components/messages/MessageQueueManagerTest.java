@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -149,6 +150,30 @@ public class MessageQueueManagerTest {
         queueManager.dismissMessage(m1);
         queueManager.dismissMessage(m1);
         verify(m1, times(1)).dismiss();
+    }
+
+    /**
+     * Tests that all messages can be dismissed correctly.
+     */
+    @Test
+    @SmallTest
+    public void testDismissAllMessages() {
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
+        final int count = 10;
+        MessageStateHandler handlers[] = new MessageStateHandler[count];
+        for (int i = 0; i < count; i++) {
+            handlers[i] = Mockito.spy(new EmptyMessageStateHandler());
+            queueManager.enqueueMessage(handlers[i], handlers[i]);
+        }
+        queueManager.dismissAllMessages();
+        for (MessageStateHandler h : handlers) {
+            verify(h).dismiss();
+        }
+        Assert.assertEquals("Map should be cleared after all messages are dismissed", 0,
+                queueManager.getMessageMapForTesting().size());
+        Assert.assertEquals("Queue should be cleared after all messages are dismissed", 0,
+                queueManager.getMessageQueueForTesting().size());
     }
 
     /**
