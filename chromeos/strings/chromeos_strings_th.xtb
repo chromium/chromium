@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
+<translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
 <translation id="1075811647922107217">ขนาดหน้า</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
+<translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
+<translation id="1398634363027580500">เวลาในการตอบสนองของ HTTPS สูงมาก</translation>
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
+<translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
 <translation id="467510802200863975">รหัสผ่านไม่ตรงกัน</translation>
+<translation id="467715984478005772">สงสัยว่าเป็นไฟร์วอลล์</translation>
 <translation id="4691278870498629773">หยุดพิมพ์ - ไม่มีถาด</translation>
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">ไม่สำเร็จ - กระดาษติด</translation>
 <translation id="6050189528197190982">ระดับสีเทา</translation>
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
+<translation id="6061772781719867950">คำขอ HTTP ที่ไม่สำเร็จ</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
 <translation id="6146993107019042706">ป้อนรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
+<translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
+<translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6839141349259399400">หากเชื่อมต่อกับเครื่องสแกนไม่ได้</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
 <translation id="7805768142964895445">สถานะ</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
+<translation id="8302368968391049045">ไฟร์วอลล์ HTTPS</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
 <translation id="8364946094152050673">เนมเซิร์ฟเวอร์ว่างเปล่า</translation>

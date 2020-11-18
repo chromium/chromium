@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
+<translation id="1238612778414822719">Latência de HTTPS</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1397738625398125236">O gateway pode receber um ping</translation>
+<translation id="1398634363027580500">Latência de HTTPS muito alta</translation>
 <translation id="1413240736185167732">Falha - Falha no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
+<translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="4646949265910132906">Conexão Wi-Fi segura</translation>
 <translation id="467510802200863975">As senhas não são iguais</translation>
+<translation id="467715984478005772">Firewall suspeito</translation>
 <translation id="4691278870498629773">Parado (bandeja ausente)</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
@@ -111,6 +116,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6048107060512778456">Falha - Atolamento de papel</translation>
 <translation id="6050189528197190982">Escala de cinza</translation>
 <translation id="6058625436358447366">Para concluir, insira a senha antiga e a nova</translation>
+<translation id="6061772781719867950">Falha em solicitações HTTP</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
 <translation id="6108689792487843350">Não é possível acessar o gateway</translation>
 <translation id="6146993107019042706">Para concluir, insira a nova senha</translation>
@@ -129,6 +135,8 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parado (saída cheia)</translation>
+<translation id="6766275201586212568">Falha em resoluções de DNS</translation>
+<translation id="6768237774506518020">Taxa elevada de erro de resolução de DNS</translation>
 <translation id="6839141349259399400">Não foi possível se conectar aos scanners?</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -136,6 +144,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7359657277149375382">Tipo de arquivo</translation>
 <translation id="7561454561030345039">Essa ação é gerenciada pelo administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latência de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar nova senha</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -147,6 +156,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
 <translation id="8294431847097064396">Origem</translation>
+<translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta de login múltiplo. Todas as contas conectadas podem ser acessadas sem uma senha; portanto esse recurso só deve ser usado com contas confiáveis.</translation>
 <translation id="8364946094152050673">Servidores de nomes vazios</translation>

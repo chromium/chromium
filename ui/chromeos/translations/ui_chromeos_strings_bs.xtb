@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1000498691615767391">Odaberite koji folder želite otvoriti</translation>
-<translation id="1016731229041675999">transliteracija za arapski</translation>
-<translation id="102325055885714714">transliteracija za tamilski</translation>
+<translation id="1016731229041675999">Transliteracija za arapski</translation>
+<translation id="102325055885714714">Transliteracija za tamilski</translation>
 <translation id="1035094536595558507">Prikaz slajda</translation>
 <translation id="1047956942837015229">Brisanje stavki (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Word dokument</translation>
@@ -276,7 +276,7 @@
 <translation id="4261901459838235729">Google prezentacija</translation>
 <translation id="4290535918735525311">1 folder se dijeli s Linuxom</translation>
 <translation id="4299729908419173967">brazilski</translation>
-<translation id="4305486654020746131">pendžabi</translation>
+<translation id="4305486654020746131">pandžapski</translation>
 <translation id="4309915981827077375">Opće informacije</translation>
 <translation id="4315949787858895817">holandski (Belgija)</translation>
 <translation id="4326192123064055915">Kafa</translation>
@@ -306,7 +306,7 @@
 <translation id="463813589602055304">kineski wubi</translation>
 <translation id="4656293982926141856">Ovaj računar</translation>
 <translation id="4669606053856530811">Članovi tima „<ph name="SOURCE_NAME" />“ će izgubiti pristup osim ako se ove stavke ne dijele s njima.</translation>
-<translation id="4669979276126590335">transliteracija za srpski jezik</translation>
+<translation id="4669979276126590335">Transliteracija za srpski jezik</translation>
 <translation id="4690246192099372265">Švedska</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Majmun</translation>
@@ -332,7 +332,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4839847978919684242">Broj odabranih stavki: <ph name="SELCTED_FILES_COUNT" /></translation>
-<translation id="4842306555839940112">transliteracija za telugu</translation>
+<translation id="4842306555839940112">Transliteracija za telugu</translation>
 <translation id="4843566743023903107">Uređaji Chromebase</translation>
 <translation id="4849981557599196363">njemački (Belgija)</translation>
 <translation id="4850886885716139402">Prikaz</translation>

@@ -24,7 +24,7 @@
 <translation id="1126928665165112660">不是斜體文字</translation>
 <translation id="113582498867142724">「<ph name="TAG" />」集 (共 <ph name="NUM" /> 個項目)</translation>
 <translation id="1161762950103988776">導向</translation>
-<translation id="1164857107703583584">跳躍指令可用於快速瀏覽網頁。</translation>
+<translation id="1164857107703583584">跳轉指令可用於快速瀏覽網頁。</translation>
 <translation id="1175914831232945926">數字</translation>
 <translation id="1188858454923323853">補充</translation>
 <translation id="1189258430971676908">練習區：下拉式清單</translation>
@@ -76,7 +76,7 @@
 <translation id="1431911867058218151">梅紅</translation>
 <translation id="1439316808600711881">區域</translation>
 <translation id="146450394670219700">圖形物件</translation>
-<translation id="1465097259579587977">重新啟動快速導覽</translation>
+<translation id="1465097259579587977">重新開始快速導覽</translation>
 <translation id="1480046233931937785">製作人員名單</translation>
 <translation id="1487494366197411587">Chromebook 的搜尋鍵位於左側 Shift 鍵的正上方。</translation>
 <translation id="1498498210836053409">在編輯文字時停用固定模式 (智慧型固定模式)</translation>
@@ -164,7 +164,7 @@
 <translation id="2163782704988363449">勘誤表</translation>
 <translation id="2169714232367507776">按一下目前的項目</translation>
 <translation id="2179452035581866348">ChromeVox 會使用音效提供必要資訊和額外資訊。只要瞭解各種音效所代表的意義，即可善用這些音效加快瀏覽速度。熟悉這種操作模式後，你可以選擇關閉詳細語音說明，完全靠音效就能掌握關於網頁的各項必要資訊。完整的音效及其意義清單如下。</translation>
-<translation id="2183409941723714159">分頁導覽</translation>
+<translation id="2183409941723714159">Tab 鍵導覽</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{右括弧}other{# 個右括弧}}</translation>
 <translation id="2197863150503783129">馬鞍褐</translation>
 <translation id="2199994615414171367">上一個數學元素</translation>
@@ -247,7 +247,7 @@
 <translation id="2808001342598757276">取消調暗螢幕</translation>
 <translation id="2811019999044652585">如要跳到畫面上的其他部分 (例如工具列或系統匣)，請按下 Control + Forward 鍵。Chromebook 的 Forward 鍵位於數字 2 鍵的正上方。</translation>
 <translation id="2811204574343810641">列</translation>
-<translation id="2816868829355607410">練習區：跳躍指令</translation>
+<translation id="2816868829355607410">練習區：跳轉指令</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2843432675592278677">沒有上一個 ARIA 位置標記</translation>
 <translation id="2843814945404750166">深橄欖綠</translation>
@@ -350,7 +350,7 @@
 <translation id="3406283310380167331">顯示表單清單</translation>
 <translation id="3414400929511680526">愛麗絲藍</translation>
 <translation id="3418936350470374046">下方沒有儲存格</translation>
-<translation id="3435494200763325275">Tab 導覽 (續)</translation>
+<translation id="3435494200763325275">Tab 鍵導覽 (續)</translation>
 <translation id="344800400831402066">秘魯色</translation>
 <translation id="3457000393508828486">部分已按下</translation>
 <translation id="3458865416877308321"><ph name="NAME" />，已關閉</translation>
@@ -582,7 +582,7 @@
 <translation id="5263344797180442561">第 2 階</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5302089807023311274">參考書目資料</translation>
-<translation id="530391007967514163">請試著在標題之間跳躍，以瀏覽下方文字。</translation>
+<translation id="530391007967514163">請試著在標題之間跳轉，以瀏覽下方文字。</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />，分頁</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5310788376443009632">已移除：</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">沒有上一個表單欄位</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">部分已選取</translation>
-<translation id="7344012264516629579">其他跳躍指令包含了以連結、按鈕或核取方塊等方式進行跳躍。ChromeVox 選單中包含了跳躍指令的完整清單，按下搜尋鍵 + 句號鍵即可開啟 ChromeVox 選單。</translation>
+<translation id="7344012264516629579">其他跳轉指令包含了以連結、按鈕或核取方塊等方式進行跳轉。ChromeVox 選單中包含了跳轉指令的完整清單，按下搜尋鍵 + 句號鍵即可開啟 ChromeVox 選單。</translation>
 <translation id="7356165926712028380">切換至 8 點點字</translation>
 <translation id="7356610683936413584">說明清單詳細資料</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{&amp; 符號}other{# 個 &amp; 符號}}</translation>
@@ -1014,7 +1014,7 @@
 <translation id="8603071050456974042">ChromeVox 面板</translation>
 <translation id="8606621670302093223">日期控制項</translation>
 <translation id="8613709718990529335">陶坯黃</translation>
-<translation id="8614129468475308349">非常好！你已順利學完 ChromeVox 的基礎。你可以將從頭再學一次，也可以結束此教學課程，只要找出並點擊底下的按鈕即可。</translation>
+<translation id="8614129468475308349">非常好！你已習得 ChromeVox 的基礎。現在可以前往底下的按鈕並點擊，即可溫習或結束此教學課程。</translation>
 <translation id="8625173877182443267">沒有下一個第 6 階標題</translation>
 <translation id="8628186274519446680">番茄紅</translation>
 <translation id="8638532244051952400">讀出目前的儲存格座標</translation>

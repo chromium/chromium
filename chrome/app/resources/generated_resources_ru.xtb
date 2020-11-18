@@ -266,6 +266,7 @@
 <translation id="1292849930724124745">Не вынимайте смарт-карту</translation>
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
 <translation id="1293556467332435079">Файлы</translation>
+<translation id="1294807885394205587">Это может занять несколько минут. Запуск менеджера контейнеров…</translation>
 <translation id="1296911687402551044">Закрепить выбранную вкладку</translation>
 <translation id="1297175357211070620">Принтер</translation>
 <translation id="1300415640239881824">Для улучшенного воспроизведения защищенного контента домену <ph name="DOMAIN" /> требуется подтверждение того, что устройство прошло проверку в Google.</translation>
@@ -924,6 +925,7 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Проверка виртуальной машины</translation>
 <translation id="2048182445208425546">Доступ к сетевому трафику</translation>
+<translation id="2048554637254265991">Не удалось запустить менеджер контейнеров. Повторите попытку.</translation>
 <translation id="2048653237708779538">Действие недоступно</translation>
 <translation id="204914487372604757">Создать ярлык</translation>
 <translation id="2050339315714019657">Книжная</translation>
@@ -1122,6 +1124,7 @@
 <translation id="2276503375879033601">Добавить приложения</translation>
 <translation id="2277255602909579701">Все файлы cookie и данные сайта</translation>
 <translation id="2278562042389100163">Открыть окно браузера</translation>
+<translation id="2278668501808246459">Запуск менеджера контейнеров</translation>
 <translation id="2280486287150724112">Правое поле</translation>
 <translation id="2282146716419988068">Процесс GPU</translation>
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
@@ -4388,6 +4391,7 @@
 <translation id="6138894911715675297">Сеть <ph name="NETWORK_TYPE" />, нет доступа</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="6143186082490678276">Справка</translation>
+<translation id="6143366292569327983">Выберите исходный язык страницы</translation>
 <translation id="6144938890088808325">Помогите нам улучшить Chromebook</translation>
 <translation id="6147020289383635445">Произошла ошибка предварительного просмотра печати.</translation>
 <translation id="6148576794665275391">Открыть</translation>
@@ -6077,6 +6081,7 @@
 <translation id="810728361871746125">Разрешение экрана</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Нет сторонних файлов cookie}=1{Заблокирован 1 сторонний файл cookie}one{Заблокирован # сторонний файл cookie}few{Заблокировано # сторонних файла cookie}many{Заблокировано # сторонних файлов cookie}other{Заблокировано # сторонних файла cookie}}</translation>
 <translation id="810875025413331850">Устройства поблизости не найдены.</translation>
+<translation id="8109109153262930486">Аватар по умолчанию</translation>
 <translation id="8110489095782891123">Скачивание списка контактов…</translation>
 <translation id="8113476325385351118">Не предоставлять этому сайту полный контроль над устройствами MIDI</translation>
 <translation id="8114199541033039755">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями. Этот параметр активируется, когда включается ChromeVox или автоматическое нажатие.</translation>

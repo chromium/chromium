@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1204296502688602597">DNS लेटंसी</translation>
+<translation id="1238612778414822719">HTTPS लेटन्सी</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कॅन क्षेत्रावर फिट करा</translation>
 <translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
+<translation id="1398634363027580500">अत्युच्च HTTPS लेटन्सी</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1468664791493211953">ऑफर</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
+<translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
+<translation id="467715984478005772">फायरवॉल असू शकते</translation>
 <translation id="4691278870498629773">थांबले - ट्रे गहाळ आहे</translation>
 <translation id="469379815867856270">सिग्नल क्षमता</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">अयशस्वी झाले - कागद अडकला</translation>
 <translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6058625436358447366">पूर्ण करण्यासाठी, तुमचे जुने आणि नवीन पासवर्ड एंटर करा</translation>
+<translation id="6061772781719867950">अयशस्वी HTTPS विनंत्या</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
+<translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
+<translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="6839141349259399400">स्कॅनरशी कनेक्ट करू शकत नाही का?</translation>
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7162487448488904999">गॅलरी</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">फाइल प्रकार</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">उच्च HTTPS लेटन्सी</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
 <translation id="7805768142964895445">स्थिती</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8294431847097064396">स्रोत</translation>
+<translation id="8302368968391049045">HTTPS फायरवॉल</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>

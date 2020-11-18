@@ -221,7 +221,7 @@
 <translation id="2638785836053527382">ההורדה של <ph name="FILE_NAME" /> נמשכת</translation>
 <translation id="2639750663247012216">‏מקש צירוף של ChromeVox</translation>
 <translation id="2644542693584024604">misspelled</translation>
-<translation id="2651441758640020174">יש לנסות לבחור את העונה המועדפת עליך מהרשימה.</translation>
+<translation id="2651441758640020174">יש לנסות לבחור את העונה האהובה עליך מהרשימה.</translation>
 <translation id="2654172656519784359">העברת הסמן למילה הבאה</translation>
 <translation id="2661530546602071611">הודעה</translation>
 <translation id="2673280813984708147">בעריכה</translation>
@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{דולר}two{# סימני דולר}many{# סימני דולר}other{# סימני דולר}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">‏רמז: כדי לצאת מהמדריך הזה, מקישים על Escape.</translation>
-<translation id="3676062394766691318">‏לאחר הגדרת המכשיר, אפשר לחזור ולהציג עוד מדריכים כך: מקישים על מקש החיפוש ועל Q ולאחר מכן מקישים על T.</translation>
+<translation id="3676062394766691318">‏לאחר הגדרת המכשיר, אפשר לחזור ולהציג עוד מדריכים כך: מקישים על מקש החיפוש ועל O ולאחר מכן מקישים על T.</translation>
 <translation id="3681531118904532409">וניל פפאיה</translation>
 <translation id="3692274950075847560">ח:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">קו חוצה</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">אין שדה טופס קודם</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">נבחר באופן חלקי</translation>
-<translation id="7344012264516629579">‏דוגמאות לפקודות קפיצה נוספות: קפיצה באמצעות קישור, לחצן או תיבת סימון. רשימה מלאה של פקודות קפיצה מופיעה בתפריטי ChromeVox, שניתנים לפתיחה על ידי הקשה על מקש החיפוש ועל מקש הנקודה.</translation>
+<translation id="7344012264516629579">‏דוגמאות לפקודות קפיצה נוספות: קפיצה באמצעות קישור, לחצן או תיבת סימון. רשימה מלאה של פקודות קפיצה מופיעה בתפריטי ChromeVox, שאותם ניתן לפתוח על ידי הקשה על מקש החיפוש ועל מקש הנקודה.</translation>
 <translation id="7356165926712028380">מעבר לברייל 8 נקודות</translation>
 <translation id="7356610683936413584">פרטי רשימת תיאורים</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{אמפרסנד (&amp;)}two{# סימני אמפרסנד (&amp;)}many{# סימני אמפרסנד (&amp;)}other{# סימני אמפרסנד (&amp;)}}</translation>
@@ -1014,7 +1014,7 @@
 <translation id="8603071050456974042">‏חלונית ChromeVox</translation>
 <translation id="8606621670302093223">בקרת תאריך</translation>
 <translation id="8613709718990529335">ביסק</translation>
-<translation id="8614129468475308349">‏כל הכבוד! למדת את כל המידע הבסיסי לשימוש ב-ChromeVox. אפשר לעבור שוב על המידע במדריך, או לצאת ממנו על ידי לחיצה על אחד הלחצנים שלמטה.</translation>
+<translation id="8614129468475308349">‏כל הכבוד! למדת את המידע הבסיסי לשימוש ב-ChromeVox. אפשר לעבור שוב על המידע במדריך, או לצאת ממנו על ידי לחיצה על אחד הלחצנים שלמטה.</translation>
 <translation id="8625173877182443267">אין עוד כותרות מרמה 6</translation>
 <translation id="8628186274519446680">עגבנייה</translation>
 <translation id="8638532244051952400">הקראת הקואורדינטות של התא הנוכחי</translation>
@@ -1024,7 +1024,7 @@
 <translation id="8656888282555543604">הפעלת רישום ברייל ביומן</translation>
 <translation id="8659501358298941449">רשימות נפתחות</translation>
 <translation id="867187640362843212">כותרת 5</translation>
-<translation id="8693391540059827073">העונה המועדפת עליי</translation>
+<translation id="8693391540059827073">העונה האהובה עליי</translation>
 <translation id="8696284982970258155">טל דבש</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{קו ניצב}two{# סימני קו ניצב}many{# סימני קו ניצב}other{# סימני קו ניצב}}</translation>
 <translation id="8741370088760768424">רמז: עליך להקיש על מקש החיפוש ועל הרווח כדי להפעיל את הפריט הנוכחי.</translation>

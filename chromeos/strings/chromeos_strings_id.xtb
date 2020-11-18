@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
+<translation id="1238612778414822719">Latensi HTTPS</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sesuaikan dengan area pindai</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
+<translation id="1398634363027580500">Latensi HTTPS sangat tinggi</translation>
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1468664791493211953">Penawaran</translation>
 <translation id="1478594628797167447">Pemindai</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
+<translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tidak ada tugas pencetakan yang sedang berlangsung</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
+<translation id="467715984478005772">Firewall dicurigai</translation>
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
@@ -111,6 +116,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6048107060512778456">Gagal - Kertas macet</translation>
 <translation id="6050189528197190982">Abu-Abu</translation>
 <translation id="6058625436358447366">Untuk menyelesaikan, masukkan sandi yang lama dan baru</translation>
+<translation id="6061772781719867950">Permintaan HTTPS gagal</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
 <translation id="6108689792487843350">Gateway tidak dapat dijangkau</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
@@ -129,6 +135,8 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6747215703636344499">Dihentikan - Baki hasil cetak penuh</translation>
+<translation id="6766275201586212568">Resolusi DNS gagal</translation>
+<translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6839141349259399400">Tidak dapat terhubung ke pemindai?</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
@@ -136,6 +144,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -147,6 +156,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8294431847097064396">Sumber</translation>
+<translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>

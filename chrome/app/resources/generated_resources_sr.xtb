@@ -1705,7 +1705,7 @@
 <translation id="2916073183900451334">Притиском на Tab на веб страници биће истакнуте везе, као и поља у обрасцу</translation>
 <translation id="2916745397441987255">Претражите додатке</translation>
 <translation id="2921081876747860777">Направите лозинку да бисте заштитили локалне податке.</translation>
-<translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ће сада бити закључан.
+<translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ће се сада закључати.
 <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
 <translation id="2923234477033317484">Уклони овај налог</translation>
 <translation id="2926085873880284723">Врати подразумеване пречице</translation>
@@ -6679,10 +6679,10 @@
 <translation id="8774934320277480003">Горња маргина</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8775163630211761057">Пренесите најбоље са Android телефона на <ph name="DEVICE_TYPE" /></translation>
-<translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> биће аутоматски закључан за # секунду.
-<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}one{<ph name="DEVICE_TYPE" /> биће аутоматски закључан за # секунду.
-<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}few{<ph name="DEVICE_TYPE" /> биће аутоматски закључан за # секунде.
-<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}other{<ph name="DEVICE_TYPE" /> биће аутоматски закључан за # секунди.
+<translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> ће се аутоматски закључати за # секунду.
+<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}one{<ph name="DEVICE_TYPE" /> ће се аутоматски закључати за # секунду.
+<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}few{<ph name="DEVICE_TYPE" /> ће се аутоматски закључати за # секунде.
+<ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}other{<ph name="DEVICE_TYPE" /> ће се аутоматски закључати за # секунди.
 <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.}}</translation>
 <translation id="8777628254805677039">основна лозинка</translation>
 <translation id="8780123805589053431">Преузимај описе слика са Google-а</translation>

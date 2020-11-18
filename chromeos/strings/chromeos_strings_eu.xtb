@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
+<translation id="1071587090247825784">suebakia hauteman da</translation>
 <translation id="1075811647922107217">Orriaren tamaina</translation>
 <translation id="1195447618553298278">Errore ezezaguna.</translation>
 <translation id="1204296502688602597">DNSaren itxarote-denbora</translation>
+<translation id="1238612778414822719">HTTPS eskaeren itxarote-denbora</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Egokitu eskanea daitekeen eremura</translation>
 <translation id="1397738625398125236">Ping egin dakioke atebideari</translation>
+<translation id="1398634363027580500">HTTPS eskaeren itxarote-denbora oso luzea</translation>
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
+<translation id="4145784616224233563">HTTP suebakia</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="4646949265910132906">Wifi-konexio segurua</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
+<translation id="467715984478005772">suebaki bat dagoela dirudi</translation>
 <translation id="4691278870498629773">Geldituta: erretilua falta da</translation>
 <translation id="469379815867856270">Seinalearen indarra</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
@@ -111,6 +116,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6048107060512778456">Hutsegitea - Papera trabatuta dago</translation>
 <translation id="6050189528197190982">Gris-eskala</translation>
 <translation id="6058625436358447366">Amaitzeko, idatzi pasahitz zaharra eta berria</translation>
+<translation id="6061772781719867950">huts egin dute HTTP eskaerek</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
@@ -129,6 +135,8 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>
 <translation id="6747215703636344499">Geldituta: irteera-erretilua beteta dago</translation>
+<translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
+<translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
 <translation id="6839141349259399400">Ezin zara konektatu eskanerretara?</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -136,6 +144,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS eskaeren itxarote-denbora luzea</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7805768142964895445">Egoera</translation>
@@ -147,6 +156,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8294431847097064396">Iturburua</translation>
+<translation id="8302368968391049045">HTTPS suebakia</translation>
 <translation id="8347227221149377169">Inprimatze-lanak</translation>
 <translation id="8352772353338965963">Gehitu kontu bat saio-hasiera anitzean. Saioa hasita daukaten kontu guztiak pasahitzik gabe atzi daitezkeenez, kontu fidagarriekin soilik erabili behar da eginbide hori.</translation>
 <translation id="8364946094152050673">Izenen zerbitzariak hutsik daude</translation>

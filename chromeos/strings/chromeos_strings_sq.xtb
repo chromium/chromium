@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1018656279737460067">Anuluar</translation>
+<translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
+<translation id="1238612778414822719">Vonesa e HTTPS</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
+<translation id="1398634363027580500">Vonesë shumë e lartë në HTTPS</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1468664791493211953">Ofertat</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4034824040120875894">Printeri</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
+<translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="467510802200863975">Fjalëkalimet nuk përputhen</translation>
+<translation id="467715984478005772">Dyshohet për mur mbrojtës</translation>
 <translation id="4691278870498629773">Ndaloi - Tabakaja mungon</translation>
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
@@ -110,6 +115,7 @@
 <translation id="6048107060512778456">Dështoi - Bllokim letre</translation>
 <translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
+<translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
 <translation id="6146993107019042706">Për të përfunduar, fut fjalëkalimin e ri</translation>
@@ -128,6 +134,8 @@
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
+<translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
+<translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="6839141349259399400">Nuk mund të lidhesh me skanerët?</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -135,6 +143,7 @@
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7805768142964895445">Statusi</translation>
@@ -146,6 +155,7 @@
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8294431847097064396">Burimi</translation>
+<translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>

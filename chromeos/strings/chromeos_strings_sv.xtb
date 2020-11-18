@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1018656279737460067">Avbröts</translation>
+<translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
 <translation id="1204296502688602597">DNS-latens</translation>
+<translation id="1238612778414822719">HTTPS-fördröjning</translation>
 <translation id="1290331692326790741">svag signal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Anpassa till området som ska skannas</translation>
 <translation id="1397738625398125236">Gateway går att pinga</translation>
+<translation id="1398634363027580500">Mycket hög HTTPS-fördröjning</translation>
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
 <translation id="1478594628797167447">Skanner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
 <translation id="4034824040120875894">Skrivare</translation>
 <translation id="4131410914670010031">Svartvitt</translation>
+<translation id="4145784616224233563">HTTP-brandvägg</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
 <translation id="4646949265910132906">Säker Wi-Fi-anslutning</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
+<translation id="467715984478005772">Misstänkt brandvägg</translation>
 <translation id="4691278870498629773">Har stoppats – fack saknas</translation>
 <translation id="469379815867856270">Signalstyrka</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
@@ -111,6 +116,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
 <translation id="6050189528197190982">Gråskala</translation>
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
+<translation id="6061772781719867950">Misslyckade HTTP-förfrågningar</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
@@ -129,6 +135,8 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
 <translation id="6747215703636344499">Har stoppats – utmatningsfacket är fullt</translation>
+<translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
+<translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="6839141349259399400">Går det inte att ansluta till någon skanner?</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -136,6 +144,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="7561454561030345039">Den här åtgärden hanteras av administratören</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -147,6 +156,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8208861521865154048">Förmåner</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
 <translation id="8294431847097064396">Källa</translation>
+<translation id="8302368968391049045">HTTPS-brandvägg</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
 <translation id="8364946094152050673">Inga namnservrar har angetts</translation>

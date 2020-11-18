@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1018656279737460067">취소됨</translation>
+<translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1204296502688602597">DNS 지연 시간</translation>
+<translation id="1238612778414822719">HTTPS 지연 시간</translation>
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
+<translation id="1398634363027580500">HTTPS 지연 시간 매우 높음</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1468664791493211953">혜택</translation>
 <translation id="1478594628797167447">스캐너</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4034824040120875894">프린터</translation>
 <translation id="4131410914670010031">흑백</translation>
+<translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
+<translation id="467715984478005772">방화벽 의심됨</translation>
 <translation id="4691278870498629773">중지됨 - 배지대 없음</translation>
 <translation id="469379815867856270">신호 강도</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
 <translation id="6050189528197190982">회색조</translation>
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
+<translation id="6061772781719867950">HTTP 요청 실패함</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
+<translation id="6766275201586212568">DNS 변환 실패함</translation>
+<translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6839141349259399400">스캐너에 연결할 수 없나요?</translation>
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7162487448488904999">갤러리</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7805768142964895445">상태</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8294431847097064396">출처</translation>
+<translation id="8302368968391049045">HTTPS 방화벽</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>

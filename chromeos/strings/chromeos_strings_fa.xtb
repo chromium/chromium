@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1018656279737460067">لغو شده</translation>
+<translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
+<translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">متناسب با ناحیه اسکن</translation>
 <translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
+<translation id="1398634363027580500">‏تأخیر بسیار بالا در HTTPS</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1478594628797167447">اسکنر</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4034824040120875894">چاپگر</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
+<translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>
+<translation id="467715984478005772">احتمال وجود مشکل در دیوار آتش</translation>
 <translation id="4691278870498629773">متوقف شد - سینی موجود نیست</translation>
 <translation id="469379815867856270">قدرت سیگنال</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">انجام نشد - کاغذ گیر کرده است</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
+<translation id="6061772781719867950">‏درخواست‌های HTTP ناموفق بود</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
 <translation id="6108689792487843350">دروازه قابل دسترسی نیست</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
+<translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
+<translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="6839141349259399400">نمی‌توانید به اسکنر متصل شوید؟</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7162487448488904999">گالری</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">نوع فایل</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7805768142964895445">وضعیت</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8294431847097064396">منبع</translation>
+<translation id="8302368968391049045">‏دیواره آتش HTTPS</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>

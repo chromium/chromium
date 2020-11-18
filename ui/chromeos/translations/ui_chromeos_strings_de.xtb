@@ -3,13 +3,13 @@
 <translationbundle lang="de">
 <translation id="1000498691615767391">Zu öffnenden Ordner auswählen</translation>
 <translation id="1016731229041675999">Arabisch (Transliteration)</translation>
-<translation id="102325055885714714">Tamilisch (Transliteration)</translation>
+<translation id="102325055885714714">Tamil (Transliteration)</translation>
 <translation id="1035094536595558507">Präsentationsansicht</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> Elemente werden gelöscht...</translation>
 <translation id="1049926623896334335">Word-Dokument</translation>
 <translation id="1060368002126861100">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, verschieben Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
-<translation id="1082570120854863773">Chinesisch (Pinyin) (traditionell)</translation>
+<translation id="1082570120854863773">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="1119069657431255176">Bzip2-komprimiertes Tar-Archiv</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> gefunden.
@@ -467,7 +467,7 @@
 <translation id="60357267506638014">Tschechisch – QWERTY</translation>
 <translation id="604001903249547235">Cloudsicherung</translation>
 <translation id="6040143037577758943">Schließen</translation>
-<translation id="6041767187407754614">Chinesisch (Cangjie)</translation>
+<translation id="6041767187407754614">Chinesisch (Quick/vereinfachtes Cangjie)</translation>
 <translation id="6074825444536523002">Google-Formular</translation>
 <translation id="6096979789310008754">Die Sucheingabe wurde gelöscht. Alle Dateien und Ordner werden angezeigt.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" verschoben</translation>

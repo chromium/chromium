@@ -100,7 +100,7 @@
 <translation id="2028997212275086731">RAR-arkiv</translation>
 <translation id="2046702855113914483">Nudler</translation>
 <translation id="2060251957438343874">Tysk (Tyskland)</translation>
-<translation id="2060392775416297569">Kinesisk Cangjie</translation>
+<translation id="2060392775416297569">Kinesisk cangjie</translation>
 <translation id="2066433303065022982">Hebraisk, translitterasjon</translation>
 <translation id="2070909990982335904">Navn som starter med et punktum, er reservert for systemet. Velg et annet navn.</translation>
 <translation id="2079545284768500474">Angre</translation>
@@ -138,7 +138,7 @@
 <translation id="2541377937973966830">Innholdet i denne mappen er skrivebeskyttet. Noen aktiviteter støttes ikke.</translation>
 <translation id="2542049655219295786">Google-tabell</translation>
 <translation id="2547921442987553570">Legg til i <ph name="EXTENSION_NAME" /></translation>
-<translation id="255285553751745003">Vietnamesisk Telex</translation>
+<translation id="255285553751745003">Vietnamesisk telex</translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
 <translation id="2562685439590298522">Google Dokumenter</translation>
 <translation id="2563185590376525700">Frosk</translation>
@@ -151,7 +151,7 @@
 <translation id="2664412712123763093">Filplassering</translation>
 <translation id="2672394958563893062">Det oppsto en feil. Klikk for å starte på nytt fra begynnelsen.</translation>
 <translation id="2676946222714718093">Spilles av på</translation>
-<translation id="2718873684053049373">Kinesisk Dayi</translation>
+<translation id="2718873684053049373">Kinesisk dayi</translation>
 <translation id="2735623501230989521">Gi Parallels Desktop tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgisk</translation>
@@ -303,7 +303,7 @@
 <translation id="4603392156942865207">Kopierer <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">Sanskrit</translation>
 <translation id="4631887759990505102">Artist</translation>
-<translation id="463813589602055304">Kinesisk Wubi</translation>
+<translation id="463813589602055304">Kinesisk wubi</translation>
 <translation id="4656293982926141856">Denne datamaskinen</translation>
 <translation id="4669606053856530811">Medlemmer av «<ph name="SOURCE_NAME" />» mister tilgangen, med mindre disse elementene deles med dem.</translation>
 <translation id="4669979276126590335">Serbisk, translitterasjon</translation>
@@ -561,7 +561,7 @@
 <translation id="7106346894903675391">Kjøp mer lagringsplass</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;søk i Disk&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
-<translation id="714369685015246514">Kinesisk Array</translation>
+<translation id="714369685015246514">Kinesisk array</translation>
 <translation id="7169438078134535111">Tyrkisk med F-tastatur</translation>
 <translation id="7170467426996704624">Translitterasjon (salam → ሰላም)</translation>
 <translation id="7173380554947442031">Vietnamesisk VNI</translation>

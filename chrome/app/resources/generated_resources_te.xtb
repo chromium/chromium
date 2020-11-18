@@ -105,7 +105,7 @@
 <translation id="1116639326869298217">మీ గుర్తింపును ధృవీకరించడం సాధ్యపడలేదు</translation>
 <translation id="1116694919640316211">గురించి</translation>
 <translation id="1116779635164066733">ఈ సెట్టింగ్‌ని "<ph name="NAME" />" ఎక్స్‌టెన్షన్ అమలు చేస్తుంది.</translation>
-<translation id="1116811861615819198">మీరు షేర్ చేస్తున్న పరికరం స్పందించడంలేదు</translation>
+<translation id="1116811861615819198">మీరు షేర్ చేస్తున్న పరికరం స్పందించడం లేదు</translation>
 <translation id="1118738876271697201">పరికర మోడల్ లేదా క్రమ సంఖ్యను గుర్తించడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
 <translation id="1122068467107743258">ఆఫీస్</translation>
@@ -266,6 +266,7 @@
 <translation id="1292849930724124745">సైన్ ఇన్ అయ్యి ఉండటానికి స్మార్ట్ కార్డ్‌ను ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1294807885394205587">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. కంటైనర్ మేనేజర్‌ను ప్రారంభిస్తోంది.</translation>
 <translation id="1296911687402551044">ఎంపిక చేసిన ట్యాబ్‌ను పిన్ చేయండి</translation>
 <translation id="1297175357211070620">గమ్యం</translation>
 <translation id="1300415640239881824">ఈ పరికరంలో రక్షిత కంటెంట్‌కు మెరుగుపరిచిన ప్లేబ్యాక్ అర్హత ఉందో లేదో నిర్ధారించడానికి, <ph name="DOMAIN" /> మీ పరికర గుర్తింపును Google ద్వారా ధృవీకరించాలనుకుంటోంది.</translation>
@@ -935,6 +936,7 @@
 <translation id="2046702855113914483">రామెన్</translation>
 <translation id="204706822916043810">వర్చువల్ మెషిన్‌ను తనిఖీ చేస్తోంది</translation>
 <translation id="2048182445208425546">మీ నెట్‌వర్క్ ట్రాఫిక్‌ను యాక్సెస్ చేయండి</translation>
+<translation id="2048554637254265991">కంటైనర్ మేనేజర్‌ను ప్రారంభించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2048653237708779538">చర్య అందుబాటులో లేదు</translation>
 <translation id="204914487372604757">షార్ట్‌కట్‌ను సృష్టించు</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
@@ -1135,6 +1137,7 @@
 <translation id="2276503375879033601">మరిన్ని యాప్‌లను జోడించండి</translation>
 <translation id="2277255602909579701">అన్ని కుక్కీలు మరియు సైట్ డేటా</translation>
 <translation id="2278562042389100163">బ్రౌజర్ విండోను తెరువు</translation>
+<translation id="2278668501808246459">కంటైనర్ మేనేజర్‌ను ప్రారంభిస్తోంది</translation>
 <translation id="2280486287150724112">కుడి అంచు</translation>
 <translation id="2282146716419988068">GPU ప్రాసెస్</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
@@ -1311,7 +1314,7 @@
 <translation id="248003956660572823">పాస్‌వర్డ్‌లు సేవ్ చేయబడలేదు</translation>
 <translation id="2480868415629598489">మీరు కాపీ చేసి, అతికించే డేటాను సవరించడం</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
-<translation id="2482895651873876648">ట్యాబ్ గ్రూప్‌కు తరలించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2482895651873876648">ట్యాబ్, గ్రూప్‌నకు తరలించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2484959914739448251">మీ అన్ని సమకాలీకరించబడుతున్న పరికరాలతో సహా, మీ Google ఖాతా నుండి బ్రౌజింగ్ డేటాను తీసివేయడానికి, <ph name="BEGIN_LINK" />మీ రహస్య పదబంధాన్ని నమోదు చేయండి<ph name="END_LINK" />.</translation>
 <translation id="2485005079599453134">ఈ పరికరంలో పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
 <translation id="2485394160472549611">మీ కోసం ఉత్తమంగా ఎంపిక చేసినవి</translation>
@@ -4415,6 +4418,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, నెట్‌వర్క్ లేదు</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="6143186082490678276">సహాయం పొందండి</translation>
+<translation id="6143366292569327983">మీరు అనువదించాలనుకునే పేజీ భాషను ఎంచుకోండి</translation>
 <translation id="6144938890088808325">Chromebookలను మెరుగుపరచడంలో మాకు సహాయపడండి</translation>
 <translation id="6147020289383635445">ముద్రణా ప్రివ్యూ విఫలమైంది.</translation>
 <translation id="6148576794665275391">ఇప్పుడే తెరువు</translation>
@@ -4861,7 +4865,7 @@
 <translation id="6684827949542560880">తాజా అప్‌డేట్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="668599234725812620">Google Playని తెరువు</translation>
 <translation id="6686490380836145850">కుడివైపు ట్యాబ్‌లను మూసివేయి</translation>
-<translation id="6686665106869989887">ట్యాబ్ కుడివైపుకు తరలించబడింది</translation>
+<translation id="6686665106869989887">ట్యాబ్ కుడి వైపునకు తరలించబడింది</translation>
 <translation id="6686817083349815241">మీ పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
 <translation id="6688285987813868112">ఈ ఇమేజ్ కోసం QR కోడ్‌ను రూపొందించండి</translation>
 <translation id="6690659332373509948">ఈ ఫైల్‌ను అన్వయించడం సాధ్యపడలేదు: <ph name="FILE_NAME" /></translation>
@@ -6110,6 +6114,7 @@
 <translation id="810728361871746125">డిస్‌ప్లే రిజల్యూషన్</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{మూడవ పక్షం కుక్కీలు లేవు}=1{మూడవ పక్షానికి సంబంధించిన 1 కుక్కీ బ్లాక్ చేయబడింది}other{మూడవ పక్షానికి సంబంధించిన # కుక్కీలు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="810875025413331850">సమీప పరికరాలు ఏవీ కనుగొనబడలేదు.</translation>
+<translation id="8109109153262930486">ఆటోమేటిక్‌గా సెట్ చేసి ఉన్న అవతార్</translation>
 <translation id="8110489095782891123">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేస్తోంది...</translation>
 <translation id="8113476325385351118">MIDI డివైజ్‌లపై పూర్తి కంట్రోల్ లేకుండా ఈ సైట్‌ను బ్లాక్ చేయడం కొనసాగించు</translation>
 <translation id="8114199541033039755">టాబ్లెట్ మోడ్‌లో బటన్‌లతో హోమ్, వెనుకకు, స్విచ్ యాప్‌లను నావిగేట్ చేయండి. ChromeVox లేదా ఆటోమేటిక్ క్లిక్‌లు ఎనేబుల్ చేయబడినప్పుడు ఆన్ అవుతుంది.</translation>
@@ -6942,7 +6947,7 @@
 <translation id="9066782832737749352">వచనం నుండి ప్రసంగం</translation>
 <translation id="9068849894565669697">రంగుని ఎంచుకోండి</translation>
 <translation id="9068878141610261315">సపోర్ట్ చేయని ఫైల్ రకం</translation>
-<translation id="9070342919388027491">ట్యాబ్ ఎడమవైపుకు తరలించబడింది</translation>
+<translation id="9070342919388027491">ట్యాబ్ ఎడమ వైపునకు తరలించబడింది</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 అడ్రస్}other{# అడ్రస్‌లు}}</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>

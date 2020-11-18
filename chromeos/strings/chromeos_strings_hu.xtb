@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1018656279737460067">Megszakítva</translation>
+<translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
+<translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Igazítás a beolvasási területhez</translation>
 <translation id="1397738625398125236">Az átjáró pingelhető</translation>
+<translation id="1398634363027580500">Nagyon hosszú várakozási idő HTTPS esetén</translation>
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1468664791493211953">Ajánlatok</translation>
 <translation id="1478594628797167447">Szkenner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
+<translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
 <translation id="4646949265910132906">Biztonságos Wi-Fi-kapcsolat</translation>
 <translation id="467510802200863975">A jelszavak nem egyeznek</translation>
+<translation id="467715984478005772">Tűzfal valószínűsíthető</translation>
 <translation id="4691278870498629773">Leállt – Hiányzó tálca</translation>
 <translation id="469379815867856270">Jelerősség</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
@@ -111,6 +116,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6048107060512778456">Sikertelen – Papírelakadás</translation>
 <translation id="6050189528197190982">Szürkeárnyalat</translation>
 <translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
+<translation id="6061772781719867950">Sikertelen HTTP-kérések</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
@@ -129,6 +135,8 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6704062477274546131">DNS-feloldás</translation>
 <translation id="6747215703636344499">Leállt – Megtelt a kimenet</translation>
+<translation id="6766275201586212568">Sikertelen DNS-feloldások</translation>
+<translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="6839141349259399400">Nem tud szkennerhez csatlakozni?</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7162487448488904999">Galéria</translation>
@@ -136,6 +144,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Hosszú várakozási idő HTTPS esetén</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7690294790491645610">Új jelszó megerősítése</translation>
 <translation id="7805768142964895445">Állapot</translation>
@@ -147,6 +156,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8294431847097064396">Forrás</translation>
+<translation id="8302368968391049045">HTTPS-tűzfal</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>

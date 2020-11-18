@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
 <translation id="1204296502688602597">Забавяне на DNS</translation>
+<translation id="1238612778414822719">Забавяне на HTTPS</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
+<translation id="1398634363027580500">Много голямо забавяне на HTTPS</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1478594628797167447">Скенер</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
+<translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="467510802200863975">Паролите не са идентични</translation>
+<translation id="467715984478005772">Предполага се наличие на защитна стена</translation>
 <translation id="4691278870498629773">Спряло – липсваща тава</translation>
 <translation id="469379815867856270">Сила на сигнала</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">Неуспешно – заседнала хартия</translation>
 <translation id="6050189528197190982">Сива скала</translation>
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
+<translation id="6061772781719867950">Неуспешни HTTP заявки</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
+<translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
+<translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6839141349259399400">Не можете да свържете скенерите?</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7162487448488904999">Галерия</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7805768142964895445">Състояние</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8294431847097064396">Източник</translation>
+<translation id="8302368968391049045">Защитна стена за HTTPS</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>

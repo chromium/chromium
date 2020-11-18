@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1018656279737460067">Скасавана</translation>
+<translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
 <translation id="1204296502688602597">Затрымка DNS</translation>
+<translation id="1238612778414822719">Затрымка HTTPS</translation>
 <translation id="1290331692326790741">Слабы сігнал</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
 <translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
+<translation id="1398634363027580500">Вельмі вялікая затрымка HTTPS</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4034824040120875894">Прынтар</translation>
 <translation id="4131410914670010031">Чорна-белы друк</translation>
+<translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
+<translation id="467715984478005772">Магчыма, уключаны брандмаўар</translation>
 <translation id="4691278870498629773">Спынена: няма латка</translation>
 <translation id="469379815867856270">Магутнасць сігналу</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
@@ -111,6 +116,7 @@
 <translation id="6048107060512778456">Збой: захрасла папера</translation>
 <translation id="6050189528197190982">Адценні шэрага</translation>
 <translation id="6058625436358447366">Каб закончыць, увядзіце стары і новы паролі</translation>
+<translation id="6061772781719867950">Збой HTTP-запытаў</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
@@ -129,6 +135,8 @@
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
+<translation id="6766275201586212568">Збой супастаўленняў імён DNS</translation>
+<translation id="6768237774506518020">Высокі працэнт збояў супастаўленняў імён DNS</translation>
 <translation id="6839141349259399400">Не ўдаецца падключыцца да сканераў?</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7162487448488904999">Галерэя</translation>
@@ -136,6 +144,7 @@
 <translation id="7359657277149375382">Тып файла</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7805768142964895445">Стан</translation>
@@ -147,6 +156,7 @@
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8294431847097064396">Крыніца</translation>
+<translation id="8302368968391049045">Брандмаўар HTTPS</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>

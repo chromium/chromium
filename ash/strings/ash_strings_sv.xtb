@@ -98,6 +98,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
 <translation id="1850504506766569011">Wi-Fi är inaktiverat.</translation>
 <translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
+<translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås upp med fingeravtryck</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplösningen har ändrats till <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -119,6 +120,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
+<translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
@@ -126,6 +128,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
+<translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222338659135520253">Inloggning krävs</translation>
@@ -234,6 +237,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3236488194889173876">Det finns inget tillgängligt mobilnätverk</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
+<translation id="3289674678944039601">Laddas via adapter</translation>
 <translation id="3290356915286466215">Inte skyddat</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3307642347673023554">Bytte till laptopläge</translation>
@@ -292,6 +296,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3799080171973636491">Du tryckte på kortkommandot för helskärmsförstoring. Vill du aktivera funktionen?</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
+<translation id="383058930331066723">Batterisparläget är aktiverat</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="3846214748874656680">Avsluta helskärmsläge</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
@@ -336,6 +341,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Skärmdump</translation>
+<translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4267383818855338811">En virtuell maskin använder kameran</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
@@ -468,14 +474,17 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5465662442746197494">Behöver du hjälp?</translation>
 <translation id="5496819745535887422">Enheten återställs av administratören. All data raderas när enheten startas om.</translation>
+<translation id="5516420770350073386">Skärmbild/skärminspelning stoppades av administratören på grund av innehåll på skärmen.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ansluter.</translation>
+<translation id="5532994612895037630">Tryck var som helst för att spela in hela skärmen</translation>
 <translation id="553675580533261935">Sessionen avslutas</translation>
 <translation id="5537725057119320332">Casta</translation>
 <translation id="554893713779400387">Aktivera och inaktivera diktamen</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5571066253365925590">Bluetooth aktiverad</translation>
 <translation id="557563299383177668">Nästa stycke</translation>
+<translation id="55808498489107691">Skärmbild/skärminspelning blockerades av administratören på grund av innehåll på skärmen.</translation>
 <translation id="558849140439112033">Välj område att ta en bild av genom att dra</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Inaktivera talad feedback genom att trycka på Ctrl + Alt + Z.</translation>
@@ -526,6 +535,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="602001110135236999">Rulla åt vänster</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
+<translation id="6032620807120418574">Klicka var som helst för att spela in hela skärmen</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
@@ -534,6 +544,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Din dator kan upptäckas av Bluetooth-enheter som finns i närheten och den visas som <ph name="NAME" /> med adressen <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
@@ -548,6 +559,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6283712521836204486">Stör ej är inaktiverat.</translation>
 <translation id="6284232397434400372">Upplösningen har ändrats</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan läggas till igen senare med en förälders tillstånd.</translation>
+<translation id="6291221004442998378">Laddar inte</translation>
 <translation id="6297287540776456956">Markera ett område med e-pennan</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> byttes till <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Mikrofon</translation>
@@ -576,6 +588,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6537924328260219877">Signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batteri<ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Fråga administratören</translation>
+<translation id="6570902864550063460">Laddas via USB</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
@@ -653,6 +666,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7377169924702866686">Caps Lock är på.</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
+<translation id="7378889811480108604">Batterisparläget är avstängt</translation>
 <translation id="7392563512730092880">Du kan alltid konfigurera detta senare i inställningarna.</translation>
 <translation id="7398254312354928459">Bytte nätverksanslutning</translation>
 <translation id="7405710164030118432">Lås upp enheten genom att ange föräldraåtkomstkoden för Family Link</translation>
@@ -702,6 +716,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7837740436429729974">Tiden är ute</translation>
 <translation id="7842569679327885685">Varning: Experimentfunktion</translation>
 <translation id="7846634333498149051">Tangentbord</translation>
+<translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
 <translation id="7868900307798234037">Låser upp med fingeravtryck</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7886169021410746335">Ändra sekretessinställningarna</translation>
@@ -743,6 +758,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8152092012181020186">Stäng genom att trycka på Ctrl. + W</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Den här inställningen hanteras av administratören.</translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
+<translation id="8170567869359129153">Mobilnätverk. Signalstyrkan är <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Aviseringar har dolts.</translation>
 <translation id="8196787716797768628">Använd rörelser för att snabbt växla mellan appar och interagera med Chromebook i surfplatteläge.</translation>
 <translation id="8200772114523450471">Återuppta</translation>
@@ -752,6 +768,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="8284362522226889623">Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Föregående meny</translation>
@@ -808,6 +825,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8785070478575117577">Anslut till <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">Inmatningsinställningar</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>

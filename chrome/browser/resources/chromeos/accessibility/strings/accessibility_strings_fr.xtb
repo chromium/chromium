@@ -27,7 +27,7 @@
 <translation id="1164857107703583584">Vous pouvez utiliser les commandes d'accès direct pour naviguer efficacement au sein d'une page Web.</translation>
 <translation id="1175914831232945926">des chiffres</translation>
 <translation id="1188858454923323853">complémentaire</translation>
-<translation id="1189258430971676908">Zone d'entraînement : listes déroulantes</translation>
+<translation id="1189258430971676908">Section d'entraînement : listes déroulantes</translation>
 <translation id="1195238899008218998">Postface</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -70,13 +70,13 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">Vert clair</translation>
-<translation id="1411043317877497323">Zone d'entraînement</translation>
+<translation id="1411043317877497323">Section d'entraînement</translation>
 <translation id="141454040365657399">En-tête de page</translation>
 <translation id="1417889266572670458">Bleu marine</translation>
 <translation id="1431911867058218151">Prune</translation>
 <translation id="1439316808600711881">région</translation>
 <translation id="146450394670219700">Objet graphique</translation>
-<translation id="1465097259579587977">Recommencer l'orientation rapide</translation>
+<translation id="1465097259579587977">Recommencer la présentation rapide</translation>
 <translation id="1480046233931937785">Remerciements</translation>
 <translation id="1487494366197411587">Sur un Chromebook, la touche de recherche se trouve juste au-dessus de la touche Maj.</translation>
 <translation id="1498498210836053409">Désactiver le mode persistant lors de la modification de texte (mode persistant intelligent)</translation>
@@ -160,7 +160,7 @@
 <translation id="2121067395472282800">touche d'accès : <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Aucun texte disponible pour cet élément</translation>
 <translation id="2127747486437921899">Italique</translation>
-<translation id="2152179395627233441">Fermer la zone d'entraînement</translation>
+<translation id="2152179395627233441">Fermer la section d'entraînement</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Cliquer sur l'élément actuel</translation>
 <translation id="2179452035581866348">ChromeVox utilise des sons pour vous fournir des informations essentielles et des données complémentaires. Découvrez la signification de chaque son afin d'optimiser votre navigation. Lorsque ces sons vous sont devenus familiers, vous pouvez désactiver les descriptions vocales détaillées et ne vous fier qu'à eux pour obtenir les informations essentielles présentes sur la page. Voici la liste complète des sons, avec la signification de chacun.</translation>
@@ -208,7 +208,7 @@
 <translation id="2523609930580546572">Tutoriel ChromeVox</translation>
 <translation id="2525706221823668172">Raccourcis clavier dans Chromebook</translation>
 <translation id="2553108862507765288">erreur grammaticale</translation>
-<translation id="2556326187583116255">Appuyez avec deux doigts pour arrêter la diffusion vocale</translation>
+<translation id="2556326187583116255">Appuyez avec deux doigts pour arrêter la lecture vocale</translation>
 <translation id="2573256689920773241">Navigation de base</translation>
 <translation id="257674075312929031">Groupe</translation>
 <translation id="2582407057977008361">Contenu relatif</translation>
@@ -247,7 +247,7 @@
 <translation id="2808001342598757276">Rétablir la luminosité de l'écran</translation>
 <translation id="2811019999044652585">Pour accéder directement à d'autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl+touche d'avance rapide. Sur un Chromebook, la touche d'avance rapide se trouve immédiatement au-dessus de la touche numérotée 2.</translation>
 <translation id="2811204574343810641">Ligne</translation>
-<translation id="2816868829355607410">Zone d'entraînement : commandes d'accès direct</translation>
+<translation id="2816868829355607410">Section d'entraînement : commandes d'accès direct</translation>
 <translation id="2841013758207633010">Heure</translation>
 <translation id="2843432675592278677">Aucun repère ARIA précédent</translation>
 <translation id="2843814945404750166">Vert olive foncé</translation>
@@ -283,7 +283,7 @@
 <translation id="3060756054951570867">menu <ph name="TITLE" /> ouvert</translation>
 <translation id="3060880924447482063">Balayez l'écran vers la gauche ou vers la droite pour passer d'un élément à un autre</translation>
 <translation id="3070245424257836917">Balayer l'écran vers le haut avec trois doigts</translation>
-<translation id="307516670110542567">Orientation rapide</translation>
+<translation id="307516670110542567">Présentation rapide</translation>
 <translation id="3078345202707391975">En-tête suivant de niveau 2</translation>
 <translation id="3078740164268491126">tableau</translation>
 <translation id="3082249673510793544">Faire défiler vers l'arrière</translation>
@@ -546,7 +546,7 @@
 <translation id="4973717656530883744">Minimum <ph name="X" /></translation>
 <translation id="4974612477719259470">Aucun bouton précédent</translation>
 <translation id="4979404613699303341">Bouton précédent</translation>
-<translation id="4982917827052020884">Commençons par les touches que vous utiliserez régulièrement. Vous pouvez utiliser la touche Ctrl pour arrêter la diffusion vocale. Cette touche se trouve en bas à gauche de votre clavier. Pour continuer, appuyez sur la touche Ctrl.</translation>
+<translation id="4982917827052020884">Commençons par les touches que vous utiliserez régulièrement. Vous pouvez utiliser la touche Ctrl pour arrêter la lecture vocale. Cette touche se trouve en bas à gauche de votre clavier. Pour continuer, appuyez sur la touche Ctrl.</translation>
 <translation id="4983588134362688868">Revenir en haut de la page</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, fenêtre</translation>
 <translation id="4993152509206108683">Vitesse : <ph name="PERCENT" /> %</translation>
@@ -618,7 +618,7 @@
 <translation id="5513242761114685513">Menu contextuel</translation>
 <translation id="551361796444814639">Bleu moyen</translation>
 <translation id="552195134157544755">Case d'option</translation>
-<translation id="5522423213731659107">Vous avez terminé l'orientation rapide !</translation>
+<translation id="5522423213731659107">Vous avez terminé la présentation rapide !</translation>
 <translation id="5534303576632885660">titre</translation>
 <translation id="5539820223028224601">Gris moyen</translation>
 <translation id="5549179427201066174">Activer ou désactiver les commentaires audio (icônes sonores)</translation>
@@ -641,7 +641,7 @@
 <translation id="5653397561111110475">Utiliser les fonctionnalités d'accessibilité de l'écran tactile du Chromebook</translation>
 <translation id="5655682562155942719">Commandes d'accès direct</translation>
 <translation id="56637627897541303">Zone de texte</translation>
-<translation id="5669637233317991674">Appuyez sur Recherche+Flèche vers la droite ou sur Recherche+Flèche vers la gauche pour naviguer dans cette leçon</translation>
+<translation id="5669637233317991674">Appuyez sur Recherche+Flèche vers la droite ou sur Recherche+Flèche vers la gauche pour parcourir cette leçon</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">déf.</translation>
 <translation id="5682113568322255809">Rep</translation>
@@ -887,7 +887,7 @@
 <translation id="762020119231868829">Met en veille tous les widgets multimédias en cours d'utilisation</translation>
 <translation id="7625690649919402823">Tableau suivant</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Appuyez sur Recherche+Flèche vers la droite pour trouver le bouton "Zone d'entraînement" ou "Leçon suivante". Pour activer le bouton choisi, appuyez ensuite sur Recherche+Espace.</translation>
+<translation id="7637342083105831460">Appuyez sur Recherche+Flèche vers la droite pour trouver le bouton "Section d'entraînement" ou "Leçon suivante". Pour activer le bouton choisi, appuyez ensuite sur Recherche+Espace.</translation>
 <translation id="7639968568612851608">Gris foncé</translation>
 <translation id="7663318257180412551">Titre 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{heure}one{heure}many{hours}other{heures}}</translation>

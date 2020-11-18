@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1018656279737460067">Peruutettu</translation>
+<translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
+<translation id="1238612778414822719">HTTPS-viive</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
+<translation id="1398634363027580500">Erittäin suuri HTTPS-viive</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
 <translation id="1478594628797167447">Skanneri</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4034824040120875894">Tulostin</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
+<translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peruuta tulostustyö painamalla Enter.</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="467510802200863975">Salasanat eivät täsmää</translation>
+<translation id="467715984478005772">Mahdollinen palomuuri</translation>
 <translation id="4691278870498629773">Pysähtynyt – Lokero puuttuu</translation>
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
@@ -111,6 +116,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6048107060512778456">Epäonnistui – Paperitukos</translation>
 <translation id="6050189528197190982">Harmaasävy</translation>
 <translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
+<translation id="6061772781719867950">Hylätyt HTTP-pyynnöt</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
@@ -129,6 +135,8 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
+<translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
+<translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6839141349259399400">Etkö pysty yhdistämään skannereihin?</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -136,6 +144,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
 <translation id="7805768142964895445">Tila</translation>
@@ -147,6 +156,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
 <translation id="8294431847097064396">Lähde</translation>
+<translation id="8302368968391049045">HTTPS-palomuuri</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>

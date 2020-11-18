@@ -350,7 +350,7 @@
 <translation id="3406283310380167331">Mostra elenco moduli</translation>
 <translation id="3414400929511680526">Blu alice</translation>
 <translation id="3418936350470374046">Nessuna cella sotto</translation>
-<translation id="3435494200763325275">Tab navigazione continuata</translation>
+<translation id="3435494200763325275">Tab navigazione (continua)</translation>
 <translation id="344800400831402066">Perù</translation>
 <translation id="3457000393508828486">Parzialmente premuto</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, opzione disattivata</translation>
@@ -382,7 +382,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{dollaro}other{# simboli dollaro}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">Suggerimento: premi Esc se vuoi uscire dal tutorial.</translation>
-<translation id="3676062394766691318">Dopo aver configurato il dispositivo, puoi toranre qui e vedere altri tutorial premendo il tasto per la ricerca + O, poi T.</translation>
+<translation id="3676062394766691318">Dopo aver configurato il dispositivo, puoi tornare qui e vedere altri tutorial premendo il tasto per la ricerca + O, poi T.</translation>
 <translation id="3681531118904532409">Panna papaya</translation>
 <translation id="3692274950075847560">R:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">Sbarrato</translation>
@@ -927,7 +927,7 @@
 <translation id="794091007957014205">{COUNT,plural, =1{chiocciola}other{# simboli chiocciola}}</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7948364528129376623">Nessun link visitato successivo</translation>
-<translation id="7952460583030260752">Riferimenti relativi i comandi</translation>
+<translation id="7952460583030260752">Riferimenti relativi ai comandi</translation>
 <translation id="7965147473449754028">menu chiuso</translation>
 <translation id="7968340748835037139">Verde scuro</translation>
 <translation id="7972507042926081808">Cioccolato</translation>
@@ -957,7 +957,7 @@
 <translation id="812886159861361726">Download di <ph name="FILE_NAME" /> interrotto</translation>
 <translation id="8129445297241948503">Nessuna cella sopra</translation>
 <translation id="8138880386467279117">Touch</translation>
-<translation id="8146613869421949343">Dopodiché, imparerai a utilizzare il tasto per la ricerca. Il tasto per la ricerca viene utilizzato insieme ad altri tasti per i comandi di ChromeVox. Si trova immediatamente sopra al tasto Maiusc. Per continuare, premi il tasto per la ricerca.</translation>
+<translation id="8146613869421949343">Dopodiché, imparerai a utilizzare il tasto per la ricerca. Il tasto per la ricerca viene utilizzato insieme ad altri tasti per i comandi di ChromeVox. Si trova immediatamente sopra al tasto Maiusc di sinistra. Per continuare, premi il tasto per la ricerca.</translation>
 <translation id="816818801578874684">Questa è la prima intestazione. Premi il tasto per la ricerca + H per passare a quella successiva.</translation>
 <translation id="8173092779156526980">Scorri verso sinistra con quattro dita</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{carattere di sottolineatura}other{# caratteri di sottolineatura}}</translation>

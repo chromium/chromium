@@ -98,6 +98,7 @@
 <translation id="1838895407229022812">「夜燈模式」已關閉。</translation>
 <translation id="1850504506766569011">Wi-Fi 已關閉。</translation>
 <translation id="1864454756846565995">USB-C 裝置 (後方連接埠)</translation>
+<translation id="1882814835921407042">沒有流動網絡</translation>
 <translation id="1882897271359938046">正在建立<ph name="DISPLAY_NAME" />鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解像度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
@@ -119,6 +120,7 @@
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
+<translation id="2078034614700056995">請用四隻手指向右滑動以切換至下一個桌面</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="209965399369889474">未連接網絡</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
@@ -126,6 +128,7 @@
 <translation id="2132302418721800944">錄影全螢幕</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
+<translation id="2170530631236737939">用三隻手指向下滑動即可結束「概覽」</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
@@ -234,6 +237,7 @@
 <translation id="3236488194889173876">沒有可用的流動網絡</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
+<translation id="3289674678944039601">正在透過電源適配器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
@@ -292,6 +296,7 @@
 <translation id="3799080171973636491">您已按下全螢幕放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
 <translation id="3826099427150913765">改用密碼</translation>
+<translation id="383058930331066723">「省電模式」已開啟</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="3846214748874656680">關閉全屏幕模式</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
@@ -336,6 +341,7 @@
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
+<translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。通知已關閉</translation>
 <translation id="4267383818855338811">有虛擬機器正在使用攝錄機</translation>
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
@@ -468,14 +474,17 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">您的管理員正在回復裝置。所有資料將於裝置重新啟動後刪除。</translation>
+<translation id="5516420770350073386">由於螢幕上的內容，因此管理員已停止錄影螢幕畫面。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
+<translation id="5532994612895037630">輕按任何一處即可錄影全螢幕畫面</translation>
 <translation id="553675580533261935">正在結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="557563299383177668">下一段</translation>
+<translation id="55808498489107691">管理員因畫面上的內容，已禁止擷取螢幕畫面。</translation>
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
@@ -526,6 +535,7 @@
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6030495522958826102">已經將選單移去螢幕左下角。</translation>
+<translation id="6032620807120418574">點擊任何一處即可錄影全螢幕畫面</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6043212731627905357">此顯示器與您的 <ph name="DEVICE_TYPE" /> 無法配對 (並不支援該顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
@@ -534,6 +544,7 @@
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
+<translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6137566720514957455">打開移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅對話框</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
@@ -548,6 +559,7 @@
 <translation id="6283712521836204486">「請勿騷擾」已關閉。</translation>
 <translation id="6284232397434400372">解像度已變更</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
+<translation id="6291221004442998378">非充電中</translation>
 <translation id="6297287540776456956">使用觸控筆選取區域</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> 已旋轉到 <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">語音</translation>
@@ -576,6 +588,7 @@
 <translation id="6537924328260219877">訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">詢問管理員</translation>
+<translation id="6570902864550063460">正在透過 USB 充電</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
@@ -653,6 +666,7 @@
 <translation id="7377169924702866686">已啟用大寫鍵。</translation>
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
+<translation id="7378889811480108604">「省電模式」已關閉</translation>
 <translation id="7392563512730092880">您稍後可隨時前往「設定」頁面進行設定。</translation>
 <translation id="7398254312354928459">已切換網絡連線</translation>
 <translation id="7405710164030118432">如要解鎖裝置，請輸入您的 Family Link 家長存取碼</translation>
@@ -702,6 +716,7 @@
 <translation id="7837740436429729974">時間到</translation>
 <translation id="7842569679327885685">警告：實驗性功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>
+<translation id="7860671499921112077">用三隻手指向上滑動即可進入「概覽」</translation>
 <translation id="7868900307798234037">用緊指紋解鎖</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7886169021410746335">調整私隱權設定</translation>
@@ -743,6 +758,7 @@
 <translation id="8152092012181020186">㩒一下 Ctrl + W 就可以閂咗佢。</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />，呢項設定由管理員管理。</translation>
 <translation id="8167567890448493835">正在使用「<ph name="LOCALE_NAME" />」</translation>
+<translation id="8170567869359129153">流動網絡。訊號強度為 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">已隱藏通知。</translation>
 <translation id="8196787716797768628">在平板電腦模式中使用手勢快速切換應用程式，並與 Chromebook 互動。</translation>
 <translation id="8200772114523450471">繼續</translation>
@@ -752,6 +768,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">㩒 Enter 掣就可以解鎖 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8284362522226889623">請用四隻手指向左滑動以切換至上一個桌面</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
@@ -808,6 +825,7 @@
 <translation id="8785070478575117577">連接去<ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="881757059229893486">輸入方法設定</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8828714802988429505">90 度</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>

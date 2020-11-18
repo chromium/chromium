@@ -115,7 +115,7 @@
 <translation id="1714116687360794776">미터</translation>
 <translation id="1722567105086139392">링크</translation>
 <translation id="1727806147743597030">ftr</translation>
-<translation id="1730447754326314349">ChromeVox 튜토리얼에 오신 것을 환영합니다. 언제든 이 튜토리얼을 종료하려면 키보드 왼쪽 상단에서 Esc 키를 누르세요. ChromeVox를 사용 중지하려면 Ctrl + Alt + Z 키를 누르세요. 준비가 되면 스페이스바를 눌러 다음 과정으로 이동하세요.</translation>
+<translation id="1730447754326314349">ChromeVox 가이드에 오신 것을 환영합니다. 언제든 이 가이드를 종료하려면 키보드 왼쪽 상단에서 Esc 키를 누르세요. ChromeVox를 사용 중지하려면 Ctrl + Alt + Z 키를 누르세요. 준비가 되면 스페이스바를 눌러 다음 과정으로 이동하세요.</translation>
 <translation id="174268867904053074">다음 그래픽</translation>
 <translation id="1756785467854861272">다크 마젠타</translation>
 <translation id="1765245556747822181">손가락 한 개를 사용하여 위로 스와이프</translation>
@@ -312,7 +312,7 @@
 <translation id="3172700825913348768">{COUNT,plural, =1{공백}other{공백 #개}}</translation>
 <translation id="3179119189286472195">링크 아님</translation>
 <translation id="320041337977930740">디스플레이 스타일을 인터리브로 변경</translation>
-<translation id="3206698050650195442">튜토리얼 종료</translation>
+<translation id="3206698050650195442">가이드 종료</translation>
 <translation id="3208346789712025453">다음 컨트롤이 없습니다</translation>
 <translation id="321072937702597574">오키드</translation>
 <translation id="3218691001991391708"><ph name="TEXT" /> 붙여넣기</translation>
@@ -341,7 +341,7 @@
 <translation id="335581015389089642">음성</translation>
 <translation id="3356951775008366684">단어의 발음을 음성으로 안내합니다.</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">또한 Tab 키를 사용해 화면의 다음 대화형 항목으로 이동할 수 있습니다. Search 키 바로 위에서 Tab 키를 찾으세요. 계속하려면 Tab 키를 누르세요.</translation>
+<translation id="3363015957057974366">또한 Tab 키를 사용해 화면의 다음 대화형 항목으로 이동할 수 있습니다. 검색 키 바로 위에서 Tab 키를 찾으세요. 계속하려면 Tab 키를 누르세요.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" /> 가이드, 과정 <ph name="LESSONS" />개</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{더하기 기호}other{더하기 기호 #개}}</translation>
 <translation id="338583716107319301">구분자</translation>
@@ -374,15 +374,15 @@
 <translation id="3594207934078151302">미디엄 씨 그린</translation>
 <translation id="3599054940393788245">수학 영역에 있지 않음</translation>
 <translation id="360241989769010433">감사의 말</translation>
-<translation id="3616016838842055984">클릭하고 싶은 항목에 도달하면 Search 키 + 스페이스바를 누르세요. 계속하려면 지금 시도해 보세요.</translation>
+<translation id="3616016838842055984">클릭하고 싶은 항목에 도달하면 검색 키 + 스페이스바를 누르세요. 계속하려면 지금 시도해 보세요.</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622350485154495700">손가락 한 개로 두 번 탭</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{백틱 기호}other{백틱 기호 #개}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{달러 기호}other{달러 기호 #개}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="366419593095697301">힌트: 이 튜토리얼을 종료하려면 Esc 키를 누르세요.</translation>
-<translation id="3676062394766691318">기기를 설정한 후 다시 돌아와 Search + O 키를 누를 다음 T 키를 눌러 더 많은 튜토리얼을 볼 수 있습니다.</translation>
+<translation id="366419593095697301">힌트: 이 가이드를 종료하려면 Esc 키를 누르세요.</translation>
+<translation id="3676062394766691318">기기를 설정한 후 다시 돌아와 검색 키 + O 키를 누를 다음 T 키를 눌러 더 많은 가이드를 볼 수 있습니다.</translation>
 <translation id="3681531118904532409">파파야 윕</translation>
 <translation id="3692274950075847560">결과:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">선이 그어져 있음</translation>
@@ -530,7 +530,7 @@
 <translation id="4846428657345567687">ChromeVox에 오신 것을 환영합니다.</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">이전 미디어 위젯이 없습니다</translation>
-<translation id="4855927945655956315">필수 키: Ctrl</translation>
+<translation id="4855927945655956315">필수 키: Ctrl 키</translation>
 <translation id="4862744964787595316">굵은 글씨 아님</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS 로깅 사용</translation>
@@ -641,7 +641,7 @@
 <translation id="5653397561111110475">Chromebook 터치스크린 접근성 기능 사용하기</translation>
 <translation id="5655682562155942719">이동 명령어</translation>
 <translation id="56637627897541303">텍스트 영역</translation>
-<translation id="5669637233317991674">Search + 오른쪽 화살표 키 또는 Search + 왼쪽 화살표 키를 눌러 이 과정을 탐색하세요.</translation>
+<translation id="5669637233317991674">검색 키 + 오른쪽 화살표 키 또는 검색 키 + 왼쪽 화살표 키를 눌러 이 과정을 탐색하세요.</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
 <translation id="5682113568322255809">랜드마크</translation>
@@ -665,11 +665,11 @@
 <translation id="5850707923114094062">뒤로 이동합니다.</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5866042630553435010">일부 확인됨</translation>
-<translation id="5866210856231860256">Search + 오른쪽 화살표 키 또는 Search + 왼쪽 화살표 키를 눌러 이 주제의 과정을 탐색하세요.</translation>
+<translation id="5866210856231860256">검색 키 + 오른쪽 화살표 키 또는 검색 키 + 왼쪽 화살표 키를 눌러 이 주제의 과정을 탐색하세요.</translation>
 <translation id="5867591286054666064">가이드를 보는 도중 아무 키나 누르면 그 키의 이름을 들을 수 있습니다.</translation>
 <translation id="5869546221129391014">격자</translation>
 <translation id="5876817486144482042">음성 볼륨 줄이기</translation>
-<translation id="5878206664863390311">Search + 오른쪽 화살표 키 또는 Search + 왼쪽 화살표 키를 눌러 주제를 탐색하세요.</translation>
+<translation id="5878206664863390311">검색 키 + 오른쪽 화살표 키 또는 검색 키 + 왼쪽 화살표 키를 눌러 주제를 탐색하세요.</translation>
 <translation id="5878908838135392163">파우더 블루</translation>
 <translation id="588108970619830498">텍스트 음성 변환 설정을 기본값으로 재설정합니다</translation>
 <translation id="5891934789323004067">표</translation>
@@ -716,7 +716,7 @@
 <translation id="6254901459154107917">다음 수정 가능 텍스트 영역</translation>
 <translation id="6259464875943891919"><ph name="TYPE" />을(를) 종료합니다.</translation>
 <translation id="6282062888058716985">nav</translation>
-<translation id="6295699829709583154">필수 키: Search</translation>
+<translation id="6295699829709583154">필수 키: 검색 키</translation>
 <translation id="6305702903308659374">ChromeVox 음성이 나올 때도 보통 볼륨으로 재생합니다.</translation>
 <translation id="6307969636681130414">누름</translation>
 <translation id="6315652249189065725">단축키 메뉴 열기</translation>
@@ -783,7 +783,7 @@
 <translation id="6858047746862060282">프롤로그</translation>
 <translation id="6859876496651143278">손가락 한 개를 사용하여 왼쪽으로 스와이프</translation>
 <translation id="6865519907510167493">맞춤법 오류</translation>
-<translation id="6873188295213080042">힌트: 탐색하려면 Search 키를 누른 상태에서 화살표 키를 누르세요.</translation>
+<translation id="6873188295213080042">힌트: 탐색하려면 검색 키를 누른 상태에서 화살표 키를 누르세요.</translation>
 <translation id="6894148351896207544">현재 날짜와 시간 말하기</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6897341342232909480">왼쪽으로 이동</translation>
@@ -849,7 +849,7 @@
 <translation id="7308519659008003150">이전 양식 입력란이 없습니다</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">일부만 선택됨</translation>
-<translation id="7344012264516629579">추가 점프 명령어에는 링크, 버튼, 체크박스 등을 이용한 점프가 포함됩니다. 점프 명령어의 전체 목록은 ChromeVox 메뉴에서 확인할 수 있으며, Search + 마침표 키를 눌러 메뉴를 열 수 있습니다.</translation>
+<translation id="7344012264516629579">추가 점프 명령어에는 링크, 버튼, 체크박스 등을 이용한 점프가 포함됩니다. 점프 명령어의 전체 목록은 ChromeVox 메뉴에서 확인할 수 있으며, 검색 키 + 마침표 키를 눌러 메뉴를 열 수 있습니다.</translation>
 <translation id="7356165926712028380">8점 점자로 전환</translation>
 <translation id="7356610683936413584">설명 목록 세부정보</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{앰퍼샌드}other{앰퍼샌드 #개}}</translation>
@@ -886,7 +886,7 @@
 <translation id="762020119231868829">현재 재생 중인 미디어 위젯 모두 일시중지</translation>
 <translation id="7625690649919402823">다음 표</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
-<translation id="7637342083105831460">Search + 오른쪽 화살표 키를 눌러 연습 영역 또는 다음 과정 버튼을 찾으세요. 그런 다음 Search 키 + 스페이스바를 눌러 활성화하세요.</translation>
+<translation id="7637342083105831460">검색 키 + 오른쪽 화살표 키를 눌러 연습 영역 또는 다음 과정 버튼을 찾으세요. 그런 다음 검색 키 + 스페이스바를 눌러 활성화하세요.</translation>
 <translation id="7639968568612851608">짙은 회색</translation>
 <translation id="7663318257180412551">제목 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{시간}other{시간}}</translation>
@@ -956,8 +956,8 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> 다운로드가 중지되었습니다</translation>
 <translation id="8129445297241948503">위에 셀이 없습니다</translation>
 <translation id="8138880386467279117">터치</translation>
-<translation id="8146613869421949343">다음으로 Search 키에 관해 알아보겠습니다. Search 키는 ChromeVox 명령을 위해 다른 키와 함께 사용됩니다. Search 키는 Shift 키 바로 위에 있습니다. 계속하려면 Search 키를 누르세요.</translation>
-<translation id="816818801578874684">첫 번째 제목입니다. 다음 제목으로 이동하려면 Search + H 키를 누르세요.</translation>
+<translation id="8146613869421949343">다음으로 검색 키에 관해 알아보겠습니다. 검색 키는 ChromeVox 명령을 위해 다른 키와 함께 사용됩니다. 검색 키는 왼쪽 Shift 키 바로 위에 있습니다. 계속하려면 검색 키를 누르세요.</translation>
+<translation id="816818801578874684">첫 번째 제목입니다. 다음 제목으로 이동하려면 검색 키 + H 키를 누르세요.</translation>
 <translation id="8173092779156526980">손가락 네 개를 사용하여 왼쪽으로 스와이프</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{밑줄}other{밑줄 기호 #개}}</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -998,7 +998,7 @@
 <translation id="8473540203671727883">마우스 커서를 올린 텍스트를 음성으로 알려줍니다.</translation>
 <translation id="8476408756881832830">ChromeVox 음성이 나올 때는 재생을 일시중지합니다.</translation>
 <translation id="8476508772960940536">창 전체보기</translation>
-<translation id="8480873377842220259">이제 몇 가지 기본적인 탐색 방법을 알아보겠습니다. Search 키를 누른 상태에서 화살표 키를 눌러 화면 곳곳을 이동할 수 있습니다. 계속하려면 Search + 오른쪽 화살표 키를 누르세요.</translation>
+<translation id="8480873377842220259">이제 몇 가지 기본적인 탐색 방법을 알아보겠습니다. 검색 키를 누른 상태에서 화살표 키를 눌러 화면 곳곳을 이동할 수 있습니다. 계속하려면 검색 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="8503360654911991865">탐색 세밀도 낮추기</translation>
 <translation id="8520472399088452386">스핀 버튼</translation>
 <translation id="8534394844575788431">서식</translation>
@@ -1013,7 +1013,7 @@
 <translation id="8603071050456974042">ChromeVox 패널</translation>
 <translation id="8606621670302093223">날짜 컨트롤</translation>
 <translation id="8613709718990529335">비스크</translation>
-<translation id="8614129468475308349">잘하셨습니다. ChromeVox의 기본사항에 관해 알아보았습니다. 다시 튜토리얼을 살펴봐도 되고 아래 버튼을 찾아 클릭하여 튜토리얼을 종료할 수도 있습니다.</translation>
+<translation id="8614129468475308349">잘하셨습니다. ChromeVox의 기본사항에 관해 알아보았습니다. 다시 가이드를 살펴봐도 되고 아래 버튼을 찾아 클릭하여 가이드를 종료할 수도 있습니다.</translation>
 <translation id="8625173877182443267">다음 수준 6 제목이 없습니다</translation>
 <translation id="8628186274519446680">토마토</translation>
 <translation id="8638532244051952400">현재 셀 좌표 알림</translation>
@@ -1026,14 +1026,14 @@
 <translation id="8693391540059827073">내가 가장 좋아하는 계절</translation>
 <translation id="8696284982970258155">허니듀</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{수직 기호}other{수직 기호 #개}}</translation>
-<translation id="8741370088760768424">힌트: 현재 항목을 활성화하려면 Search 키 + 스페이스바를 누르세요.</translation>
+<translation id="8741370088760768424">힌트: 현재 항목을 활성화하려면 검색 키 + 스페이스바를 누르세요.</translation>
 <translation id="8743786158317878347">구조화된 콘텐츠(예: 표) 입력</translation>
 <translation id="8747966237988593539">정렬된 목록</translation>
 <translation id="8749988712346667988">실버</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> 다운로드가 완료되었습니다</translation>
 <translation id="8767968232364267681">다음 수준 4 제목</translation>
 <translation id="8770473310765924354">구조화된 콘텐츠(예: 표) 종료</translation>
-<translation id="8775203254697638994">드롭다운 목록에서 항목을 선택해야 하는 경우가 있습니다. 그러려면 먼저 Search 키 + 스페이스바를 눌러 목록을 펼칩니다. 그런 다음 위쪽 화살표와 아래쪽 화살표를 눌러 항목을 선택합니다. 마지막으로 Search 키 + 스페이스바를 눌러 목록을 접습니다.</translation>
+<translation id="8775203254697638994">드롭다운 목록에서 항목을 선택해야 하는 경우가 있습니다. 그러려면 먼저 검색 키 + 스페이스바를 눌러 목록을 펼칩니다. 그런 다음 위쪽 화살표 키와 아래쪽 화살표 키를 눌러 항목을 선택합니다. 마지막으로 검색 키 + 스페이스바를 눌러 목록을 접습니다.</translation>
 <translation id="8779057862865475116">이전 링크가 없습니다</translation>
 <translation id="8796411681063377102">다음 수준 3 제목</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />페이지 중 <ph name="CURRENTPAGE" />페이지</translation>
@@ -1056,7 +1056,7 @@
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8989104346085848538">현재 ChromeVox의 음성 안내를 중지하려면 Ctrl 키를 누르세요.</translation>
-<translation id="9014206344398081366">ChromeVox 튜토리얼</translation>
+<translation id="9014206344398081366">ChromeVox 가이드</translation>
 <translation id="9040132695316389094">제목 1</translation>
 <translation id="9061884144798498064">8점 점자표 선택:</translation>
 <translation id="9065283790526219006">팝업있음</translation>

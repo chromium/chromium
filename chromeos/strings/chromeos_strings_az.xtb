@@ -2,13 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1018656279737460067">Ləğv edilib</translation>
+<translation id="1071587090247825784">Qoruyucu divar aşkarlandı</translation>
 <translation id="1075811647922107217">Səhifə ölçüsü</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
+<translation id="1238612778414822719">HTTPS Gecikməsi</translation>
 <translation id="1290331692326790741">Zəif siqnal</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
 <translation id="1397738625398125236">Giriş test edilə bilər</translation>
+<translation id="1398634363027580500">Çox yüksək HTTPS gecikməsi</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -64,6 +67,7 @@
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
+<translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
@@ -80,6 +84,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
+<translation id="467715984478005772">Qoruyucu divar şübhəsi var</translation>
 <translation id="4691278870498629773">Dayanıb - Altlıq yoxdur</translation>
 <translation id="469379815867856270">Siqnal Gücü</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
@@ -110,6 +115,7 @@
 <translation id="6048107060512778456">Alınmadı - Kağız ilişib</translation>
 <translation id="6050189528197190982">Boz çalar</translation>
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
+<translation id="6061772781719867950">HTTP sorğuları alınmadı</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
@@ -128,6 +134,8 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
+<translation id="6766275201586212568">DNS həlləri alınmadı</translation>
+<translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6839141349259399400">Skanerlərə qoşula bilmirsiniz?</translation>
 <translation id="714876143603641390">Lan Bağlantısı</translation>
 <translation id="7162487448488904999">Qalereya</translation>
@@ -135,6 +143,7 @@
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -146,6 +155,7 @@
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8294431847097064396">Mənbə</translation>
+<translation id="8302368968391049045">HTTPS Qoruyucu divarı</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
 <translation id="8364946094152050673">Boş ad serverləri</translation>
