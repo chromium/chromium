@@ -1101,10 +1101,12 @@ int main(int argc, const char* argv[]) {
   // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
   //
   // See also testcases in tests/affected-expr-original.cc
-  auto implicit_ctor_expr_matcher = implicitCastExpr(has(cxxConstructExpr(allOf(
+  auto implicit_ctor_expr_matcher = cxxConstructExpr(allOf(
+      anyOf(hasParent(materializeTemporaryExpr()),
+            hasParent(implicitCastExpr())),
       hasDeclaration(
           cxxConstructorDecl(allOf(parameterCountIs(1), unless(isExplicit())))),
-      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl())))));
+      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl())));
   match_finder.addMatcher(implicit_ctor_expr_matcher, &affected_expr_rewriter);
 
   // |auto| type declarations =========

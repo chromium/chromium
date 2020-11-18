@@ -289,6 +289,7 @@ class BasicStringPiece {
 };
 // Test case:
 void FunctionTakingBasicStringPiece(StringPiece arg) {}
+void FunctionTakingBasicStringPieceRef(const StringPiece& arg) {}
 
 class ClassWithImplicitConstructor {
  public:
@@ -307,6 +308,11 @@ void foo() {
   // 'BasicStringPiece<basic_string<char, char_traits<char>, allocator<char>>>')
   // for 1st argument
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr.get());
+  FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr.get());
+
+  // No rewrite expected.
+  FunctionTakingBasicStringPiece(StringPiece(my_struct.const_char_ptr));
+  FunctionTakingBasicStringPieceRef(StringPiece(my_struct.const_char_ptr));
 
   // Expected rewrite - appending: .get().  This is the same scenario as with
   // StringPiece above (except that no templates are present here).
