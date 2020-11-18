@@ -9,7 +9,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
-#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -25,15 +24,11 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/closure_animation_observer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -76,9 +71,6 @@ constexpr int kExpandViewPaddingBottom = 8;
 constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
-
-constexpr float kSharesheetOpacityTranslucent = 0.0f;
-constexpr float kSharesheetOpacityOpaque = 1.0f;
 
 constexpr char kTitleFont[] = "GoogleSans, Medium, 16px";
 constexpr char kExpandViewTitleFont[] = "Roboto, Medium, 15px";
@@ -170,9 +162,9 @@ void SharesheetBubbleView::ShowBubble(
   main_view_->RequestFocus();
   main_view_->GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
-  views::BubbleDialogDelegateView::CreateBubble(this);
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
   GetWidget()->GetRootView()->Layout();
-  ShowWidgetWithAnimateFadeIn();
+  widget->Show();
 
   if (expanded_view_ == nullptr || expanded_view_->children().size() > 1) {
     SetToDefaultBubbleSizing();
@@ -298,18 +290,20 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
   UpdateAnchorPosition();
 }
 
-// This function is called from a ShareAction or after an app launches.
 void SharesheetBubbleView::CloseBubble() {
-  CloseWidgetWithAnimateFadeOut(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
+  views::Widget* widget = View::GetWidget();
+  widget->CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
+  // Reset all bubble values.
+  active_target_ = base::string16();
+  intent_.reset();
+  keyboard_highlighted_target_ = 0;
+  SetToDefaultBubbleSizing();
 }
 
 void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
-  // Ignore key press if bubble is closing.
   // TODO(crbug.com/1141741) Update to OnKeyPressed.
   if (!IsKeyboardCodeArrow(event->key_code()) ||
-      event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr ||
-      is_bubble_closing_) {
+      event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr) {
     return;
   }
 
@@ -374,23 +368,21 @@ gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {
   return gfx::Size(width_, height_);
 }
 
-void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
-                                                     bool active) {
-  // Catch widgets that are closing due to the user clicking out of the bubble.
-  // If |user_selection_made_| we should not close the bubble here as it will be
-  // closed in a different code path.
-  if (!active && !user_selection_made_) {
-    if (close_callback_) {
-      std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
-    }
+void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
+  // If there is no active_target_ value, the user cancelled without making a
+  // selection and we will record this.
+  if (user_cancelled_) {
     sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
         sharesheet::SharesheetMetrics::UserAction::kCancelled);
-    CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kLostFocus);
+  }
+  delegate_->OnBubbleClosed(active_target_);
+  if (close_callback_) {
+    std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
   }
 }
 
 void SharesheetBubbleView::CreateBubble() {
-  set_close_on_deactivate(false);
+  set_close_on_deactivate(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -426,7 +418,6 @@ void SharesheetBubbleView::ExpandButtonPressed() {
 }
 
 void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
-  user_selection_made_ = true;
   auto type = target.type;
   if (type == sharesheet::TargetType::kAction)
     active_target_ = target.launch_name;
@@ -435,6 +426,7 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   delegate_->OnTargetSelected(target.launch_name, type, std::move(intent_),
                               share_action_view_);
   intent_.reset();
+  user_cancelled_ = false;
   if (close_callback_)
     std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
 }
@@ -461,62 +453,4 @@ void SharesheetBubbleView::UpdateAnchorPosition() {
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {
   width_ = kDefaultBubbleWidth;
   height_ = kDefaultBubbleHeight;
-}
-
-void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
-  constexpr float kSharesheetScaleUpFactor = 0.8f;
-  constexpr base::TimeDelta kSharesheetScaleUpTime =
-      base::TimeDelta::FromMilliseconds(150);
-  constexpr base::TimeDelta kSharesheetOpacityFadeInTime =
-      base::TimeDelta::FromMilliseconds(100);
-
-  views::Widget* widget = View::GetWidget();
-  ui::Layer* layer = widget->GetLayer();
-
-  layer->SetOpacity(kSharesheetOpacityTranslucent);
-  widget->ShowInactive();
-  gfx::Transform transform = gfx::GetScaleTransform(
-      gfx::Rect(layer->size()).CenterPoint(), kSharesheetScaleUpFactor);
-  layer->SetTransform(transform);
-  auto scoped_settings =
-      std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
-
-  scoped_settings->SetTransitionDuration(kSharesheetScaleUpTime);
-  scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  layer->SetTransform(gfx::Transform());
-
-  scoped_settings->SetTransitionDuration(kSharesheetOpacityFadeInTime);
-  scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
-  layer->SetOpacity(kSharesheetOpacityOpaque);
-  widget->Activate();
-}
-
-void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
-    views::Widget::ClosedReason closed_reason) {
-  constexpr base::TimeDelta kSharesheetOpacityFadeOutTime =
-      base::TimeDelta::FromMilliseconds(80);
-
-  is_bubble_closing_ = true;
-  ui::Layer* layer = View::GetWidget()->GetLayer();
-  // If open animation is still running, abort it as we are now closing.
-  layer->GetAnimator()->AbortAllAnimations();
-  auto scoped_settings =
-      std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
-  scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
-  scoped_settings->SetTransitionDuration(kSharesheetOpacityFadeOutTime);
-  layer->SetOpacity(kSharesheetOpacityTranslucent);
-  // We are closing the native widget during the close animation which results
-  // in destroying the layer and the animation and the observer not calling
-  // back. Thus it is safe to use base::Unretained here.
-  scoped_settings->AddObserver(new ui::ClosureAnimationObserver(
-      base::BindOnce(&SharesheetBubbleView::CloseWidgetWithReason,
-                     base::Unretained(this), closed_reason)));
-}
-
-void SharesheetBubbleView::CloseWidgetWithReason(
-    views::Widget::ClosedReason closed_reason) {
-  View::GetWidget()->CloseWithReason(closed_reason);
-
-  // Bubble is deleted here.
-  delegate_->OnBubbleClosed(active_target_);
 }
