@@ -3,6 +3,3 @@ johnidel@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: privacy-sandbox-dev@chromium.org
-# COMPONENT: Internals>ConversionMeasurement

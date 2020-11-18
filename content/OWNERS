@@ -53,5 +53,3 @@ per-file *.mm=tapted@chromium.org
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# COMPONENT: Internals>Core
