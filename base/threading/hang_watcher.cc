@@ -31,24 +31,33 @@
 namespace base {
 
 // static
-constexpr base::Feature kEnableHangWatcher{"EnableHangWatcher",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-constexpr base::FeatureParam<bool> kHangWatchIOThread{
-    &kEnableHangWatcher, "hang_watch_io_thread", false};
-constexpr base::FeatureParam<bool> kHangWatchUIThread{
-    &kEnableHangWatcher, "hang_watch_ui_thread", false};
-constexpr base::FeatureParam<bool> kHangWatchThreadPool{
-    &kEnableHangWatcher, "hang_watch_threadpool", false};
+const base::Feature HangWatcher::kEnableHangWatcher{
+    "EnableHangWatcher", base::FEATURE_DISABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<int> kIOThreadLogLevel{
+    &HangWatcher::kEnableHangWatcher, "io_thread_log_level", 0};
+constexpr base::FeatureParam<int> kUIThreadLogLevel{
+    &HangWatcher::kEnableHangWatcher, "ui_thread_log_level", 0};
+constexpr base::FeatureParam<int> kThreadPoolLogLevel{
+    &HangWatcher::kEnableHangWatcher, "threadpool_log_level", 0};
 
 constexpr base::TimeDelta HangWatchScopeEnabled::kDefaultHangWatchTime =
     base::TimeDelta::FromSeconds(10);
 
 namespace {
+
+// Defines how much logging happens when the HangWatcher monitors the threads.
+// Logging levels are set per thread type through Finch. It's important that
+// the order of the enum members stay the and that their numerical
+// values be in increasing order. The implementation of
+// ThreadTypeLoggingLevelGreaterOrEqual() depends on it.
+enum class LoggingLevel { kNone = 0, kUmaOnly = 1, kUmaAndCrash = 2 };
+
 HangWatcher* g_instance = nullptr;
 std::atomic<bool> g_use_hang_watcher{false};
-std::atomic<bool> g_hang_watch_workers{false};
-std::atomic<bool> g_hang_watch_io_thread{false};
-std::atomic<bool> g_hang_watch_ui_thread{false};
+std::atomic<LoggingLevel> g_threadpool_log_level{LoggingLevel::kNone};
+std::atomic<LoggingLevel> g_io_thread_log_level{LoggingLevel::kNone};
+std::atomic<LoggingLevel> g_ui_thread_log_level{LoggingLevel::kNone};
 
 // Emits the hung thread count histogram. |count| is the number of threads
 // of type |thread_type| that were hung or became hung during the last
@@ -76,6 +85,23 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
           "ThreadPool",
           count, kMaxHungThreadCount);
       break;
+  }
+}
+
+// Returns true if |thread_type| was configured through Finch to have a logging
+// level that is equal to or exceeds |logging_level|.
+bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
+                                          LoggingLevel logging_level) {
+  switch (thread_type) {
+    case HangWatcher::ThreadType::kIOThread:
+      return g_io_thread_log_level.load(std::memory_order_relaxed) >=
+             logging_level;
+    case HangWatcher::ThreadType::kUIThread:
+      return g_ui_thread_log_level.load(std::memory_order_relaxed) >=
+             logging_level;
+    case HangWatcher::ThreadType::kThreadPoolThread:
+      return g_threadpool_log_level.load(std::memory_order_relaxed) >=
+             logging_level;
   }
 }
 }
@@ -224,9 +250,9 @@ HangWatchScopeDisabled::~HangWatchScopeDisabled() {
 // static
 void HangWatcher::InitializeOnMainThread() {
   DCHECK(!g_use_hang_watcher);
-  DCHECK(!g_hang_watch_workers);
-  DCHECK(!g_hang_watch_io_thread);
-  DCHECK(!g_hang_watch_ui_thread);
+  DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
+  DCHECK(g_ui_thread_log_level == LoggingLevel::kNone);
+  DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
   g_use_hang_watcher.store(base::FeatureList::IsEnabled(kEnableHangWatcher),
                            std::memory_order_relaxed);
@@ -234,13 +260,23 @@ void HangWatcher::InitializeOnMainThread() {
   // If hang watching is disabled as a whole there is no need to read the
   // params.
   if (g_use_hang_watcher.load(std::memory_order_relaxed)) {
-    g_hang_watch_workers.store(kHangWatchThreadPool.Get(),
-                               std::memory_order_relaxed);
-    g_hang_watch_io_thread.store(kHangWatchIOThread.Get(),
-                                 std::memory_order_relaxed);
-    g_hang_watch_ui_thread.store(kHangWatchUIThread.Get(),
-                                 std::memory_order_relaxed);
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_ui_thread_log_level.store(
+        static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
+        std::memory_order_relaxed);
   }
+}
+
+void HangWatcher::UnitializeOnMainThreadForTesting() {
+  g_use_hang_watcher.store(false, std::memory_order_relaxed);
+  g_threadpool_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
+  g_io_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
+  g_ui_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
 }
 
 // static
@@ -250,15 +286,18 @@ bool HangWatcher::IsEnabled() {
 
 // static
 bool HangWatcher::IsThreadPoolHangWatchingEnabled() {
-  return g_hang_watch_workers.load(std::memory_order_relaxed);
+  return g_threadpool_log_level.load(std::memory_order_relaxed) !=
+         LoggingLevel::kNone;
 }
 
 bool HangWatcher::IsIOThreadHangWatchingEnabled() {
-  return g_hang_watch_io_thread.load(std::memory_order_relaxed);
+  return g_io_thread_log_level.load(std::memory_order_relaxed) !=
+         LoggingLevel::kNone;
 }
 
 bool HangWatcher::IsUIThreadHangWatchingEnabled() {
-  return g_hang_watch_ui_thread.load(std::memory_order_relaxed);
+  return g_ui_thread_log_level.load(std::memory_order_relaxed) !=
+         LoggingLevel::kNone;
 }
 
 HangWatcher::HangWatcher()
@@ -465,6 +504,10 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
   constexpr int kInvalidHangCount = -1;
   hung_counts_per_thread_type.fill(kInvalidHangCount);
 
+  // Will be true if any of the hung threads has a logging level high enough,
+  // as defined through finch params, to warant dumping a crash.
+  bool any_hung_thread_has_dumping_enabled = false;
+
   // Copy hung thread information.
   for (const auto& watch_state : watch_states) {
     uint64_t flags;
@@ -494,6 +537,11 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
     if (deadline <= now) {
       ++hung_counts_per_thread_type[hang_count_index];
 
+      if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
+                                               LoggingLevel::kUmaAndCrash)) {
+        any_hung_thread_has_dumping_enabled = true;
+      }
+
       // Attempt to mark the thread as needing to stay within its current
       // HangWatchScopeEnabled until capture is complete.
       bool thread_marked = watch_state->SetShouldBlockOnHang(flags, deadline);
@@ -516,12 +564,16 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
   // of the type were found.
   for (size_t i = 0; i < kHangCountArraySize; ++i) {
     const int hang_count = hung_counts_per_thread_type[i];
-    if (hang_count != kInvalidHangCount)
-      LogHungThreadCountHistogram(static_cast<HangWatcher::ThreadType>(i),
-                                  hang_count);
+    const HangWatcher::ThreadType thread_type =
+        static_cast<HangWatcher::ThreadType>(i);
+    if (hang_count != kInvalidHangCount &&
+        ThreadTypeLoggingLevelGreaterOrEqual(thread_type,
+                                             LoggingLevel::kUmaOnly))
+      LogHungThreadCountHistogram(thread_type, hang_count);
   }
 
-  // Two cases can invalidate this snapshot and prevent the capture of the hang.
+  // Three cases can invalidate this snapshot and prevent the capture of the
+  // hang.
   //
   // 1. Some threads could not be marked for blocking so this snapshot isn't
   // actionable since marked threads could be hung because of unmarked ones.
@@ -531,7 +583,12 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
   // 2. Any of the threads have a deadline before |deadline_ignore_threshold|.
   // If any thread is ignored it reduces the confidence in the whole state and
   // it's better to avoid capturing misleading data.
-  if (!all_threads_marked || found_deadline_before_ignore_threshold) {
+  //
+  // 3. The hung threads found were all of types that are not configured through
+  // Finch to trigger a crash dump.
+  //
+  if (!all_threads_marked || found_deadline_before_ignore_threshold ||
+      !any_hung_thread_has_dumping_enabled) {
     hung_watch_state_copies_.clear();
     return;
   }

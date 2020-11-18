@@ -17,6 +17,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -33,6 +34,12 @@ using testing::IsEmpty;
 
 namespace base {
 namespace {
+
+// Use with a FeatureList to activate crash dumping for threads marked as
+// threadpool threads.
+const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+    kFeatureAndParams{{base::HangWatcher::kEnableHangWatcher,
+                       {{"threadpool_log_level", "2"}}}};
 
 // Use this value to mark things very far off in the future. Adding this
 // to TimeTicks::Now() gives a point that will never be reached during the
@@ -104,6 +111,9 @@ class HangWatcherTest : public testing::Test {
   const base::TimeDelta kHangTime = kTimeout + base::TimeDelta::FromSeconds(1);
 
   HangWatcherTest() {
+    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
+    hang_watcher_.InitializeOnMainThread();
+
     hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
 
@@ -118,6 +128,8 @@ class HangWatcherTest : public testing::Test {
     hang_watcher_.Start();
   }
 
+  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
+
   HangWatcherTest(const HangWatcherTest& other) = delete;
   HangWatcherTest& operator=(const HangWatcherTest& other) = delete;
 
@@ -129,6 +141,8 @@ class HangWatcherTest : public testing::Test {
   // Signaled from the HangWatcher thread when a hang is detected. Needs to
   // outlive the HangWatcher thread.
   WaitableEvent hang_event_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   HangWatcher hang_watcher_;
 
@@ -896,6 +910,9 @@ namespace {
 class HangWatchScopeEnabledBlockingTest : public testing::Test {
  public:
   HangWatchScopeEnabledBlockingTest() {
+    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
+    hang_watcher_.InitializeOnMainThread();
+
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();
       // Simulate capturing that takes a long time.
@@ -921,6 +938,8 @@ class HangWatchScopeEnabledBlockingTest : public testing::Test {
     unregister_thread_closure_ = hang_watcher_.RegisterThread(
         base::HangWatcher::ThreadType::kThreadPoolThread);
   }
+
+  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
 
   HangWatchScopeEnabledBlockingTest(
       const HangWatchScopeEnabledBlockingTest& other) = delete;
@@ -960,6 +979,7 @@ class HangWatchScopeEnabledBlockingTest : public testing::Test {
   base::WaitableEvent continue_capture_;
   bool completed_capture_{false};
 
+  base::test::ScopedFeatureList feature_list_;
   HangWatcher hang_watcher_;
   base::ScopedClosureRunner unregister_thread_closure_;
 };

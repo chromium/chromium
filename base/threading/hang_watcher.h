@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -136,6 +137,10 @@ class BASE_EXPORT HangWatchScopeDisabled {
 // within a single process. This instance must outlive all monitored threads.
 class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
  public:
+  // Determines if the HangWatcher is activated. When false the HangWatcher
+  // thread never started.
+  static const base::Feature kEnableHangWatcher;
+
   // Describes the type of a thread for logging purposes.
   enum class ThreadType {
     kIOThread = 0,
@@ -161,6 +166,11 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Initializes HangWatcher. Must be called once on the main thread during
   // startup while single-threaded.
   static void InitializeOnMainThread();
+
+  // Returns the values that were set through InitializeOnMainThread() to their
+  // default value. Used for testing since in prod initialization should happen
+  // only once.
+  static void UnitializeOnMainThreadForTesting();
 
   // Thread safe functions to verify if hang watching is activated. If called
   // before InitializeOnMainThread returns the default value which is false.
@@ -255,8 +265,13 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
     // Construct the snapshot from provided data. |snapshot_time| can be
     // different than now() to be coherent with other operations recently done
-    // on |watch_states|. If any deadline in |watch_states| is before
-    // |deadline_ignore_threshold|, the snapshot is empty.
+    // on |watch_states|. The snapshot can be empty for a number of reasons:
+    // 1. If any deadline in |watch_states| is before
+    // |deadline_ignore_threshold|.
+    // 2. If some of the hung threads could not be marked as blocking on
+    // capture.
+    // 3. If none of the hung threads are of a type configured to trigger a
+    // crash dump.
     WatchStateSnapShot(const HangWatchStates& watch_states,
                        base::TimeTicks deadline_ignore_threshold);
     WatchStateSnapShot(const WatchStateSnapShot& other);
