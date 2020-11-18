@@ -171,17 +171,19 @@ enum class HistogramSize { SMALL, LARGE };
 
 // An enum for UMA reporting. Add values to the end only.
 enum DatabaseInitError {
-  INIT_OK,
-  OPEN_FILE_ERROR,
-  START_TRANSACTION_ERROR,
-  META_TABLE_INIT_ERROR,
-  INCOMPATIBLE_VERSION,
-  INIT_LOGINS_ERROR,
-  INIT_STATS_ERROR,
-  MIGRATION_ERROR,
-  COMMIT_TRANSACTION_ERROR,
-  INIT_COMPROMISED_CREDENTIALS_ERROR,
-  INIT_FIELD_INFO_ERROR,
+  INIT_OK = 0,
+  OPEN_FILE_ERROR = 1,
+  START_TRANSACTION_ERROR = 2,
+  META_TABLE_INIT_ERROR = 3,
+  INCOMPATIBLE_VERSION = 4,
+  INIT_LOGINS_ERROR = 5,
+  INIT_STATS_ERROR = 6,
+  MIGRATION_ERROR = 7,
+  COMMIT_TRANSACTION_ERROR = 8,
+  INIT_COMPROMISED_CREDENTIALS_ERROR = 9,
+  INIT_FIELD_INFO_ERROR = 10,
+  FOREIGN_KEY_ERROR = 11,
+
   DATABASE_INIT_ERROR_COUNT,
 };
 
@@ -626,6 +628,12 @@ bool LoginDatabase::Init() {
   if (!db_.Open(db_path_)) {
     LogDatabaseInitError(OPEN_FILE_ERROR);
     LOG(ERROR) << "Unable to open the password store database.";
+    return false;
+  }
+
+  if (!db_.Execute("PRAGMA foreign_keys = ON")) {
+    LogDatabaseInitError(FOREIGN_KEY_ERROR);
+    LOG(ERROR) << "Unable to activate foreign keys.";
     return false;
   }
 

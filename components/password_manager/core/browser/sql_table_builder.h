@@ -50,6 +50,9 @@ class SQLTableBuilder {
   // Create the builder for an arbitrary table name.
   explicit SQLTableBuilder(const std::string& table_name);
 
+  SQLTableBuilder(const SQLTableBuilder& rhs) = delete;
+  SQLTableBuilder& operator=(const SQLTableBuilder& rhs) = delete;
+
   ~SQLTableBuilder();
 
   // Adds a column in the table description, with |name| and |type|. |name|
@@ -186,8 +189,6 @@ class SQLTableBuilder {
 
   // The name of the table.
   const std::string table_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLTableBuilder);
 };
 
 }  // namespace password_manager

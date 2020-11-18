@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 #include "sql/transaction.h"
 
 namespace password_manager {
@@ -29,6 +30,19 @@ void Append(const std::string& name, std::string* list_of_names) {
     *list_of_names += ", " + name;
 }
 
+// Returns true iff the foreign keys can be safely re-enabled on the database.
+bool CheckForeignKeyConstraints(sql::Database& db) {
+  sql::Statement stmt(db.GetUniqueStatement("PRAGMA foreign_key_check"));
+
+  bool ret = true;
+  while (stmt.Step()) {
+    ret = false;
+    LOG(ERROR) << "Foreign key violation "
+               << stmt.ColumnString(0) + ", " + stmt.ColumnString(1) + ", " +
+                      stmt.ColumnString(2) + ", " + stmt.ColumnString(3);
+  }
+  return ret;
+}
 }  // namespace
 
 // static
@@ -74,8 +88,10 @@ SQLTableBuilder::~SQLTableBuilder() = default;
 
 void SQLTableBuilder::AddColumn(std::string name, std::string type) {
   DCHECK(FindLastColumnByName(name) == columns_.rend());
-  columns_.push_back({std::move(name), std::move(type), false, false,
-                      sealed_version_ + 1, kInvalidVersion, false});
+  columns_.push_back({std::move(name), std::move(type),
+                      /*is_primary_key=*/false, /*part_of_unique_key=*/false,
+                      sealed_version_ + 1, kInvalidVersion,
+                      /*gets_previous_data=*/false});
 }
 
 void SQLTableBuilder::AddPrimaryKeyColumn(std::string name) {
@@ -115,7 +131,7 @@ void SQLTableBuilder::RenameColumn(const std::string& old_name,
                          old_column->part_of_unique_key,
                          sealed_version_ + 1,
                          kInvalidVersion,
-                         true};
+                         /*gets_previous_data=*/true};
     old_column->max_version = sealed_version_;
     auto past_old =
         old_column.base();  // Points one element after |old_column|.
@@ -295,7 +311,7 @@ std::vector<base::StringPiece> SQLTableBuilder::AllPrimaryKeyNames() const {
       result.emplace_back(column.name);
     }
   }
-  DCHECK(result.size() < 2);
+  DCHECK_LT(result.size(), 2u);
   return result;
 }
 
@@ -390,14 +406,15 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
     std::string constraints = ComputeConstraints(old_version + 1);
     DCHECK(has_primary_key || !constraints.empty());
 
-    // Foreign key constraints are not enabled for the login database, so no
-    // PRAGMA foreign_keys=off needed.
     const std::string temp_table_name = "temp_" + table_name_;
 
     std::string names_of_all_columns = new_names_of_existing_columns;
     for (const std::string& new_column : names_of_new_columns_list) {
       Append(new_column, &names_of_all_columns);
     }
+
+    if (!db->Execute("PRAGMA foreign_keys = OFF"))
+      return false;
 
     std::string create_table_statement =
         constraints.empty()
@@ -423,7 +440,8 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
                                          temp_table_name.c_str(),
                                          table_name_.c_str())
                           .c_str()) &&
-          transaction.Commit())) {
+          CheckForeignKeyConstraints(*db) && transaction.Commit() &&
+          db->Execute("PRAGMA foreign_keys = ON"))) {
       return false;
     }
   } else if (!names_of_new_columns_list.empty()) {

@@ -1489,7 +1489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.LoginDatabaseInit"
-    enum="LoginDatabaseInitError" expires_after="M89">
+    enum="LoginDatabaseInitError" expires_after="M91">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>An error on LoginDatabase initialization.</summary>
