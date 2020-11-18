@@ -73,6 +73,7 @@ CrasDevice::CrasDevice(const cras_ionode_info* node,
   // If the name of node is not meaningful, use the device name instead.
   if (name.empty() || name == "(default)")
     name = dev->name;
+  dev_name = dev->name;
 }
 
 // Creates a CrasDevice based on the node list.
