@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "crypto/scoped_nss_types.h"
@@ -46,6 +47,12 @@ class SystemTokenCertDBObserver : public base::CheckedObserver {
 // All of the methods must be called on the UI thread.
 class SystemTokenCertDBInitializer final : public CryptohomeClient::Observer {
  public:
+  // It is stated in cryptohome implementation that 5 minutes is enough time to
+  // wait for any TPM operations. For more information, please refer to:
+  // https://chromium.googlesource.com/chromiumos/platform2/+/master/cryptohome/cryptohome.cc
+  static constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
+      base::TimeDelta::FromMinutes(5);
+
   SystemTokenCertDBInitializer();
   ~SystemTokenCertDBInitializer() override;
 

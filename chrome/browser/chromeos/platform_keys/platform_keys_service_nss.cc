@@ -151,8 +151,6 @@ void DidGetCertDbOnUiThread(base::Optional<TokenId> token_id,
 // Asynchronously fetches the NSSCertDatabase using |delegate| and, if
 // |token_id| is not empty, the slot for |token_id|. Stores the slot in |state|
 // and passes the database to |callback|. Will run |callback| on the IO thread.
-// TODO(omorsi): Introduce timeout for retrieving certificate database in
-// platform keys.
 void GetCertDatabase(base::Optional<TokenId> token_id,
                      GetCertDBCallback callback,
                      PlatformKeysServiceImplDelegate* delegate,

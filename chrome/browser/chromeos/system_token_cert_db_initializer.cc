@@ -30,12 +30,6 @@ namespace chromeos {
 
 namespace {
 
-// It is stated in cryptohome implementation that 5 minutes is enough time to
-// wait for any TPM operations. For more information, please refer to:
-// https://chromium.googlesource.com/chromiumos/platform2/+/master/cryptohome/cryptohome.cc
-constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
-    base::TimeDelta::FromMinutes(5);
-
 // Called on UI Thread when the system slot has been retrieved.
 void GotSystemSlotOnUIThread(
     base::OnceCallback<void(crypto::ScopedPK11Slot)> callback_ui_thread,
@@ -85,6 +79,9 @@ bool ShallAttemptTpmOwnership() {
 SystemTokenCertDBInitializer* g_system_token_cert_db_initializer = nullptr;
 
 }  // namespace
+
+constexpr base::TimeDelta
+    SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay;
 
 SystemTokenCertDBInitializer::SystemTokenCertDBInitializer() {
   // Only start loading the system token once cryptohome is available and only
