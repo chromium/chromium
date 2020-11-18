@@ -232,7 +232,10 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
 
 void CameraHalDispatcherImpl::RegisterClient(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  // RegisterClient can be called locally by ArcCameraBridge. Unretained
+  // reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
+
   // TODO(b/170075468): Reject this call once we've migrated all camera clients.
   auto temporary_token = base::UnguessableToken::Create();
   RegisterClientWithToken(std::move(client),
@@ -245,9 +248,6 @@ void CameraHalDispatcherImpl::RegisterClientWithToken(
     cros::mojom::CameraClientType type,
     const base::UnguessableToken& auth_token,
     RegisterClientWithTokenCallback callback) {
-  // RegisterClient can be called locally by ArcCameraBridge. Unretained
-  // reference is safe here because CameraHalDispatcherImpl owns
-  // |proxy_thread_|.
   base::UnguessableToken client_auth_token = auth_token;
   proxy_task_runner_->PostTask(
       FROM_HERE,
