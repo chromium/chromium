@@ -112,6 +112,8 @@ constexpr char kTestGuid[] = "cccccccc-cccc-4ccc-0ccc-ccccccccccc1";
 constexpr char kTestCookieName[] = "TestCookie";
 constexpr char kTestCookieValue[] = "present";
 constexpr char kTestCookieHost[] = "host1.com";
+constexpr char kClientCert1Name[] = "client_1";
+constexpr char kClientCert2Name[] = "client_2";
 
 constexpr std::initializer_list<base::StringPiece> kPrimaryButton = {
     "gaia-signin", "primary-action-button"};
@@ -824,13 +826,22 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
   }
 
-  bool ImportSystemSlotClientCert(PK11SlotInfo* system_slot) {
+  void ImportSystemSlotClientCerts(
+      const std::vector<std::string>& client_cert_names,
+      PK11SlotInfo* system_slot) {
     base::ScopedAllowBlockingForTesting allow_io;
-    scoped_refptr<net::X509Certificate> client_cert =
-        net::ImportClientCertAndKeyFromFile(net::GetTestCertsDirectory(),
-                                            "client_1.pem", "client_1.pk8",
-                                            system_slot);
-    return client_cert.get() != nullptr;
+    for (const auto& client_cert_name : client_cert_names) {
+      const std::string pem_file_name =
+          base::StringPrintf("%s.pem", client_cert_name.c_str());
+      const std::string pk8_file_name =
+          base::StringPrintf("%s.pk8", client_cert_name.c_str());
+      scoped_refptr<net::X509Certificate> client_cert =
+          net::ImportClientCertAndKeyFromFile(net::GetTestCertsDirectory(),
+                                              pem_file_name, pk8_file_name,
+                                              system_slot);
+      if (!client_cert)
+        ADD_FAILURE() << "Failed to import cert from " << client_cert_name;
+    }
   }
 
  private:
@@ -870,9 +881,11 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
  public:
   WebviewClientCertsLoginTest() = default;
 
-  // Imports a client certificate into the system slot.
-  bool SetUpClientCertInSystemSlot() {
-    return ImportSystemSlotClientCert(system_nss_key_slot_mixin_.slot());
+  // Imports specified client certificates into the system slot.
+  void SetUpClientCertsInSystemSlot(
+      const std::vector<std::string>& client_cert_names) {
+    ImportSystemSlotClientCerts(client_cert_names,
+                                system_nss_key_slot_mixin_.slot());
   }
 
  private:
@@ -886,7 +899,8 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
 // certificates signed by a specific authority.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameNoAuthorityGiven) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
@@ -899,16 +913,17 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
-  EXPECT_EQ(
-      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
-      https_reply_content);
+  EXPECT_EQ("got client cert with fingerprint: " +
+                GetCertSha1Fingerprint(kClientCert1Name),
+            https_reply_content);
 }
 
 // Test that client certificate autoselect selects the right certificate even
 // with multiple filters for the same pattern.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameCertMultipleFiltersAutoSelected) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
@@ -922,16 +937,16 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
-  EXPECT_EQ(
-      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
-      https_reply_content);
+  EXPECT_EQ("got client cert with fingerprint: " +
+                GetCertSha1Fingerprint(kClientCert1Name),
+            https_reply_content);
 }
 
 // Test that if no client certificate is auto-selected using policy on the
 // sign-in frame, the client does not send up any client certificate.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameCertNotAutoSelected) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
@@ -948,7 +963,8 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 // system slot is enabled in the sign-in frame. The server requests
 // a certificate signed by a specific authority.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   base::FilePath ca_path =
@@ -964,9 +980,9 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
-  EXPECT_EQ(
-      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
-      https_reply_content);
+  EXPECT_EQ("got client cert with fingerprint: " +
+                GetCertSha1Fingerprint(kClientCert1Name),
+            https_reply_content);
 }
 
 // Test that client certificate authentication using certificates from the
@@ -975,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
 // matching certificate.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameAuthorityGivenNoMatchingCert) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   base::FilePath ca_path =
@@ -1001,7 +1017,8 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 // policy).
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameIntermediateAuthorityUnknown) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   base::FilePath ca_path = net::GetTestCertsDirectory().Append(
@@ -1026,7 +1043,8 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 // known on the device (it has been made available through device ONC policy).
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        SigninFrameIntermediateAuthorityKnown) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   base::FilePath ca_path = net::GetTestCertsDirectory().Append(
@@ -1047,9 +1065,9 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
-  EXPECT_EQ(
-      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
-      https_reply_content);
+  EXPECT_EQ("got client cert with fingerprint: " +
+                GetCertSha1Fingerprint(kClientCert1Name),
+            https_reply_content);
 }
 
 // Tests that client certificate authentication is not enabled in a webview on
@@ -1059,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 // deprecated and removed. https://crbug.com/849710.
 IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
                        DISABLED_ClientCertRequestedInOtherWebView) {
-  ASSERT_TRUE(SetUpClientCertInSystemSlot());
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
   ASSERT_NO_FATAL_FAILURE(StartHttpsServer(ssl_options));
@@ -1107,7 +1125,8 @@ class WebviewClientCertsTokenLoadingLoginTest
     loop.Run();
     ASSERT_TRUE(out_system_slot_prepared_successfully);
 
-    ASSERT_TRUE(ImportSystemSlotClientCert(test_system_slot_nss_db_->slot()));
+    ASSERT_NO_FATAL_FAILURE(ImportSystemSlotClientCerts(
+        {kClientCert1Name}, test_system_slot_nss_db_->slot()));
   }
 
  protected:
@@ -1204,9 +1223,9 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
-  EXPECT_EQ(
-      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
-      https_reply_content);
+  EXPECT_EQ("got client cert with fingerprint: " +
+                GetCertSha1Fingerprint(kClientCert1Name),
+            https_reply_content);
 
   EXPECT_TRUE(IsTpmTokenReady());
 }
