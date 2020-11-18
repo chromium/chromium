@@ -57,19 +57,68 @@ struct IsTransparentCompare<T, void_t<typename T::is_transparent>>
 // Helper inspired by C++20's std::to_array to convert a C-style array to a
 // std::array. As opposed to the C++20 version this implementation does not
 // provide an overload for rvalues and does not strip cv qualifers from the
-// returned std::array::value_type, allowing the construction of std::arrays
-// with const elements.
+// returned std::array::value_type. The returned value_type needs to be
+// specified explicitly, allowing the construction of std::arrays with const
+// elements.
 //
 // Reference: https://en.cppreference.com/w/cpp/container/array/to_array
-template <class T, size_t N, size_t... I>
-constexpr std::array<T, N> ToArrayImpl(const T (&data)[N],
+template <typename U, typename T, size_t N, size_t... I>
+constexpr std::array<U, N> ToArrayImpl(const T (&data)[N],
                                        std::index_sequence<I...>) {
   return {{data[I]...}};
 }
 
-template <typename T, size_t N>
-constexpr std::array<T, N> ToArray(const T (&data)[N]) {
-  return ToArrayImpl<T, N>(data, std::make_index_sequence<N>());
+template <typename U, typename T, size_t N>
+constexpr std::array<U, N> ToArray(const T (&data)[N]) {
+  return ToArrayImpl<U>(data, std::make_index_sequence<N>());
+}
+
+// std::pair's operator= is not constexpr prior to C++20. Thus we need this
+// small helper to invoke operator= on the .first and .second member explicitly.
+template <typename T>
+constexpr void Assign(T& lhs, T&& rhs) {
+  lhs = std::move(rhs);
+}
+
+template <typename T, typename U>
+constexpr void Assign(std::pair<T, U>& lhs, std::pair<T, U>&& rhs) {
+  Assign(lhs.first, std::move(rhs.first));
+  Assign(lhs.second, std::move(rhs.second));
+}
+
+// constexpr swap implementation. std::swap is not constexpr prior to C++20.
+template <typename T>
+constexpr void Swap(T& lhs, T& rhs) {
+  T tmp = std::move(lhs);
+  Assign(lhs, std::move(rhs));
+  Assign(rhs, std::move(tmp));
+}
+
+// constexpr prev implementation. std::prev is not constexpr prior to C++17.
+template <typename BidirIt>
+constexpr BidirIt Prev(BidirIt it) {
+  return --it;
+}
+
+// constexpr next implementation. std::next is not constexpr prior to C++17.
+template <typename InputIt>
+constexpr InputIt Next(InputIt it) {
+  return ++it;
+}
+
+// constexpr sort implementation. std::sort is not constexpr prior to C++20.
+// While insertion sort has a quadratic worst case complexity, it was chosen
+// because it has linear complexity for nearly sorted data, is stable, and
+// simple to implement.
+template <typename BidirIt, typename Compare>
+constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
+  if (first == last)
+    return;
+
+  for (auto it = Next(first); it != last; ++it) {
+    for (auto curr = it; curr != first && comp(*curr, *Prev(curr)); --curr)
+      Swap(*curr, *Prev(curr));
+  }
 }
 
 // Implementation -------------------------------------------------------------

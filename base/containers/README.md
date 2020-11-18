@@ -194,16 +194,22 @@ are constexpr friendly (assuming the key and mapped types are), and thus can be
 used as compile time lookup tables.
 
 To aid their constructions type deduction helpers in the form of
-`base::MakeFixedFlatMap` and `base::MakeFixedFlatSet` are provided. These will
-CHECK whether the provided elements are sorted and unique, failing compilation
-if this precondition is violated in a constexpr context.
+`base::MakeFixedFlatMap` and `base::MakeFixedFlatSet` are provided. While these
+helpers can deal with unordered data, they require that keys are not repeated.
+This precondition is CHECKed, failing compilation if this precondition is
+violated in a constexpr context.
 
 Example:
 
 ```cpp
+constexpr auto kSet = base::MakeFixedFlatSet<int>(1, 2, 3);
+
 constexpr auto kMap = base::MakeFixedFlatMap<base::StringPiece, int>(
-    {{"bar", 1}, {"baz", 2}, {"foo", 3}});
+    {{"foo", 1}, {"bar", 2}, {"baz", 3}});
 ```
+
+Both `MakeFixedFlatSet` and `MakeFixedFlatMap` require callers to explicitly
+specify the key (and mapped) type.
 
 ### base::small\_map
 

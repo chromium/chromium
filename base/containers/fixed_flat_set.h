@@ -7,6 +7,7 @@
 
 #include <array>
 #include <functional>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -74,14 +75,22 @@ template <class Key, size_t N, class Compare = std::less<>>
 using fixed_flat_set = base::flat_set<Key, Compare, std::array<const Key, N>>;
 
 // Utility function to simplify constructing a fixed_flat_set from a fixed list
-// of keys. Requires that the passed in `data` is sorted and unique.
+// of keys. Requires that the passed in `data` contains unique keys.
 //
 // Example usage:
-//   constexpr auto kSet = base::MakeFixedFlatSet({1, 2, 3, 4});
+//   constexpr auto kIntSet = base::MakeFixedFlatSet<int>({1, 2, 3, 4});
+//
+// Data needs not to be sorted:
+//   constexpr auto kStringSet = base::MakeFixedFlatSet<base::StringPiece>(
+//       {"foo", "bar", "baz", "qux"});
+//
+// Note: Wrapping `Key` in `std::common_type_t` below requires callers to
+// explicitly specify `Key`, which is desired here.
 template <class Key, size_t N, class Compare = std::less<>>
 constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
-    const Key (&data)[N],
+    std::common_type_t<Key>(&&data)[N],
     const Compare& comp = Compare()) {
+  internal::InsertionSort(data, data + N, comp);
   CHECK(internal::is_sorted_and_unique(data, comp));
   // Specify the value_type explicitly to ensure that the returned array has
   // immutable keys.
