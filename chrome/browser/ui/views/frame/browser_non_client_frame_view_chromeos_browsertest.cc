@@ -43,7 +43,7 @@
 #include "chrome/browser/ui/toolbar/browser_actions_bar_browsertest.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
@@ -144,9 +144,9 @@ bool IsShelfVisible() {
   return ash::ShelfTestApi().IsVisible();
 }
 
-BrowserNonClientFrameViewAsh* GetFrameViewAsh(BrowserView* browser_view) {
+BrowserNonClientFrameViewChromeOS* GetFrameViewAsh(BrowserView* browser_view) {
   // We know we're using Ash, so static cast.
-  auto* frame_view = static_cast<BrowserNonClientFrameViewAsh*>(
+  auto* frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
       browser_view->GetWidget()->non_client_view()->frame_view());
   DCHECK(frame_view);
   return frame_view;
@@ -264,20 +264,20 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
 
 using views::Widget;
 
-using BrowserNonClientFrameViewAshTest =
+using BrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<InProcessBrowserTest>;
-using BrowserNonClientFrameViewAshTestNoWebUiTabStrip =
-    WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewAshTest>;
-using BrowserNonClientFrameViewAshTestWithWebUiTabStrip =
-    WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewAshTest>;
+using BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip =
+    WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewChromeOSTest>;
+using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
+    WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
 
 // This test does not make sense for the webUI tabstrip, since the window layout
 // is different in that case.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        NonClientHitTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   Widget* widget = browser_view->GetWidget();
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   // Click on the top edge of a restored window hits the top edge resize handle.
   const int kWindowWidth = 300;
@@ -301,11 +301,11 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
 // fullscreen.
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        NonImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   // Frame paints by default.
   EXPECT_TRUE(frame_view->ShouldPaint());
@@ -329,10 +329,10 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
 // browser window on ChromeOS.
 // TODO(http://crbug.com/1059514): This test should be made to work with the
 // webUI tabstrip.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        AvatarDisplayOnTeleportedWindow) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
   aura::Window* window = browser()->window()->GetNativeWindow();
 
   EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
 
 // There should be no top inset when using the WebUI tab strip since the frame
 // is invisible. Regression test for crbug.com/1076675
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestWithWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
                        TopInset) {
   // This test doesn't make sense in non-touch mode since it expects the WebUI
   // tab strip to be active. This test is instantiated with and without touch
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestWithWebUiTabStrip,
   EXPECT_EQ(0, GetFrameViewAsh(browser_view)->GetTopInset(false));
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        IncognitoMarkedAsAssistantBlocked) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   EXPECT_TRUE(incognito_browser->window()->GetNativeWindow()->GetProperty(
@@ -384,10 +384,10 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
 
 // Tests that browser frame minimum size constraint is updated in response to
 // browser view layout.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        FrameMinSizeIsUpdated) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   BookmarkBarView* bookmark_bar = browser_view->GetBookmarkBarView();
   EXPECT_FALSE(bookmark_bar->GetVisible());
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
   EXPECT_GT(min_window_size.height(), min_height_no_bookmarks);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        SettingsSystemWebAppHasMinimumWindowSize) {
   // Install the Settings System Web App.
   web_app::WebAppProvider::Get(browser()->profile())
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
 
 // This is a regression test that session restore minimized browser should
 // re-layout the header (https://crbug.com/827444).
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        RestoreMinimizedBrowserUpdatesCaption) {
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
@@ -458,8 +458,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
       BrowserView::GetBrowserViewForBrowser(new_browser);
   Widget* widget = browser_view->GetWidget();
 
-  BrowserNonClientFrameViewAsh* frame_view =
-      static_cast<BrowserNonClientFrameViewAsh*>(
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(
           widget->non_client_view()->frame_view());
 
   chromeos::FrameCaptionButtonContainerView::TestApi test(
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                        ImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   ImmersiveModeController* immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -884,7 +884,8 @@ class WebAppNonClientFrameViewAshTest
     navigation_observer.WaitForNavigationFinished();
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-    BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view_);
+    BrowserNonClientFrameViewChromeOS* frame_view =
+        GetFrameViewAsh(browser_view_);
     frame_header_ = static_cast<chromeos::DefaultFrameHeader*>(
         frame_view->frame_header_.get());
 
@@ -1270,12 +1271,12 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, PopupHasNoToolbar) {
   Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(popup_browser);
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
   EXPECT_FALSE(frame_view->web_app_frame_toolbar_for_testing());
 }
 
 // Test the normal type browser's kTopViewInset is always 0.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, TopViewInset) {
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, TopViewInset) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -1305,11 +1306,11 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, TopViewInset) {
 
 // Test that for a browser window, its caption buttons are always hidden in
 // tablet mode.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   Widget* widget = browser_view->GetWidget();
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   widget->GetNativeWindow()->SetProperty(
       aura::client::kResizeBehaviorKey,
@@ -1336,7 +1337,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
 
 // Test that for a browser app window, its caption buttons may or may not hide
 // in tablet mode.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        AppHeaderVisibilityInTabletModeTest) {
   // Create a browser app window.
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
@@ -1347,7 +1348,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
   AddBlankTabAndShow(browser2);
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   Widget* widget2 = browser_view2->GetWidget();
-  BrowserNonClientFrameViewAsh* frame_view2 = GetFrameViewAsh(browser_view2);
+  BrowserNonClientFrameViewChromeOS* frame_view2 =
+      GetFrameViewAsh(browser_view2);
   widget2->GetNativeWindow()->SetProperty(
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize |
@@ -1373,7 +1375,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
 // Regression test for https://crbug.com/879851.
 // Tests that we don't accidentally change the color of app frame title bars.
 // Update expectation if change is intentional.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, AppFrameColor) {
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
   browser()->window()->Close();
 
   // Open a new app window.
@@ -1391,7 +1393,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, AppFrameColor) {
       << SkColorGetB(active_frame_color);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        ImmersiveModeTopViewInset) {
   browser()->window()->Close();
 
@@ -1439,11 +1441,11 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
 
 namespace {
 
-class HomeLauncherBrowserNonClientFrameViewAshTest
+class HomeLauncherBrowserNonClientFrameViewChromeOSTest
     : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
-  HomeLauncherBrowserNonClientFrameViewAshTest() = default;
-  ~HomeLauncherBrowserNonClientFrameViewAshTest() override = default;
+  HomeLauncherBrowserNonClientFrameViewChromeOSTest() = default;
+  ~HomeLauncherBrowserNonClientFrameViewChromeOSTest() override = default;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpDefaultCommandLine(
@@ -1453,15 +1455,15 @@ class HomeLauncherBrowserNonClientFrameViewAshTest
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(HomeLauncherBrowserNonClientFrameViewAshTest);
+  DISALLOW_COPY_AND_ASSIGN(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                        TabletModeBrowserCaptionButtonVisibility) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
 
   EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
   ASSERT_NO_FATAL_FAILURE(
@@ -1482,8 +1484,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
 // performance by consolidating this unit test with
 // |TabletModeBrowserCaptionButtonVisibility|. Do not forget to remove the
 // corresponding |FRIEND_TEST_ALL_PREFIXES| usage from
-// |BrowserNonClientFrameViewAsh|.
-IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
+// |BrowserNonClientFrameViewChromeOS|.
+IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                        CaptionButtonVisibilityForBrowserLaunchedInTabletMode) {
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
@@ -1492,7 +1494,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
                    ->caption_button_container_->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
+IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                        TabletModeAppCaptionButtonVisibility) {
   browser()->window()->Close();
 
@@ -1506,7 +1508,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
   browser->window()->Show();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
   EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
 
   // Tablet mode doesn't affect app's caption button's visibility.
@@ -1528,10 +1530,10 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
 #define INSTANTIATE_TEST_SUITE(name) \
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
-INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTest);
-INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestNoWebUiTabStrip);
-INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestWithWebUiTabStrip);
+INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
+INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTest);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
-INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewAshTest);
+INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);

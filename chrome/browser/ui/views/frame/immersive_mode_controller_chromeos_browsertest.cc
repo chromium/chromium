@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -117,7 +117,8 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
     }
   }
 
-  void VerifyButtonsInImmersiveMode(BrowserNonClientFrameViewAsh* frame_view) {
+  void VerifyButtonsInImmersiveMode(
+      BrowserNonClientFrameViewChromeOS* frame_view) {
     WebAppFrameToolbarView* container =
         frame_view->web_app_frame_toolbar_for_testing();
     views::test::InkDropHostViewTestApi ink_drop_api(
@@ -271,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewAsh* frame_view =
-      static_cast<BrowserNonClientFrameViewAsh*>(
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(
           browser_view->GetWidget()->non_client_view()->frame_view());
   chromeos::FrameCaptionButtonContainerView* caption_button_container =
       frame_view->caption_button_container_;
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Start in tablet mode
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
-  BrowserNonClientFrameViewAsh* frame_view = nullptr;
+  BrowserNonClientFrameViewChromeOS* frame_view = nullptr;
   {
     auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
     LaunchAppBrowser(false);
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    frame_view = static_cast<BrowserNonClientFrameViewAsh*>(
+    frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
         browser_view->GetWidget()->non_client_view()->frame_view());
 
     task_runner->FastForwardBy(titlebar_animation_delay());

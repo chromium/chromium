@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_ASH_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_ASH_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_
 
 #include <memory>
 
@@ -32,7 +32,7 @@ class FrameCaptionButtonContainerView;
 }  // namespace chromeos
 
 // Provides the BrowserNonClientFrameView for Chrome OS.
-class BrowserNonClientFrameViewAsh
+class BrowserNonClientFrameViewChromeOS
     : public BrowserNonClientFrameView,
       public BrowserFrameHeaderChromeOS::AppearanceProvider,
       public display::DisplayObserver,
@@ -40,8 +40,9 @@ class BrowserNonClientFrameViewAsh
       public aura::WindowObserver,
       public ImmersiveModeController::Observer {
  public:
-  BrowserNonClientFrameViewAsh(BrowserFrame* frame, BrowserView* browser_view);
-  ~BrowserNonClientFrameViewAsh() override;
+  BrowserNonClientFrameViewChromeOS(BrowserFrame* frame,
+                                    BrowserView* browser_view);
+  ~BrowserNonClientFrameViewChromeOS() override;
 
   void Init();
 
@@ -110,36 +111,36 @@ class BrowserNonClientFrameViewAsh
  private:
   // TODO(pkasting): Test the public API or create a test helper class, don't
   // add this many friends
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                            NonImmersiveFullscreen);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ToggleTabletModeRelayout);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                            AvatarDisplayOnTeleportedWindow);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            BrowserHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            AppHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ImmersiveModeTopViewInset);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ToggleTabletModeOnMinimizedWindow);
   FRIEND_TEST_ALL_PREFIXES(WebAppNonClientFrameViewAshTest,
                            ActiveStateOfButtonMatchesWidget);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            RestoreMinimizedBrowserUpdatesCaption);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeControllerChromeosWebAppBrowserTest,
                            FrameLayoutToggleTabletMode);
-  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                            TabletModeBrowserCaptionButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(
-      HomeLauncherBrowserNonClientFrameViewAshTest,
+      HomeLauncherBrowserNonClientFrameViewChromeOSTest,
       CaptionButtonVisibilityForBrowserLaunchedInTabletMode);
-  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                            TabletModeAppCaptionButtonVisibility);
-  FRIEND_TEST_ALL_PREFIXES(NonHomeLauncherBrowserNonClientFrameViewAshTest,
+  FRIEND_TEST_ALL_PREFIXES(NonHomeLauncherBrowserNonClientFrameViewChromeOSTest,
                            HeaderHeightForSnappedBrowserInSplitView);
 
   friend class WebAppNonClientFrameViewAshTest;
@@ -216,9 +217,10 @@ class BrowserNonClientFrameViewAsh
 
   ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
 
-  base::WeakPtrFactory<BrowserNonClientFrameViewAsh> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserNonClientFrameViewChromeOS> weak_ptr_factory_{
+      this};
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewAsh);
+  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewChromeOS);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_ASH_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_CHROMEOS_H_

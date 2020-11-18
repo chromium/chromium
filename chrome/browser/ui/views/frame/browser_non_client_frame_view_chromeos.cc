@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 
 #include <algorithm>
 
@@ -90,7 +90,7 @@ bool UsePackagedAppHeaderStyle(const Browser* browser) {
 
 }  // namespace
 
-BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
+BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
@@ -102,7 +102,7 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
 #endif
 }
 
-BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
+BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
   display::Screen::GetScreen()->RemoveObserver(this);
 
   ImmersiveModeController* immersive_controller =
@@ -111,7 +111,7 @@ BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
     immersive_controller->RemoveObserver(this);
 }
 
-void BrowserNonClientFrameViewAsh::Init() {
+void BrowserNonClientFrameViewChromeOS::Init() {
   caption_button_container_ =
       new chromeos::FrameCaptionButtonContainerView(frame());
   caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
@@ -160,7 +160,7 @@ void BrowserNonClientFrameViewAsh::Init() {
   browser_view()->immersive_mode_controller()->AddObserver(this);
 }
 
-gfx::Rect BrowserNonClientFrameViewAsh::GetBoundsForTabStripRegion(
+gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   const int left_inset = GetTabStripLeftInset();
   const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
@@ -169,7 +169,7 @@ gfx::Rect BrowserNonClientFrameViewAsh::GetBoundsForTabStripRegion(
                    tabstrip_minimum_size.height());
 }
 
-int BrowserNonClientFrameViewAsh::GetTopInset(bool restored) const {
+int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
   // TODO(estade): why do callsites in this class hardcode false for |restored|?
 
   if (!ShouldPaint()) {
@@ -207,25 +207,25 @@ int BrowserNonClientFrameViewAsh::GetTopInset(bool restored) const {
              : caption_button_container_->bounds().bottom();
 }
 
-int BrowserNonClientFrameViewAsh::GetThemeBackgroundXInset() const {
+int BrowserNonClientFrameViewChromeOS::GetThemeBackgroundXInset() const {
   return BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset();
 }
 
-void BrowserNonClientFrameViewAsh::UpdateFrameColor() {
+void BrowserNonClientFrameViewChromeOS::UpdateFrameColor() {
   OnUpdateFrameColor();
   BrowserNonClientFrameView::UpdateFrameColor();
 }
 
-void BrowserNonClientFrameViewAsh::UpdateThrobber(bool running) {
+void BrowserNonClientFrameViewChromeOS::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();
 }
 
-bool BrowserNonClientFrameViewAsh::CanUserExitFullscreen() const {
+bool BrowserNonClientFrameViewChromeOS::CanUserExitFullscreen() const {
   return !platform_util::IsBrowserLockedFullscreen(browser_view()->browser());
 }
 
-SkColor BrowserNonClientFrameViewAsh::GetCaptionColor(
+SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   bool active = ShouldPaintAsActive(active_state);
 
@@ -248,17 +248,17 @@ SkColor BrowserNonClientFrameViewAsh::GetCaptionColor(
   return SkColorSetA(active_color, inactive_alpha_ratio * SK_AlphaOPAQUE);
 }
 
-gfx::Rect BrowserNonClientFrameViewAsh::GetBoundsForClientView() const {
+gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // The ClientView must be flush with the top edge of the widget so that the
   // web contents can take up the entire screen in immersive fullscreen (with
   // or without the top-of-window views revealed). When in immersive fullscreen
   // and the top-of-window views are revealed, the TopContainerView paints the
   // window header by redirecting paints from its background to
-  // BrowserNonClientFrameViewAsh.
+  // BrowserNonClientFrameViewChromeOS.
   return bounds();
 }
 
-gfx::Rect BrowserNonClientFrameViewAsh::GetWindowBoundsForClientBounds(
+gfx::Rect BrowserNonClientFrameViewChromeOS::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   const int top_inset = GetTopInset(false);
   return gfx::Rect(client_bounds.x(),
@@ -266,7 +266,8 @@ gfx::Rect BrowserNonClientFrameViewAsh::GetWindowBoundsForClientBounds(
                    client_bounds.width(), client_bounds.height() + top_inset);
 }
 
-int BrowserNonClientFrameViewAsh::NonClientHitTest(const gfx::Point& point) {
+int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
+    const gfx::Point& point) {
   int hit_test = chromeos::FrameBorderNonClientHitTest(this, point);
 
   // When the window is restored we want a large click target above the tabs
@@ -285,23 +286,23 @@ int BrowserNonClientFrameViewAsh::NonClientHitTest(const gfx::Point& point) {
   return hit_test;
 }
 
-void BrowserNonClientFrameViewAsh::GetWindowMask(const gfx::Size& size,
-                                                 SkPath* window_mask) {
+void BrowserNonClientFrameViewChromeOS::GetWindowMask(const gfx::Size& size,
+                                                      SkPath* window_mask) {
   // Aura does not use window masks.
 }
 
-void BrowserNonClientFrameViewAsh::ResetWindowControls() {
+void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {
   BrowserNonClientFrameView::ResetWindowControls();
   caption_button_container_->SetVisible(ShouldShowCaptionButtons());
   caption_button_container_->ResetWindowControls();
 }
 
-void BrowserNonClientFrameViewAsh::UpdateWindowIcon() {
+void BrowserNonClientFrameViewChromeOS::UpdateWindowIcon() {
   if (window_icon_)
     window_icon_->SchedulePaint();
 }
 
-void BrowserNonClientFrameViewAsh::UpdateWindowTitle() {
+void BrowserNonClientFrameViewChromeOS::UpdateWindowTitle() {
   if (!frame()->IsFullscreen() && frame_header_)
     frame_header_->SchedulePaintForTitle();
 
@@ -311,9 +312,9 @@ void BrowserNonClientFrameViewAsh::UpdateWindowTitle() {
           /*include_app_name=*/false));
 }
 
-void BrowserNonClientFrameViewAsh::SizeConstraintsChanged() {}
+void BrowserNonClientFrameViewChromeOS::SizeConstraintsChanged() {}
 
-void BrowserNonClientFrameViewAsh::OnPaint(gfx::Canvas* canvas) {
+void BrowserNonClientFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldPaint())
     return;
 
@@ -321,7 +322,7 @@ void BrowserNonClientFrameViewAsh::OnPaint(gfx::Canvas* canvas) {
     frame_header_->PaintHeader(canvas);
 }
 
-void BrowserNonClientFrameViewAsh::Layout() {
+void BrowserNonClientFrameViewChromeOS::Layout() {
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
   // position of the window controls.
@@ -354,16 +355,16 @@ void BrowserNonClientFrameViewAsh::Layout() {
   }
 }
 
-const char* BrowserNonClientFrameViewAsh::GetClassName() const {
-  return "BrowserNonClientFrameViewAsh";
+const char* BrowserNonClientFrameViewChromeOS::GetClassName() const {
+  return "BrowserNonClientFrameViewChromeOS";
 }
 
-void BrowserNonClientFrameViewAsh::GetAccessibleNodeData(
+void BrowserNonClientFrameViewChromeOS::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTitleBar;
 }
 
-gfx::Size BrowserNonClientFrameViewAsh::GetMinimumSize() const {
+gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
   // System web apps (e.g. Settings) may have a fixed minimum size.
   Browser* browser = browser_view()->browser();
   if (web_app::IsSystemWebApp(browser)) {
@@ -388,12 +389,12 @@ gfx::Size BrowserNonClientFrameViewAsh::GetMinimumSize() const {
   return gfx::Size(min_width, min_client_view_size.height());
 }
 
-void BrowserNonClientFrameViewAsh::OnThemeChanged() {
+void BrowserNonClientFrameViewChromeOS::OnThemeChanged() {
   OnUpdateFrameColor();
   BrowserNonClientFrameView::OnThemeChanged();
 }
 
-void BrowserNonClientFrameViewAsh::ChildPreferredSizeChanged(
+void BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged(
     views::View* child) {
   if (browser_view()->initialized()) {
     InvalidateLayout();
@@ -401,33 +402,34 @@ void BrowserNonClientFrameViewAsh::ChildPreferredSizeChanged(
   }
 }
 
-SkColor BrowserNonClientFrameViewAsh::GetTitleColor() {
+SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
   return browser_view()->IsRegularOrGuestSession()
              ? kNormalWindowTitleTextColor
              : kIncognitoWindowTitleTextColor;
 }
 
-SkColor BrowserNonClientFrameViewAsh::GetFrameHeaderColor(bool active) {
+SkColor BrowserNonClientFrameViewChromeOS::GetFrameHeaderColor(bool active) {
   return GetFrameColor(active ? BrowserFrameActiveState::kActive
                               : BrowserFrameActiveState::kInactive);
 }
 
-gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderImage(bool active) {
+gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFrameHeaderImage(
+    bool active) {
   return GetFrameImage(active ? BrowserFrameActiveState::kActive
                               : BrowserFrameActiveState::kInactive);
 }
 
-int BrowserNonClientFrameViewAsh::GetFrameHeaderImageYInset() {
+int BrowserNonClientFrameViewChromeOS::GetFrameHeaderImageYInset() {
   return ThemeProperties::kFrameHeightAboveTabs - GetTopInset(false);
 }
 
-gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderOverlayImage(
+gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFrameHeaderOverlayImage(
     bool active) {
   return GetFrameOverlayImage(active ? BrowserFrameActiveState::kActive
                                      : BrowserFrameActiveState::kInactive);
 }
 
-void BrowserNonClientFrameViewAsh::OnDisplayTabletStateChanged(
+void BrowserNonClientFrameViewChromeOS::OnDisplayTabletStateChanged(
     display::TabletState state) {
   switch (state) {
     case display::TabletState::kInTabletMode:
@@ -442,7 +444,7 @@ void BrowserNonClientFrameViewAsh::OnDisplayTabletStateChanged(
   }
 }
 
-void BrowserNonClientFrameViewAsh::OnTabletModeToggled(bool enabled) {
+void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   if (!enabled && browser_view()->immersive_mode_controller()->IsRevealed()) {
     // Before updating the caption buttons state below (which triggers a
     // relayout), we want to move the caption buttons from the
@@ -484,7 +486,7 @@ void BrowserNonClientFrameViewAsh::OnTabletModeToggled(bool enabled) {
     frame()->GetRootView()->Layout();
 }
 
-bool BrowserNonClientFrameViewAsh::ShouldTabIconViewAnimate() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
   // Web apps use their app icon and shouldn't show a throbber.
   if (browser_view()->IsBrowserTypeWebApp())
     return false;
@@ -496,18 +498,20 @@ bool BrowserNonClientFrameViewAsh::ShouldTabIconViewAnimate() const {
   return current_tab && current_tab->IsLoading();
 }
 
-gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFaviconForTabIconView() {
+gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
   views::WidgetDelegate* delegate = frame()->widget_delegate();
   return delegate ? delegate->GetWindowIcon() : gfx::ImageSkia();
 }
 
-void BrowserNonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
+void BrowserNonClientFrameViewChromeOS::OnWindowDestroying(
+    aura::Window* window) {
   window_observer_.RemoveAll();
 }
 
-void BrowserNonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
-                                                           const void* key,
-                                                           intptr_t old) {
+void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
+    aura::Window* window,
+    const void* key,
+    intptr_t old) {
   if (key == chromeos::kIsShowingInOverviewKey) {
     OnAddedToOrRemovedFromOverview();
     return;
@@ -524,15 +528,15 @@ void BrowserNonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
   }
 }
 
-void BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted() {
+void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   // The frame caption buttons use ink drop highlights and flood fill effects.
   // They make those buttons paint_to_layer. On immersive mode, the browser's
   // TopContainerView is also converted to paint_to_layer (see
   // ImmersiveModeControllerAsh::OnImmersiveRevealStarted()). In this mode, the
   // TopContainerView is responsible for painting this
-  // BrowserNonClientFrameViewAsh (see TopContainerView::PaintChildren()).
-  // However, BrowserNonClientFrameViewAsh is a sibling of TopContainerView not
-  // a child. As a result, when the frame caption buttons are set to
+  // BrowserNonClientFrameViewChromeOS (see TopContainerView::PaintChildren()).
+  // However, BrowserNonClientFrameViewChromeOS is a sibling of TopContainerView
+  // not a child. As a result, when the frame caption buttons are set to
   // paint_to_layer as a result of an ink drop effect, they will disappear.
   // https://crbug.com/840242. To fix this, we'll make the caption buttons
   // temporarily children of the TopContainerView while they're all painting to
@@ -545,18 +549,18 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted() {
   container->Layout();
 }
 
-void BrowserNonClientFrameViewAsh::OnImmersiveRevealEnded() {
+void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
   AddChildViewAt(caption_button_container_, 0);
   if (web_app_frame_toolbar())
     AddChildViewAt(web_app_frame_toolbar(), 0);
   Layout();
 }
 
-void BrowserNonClientFrameViewAsh::OnImmersiveFullscreenExited() {
+void BrowserNonClientFrameViewChromeOS::OnImmersiveFullscreenExited() {
   OnImmersiveRevealEnded();
 }
 
-void BrowserNonClientFrameViewAsh::PaintAsActiveChanged() {
+void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 
   UpdateProfileIcons();
@@ -565,30 +569,30 @@ void BrowserNonClientFrameViewAsh::PaintAsActiveChanged() {
     frame_header_->SetPaintAsActive(ShouldPaintAsActive());
 }
 
-void BrowserNonClientFrameViewAsh::OnProfileAvatarChanged(
+void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   BrowserNonClientFrameView::OnProfileAvatarChanged(profile_path);
   UpdateProfileIcons();
 }
 
-bool BrowserNonClientFrameViewAsh::ShouldShowCaptionButtons() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldShowCaptionButtons() const {
   return ShouldShowCaptionButtonsWhenNotInOverview() && !IsInOverviewMode();
 }
 
-bool BrowserNonClientFrameViewAsh::ShouldShowCaptionButtonsWhenNotInOverview()
-    const {
+bool BrowserNonClientFrameViewChromeOS::
+    ShouldShowCaptionButtonsWhenNotInOverview() const {
   return UsePackagedAppHeaderStyle(browser_view()->browser()) ||
          !chromeos::TabletState::Get()->InTabletMode();
 }
 
-int BrowserNonClientFrameViewAsh::GetToolbarLeftInset() const {
+int BrowserNonClientFrameViewChromeOS::GetToolbarLeftInset() const {
   // Include padding on left and right of icon.
   return profile_indicator_icon_
              ? kProfileIndicatorPadding * 2 + profile_indicator_icon_->width()
              : 0;
 }
 
-int BrowserNonClientFrameViewAsh::GetTabStripLeftInset() const {
+int BrowserNonClientFrameViewChromeOS::GetTabStripLeftInset() const {
   // Include padding on left of icon.
   // The tab strip has its own 'padding' to the right of the icon.
   return profile_indicator_icon_
@@ -596,7 +600,7 @@ int BrowserNonClientFrameViewAsh::GetTabStripLeftInset() const {
              : 0;
 }
 
-int BrowserNonClientFrameViewAsh::GetTabStripRightInset() const {
+int BrowserNonClientFrameViewChromeOS::GetTabStripRightInset() const {
   int inset = 0;
   if (ShouldShowCaptionButtonsWhenNotInOverview())
     inset += caption_button_container_->GetPreferredSize().width();
@@ -605,7 +609,7 @@ int BrowserNonClientFrameViewAsh::GetTabStripRightInset() const {
   return inset;
 }
 
-bool BrowserNonClientFrameViewAsh::ShouldPaint() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldPaint() const {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // Normal windows that have a WebUI-based tab strip do not need a browser
   // frame as no tab strip is drawn on top of the browser frame.
@@ -626,7 +630,7 @@ bool BrowserNonClientFrameViewAsh::ShouldPaint() const {
   return !frame()->IsFullscreen();
 }
 
-void BrowserNonClientFrameViewAsh::OnAddedToOrRemovedFromOverview() {
+void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   const bool should_show_caption_buttons = ShouldShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
   if (web_app_frame_toolbar())
@@ -634,7 +638,7 @@ void BrowserNonClientFrameViewAsh::OnAddedToOrRemovedFromOverview() {
 }
 
 std::unique_ptr<chromeos::FrameHeader>
-BrowserNonClientFrameViewAsh::CreateFrameHeader() {
+BrowserNonClientFrameViewChromeOS::CreateFrameHeader() {
   std::unique_ptr<chromeos::FrameHeader> header;
   Browser* browser = browser_view()->browser();
   if (!UsePackagedAppHeaderStyle(browser)) {
@@ -649,7 +653,7 @@ BrowserNonClientFrameViewAsh::CreateFrameHeader() {
   return header;
 }
 
-void BrowserNonClientFrameViewAsh::UpdateTopViewInset() {
+void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
   // In immersive fullscreen mode, the top view inset property should be 0.
   const bool immersive =
       browser_view()->immersive_mode_controller()->IsEnabled();
@@ -659,7 +663,7 @@ void BrowserNonClientFrameViewAsh::UpdateTopViewInset() {
   frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);
 }
 
-bool BrowserNonClientFrameViewAsh::ShouldShowProfileIndicatorIcon() const {
+bool BrowserNonClientFrameViewChromeOS::ShouldShowProfileIndicatorIcon() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We only show the profile indicator for the teleported browser windows
   // between multi-user sessions. Note that you can't teleport an incognito
@@ -687,7 +691,7 @@ bool BrowserNonClientFrameViewAsh::ShouldShowProfileIndicatorIcon() const {
 #endif
 }
 
-void BrowserNonClientFrameViewAsh::UpdateProfileIcons() {
+void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   View* root_view = frame()->GetRootView();
   if (ShouldShowProfileIndicatorIcon()) {
@@ -718,7 +722,7 @@ void BrowserNonClientFrameViewAsh::UpdateProfileIcons() {
 #endif
 }
 
-void BrowserNonClientFrameViewAsh::LayoutProfileIndicator() {
+void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {
   DCHECK(profile_indicator_icon_);
   const int frame_height =
       GetTopInset(false) + browser_view()->GetTabStripHeight();
@@ -731,11 +735,11 @@ void BrowserNonClientFrameViewAsh::LayoutProfileIndicator() {
   DCHECK_LE(profile_indicator_icon_->height(), frame_height);
 }
 
-bool BrowserNonClientFrameViewAsh::IsInOverviewMode() const {
+bool BrowserNonClientFrameViewChromeOS::IsInOverviewMode() const {
   return GetFrameWindow()->GetProperty(chromeos::kIsShowingInOverviewKey);
 }
 
-void BrowserNonClientFrameViewAsh::OnUpdateFrameColor() {
+void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
   aura::Window* window = frame()->GetNativeWindow();
   base::Optional<SkColor> active_color, inactive_color;
   if (!UsePackagedAppHeaderStyle(browser_view()->browser())) {
@@ -762,10 +766,10 @@ void BrowserNonClientFrameViewAsh::OnUpdateFrameColor() {
     frame_header_->UpdateFrameColors();
 }
 
-const aura::Window* BrowserNonClientFrameViewAsh::GetFrameWindow() const {
-  return const_cast<BrowserNonClientFrameViewAsh*>(this)->GetFrameWindow();
+const aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() const {
+  return const_cast<BrowserNonClientFrameViewChromeOS*>(this)->GetFrameWindow();
 }
 
-aura::Window* BrowserNonClientFrameViewAsh::GetFrameWindow() {
+aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() {
   return frame()->GetNativeWindow();
 }
