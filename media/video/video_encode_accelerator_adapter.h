@@ -116,6 +116,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
   State state_ = State::kNotInitialized;
+  bool flush_support_ = false;
 
   Options options_;
   OutputCB output_cb_;

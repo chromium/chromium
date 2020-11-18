@@ -43,6 +43,8 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
                                        uint32_t framerate_num) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
                                        uint32_t framerate) override;
+  bool IsFlushSupported() override;
+  void Flush(FlushCallback flush_callback) override;
   void Destroy() override;
 
  private:
