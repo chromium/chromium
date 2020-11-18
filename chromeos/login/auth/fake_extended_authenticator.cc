@@ -11,25 +11,14 @@
 namespace chromeos {
 
 FakeExtendedAuthenticator::FakeExtendedAuthenticator(
-    NewAuthStatusConsumer* consumer,
-    const UserContext& expected_user_context)
-    : consumer_(consumer),
-      old_consumer_(NULL),
-      expected_user_context_(expected_user_context) {
-}
-
-FakeExtendedAuthenticator::FakeExtendedAuthenticator(
     AuthStatusConsumer* consumer,
     const UserContext& expected_user_context)
-    : consumer_(NULL),
-      old_consumer_(consumer),
-      expected_user_context_(expected_user_context) {
-}
+    : consumer_(consumer), expected_user_context_(expected_user_context) {}
 
 FakeExtendedAuthenticator::~FakeExtendedAuthenticator() = default;
 
 void FakeExtendedAuthenticator::SetConsumer(AuthStatusConsumer* consumer) {
-  old_consumer_ = consumer;
+  consumer_ = consumer;
 }
 
 void FakeExtendedAuthenticator::AuthenticateToMount(
@@ -114,16 +103,14 @@ void FakeExtendedAuthenticator::TransformKeyIfNeeded(
 }
 
 void FakeExtendedAuthenticator::OnAuthSuccess(const UserContext& context) {
-  if (old_consumer_)
-    old_consumer_->OnAuthSuccess(context);
+  if (consumer_)
+    consumer_->OnAuthSuccess(context);
 }
 
 void FakeExtendedAuthenticator::OnAuthFailure(AuthState state,
                                               const AuthFailure& error) {
   if (consumer_)
-    consumer_->OnAuthenticationFailure(state);
-  if (old_consumer_)
-    old_consumer_->OnAuthFailure(error);
+    consumer_->OnAuthFailure(error);
 }
 
 }  // namespace chromeos

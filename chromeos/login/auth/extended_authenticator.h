@@ -39,15 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
   using ResultCallback = base::OnceCallback<void(const std::string& result)>;
   using ContextCallback = base::OnceCallback<void(const UserContext& context)>;
 
-  class NewAuthStatusConsumer {
-   public:
-    virtual ~NewAuthStatusConsumer() {}
-    // The current login attempt has ended in failure, with error.
-    virtual void OnAuthenticationFailure(AuthState state) = 0;
-  };
-
-  static scoped_refptr<ExtendedAuthenticator> Create(
-      NewAuthStatusConsumer* consumer);
   static scoped_refptr<ExtendedAuthenticator> Create(
       AuthStatusConsumer* consumer);
 

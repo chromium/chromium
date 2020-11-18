@@ -46,16 +46,6 @@ void RecordEndMarker(const std::string& marker) {
 
 // static
 scoped_refptr<ExtendedAuthenticatorImpl> ExtendedAuthenticatorImpl::Create(
-    NewAuthStatusConsumer* consumer) {
-  auto extended_authenticator =
-      base::WrapRefCounted(new ExtendedAuthenticatorImpl(consumer));
-  SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
-      &ExtendedAuthenticatorImpl::OnSaltObtained, extended_authenticator));
-  return extended_authenticator;
-}
-
-// static
-scoped_refptr<ExtendedAuthenticatorImpl> ExtendedAuthenticatorImpl::Create(
     AuthStatusConsumer* consumer) {
   auto extended_authenticator =
       base::WrapRefCounted(new ExtendedAuthenticatorImpl(consumer));
@@ -65,17 +55,11 @@ scoped_refptr<ExtendedAuthenticatorImpl> ExtendedAuthenticatorImpl::Create(
 }
 
 ExtendedAuthenticatorImpl::ExtendedAuthenticatorImpl(
-    NewAuthStatusConsumer* consumer)
-    : salt_obtained_(false), consumer_(consumer), old_consumer_(NULL) {
-}
-
-ExtendedAuthenticatorImpl::ExtendedAuthenticatorImpl(
     AuthStatusConsumer* consumer)
-    : salt_obtained_(false), consumer_(NULL), old_consumer_(consumer) {
-}
+    : salt_obtained_(false), consumer_(consumer) {}
 
 void ExtendedAuthenticatorImpl::SetConsumer(AuthStatusConsumer* consumer) {
-  old_consumer_ = consumer;
+  consumer_ = consumer;
 }
 
 void ExtendedAuthenticatorImpl::AuthenticateToMount(
@@ -303,10 +287,10 @@ void ExtendedAuthenticatorImpl::OnMountComplete(
         cryptohome::MountExReplyToMountHash(reply.value());
     if (success_callback)
       std::move(success_callback).Run(mount_hash);
-    if (old_consumer_) {
+    if (consumer_) {
       UserContext copy = user_context;
       copy.SetUserIDHash(mount_hash);
-      old_consumer_->OnAuthSuccess(copy);
+      consumer_->OnAuthSuccess(copy);
     }
     return;
   }
@@ -320,12 +304,9 @@ void ExtendedAuthenticatorImpl::OnMountComplete(
   if (return_code == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST)
     state = NO_MOUNT;
 
-  if (consumer_)
-    consumer_->OnAuthenticationFailure(state);
-
-  if (old_consumer_) {
+  if (consumer_) {
     AuthFailure failure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
-    old_consumer_->OnAuthFailure(failure);
+    consumer_->OnAuthFailure(failure);
   }
 }
 
@@ -339,8 +320,8 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
   if (return_code == cryptohome::MOUNT_ERROR_NONE) {
     if (success_callback)
       std::move(success_callback).Run();
-    if (old_consumer_)
-      old_consumer_->OnAuthSuccess(user_context);
+    if (consumer_)
+      consumer_->OnAuthSuccess(user_context);
     return;
   }
 
@@ -358,12 +339,9 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
   if (return_code == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST)
     state = NO_MOUNT;
 
-  if (consumer_)
-    consumer_->OnAuthenticationFailure(state);
-
-  if (old_consumer_) {
+  if (consumer_) {
     AuthFailure failure(AuthFailure::UNLOCK_FAILED);
-    old_consumer_->OnAuthFailure(failure);
+    consumer_->OnAuthFailure(failure);
   }
 }
 

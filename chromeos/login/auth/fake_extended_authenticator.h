@@ -17,8 +17,6 @@ class AuthFailure;
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
     : public ExtendedAuthenticator {
  public:
-  FakeExtendedAuthenticator(NewAuthStatusConsumer* consumer,
-                            const UserContext& expected_user_context);
   FakeExtendedAuthenticator(AuthStatusConsumer* consumer,
                             const UserContext& expected_user_context);
 
@@ -56,8 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
   void OnAuthSuccess(const UserContext& context);
   void OnAuthFailure(AuthState state, const AuthFailure& error);
 
-  NewAuthStatusConsumer* consumer_;
-  AuthStatusConsumer* old_consumer_;
+  AuthStatusConsumer* consumer_;
 
   UserContext expected_user_context_;
 
