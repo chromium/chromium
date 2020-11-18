@@ -1061,6 +1061,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
+  dict->SetBoolean(
+      "AUDIO_PLAYER_JS_MODULES_ENABLED",
+      base::FeatureList::IsEnabled(chromeos::features::kAudioPlayerJsModules));
 
   dict->SetString("UI_LOCALE", locale);
 }
