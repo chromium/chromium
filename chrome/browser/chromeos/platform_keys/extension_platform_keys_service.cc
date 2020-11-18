@@ -163,12 +163,31 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
       return;
     }
 
-    // TODO(crbug.com/1131436): Delete public key if corporate registration
-    // failed.
     LOG(ERROR) << "Corporate key registration failed: "
                << platform_keys::StatusToString(status);
+
+    service_->platform_keys_service_->RemoveKey(
+        token_id_, public_key_spki_der_,
+        base::BindOnce(&GenerateKeyTask::RemoveKeyCallback,
+                       base::Unretained(this),
+                       /*corporate_key_registration_error_status=*/status));
+  }
+
+  void RemoveKeyCallback(
+      platform_keys::Status corporate_key_registration_error_status,
+      platform_keys::Status remove_key_status) {
+    if (remove_key_status != platform_keys::Status::kSuccess) {
+      LOG(ERROR)
+          << "Failed to remove a dangling key with error: "
+          << platform_keys::StatusToString(remove_key_status)
+          << ", after failing to register key for corporate usage with error: "
+          << platform_keys::StatusToString(
+                 corporate_key_registration_error_status);
+    }
+
     next_step_ = Step::DONE;
-    callback_.Run(std::string() /* no public key */, status);
+    callback_.Run(std::string() /* no public key */,
+                  corporate_key_registration_error_status);
     DoStep();
   }
 
