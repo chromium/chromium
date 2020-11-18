@@ -17,7 +17,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/network_service_instance.h"
-#include "services/network/public/cpp/features.h"
+#include "net/base/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 using component_updater::ComponentUpdateService;
@@ -148,7 +148,7 @@ std::vector<std::string> FirstPartySetsComponentInstallerPolicy::GetMimeTypes()
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(network::features::kFirstPartySets))
+  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets))
     return;
   VLOG(1) << "Registering First-Party Sets component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(

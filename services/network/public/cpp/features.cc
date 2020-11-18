@@ -214,9 +214,5 @@ const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
 const base::Feature kWebSocketReassembleShortMessages{
     "WebSocketReassembleShortMessages", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables usage of First Party Sets to determine cookie availability.
-constexpr base::Feature kFirstPartySets{"FirstPartySets",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace network

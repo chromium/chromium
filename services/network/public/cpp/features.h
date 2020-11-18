@@ -81,9 +81,6 @@ extern const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kWebSocketReassembleShortMessages;
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kFirstPartySets;
-
 }  // namespace features
 }  // namespace network
 

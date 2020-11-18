@@ -287,6 +287,9 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutTcpConnectAttemptMax;
 
+// Enables usage of First Party Sets to determine cookie availability.
+NET_EXPORT extern const base::Feature kFirstPartySets;
+
 }  // namespace features
 }  // namespace net
 

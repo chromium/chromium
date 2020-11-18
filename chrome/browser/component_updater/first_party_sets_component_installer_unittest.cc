@@ -16,7 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "services/network/public/cpp/features.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +40,7 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
 
 TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(network::features::kFirstPartySets);
+  scoped_list.InitAndDisableFeature(net::features::kFirstPartySets);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
@@ -51,7 +51,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
 
 TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(network::features::kFirstPartySets);
+  scoped_list.InitAndEnableFeature(net::features::kFirstPartySets);
 
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
