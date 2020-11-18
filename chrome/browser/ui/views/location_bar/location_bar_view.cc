@@ -181,6 +181,8 @@ void LocationBarView::Init() {
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
+  permission_chip_ = AddChildView(std::make_unique<PermissionChip>(browser()));
+
   auto location_icon_view =
       std::make_unique<LocationIconView>(font_list, this, this);
   location_icon_view->set_drag_controller(this);
@@ -308,8 +310,6 @@ void LocationBarView::Init() {
       l10n_util::GetStringUTF16(IDS_OMNIBOX_CLEAR_ALL));
   clear_all_button_ = AddChildView(std::move(clear_all_button));
   RefreshClearAllButtonIcon();
-
-  permission_chip_ = AddChildView(std::make_unique<PermissionChip>(browser()));
 
   // Initialize the location entry. We do this to avoid a black flash which is
   // visible when the location entry has just been initialized.
