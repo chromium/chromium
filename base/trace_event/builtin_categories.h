@@ -366,7 +366,6 @@ class BASE_EXPORT BuiltinCategories {
       "Testing",
       "TraceEventAgentTestCategory",
       "unfiltered_cat",
-      "whitewashed",
       "x",
       TRACE_DISABLED_BY_DEFAULT("c9"),
       TRACE_DISABLED_BY_DEFAULT("cat"),

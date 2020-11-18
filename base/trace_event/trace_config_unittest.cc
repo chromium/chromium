@@ -31,7 +31,7 @@ const char kCustomTraceConfigString[] =
     "\"event_filters\":["
     "{"
     "\"excluded_categories\":[\"unfiltered_cat\"],"
-    "\"filter_args\":{\"event_name_whitelist\":[\"a snake\",\"a dog\"]},"
+    "\"filter_args\":{\"event_name_allowlist\":[\"a snake\",\"a dog\"]},"
     "\"filter_predicate\":\"event_whitelist_predicate\","
     "\"included_categories\":[\"*\"]"
     "}"
@@ -379,7 +379,7 @@ TEST(TraceConfigTest, TraceConfigFromValidString) {
       "\"event_filters\":["
       "{"
       "\"excluded_categories\":[\"unfiltered_cat\"],"
-      "\"filter_args\":{\"event_name_whitelist\":[\"a snake\",\"a dog\"]},"
+      "\"filter_args\":{\"event_name_allowlist\":[\"a snake\",\"a dog\"]},"
       "\"filter_predicate\":\"event_whitelist_predicate\","
       "\"included_categories\":[\"*\"]"
       "}"
@@ -438,9 +438,9 @@ TEST(TraceConfigTest, TraceConfigFromValidString) {
   std::string json_out;
   base::JSONWriter::Write(event_filter.filter_args(), &json_out);
   EXPECT_STREQ(json_out.c_str(),
-               "{\"event_name_whitelist\":[\"a snake\",\"a dog\"]}");
+               "{\"event_name_allowlist\":[\"a snake\",\"a dog\"]}");
   std::unordered_set<std::string> filter_values;
-  EXPECT_TRUE(event_filter.GetArgAsSet("event_name_whitelist", &filter_values));
+  EXPECT_TRUE(event_filter.GetArgAsSet("event_name_allowlist", &filter_values));
   EXPECT_EQ(2u, filter_values.size());
   EXPECT_EQ(1u, filter_values.count("a snake"));
   EXPECT_EQ(1u, filter_values.count("a dog"));

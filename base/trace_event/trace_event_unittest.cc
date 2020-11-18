@@ -2316,8 +2316,8 @@ TEST_F(TraceEventTestFixture, NameIsEscaped) {
 
 namespace {
 
-bool IsArgNameWhitelisted(const char* arg_name) {
-  return base::MatchPattern(arg_name, "granular_arg_whitelisted");
+bool IsArgNameAllowed(const char* arg_name) {
+  return base::MatchPattern(arg_name, "granular_arg_allowed");
 }
 
 bool IsTraceEventArgsAllowlisted(const char* category_group_name,
@@ -2329,8 +2329,8 @@ bool IsTraceEventArgsAllowlisted(const char* category_group_name,
   }
 
   if (base::MatchPattern(category_group_name, "benchmark") &&
-      base::MatchPattern(event_name, "granularly_whitelisted")) {
-    *arg_filter = base::BindRepeating(&IsArgNameWhitelisted);
+      base::MatchPattern(event_name, "granularly_allowed")) {
+    *arg_filter = base::BindRepeating(&IsArgNameAllowed);
     return true;
   }
 
@@ -2339,7 +2339,7 @@ bool IsTraceEventArgsAllowlisted(const char* category_group_name,
 
 }  // namespace
 
-TEST_F(TraceEventTestFixture, ArgsWhitelisting) {
+TEST_F(TraceEventTestFixture, ArgsAllowlisting) {
   TraceLog::GetInstance()->SetArgumentFilterPredicate(
       base::BindRepeating(&IsTraceEventArgsAllowlisted));
 
@@ -2348,11 +2348,10 @@ TEST_F(TraceEventTestFixture, ArgsWhitelisting) {
     TraceLog::RECORDING_MODE);
 
   TRACE_EVENT1("toplevel", "event1", "int_one", 1);
-  TRACE_EVENT1("whitewashed", "event2", "int_two", 1);
+  TRACE_EVENT1("Testing", "event2", "int_two", 1);
 
-  TRACE_EVENT2("benchmark", "granularly_whitelisted",
-               "granular_arg_whitelisted", "whitelisted_value",
-               "granular_arg_blacklisted", "blacklisted_value");
+  TRACE_EVENT2("benchmark", "granularly_allowed", "granular_arg_allowed",
+               "allowed_value", "granular_arg_disallowed", "disallowed_value");
 
   EndTraceAndFlush();
 
@@ -2377,15 +2376,15 @@ TEST_F(TraceEventTestFixture, ArgsWhitelisting) {
   EXPECT_TRUE(dict->GetString("args", &args_string));
   EXPECT_EQ(args_string, "__stripped__");
 
-  dict = FindNamePhase("granularly_whitelisted", "X");
+  dict = FindNamePhase("granularly_allowed", "X");
   ASSERT_TRUE(dict);
   dict->GetDictionary("args", &args_dict);
   ASSERT_TRUE(args_dict);
 
-  EXPECT_TRUE(args_dict->GetString("granular_arg_whitelisted", &args_string));
-  EXPECT_EQ(args_string, "whitelisted_value");
+  EXPECT_TRUE(args_dict->GetString("granular_arg_allowed", &args_string));
+  EXPECT_EQ(args_string, "allowed_value");
 
-  EXPECT_TRUE(args_dict->GetString("granular_arg_blacklisted", &args_string));
+  EXPECT_TRUE(args_dict->GetString("granular_arg_disallowed", &args_string));
   EXPECT_EQ(args_string, "__stripped__");
 }
 
@@ -2966,11 +2965,11 @@ TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
 
 // Flaky on iOS device, see crbug.com/908002
 #if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EventWhitelistFiltering DISABLED_EventWhitelistFiltering
+#define MAYBE_EventAllowlistFiltering DISABLED_EventAllowlistFiltering
 #else
-#define MAYBE_EventWhitelistFiltering EventWhitelistFiltering
+#define MAYBE_EventAllowlistFiltering EventAllowlistFiltering
 #endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EventWhitelistFiltering) {
+TEST_F(TraceEventTestFixture, MAYBE_EventAllowlistFiltering) {
   std::string config_json = StringPrintf(
       "{"
       "  \"included_categories\": ["
@@ -2984,7 +2983,7 @@ TEST_F(TraceEventTestFixture, MAYBE_EventWhitelistFiltering) {
       "         \"filtered_cat\","
       "         \"" TRACE_DISABLED_BY_DEFAULT("*") "\"], "
       "       \"filter_args\": {"
-      "           \"event_name_whitelist\": [\"a snake\", \"a dog\"]"
+      "           \"event_name_allowlist\": [\"a snake\", \"a dog\"]"
       "         }"
       "     }"
       "    "
