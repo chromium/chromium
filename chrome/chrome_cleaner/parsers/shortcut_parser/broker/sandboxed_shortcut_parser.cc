@@ -130,9 +130,7 @@ void SandboxedShortcutParser::OnShortcutsParsingDone(
     const std::wstring kChromeLnkName = L"Google Chrome.lnk";
     if (chrome_exe_locations.Contains(
             base::FilePath(parsed_shortcut.icon_location)) ||
-        lnk_path.BaseName().value() == kChromeLnkName ||
-        chrome_exe_locations.Contains(
-            base::FilePath(parsed_shortcut.target_path))) {
+        lnk_path.BaseName().value() == kChromeLnkName) {
       base::AutoLock lock(lock_);
       found_shortcuts->push_back(parsed_shortcut);
     }

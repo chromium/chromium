@@ -6,12 +6,10 @@
 
 #include <set>
 
-#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
@@ -169,44 +167,6 @@ TEST_F(SandboxedShortcutParserTest, ParseMultipleFoldersWithChromeLnk) {
 
     EXPECT_EQ(parsed_shortcut.command_line_arguments, kLnkArguments);
   }
-}
-
-TEST_F(SandboxedShortcutParserTest,
-       ParseShortcutWithChromeTargetDifferentName) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  base::win::ShortcutProperties shortcut;
-  base::FilePath fake_chrome_path =
-      fake_chrome_exe_file_path_set_.ToVector()[0];
-  shortcut.set_target(fake_chrome_path);
-
-  base::win::ScopedHandle fake_chrome_shortcut_handle =
-      CreateAndOpenShortcutInTempDir("Google Chrome-New Profile.lnk", shortcut,
-                                     &temp_dir);
-  ASSERT_TRUE(fake_chrome_shortcut_handle.IsValid());
-
-  base::RunLoop run_loop;
-  std::vector<ShortcutInformation> found_shortcuts;
-  FilePathSet empty_file_path_set;
-  shortcut_parser_->FindAndParseChromeShortcutsInFoldersAsync(
-      {
-          temp_dir.GetPath(),
-      },
-      fake_chrome_exe_file_path_set_,
-      base::BindOnce(
-          [](std::vector<ShortcutInformation>* found_shortcuts,
-             base::OnceClosure closure,
-             std::vector<ShortcutInformation> parsed_shortcuts) {
-            *found_shortcuts = parsed_shortcuts;
-            std::move(closure).Run();
-          },
-          &found_shortcuts, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ASSERT_EQ(found_shortcuts.size(), 1ul);
-  EXPECT_TRUE(PathEqual(fake_chrome_path,
-                        base::FilePath(found_shortcuts[0].target_path)));
 }
 
 TEST_F(SandboxedShortcutParserTest, ParseShortcutWithEmptyIconSet) {
