@@ -17,7 +17,7 @@ class MockBatteryMonitor {
     this.bindingSet_ = new mojo.BindingSet(device.mojom.BatteryMonitor);
 
     this.interceptor_ = new MojoInterfaceInterceptor(
-        device.mojom.BatteryMonitor.name, "process");
+        device.mojom.BatteryMonitor.name);
     this.interceptor_.oninterfacerequest = e => this.bindRequest(e.handle);
     this.interceptor_.start();
   }

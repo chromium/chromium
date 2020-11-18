@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
-#include "third_party/blink/renderer/modules/battery/battery_manager.h"
 #include "third_party/blink/renderer/modules/battery/battery_status.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -19,9 +19,7 @@ class MODULES_EXPORT BatteryDispatcher final
     : public GarbageCollected<BatteryDispatcher>,
       public PlatformEventDispatcher {
  public:
-  static BatteryDispatcher& Instance();
-
-  BatteryDispatcher();
+  explicit BatteryDispatcher(ExecutionContext*);
 
   const BatteryStatus* LatestData() const {
     return has_latest_data_ ? &battery_status_ : nullptr;

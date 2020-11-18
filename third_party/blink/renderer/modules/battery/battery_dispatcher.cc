@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/battery/battery_dispatcher.h"
 
 #include "services/device/public/mojom/battery_status.mojom-blink.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
@@ -13,14 +13,8 @@
 
 namespace blink {
 
-BatteryDispatcher& BatteryDispatcher::Instance() {
-  DEFINE_STATIC_LOCAL(Persistent<BatteryDispatcher>, battery_dispatcher,
-                      (MakeGarbageCollected<BatteryDispatcher>()));
-  return *battery_dispatcher;
-}
-
-BatteryDispatcher::BatteryDispatcher()
-    : monitor_(nullptr), has_latest_data_(false) {}
+BatteryDispatcher::BatteryDispatcher(ExecutionContext* context)
+    : monitor_(context), has_latest_data_(false) {}
 
 void BatteryDispatcher::Trace(Visitor* visitor) const {
   visitor->Trace(monitor_);
@@ -53,7 +47,7 @@ void BatteryDispatcher::UpdateBatteryStatus(
 void BatteryDispatcher::StartListening(LocalDOMWindow* window) {
   DCHECK(!monitor_.is_bound());
   // See https://bit.ly/2S0zRAS for task types.
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+  window->GetBrowserInterfaceBroker().GetInterface(
       monitor_.BindNewPipeAndPassReceiver(
           window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   QueryNextStatus();

@@ -199,7 +199,6 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/policy/switches.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
@@ -1241,20 +1240,6 @@ GetBindHostReceiverInterceptor() {
   return *interceptor;
 }
 
-RenderProcessHostImpl::BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
-  static base::NoDestructor<RenderProcessHostImpl::BatteryMonitorBinder> binder;
-  return *binder;
-}
-
-void BindBatteryMonitor(
-    mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
-  const auto& binder = GetBatteryMonitorBinderOverride();
-  if (binder)
-    binder.Run(std::move(receiver));
-  else
-    GetDeviceService().BindBatteryMonitor(std::move(receiver));
-}
-
 RenderProcessHostImpl::CreateNetworkFactoryCallback&
 GetCreateNetworkFactoryCallback() {
   static base::NoDestructor<RenderProcessHostImpl::CreateNetworkFactoryCallback>
@@ -2247,17 +2232,8 @@ RenderProcessHostImpl::GetPeerConnectionTrackerHost() {
   return peer_connection_tracker_host_.get();
 }
 
-// static
-void RenderProcessHostImpl::OverrideBatteryMonitorBinderForTesting(
-    BatteryMonitorBinder binder) {
-  GetBatteryMonitorBinderOverride() = std::move(binder);
-}
-
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
-
-  AddUIThreadInterface(registry.get(),
-                       base::BindRepeating(&BindBatteryMonitor));
 
   AddUIThreadInterface(
       registry.get(),

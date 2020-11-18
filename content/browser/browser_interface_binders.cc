@@ -64,6 +64,7 @@
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -490,6 +491,20 @@ void EmptyBinderForFrame(RenderFrameHost* host,
               << " for the frame/document scope";
 }
 
+BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
+  static base::NoDestructor<BatteryMonitorBinder> binder;
+  return *binder;
+}
+
+void BindBatteryMonitor(
+    mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
+  const auto& binder = GetBatteryMonitorBinderOverride();
+  if (binder)
+    binder.Run(std::move(receiver));
+  else
+    GetDeviceService().BindBatteryMonitor(std::move(receiver));
+}
+
 VibrationManagerBinder& GetVibrationManagerBinderOverride() {
   static base::NoDestructor<VibrationManagerBinder> binder;
   return *binder;
@@ -515,6 +530,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::AudioContextManager>(base::BindRepeating(
       &RenderFrameHostImpl::GetAudioContextManager, base::Unretained(host)));
+
+  map->Add<device::mojom::BatteryMonitor>(
+      base::BindRepeating(&BindBatteryMonitor));
 
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &RenderFrameHostImpl::BindCacheStorage, base::Unretained(host)));
@@ -1142,6 +1160,10 @@ void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {
 }
 
 }  // namespace internal
+
+void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
+  internal::GetBatteryMonitorBinderOverride() = std::move(binder);
+}
 
 void OverrideVibrationManagerBinderForTesting(VibrationManagerBinder binder) {
   internal::GetVibrationManagerBinderOverride() = std::move(binder);

@@ -45,7 +45,9 @@ BatteryManager::~BatteryManager() = default;
 BatteryManager::BatteryManager(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       ExecutionContextLifecycleStateObserver(navigator.DomWindow()),
-      PlatformEventController(*navigator.DomWindow()) {
+      PlatformEventController(*navigator.DomWindow()),
+      battery_dispatcher_(
+          MakeGarbageCollected<BatteryDispatcher>(navigator.DomWindow())) {
   UpdateStateIfNeeded();
 }
 
@@ -86,7 +88,7 @@ void BatteryManager::DidUpdateData() {
   DCHECK(battery_property_);
 
   BatteryStatus old_status = battery_status_;
-  battery_status_ = *BatteryDispatcher::Instance().LatestData();
+  battery_status_ = *battery_dispatcher_->LatestData();
 
   if (battery_property_->GetState() == BatteryProperty::kPending) {
     battery_property_->Resolve(this);
@@ -110,15 +112,15 @@ void BatteryManager::DidUpdateData() {
 }
 
 void BatteryManager::RegisterWithDispatcher() {
-  BatteryDispatcher::Instance().AddController(this, DomWindow());
+  battery_dispatcher_->AddController(this, DomWindow());
 }
 
 void BatteryManager::UnregisterWithDispatcher() {
-  BatteryDispatcher::Instance().RemoveController(this);
+  battery_dispatcher_->RemoveController(this);
 }
 
 bool BatteryManager::HasLastData() {
-  return BatteryDispatcher::Instance().LatestData();
+  return battery_dispatcher_->LatestData();
 }
 
 void BatteryManager::ContextLifecycleStateChanged(
@@ -148,6 +150,7 @@ bool BatteryManager::HasPendingActivity() const {
 
 void BatteryManager::Trace(Visitor* visitor) const {
   visitor->Trace(battery_property_);
+  visitor->Trace(battery_dispatcher_);
   Supplement<Navigator>::Trace(visitor);
   PlatformEventController::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);

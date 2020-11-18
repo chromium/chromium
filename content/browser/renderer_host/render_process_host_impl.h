@@ -64,7 +64,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/device/public/mojom/battery_monitor.mojom-forward.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -683,13 +682,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
 
   PeerConnectionTrackerHost* GetPeerConnectionTrackerHost();
-
-  // Allows tests to override how RenderProcessHosts bind incoming
-  // BatteryMonitor receivers.
-  using BatteryMonitorBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<device::mojom::BatteryMonitor>)>;
-  static void OverrideBatteryMonitorBinderForTesting(
-      BatteryMonitorBinder binder);
 
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.

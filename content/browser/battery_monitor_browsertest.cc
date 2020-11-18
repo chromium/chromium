@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "content/browser/browser_interface_binders.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -77,14 +78,13 @@ class BatteryMonitorTest : public ContentBrowserTest {
     // Because Device Service also runs in this process(browser process), here
     // we can directly set our binder to intercept interface requests against
     // it.
-    RenderProcessHostImpl::OverrideBatteryMonitorBinderForTesting(
+    OverrideBatteryMonitorBinderForTesting(
         base::BindRepeating(&MockBatteryMonitor::Bind,
                             base::Unretained(mock_battery_monitor_.get())));
   }
 
   ~BatteryMonitorTest() override {
-    RenderProcessHostImpl::OverrideBatteryMonitorBinderForTesting(
-        base::NullCallback());
+    OverrideBatteryMonitorBinderForTesting(base::NullCallback());
   }
 
  protected:
