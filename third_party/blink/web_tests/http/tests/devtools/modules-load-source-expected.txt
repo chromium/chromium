@@ -9,6 +9,7 @@ Loaded modules:
     event_listeners
     formatter
     inline_editor
+    linear_memory_inspector
     object_ui
     quick_open
     search
