@@ -6,8 +6,12 @@
 
 #include <stdio.h>
 
+#include "base/logging.h"
 #include "chrome/browser/policy/messaging_layer/util/status.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::StrEq;
 
 namespace reporting {
 namespace {
@@ -148,6 +152,41 @@ TEST(Status, RestoreFromNonOk) {
 
   EXPECT_EQ(status.error_code(), status_proto.code());
   EXPECT_EQ(status.error_message(), status_proto.error_message());
+}
+
+TEST(Status, ConvertStatusToString) {
+  const std::pair<Status, const char*> status_pairs[] = {
+      {Status::StatusOK(), "OK"},
+      {Status(error::CANCELLED, "Cancelled"), "CANCELLED:Cancelled"},
+      {Status(error::UNKNOWN, "Unknown"), "UNKNOWN:Unknown"},
+      {Status(error::INVALID_ARGUMENT, "Invalid argument"),
+       "INVALID_ARGUMENT:Invalid argument"},
+      {Status(error::DEADLINE_EXCEEDED, "Deadline exceeded"),
+       "DEADLINE_EXCEEDED:Deadline exceeded"},
+      {Status(error::NOT_FOUND, "Not found"), "NOT_FOUND:Not found"},
+      {Status(error::ALREADY_EXISTS, "Already exists"),
+       "ALREADY_EXISTS:Already exists"},
+      {Status(error::PERMISSION_DENIED, "Permission denied"),
+       "PERMISSION_DENIED:Permission denied"},
+      {Status(error::UNAUTHENTICATED, "Unathenticated"),
+       "UNAUTHENTICATED:Unathenticated"},
+      {Status(error::RESOURCE_EXHAUSTED, "Resourse exhausted"),
+       "RESOURCE_EXHAUSTED:Resourse exhausted"},
+      {Status(error::FAILED_PRECONDITION, "Failed precondition"),
+       "FAILED_PRECONDITION:Failed precondition"},
+      {Status(error::ABORTED, "Aborted"), "ABORTED:Aborted"},
+      {Status(error::OUT_OF_RANGE, "Out of range"),
+       "OUT_OF_RANGE:Out of range"},
+      {Status(error::UNIMPLEMENTED, "Unimplemented"),
+       "UNIMPLEMENTED:Unimplemented"},
+      {Status(error::INTERNAL, "Internal"), "INTERNAL:Internal"},
+      {Status(error::UNAVAILABLE, "Unavailable"), "UNAVAILABLE:Unavailable"},
+      {Status(error::DATA_LOSS, "Data loss"), "DATA_LOSS:Data loss"},
+  };
+  for (const auto& p : status_pairs) {
+    LOG(INFO) << p.first;
+    EXPECT_THAT(p.first.ToString(), StrEq(p.second));
+  }
 }
 }  // namespace
 }  // namespace reporting

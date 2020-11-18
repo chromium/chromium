@@ -272,5 +272,14 @@ TEST(StatusOr, TestBinding) {
   EXPECT_EQ(kI, result);
 }
 
+TEST(StatusOr, TestAbort) {
+  StatusOr<int> thing1(Status(error::UNKNOWN, "Unknown"));
+  int v1;
+  EXPECT_DEATH(v1 = thing1.ValueOrDie(), "");
+
+  StatusOr<std::unique_ptr<int>> thing2(Status(error::UNKNOWN, "Unknown"));
+  std::unique_ptr<int> v2;
+  EXPECT_DEATH(v2 = std::move(thing2.ValueOrDie()), "");
+}
 }  // namespace
 }  // namespace reporting
