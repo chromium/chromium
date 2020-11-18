@@ -393,7 +393,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                      bool origin_requests_isolation);
 
   // This function adds |origin| to the master list of origins that have
-  // ever requested opt-in isolation in the given |browsing_context|, either via
+  // ever requested opt-in isolation in the given |browser_context|, either via
   // an OriginPolicy or opt-in header. Returns true if |origin| is not already
   // in the list.
   bool UpdateOriginIsolationOptInListIfNecessary(
@@ -594,7 +594,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   Handle CreateHandle(int child_id);
 
   // Returns true if we have seen an isolation request for this |origin| in the
-  // given |browsing_context| before in any BrowsingInstance.
+  // given |browser_context| before in any BrowsingInstance.
   bool HasOriginEverRequestedOptInIsolation(BrowserContext* browser_context,
                                             const url::Origin& origin);
 
@@ -891,7 +891,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // another profile.
   base::Lock origins_isolation_opt_in_lock_;
   // The set of all origins that have ever requested opt-in isolation, organized
-  // by BrowsingContext. This is tracked so we know which origins need to be
+  // by BrowserContext. This is tracked so we know which origins need to be
   // tracked when non-isolated in any given BrowsingInstance. Origins requesting
   // isolation, if successful, are marked as isolated via
   // ShouldOriginGetOptInIsolation's checking |origin_requests_isolation|.

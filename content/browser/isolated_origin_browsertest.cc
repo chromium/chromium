@@ -1343,7 +1343,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // BrowsingInstance, since we haven't yet done a global walk in the OTR
   // BrowserContext, so ShouldOriginGetOptInIsolation will return true.
   // However, during the navigation by the OpenPopup call below that global walk
-  // will be triggered before the url's isolation status is set.
+  // will be triggered before the url's isolation status is set. This walk is
+  // triggered by the call to CheckForIsolationOptIn() in
+  // NavigationRequest::OnResponseStarted().
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
       static_cast<WebContentsImpl*>(shell_otr->web_contents())
           ->GetFrameTree()
