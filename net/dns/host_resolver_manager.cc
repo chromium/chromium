@@ -1261,15 +1261,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // ERR_NAME_NOT_RESOLVED) results with a valid response to parse.
     if (net_error == OK || (net_error == ERR_NAME_NOT_RESOLVED && response &&
                             response->IsValid())) {
-      DnsResponseResultExtractor::ExtractionError extraction_error;
-      if (dns_query_type == DnsQueryType::A ||
-          dns_query_type == DnsQueryType::AAAA) {
-        extraction_error = ParseAddressDnsResponse(response, &results);
-      } else {
-        DnsResponseResultExtractor extractor(response);
-        extraction_error =
-            extractor.ExtractDnsResults(dns_query_type, &results);
-      }
+      DnsResponseResultExtractor extractor(response);
+      DnsResponseResultExtractor::ExtractionError extraction_error =
+          extractor.ExtractDnsResults(dns_query_type, &results);
       DCHECK_NE(extraction_error,
                 DnsResponseResultExtractor::ExtractionError::kUnexpected);
 
@@ -1389,28 +1383,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     OnSuccess(results);
-  }
-
-  DnsResponseResultExtractor::ExtractionError ParseAddressDnsResponse(
-      const DnsResponse* response,
-      HostCache::Entry* out_results) {
-    DCHECK(response);
-    AddressList addresses;
-    base::Optional<base::TimeDelta> ttl;
-    DnsResponseResultExtractor::ExtractionError parse_result =
-        response->ParseToAddressList(&addresses, &ttl);
-
-    if (parse_result != DnsResponseResultExtractor::ExtractionError::kOk) {
-      *out_results = GetMalformedResponseResult();
-    } else if (addresses.empty()) {
-      *out_results = HostCache::Entry(ERR_NAME_NOT_RESOLVED, AddressList(),
-                                      HostCache::Entry::SOURCE_DNS, ttl);
-    } else {
-      addresses.Deduplicate();
-      *out_results = HostCache::Entry(OK, std::move(addresses),
-                                      HostCache::Entry::SOURCE_DNS, ttl);
-    }
-    return parse_result;
   }
 
   void OnSortComplete(base::TimeTicks sort_start_time,

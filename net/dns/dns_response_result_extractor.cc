@@ -22,7 +22,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
@@ -191,6 +194,10 @@ ExtractionError ExtractResponseRecords(
       if (!cname_data)
         return ExtractionError::kMalformedCname;
 
+      base::TimeDelta ttl = base::TimeDelta::FromSeconds(record->ttl());
+      response_ttl =
+          std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
+
       bool added = aliases.emplace(record->name(), cname_data->cname()).second;
       DCHECK(added);
     } else if (record->klass() == dns_protocol::kClassIN &&
@@ -249,9 +256,48 @@ ExtractionError ExtractResponseRecords(
 ExtractionError ExtractAddressResults(const DnsResponse& response,
                                       uint16_t address_qtype,
                                       HostCache::Entry* out_results) {
-  // TODO(crbug.com/1147247): Move address result handling from DnsResponse.
-  NOTIMPLEMENTED();
-  return ExtractionError::kUnexpected;
+  DCHECK(address_qtype == dns_protocol::kTypeA ||
+         address_qtype == dns_protocol::kTypeAAAA);
+  DCHECK(out_results);
+
+  std::vector<std::unique_ptr<const RecordParsed>> records;
+  base::Optional<base::TimeDelta> response_ttl;
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, address_qtype, &records, &response_ttl);
+
+  if (extraction_error != ExtractionError::kOk) {
+    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
+                                    HostCache::Entry::SOURCE_DNS);
+    return extraction_error;
+  }
+
+  AddressList addresses;
+  for (const auto& record : records) {
+    if (addresses.empty())
+      addresses.set_canonical_name(record->name());
+
+    // Expect that ExtractResponseRecords validates that all results correctly
+    // have the same name.
+    DCHECK_EQ(addresses.canonical_name(), record->name());
+
+    IPAddress address;
+    if (address_qtype == dns_protocol::kTypeA) {
+      const ARecordRdata* rdata = record->rdata<ARecordRdata>();
+      address = rdata->address();
+      DCHECK(address.IsIPv4());
+    } else {
+      DCHECK_EQ(address_qtype, dns_protocol::kTypeAAAA);
+      const AAAARecordRdata* rdata = record->rdata<AAAARecordRdata>();
+      address = rdata->address();
+      DCHECK(address.IsIPv6());
+    }
+    addresses.push_back(IPEndPoint(address, 0 /* port */));
+  }
+
+  *out_results = HostCache::Entry(
+      addresses.empty() ? ERR_NAME_NOT_RESOLVED : OK, std::move(addresses),
+      HostCache::Entry::SOURCE_DNS, response_ttl);
+  return ExtractionError::kOk;
 }
 
 ExtractionError ExtractTxtResults(const DnsResponse& response,

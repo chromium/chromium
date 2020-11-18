@@ -54,8 +54,10 @@
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_udp_tracker.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_cache.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/dns/resolve_context.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
@@ -976,26 +978,30 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       const DnsAttempt* attempt =
           probe_stats->probe_attempts[attempt_number].get();
       const DnsResponse* response = attempt->GetResponse();
-      AddressList addresses;
-      base::Optional<base::TimeDelta> ttl;
-      if (response &&
-          attempt->GetResponse()->ParseToAddressList(&addresses, &ttl) ==
-              DnsResponseResultExtractor::ExtractionError::kOk &&
-          !addresses.empty()) {
-        // The DoH probe queries don't go through the standard DnsAttempt path,
-        // so the ServerStats have not been updated yet.
-        context_->RecordServerSuccess(doh_server_index,
-                                      true /* is_doh_server */, session_.get());
-        context_->RecordRtt(doh_server_index, true /* is_doh_server */,
-                            base::TimeTicks::Now() - query_start_time, rv,
-                            session_.get());
-        success = true;
+      if (response) {
+        DnsResponseResultExtractor extractor(response);
+        HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+        DnsResponseResultExtractor::ExtractionError extraction_error =
+            extractor.ExtractDnsResults(DnsQueryType::A, &results);
 
-        // Do not delete the ProbeStats and cancel the probe sequence. It will
-        // cancel itself on the next scheduled ContinueProbe() call if the
-        // server is still available. This way, the backoff schedule will be
-        // maintained if a server quickly becomes unavailable again before that
-        // scheduled call.
+        if (extraction_error ==
+                DnsResponseResultExtractor::ExtractionError::kOk &&
+            results.addresses() && !results.addresses().value().empty()) {
+          // The DoH probe queries don't go through the standard DnsAttempt
+          // path, so the ServerStats have not been updated yet.
+          context_->RecordServerSuccess(
+              doh_server_index, true /* is_doh_server */, session_.get());
+          context_->RecordRtt(doh_server_index, true /* is_doh_server */,
+                              base::TimeTicks::Now() - query_start_time, rv,
+                              session_.get());
+          success = true;
+
+          // Do not delete the ProbeStats and cancel the probe sequence. It will
+          // cancel itself on the next scheduled ContinueProbe() call if the
+          // server is still available. This way, the backoff schedule will be
+          // maintained if a server quickly becomes unavailable again before
+          // that scheduled call.
+        }
       }
     }
 

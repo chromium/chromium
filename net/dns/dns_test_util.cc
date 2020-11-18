@@ -132,7 +132,7 @@ DnsResourceRecord BuildTestTextRecord(std::string name,
   }
 
   return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeTXT,
-                            std::move(rdata));
+                            std::move(rdata), ttl);
 }
 
 DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
@@ -200,7 +200,7 @@ DnsResponse BuildTestDnsResponse(
   return DnsResponse(0, true /* is_authoritative */, answers,
                      authority /* authority_records */,
                      additional /* additional_records */, query, rcode,
-                     false /* validate_answers_match_query */);
+                     false /* validate_records */);
 }
 
 DnsResponse BuildTestDnsAddressResponse(std::string name,
