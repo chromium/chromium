@@ -351,6 +351,10 @@ bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
   if (key_event.IsAltDown())
     return false;
 
+  // Default handling for events with Control modifier like sign out.
+  if (key_event.IsControlDown())
+    return false;
+
   if (sender->GetReadOnly())
     return false;
 
