@@ -161,7 +161,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // SetSafeOpaqueBackgroundColor() which should be an opaque color. Otherwise,
   // it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
-  // claims to not be), then SK_ColorTRANSPARENT is returned.
+  // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
+  // checkerboard where the layer is not covered by the background_color().
   SkColor SafeOpaqueBackgroundColor() const;
   // For testing, return the actual stored value.
   SkColor ActualSafeOpaqueBackgroundColorForTesting() const {

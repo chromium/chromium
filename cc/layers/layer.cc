@@ -505,15 +505,17 @@ void Layer::SetSafeOpaqueBackgroundColor(SkColor background_color) {
 
 SkColor Layer::SafeOpaqueBackgroundColor() const {
   if (contents_opaque()) {
-    // TODO(936906): We should uncomment this DCHECK, since the
-    // |safe_opaque_background_color_| could be transparent if it is never set
-    // (the default is 0). But to do that, one test needs to be fixed.
-    // DCHECK_EQ(SkColorGetA(safe_opaque_background_color_), SK_AlphaOPAQUE);
+    DCHECK_EQ(SkColorGetA(safe_opaque_background_color_), SK_AlphaOPAQUE);
     return safe_opaque_background_color_;
   }
   SkColor color = background_color();
-  if (SkColorGetA(color) == 255)
+  if (SkColorGetA(color) == SK_AlphaOPAQUE) {
+    // The layer is not opaque while the background color is, meaning that the
+    // background color doesn't cover the whole layer. Use SK_ColorTRANSPARENT
+    // to avoid intrusive checkerboard where the layer is not covered by the
+    // background color.
     color = SK_ColorTRANSPARENT;
+  }
   return color;
 }
 
