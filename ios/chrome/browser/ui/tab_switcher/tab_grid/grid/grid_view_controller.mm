@@ -303,9 +303,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self animateEmptyStateIn];
     return;
   }
+  UICollectionViewScrollPosition scrollPosition =
+      (self.currentLayout == self.horizontalLayout)
+          ? UICollectionViewScrollPositionCenteredHorizontally
+          : UICollectionViewScrollPositionTop;
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                                     animated:NO
-                              scrollPosition:UICollectionViewScrollPositionTop];
+                              scrollPosition:scrollPosition];
   // Update the delegate, in case it wasn't set when |items| was populated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   [self removeEmptyStateAnimated:NO];

@@ -463,6 +463,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           0, [self hiddenTopToolbarYTranslation]);
       [self gridViewControllerForPage:self.currentPage].gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
+      [self contentWillAppearAnimated:YES];
       break;
     case ViewRevealState::Peeked:
       break;
@@ -486,6 +487,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       self.topToolbar.alpha = 0;
       [self showPlusSignButtonWithAlpha:1 - gridViewController
                                                 .fractionVisibleOfLastItem];
+      [self contentWillDisappearAnimated:YES];
       self.plusSignButton.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       break;
@@ -503,7 +505,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       self.topToolbar.transform = CGAffineTransformIdentity;
       gridViewController.gridView.transform = CGAffineTransformMakeTranslation(
           0, self.topToolbar.intrinsicContentSize.height);
-      [self contentWillAppearAnimated:YES];
       self.topToolbar.alpha = 1;
       [self hidePlusSignButton];
       break;
