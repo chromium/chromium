@@ -8,8 +8,8 @@
 <script src="resources/test-helpers.sub.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script>
-// Tests of updating a service worker. This file contains non-cors cases only.
-// The cases of cors: true are in update-bytecheck-cors-import.https.html.
+// Tests of updating a service worker. This file contains cors cases only.
+// The cases of cors: false are in update-bytecheck.https.html.
 
 /*
  * @param string main
@@ -25,10 +25,11 @@ const settings = [{main: 'default', imported: 'default'},
                   {main: 'time',    imported: 'time'   }];
 
 const host_info = get_host_info();
-settings.forEach(({main, imported}) => {
+settings.forEach(({cors, main, imported}) => {
   promise_test(async (t) => {
-    // Empty path results in the same origin imported scripts.
-    const path = '';
+    // Specify a cross origin path to load imported scripts from a cross origin.
+    const path = host_info.HTTPS_REMOTE_ORIGIN +
+                 '/service-workers/service-worker/resources/';
     const script = 'resources/bytecheck-worker.py' +
                    '?main=' + main +
                    '&imported=' + imported +
