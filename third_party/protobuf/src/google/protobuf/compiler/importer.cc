@@ -46,14 +46,11 @@
 #include <memory>
 
 #include <google/protobuf/compiler/importer.h>
-
 #include <google/protobuf/compiler/parser.h>
-#include <google/protobuf/io/io_win32.h>
 #include <google/protobuf/io/tokenizer.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/stubs/strutil.h>
-
-
+#include <google/protobuf/io/io_win32.h>
 
 #ifdef _WIN32
 #include <ctype.h>
@@ -234,8 +231,9 @@ const FileDescriptor* Importer::Import(const std::string& filename) {
   return pool_.FindFileByName(filename);
 }
 
-void Importer::AddUnusedImportTrackFile(const std::string& file_name) {
-  pool_.AddUnusedImportTrackFile(file_name);
+void Importer::AddUnusedImportTrackFile(const std::string& file_name,
+                                        bool is_error) {
+  pool_.AddUnusedImportTrackFile(file_name, is_error);
 }
 
 void Importer::ClearUnusedImportTrackFiles() {
@@ -314,7 +312,7 @@ static std::string CanonicalizePath(std::string path) {
 
 static inline bool ContainsParentReference(const std::string& path) {
   return path == ".." || HasPrefixString(path, "../") ||
-         HasSuffixString(path, "/..") || path.find("/../") != string::npos;
+         HasSuffixString(path, "/..") || path.find("/../") != std::string::npos;
 }
 
 // Maps a file from an old location to a new one.  Typically, old_prefix is
@@ -492,6 +490,15 @@ io::ZeroCopyInputStream* DiskSourceTree::OpenVirtualFile(
 
 io::ZeroCopyInputStream* DiskSourceTree::OpenDiskFile(
     const std::string& filename) {
+  struct stat sb;
+  int ret = 0;
+  do {
+    ret = stat(filename.c_str(), &sb);
+  } while (ret != 0 && errno == EINTR);
+  if (ret == 0 && sb.st_mode & S_IFDIR) {
+    last_error_message_ = "Input file is a directory.";
+    return NULL;
+  }
   int file_descriptor;
   do {
     file_descriptor = open(filename.c_str(), O_RDONLY);

@@ -55,16 +55,10 @@ class MapFieldGenerator : public FieldGenerator {
   void GenerateSwappingCode(io::Printer* printer) const;
   void GenerateConstructorCode(io::Printer* printer) const {}
   void GenerateCopyConstructorCode(io::Printer* printer) const;
-  void GenerateMergeFromCodedStream(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizes(io::Printer* printer) const;
   void GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const;
   void GenerateByteSize(io::Printer* printer) const;
 
  private:
-  // A helper for GenerateSerializeWithCachedSizes{,ToArray}.
-  void GenerateSerializeWithCachedSizes(io::Printer* printer,
-                                        bool to_array) const;
-
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MapFieldGenerator);
 };
 

@@ -37,10 +37,10 @@
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/parse_context.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/metadata.h>
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/stl_util.h>
 
@@ -49,9 +49,9 @@
 namespace google {
 namespace protobuf {
 
-const UnknownFieldSet* UnknownFieldSet::default_instance() {
+const UnknownFieldSet& UnknownFieldSet::default_instance() {
   static auto instance = internal::OnShutdownDelete(new UnknownFieldSet());
-  return instance;
+  return *instance;
 }
 
 void UnknownFieldSet::ClearFallback() {
@@ -98,10 +98,9 @@ void UnknownFieldSet::MergeFromAndDestroy(UnknownFieldSet* other) {
   other->fields_.clear();
 }
 
-void UnknownFieldSet::MergeToInternalMetdata(
-    const UnknownFieldSet& other,
-    internal::InternalMetadataWithArena* metadata) {
-  metadata->mutable_unknown_fields()->MergeFrom(other);
+void UnknownFieldSet::MergeToInternalMetadata(
+    const UnknownFieldSet& other, internal::InternalMetadata* metadata) {
+  metadata->mutable_unknown_fields<UnknownFieldSet>()->MergeFrom(other);
 }
 
 size_t UnknownFieldSet::SpaceUsedExcludingSelfLong() const {
@@ -268,52 +267,16 @@ void UnknownField::DeepCopy(const UnknownField& other) {
 }
 
 
-void UnknownField::SerializeLengthDelimitedNoTag(
-    io::CodedOutputStream* output) const {
-  GOOGLE_DCHECK_EQ(TYPE_LENGTH_DELIMITED, type());
-  const std::string& data = *data_.length_delimited_.string_value;
-  output->WriteVarint32(data.size());
-  output->WriteRawMaybeAliased(data.data(), data.size());
-}
-
-uint8* UnknownField::SerializeLengthDelimitedNoTagToArray(uint8* target) const {
+uint8* UnknownField::InternalSerializeLengthDelimitedNoTag(
+    uint8* target, io::EpsCopyOutputStream* stream) const {
   GOOGLE_DCHECK_EQ(TYPE_LENGTH_DELIMITED, type());
   const std::string& data = *data_.length_delimited_.string_value;
   target = io::CodedOutputStream::WriteVarint32ToArray(data.size(), target);
-  target = io::CodedOutputStream::WriteStringToArray(data, target);
+  target = stream->WriteRaw(data.data(), data.size(), target);
   return target;
 }
 
-#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 namespace internal {
-const char* PackedEnumParser(void* object, const char* ptr, ParseContext* ctx,
-                             bool (*is_valid)(int),
-                             InternalMetadataWithArena* metadata,
-                             int field_num) {
-  return ctx->ReadPackedVarint(
-      ptr, [object, is_valid, metadata, field_num](uint64 val) {
-        if (is_valid(val)) {
-          static_cast<RepeatedField<int>*>(object)->Add(val);
-        } else {
-          WriteVarint(field_num, val, metadata->mutable_unknown_fields());
-        }
-      });
-}
-const char* PackedEnumParserArg(void* object, const char* ptr,
-                                ParseContext* ctx,
-                                bool (*is_valid)(const void*, int),
-                                const void* data,
-                                InternalMetadataWithArena* metadata,
-                                int field_num) {
-  return ctx->ReadPackedVarint(
-      ptr, [object, is_valid, data, metadata, field_num](uint64 val) {
-        if (is_valid(data, val)) {
-          static_cast<RepeatedField<int>*>(object)->Add(val);
-        } else {
-          WriteVarint(field_num, val, metadata->mutable_unknown_fields());
-        }
-      });
-}
 
 class UnknownFieldParserHelper {
  public:
@@ -359,13 +322,6 @@ const char* UnknownFieldParse(uint64 tag, UnknownFieldSet* unknown,
   return FieldParser(tag, field_parser, ptr, ctx);
 }
 
-const char* UnknownFieldParse(uint32 tag, InternalMetadataWithArena* metadata,
-                              const char* ptr, ParseContext* ctx) {
-  return UnknownFieldParse(tag, metadata->mutable_unknown_fields(), ptr, ctx);
-}
-
 }  // namespace internal
-#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-
 }  // namespace protobuf
 }  // namespace google

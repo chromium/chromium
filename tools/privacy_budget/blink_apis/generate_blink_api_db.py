@@ -1,8 +1,23 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython
 
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+# [VPYTHON:BEGIN]
+# python_version: "2.7"
+# wheel: <
+#   name: "infra/python/wheels/protobuf-py2_py3"
+#   version: "version:3.13.0"
+# >
+#
+# wheel: <
+#   name: "infra/python/wheels/six-py2_py3"
+#   version: "version:1.11.0"
+# >
+#
+# [VPYTHON:END]
+
 """
 Generate a database of Blink APIs.
 
@@ -36,39 +51,39 @@ import argparse
 
 
 def parse_options():
-    parser = argparse.ArgumentParser(description="%prog [options]")
-    parser.add_argument("--web_idl_database",
-                        type=str,
-                        help="filepath of the input database")
-    parser.add_argument("--output", type=str, help="filepath of output file")
-    parser.add_argument("--path", type=str, help="Additions to sys.path")
-    parser.add_argument(
-        "--chromium_revision",
-        type=str,
-        help="Chromium revision (git hash) for the source of Blink WebIDL DB")
-    args = parser.parse_args()
+  parser = argparse.ArgumentParser(description="%prog [options]")
+  parser.add_argument("--web_idl_database",
+                      type=str,
+                      help="filepath of the input database")
+  parser.add_argument("--output", type=str, help="filepath of output file")
+  parser.add_argument("--path", type=str, help="Additions to sys.path")
+  parser.add_argument(
+      "--chromium_revision",
+      type=str,
+      help="Chromium revision (git hash) for the source of Blink WebIDL DB")
+  args = parser.parse_args()
 
-    required_option_names = ("web_idl_database", "output")
-    for opt_name in required_option_names:
-        if getattr(args, opt_name) is None:
-            parser.error("--{} is a required option.".format(opt_name))
+  required_option_names = ("web_idl_database", "output")
+  for opt_name in required_option_names:
+    if getattr(args, opt_name) is None:
+      parser.error("--{} is a required option.".format(opt_name))
 
-    if args.path:
-        for p in args.path.split(':'):
-            sys.path.append(p)
+  if args.path:
+    for p in args.path.split(':'):
+      sys.path.append(p)
 
-    return args
+  return args
 
 
 def main():
-    args = parse_options()
+  args = parse_options()
 
-    from blink_api_proto import BlinkApiProto
-    p = BlinkApiProto(args.web_idl_database, args.output,
-                      args.chromium_revision)
-    p.Parse()
-    p.WriteTo(args.output)
+  from blink_api_proto import BlinkApiProto
+  p = BlinkApiProto(args.web_idl_database, args.output,
+                    args.chromium_revision)
+  p.Parse()
+  p.WriteTo(args.output)
 
 
 if __name__ == '__main__':
-    main()
+  main()

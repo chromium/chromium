@@ -74,7 +74,8 @@ class FieldGenerator {
                           const Options& options)
       : descriptor_(descriptor), options_(options) {}
   virtual ~FieldGenerator();
-
+  virtual void GenerateSerializeWithCachedSizes(
+      io::Printer* printer) const final{};
   // Generate lines of code declaring members fields of the message class
   // needed to represent this field.  These are placed inside the message
   // class.
@@ -166,23 +167,6 @@ class FieldGenerator {
   // Generate code that allocates the fields's default instance.
   virtual void GenerateDefaultInstanceAllocator(
       io::Printer* /*printer*/) const {}
-
-  // Generate lines to decode this field, which will be placed inside the
-  // message's MergeFromCodedStream() method.
-  virtual void GenerateMergeFromCodedStream(io::Printer* printer) const = 0;
-
-  // Returns true if this field's "MergeFromCodedStream" code needs the arena
-  // to be defined as a variable.
-  virtual bool MergeFromCodedStreamNeedsArena() const { return false; }
-
-  // Generate lines to decode this field from a packed value, which will be
-  // placed inside the message's MergeFromCodedStream() method.
-  virtual void GenerateMergeFromCodedStreamWithPacking(
-      io::Printer* printer) const;
-
-  // Generate lines to serialize this field, which are placed within the
-  // message's SerializeWithCachedSizes() method.
-  virtual void GenerateSerializeWithCachedSizes(io::Printer* printer) const = 0;
 
   // Generate lines to serialize this field directly to the array "target",
   // which are placed within the message's SerializeWithCachedSizesToArray()

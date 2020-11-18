@@ -15,11 +15,12 @@ proto_library("protos") {
 
 action("blink_apis") {
   testonly = true
-  script = "generate_blink_api_db.py"
+  script = "generate_blink_api_db_entrypoint.py"
 
   inputs = [
     web_idl_database_filepath,
     "blink_api_proto.py",
+    "generate_blink_api_db.py"
   ]
   output_data_file = "${root_build_dir}/blink_apis.textpb"
   outputs = [ output_data_file ]

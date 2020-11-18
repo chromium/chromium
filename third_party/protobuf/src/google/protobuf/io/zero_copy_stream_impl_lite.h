@@ -44,9 +44,11 @@
 #ifndef GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_IMPL_LITE_H__
 #define GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_IMPL_LITE_H__
 
+
 #include <iosfwd>
 #include <memory>
 #include <string>
+
 #include <google/protobuf/stubs/callback.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/zero_copy_stream.h>
@@ -78,7 +80,7 @@ class PROTOBUF_EXPORT ArrayInputStream : public ZeroCopyInputStream {
   bool Next(const void** data, int* size) override;
   void BackUp(int count) override;
   bool Skip(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
 
  private:
@@ -111,7 +113,7 @@ class PROTOBUF_EXPORT ArrayOutputStream : public ZeroCopyOutputStream {
   // implements ZeroCopyOutputStream ---------------------------------
   bool Next(void** data, int* size) override;
   void BackUp(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
  private:
   uint8* const data_;     // The byte array.
@@ -145,10 +147,10 @@ class PROTOBUF_EXPORT StringOutputStream : public ZeroCopyOutputStream {
   // implements ZeroCopyOutputStream ---------------------------------
   bool Next(void** data, int* size) override;
   void BackUp(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
  private:
-  static const int kMinimumSize = 16;
+  static constexpr size_t kMinimumSize = 16;
 
   std::string* target_;
 
@@ -217,7 +219,7 @@ class PROTOBUF_EXPORT CopyingInputStreamAdaptor : public ZeroCopyInputStream {
   bool Next(const void** data, int* size) override;
   void BackUp(int count) override;
   bool Skip(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
  private:
   // Insures that buffer_ is not NULL.
@@ -229,7 +231,7 @@ class PROTOBUF_EXPORT CopyingInputStreamAdaptor : public ZeroCopyInputStream {
   CopyingInputStream* copying_stream_;
   bool owns_copying_stream_;
 
-  // True if we have seen a permenant error from the underlying stream.
+  // True if we have seen a permanent error from the underlying stream.
   bool failed_;
 
   // The current position of copying_stream_, relative to the point where
@@ -304,7 +306,7 @@ class PROTOBUF_EXPORT CopyingOutputStreamAdaptor : public ZeroCopyOutputStream {
   // implements ZeroCopyOutputStream ---------------------------------
   bool Next(void** data, int* size) override;
   void BackUp(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
  private:
   // Write the current buffer, if it is present.
@@ -318,7 +320,7 @@ class PROTOBUF_EXPORT CopyingOutputStreamAdaptor : public ZeroCopyOutputStream {
   CopyingOutputStream* copying_stream_;
   bool owns_copying_stream_;
 
-  // True if we have seen a permenant error from the underlying stream.
+  // True if we have seen a permanent error from the underlying stream.
   bool failed_;
 
   // The current position of copying_stream_, relative to the point where
@@ -351,7 +353,7 @@ class PROTOBUF_EXPORT LimitingInputStream : public ZeroCopyInputStream {
   bool Next(const void** data, int* size) override;
   void BackUp(int count) override;
   bool Skip(int count) override;
-  int64 ByteCount() const override;
+  int64_t ByteCount() const override;
 
 
  private:

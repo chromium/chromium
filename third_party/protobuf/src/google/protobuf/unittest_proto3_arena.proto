@@ -183,7 +183,7 @@ message TestUnpackedTypes {
   repeated TestAllTypes.NestedEnum repeated_nested_enum = 14 [packed = false];
 }
 
-// This proto includes a recusively nested message.
+// This proto includes a recursively nested message.
 message NestedTestAllTypes {
   NestedTestAllTypes child = 1;
   TestAllTypes payload = 2;
@@ -205,4 +205,14 @@ enum ForeignEnum {
 
 // TestEmptyMessage is used to test behavior of unknown fields.
 message TestEmptyMessage {
+}
+
+// Needed for a Python test.
+message TestPickleNestedMessage {
+  message NestedMessage {
+    int32 bb = 1;
+    message NestedNestedMessage {
+      int32 cc = 1;
+    }
+  }
 }

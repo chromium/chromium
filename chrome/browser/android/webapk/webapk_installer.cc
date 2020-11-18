@@ -304,8 +304,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
         if (shortcut_hash_it->second.unsafe_data.size() <=
             kMaxIconSizeInBytes) {
           // Duplicate icons will have an empty |image_data|.
-          shortcut_icon->set_image_data(
-              std::move(shortcut_hash_it->second.unsafe_data));
+          shortcut_icon->set_image_data(shortcut_hash_it->second.unsafe_data);
+          shortcut_hash_it->second.unsafe_data.clear();
         }
       }
     }
@@ -342,9 +342,8 @@ bool StoreUpdateRequestToFileInBackground(
   // Create directory if it does not exist.
   base::CreateDirectory(update_request_path.DirName());
 
-  int bytes_written = base::WriteFile(update_request_path,
-                                      proto->c_str(),
-                                      proto->size());
+  int bytes_written =
+      base::WriteFile(update_request_path, proto->c_str(), proto->size());
   return (bytes_written == static_cast<int>(proto->size()));
 }
 

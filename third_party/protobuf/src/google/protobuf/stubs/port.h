@@ -32,17 +32,11 @@
 #define GOOGLE_PROTOBUF_STUBS_PORT_H_
 
 #include <assert.h>
+#include <cstdint>
 #include <stdlib.h>
 #include <cstddef>
 #include <string>
 #include <string.h>
-#if defined(__osf__)
-// Tru64 lacks stdint.h, but has inttypes.h which defines a superset of
-// what stdint.h would define.
-#include <inttypes.h>
-#elif !defined(_MSC_VER)
-#include <stdint.h>
-#endif
 
 #include <google/protobuf/stubs/platform_macros.h>
 
@@ -57,7 +51,7 @@
   #if !defined(PROTOBUF_DISABLE_LITTLE_ENDIAN_OPT_FOR_TEST)
     #define PROTOBUF_LITTLE_ENDIAN 1
   #endif
-  #if _MSC_VER >= 1300 && !defined(__INTEL_COMPILER)
+  #if defined(_MSC_VER) && _MSC_VER >= 1300 && !defined(__INTEL_COMPILER)
     // If MSVC has "/RTCc" set, it will complain about truncating casts at
     // runtime.  This file contains some intentional truncating casts.
     #pragma runtime_checks("c", off)
@@ -116,8 +110,9 @@
   #define LIBPROTOC_EXPORT
 #endif
 
-#define PROTOBUF_RUNTIME_DEPRECATED(message)
-#define GOOGLE_PROTOBUF_RUNTIME_DEPRECATED(message)
+#define PROTOBUF_RUNTIME_DEPRECATED(message) PROTOBUF_DEPRECATED_MSG(message)
+#define GOOGLE_PROTOBUF_RUNTIME_DEPRECATED(message) \
+  PROTOBUF_DEPRECATED_MSG(message)
 
 // ===================================================================
 // from google3/base/port.h
@@ -128,36 +123,17 @@
 // undefined otherwise.  Do NOT define it to 0 -- that causes
 // '#ifdef LANG_CXX11' to behave differently from '#if LANG_CXX11'.
 #define LANG_CXX11 1
-#endif
-
-#if LANG_CXX11 && !defined(__NVCC__)
-#define PROTOBUF_CXX11 1
 #else
-#define PROTOBUF_CXX11 0
-#endif
-
-#if PROTOBUF_CXX11
-#define PROTOBUF_FINAL final
-#else
-#define PROTOBUF_FINAL
+#error "Protobuf requires at least C++11."
 #endif
 
 namespace google {
 namespace protobuf {
 
+using ConstStringParam = const std::string &;
+
 typedef unsigned int uint;
 
-#ifdef _MSC_VER
-typedef signed __int8  int8;
-typedef __int16 int16;
-typedef __int32 int32;
-typedef __int64 int64;
-
-typedef unsigned __int8  uint8;
-typedef unsigned __int16 uint16;
-typedef unsigned __int32 uint32;
-typedef unsigned __int64 uint64;
-#else
 typedef int8_t int8;
 typedef int16_t int16;
 typedef int32_t int32;
@@ -167,7 +143,6 @@ typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
-#endif
 
 static const int32 kint32max = 0x7FFFFFFF;
 static const int32 kint32min = -kint32max - 1;
@@ -263,12 +238,6 @@ inline void GOOGLE_UNALIGNED_STORE64(void *p, uint64 v) {
         && (__clang_major__ == 3 && __clang_minor__ == 8) \
         && (__clang_patchlevel__ < 275480))
 # define GOOGLE_PROTOBUF_USE_PORTABLE_LOG2
-#endif
-
-#if defined(_MSC_VER)
-#define GOOGLE_THREAD_LOCAL __declspec(thread)
-#else
-#define GOOGLE_THREAD_LOCAL __thread
 #endif
 
 // The following guarantees declaration of the byte swap functions.
@@ -443,13 +412,6 @@ class BigEndian {
 
 }  // namespace protobuf
 }  // namespace google
-
-#ifdef PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-#define GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER \
-  PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-#else
-#define GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER 0
-#endif
 
 #include <google/protobuf/port_undef.inc>
 

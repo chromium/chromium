@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD
 License File: LICENSE
-Version: 3.9.0
-CPEPrefix: cpe:/a:google:protobuf:3.9.0
-Revision: cf242503ec157a7dda8a6eda48712dd26c81d2e6
+Version: 3.13.0.1
+CPEPrefix: cpe:/a:google:protobuf:3.13.0.1
+Revision: 3cff48db79bd903b2382492e166079fe708be6b1
 Security Critical: yes
 
 Steps used to create the current version:
@@ -35,7 +35,7 @@ Steps used to create the current version:
 the same directory as this file.
 
 9. Add an __init__.py to protobuf/ that adds third_party/six/ to Python path.
-10. Update README.chromium.
+10. Update this file (README.chromium).
 
 Note about libmirclient:
 
@@ -75,31 +75,3 @@ Description of the patches:
 - 0021-Fix-protobuf-s-library-.gitinore-file.patch
 
   Un-ignores python/google/protobuf/descriptor_pb2.py
-
-- 0026-json_objectwriter_override.patch
-
-  Corrects/adds override in json_objectwriter.h and
-  default_value_objectwriter.h
-  (https://github.com/protocolbuffers/protobuf/pull/6515).
-
-- 0027-explicit-namespace.patch
-
-  clang-cl requires friend class declarations to be fully namespaced.
-  (https://github.com/protocolbuffers/protobuf/pull/6516)
-
-- 0028-fix-repeated-field-export.patch
-
-  clang and clang-cl differ on how to do template instantiation exporting (see
-  https://crbug.com/994001). This adds some macro magic copied from chromium
-  //base/export_template.h.
-  (https://github.com/protocolbuffers/protobuf/pull/6535)
-
-- 0029-Fix-order-for-mutex-macros.patch
-
-  __declspec(dllexport) must come after __atrribute__(()) on clang-cl
-  (https://github.com/protocolbuffers/protobuf/pull/6524)
-
-- 0030-fix-use_unaligned-not-defined-warning.patch
-
-  Fixes "GOOGLE_PROTOBUF_USE_UNALIGNED is not defined" compilation warning
-
