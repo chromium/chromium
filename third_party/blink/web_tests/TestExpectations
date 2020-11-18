@@ -5066,7 +5066,7 @@ crbug.com/979593 [ Linux ] external/wpt/service-workers/service-worker/registrat
 crbug.com/979593 [ Win ] external/wpt/service-workers/service-worker/registration-schedule-job.https.html [ Pass Failure ]
 
 # Sheriff 2019-07-04
-crbug.com/981267 [ Linux ] http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Pass Failure ]
+crbug.com/981267 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Pass Failure Timeout ]
 # TODO(crbug.com/980588): reenable once WPT is fixed
 crbug.com/980588 external/wpt/screen-orientation/lock-unlock-check.html [ Pass Failure ]
 
@@ -5401,7 +5401,6 @@ crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cr
 crbug.com/1047164 [ Mac ] fast/scroll-snap/snaps-after-keyboard-scrolling.html [ Pass Failure ]
 crbug.com/1047208 http/tests/serviceworker/update-served-from-cache.html [ Pass Failure ]
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Pass Failure ]
-crbug.com/1047420 [ Mac ] http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Pass Failure ]
 
 crbug.com/1008483 external/wpt/css/css-transforms/3d-rendering-context-behavior.tentative.html [ Failure ]
 crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Failure ]
