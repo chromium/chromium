@@ -202,7 +202,6 @@
 #include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber_test_observer.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -307,31 +306,6 @@ bool IsNetworkPredictionEnabled(PrefService* prefs) {
   return chrome_browser_net::CanPrefetchAndPrerenderUI(prefs) ==
       chrome_browser_net::NetworkPredictionStatus::ENABLED;
 }
-
-#if defined(OS_CHROMEOS)
-class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
- public:
-  TestAudioObserver() : output_mute_changed_count_(0) {
-  }
-
-  int output_mute_changed_count() const {
-    return output_mute_changed_count_;
-  }
-
-  ~TestAudioObserver() override {}
-
- protected:
-  // chromeos::CrasAudioHandler::AudioObserver overrides.
-  void OnOutputMuteChanged(bool /* mute_on */) override {
-    ++output_mute_changed_count_;
-  }
-
- private:
-  int output_mute_changed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAudioObserver);
-};
-#endif
 
 }  // namespace
 
@@ -894,45 +868,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DISABLED_DisableScreenshotsFile) {
   // Check if trying to take a screenshot fails when disabled by policy.
   TestScreenshotFile(false);
   ASSERT_EQ(CountScreenshots(), screenshot_count + 1);
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, DisableAudioOutput) {
-  // Set up the mock observer.
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
-  std::unique_ptr<TestAudioObserver> test_observer(new TestAudioObserver);
-  audio_handler->AddAudioObserver(test_observer.get());
-
-  bool prior_state = audio_handler->IsOutputMuted();
-  // Make sure the audio is not muted and then toggle the policy and observe
-  // if the output mute changed event is fired.
-  audio_handler->SetOutputMute(false);
-  EXPECT_FALSE(audio_handler->IsOutputMuted());
-  EXPECT_EQ(1, test_observer->output_mute_changed_count());
-  PolicyMap policies;
-  policies.Set(key::kAudioOutputAllowed, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(audio_handler->IsOutputMuted());
-  // This should not change the state now and should not trigger output mute
-  // changed event.
-  audio_handler->SetOutputMute(false);
-  EXPECT_TRUE(audio_handler->IsOutputMuted());
-  EXPECT_EQ(1, test_observer->output_mute_changed_count());
-
-  // Toggle back and observe if the output mute changed event is fired.
-  policies.Set(key::kAudioOutputAllowed, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_FALSE(audio_handler->IsOutputMuted());
-  EXPECT_EQ(1, test_observer->output_mute_changed_count());
-  audio_handler->SetOutputMute(true);
-  EXPECT_TRUE(audio_handler->IsOutputMuted());
-  EXPECT_EQ(2, test_observer->output_mute_changed_count());
-  // Revert the prior state.
-  audio_handler->SetOutputMute(prior_state);
-  audio_handler->RemoveAudioObserver(test_observer.get());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_SessionLengthLimit) {
