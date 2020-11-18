@@ -11,15 +11,11 @@ if (is_android) {
 
 # TODO(crbug.com/1006430): Fix password reuse detection not fully functional on
 # Android.
-password_reuse_detection_support = !is_ios
 password_reuse_warning_support = !is_ios
 password_on_focus_ping_support = !is_ios
 
 config("password_reuse_detection_config") {
   defines = []
-  if (password_reuse_detection_support) {
-    defines += [ "PASSWORD_REUSE_DETECTION_ENABLED" ]
-  }
   if (password_reuse_warning_support) {
     defines += [ "PASSWORD_REUSE_WARNING_ENABLED" ]
   }
