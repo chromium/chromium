@@ -267,27 +267,12 @@ bool WebRequestPermissions::HideRequest(
     if (!request.is_navigation_request)
       return true;
 
-    if (request.web_request_type !=
-            extensions::WebRequestResourceType::MAIN_FRAME &&
-        request.web_request_type !=
-            extensions::WebRequestResourceType::SUB_FRAME &&
-        request.web_request_type !=
-            extensions::WebRequestResourceType::OBJECT) {
-      // TODO(crbug.com/1145496): Remove crash key logging once the DCHECK
-      // failure below is fixed.
-      static auto* web_request_type_key = base::debug::AllocateCrashKeyString(
-          "web_request_type", base::debug::CrashKeySize::Size32);
-      static auto* url_key = base::debug::AllocateCrashKeyString(
-          "web_request_url", base::debug::CrashKeySize::Size256);
-
-      base::debug::ScopedCrashKeyString scoped_web_request_type(
-          web_request_type_key,
-          WebRequestResourceTypeToString(request.web_request_type));
-      base::debug::ScopedCrashKeyString scoped_url(
-          url_key, request.url.possibly_invalid_spec());
-
-      DCHECK(false);
-    }
+    DCHECK(request.web_request_type ==
+               extensions::WebRequestResourceType::MAIN_FRAME ||
+           request.web_request_type ==
+               extensions::WebRequestResourceType::SUB_FRAME ||
+           request.web_request_type ==
+               extensions::WebRequestResourceType::OBJECT);
 
     // Hide sub-frame requests to clientsX.google.com.
     // TODO(crbug.com/890006): Determine if the code here can be cleaned up
