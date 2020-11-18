@@ -2703,15 +2703,30 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('test report message', report['body']['message']);
 
   def testSetTimezone(self):
+    defaultTimeZoneScript = '''
+       return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
+       ''';
+    localHourScript = '''
+       return (new Date("2020-10-10T00:00:00Z")).getHours();
+       ''';
+
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+
+    # Test to switch to Taipei
     self._driver.SetTimezone('Asia/Taipei');
-    timeZone = self._driver.ExecuteScript(
-        'return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;')
+    timeZone = self._driver.ExecuteScript(defaultTimeZoneScript)
     self.assertEquals('Asia/Taipei', timeZone);
-    self._driver.SetTimezone('Asia/Hong_Kong');
-    timeZone = self._driver.ExecuteScript(
-        'return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;')
-    self.assertEquals('Asia/Hong_Kong', timeZone);
+    localHour = self._driver.ExecuteScript(localHourScript)
+    # Taipei time is GMT+8. Not observes DST.
+    self.assertEquals(8, localHour);
+
+    # Test to switch to Tokyo
+    self._driver.SetTimezone('Asia/Tokyo');
+    timeZone = self._driver.ExecuteScript(defaultTimeZoneScript)
+    self.assertEquals('Asia/Tokyo', timeZone);
+    localHour = self._driver.ExecuteScript(localHourScript)
+    # Tokyo time is GMT+9. Not observes DST.
+    self.assertEquals(9, localHour);
 
   def GetPermissionWithQuery(self, query):
     script = """
