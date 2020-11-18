@@ -68,6 +68,7 @@ class KaleidoscopeDataProviderImpl
   void GetSignedOutProviders(GetSignedOutProvidersCallback cb) override;
   void SetSignedOutProviders(
       const std::vector<std::string>& providers) override;
+  void RecordTimeTakenToStartWatchHistogram(base::TimeDelta time) override;
 
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();

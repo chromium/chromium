@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
@@ -311,6 +312,12 @@ void KaleidoscopeDataProviderImpl::SetSignedOutProviders(
 
   profile_->GetPrefs()->Set(
       kaleidoscope::prefs::kKaleidoscopeSignedOutProviders, *providers_copy);
+}
+
+void KaleidoscopeDataProviderImpl::RecordTimeTakenToStartWatchHistogram(
+    base::TimeDelta time) {
+  base::UmaHistogramMediumTimes("Media.Kaleidoscope.TimeTakenToStartWatch",
+                                time);
 }
 
 void KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections(

@@ -106,6 +106,9 @@ interface KaleidoscopeDataProvider {
   // Stores a list of providers that were chosen by the user. Only used if the
   // user is signed out.
   SetSignedOutProviders(array<string> providers);
+
+  // Records a histogram of the time taken to start a watch action.
+  RecordTimeTakenToStartWatchHistogram(mojo_base.mojom.TimeDelta time);
 };
 
 enum GetCollectionsResult {

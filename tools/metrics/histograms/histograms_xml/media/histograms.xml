@@ -2183,6 +2183,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Kaleidoscope.TimeTakenToStartWatch" units="ms"
+    expires_after="2021-08-19">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded the first time in a Kaleidoscope session a user selects a watch
+    action in Kaleidoscope with the time taken from loading the page to the user
+    clicking on the watch action.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.Learning.BinaryThreshold.Aggregate"
     enum="ConfusionMatrix" expires_after="2019-10-30">
 <!-- Name completed by histogram_suffixes
