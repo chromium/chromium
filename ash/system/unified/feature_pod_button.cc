@@ -55,6 +55,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
     : views::ImageButton(std::move(callback)), is_togglable_(is_togglable) {
   SetPreferredSize(kUnifiedFeaturePodIconSize);
   SetBorder(views::CreateEmptyBorder(kUnifiedFeaturePodIconPadding));
+  SetFlipCanvasOnPaintForRTLUI(false);
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
