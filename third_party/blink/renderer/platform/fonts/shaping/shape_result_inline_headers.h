@@ -98,26 +98,26 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
           unsigned start_index,
           unsigned num_glyphs,
           unsigned num_characters)
-      : font_data_(const_cast<SimpleFontData*>(font)),
-        direction_(dir),
-        canvas_rotation_(canvas_rotation),
-        script_(script),
-        glyph_data_(
+      : glyph_data_(
             std::min(num_glyphs, HarfBuzzRunGlyphData::kMaxCharacterIndex + 1)),
+        font_data_(const_cast<SimpleFontData*>(font)),
         start_index_(start_index),
         num_characters_(num_characters),
-        width_(0.0f) {}
+        width_(0.0f),
+        script_(script),
+        direction_(dir),
+        canvas_rotation_(canvas_rotation) {}
 
   RunInfo(const RunInfo& other)
-      : font_data_(other.font_data_),
-        direction_(other.direction_),
-        canvas_rotation_(other.canvas_rotation_),
-        script_(other.script_),
-        glyph_data_(other.glyph_data_),
+      : glyph_data_(other.glyph_data_),
+        font_data_(other.font_data_),
         graphemes_(other.graphemes_),
         start_index_(other.start_index_),
         num_characters_(other.num_characters_),
-        width_(other.width_) {}
+        width_(other.width_),
+        script_(other.script_),
+        direction_(other.direction_),
+        canvas_rotation_(other.canvas_rotation_) {}
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool Rtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
@@ -519,13 +519,8 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     GlyphOffsetArray offsets_;
   };
 
-  scoped_refptr<SimpleFontData> font_data_;
-  hb_direction_t direction_;
-  // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
-  // the canvas back 90deg for this RunInfo.
-  CanvasRotationInVertical canvas_rotation_;
-  hb_script_t script_;
   GlyphDataCollection glyph_data_;
+  scoped_refptr<SimpleFontData> font_data_;
 
   // graphemes_[i] is the number of graphemes up to (and including) the ith
   // character in the run.
@@ -534,6 +529,13 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   unsigned start_index_;
   unsigned num_characters_;
   float width_;
+
+  hb_script_t script_;
+  hb_direction_t direction_;
+
+  // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
+  // the canvas back 90deg for this RunInfo.
+  CanvasRotationInVertical canvas_rotation_;
 };
 
 // For non-zero glyph offset array
