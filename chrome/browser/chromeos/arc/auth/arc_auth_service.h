@@ -107,8 +107,8 @@ class ArcAuthService : public KeyedService,
 
  private:
   // Callback when Active Directory Enrollment Token is fetched.
-  // |callback| is completed with |ArcSignInStatus| and |AccountInfo| depending
-  // on the success / failure of the operation.
+  // |callback| is completed with |ArcAuthCodeStatus| and |AccountInfo|
+  // depending on the success / failure of the operation.
   void OnActiveDirectoryEnrollmentTokenFetched(
       ArcActiveDirectoryEnrollmentTokenFetcher* fetcher,
       RequestPrimaryAccountInfoCallback callback,
@@ -119,8 +119,8 @@ class ArcAuthService : public KeyedService,
   // Issues a request for fetching AccountInfo for the Device Account.
   // |initial_signin| denotes whether this is the initial ARC provisioning flow
   // or a subsequent sign-in.
-  // |callback| is completed with |ArcSignInStatus| and |AccountInfo| depending
-  // on the success / failure of the operation.
+  // |callback| is completed with |ArcAuthCodeStatus| and |AccountInfo|
+  // depending on the success / failure of the operation.
   void FetchPrimaryAccountInfo(bool initial_signin,
                                RequestPrimaryAccountInfoCallback callback);
 
@@ -129,8 +129,8 @@ class ArcAuthService : public KeyedService,
   // deleting pending requests from |pending_token_requests_|.
   // |success| and |auth_code| are the callback parameters passed by
   // |ArcBackgroundAuthCodeFetcher::Fetch|.
-  // |callback| is completed with |ArcSignInStatus| and |AccountInfo| depending
-  // on the success / failure of the operation.
+  // |callback| is completed with |ArcAuthCodeStatus| and |AccountInfo|
+  // depending on the success / failure of the operation.
   void OnPrimaryAccountAuthCodeFetched(
       ArcAuthCodeFetcher* fetcher,
       RequestPrimaryAccountInfoCallback callback,
@@ -147,9 +147,9 @@ class ArcAuthService : public KeyedService,
   // |ArcBackgroundAuthCodeFetcher::Fetch|.
   // |account_name| is the account identifier used by ARC/Android.
   // |fetcher| is used to identify the |ArcBackgroundAuthCodeFetcher| instance
-  // that completed the request. |callback| is completed with |ArcSignInStatus|
-  // and |AccountInfo| depending on the success / failure of the operation.
-  // |success| and |auth_code| are arguments passed by
+  // that completed the request. |callback| is completed with
+  // |ArcAuthCodeStatus| and |AccountInfo| depending on the success / failure of
+  // the operation. |success| and |auth_code| are arguments passed by
   // |ArcBackgroundAuthCodeFetcher::Fetch| callback.
   void OnSecondaryAccountAuthCodeFetched(const std::string& account_name,
                                          ArcBackgroundAuthCodeFetcher* fetcher,

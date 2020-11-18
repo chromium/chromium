@@ -71,7 +71,7 @@ class ArcAuthServiceFactory
   ~ArcAuthServiceFactory() override = default;
 };
 
-// Converts mojom::ArcSignInStatus into ProvisiningResult.
+// Converts mojom::ArcSignInResult into ProvisiningResult.
 ProvisioningResult ConvertArcSignInResultToProvisioningResult(
     mojom::ArcSignInResult* result) {
   if (result->is_success()) {
@@ -269,7 +269,7 @@ std::string GetAccountName(Profile* profile) {
 void OnFetchPrimaryAccountInfoCompleted(
     ArcAuthService::RequestAccountInfoCallback callback,
     bool persistent_error,
-    mojom::ArcSignInStatus status,
+    mojom::ArcAuthCodeStatus status,
     mojom::AccountInfoPtr account_info) {
   std::move(callback).Run(std::move(status), std::move(account_info),
                           persistent_error);
@@ -490,7 +490,7 @@ void ArcAuthService::FetchPrimaryAccountInfo(
 
   if (IsArcOptInVerificationDisabled()) {
     std::move(callback).Run(
-        mojom::ArcSignInStatus::SUCCESS,
+        mojom::ArcAuthCodeStatus::SUCCESS,
         CreateAccountInfo(false /* is_enforced */,
                           std::string() /* auth_info */,
                           std::string() /* auth_name */, account_type,
@@ -520,7 +520,7 @@ void ArcAuthService::FetchPrimaryAccountInfo(
   if (account_type == mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT) {
     // Skip account auth code fetch for offline enrolled demo mode.
     std::move(callback).Run(
-        mojom::ArcSignInStatus::SUCCESS,
+        mojom::ArcAuthCodeStatus::SUCCESS,
         CreateAccountInfo(true /* is_enforced */, std::string() /* auth_info */,
                           std::string() /* auth_name */, account_type,
                           true /* is_managed */));
@@ -673,7 +673,7 @@ void ArcAuthService::OnActiveDirectoryEnrollmentTokenFetched(
 
       // Send enrollment token to ARC.
       std::move(callback).Run(
-          mojom::ArcSignInStatus::SUCCESS,
+          mojom::ArcAuthCodeStatus::SUCCESS,
           CreateAccountInfo(true /* is_enforced */, enrollment_token,
                             std::string() /* account_name */,
                             mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT,
@@ -683,12 +683,12 @@ void ArcAuthService::OnActiveDirectoryEnrollmentTokenFetched(
     case ArcActiveDirectoryEnrollmentTokenFetcher::Status::FAILURE: {
       // Send error to ARC.
       std::move(callback).Run(
-          mojom::ArcSignInStatus::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
+          mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
       break;
     }
     case ArcActiveDirectoryEnrollmentTokenFetcher::Status::ARC_DISABLED: {
       // Send error to ARC.
-      std::move(callback).Run(mojom::ArcSignInStatus::ARC_DISABLED, nullptr);
+      std::move(callback).Run(mojom::ArcAuthCodeStatus::ARC_DISABLED, nullptr);
       break;
     }
   }
@@ -706,7 +706,7 @@ void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
   if (success) {
     const std::string& full_account_id = GetAccountName(profile_);
     std::move(callback).Run(
-        mojom::ArcSignInStatus::SUCCESS,
+        mojom::ArcAuthCodeStatus::SUCCESS,
         CreateAccountInfo(!IsArcOptInVerificationDisabled(), auth_code,
                           full_account_id, GetAccountType(profile_),
                           policy_util::IsAccountManaged(profile_)));
@@ -715,7 +715,7 @@ void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
     // For demo sessions, if auth code fetch failed (e.g. because the device is
     // offline), fall back to accountless offline demo mode provisioning.
     std::move(callback).Run(
-        mojom::ArcSignInStatus::SUCCESS,
+        mojom::ArcAuthCodeStatus::SUCCESS,
         CreateAccountInfo(true /* is_enforced */, std::string() /* auth_info */,
                           std::string() /* auth_name */,
                           mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
@@ -723,7 +723,7 @@ void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
   } else {
     // Send error to ARC.
     std::move(callback).Run(
-        mojom::ArcSignInStatus::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
+        mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
   }
 }
 
@@ -737,7 +737,7 @@ void ArcAuthService::FetchSecondaryAccountInfo(
               account_name);
   if (!account_info.has_value()) {
     // Account is in ARC, but not in Chrome OS Account Manager.
-    std::move(callback).Run(mojom::ArcSignInStatus::CHROME_ACCOUNT_NOT_FOUND,
+    std::move(callback).Run(mojom::ArcAuthCodeStatus::CHROME_ACCOUNT_NOT_FOUND,
                             nullptr /* account_info */,
                             true /* persistent_error */);
     return;
@@ -749,7 +749,7 @@ void ArcAuthService::FetchSecondaryAccountInfo(
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id)) {
     std::move(callback).Run(
-        mojom::ArcSignInStatus::CHROME_SERVER_COMMUNICATION_ERROR,
+        mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
         nullptr /* account_info */, true /* persistent_error */);
     return;
   }
@@ -780,7 +780,7 @@ void ArcAuthService::OnSecondaryAccountAuthCodeFetched(
 
   if (success) {
     std::move(callback).Run(
-        mojom::ArcSignInStatus::SUCCESS,
+        mojom::ArcAuthCodeStatus::SUCCESS,
         CreateAccountInfo(true /* is_enforced */, auth_code, account_name,
                           mojom::ChromeAccountType::USER_ACCOUNT,
                           false /* is_managed */),
@@ -799,12 +799,12 @@ void ArcAuthService::OnSecondaryAccountAuthCodeFetched(
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info->account_id);
     std::move(callback).Run(
-        mojom::ArcSignInStatus::CHROME_SERVER_COMMUNICATION_ERROR,
+        mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
         nullptr /* account_info */, is_persistent_error);
     return;
   }
 
-  std::move(callback).Run(mojom::ArcSignInStatus::CHROME_ACCOUNT_NOT_FOUND,
+  std::move(callback).Run(mojom::ArcAuthCodeStatus::CHROME_ACCOUNT_NOT_FOUND,
                           nullptr /* account_info */, true);
 }
 

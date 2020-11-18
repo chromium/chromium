@@ -6,64 +6,13 @@
 
 module arc.mojom;
 
-// These values describe failure reason of sign-in.
+// These values describe failure reason of auth code retrieval.
+// This enum previously had provisioning status values such as GMS
+// sign-in and check-in failure codes from 0 to 22 that have been
+// removed and should not be re-introduced.
 [Extensible]
-enum ArcSignInStatus {
-  // Negative values are reserved for internal use.
-  // The values are shuffled to keep the backward compatibility and don't match
-  // ProvisioningResult in arc_optin_uma.h
+enum ArcAuthCodeStatus {
   // Next value: 23.
-  UNKNOWN_ERROR = 0,
-
-  // Mojo errors:
-  // MOJO_VERSION_MISMATCH: is sent when an API is not supported
-  //   due to Host/Instance version mismatch.
-  MOJO_VERSION_MISMATCH = 6,
-
-  // PROVISIONING_TIMEOUT: is sent when provisioning is started
-  //   but not completed with time out.
-  PROVISIONING_TIMEOUT = 7,
-
-  // Device check-in errors:
-  // DEVICE_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
-  //   but is actually failed.
-  // DEVICE_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
-  //   but is not completed.
-  // DEVICE_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
-  //   started, but some unexpected error situation happens so that it could
-  //   not completed.
-  DEVICE_CHECK_IN_FAILED = 4,
-  DEVICE_CHECK_IN_TIMEOUT = 8,
-  DEVICE_CHECK_IN_INTERNAL_ERROR = 9,
-
-  // GMS errors:
-  // GMS_NETWORK_ERROR: is sent when GMS sign-in procedure is started, but
-  //   it reports NETWORK_ERROR.
-  // GMS_SERVICE_UNAVAILABLE: is sent when GMS sign-in procedure is started
-  //   but it reports SERVICE_UNAVAILABLE. Note that this is not generic
-  //   service unavailable error code.
-  // GMS_BAD_AUTHENTICATION: is sent when GMS sign-in procedure is started
-  //   but it reports BAD_AUTHENTICATION.
-  // GMS_SIGN_IN_FAILED: is sent when GMS sign in procedure is started but
-  //   it reports an error other than above NETWORK_ERROR, SERVICE_UNAVAILABLE
-  //   or BAD_AUTHENTICATION. In general, we do not expect this kind of cases.
-  // GMS_SIGN_IN_TIMEOUT: is sent when GMS sign in procedure is started but
-  //   not returned.
-  // GMS_SIGN_IN_INTERNAL_ERROR: is sent when GMS sign in procedure is started
-  //   but could not completed.
-  GMS_NETWORK_ERROR = 1,
-  GMS_SERVICE_UNAVAILABLE = 2,
-  GMS_BAD_AUTHENTICATION = 3,
-  GMS_SIGN_IN_FAILED = 10,
-  GMS_SIGN_IN_TIMEOUT = 11,
-  GMS_SIGN_IN_INTERNAL_ERROR = 12,
-
-  // Top level error for all CloudDPC errors
-  // additional details are provided by CloudProvisionFlowError
-  [MinVersion=25] CLOUD_PROVISION_FLOW_ERROR = 22,
-
-  // Network connection is unavailable.
-  [MinVersion=8] NO_NETWORK_CONNECTION = 15,
 
   // Server does not return authorization.
   [MinVersion=10] CHROME_SERVER_COMMUNICATION_ERROR = 16,
@@ -72,12 +21,6 @@ enum ArcSignInStatus {
   [MinVersion=10] ARC_DISABLED = 17,
 
   [MinVersion=10] SUCCESS = 18,
-
-  // ARC was already provisioned.
-  [MinVersion=11] SUCCESS_ALREADY_PROVISIONED = 19,
-
-  // Account type is not supported for authorization.
-  [MinVersion=16] UNSUPPORTED_ACCOUNT_TYPE = 20,
 
   // Account is not present in Chrome OS Account Manager.
   [MinVersion=21] CHROME_ACCOUNT_NOT_FOUND = 21,
@@ -231,8 +174,7 @@ enum ArcSignInSuccess {
 };
 
 // Represents different kinds of errors that can happen during
-// sign-in. Error codes from ArcSignInStatus should be grouped
-// and moved here.
+// sign-in.
 union ArcSignInError {
   CloudProvisionFlowError cloud_provision_flow_error;
   [MinVersion=26] GeneralSignInError general_error;
@@ -464,7 +406,7 @@ interface AuthHost {
   // In case of an error, |status| must contain the reason of failure, other
   // than SUCCESS, and |account_info| is null.
   [MinVersion=15] RequestPrimaryAccountInfo@12()
-      => (ArcSignInStatus status, AccountInfo? account_info);
+      => (ArcAuthCodeStatus status, AccountInfo? account_info);
 
   // Requests an authorization code, as well as the account information for an
   // account in Chrome OS Account Manager.
@@ -476,7 +418,7 @@ interface AuthHost {
   // |persistent_error| flag set to true indicates that error cannot be
   // eliminated by retrying the request.
   [MinVersion=15] RequestAccountInfo@13(string account_name)
-      => (ArcSignInStatus status,
+      => (ArcAuthCodeStatus status,
           AccountInfo? account_info,
           [MinVersion=24] bool persistent_error);
 
