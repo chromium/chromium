@@ -85,8 +85,12 @@ void LegacyMetricsClient::StartReport() {
 
 void LegacyMetricsClient::Report(
     std::vector<fuchsia::legacymetrics::Event> events) {
-  DCHECK(metrics_recorder_);
   DVLOG(1) << __func__ << " called.";
+
+  // The connection might have dropped while additional metrics were being
+  // collected.
+  if (!metrics_recorder_)
+    return;
 
   // Include histograms.
   for (auto& histogram : GetLegacyMetricsDeltas()) {
