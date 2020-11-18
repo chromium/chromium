@@ -33,6 +33,7 @@ AssistantAudioDecoder::AssistantAudioDecoder(
       data_source_(std::make_unique<IPCDataSource>(std::move(data_source))),
       media_thread_(std::make_unique<base::Thread>("media_thread")),
       weak_factory_(this) {
+  weak_this_ = weak_factory_.GetWeakPtr();
   CHECK(media_thread_->Start());
   client_.set_disconnect_handler(base::BindOnce(
       &AssistantAudioDecoder::OnConnectionError, base::Unretained(this)));
@@ -83,7 +84,7 @@ void AssistantAudioDecoder::OpenDecoderOnMediaThread() {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AssistantAudioDecoder::OnDecoderInitializedOnThread,
-                     weak_factory_.GetWeakPtr(), decoder_->sample_rate(),
+                     weak_this_, decoder_->sample_rate(),
                      decoder_->channels()));
 }
 
@@ -100,8 +101,7 @@ void AssistantAudioDecoder::DecodeOnMediaThread() {
 
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AssistantAudioDecoder::OnBufferDecodedOnThread,
-                                weak_factory_.GetWeakPtr(),
-                                std::move(decoded_audio_packets)));
+                                weak_this_, std::move(decoded_audio_packets)));
 }
 
 void AssistantAudioDecoder::CloseDecoderOnMediaThread() {
@@ -111,8 +111,8 @@ void AssistantAudioDecoder::CloseDecoderOnMediaThread() {
 
   closed_ = true;
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AssistantAudioDecoder::RunCallbacksAsClosed,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&AssistantAudioDecoder::RunCallbacksAsClosed, weak_this_));
 }
 
 void AssistantAudioDecoder::OnDecoderInitializedOnThread(

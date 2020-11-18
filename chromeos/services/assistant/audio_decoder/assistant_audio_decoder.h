@@ -60,6 +60,12 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   bool closed_ = false;
   bool read_error_ = false;
 
+  // Weak reference to |this| for use by the media thread. Note, ordering is
+  // important here. This _must_ appear before |media_thread_| so that the media
+  // thread is destroyed (and joined) first, and hence any attempt to copy
+  // |weak_this_| happens before it is destroyed.
+  base::WeakPtr<AssistantAudioDecoder> weak_this_;
+
   std::unique_ptr<media::DataSource> data_source_;
   std::unique_ptr<media::BlockingUrlProtocol> protocol_;
   std::unique_ptr<media::AudioFileReader> decoder_;
