@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -178,9 +179,8 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
         source_(params.source),
         start_point_(params.start_point),
         do_drag_callback_(std::move(do_drag_callback)),
-        drag_data_(std::make_unique<ui::OSExchangeData>()),
-        observer_(this) {
-    observer_.Add(model_);
+        drag_data_(std::make_unique<ui::OSExchangeData>()){
+    observation_.Observe(model_);
 
     // Set up our OLE machinery.
     bookmarks::BookmarkNodeData bookmark_drag_data(params.nodes);
@@ -272,8 +272,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   std::unique_ptr<ui::OSExchangeData> drag_data_;
 
-  ScopedObserver<bookmarks::BookmarkModel, bookmarks::BookmarkModelObserver>
-      observer_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      observation_{this};
 
   base::WeakPtrFactory<BookmarkDragHelper> weak_factory_{this};
 

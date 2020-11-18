@@ -9,6 +9,8 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -456,18 +458,18 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
 
   void OnWidgetDestroying(views::Widget* widget) override {
     if (widget == window())
-      bookmark_bar_observer_.RemoveAll();
+      bookmark_bar_observation_.RemoveObservation();
   }
 
   void OnWidgetDestroyed(views::Widget* widget) override {
-    widget_observer_.Remove(widget);
+    widget_observations_.RemoveObservation(widget);
   }
 
  protected:
   // BookmarkBarViewEventTestBase:
   void DoTestOnMessageLoop() override {
-    widget_observer_.Add(window());
-    bookmark_bar_observer_.Add(bb_view_);
+    widget_observations_.AddObservation(window());
+    bookmark_bar_observation_.Observe(bb_view_);
 
     // Record the URL for node f1a.
     const auto& f1 = model_->bookmark_bar_node()->children().front();
@@ -489,7 +491,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
     ASSERT_TRUE(submenu->IsShowing());
 
     // The menu is showing, so it has a widget we can observe now.
-    widget_observer_.Add(submenu->GetWidget());
+    widget_observations_.AddObservation(submenu->GetWidget());
 
     // Move mouse to center of node f1a and press button.
     views::View* f1a = submenu->GetMenuItemAt(0);
@@ -533,9 +535,10 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   }
 
   GURL f1a_url_;
-  ScopedObserver<BookmarkBarView, BookmarkBarViewObserver>
-      bookmark_bar_observer_{this};
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<BookmarkBarView, BookmarkBarViewObserver>
+      bookmark_bar_observation_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 };
 
 #if !defined(OS_MAC)
