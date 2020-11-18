@@ -90,11 +90,6 @@ class ASH_EXPORT CaptureModeController
   void OpenFeedbackDialog();
 
   // recording::mojom::RecordingServiceClient:
-  void BindVideoCapturer(
-      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver)
-      override;
-  void BindAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
   void OnMuxerOutput(const std::string& chunk) override;
   void OnRecordingEnded(bool success) override;
 
@@ -104,16 +99,6 @@ class ASH_EXPORT CaptureModeController
 
  private:
   friend class CaptureModeTestApi;
-
-  // Launches the mojo service that handles audio and video recording.
-  void LaunchRecordingService();
-
-  // Called back when the mojo pipe to the recording service gets disconnected.
-  void OnRecordingServiceDisconnected();
-
-  // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
-  // pod button, and the |video_recording_watcher_| when recording ends.
-  void TerminateRecordingUiElements();
 
   // Returns the capture parameters for the capture operation that is about to
   // be performed (i.e. the window to be captured, and the capture bounds). If
@@ -129,9 +114,21 @@ class ASH_EXPORT CaptureModeController
   };
   base::Optional<CaptureParams> GetCaptureParams() const;
 
+  // Launches the mojo service that handles audio and video recording, and
+  // begins recording according to the given |capture_params|.
+  void LaunchRecordingServiceAndStartRecording(
+      const CaptureParams& capture_params);
+
+  // Called back when the mojo pipe to the recording service gets disconnected.
+  void OnRecordingServiceDisconnected();
+
   // Returns true if doing a screen capture is currently allowed, false
   // otherwise.
   bool IsCaptureAllowed(const CaptureParams& capture_params) const;
+
+  // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
+  // pod button, and the |video_recording_watcher_| when recording ends.
+  void TerminateRecordingUiElements();
 
   // The below functions start the actual image/video capture. They expect that
   // the capture session is still active when called, so they can retrieve the
