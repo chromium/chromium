@@ -6,11 +6,6 @@
     padding: 4px 8px;
   }
 
-  .card-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
   .card-container {
     display: flex;
     flex-direction: column;
@@ -32,11 +27,10 @@
   }
 
   .data-points {
-    column-gap: 10px;
+    border-bottom: 1px solid var(--diagnostics-border-color);
     display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    justify-content: end;
-    row-gap: 5px;
+    grid-template-columns: 1.5fr 0fr 1fr 0fr 1.5fr;
+    padding-bottom: 8px;
   }
 
   .routine-container {
@@ -48,6 +42,15 @@
     padding-inline-end: 15px;
     padding-inline-start: 15px;
   }
+
+  .top-section {
+    border-bottom: 1px solid var(--diagnostics-border-color);
+    margin-bottom: 6px;
+    margin-top: 12px;
+    padding-bottom: 12px;
+    padding-inline-end: 15px;
+    padding-inline-start: 15px;
+  }
 </style>
 <div class="card-container">
   <div id="title" class="card-header">
@@ -55,15 +58,12 @@
     <slot name="chip"></slot>
   </div>
   <div class="card-wrapper">
-    <div class="card-columns spacing">
-      <div>
-        <slot name="left-panel"></slot>
-      </div>
-      <div id="body" class="data-points" hidden$="[[hideDataPoints]]">
-        <slot name="body"></slot>
-      </div>
+    <div class="top-section">
+      <slot name="left-panel"></slot>
     </div>
-
+    <div id="body" class="data-points" hidden$="[[hideDataPoints]]">
+      <slot name="body"></slot>
+    </div>
     <div id="routines" class="routine-container spacing">
       <slot name="routines"></slot>
     </div>

@@ -1,5 +1,4 @@
-<style include="diagnostics-shared">
-</style>
+<style include="diagnostics-shared diagnostics-fonts"></style>
 
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('batteryTitle')]]</div>
@@ -14,9 +13,11 @@
     header="[[i18n('batteryHealthLabel')]]"
     value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]">
   </data-point>
+  <div slot="body" class="divider"></div>
   <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
     value="[[batteryHealth_.cycleCount]]">
   </data-point>
+  <div slot="body" class="divider"></div>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNowLabel')]]"
     value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]">
   </data-point>

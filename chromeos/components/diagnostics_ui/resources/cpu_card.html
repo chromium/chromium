@@ -1,5 +1,4 @@
-<style include="diagnostics-shared diagnostics-fonts">
-</style>
+<style include="diagnostics-shared diagnostics-fonts"></style>
 
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('cpuTitle')]]</div>
@@ -14,9 +13,11 @@
     value="[[getCurrentlyUsing_(cpuUsage_.percentUsageSystem,
         cpuUsage_.percentUsageUser)]]">
   </data-point>
+  <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTempLabel')]]"
     value="[[getCpuTemp_(cpuUsage_.averageCpuTempCelsius)]]">
   </data-point>
+  <div slot="body" class="divider"></div>
   <!-- TODO(michaelcheco): Add value for CPU speed. -->
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuSpeedLabel')]]"
     value="">
