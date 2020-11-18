@@ -325,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Disconnect) {
 
 // TODO(crbug.com/1122806): Migrate this test to use kSignalEndOfTest and
 // re-enable it.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
-                       DISABLED_PerformScrollToMakeVisible) {
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, PerformScrollToMakeVisible) {
   constexpr int kScreenWidth = 720;
   constexpr int kScreenHeight = 640;
   gfx::Rect screen_bounds(kScreenWidth, kScreenHeight);
