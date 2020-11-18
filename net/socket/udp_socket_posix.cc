@@ -27,6 +27,7 @@
 #include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -947,7 +948,7 @@ int UDPSocketPosix::DoBind(const IPEndPoint& address) {
   if (rv == 0)
     return OK;
   int last_error = errno;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (last_error == EINVAL)
     return ERR_ADDRESS_IN_USE;
 #elif defined(OS_APPLE)

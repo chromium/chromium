@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -50,7 +51,7 @@ TEST(HttpAuthPreferencesTest, AuthAndroidhNegotiateAccountType) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(HttpAuthPreferencesTest, AllowGssapiLibraryLoad) {
   HttpAuthPreferences http_auth_preferences;
   EXPECT_TRUE(http_auth_preferences.AllowGssapiLibraryLoad());

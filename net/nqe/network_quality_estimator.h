@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
@@ -255,14 +256,14 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   const NetworkQualityEstimatorParams* params() { return params_.get(); }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Enables getting the network id asynchronously when
   // GatherEstimatesForNextConnectionType(). This should always be called in
   // production, because getting the network id involves a blocking call to
   // recv() in AddressTrackerLinux, and the IO thread should never be blocked.
   // TODO(https://crbug.com/821607): Remove after the bug is resolved.
   void EnableGetNetworkIdAsynchronously();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Forces the effective connection type to be recomputed as |type|. Once
   // called, effective connection type would always be computed as |type|.
@@ -679,7 +680,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   base::Optional<base::TimeTicks> last_signal_strength_check_timestamp_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Whether the network id should be obtained on a worker thread.
   bool get_network_id_asynchronously_ = false;
 #endif

@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
@@ -380,6 +381,7 @@ component("net") {
 
   deps = [
     ":net_deps",
+    "//build:chromeos_buildflags",
     "//net/http:transport_security_state_generated_files",
   ]
 
@@ -1209,7 +1211,7 @@ component("net") {
       ]
     }
 
-    if (is_chromeos && use_nss_certs) {
+    if (is_chromeos_ash && use_nss_certs) {
       sources += [
         "cert/nss_cert_database_chromeos.cc",
         "cert/nss_cert_database_chromeos.h",
@@ -1230,7 +1232,7 @@ component("net") {
       ]
     }
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [
         "base/network_change_notifier_linux.cc",
         "base/network_change_notifier_linux.h",
@@ -1385,7 +1387,7 @@ component("net") {
       }
     }
 
-    if (is_android || is_chromeos) {
+    if (is_android || is_chromeos_ash) {
       sources += [
         "base/network_change_notifier_posix.cc",
         "base/network_change_notifier_posix.h",
@@ -2377,6 +2379,7 @@ if (!is_ios && !is_android) {
     deps = [
       ":net",
       "//base",
+      "//build:chromeos_buildflags",
       "//build/win:default_exe_manifest",
     ]
   }
@@ -4454,7 +4457,7 @@ test("net_unittests") {
     ]
   }
 
-  if (is_chromeos && use_nss_certs) {
+  if (is_chromeos_ash && use_nss_certs) {
     sources += [
       "cert/nss_cert_database_chromeos_unittest.cc",
       "cert/nss_profile_filter_chromeos_unittest.cc",
@@ -4466,7 +4469,7 @@ test("net_unittests") {
       "base/address_tracker_linux_unittest.cc",
       "base/network_interfaces_linux_unittest.cc",
     ]
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [ "proxy_resolution/proxy_config_service_linux_unittest.cc" ]
     }
   }
@@ -4513,6 +4516,7 @@ test("net_unittests") {
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/sqlite_proto",
     "//crypto",
     "//crypto:platform",
@@ -4544,7 +4548,7 @@ test("net_unittests") {
     sources += [ "socket/udp_socket_posix_unittest.cc" ]
   }
 
-  if (is_android || is_chromeos) {
+  if (is_android || is_chromeos_ash) {
     sources += [ "base/network_change_notifier_posix_unittest.cc" ]
   }
 

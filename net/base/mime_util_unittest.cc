@@ -8,6 +8,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -34,7 +35,7 @@ TEST(MimeUtilTest, ExtensionTest) {
     {FILE_PATH_LITERAL("webm"), "video/webm", true},
     {FILE_PATH_LITERAL("weba"), "audio/webm", true},
     {FILE_PATH_LITERAL("avif"), "image/avif", true},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // These are test cases for testing platform mime types on Chrome OS.
     {FILE_PATH_LITERAL("epub"), "application/epub+zip", true},
     {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive", true},

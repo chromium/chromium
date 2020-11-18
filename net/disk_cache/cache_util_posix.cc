@@ -8,11 +8,12 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 
 namespace disk_cache {
 
 bool MoveCache(const base::FilePath& from_path, const base::FilePath& to_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For ChromeOS, we don't actually want to rename the cache
   // directory, because if we do, then it'll get recreated through the
   // encrypted filesystem (with encrypted names), and we won't be able

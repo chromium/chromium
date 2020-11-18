@@ -7,6 +7,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "net/android/network_library.h"
@@ -22,7 +23,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     std::string* result) const {
   return android::GetMimeTypeFromExtension(ext, result);
 }
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     const base::FilePath::StringType& ext,
     std::string* result) const {

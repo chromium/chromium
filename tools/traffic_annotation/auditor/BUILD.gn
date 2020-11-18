@@ -72,6 +72,8 @@ source_set("auditor_sources") {
     "//third_party/protobuf:protobuf_full",
     "//third_party/re2",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 executable("traffic_annotation_auditor") {

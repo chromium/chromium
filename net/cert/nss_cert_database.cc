@@ -22,6 +22,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
@@ -125,7 +126,7 @@ void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback) {
       std::move(callback));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 crypto::ScopedPK11Slot NSSCertDatabase::GetSystemSlot() const {
   return crypto::ScopedPK11Slot();
 }
@@ -435,7 +436,7 @@ bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   if (!slot || !PK11_IsHW(slot))
     return false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chaps announces PK11_IsHW(slot) for all slots. However, it is possible for
   // a key in chaps to be not truly hardware-backed, either because it has been
   // requested to be software-backed, or because the TPM does not support the

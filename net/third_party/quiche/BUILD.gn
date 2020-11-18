@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -1448,7 +1449,7 @@ source_set("quiche_tests") {
   ]
   public_deps = []
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     public_deps += [ "//net:epoll_quic_tools" ]
   }
   if (is_linux || is_chromeos) {
@@ -1473,7 +1474,7 @@ source_set("quiche_tests") {
       "//net:epoll_server_test_tools",
     ]
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [ "src/quic/core/quic_udp_socket_test.cc" ]
     }
   }

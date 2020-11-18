@@ -1,6 +1,9 @@
 source_set("traffic_annotation") {
   sources = [ "network_traffic_annotation.h" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 source_set("test_support") {

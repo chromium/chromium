@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
 #include "url/gurl.h"
@@ -42,7 +43,7 @@ class NET_EXPORT HttpAuthPreferences {
 #if defined(OS_ANDROID)
   virtual std::string AuthAndroidNegotiateAccountType() const;
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool AllowGssapiLibraryLoad() const;
 #endif
   virtual bool CanUseDefaultCredentials(const GURL& auth_origin) const;
@@ -77,7 +78,7 @@ class NET_EXPORT HttpAuthPreferences {
   }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_allow_gssapi_library_load(bool allow_gssapi_library_load) {
     allow_gssapi_library_load_ = allow_gssapi_library_load;
   }
@@ -112,7 +113,7 @@ class NET_EXPORT HttpAuthPreferences {
   std::string auth_android_negotiate_account_type_;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool allow_gssapi_library_load_ = true;
 #endif
 

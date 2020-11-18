@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -463,7 +464,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
 #endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
 
 // AllowGssapiLibraryLoad() is only supported on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   // Disabling allow_gssapi_library_load should prevent handler creation.
   SetupMocks(AuthLibrary());
@@ -479,7 +480,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   EXPECT_EQ(OK, rv);
   EXPECT_TRUE(auth_handler);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // defined(OS_POSIX)
 

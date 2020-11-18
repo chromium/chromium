@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -155,7 +156,7 @@ class NET_EXPORT NSSCertDatabase {
   // deleted.
   virtual void ListCertsInfo(ListCertsInfoCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get the slot for system-wide key data. May be NULL if the system token was
   // not explicitly set.
   // Note: The System slot is set after the NSSCertDatabase is constructed and

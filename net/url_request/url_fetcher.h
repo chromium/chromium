@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -355,7 +356,11 @@ class NET_EXPORT URLFetcher {
   // The unannotated Create() methods are not available on desktop Linux +
   // Windows. They are available on other platforms, since we only audit network
   // annotations on Linux & Windows.
-#if (!defined(OS_WIN) && !defined(OS_LINUX)) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (!defined(OS_WIN) &&                                       \
+     !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))) || \
+    defined(OS_CHROMEOS)
   // |url| is the URL to send the request to. It must be valid.
   // |request_type| is the type of request to make.
   // |d| the object that will receive the callback on fetch completion.
