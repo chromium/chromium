@@ -460,6 +460,7 @@ cast_source_set("browser") {
       "webview/webview_window_manager.cc",
       "webview/webview_window_manager.h",
     ]
+    configs += [ "//third_party/grpc:grpc_config" ]
     deps += [
       ":web_contents_provider",
       "//chromecast/browser/webview/proto",
@@ -467,7 +468,6 @@ cast_source_set("browser") {
       "//components/exo/wayland",
       "//content/public/browser",
       "//services/viz/privileged/mojom/compositing",
-      "//third_party/grpc:grpc++",
       "//ui/display/manager",
     ]
   }

@@ -21,6 +21,5 @@ executable("wayland_webview_client") {
     "//ui/events:events_base",
     "//ui/events/types:headers",
     "//ui/gl",
-    "//third_party/grpc:grpc++",
   ]
 }

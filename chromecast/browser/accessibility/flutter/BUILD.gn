@@ -26,7 +26,7 @@ cast_source_set("accessibility") {
     "//content/public/browser",
     "//extensions/browser/api",
     "//skia",
-    "//third_party/grpc:grpc++",
+    "//third_party/grpc:grpcpp",
     "//ui/views",
   ]
 }

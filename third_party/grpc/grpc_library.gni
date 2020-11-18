@@ -1,51 +1,45 @@
-# Copyright 2019 Google Inc. All Rights Reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Compile a grpc service.
-#
-# Example:
-#  grpc_library("mylib") {
-#    sources = [
-#      "foo.proto",
-#    ]
-#  }
-
-import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-template("grpc_library") {
-  assert(defined(invoker.sources), "Need sources for proto_library")
-  proto_library(target_name) {
+# Compiles a protocol buffer into gRPC C++ interface.
+#
+# Example
+#   cc_grpc_library("mylib") {
+#     sources = [
+#       "foo.proto",
+#     ]
+#   }
+template("cc_grpc_library") {
+  proto_library_name = "${target_name}_proto_lib"
+  proto_library(proto_library_name) {
     forward_variables_from(invoker,
                            [
-                             "cc_include",
-                             "extra_configs",
-                             "generator_plugin_label",
-                             "generator_plugin_suffix",
-                             "generate_python",
-                             "import_dirs",
-                             "link_deps",
-                             "proto_in_dir",
-                             "proto_out_dir",
-                             "sources",
-                             "testonly",
-                             "visibility",
+                             "defines",
                              "deps",
-                             "proto_deps",
+                             "sources",
+                             "use_protobuf_full",
+                             "import_dirs",
+                             "proto_in_dir",
                            ])
-
-    if (defined(invoker.use_protobuf_full)) {
-      use_protobuf_full = invoker.use_protobuf_full
-    } else {
-      cc_generator_options = "lite"
-    }
-
-    extra_configs = ["//third_party/grpc:grpc_config"]
-
-    generate_cc = true
-
+    remove_configs = [ "//build/config/compiler:chromium_code" ]
+    extra_configs = [
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/grpc:grpc_config",
+    ]
+    generate_python = false
     generator_plugin_label = "//third_party/grpc:grpc_cpp_plugin"
     generator_plugin_suffix = ".grpc.pb"
+  }
+
+  # This group forces caller to depend on grpcpp, which is required when using
+  # the compiled gRPC library.
+  group(target_name) {
+    public_deps = [
+      ":${proto_library_name}",
+      "//third_party/grpc:grpcpp",
+    ]
   }
 }
