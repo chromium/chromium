@@ -85,7 +85,7 @@ mediaApp.AbstractFile.prototype.renameOriginalFile;
 /**
  * A function that will save the provided blob in the file pointed to by
  * pickedFileToken. Once saved the new file takes over this.token and becomes
- * currently writable. The original file is given a new token
+ * the current file. The original file is given a new token
  * and pushed forward in the navigation order.
  * @type {function(!Blob, number): !Promise<undefined>|undefined}
  */
@@ -111,11 +111,6 @@ mediaApp.AbstractFileList.prototype.currentFileIndex;
  */
 mediaApp.AbstractFileList.prototype.item = function(index) {};
 /**
- * Returns the file which is currently writable or null if there isn't one.
- * @return {?mediaApp.AbstractFile}
- */
-mediaApp.AbstractFileList.prototype.getCurrentlyWritable = function() {};
-/**
  * Loads the next file in the navigation order into the media app.
  * @param {number=} currentFileToken the token of the file that is currently
  *     loaded into the media app.
@@ -135,12 +130,15 @@ mediaApp.AbstractFileList.prototype.loadPrev = function(currentFileToken) {};
  */
 mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
 /**
- * Request for the user to be prompted with a open file picker. Once the user
- * selects a file, the file is inserted into the navigation order after the
- * current file and navigated to.
- * @return {!Promise<undefined>}
+ * A function that requests for the user to be prompted with an open file
+ * picker. Once the user selects a file, the file is inserted into the
+ * navigation order after the current file and then navigated to.
+ * TODO(b/165720635): Remove the undefined here once we can ensure all file
+ * lists implement a openFile function.
+ * @type {function(): !Promise<undefined>|undefined}
  */
-mediaApp.AbstractFileList.prototype.openFile = function() {};
+mediaApp.AbstractFileList.prototype.openFile;
+
 /**
  * The delegate which exposes open source privileged WebUi functions to
  * MediaApp.
@@ -171,13 +169,6 @@ mediaApp.ClientApiDelegate.prototype.openFeedbackDialog = function() {};
  */
 mediaApp.ClientApiDelegate.prototype.requestSaveFile = function(
     suggestedName, mimeType) {};
-/**
- * Request for the user to be prompted with a open file picker. Once the user
- * selects a file, the file is inserted into the navigation order after the
- * current file and navigated to.
- * @return {!Promise<undefined>}
- */
-mediaApp.ClientApiDelegate.prototype.openFile = function() {};
 /**
  * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
  * failure. Note this is typically a full-sized preview, not a thumbnail.

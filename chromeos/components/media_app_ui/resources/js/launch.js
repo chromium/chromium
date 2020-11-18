@@ -283,8 +283,7 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
     // Note `pickedFileHandle` could be the same as a `FileSystemFileHandle`
     // that exists in `tokenMap`. Possibly even the `File` currently open. But
     // that's OK. E.g. the next overwrite-file request will just invoke
-    // `saveBlobToFile` in the same way. Note there may be no currently writable
-    // file (e.g. save from clipboard).
+    // `saveBlobToFile` in the same way.
     await saveBlobToFile(pickedFileDescriptor.handle, blob);
   } catch (/** @type {!DOMException} */ e) {
     // If something went wrong revert the token back to its original
@@ -415,7 +414,9 @@ async function saveBlobToFile(handle, data) {
  * @param {string} fileName
  */
 function warnIfUncommon(e, fileName) {
-  if (e.name === 'NotFoundError' || e.name === 'NotAllowedError') {
+  // Errors we expect to be thrown in normal operation.
+  const commonErrors = ['NotFoundError', 'NotAllowedError', 'NotAFile'];
+  if (commonErrors.includes(e.name)) {
     return;
   }
   console.warn(`Unexpected ${e.name} on ${fileName}: ${e.message}`);
@@ -469,7 +470,7 @@ function fileDescriptorToFileContext(fd) {
 }
 
 /**
- * Loads the provided file list into the guest without making any file writable.
+ * Loads the provided file list into the guest.
  * Note: code paths can defer loads i.e. `launchWithDirectory()` increment
  * `globalLaunchNumber` to ensure their deferred load is still relevant when it
  * finishes processing. Other code paths that call `sendSnapshotToGuest()` don't
@@ -496,13 +497,13 @@ async function sendSnapshotToGuest(
   if (localLaunchNumber !== globalLaunchNumber) {
     return;
   }
-
   /** @type {!LoadFilesMessage} */
   const loadFilesMessage = {
-    writableFileIndex: focusIndex,
+    currentFileIndex: focusIndex,
     // Handle can't be passed through a message pipe.
     files: snapshot.map(fileDescriptorToFileContext)
   };
+
   // Clear handles to the open files in the privileged context so they are
   // refreshed on a navigation request. The refcount to the File will be alive
   // in the postMessage object until the guest takes its own reference.
@@ -875,7 +876,6 @@ async function advance(direction, currentFileToken) {
   } else {
     entryIndex = -1;
   }
-
   await sendFilesToGuest();
 }
 

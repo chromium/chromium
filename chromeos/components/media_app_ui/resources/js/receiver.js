@@ -107,38 +107,33 @@ class ReceivedFile {
 }
 
 /**
- * Source of truth for what files are loaded in the app and writable. This can
+ * Source of truth for what files are loaded in the app. This can
  * be appended to via `ReceivedFileList.addFiles()`.
  * @type {?ReceivedFileList}
  */
 let lastLoadedReceivedFileList = null;
 
 /**
- * A file list consisting of all files received from the parent. Exposes the
- * currently writable file and all other readable files in the current
- * directory.
+ * A file list consisting of all files received from the parent. Exposes all
+ * readable files in the directory, some of which may be writable.
  * @implements mediaApp.AbstractFileList
  */
 class ReceivedFileList {
   /** @param {!LoadFilesMessage} filesMessage */
   constructor(filesMessage) {
-    // We make sure the 0th item in the list is the writable one so we
-    // don't break older versions of the media app which uses item(0) instead
-    // of getCurrentlyWritable()
-    // TODO(b/151880563): remove this.
-    let writableFileIndex = filesMessage.writableFileIndex;
-    const files = filesMessage.files;
-    while (writableFileIndex > 0) {
-      files.push(files.shift());
-      writableFileIndex--;
+    const {files, currentFileIndex} = filesMessage;
+    if (files.length) {
+      // If we were not provided with a currentFileIndex, default to making the
+      // first file the current file.
+      this.currentFileIndex = currentFileIndex >= 0 ? currentFileIndex : 0;
+    } else {
+      // If we are empty we have no current file.
+      this.currentFileIndex = -1;
     }
 
     this.length = files.length;
-    this.currentFileIndex = files.length ? 0 : -1;
     /** @type {!Array<!ReceivedFile>} */
     this.files = files.map(f => new ReceivedFile(f));
-    /** @type {number} */
-    this.writableFileIndex = 0;
     /** @type {!Array<function(!mediaApp.AbstractFileList): void>} */
     this.observers = [];
   }
@@ -146,15 +141,6 @@ class ReceivedFileList {
   /** @override */
   item(index) {
     return this.files[index] || null;
-  }
-
-  /**
-   * Returns the file which is currently writable or null if there isn't one.
-   * @override
-   * @return {?mediaApp.AbstractFile}
-   */
-  getCurrentlyWritable() {
-    return this.item(this.writableFileIndex);
   }
 
   /** @override */
@@ -335,7 +321,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Ensure that if no files are loaded into the media app there is a default
 // empty file list available.
 window.customLaunchData = {
-  files: new ReceivedFileList({files: [], writableFileIndex: 0})
+  files: new ReceivedFileList({files: [], currentFileIndex: -1})
 };
 
 // Attempting to show file pickers in the sandboxed <iframe> is guaranteed to

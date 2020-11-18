@@ -77,7 +77,7 @@ class BacklightApp extends HTMLElement {
   /** @override  */
   async loadFiles(files) {
     let child;
-    const file = files.item(0);
+    const file = files.item(files.currentFileIndex);
     await this.preprocessFile(file);
     if (file) {
       const isVideo = file.mimeType.match('^video/');

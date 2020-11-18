@@ -67,7 +67,7 @@ let FileContext;
  * Message sent by the privileged context to the unprivileged context indicating
  * the files available to open.
  * @typedef {{
- *    writableFileIndex: number,
+ *    currentFileIndex: number,
  *    files: !Array<!FileContext>
  * }}
  */

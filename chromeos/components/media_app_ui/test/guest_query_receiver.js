@@ -17,8 +17,9 @@ const guestTestCases = new Map();
 /**
  * @return {!mediaApp.AbstractFile}
  */
-function firstReceivedItem() {
-  return assertCast(assertCast(lastReceivedFileList).item(0));
+function currentFile() {
+  const fileList = assertCast(lastReceivedFileList);
+  return assertCast(fileList.item(fileList.currentFileIndex));
 }
 
 /**
@@ -44,6 +45,7 @@ async function runTestQuery(data) {
       }
     }
   } else if (data.navigate !== undefined) {
+    // Simulate a user navigating to the next/prev file.
     if (data.navigate.direction === 'next') {
       await assertCast(lastReceivedFileList).loadNext(data.navigate.token);
       result = 'loadNext called';
@@ -54,8 +56,9 @@ async function runTestQuery(data) {
       result = 'nothing called';
     }
   } else if (data.overwriteLastFile) {
+    // Simulate a user overwriting the currently open file.
     const testBlob = new Blob([data.overwriteLastFile]);
-    const file = firstReceivedItem();
+    const file = currentFile();
     await assertCast(file.overwriteOriginal).call(file, testBlob);
     extraResultData = {
       receiverFileName: file.name,
@@ -63,10 +66,10 @@ async function runTestQuery(data) {
     };
     result = 'overwriteOriginal resolved';
   } else if (data.deleteLastFile) {
+    // Simulate a user deleting the currently open file.
     try {
-      const deleteResult =
-          await assertCast(firstReceivedItem().deleteOriginalFile)
-              .call(firstReceivedItem());
+      const deleteResult = await assertCast(currentFile().deleteOriginalFile)
+                               .call(currentFile());
       if (deleteResult === DeleteResult.FILE_MOVED) {
         result = 'deleteOriginalFile resolved file moved';
       } else {
@@ -76,10 +79,10 @@ async function runTestQuery(data) {
       result = `deleteOriginalFile failed Error: ${error}`;
     }
   } else if (data.renameLastFile) {
+    // Simulate a user renaming the currently open file.
     try {
-      const renameResult =
-          await assertCast(firstReceivedItem().renameOriginalFile)
-              .call(firstReceivedItem(), data.renameLastFile);
+      const renameResult = await assertCast(currentFile().renameOriginalFile)
+                               .call(currentFile(), data.renameLastFile);
       if (renameResult === RenameResult.FILE_EXISTS) {
         result = 'renameOriginalFile resolved file exists';
       } else if (
@@ -94,6 +97,7 @@ async function runTestQuery(data) {
       result = `renameOriginalFile failed Error: ${error}`;
     }
   } else if (data.requestSaveFile) {
+    // Call requestSaveFile on the delegate.
     const existingFile = assertCast(lastReceivedFileList).item(0);
     if (!existingFile) {
       result = 'requestSaveFile failed, no file loaded';
@@ -103,11 +107,13 @@ async function runTestQuery(data) {
       result = assertCast(pickedFile.token).toString();
     }
   } else if (data.saveAs) {
+    // Call save as on the first item in the last received file list, simulating
+    // a user clicking save as in the file.
     const existingFile = assertCast(lastReceivedFileList).item(0);
     if (!existingFile) {
       result = 'saveAs failed, no file loaded';
     } else {
-      const file = firstReceivedItem();
+      const file = currentFile();
       try {
         const token = (await DELEGATE.requestSaveFile(
                            existingFile.name, existingFile.mimeType))
@@ -124,15 +130,23 @@ async function runTestQuery(data) {
   } else if (data.getFileErrors) {
     result =
         assertCast(lastReceivedFileList).files.map(file => file.error).join();
-  } else if (data.legacyOpenFile) {
-    // TODO(b/165720635): Remove this once google3 shifts over to using openFile
-    // on the fileList.
-    await DELEGATE.openFile();
   } else if (data.openFile) {
+    // Call open file on file list, simulating a user trying to open a new file.
     await assertCast(lastReceivedFileList).openFile();
   } else if (data.getLastFileName) {
-    result = firstReceivedItem().name;
+    result = currentFile().name;
+  } else if (data.suppressCrashReports) {
+    // TODO(b/172981864): Remove this once we stop triggering crash reports for
+    // NotAFile errors.
+
+    // Remove the implementation of reportError so test code
+    // can safely check that the right errors are being thrown without
+    // triggering a crash.
+    if (chrome) {
+      chrome.crashReportPrivate.reportError = () => {};
+    }
   }
+
   return {testQueryResult: result, testQueryResultData: extraResultData};
 }
 

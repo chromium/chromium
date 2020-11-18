@@ -418,7 +418,6 @@ TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
     fileToFileHandle(await createTestImageFile(222 /* width */, 10, '2.png')),
     fileToFileHandle(await createTestImageFile(333 /* width */, 10, '3.png')),
   ];
-
   await launchWithHandles(handles);
   let result = await waitForImageAndGetWidth('1.png');
   assertEquals(result, '111');
@@ -454,7 +453,7 @@ TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
   result = await waitForErrorUX();
   assertMatch(result, GENERIC_ERROR_MESSAGE_REGEX);
   assertEquals(currentFiles.length, 3);
-  assertEquals(await getFileErrors(), 'NotAllowedError,,');
+  assertEquals(await getFileErrors(), ',,NotAllowedError');
 
   // Navigating back to an openable file should still work, and the error should
   // "stick".
@@ -470,6 +469,7 @@ TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
 // Tests a hypothetical scenario where a file may be deleted and replaced with
 // an openable directory with the same name while the app is running.
 TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
+  await sendTestMessage({suppressCrashReports: true});
   const handles = [
     fileToFileHandle(await createTestImageFile(111 /* width */, 10, '1.png')),
     fileToFileHandle(await createTestImageFile(222 /* width */, 10, '2.png')),
@@ -489,7 +489,7 @@ TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
   result = await waitForErrorUX();
   assertMatch(result, GENERIC_ERROR_MESSAGE_REGEX);
   assertEquals(currentFiles.length, 2);
-  assertEquals(await getFileErrors(), 'NotAFile,');
+  assertEquals(await getFileErrors(), ',NotAFile');
 
   testDone();
 });
@@ -1001,25 +1001,6 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsErrorHandling', async () => {
   assertEquals(currentFiles[0].handle, directory.files[0]);
   assertEquals(currentFiles[0].handle.name, 'original_file.jpg');
   assertEquals(currentFiles[0].token, originalFileToken);
-  assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
-  testDone();
-});
-
-// Tests the IPC behind the openFile delegate function.
-// TODO(b/165720635): Remove this once google3 shifts over to using openFile on
-// the fileList.
-TEST_F('MediaAppUIBrowserTest', 'LegacyOpenFileIPC', async () => {
-  const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
-  window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
-
-  await sendTestMessage({legacyOpenFile: true});
-
-  const lastToken = [...tokenMap.keys()].slice(-1)[0];
-  assertEquals(entryIndex, 0);
-  assertEquals(currentFiles.length, 1);
-  assertEquals(currentFiles[0].handle, pickedFileHandle);
-  assertEquals(currentFiles[0].handle.name, 'picked_file.jpg');
-  assertEquals(currentFiles[0].token, lastToken);
   assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
   testDone();
 });
