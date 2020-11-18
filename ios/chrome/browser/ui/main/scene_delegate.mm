@@ -44,7 +44,7 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
       // Assign an a11y identifier for using in EGTest.
       // See comment for [ChromeMatchersAppInterface windowWithNumber:] matcher
       // for context.
-      self.sceneState.window.accessibilityIdentifier =
+      _window.accessibilityIdentifier =
           [NSString stringWithFormat:@"%ld", UIApplication.sharedApplication
                                                      .connectedScenes.count -
                                                  1];

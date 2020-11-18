@@ -130,7 +130,7 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)windowWithNumber:(int)windowNumber {
   return grey_allOf(
-      grey_accessibilityLabel([NSString stringWithFormat:@"%d", windowNumber]),
+      grey_accessibilityID([NSString stringWithFormat:@"%d", windowNumber]),
       grey_kindOfClass([UIWindow class]), nil);
 }
 
