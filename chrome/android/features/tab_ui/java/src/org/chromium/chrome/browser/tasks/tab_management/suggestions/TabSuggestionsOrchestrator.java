@@ -46,7 +46,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, Destroyable {
     private static final int MIN_CLOSE_SUGGESTIONS_THRESHOLD = 3;
     private static final String SHARED_PREFERENCES_ID = "TabsuggestionsPreferences";
 
-    private static final int MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS = 5000;
+    private static final int MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS = 30000;
 
     protected TabContextObserver mTabContextObserver;
     protected TabSuggestionFeedback mTabSuggestionFeedback;
