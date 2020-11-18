@@ -75,8 +75,7 @@ void TriggerScriptCoordinator::Start(
     const GURL& deeplink_url,
     std::unique_ptr<TriggerContext> trigger_context) {
   deeplink_url_ = deeplink_url;
-  GURL current_url = client_->GetWebContents()->GetLastCommittedURL();
-  if (!url_utils::IsInDomainOrSubDomain(current_url, deeplink_url_)) {
+  if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), deeplink_url_)) {
     LOG(ERROR) << "Trigger script requested for domain other than the deeplink";
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
@@ -248,9 +247,8 @@ void TriggerScriptCoordinator::DidFinishNavigation(
 
   // The user has navigated away from the target domain. This will cancel the
   // current trigger script session.
-  if (!url_utils::IsInDomainOrSubDomain(web_contents()->GetLastCommittedURL(),
-                                        deeplink_url_) &&
-      !url_utils::IsInDomainOrSubDomain(web_contents()->GetLastCommittedURL(),
+  if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), deeplink_url_) &&
+      !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                         additional_allowed_domains_)) {
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
@@ -447,6 +445,14 @@ void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(
   for (Observer& observer : observers_) {
     observer.OnTriggerScriptFinished(state);
   }
+}
+
+GURL TriggerScriptCoordinator::GetCurrentURL() const {
+  GURL current_url = web_contents()->GetLastCommittedURL();
+  if (current_url.is_empty()) {
+    return deeplink_url_;
+  }
+  return current_url;
 }
 
 }  // namespace autofill_assistant

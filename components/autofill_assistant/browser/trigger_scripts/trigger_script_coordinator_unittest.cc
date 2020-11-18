@@ -144,6 +144,14 @@ TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForCorrectDomain) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
 }
+
+TEST_F(TriggerScriptCoordinatorTest, StartSucceedsWhileNoCommittedURL) {
+  content::WebContentsTester::For(web_contents())->SetLastCommittedURL(GURL());
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+
 TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForSubDomain) {
   SimulateNavigateToUrl(GURL(kFakeSubdomainDeepLink));
   EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);

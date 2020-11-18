@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/optional.h"
 #include "components/autofill_assistant/browser/client.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -78,7 +77,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
 
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  ClientSettings client_settings_;
+  bool disable_header_animations_for_testing_ = false;
   base::Optional<TriggerScriptUIProto> last_shown_trigger_script_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
 };

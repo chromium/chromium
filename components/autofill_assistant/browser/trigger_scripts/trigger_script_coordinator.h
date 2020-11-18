@@ -102,6 +102,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
   void OnGetTriggerScripts(int http_status, const std::string& response);
   void Stop(Metrics::LiteScriptFinishedState state);
+  GURL GetCurrentURL() const;
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no

@@ -158,7 +158,9 @@ public class AssistantTriggerScript {
 
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
-        mHeaderCoordinator.destroy();
+        if (mHeaderCoordinator != null) {
+            mHeaderCoordinator.destroy();
+        }
         mApplicationViewportInsetSupplier.removeSupplier(mInsetSupplier);
     }
 

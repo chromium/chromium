@@ -46,10 +46,8 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
   if (jservice_request_sender) {
     service_request_sender.reset(static_cast<ServiceRequestSender*>(
         reinterpret_cast<void*>(jservice_request_sender)));
-    ClientSettingsProto::IntegrationTestSettings test_settings;
-    test_settings.set_disable_header_animations(true);
-    test_settings.set_disable_carousel_change_animations(true);
-    client_settings_.integration_test_settings = test_settings;
+    // TODO(b/171776026): consider exposing this in proto.
+    disable_header_animations_for_testing_ = true;
   } else {
     service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
         client->GetWebContents()->GetBrowserContext(),
@@ -129,6 +127,9 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   auto jheader_model =
       Java_AssistantTriggerScriptBridge_getHeaderModel(env, java_object_);
   AssistantHeaderModel header_model(jheader_model);
+  if (disable_header_animations_for_testing_) {
+    header_model.SetDisableAnimations(disable_header_animations_for_testing_);
+  }
   header_model.SetStatusMessage(proto.status_message());
   header_model.SetBubbleMessage(proto.callout_message());
   header_model.SetProgressVisible(proto.has_progress_bar());
