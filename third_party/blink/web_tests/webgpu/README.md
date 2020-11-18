@@ -25,7 +25,20 @@ instructions on performing a roll.
 ## How to roll the WebGPU CTS into Chromium
 
 1. Merge the cts `main` branch into `glsl-dependent` if it hasn't been
-    done recently (or ask kainino@ to do this).
+    done recently (or just ask kainino@ to do this).
+    1. Check out the `glsl-dependent` branch in a local checkout.
+    1. `git merge main`, fix any immediate conflicts, and finish merge.
+    1. Push `glsl-dependent` to your own fork of `gpuweb/cts`.
+    1. Open PR from `you:glsl-dependent` to `gpuweb:glsl-dependent`.
+    1. Push to your fork.
+        1. CI may fail. Fix the branch build if needed.
+            1. `npm install --frozen-lockfile`
+            1. Fixes to make `npx grunt pre` pass.
+            1. Commit fixes and push to your fork.
+    1. Get review (specifically on the build-fix commit if any).
+    1. (Ideally) **don't** click the merge button. Push your branch directly to
+        `gpuweb:glsl-dependent` to keep the nice merge history. This will not
+        bypass the CI and review checks.
     1. Wait for
         [Chromium's mirror](https://chromium.googlesource.com/external/github.com/gpuweb/cts/+log/refs/heads/glsl-dependent)
         to pick up the changes (_usually_ &lt;10 minutes).
@@ -45,7 +58,7 @@ instructions on performing a roll.
     1. Remove any expectations for "passed unexpectedly" test variants
         in `WebGPUExpectations`.
 1. Repeat until CQ passes:
-    1. Look at output of `webgpu_blink_web_tests` on all bots
+    1. Look at output of `webgpu_blink_web_tests` on all bots.
     1. Look at the output of `webgpu_blink_web_tests` (and related)
         on any failing bots.
     1. Add `WebGPUExpectations` lines for any test variants that
