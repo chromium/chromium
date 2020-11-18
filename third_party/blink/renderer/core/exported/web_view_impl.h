@@ -498,6 +498,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // code should eventually move out of WebView into somewhere else.
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
 
+  // Indication that the root layer for the main frame widget has changed.
+  void DidChangeRootLayer(bool root_layer_exists);
+
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
   // unscaled visual viewport is the same size as the main frame. The passed
@@ -595,8 +598,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DisablePopupMouseWheelEventListener();
 
   float DeviceScaleFactor() const;
-
-  void DidChangeRootLayer(bool root_layer_exists);
 
   LocalFrame* FocusedLocalFrameInWidget() const;
 

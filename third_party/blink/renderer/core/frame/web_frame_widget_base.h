@@ -147,6 +147,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) final;
   void RequestAnimationAfterDelay(const base::TimeDelta&) final;
+  void SetRootLayer(scoped_refptr<cc::Layer>) override;
   void RegisterSelection(cc::LayerSelection selection) final;
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) final;

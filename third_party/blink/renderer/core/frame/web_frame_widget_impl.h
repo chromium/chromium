@@ -50,10 +50,6 @@
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
-namespace cc {
-class Layer;
-}
-
 namespace blink {
 class Element;
 class PaintLayerCompositor;
@@ -101,7 +97,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       const VisualProperties& visual_properties) override;
 
   // FrameWidget overrides:
-  void SetRootLayer(scoped_refptr<cc::Layer>) override;
   bool ShouldHandleImeEvents() override;
 
   // WidgetBaseClient overrides:

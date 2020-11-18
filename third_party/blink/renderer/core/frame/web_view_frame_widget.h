@@ -73,7 +73,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
       const VisualProperties& visual_properties) override;
 
   // FrameWidget overrides:
-  void SetRootLayer(scoped_refptr<cc::Layer>) override;
   bool ShouldHandleImeEvents() override;
 
   // WidgetBaseClient overrides:

@@ -3431,6 +3431,10 @@ bool WebViewImpl::TabsToLinks() const {
 }
 
 void WebViewImpl::DidChangeRootLayer(bool root_layer_exists) {
+  // The Layer is removed when the main frame's `Document` changes. It also is
+  // removed when the whole `LocalFrame` goes away, in which case we don't
+  // need to DeferMainFrameUpdate() as we will do so if a local MainFrame is
+  // attached in the future.
   if (!MainFrameImpl()) {
     DCHECK(!root_layer_exists);
     return;

@@ -454,25 +454,6 @@ PaintLayerCompositor* WebFrameWidgetImpl::Compositor() const {
   return frame->GetDocument()->GetLayoutView()->Compositor();
 }
 
-void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
-  if (!layer) {
-    // This notifies the WebFrameWidgetImpl that its LocalFrame tree is being
-    // detached.
-    return;
-  }
-
-  // WebFrameWidgetImpl is used for child frames, which always have a
-  // transparent background color.
-  widget_base_->LayerTreeHost()->set_background_color(SK_ColorTRANSPARENT);
-  // Pass the limits even though this is for subframes, as the limits will
-  // be needed in setting the raster scale.
-  SetPageScaleStateAndLimits(1.f, false /* is_pinch_gesture_active */,
-                             View()->MinimumPageScaleFactor(),
-                             View()->MaximumPageScaleFactor());
-
-  widget_base_->LayerTreeHost()->SetRootLayer(layer);
-}
-
 void WebFrameWidgetImpl::DidCreateLocalRootView() {
   // If this WebWidget still hasn't received its size from the embedder, block
   // the parser. This is necessary, because the parser can cause layout to

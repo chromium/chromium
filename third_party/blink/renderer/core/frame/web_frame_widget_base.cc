@@ -2174,6 +2174,33 @@ void WebFrameWidgetBase::RequestAnimationAfterDelay(
   }
 }
 
+void WebFrameWidgetBase::SetRootLayer(scoped_refptr<cc::Layer> layer) {
+  if (!View()->does_composite()) {
+    DCHECK(ForMainFrame());
+    DCHECK(!layer);
+    return;
+  }
+
+  // Set up some initial state before we are setting the layer.
+  if (ForSubframe() && layer) {
+    // Child local roots will always have a transparent background color.
+    widget_base_->LayerTreeHost()->set_background_color(SK_ColorTRANSPARENT);
+    // Pass the limits even though this is for subframes, as the limits will
+    // be needed in setting the raster scale.
+    SetPageScaleStateAndLimits(1.f, false /* is_pinch_gesture_active */,
+                               View()->MinimumPageScaleFactor(),
+                               View()->MaximumPageScaleFactor());
+  }
+
+  bool root_layer_exists = !!layer;
+  widget_base_->LayerTreeHost()->SetRootLayer(std::move(layer));
+
+  // Notify the WebView that we did set a layer.
+  if (ForMainFrame()) {
+    View()->DidChangeRootLayer(root_layer_exists);
+  }
+}
+
 void WebFrameWidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
   if (client_)
     client_->ScheduleAnimation();

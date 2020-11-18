@@ -114,16 +114,6 @@ bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }
 
-void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
-  if (!web_view_->does_composite()) {
-    DCHECK(!root_layer);
-    return;
-  }
-  cc::LayerTreeHost* layer_tree_host = widget_base_->LayerTreeHost();
-  layer_tree_host->SetRootLayer(root_layer);
-  web_view_->DidChangeRootLayer(!!root_layer);
-}
-
 WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     const WebGestureEvent& event) {
   if (!web_view_->Client() || !web_view_->Client()->CanHandleGestureEvent()) {
