@@ -122,9 +122,9 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
                        uint32_t module_size,
                        uint32_t module_time_date_stamp);
 
-  // Marks the module as added to the module blacklist cache, which means it
+  // Marks the module as added to the module blocklist cache, which means it
   // will be blocked on the next browser launch.
-  void OnModuleAddedToBlacklist(const base::FilePath& module_path,
+  void OnModuleAddedToBlocklist(const base::FilePath& module_path,
                                 uint32_t module_size,
                                 uint32_t module_time_date_stamp);
 

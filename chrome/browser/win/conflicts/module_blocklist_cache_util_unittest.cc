@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 
 #include <algorithm>
 #include <memory>
@@ -61,7 +61,7 @@ std::vector<third_party_dlls::PackedListModule> CreateUniqueModuleEntries(
 
 // Calls the |p| binary predicate for a sample of the collection.
 template <typename T, typename Predicate>
-void SampleBlacklistedModules(size_t count,
+void SampleBlocklistedModules(size_t count,
                               Predicate p,
                               std::vector<T>* collection) {
   size_t to_skip = collection->size() / count;
@@ -71,33 +71,33 @@ void SampleBlacklistedModules(size_t count,
 
 }  // namespace
 
-class ModuleBlacklistCacheUtilTest : public testing::Test {
+class ModuleBlocklistCacheUtilTest : public testing::Test {
  protected:
-  ModuleBlacklistCacheUtilTest() = default;
-  ~ModuleBlacklistCacheUtilTest() override = default;
+  ModuleBlocklistCacheUtilTest() = default;
+  ~ModuleBlocklistCacheUtilTest() override = default;
 
   // The number of module entry created for each test.
   enum { kTestModuleCount = 500u };
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    module_blacklist_cache_path_ = scoped_temp_dir_.GetPath().Append(
-        FILE_PATH_LITERAL("ModuleBlacklistCache"));
+    module_blocklist_cache_path_ = scoped_temp_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("ModuleBlocklistCache"));
   }
 
-  const base::FilePath& module_blacklist_cache_path() const {
-    return module_blacklist_cache_path_;
+  const base::FilePath& module_blocklist_cache_path() const {
+    return module_blocklist_cache_path_;
   }
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
 
-  base::FilePath module_blacklist_cache_path_;
+  base::FilePath module_blocklist_cache_path_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlacklistCacheUtilTest);
+  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUtilTest);
 };
 
-TEST_F(ModuleBlacklistCacheUtilTest, CalculateTimeDateStamp) {
+TEST_F(ModuleBlocklistCacheUtilTest, CalculateTimeDateStamp) {
   base::Time::Exploded chrome_birthday = {};
   chrome_birthday.year = 2008;
   chrome_birthday.month = 9;        // September.
@@ -113,17 +113,17 @@ TEST_F(ModuleBlacklistCacheUtilTest, CalculateTimeDateStamp) {
   EXPECT_EQ(3573552u, CalculateTimeDateStamp(time));
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, WriteEmptyCache) {
+TEST_F(ModuleBlocklistCacheUtilTest, WriteEmptyCache) {
   third_party_dlls::PackedListMetadata metadata = {
       third_party_dlls::PackedListVersion::kCurrent, 0};
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
   base::MD5Digest md5_digest;
-  EXPECT_TRUE(WriteModuleBlacklistCache(module_blacklist_cache_path(), metadata,
-                                        blacklisted_modules, &md5_digest));
+  EXPECT_TRUE(WriteModuleBlocklistCache(module_blocklist_cache_path(), metadata,
+                                        blocklisted_modules, &md5_digest));
 
   // Check the file's stat.
   int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(module_blacklist_cache_path(), &file_size));
+  EXPECT_TRUE(base::GetFileSize(module_blocklist_cache_path(), &file_size));
   EXPECT_EQ(file_size, internal::CalculateExpectedFileSize(metadata));
 
   base::MD5Digest expected = {
@@ -135,45 +135,45 @@ TEST_F(ModuleBlacklistCacheUtilTest, WriteEmptyCache) {
     EXPECT_EQ(expected.a[i], md5_digest.a[i]);
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, WrittenFileSize) {
+TEST_F(ModuleBlocklistCacheUtilTest, WrittenFileSize) {
   third_party_dlls::PackedListMetadata metadata = {
       third_party_dlls::PackedListVersion::kCurrent, kTestModuleCount};
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 0u, 4000u);
   base::MD5Digest md5_digest;
-  EXPECT_TRUE(WriteModuleBlacklistCache(module_blacklist_cache_path(), metadata,
-                                        blacklisted_modules, &md5_digest));
+  EXPECT_TRUE(WriteModuleBlocklistCache(module_blocklist_cache_path(), metadata,
+                                        blocklisted_modules, &md5_digest));
 
   // Check the file's stat.
   int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(module_blacklist_cache_path(), &file_size));
+  EXPECT_TRUE(base::GetFileSize(module_blocklist_cache_path(), &file_size));
   EXPECT_EQ(file_size, internal::CalculateExpectedFileSize(metadata));
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, WriteAndRead) {
+TEST_F(ModuleBlocklistCacheUtilTest, WriteAndRead) {
   third_party_dlls::PackedListMetadata metadata = {
       third_party_dlls::PackedListVersion::kCurrent, kTestModuleCount};
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 0u, 4000u);
   base::MD5Digest md5_digest;
-  EXPECT_TRUE(WriteModuleBlacklistCache(module_blacklist_cache_path(), metadata,
-                                        blacklisted_modules, &md5_digest));
+  EXPECT_TRUE(WriteModuleBlocklistCache(module_blocklist_cache_path(), metadata,
+                                        blocklisted_modules, &md5_digest));
 
   third_party_dlls::PackedListMetadata read_metadata;
-  std::vector<third_party_dlls::PackedListModule> read_blacklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> read_blocklisted_modules;
   base::MD5Digest read_md5_digest;
   EXPECT_EQ(
       ReadResult::kSuccess,
-      ReadModuleBlacklistCache(module_blacklist_cache_path(), &read_metadata,
-                               &read_blacklisted_modules, &read_md5_digest));
+      ReadModuleBlocklistCache(module_blocklist_cache_path(), &read_metadata,
+                               &read_blocklisted_modules, &read_md5_digest));
 
   EXPECT_EQ(read_metadata.version, metadata.version);
   EXPECT_EQ(read_metadata.module_count, metadata.module_count);
-  ASSERT_EQ(read_blacklisted_modules.size(), blacklisted_modules.size());
+  ASSERT_EQ(read_blocklisted_modules.size(), blocklisted_modules.size());
   // Note: Not using PackedListModuleEquals because the time_date_stamp is also
   // verified.
-  EXPECT_EQ(0, memcmp(&read_blacklisted_modules[0], &blacklisted_modules[0],
-                      read_blacklisted_modules.size() *
+  EXPECT_EQ(0, memcmp(&read_blocklisted_modules[0], &blocklisted_modules[0],
+                      read_blocklisted_modules.size() *
                           sizeof(third_party_dlls::PackedListModule)));
 
   for (size_t i = 0; i < std::extent<decltype(base::MD5Digest::a)>(); ++i)
@@ -184,8 +184,8 @@ class FakeModuleListFilter : public ModuleListFilter {
  public:
   FakeModuleListFilter() = default;
 
-  void AddWhitelistedModule(const third_party_dlls::PackedListModule& module) {
-    whitelisted_modules_.emplace(
+  void AddAllowlistedModule(const third_party_dlls::PackedListModule& module) {
+    allowlisted_modules_.emplace(
         base::StringPiece(
             reinterpret_cast<const char*>(&module.basename_hash[0]),
             base::size(module.basename_hash)),
@@ -195,14 +195,14 @@ class FakeModuleListFilter : public ModuleListFilter {
   }
 
   // ModuleListFilter:
-  bool IsWhitelisted(base::StringPiece module_basename_hash,
+  bool IsAllowlisted(base::StringPiece module_basename_hash,
                      base::StringPiece module_code_id_hash) const override {
     return base::Contains(
-        whitelisted_modules_,
+        allowlisted_modules_,
         std::make_pair(module_basename_hash, module_code_id_hash));
   }
 
-  std::unique_ptr<chrome::conflicts::BlacklistAction> IsBlacklisted(
+  std::unique_ptr<chrome::conflicts::BlocklistAction> IsBlocklisted(
       const ModuleInfoKey& module_key,
       const ModuleInfoData& module_data) const override {
     return nullptr;
@@ -212,46 +212,46 @@ class FakeModuleListFilter : public ModuleListFilter {
   ~FakeModuleListFilter() override = default;
 
   std::set<std::pair<base::StringPiece, base::StringPiece>>
-      whitelisted_modules_;
+      allowlisted_modules_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeModuleListFilter);
 };
 
-TEST_F(ModuleBlacklistCacheUtilTest, RemoveWhitelistedEntries) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, RemoveAllowlistedEntries) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 5u, 10u);
 
-  // The number of modules that will be whitelisted in this test.
-  const size_t kWhitelistedModulesCount = 5u;
+  // The number of modules that will be allowlisted in this test.
+  const size_t kAllowlistedModulesCount = 5u;
 
-  // Mark a few modules as whitelisted.
-  std::vector<third_party_dlls::PackedListModule> whitelisted_modules;
-  SampleBlacklistedModules(
-      kWhitelistedModulesCount,
-      [&whitelisted_modules](const auto& element) {
-        whitelisted_modules.push_back(element);
+  // Mark a few modules as allowlisted.
+  std::vector<third_party_dlls::PackedListModule> allowlisted_modules;
+  SampleBlocklistedModules(
+      kAllowlistedModulesCount,
+      [&allowlisted_modules](const auto& element) {
+        allowlisted_modules.push_back(element);
       },
-      &blacklisted_modules);
+      &blocklisted_modules);
   auto module_list_filter = base::MakeRefCounted<FakeModuleListFilter>();
-  for (const auto& module : whitelisted_modules)
-    module_list_filter->AddWhitelistedModule(module);
+  for (const auto& module : allowlisted_modules)
+    module_list_filter->AddAllowlistedModule(module);
 
-  internal::RemoveWhitelistedEntries(*module_list_filter, &blacklisted_modules);
+  internal::RemoveAllowlistedEntries(*module_list_filter, &blocklisted_modules);
 
-  EXPECT_EQ(kTestModuleCount - kWhitelistedModulesCount,
-            blacklisted_modules.size());
-  for (const auto& module : whitelisted_modules) {
+  EXPECT_EQ(kTestModuleCount - kAllowlistedModulesCount,
+            blocklisted_modules.size());
+  for (const auto& module : allowlisted_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element);
                      });
-    EXPECT_EQ(blacklisted_modules.end(), iter);
+    EXPECT_EQ(blocklisted_modules.end(), iter);
   }
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, UpdateModuleBlacklistCacheTimestamps) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, UpdateModuleBlocklistCacheTimestamps) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 5u, 10u);
 
   // The number of modules that will get their time_date_stamp updated.
@@ -262,33 +262,33 @@ TEST_F(ModuleBlacklistCacheUtilTest, UpdateModuleBlacklistCacheTimestamps) {
   // (which is [5u, 10u]).
   const uint32_t kNewTimeDateStamp = 15u;
   std::vector<third_party_dlls::PackedListModule> updated_modules;
-  SampleBlacklistedModules(
+  SampleBlocklistedModules(
       kModulesToRemove,
       [&updated_modules](const auto& element) {
         updated_modules.push_back(element);
       },
-      &blacklisted_modules);
+      &blocklisted_modules);
   for (auto& module : updated_modules)
     module.time_date_stamp = kNewTimeDateStamp;
 
-  internal::UpdateModuleBlacklistCacheTimestamps(updated_modules,
-                                                 &blacklisted_modules);
+  internal::UpdateModuleBlocklistCacheTimestamps(updated_modules,
+                                                 &blocklisted_modules);
 
-  EXPECT_EQ(kTestModuleCount, blacklisted_modules.size());
+  EXPECT_EQ(kTestModuleCount, blocklisted_modules.size());
   // For each entires, make sure they were updated.
   for (const auto& module : updated_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element);
                      });
-    ASSERT_NE(blacklisted_modules.end(), iter);
+    ASSERT_NE(blocklisted_modules.end(), iter);
     EXPECT_EQ(kNewTimeDateStamp, iter->time_date_stamp);
   }
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_OnlyExpired) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_OnlyExpired) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 5u, 10u);
 
   // The number of modules to remove from the collection.
@@ -297,46 +297,46 @@ TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_OnlyExpired) {
   // Set the time date stamp of 5 modules to an expired value.
   const uint32_t kExpiredTimeDateStamp = 1u;
   std::vector<third_party_dlls::PackedListModule> expired_modules;
-  SampleBlacklistedModules(
+  SampleBlocklistedModules(
       kModulesToRemove,
       [&expired_modules](auto& element) {
         expired_modules.push_back(element);
         element.time_date_stamp = kExpiredTimeDateStamp;
       },
-      &blacklisted_modules);
+      &blocklisted_modules);
 
-  std::sort(blacklisted_modules.begin(), blacklisted_modules.end(),
+  std::sort(blocklisted_modules.begin(), blocklisted_modules.end(),
             internal::ModuleTimeDateStampGreater());
 
   // Set a minimum time date stamp that excludes all the entries in
   // |expired_modules|.
   const size_t kMinTimeDateStamp = kExpiredTimeDateStamp;
   // Set a maxium cache file that fits all the existing modules.
-  const size_t kMaxModuleBlacklistCacheSize = kTestModuleCount;
-  // Assume there is no newly blacklisted module.
-  const size_t kNewlyBlacklistedModuleCount = 0u;
+  const size_t kMaxModuleBlocklistCacheSize = kTestModuleCount;
+  // Assume there is no newly blocklisted module.
+  const size_t kNewlyBlocklistedModuleCount = 0u;
 
   internal::RemoveExpiredEntries(
-      kMinTimeDateStamp, kMaxModuleBlacklistCacheSize,
-      kNewlyBlacklistedModuleCount, &blacklisted_modules);
+      kMinTimeDateStamp, kMaxModuleBlocklistCacheSize,
+      kNewlyBlocklistedModuleCount, &blocklisted_modules);
 
   // The 5 elements were removed.
-  EXPECT_EQ(kTestModuleCount - kModulesToRemove, blacklisted_modules.size());
+  EXPECT_EQ(kTestModuleCount - kModulesToRemove, blocklisted_modules.size());
   for (const auto& module : expired_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element);
                      });
-    EXPECT_EQ(blacklisted_modules.end(), iter);
+    EXPECT_EQ(blocklisted_modules.end(), iter);
   }
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_NewlyBlacklisted) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_NewlyBlocklisted) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 10u, 10000u);
 
-  std::sort(blacklisted_modules.begin(), blacklisted_modules.end(),
+  std::sort(blocklisted_modules.begin(), blocklisted_modules.end(),
             internal::ModuleTimeDateStampGreater());
 
   // The number of modules to remove from the collection.
@@ -345,39 +345,39 @@ TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_NewlyBlacklisted) {
   // Set a minimum time date stamp that doesn't exclude any entry.
   const size_t kMinTimeDateStamp = 0u;
   // Set a maxium cache file that fits all the existing modules.
-  const size_t kMaxModuleBlacklistCacheSize = kTestModuleCount;
+  const size_t kMaxModuleBlocklistCacheSize = kTestModuleCount;
   // Remove the kModulesToRemove oldest entries by pretending there is
-  // kModulesToRemove newly blacklisted modules.
-  const size_t kNewlyBlacklistedModuleCount = kModulesToRemove;
+  // kModulesToRemove newly blocklisted modules.
+  const size_t kNewlyBlocklistedModuleCount = kModulesToRemove;
 
   // Get a copy of the 10 oldest modules to make sure they were removed. They
   // should at the end of the vector.
   std::vector<third_party_dlls::PackedListModule> excess_modules(
-      blacklisted_modules.end() - kNewlyBlacklistedModuleCount,
-      blacklisted_modules.end());
+      blocklisted_modules.end() - kNewlyBlocklistedModuleCount,
+      blocklisted_modules.end());
 
   internal::RemoveExpiredEntries(
-      kMinTimeDateStamp, kMaxModuleBlacklistCacheSize,
-      kNewlyBlacklistedModuleCount, &blacklisted_modules);
+      kMinTimeDateStamp, kMaxModuleBlocklistCacheSize,
+      kNewlyBlocklistedModuleCount, &blocklisted_modules);
 
   // Enough elements were removed.
-  EXPECT_EQ(kTestModuleCount - kNewlyBlacklistedModuleCount,
-            blacklisted_modules.size());
+  EXPECT_EQ(kTestModuleCount - kNewlyBlocklistedModuleCount,
+            blocklisted_modules.size());
   for (const auto& module : excess_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element);
                      });
-    EXPECT_EQ(blacklisted_modules.end(), iter);
+    EXPECT_EQ(blocklisted_modules.end(), iter);
   }
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_MaxSize) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_MaxSize) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 10u, 10000u);
 
-  std::sort(blacklisted_modules.begin(), blacklisted_modules.end(),
+  std::sort(blocklisted_modules.begin(), blocklisted_modules.end(),
             internal::ModuleTimeDateStampGreater());
 
   // The number of modules to remove from the collection.
@@ -386,37 +386,37 @@ TEST_F(ModuleBlacklistCacheUtilTest, RemoveExpiredEntries_MaxSize) {
   // Set a minimum time date stamp that doesn't exclude any entry.
   const size_t kMinTimeDateStamp = 0u;
   // Pick a max size that ensures that kModulesToRemove entries are removed.
-  const size_t kMaxModuleBlacklistCacheSize =
+  const size_t kMaxModuleBlocklistCacheSize =
       kTestModuleCount - kModulesToRemove;
-  // Assume there is no newly blacklisted module.
-  const size_t kNewlyBlacklistedModuleCount = 0u;
+  // Assume there is no newly blocklisted module.
+  const size_t kNewlyBlocklistedModuleCount = 0u;
 
   // Get a copy of the last kModulesToRemove entries to make sure they are the
   // one that are removed.
   std::vector<third_party_dlls::PackedListModule> excess_modules(
-      blacklisted_modules.end() - kModulesToRemove, blacklisted_modules.end());
+      blocklisted_modules.end() - kModulesToRemove, blocklisted_modules.end());
 
   // The collection contains too many entries at first.
-  EXPECT_NE(kMaxModuleBlacklistCacheSize, blacklisted_modules.size());
+  EXPECT_NE(kMaxModuleBlocklistCacheSize, blocklisted_modules.size());
 
   internal::RemoveExpiredEntries(
-      kMinTimeDateStamp, kMaxModuleBlacklistCacheSize,
-      kNewlyBlacklistedModuleCount, &blacklisted_modules);
+      kMinTimeDateStamp, kMaxModuleBlocklistCacheSize,
+      kNewlyBlocklistedModuleCount, &blocklisted_modules);
 
   // Enough elements were removed.
-  EXPECT_EQ(kMaxModuleBlacklistCacheSize, blacklisted_modules.size());
+  EXPECT_EQ(kMaxModuleBlocklistCacheSize, blocklisted_modules.size());
   for (const auto& module : excess_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element);
                      });
-    EXPECT_EQ(blacklisted_modules.end(), iter);
+    EXPECT_EQ(blocklisted_modules.end(), iter);
   }
 }
 
-TEST_F(ModuleBlacklistCacheUtilTest, RemoveDuplicateEntries) {
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules =
+TEST_F(ModuleBlocklistCacheUtilTest, RemoveDuplicateEntries) {
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules =
       CreateUniqueModuleEntries(kTestModuleCount, 10u, 10000u);
 
   // The number of modules to duplicate in this test.
@@ -425,37 +425,37 @@ TEST_F(ModuleBlacklistCacheUtilTest, RemoveDuplicateEntries) {
   // Create kDuplicateCount duplicate modules and set their time_date_stamp to a
   // greater value so that the duplicate is kept instead of the original.
   std::vector<third_party_dlls::PackedListModule> duplicated_modules;
-  SampleBlacklistedModules(
+  SampleBlocklistedModules(
       kDuplicateCount,
       [&duplicated_modules](auto& element) {
         duplicated_modules.push_back(element);
       },
-      &blacklisted_modules);
+      &blocklisted_modules);
   for (auto& module : duplicated_modules)
     module.time_date_stamp += 10u;
 
   // Insert at the beginning because RemoveDuplicateEntries() keeps the first
   // duplicate in the list.
-  blacklisted_modules.insert(blacklisted_modules.begin(),
+  blocklisted_modules.insert(blocklisted_modules.begin(),
                              duplicated_modules.begin(),
                              duplicated_modules.end());
 
   // Stable sort to keep the relative order between duplicates.
-  std::stable_sort(blacklisted_modules.begin(), blacklisted_modules.end(),
+  std::stable_sort(blocklisted_modules.begin(), blocklisted_modules.end(),
                    internal::ModuleLess());
 
-  EXPECT_EQ(kTestModuleCount + kDuplicateCount, blacklisted_modules.size());
+  EXPECT_EQ(kTestModuleCount + kDuplicateCount, blocklisted_modules.size());
 
-  internal::RemoveDuplicateEntries(&blacklisted_modules);
+  internal::RemoveDuplicateEntries(&blocklisted_modules);
 
-  EXPECT_EQ(kTestModuleCount, blacklisted_modules.size());
+  EXPECT_EQ(kTestModuleCount, blocklisted_modules.size());
   for (const auto& module : duplicated_modules) {
     auto iter =
-        std::find_if(blacklisted_modules.begin(), blacklisted_modules.end(),
+        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
                      [&module](const auto& element) {
                        return internal::ModuleEqual()(module, element) &&
                               module.time_date_stamp == element.time_date_stamp;
                      });
-    EXPECT_NE(blacklisted_modules.end(), iter);
+    EXPECT_NE(blocklisted_modules.end(), iter);
   }
 }
