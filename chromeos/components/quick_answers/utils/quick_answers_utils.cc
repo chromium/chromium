@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -73,6 +74,10 @@ std::string BuildTranslationTitleText(const std::string& query_text,
   return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
                                    base::UTF8ToUTF16(query_text),
                                    base::UTF8ToUTF16(locale_name));
+}
+
+std::string UnescapeStringForHTML(const std::string& string) {
+  return base::UTF16ToUTF8(net::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
 
 }  // namespace quick_answers

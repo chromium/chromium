@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -51,21 +52,22 @@ void TranslationResponseParser::OnJsonParsed(
 
   DCHECK(translations->GetList().size() == 1);
 
-  const std::string* translated_text =
+  const std::string* translated_text_ptr =
       translations->GetList().front().FindStringPath("translatedText");
-  if (!translated_text) {
+  if (!translated_text_ptr) {
     LOG(ERROR) << "Can't find a translated text.";
     std::move(complete_callback_).Run(nullptr);
     return;
   }
+  auto translated_text = UnescapeStringForHTML(*translated_text_ptr);
 
   auto quick_answer = std::make_unique<QuickAnswer>();
   quick_answer->result_type = ResultType::kTranslationResult;
-  quick_answer->primary_answer = *translated_text;
+  quick_answer->primary_answer = translated_text;
   quick_answer->secondary_answer = title_text;
   quick_answer->title.push_back(std::make_unique<QuickAnswerText>(title_text));
   quick_answer->first_answer_row.push_back(
-      std::make_unique<QuickAnswerResultText>(*translated_text));
+      std::make_unique<QuickAnswerResultText>(translated_text));
 
   std::move(complete_callback_).Run(std::move(quick_answer));
 }
