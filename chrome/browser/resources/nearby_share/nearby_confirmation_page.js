@@ -180,6 +180,7 @@ Polymer({
         this.needsConfirmation_ = false;
         break;
       case nearbyShare.mojom.TransferStatus.kInProgress:
+      case nearbyShare.mojom.TransferStatus.kComplete:
         this.fire('close');
         break;
       case nearbyShare.mojom.TransferStatus.kRejected:
@@ -198,6 +199,7 @@ Polymer({
       case nearbyShare.mojom.TransferStatus.kMediaUnavailable:
       case nearbyShare.mojom.TransferStatus.kNotEnoughSpace:
       case nearbyShare.mojom.TransferStatus.kFailed:
+      case nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptanceFailed:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
         this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         break;

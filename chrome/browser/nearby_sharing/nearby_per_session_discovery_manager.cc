@@ -25,6 +25,7 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kAwaitingRemoteAcceptance:
       return nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptance;
     case TransferMetadata::Status::kComplete:
+      return nearby_share::mojom::TransferStatus::kComplete;
     case TransferMetadata::Status::kInProgress:
       return nearby_share::mojom::TransferStatus::kInProgress;
     case TransferMetadata::Status::kRejected:
@@ -38,11 +39,15 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kNotEnoughSpace:
       return nearby_share::mojom::TransferStatus::kNotEnoughSpace;
     case TransferMetadata::Status::kFailed:
-    case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
       return nearby_share::mojom::TransferStatus::kFailed;
+    case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
+      return nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptanceFailed;
     case TransferMetadata::Status::kUnknown:
+      return nearby_share::mojom::TransferStatus::kUnknown;
     case TransferMetadata::Status::kConnecting:
+      return nearby_share::mojom::TransferStatus::kConnecting;
     case TransferMetadata::Status::kCancelled:
+      return nearby_share::mojom::TransferStatus::kCancelled;
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
       // Ignore all other transfer status updates.
