@@ -9274,6 +9274,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Exit Button"/>
 </enum>
 
+<enum name="CaptureModeConfiguration">
+  <int value="0" label="Fullscreen screenshot"/>
+  <int value="1" label="Region screenshot"/>
+  <int value="2" label="Window screenshot"/>
+  <int value="3" label="Fullscreen recording"/>
+  <int value="4" label="Region recording"/>
+  <int value="5" label="Window recording"/>
+</enum>
+
 <enum name="CaptureModeEntryType">
   <int value="0" label="Partial Screenshot Accelerator"/>
   <int value="1" label="Window Screenshot Accelerator"/>

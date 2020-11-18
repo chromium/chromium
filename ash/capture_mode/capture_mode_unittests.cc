@@ -1490,6 +1490,78 @@ TEST_F(CaptureModeTest, FullscreenCapture) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+// Tests that metrics are recorded properly for capture mode configurations when
+// taking a screenshot.
+TEST_F(CaptureModeTest, ScreenshotConfigurationHistogram) {
+  constexpr char kClamshellHistogram[] =
+      "Ash.CaptureModeController.CaptureConfiguration.ClamshellMode";
+  constexpr char kTabletHistogram[] =
+      "Ash.CaptureModeController.CaptureConfiguration.TabletMode";
+  base::HistogramTester histogram_tester;
+  // Use a set display size as we will be choosing points in this test.
+  UpdateDisplay("800x800");
+
+  // Create a window for window captures later.
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindow(gfx::Rect(600, 600, 100, 100)));
+
+  // Perform a fullscreen screenshot.
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeConfiguration::kFullscreenScreenshot, 1);
+
+  // Perform a region screenshot.
+  controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  const gfx::Rect capture_region(200, 200, 400, 400);
+  SelectRegion(capture_region);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeConfiguration::kRegionScreenshot, 1);
+
+  // Perform a window screenshot.
+  controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window1.get());
+  EXPECT_EQ(window1.get(),
+            controller->capture_mode_session()->GetSelectedWindow());
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeConfiguration::kWindowScreenshot, 1);
+
+  // Switch to tablet mode.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+
+  // Perform a fullscreen screenshot.
+  controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                   CaptureModeType::kImage);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeConfiguration::kFullscreenScreenshot, 1);
+
+  // Perform a region screenshot.
+  controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeConfiguration::kRegionScreenshot, 1);
+
+  // Perform a window screenshot.
+  controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  event_generator->MoveMouseToCenterOf(window1.get());
+  EXPECT_EQ(window1.get(),
+            controller->capture_mode_session()->GetSelectedWindow());
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeConfiguration::kWindowScreenshot, 1);
+}
+
 // A test class that uses a mock time task environment.
 class CaptureModeMockTimeTest : public CaptureModeTest {
  public:

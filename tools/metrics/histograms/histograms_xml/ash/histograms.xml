@@ -196,6 +196,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
+    enum="CaptureModeConfiguration" expires_after="2021-11-13">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user performs a screen capture in {TabletOrClamshell}.
+    The recorded enum indicates the configuration used for the capture. I.e. the
+    capture source and the capture type.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
     name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
     units="adjustments" expires_after="2021-11-06">
   <owner>chinsenj@chromium.org</owner>
