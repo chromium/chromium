@@ -5,6 +5,3 @@ toyoshim@chromium.org
 per-file quic_transport_browsertest.cc=ricea@chromium.org
 per-file quic_transport_browsertest.cc=vasilvv@chromium.org
 per-file quic_transport_browsertest.cc=yhirano@chromium.org
-
-# TEAM: net-dev@chromium.org
-# COMPONENT: Internals>Network

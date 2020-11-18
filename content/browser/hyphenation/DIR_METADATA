@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser"
+}
+team_email: "layout-dev@chromium.org"
