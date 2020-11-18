@@ -87,8 +87,7 @@ const getAudioPlayer = new Promise(async (resolve) => {
   const url = util.isAudioPlayerJsModulesEnabled() ?
       AUDIO_PLAYER_MODULE_APP_URL :
       AUDIO_PLAYER_APP_URL;
-  resolve(new SingletonAppWindowWrapper(
-      AUDIO_PLAYER_APP_URL, audioPlayerCreateOptions));
+  resolve(new SingletonAppWindowWrapper(url, audioPlayerCreateOptions));
 });
 
 /**
@@ -149,7 +148,8 @@ const getAudioPlayer = new Promise(async (resolve) => {
 
     audioPlayer.setIcon(AUDIO_PLAYER_ICON);
     audioPlayer.rawAppWindow.focus();
-    return AUDIO_PLAYER_APP_URL;
+    return util.isAudioPlayerJsModulesEnabled() ? AUDIO_PLAYER_MODULE_APP_URL :
+                                                  AUDIO_PLAYER_APP_URL;
   } catch (error) {
     console.error('Launch failed: ' + (error.stack || error));
     throw error;

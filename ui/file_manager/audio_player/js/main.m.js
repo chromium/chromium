@@ -7,7 +7,10 @@
  * audio_player_scripts.js
  */
 
-import '../../base/js/app_util.m.js';
-import '../../base/js/volume_manager_types.m.js';
+import {AudioPlayer, reload, unload} from './audio_player.m.js';
+
+window.reload = reload;
+window.unload = unload;
+window.AudioPlayer = AudioPlayer;
 
 console.log('AudioPlayer main.m.js loaded');

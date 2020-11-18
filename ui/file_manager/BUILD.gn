@@ -103,17 +103,25 @@ preprocess_grit("preprocess_generated") {
     "audio_player/js/error_util.m.js",
     "audio_player/js/test_util.m.js",
     "audio_player/js/background.m.js",
+    "audio_player/js/audio_player.m.js",
+    "audio_player/elements/audio_player.m.js",
+    "audio_player/elements/track_info_panel.m.js",
+    "audio_player/elements/track_list.m.js",
+    "audio_player/elements/control_panel.m.js",
+    "audio_player/elements/repeat_button.m.js",
 
     # Base:
     "base/js/app_util.m.js",
     "base/js/volume_manager_types.m.js",
     "base/js/mediasession_types.m.js",
+    "base/js/filtered_volume_manager.m.js",
 
     # Common:
     "file_manager/common/js/async_util.m.js",
     "file_manager/common/js/util.m.js",
     "file_manager/common/js/file_type.m.js",
     "file_manager/common/js/files_app_entry_types.m.js",
+    "file_manager/common/js/lru_cache.m.js",
 
     # Externs:
     "externs/entry_location.m.js",
@@ -134,15 +142,47 @@ preprocess_grit("preprocess_generated") {
     "file_manager/background/js/volume_info_list_impl.m.js",
     "file_manager/background/js/test_util_base.m.js",
     "file_manager/background/js/volume_manager_util.m.js",
+
+    # Files app Foreground:
+    "file_manager/foreground/js/thumbnail_loader.m.js",
+
+    # Files app Elements:
+    "file_manager/foreground/elements/files_icon_button.m.js",
+
+    # Image Loader:
+    "image_loader/image_loader_client.m.js",
+    "image_loader/load_image_request.m.js",
+
+    # Metadata:
+    "file_manager/foreground/js/metadata/content_metadata_provider.m.js",
+    "file_manager/foreground/js/metadata/external_metadata_provider.m.js",
+    "file_manager/foreground/js/metadata/file_system_metadata_provider.m.js",
+    "file_manager/foreground/js/metadata/multi_metadata_provider.m.js",
+    "file_manager/foreground/js/metadata/metadata_model.m.js",
+    "file_manager/foreground/js/metadata/metadata_cache_item.m.js",
+    "file_manager/foreground/js/metadata/metadata_item.m.js",
+    "file_manager/foreground/js/metadata/metadata_provider.m.js",
+    "file_manager/foreground/js/metadata/metadata_cache_set.m.js",
+    "file_manager/foreground/js/metadata/metadata_request.m.js",
+    "file_manager/foreground/js/metadata/image_orientation.m.js",
   ]
 
   deps = [
+    "//ui/file_manager/audio_player/elements:audio_player_module",
+    "//ui/file_manager/audio_player/elements:control_panel_module",
+    "//ui/file_manager/audio_player/elements:repeat_button_module",
+    "//ui/file_manager/audio_player/elements:track_info_panel_module",
+    "//ui/file_manager/audio_player/elements:track_list_module",
     "//ui/file_manager/audio_player/js:modulize",
     "//ui/file_manager/base/js:modulize",
     "//ui/file_manager/externs:modulize",
     "//ui/file_manager/externs/background:modulize",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",
+    "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
+    "//ui/file_manager/file_manager/foreground/js:modulize",
+    "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
+    "//ui/file_manager/image_loader:modulize",
   ]
 }
 
@@ -152,21 +192,27 @@ generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 generate_grd("build_grd") {
   out_grd = generated_grd
 
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/preprocessed", root_gen_dir)
+  input_files_base_dir = rebase_path("$target_gen_dir", root_gen_dir)
   input_files = [
-    "../audio_player/js/main.m.rollup.js",
-    "../audio_player/js/main_background.m.rollup.js",
+    "audio_player/js/main.m.rollup.js",
+    "audio_player/js/main_background.m.rollup.js",
+
+    "file_manager/foreground/elements/files_icon_button.m.js",
+    "file_manager/foreground/elements/files_toggle_ripple.m.js",
+    "file_manager/foreground/elements/files_ripple.m.js",
   ]
 
   resource_path_rewrites = [
-    "../audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
-    "../audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
+    "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
+    "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
   ]
 
   deps = [
     "//ui/file_manager/audio_player/js:build",
     "//ui/file_manager/audio_player/js:build_background",
+    "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",
   ]
 }
 

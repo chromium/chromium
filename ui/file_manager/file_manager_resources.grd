@@ -149,6 +149,7 @@
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_LIST_JS" file="audio_player/elements/track_list.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_METADATA_WORKER_JS" file="audio_player/js/metadata_worker.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER" file="audio_player/audio_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player_module.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_JS" file="audio_player/js/audio_player_scripts.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_16" file="audio_player/icons/audio-player-favicon-16.png" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_32" file="audio_player/icons/audio-player-favicon-32.png" type="BINDATA" />
