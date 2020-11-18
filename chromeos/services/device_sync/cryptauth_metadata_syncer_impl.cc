@@ -377,18 +377,27 @@ void CryptAuthMetadataSyncerImpl::AttemptNextStep() {
 
 bool CryptAuthMetadataSyncerImpl::
     ShouldUseCachedEncryptedLocalDeviceMetadata() {
-  std::string last_synced_unencrypted_metadata = pref_service_->GetString(
-      prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata);
-  std::string last_synced_group_public_key =
-      pref_service_->GetString(prefs::kCryptAuthLastSyncedGroupPublicKey);
+  base::Optional<std::string> last_synced_unencrypted_metadata =
+      util::DecodeFromString(pref_service_->GetString(
+          prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata));
+  base::Optional<std::string> last_synced_group_public_key =
+      util::DecodeFromString(
+          pref_service_->GetString(prefs::kCryptAuthLastSyncedGroupPublicKey));
+  base::Optional<std::string> last_synced_encrypted_metadata =
+      util::DecodeFromString(pref_service_->GetString(
+          prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata));
+
+  // Persisted values are not encoded properly.
+  if (!last_synced_unencrypted_metadata || !last_synced_group_public_key ||
+      !last_synced_encrypted_metadata) {
+    return false;
+  }
 
   // Prefs should be all set or all unset.
   DCHECK_EQ(last_synced_unencrypted_metadata == kUnsetPrefValue,
             last_synced_group_public_key == kUnsetPrefValue);
   DCHECK_EQ(last_synced_unencrypted_metadata == kUnsetPrefValue,
-            pref_service_->GetString(
-                prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata) ==
-                kUnsetPrefValue);
+            last_synced_encrypted_metadata == kUnsetPrefValue);
 
   if (last_synced_unencrypted_metadata == kUnsetPrefValue)
     return false;
@@ -402,8 +411,9 @@ void CryptAuthMetadataSyncerImpl::EncryptLocalDeviceMetadata() {
   SetState(State::kWaitingForLocalDeviceMetadataEncryption);
 
   if (ShouldUseCachedEncryptedLocalDeviceMetadata()) {
-    OnLocalDeviceMetadataEncrypted(pref_service_->GetString(
-        prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata));
+    OnLocalDeviceMetadataEncrypted(
+        *util::DecodeFromString(pref_service_->GetString(
+            prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata)));
     return;
   }
 
@@ -532,12 +542,12 @@ void CryptAuthMetadataSyncerImpl::OnSyncMetadataSuccess(
   // the key returned in the respone.
   pref_service_->SetString(
       prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata,
-      local_device_metadata_.SerializeAsString());
+      util::EncodeAsString(local_device_metadata_.SerializeAsString()));
   pref_service_->SetString(prefs::kCryptAuthLastSyncedGroupPublicKey,
-                           GetGroupKey()->public_key());
+                           util::EncodeAsString(GetGroupKey()->public_key()));
   pref_service_->SetString(
       prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata,
-      *encrypted_local_device_metadata_);
+      util::EncodeAsString(*encrypted_local_device_metadata_));
 
   sync_metadata_response_ = response;
 

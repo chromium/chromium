@@ -33,6 +33,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
+#include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +43,9 @@ namespace device_sync {
 
 namespace {
 
-const char kStaleGroupPublicKey[] = "stale_group_public_key";
+// Note: Include a non-UTF-8 character to ensure that we handle them correctly
+// in prefs.
+const char kStaleGroupPublicKey[] = "stale_group_public_key\xff";
 
 const char kAccessTokenUsed[] = "access token used by CryptAuthClient";
 
@@ -118,13 +121,13 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
       const std::string& group_public_key) {
     pref_service_.SetString(
         prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata,
-        unencrypted_local_device_metadata);
+        util::EncodeAsString(unencrypted_local_device_metadata));
     pref_service_.SetString(prefs::kCryptAuthLastSyncedGroupPublicKey,
-                            group_public_key);
+                            util::EncodeAsString(group_public_key));
     pref_service_.SetString(
         prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata,
-        MakeFakeEncryptedString(unencrypted_local_device_metadata,
-                                group_public_key));
+        util::EncodeAsString(MakeFakeEncryptedString(
+            unencrypted_local_device_metadata, group_public_key)));
   }
 
   void SyncMetadata(
@@ -402,14 +405,14 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
       const std::string& expected_unencrypted_metadata,
       const std::string& expected_group_public_key) {
     EXPECT_EQ(expected_encrypted_metadata,
-              pref_service_.GetString(
-                  prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata));
+              util::DecodeFromString(pref_service_.GetString(
+                  prefs::kCryptAuthLastSyncedEncryptedLocalDeviceMetadata)));
     EXPECT_EQ(expected_unencrypted_metadata,
-              pref_service_.GetString(
-                  prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata));
-    EXPECT_EQ(
-        expected_group_public_key,
-        pref_service_.GetString(prefs::kCryptAuthLastSyncedGroupPublicKey));
+              util::DecodeFromString(pref_service_.GetString(
+                  prefs::kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata)));
+    EXPECT_EQ(expected_group_public_key,
+              util::DecodeFromString(pref_service_.GetString(
+                  prefs::kCryptAuthLastSyncedGroupPublicKey)));
   }
 
   void OnMetadataSyncComplete(
@@ -599,8 +602,9 @@ TEST_F(
       GetPrivateKeyFromPublicKeyForTest(group_public_key);
 
   // Say the local device metadata was already encrypted with the current group
-  // key but the device metadata is stale.
-  SetLocalDeviceMetadataPrefs("old_metadata", group_public_key);
+  // key but the device metadata is stale. Note: Include a non-UTF-8 character
+  // to ensure that we handle them correctly in prefs.
+  SetLocalDeviceMetadataPrefs("old_metadata\xC0", group_public_key);
 
   SyncMetadata(group_public_key, group_private_key);
 
@@ -632,11 +636,12 @@ TEST_F(
       GetPrivateKeyFromPublicKeyForTest(group_public_key);
 
   // Say the local device metadata was already encrypted with the current device
-  // metadata but a stale group public key.
+  // metadata but a stale group public key. Note: Include a non-UTF-8 character
+  // to ensure that we handle them correctly in prefs.
   SetLocalDeviceMetadataPrefs(
       GetLocalDeviceForTest()
           .better_together_device_metadata->SerializeAsString(),
-      "old_group_public_key");
+      "old_group_public_key\xC1");
 
   SyncMetadata(group_public_key, group_private_key);
 
