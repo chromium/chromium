@@ -122,7 +122,7 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
             help.setIcon(VectorDrawableCompat.create(
-                    getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+                    getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
         }
     }
 
@@ -166,7 +166,7 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
         // Managed objects cannot be revoked, so finish the activity only if the list did not
         // contain managed objects.
         if (hasManagedObject) {
-            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
+            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getActivity());
         } else {
             getActivity().finish();
         }
@@ -240,7 +240,7 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
         header.setTitle(titleText);
         header.setImageView(R.drawable.ic_delete_white_24dp,
                 R.string.website_settings_revoke_all_permissions_for_device, (View view) -> {
-                    new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+                    new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
                             .setTitle(R.string.reset)
                             .setMessage(dialogMsg)
                             .setPositiveButton(R.string.reset,

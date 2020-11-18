@@ -363,7 +363,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
             help.setIcon(VectorDrawableCompat.create(
-                    getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+                    getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
         }
     }
 
@@ -588,7 +588,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
         Toast.makeText(getActivity(),
-                     String.format(getContext().getString(R.string.website_settings_add_site_toast),
+                     String.format(
+                             getActivity().getString(R.string.website_settings_add_site_toast),
                              hostname),
                      Toast.LENGTH_SHORT)
                 .show();
@@ -790,7 +791,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             extras.putString(EXTRA_TITLE, getActivity().getTitle().toString());
             extras.putSerializable(ChosenObjectSettings.EXTRA_OBJECT_INFOS, entry.first);
             extras.putSerializable(ChosenObjectSettings.EXTRA_SITES, entry.second);
-            preference.setIcon(SettingsUtils.getTintedIcon(getContext(),
+            preference.setIcon(SettingsUtils.getTintedIcon(getActivity(),
                     ContentSettingsResources.getIcon(mCategory.getContentSettingsType())));
             preference.setTitle(entry.first.get(0).getName());
             preference.setFragment(ChosenObjectSettings.class.getCanonicalName());
@@ -1060,7 +1061,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         descriptions[1] =
                 getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.BLOCK));
 
-        return new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
                 .setPositiveButton(R.string.cancel, null)
                 .setNegativeButton(R.string.remove,
                         (dialog, which) -> {

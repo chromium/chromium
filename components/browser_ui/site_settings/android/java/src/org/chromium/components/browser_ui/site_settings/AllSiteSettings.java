@@ -165,7 +165,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     /** OnClickListener for the clear button. We show an alert dialog to confirm the action */
     @Override
     public void onClick(View v) {
-        if (getContext() == null || v != mClearButton) return;
+        if (getActivity() == null || v != mClearButton) return;
 
         long totalUsage = 0;
         boolean includesApps = false;
@@ -181,10 +181,9 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater =
-                (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = inflater.inflate(R.layout.clear_data_dialog, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View dialogView =
+                getActivity().getLayoutInflater().inflate(R.layout.clear_data_dialog, null);
         TextView message = dialogView.findViewById(android.R.id.message);
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
@@ -193,7 +192,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         String dialogFormattedText =
                 getString(includesApps ? R.string.webstorage_clear_data_dialog_message_with_app
                                        : R.string.webstorage_clear_data_dialog_message,
-                        Formatter.formatShortFileSize(getContext(), totalUsage));
+                        Formatter.formatShortFileSize(getActivity(), totalUsage));
         message.setText(dialogFormattedText);
         builder.setView(dialogView);
         builder.setPositiveButton(R.string.storage_clear_dialog_clear_storage_option,
@@ -247,7 +246,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
             help.setIcon(VectorDrawableCompat.create(
-                    getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+                    getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
         }
     }
 

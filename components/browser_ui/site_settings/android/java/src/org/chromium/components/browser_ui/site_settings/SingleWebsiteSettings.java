@@ -227,7 +227,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
+        getActivity().setTitle(R.string.prefs_site_settings);
         init();
         super.onActivityCreated(savedInstanceState);
     }
@@ -358,7 +358,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             @ContentSettingValues @Nullable Integer value, boolean enabled) {
         Drawable icon = enabled
                 ? SettingsUtils.getTintedIcon(
-                        getContext(), ContentSettingsResources.getIcon(contentSettingsType))
+                        getActivity(), ContentSettingsResources.getIcon(contentSettingsType))
                 : ContentSettingsResources.getDisabledIcon(contentSettingsType, getResources());
         if (getSiteSettingsClient().isPageInfoV2Enabled() && value != null
                 && value == ContentSettingValues.BLOCK) {
@@ -691,8 +691,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     new ChromeImageViewPreference(getStyledContext());
 
             preference.setKey(CHOOSER_PERMISSION_PREFERENCE_KEY);
-            preference.setIcon(SettingsUtils.getTintedIcon(
-                    getContext(), ContentSettingsResources.getIcon(info.getContentSettingsType())));
+            preference.setIcon(SettingsUtils.getTintedIcon(getActivity(),
+                    ContentSettingsResources.getIcon(info.getContentSettingsType())));
             preference.setOrder(maxPermissionOrder);
             preference.setTitle(info.getName());
             preference.setImageView(R.drawable.ic_delete_white_24dp,
@@ -1076,7 +1076,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 : R.string.website_reset_confirmation;
         int buttonResId = mHideNonPermissionPreferences ? R.string.reset : titleResId;
         // Handle the Clear & Reset preference click by showing a confirmation.
-        new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+        new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
                 .setTitle(titleResId)
                 .setMessage(confirmationResId)
                 .setPositiveButton(buttonResId,
@@ -1154,7 +1154,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         mObjectUserPermissionCount = 0;
 
         if (mObjectPolicyPermissionCount > 0) {
-            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
+            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getActivity());
         }
     }
 }

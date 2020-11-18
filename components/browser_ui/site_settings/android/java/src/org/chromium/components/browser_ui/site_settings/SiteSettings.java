@@ -31,7 +31,7 @@ public class SiteSettings
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.site_settings_preferences);
-        getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
+        getActivity().setTitle(R.string.prefs_site_settings);
 
         configurePreferences();
         updatePreferenceStates();
@@ -120,7 +120,7 @@ public class SiteSettings
 
             if (p.isEnabled()) {
                 p.setIcon(SettingsUtils.getTintedIcon(
-                        getContext(), ContentSettingsResources.getIcon(contentType)));
+                        getActivity(), ContentSettingsResources.getIcon(contentType)));
             } else {
                 p.setIcon(ContentSettingsResources.getDisabledIcon(contentType, getResources()));
             }
