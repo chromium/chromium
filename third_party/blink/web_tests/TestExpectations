@@ -6002,6 +6002,7 @@ crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass T
 crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Pass Timeout ]
 
 # Sheriff 2020-11-18
+crbug.com/1150518 [ Win ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ Pass Timeout ]
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
 crbug.com/1105957 [ Linux Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Pass Failure ]
