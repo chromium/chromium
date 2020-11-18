@@ -4570,6 +4570,17 @@
           'sync_integration_tests'
         ]
       },
+      'Linux Builder Robocrop': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+        'test_suites': {
+          'scripts': 'check_network_annotations_script',
+        }
+      },
       'Linux Ozone Tester (Headless)': {
         'mixins': [
           'linux-xenial',
@@ -4636,6 +4647,18 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_dbg_isolated_scripts',
+        },
+      },
+      'Linux Tests Robocrop': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-xenial',
+          'robocrop-swarming-pool',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+          'scripts': 'chromium_linux_scripts',
         },
       },
       # For documentation, see //services/network/README.md.
