@@ -83,6 +83,9 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // it can return this value when querying its parent accessible.
   void SetParentAccessible(gfx::NativeViewAccessible);
 
+  // Returns the parent accessible object to this host's native view.
+  gfx::NativeViewAccessible GetParentAccessible();
+
   // Fast resizing will move the native view and clip its visible region, this
   // will result in white areas and will not resize the content (so scrollbars
   // will be all wrong and content will flow offscreen). Only use this

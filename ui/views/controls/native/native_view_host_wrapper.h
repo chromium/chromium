@@ -115,6 +115,9 @@ class NativeViewHostWrapper {
   // this value when querying its parent accessible.
   virtual void SetParentAccessible(gfx::NativeViewAccessible) = 0;
 
+  // Returns the parent accessible object to the native view.
+  virtual gfx::NativeViewAccessible GetParentAccessible() = 0;
+
   // Creates a platform-specific instance of an object implementing this
   // interface.
   static NativeViewHostWrapper* CreateWrapper(NativeViewHost* host);

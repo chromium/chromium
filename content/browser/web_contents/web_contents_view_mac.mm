@@ -702,6 +702,11 @@ void WebContentsViewMac::ViewsHostableSetParentAccessible(
 }
 
 gfx::NativeViewAccessible
+WebContentsViewMac::ViewsHostableGetParentAccessible() {
+  return views_host_accessibility_element_;
+}
+
+gfx::NativeViewAccessible
 WebContentsViewMac::ViewsHostableGetAccessibilityElement() {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv)
