@@ -19,7 +19,16 @@ namespace certificateProvider {
     // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-384 hashing function.
     RSASSA_PKCS1_v1_5_SHA384,
     // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-512 hashing function.
-    RSASSA_PKCS1_v1_5_SHA512
+    RSASSA_PKCS1_v1_5_SHA512,
+    // RSASSA PSS signature algorithm with the SHA-256 hashing function, MGF1
+    // mask generation function and the salt of the same size as the hash.
+    RSASSA_PSS_SHA256,
+    // RSASSA PSS signature algorithm with the SHA-384 hashing function, MGF1
+    // mask generation function and the salt of the same size as the hash.
+    RSASSA_PSS_SHA384,
+    // RSASSA PSS signature algorithm with the SHA-512 hashing function, MGF1
+    // mask generation function and the salt of the same size as the hash.
+    RSASSA_PSS_SHA512
   };
 
   // Types of errors that the extension can report.

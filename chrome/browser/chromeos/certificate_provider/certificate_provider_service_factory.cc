@@ -127,6 +127,15 @@ std::unique_ptr<extensions::Event> BuildOnSignatureRequestedEvent(
     case SSL_SIGN_RSA_PKCS1_SHA512:
       request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA512;
       break;
+    case SSL_SIGN_RSA_PSS_RSAE_SHA256:
+      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA256;
+      break;
+    case SSL_SIGN_RSA_PSS_RSAE_SHA384:
+      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA384;
+      break;
+    case SSL_SIGN_RSA_PSS_RSAE_SHA512:
+      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA512;
+      break;
     default:
       LOG(ERROR) << "Unknown signature algorithm";
       return nullptr;

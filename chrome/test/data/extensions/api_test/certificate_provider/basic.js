@@ -134,7 +134,7 @@ function registerForSignatureRequests() {
       request) {
     assertTrue(Number.isInteger(request.signRequestId));
     assertEq(l1LeafCert.buffer, request.certificate);
-    // The sign request must refer to an algorithm that was declared to be
+    // The sign request must refer to the algorithm that was declared to be
     // supported.
     assertTrue(supportedAlgorithms.includes(request.algorithm));
     signatureCallback = (signature) => {
@@ -151,7 +151,8 @@ function registerForLegacySignatureRequests() {
   chrome.certificateProvider.onSignDigestRequested.addListener(function(
       request, callback) {
     assertEq(l1LeafCert.buffer, request.certificate);
-    // The sign request must refer to a hash that was declared to be supported.
+    // The sign request must refer to the hash that was declared to be
+    // supported.
     assertTrue(supportedLegacyHashes.includes(request.hash));
     signatureCallback = callback;
     signatureRequestAlgorithm = request.hash;

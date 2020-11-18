@@ -98,17 +98,23 @@ bool RsaSignRawData(uint16_t openssl_signature_algorithm,
   const EVP_MD* const digest_algorithm =
       SSL_get_signature_algorithm_digest(openssl_signature_algorithm);
   bssl::ScopedEVP_MD_CTX ctx;
-  if (!EVP_DigestSignInit(ctx.get(), /*EVP_PKEY_CTX** pctx=*/nullptr,
-                          digest_algorithm,
-                          /*ENGINE* e=*/nullptr, key->key())) {
+  EVP_PKEY_CTX* pkey_ctx = nullptr;
+  if (!EVP_DigestSignInit(ctx.get(), &pkey_ctx, digest_algorithm,
+                          /*ENGINE* e=*/nullptr, key->key()))
     return false;
+  if (SSL_is_signature_algorithm_rsa_pss(openssl_signature_algorithm)) {
+    // For RSA-PSS, configure the special padding and set the salt length to be
+    // equal to the hash size.
+    if (!EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING) ||
+        !EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, /*salt_len=*/-1)) {
+      return false;
+    }
   }
   size_t sig_len = 0;
   // Determine the signature length for the buffer.
   if (!EVP_DigestSign(ctx.get(), /*out_sig=*/nullptr, &sig_len, input.data(),
-                      input.size())) {
+                      input.size()))
     return false;
-  }
   signature->resize(sig_len);
   return EVP_DigestSign(ctx.get(), signature->data(), &sig_len, input.data(),
                         input.size()) != 0;
@@ -118,6 +124,8 @@ bool RsaSignPrehashed(uint16_t openssl_signature_algorithm,
                       const std::vector<uint8_t>& digest,
                       crypto::RSAPrivateKey* key,
                       std::vector<uint8_t>* signature) {
+  // RSA-PSS is not supported for prehashed data.
+  EXPECT_FALSE(SSL_is_signature_algorithm_rsa_pss(openssl_signature_algorithm));
   RSA* rsa_key = EVP_PKEY_get0_RSA(key->key());
   if (!rsa_key)
     return false;
@@ -337,8 +345,8 @@ class CertificateProviderApiMockedExtensionTest
   // Tests the api by navigating to a webpage that requests to perform a
   // signature operation with the available certificate.
   // This signs the request using the algorithm specified by
-  // `openssl_signature_algorithm`, hashes it if `is_raw_data` is true, and
-  // replies to the extension's page.
+  // `openssl_signature_algorithm`, with additionally hashing it if
+  // `is_raw_data` is true, and replies to the page.
   void TestNavigationToCertificateRequestingWebPage(
       const std::string& expected_request_signature_algorithm,
       uint16_t openssl_signature_algorithm,
@@ -674,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 }
 
 // Tests the RSA MD5/SHA-1 signature algorithm. Note that TLS 1.1 is used in
-// order to employ this algorithm.
+// order to make this algorithm employed.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
   ExecuteJavascript("supportedAlgorithms = ['RSASSA_PKCS1_v1_5_MD5_SHA1'];");
@@ -686,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
 }
 
 // Tests the RSA MD5/SHA-1 signature algorithm using the legacy version of the
-// API. Note that TLS 1.1 is used in order to employ this algorithm.
+// API. Note that TLS 1.1 is used in order to make this algorithm employed.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        LegacyRsaMd5Sha1) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
@@ -793,10 +801,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 }
 
 // Tests that the RSA SHA-512 signature algorithm is still used when there are
-// other, less strong, algorithms specified after it. Note: The test is written
-// in a way that it doesn't depend on whether the algorithm order matters or not
-// (currently, the API implementation respects it, but this might change in the
-// future).
+// other, less strong, algorithms specified after it.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        RsaSha512AndOthers) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
@@ -823,6 +828,42 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
   TestNavigationToCertificateRequestingWebPage("RSASSA_PKCS1_v1_5_MD5_SHA1",
                                                SSL_SIGN_RSA_PKCS1_MD5_SHA1,
+                                               /*is_raw_data=*/true);
+}
+
+// Tests the RSA-PSS SHA-256 signature algorithm.
+IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
+                       RsaPssSha256) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_3));
+  ExecuteJavascript("supportedAlgorithms = ['RSASSA_PSS_SHA256'];");
+  ExecuteJavascript("registerForSignatureRequests();");
+  ExecuteJavascriptAndWaitForCallback("setCertificates();");
+  TestNavigationToCertificateRequestingWebPage("RSASSA_PSS_SHA256",
+                                               SSL_SIGN_RSA_PSS_RSAE_SHA256,
+                                               /*is_raw_data=*/true);
+}
+
+// Tests the RSA-PSS SHA-384 signature algorithm.
+IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
+                       RsaPssSha384) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_3));
+  ExecuteJavascript("supportedAlgorithms = ['RSASSA_PSS_SHA384'];");
+  ExecuteJavascript("registerForSignatureRequests();");
+  ExecuteJavascriptAndWaitForCallback("setCertificates();");
+  TestNavigationToCertificateRequestingWebPage("RSASSA_PSS_SHA384",
+                                               SSL_SIGN_RSA_PSS_RSAE_SHA384,
+                                               /*is_raw_data=*/true);
+}
+
+// Tests the RSA-PSS SHA-512 signature algorithm.
+IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
+                       RsaPssSha512) {
+  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_3));
+  ExecuteJavascript("supportedAlgorithms = ['RSASSA_PSS_SHA512'];");
+  ExecuteJavascript("registerForSignatureRequests();");
+  ExecuteJavascriptAndWaitForCallback("setCertificates();");
+  TestNavigationToCertificateRequestingWebPage("RSASSA_PSS_SHA512",
+                                               SSL_SIGN_RSA_PSS_RSAE_SHA512,
                                                /*is_raw_data=*/true);
 }
 
