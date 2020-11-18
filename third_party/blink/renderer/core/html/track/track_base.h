@@ -70,10 +70,6 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
   Member<HTMLMediaElement> media_element_;
 };
 
-#define DEFINE_TRACK_TYPE_CASTS(thisType, predicate)                           \
-  DEFINE_TYPE_CASTS(thisType, TrackBase, track, track->GetType() == predicate, \
-                    track.GetType() == predicate)
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_TRACK_BASE_H_

@@ -50,15 +50,6 @@ class PresentationConnectionAvailableEvent final : public Event {
   Member<PresentationConnection> connection_;
 };
 
-DEFINE_TYPE_CASTS(
-    PresentationConnectionAvailableEvent,
-    Event,
-    event,
-    event->InterfaceName() ==
-        event_interface_names::kPresentationConnectionAvailableEvent,
-    event.InterfaceName() ==
-        event_interface_names::kPresentationConnectionAvailableEvent);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_AVAILABLE_EVENT_H_

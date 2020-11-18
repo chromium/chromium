@@ -2240,10 +2240,6 @@ inline void Document::ScheduleLayoutTreeUpdateIfNeeded() {
     ScheduleLayoutTreeUpdate();
 }
 
-#define DEFINE_DOCUMENT_TYPE_CASTS(thisType)                                \
-  DEFINE_TYPE_CASTS(thisType, Document, document, document->Is##thisType(), \
-                    document.Is##thisType())
-
 // This is needed to avoid ambiguous overloads with the Node and TreeScope
 // versions.
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(Document)
