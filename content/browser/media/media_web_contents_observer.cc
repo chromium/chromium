@@ -299,6 +299,7 @@ void MediaWebContentsObserver::OnMediaDestroyed(
   const MediaPlayerId player_id(render_frame_host, delegate_id);
   player_info_map_.erase(player_id);
   session_controllers_manager_.OnEnd(player_id);
+  web_contents_impl()->MediaDestroyed(player_id);
 }
 
 void MediaWebContentsObserver::OnMediaPaused(RenderFrameHost* render_frame_host,

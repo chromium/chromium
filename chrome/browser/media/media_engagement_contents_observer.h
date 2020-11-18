@@ -43,6 +43,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
                                bool muted) override;
   void MediaResized(const gfx::Size& size,
                     const content::MediaPlayerId& id) override;
+  void MediaDestroyed(const content::MediaPlayerId& id) override;
   void AudioContextPlaybackStarted(
       const AudioContextId& audio_context_id) override;
   void AudioContextPlaybackStopped(

@@ -215,6 +215,11 @@ class MediaEngagementContentsObserverTest
     task_runner_->FastForwardBy(kMaxWaitingTime);
   }
 
+  void SimulateMediaDestroyed(int id) {
+    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    contents_observer_->MediaDestroyed(player_id);
+  }
+
   void ExpectScores(const url::Origin origin,
                     double expected_score,
                     int expected_visits,
@@ -1341,6 +1346,20 @@ TEST_F(MediaEngagementContentsObserverTest, IgnoreAudioContextIfDisabled) {
 
   SimulateAudioContextPlaybackTimerFired();
   EXPECT_FALSE(WasSignificantAudioContextPlaybackRecorded());
+}
+
+TEST_F(MediaEngagementContentsObserverTest, PlayerStateIsCleanedUp) {
+  Navigate(GURL("https://www.example.com"));
+
+  EXPECT_EQ(0u, GetStoredPlayerStatesCount());
+  SimulateSignificantVideoPlayer(0);
+  EXPECT_EQ(1u, GetStoredPlayerStatesCount());
+  SimulateSignificantVideoPlayer(1);
+  EXPECT_EQ(2u, GetStoredPlayerStatesCount());
+  SimulateMediaDestroyed(0);
+  EXPECT_EQ(1u, GetStoredPlayerStatesCount());
+  SimulateMediaDestroyed(1);
+  EXPECT_EQ(0u, GetStoredPlayerStatesCount());
 }
 
 #endif  // !defined(OS_ANDROID)

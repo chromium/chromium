@@ -8425,6 +8425,15 @@ void WebContentsImpl::MediaResized(const gfx::Size& size,
       [&](WebContentsObserver* observer) { observer->MediaResized(size, id); });
 }
 
+void WebContentsImpl::MediaEffectivelyFullscreenChanged(bool is_fullscreen) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::MediaEffectivelyFullscreenChanged",
+                        "is_fullscreen", is_fullscreen);
+  observers_.ForEachObserver([&](WebContentsObserver* observer) {
+    observer->MediaEffectivelyFullscreenChanged(is_fullscreen);
+  });
+}
+
 void WebContentsImpl::MediaBufferUnderflow(const MediaPlayerId& id) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaBufferUnderflow");
   observers_.ForEachObserver([&](WebContentsObserver* observer) {
@@ -8438,13 +8447,14 @@ void WebContentsImpl::MediaPlayerSeek(const MediaPlayerId& id) {
       [&](WebContentsObserver* observer) { observer->MediaPlayerSeek(id); });
 }
 
-void WebContentsImpl::MediaEffectivelyFullscreenChanged(bool is_fullscreen) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::MediaEffectivelyFullscreenChanged",
-                        "is_fullscreen", is_fullscreen);
-  observers_.ForEachObserver([&](WebContentsObserver* observer) {
-    observer->MediaEffectivelyFullscreenChanged(is_fullscreen);
-  });
+void WebContentsImpl::MediaDestroyed(const MediaPlayerId& id) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaDestroyed");
+  observers_.ForEachObserver(
+      [&](WebContentsObserver* observer) { observer->MediaDestroyed(id); });
+}
+
+int WebContentsImpl::GetCurrentlyPlayingVideoCount() {
+  return currently_playing_video_count_;
 }
 
 base::Optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {
@@ -8453,10 +8463,6 @@ base::Optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {
   if (id && base::Contains(cached_video_sizes_, id.value()))
     return base::Optional<gfx::Size>(cached_video_sizes_[id.value()]);
   return base::nullopt;
-}
-
-int WebContentsImpl::GetCurrentlyPlayingVideoCount() {
-  return currently_playing_video_count_;
 }
 
 void WebContentsImpl::AudioContextPlaybackStarted(RenderFrameHost* host,

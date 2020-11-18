@@ -1053,6 +1053,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Called by MediaWebContentsObserver when player seek event occurs.
   void MediaPlayerSeek(const MediaPlayerId& id);
 
+  // Called by MediaWebContentsObserver when a media player is destroyed.
+  void MediaDestroyed(const MediaPlayerId& id);
+
   int GetCurrentlyPlayingVideoCount() override;
   base::Optional<gfx::Size> GetFullscreenVideoSize() override;
 
