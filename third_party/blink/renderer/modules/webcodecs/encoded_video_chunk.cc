@@ -17,9 +17,8 @@ EncodedVideoChunk* EncodedVideoChunk::Create(EncodedVideoChunkInit* init) {
   EncodedVideoMetadata metadata;
   metadata.timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
   metadata.key_frame = (init->type() == "key");
-  if (init->hasDurationNonNull()) {
-    metadata.duration =
-        base::TimeDelta::FromMicroseconds(init->durationNonNull());
+  if (init->hasDuration()) {
+    metadata.duration = base::TimeDelta::FromMicroseconds(init->duration());
   }
   DOMArrayPiece piece(init->data());
 

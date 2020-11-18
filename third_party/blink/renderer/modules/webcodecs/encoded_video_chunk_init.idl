@@ -5,8 +5,8 @@
 // https://github.com/WICG/web-codecs
 
 dictionary EncodedVideoChunkInit {
-  EncodedVideoChunkType type;
-  unsigned long long timestamp; // microseconds
-  unsigned long long? duration;  // microseconds
-  BufferSource data;
+  required EncodedVideoChunkType type;
+  required unsigned long long timestamp; // microseconds
+  unsigned long long duration;  // microseconds
+  required BufferSource data;
 };

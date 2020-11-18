@@ -5,6 +5,6 @@
 // https://github.com/WICG/web-codecs
 
 dictionary AudioFrameInit {
-  unsigned long long timestamp;  // microseconds
-  AudioBuffer buffer;
+  required unsigned long long timestamp;  // microseconds
+  required AudioBuffer buffer;
 };
