@@ -72,6 +72,9 @@ class RegionComboboxModel : public ui::ComboboxModel {
   // To be called when the data for the given country code was loaded.
   base::ObserverList<ui::ComboboxModelObserver> observers_;
 
+  // Weak pointer factory.
+  base::WeakPtrFactory<RegionComboboxModel> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(RegionComboboxModel);
 };
 
