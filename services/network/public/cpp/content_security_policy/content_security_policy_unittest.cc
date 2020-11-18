@@ -635,6 +635,42 @@ TEST(ContentSecurityPolicy, ParsePluginTypes) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
+  struct {
+    const char* input;
+    network::mojom::CSPRequireTrustedTypesFor expected;
+  } cases[]{
+      {
+          "require-trusted-types-for",
+          network::mojom::CSPRequireTrustedTypesFor::None,
+      },
+      {
+          "require-trusted-types-for 'script'",
+          network::mojom::CSPRequireTrustedTypesFor::Script,
+      },
+      {
+          "require-trusted-types-for 'wasm' 'script'",
+          network::mojom::CSPRequireTrustedTypesFor::Script,
+      },
+      {
+          "require-trusted-types-for 'script' 'wasm' 'script'",
+          network::mojom::CSPRequireTrustedTypesFor::Script,
+      },
+      {
+          "require-trusted-types-for 'wasm'",
+          network::mojom::CSPRequireTrustedTypesFor::None,
+      },
+  };
+
+  for (const auto& testCase : cases) {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP(testCase.input);
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
+    EXPECT_EQ(policies[0]->require_trusted_types_for, testCase.expected);
+  }
+}
+
 TEST(ContentSecurityPolicy, ParseReportEndpoint) {
   // report-uri directive.
   {

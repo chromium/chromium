@@ -272,7 +272,8 @@ WebContentSecurityPolicy ConvertToPublic(
           policy->upgrade_insecure_requests,
           std::move(policy->report_endpoints),
           policy->header->header_value,
-          policy->use_reporting_api};
+          policy->use_reporting_api,
+          policy->require_trusted_types_for};
 }
 
 }  // namespace

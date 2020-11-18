@@ -81,6 +81,7 @@ struct WebContentSecurityPolicy {
   WebVector<WebString> report_endpoints;
   WebString header;
   bool use_reporting_api;
+  network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
 };
 
 }  // namespace blink

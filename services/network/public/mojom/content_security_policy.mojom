@@ -127,6 +127,11 @@ enum CSPDirectiveName {
   WorkerSrc,
 };
 
+enum CSPRequireTrustedTypesFor {
+  None = 0,
+  Script = 1,
+};
+
 struct ContentSecurityPolicy {
   map<CSPDirectiveName, CSPSourceList> directives;
 
@@ -159,6 +164,11 @@ struct ContentSecurityPolicy {
   // plugin-types directive is specified with no types, hence no types are
   // allowed.
   array<string>? plugin_types;
+
+  // The parsed value of the directive 'require-trusted-types-for'.
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
+  CSPRequireTrustedTypesFor require_trusted_types_for =
+      CSPRequireTrustedTypesFor.None;
 
   // An array containing a set of errors occurred while parsing the CSP header.
   array<string> parsing_errors;

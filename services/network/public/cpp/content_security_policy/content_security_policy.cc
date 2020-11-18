@@ -728,6 +728,21 @@ std::vector<std::string> ParsePluginTypes(
   return out;
 }
 
+// Parse the 'required-trusted-types-for' directive.
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
+//
+// TODO(https://crbug.com/1149293): Add a warning when parsing invalid values.
+network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
+    base::StringPiece value) {
+  for (const auto expression : base::SplitStringPiece(
+           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (expression == "'script'")
+      return network::mojom::CSPRequireTrustedTypesFor::Script;
+  }
+  return network::mojom::CSPRequireTrustedTypesFor::None;
+}
+
 // Parses a reporting directive.
 // https://w3c.github.io/webappsec-csp/#directives-reporting
 // TODO(lfg): The report-to should be treated as a single token according to the
@@ -879,12 +894,16 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
             ParsePluginTypes(directive.second, out->parsing_errors);
         break;
 
+      case CSPDirectiveName::RequireTrustedTypesFor:
+        out->require_trusted_types_for =
+            ParseRequireTrustedTypesFor(directive.second);
+        break;
+
         // We check the following three directives so that we do not trigger a
         // warning because of an unrecognized directive. However, we skip
         // parsing them for now since we do not need these directives here (they
         // are parsed and enforced in the blink CSP parser).
       case CSPDirectiveName::BlockAllMixedContent:
-      case CSPDirectiveName::RequireTrustedTypesFor:
       case CSPDirectiveName::TrustedTypes:
         break;
 

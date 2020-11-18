@@ -49,6 +49,8 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
   for (const blink::WebString& endpoint : policy_in.report_endpoints)
     policy->report_endpoints.push_back(endpoint.Utf8());
 
+  policy->require_trusted_types_for = policy_in.require_trusted_types_for;
+
   return policy;
 }
 
