@@ -11,6 +11,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/i18n/string_compare.h"
 #include "base/metrics/user_metrics_action.h"
@@ -42,15 +43,43 @@ namespace bookmark_utils_ios {
 
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
-const BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,
-                                   int64_t id) {
+base::Optional<NodeSet> FindNodesByIds(bookmarks::BookmarkModel* model,
+                                       const std::set<int64_t>& ids) {
+  DCHECK(model);
+  NodeSet nodes;
   ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
   while (iterator.has_next()) {
-    const BookmarkNode* bookmark = iterator.Next();
-    if (bookmark->id() == id && bookmark->is_folder())
-      return bookmark;
+    const BookmarkNode* node = iterator.Next();
+    if (ids.find(node->id()) == ids.end())
+      continue;
+
+    nodes.insert(node);
+    if (ids.size() == nodes.size())
+      break;
   }
-  return NULL;
+
+  if (ids.size() != nodes.size())
+    return base::nullopt;
+
+  return nodes;
+}
+
+const BookmarkNode* FindNodeById(bookmarks::BookmarkModel* model, int64_t id) {
+  DCHECK(model);
+  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
+  while (iterator.has_next()) {
+    const BookmarkNode* node = iterator.Next();
+    if (node->id() == id)
+      return node;
+  }
+
+  return nullptr;
+}
+
+const BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,
+                                   int64_t id) {
+  const BookmarkNode* node = FindNodeById(model, id);
+  return node && node->is_folder() ? node : nullptr;
 }
 
 NSString* TitleForBookmarkNode(const BookmarkNode* node) {
