@@ -173,11 +173,6 @@ void LoginDisplayWebUI::ShowPasswordChangedDialog(bool show_password_error,
   NOTIMPLEMENTED();
 }
 
-void LoginDisplayWebUI::ShowSigninUI(const std::string& email) {
-  if (webui_handler_)
-    webui_handler_->ShowSigninUI(email);
-}
-
 void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
   if (webui_handler_)
     webui_handler_->ShowAllowlistCheckFailedError();

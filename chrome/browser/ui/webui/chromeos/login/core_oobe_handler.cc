@@ -179,10 +179,6 @@ void CoreOobeHandler::ShowEnableAdbSideloadingScreen() {
       EnableAdbSideloadingScreenView::kScreenId);
 }
 
-void CoreOobeHandler::ShowSignInUI(const std::string& email) {
-  CallJS("cr.ui.Oobe.showSigninUI", email);
-}
-
 void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
 }

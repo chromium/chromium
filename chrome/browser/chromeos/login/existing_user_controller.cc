@@ -826,7 +826,7 @@ void ExistingUserController::ContinuePerformLoginWithoutMigration(
 void ExistingUserController::RestartLogin(const UserContext& user_context) {
   is_login_in_progress_ = false;
   login_performer_.reset();
-  GetLoginDisplay()->ShowSigninUI(user_context.GetAccountId().GetUserEmail());
+  GetLoginDisplayHost()->ShowGaiaDialog(user_context.GetAccountId());
 }
 
 void ExistingUserController::OnSigninScreenReady() {
@@ -1264,7 +1264,7 @@ void ExistingUserController::ForceOnlineLoginForAccountId(
   // Start online sign-in UI for the user.
   is_login_in_progress_ = false;
   login_performer_.reset();
-  GetLoginDisplay()->ShowSigninUI(account_id.GetUserEmail());
+  GetLoginDisplayHost()->ShowGaiaDialog(account_id);
 }
 
 void ExistingUserController::AllowlistCheckFailed(const std::string& email) {

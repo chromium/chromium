@@ -201,10 +201,6 @@ void LoginDisplayMojo::ShowPasswordChangedDialog(bool show_password_error,
   host_->ShowPasswordChangedDialog(show_password_error, account_id);
 }
 
-void LoginDisplayMojo::ShowSigninUI(const std::string& email) {
-  host_->ShowSigninUI(email);
-}
-
 void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
   host_->ShowAllowlistCheckFailedError();
 }

@@ -65,9 +65,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // signin but allowlist check fails.
   void ShowAllowlistCheckFailedError();
 
-  // Shows signin UI with specified email.
-  void ShowSigninUI(const std::string& email);
-
   UserSelectionScreen* user_selection_screen() {
     return user_selection_screen_.get();
   }

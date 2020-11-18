@@ -54,7 +54,6 @@ class CoreOobeView {
                                const std::string& error_text,
                                const std::string& help_link_text,
                                HelpAppLauncher::HelpTopic help_topic_id) = 0;
-  virtual void ShowSignInUI(const std::string& email) = 0;
   virtual void ResetSignInUI(bool force_online) = 0;
   virtual void ClearUserPodPassword() = 0;
   virtual void RefocusCurrentPod() = 0;
@@ -127,7 +126,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
                        const std::string& error_text,
                        const std::string& help_link_text,
                        HelpAppLauncher::HelpTopic help_topic_id) override;
-  void ShowSignInUI(const std::string& email) override;
   void ResetSignInUI(bool force_online) override;
   void ClearUserPodPassword() override;
   void RefocusCurrentPod() override;

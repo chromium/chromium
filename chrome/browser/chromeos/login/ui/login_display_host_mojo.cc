@@ -142,12 +142,6 @@ void LoginDisplayHostMojo::ShowAllowlistCheckFailedError() {
   ShowDialog();
 }
 
-void LoginDisplayHostMojo::ShowSigninUI(const std::string& email) {
-  DCHECK(GetOobeUI());
-  GetOobeUI()->signin_screen_handler()->ShowSigninUI(email);
-  ShowDialog();
-}
-
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
   if (dialog_->IsVisible())
     GetOobeUI()->GetErrorScreen()->FixCaptivePortal();

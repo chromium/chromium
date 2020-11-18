@@ -91,9 +91,6 @@ class LoginDisplay {
   virtual void ShowPasswordChangedDialog(bool show_password_error,
                                          const AccountId& account_id) = 0;
 
-  // Shows signin UI with specified email.
-  virtual void ShowSigninUI(const std::string& email) = 0;
-
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
   virtual void ShowAllowlistCheckFailedError() = 0;

@@ -878,10 +878,6 @@ void SigninScreenHandler::ShowError(int login_attempts,
                                    help_topic_id);
 }
 
-void SigninScreenHandler::ShowSigninUI(const std::string& email) {
-  core_oobe_view_->ShowSignInUI(email);
-}
-
 void SigninScreenHandler::ShowAllowlistCheckFailedError() {
   gaia_screen_handler_->ShowAllowlistCheckFailedError();
 }
