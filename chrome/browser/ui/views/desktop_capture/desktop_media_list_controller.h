@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
@@ -119,7 +119,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   DesktopMediaPickerDialogView* dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
   ListView* view_ = nullptr;
-  ScopedObserver<views::View, views::ViewObserver> view_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      view_observations_{this};
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };
