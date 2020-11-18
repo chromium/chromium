@@ -118,7 +118,7 @@ void ChromeCaptureModeDelegate::OpenFeedbackDialog() {
 }
 
 mojo::Remote<recording::mojom::RecordingService>
-ChromeCaptureModeDelegate::LaunchRecordingService() const {
+ChromeCaptureModeDelegate::LaunchRecordingService() {
   return content::ServiceProcessHost::Launch<
       recording::mojom::RecordingService>(
       content::ServiceProcessHost::Options()

@@ -40,16 +40,26 @@ class RecordingService : public mojom::RecordingService,
   ~RecordingService() override;
 
   // mojom::RecordingService:
-  void SetClient(
-      mojo::PendingRemote<mojom::RecordingServiceClient> client) override;
-  void RecordFullscreen(const viz::FrameSinkId& frame_sink_id,
-                        const gfx::Size& video_size) override;
-  void RecordWindow(const viz::FrameSinkId& frame_sink_id,
-                    const gfx::Size& initial_video_size,
-                    const gfx::Size& max_video_size) override;
-  void RecordRegion(const viz::FrameSinkId& frame_sink_id,
-                    const gfx::Size& full_capture_size,
-                    const gfx::Rect& crop_region) override;
+  void RecordFullscreen(
+      mojo::PendingRemote<mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& video_size) override;
+  void RecordWindow(
+      mojo::PendingRemote<mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& initial_video_size,
+      const gfx::Size& max_video_size) override;
+  void RecordRegion(
+      mojo::PendingRemote<mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& full_capture_size,
+      const gfx::Rect& crop_region) override;
   void StopRecording() override;
 
   // viz::mojom::FrameSinkVideoConsumer:
@@ -72,16 +82,21 @@ class RecordingService : public mojom::RecordingService,
   void OnCaptureMuted(bool is_muted) override;
 
  private:
-  void StartNewRecording(std::unique_ptr<VideoCaptureParams> capture_params);
+  void StartNewRecording(
+      mojo::PendingRemote<mojom::RecordingServiceClient> client,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      std::unique_ptr<VideoCaptureParams> capture_params);
 
   // Called on the main thread on |success| from OnStopped() when all video
   // frames have been sent, or from OnEncodingFailure() with |success| set to
   // false.
   void TerminateRecording(bool success);
 
-  // Creates and binds a video capturer and start capturing video according to
-  // the current |current_video_capture_params_|.
-  void ConnectAndStartVideoCapturer();
+  // Binds the given |video_capturer| to |video_capturer_remote_| and starts
+  // video according to the current |current_video_capture_params_|.
+  void ConnectAndStartVideoCapturer(
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer);
 
   // If the video capturer gets disconnected (e.g. Viz crashes) during an
   // ongoing recording, this attempts to reconnect to a new capturer and resumes

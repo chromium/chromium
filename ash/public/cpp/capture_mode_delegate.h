@@ -80,7 +80,7 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Launches the Recording Service into a separate utility process.
   virtual mojo::Remote<recording::mojom::RecordingService>
-  LaunchRecordingService() const = 0;
+  LaunchRecordingService() = 0;
 
   // Binds the given audio StreamFactory |receiver| to the audio service.
   virtual void BindAudioStreamFactory(
