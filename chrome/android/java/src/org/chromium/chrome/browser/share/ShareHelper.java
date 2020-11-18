@@ -130,7 +130,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
             boolean isIncognito, String srcUrl, String titleOrAltText, boolean isShoppingIntent,
             boolean requiresConfirmation) {
-        Intent shareIntent = LensUtils.getShareWithGoogleLensIntent(imageUri, isIncognito,
+        Intent shareIntent = LensUtils.getShareWithGoogleLensIntent(
+                ContextUtils.getApplicationContext(), imageUri, isIncognito,
                 SystemClock.elapsedRealtimeNanos(), srcUrl, titleOrAltText,
                 isShoppingIntent ? LensUtils.IntentType.SHOPPING : LensUtils.IntentType.DEFAULT,
                 requiresConfirmation);
