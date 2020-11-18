@@ -8,7 +8,7 @@
 
 #include "ash/accelerometer/accelerometer_file_reader.h"
 #include "ash/accelerometer/accelerometer_provider_mojo.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -24,7 +24,8 @@ constexpr char kIioServiceGroupName[] = "iioservice";
 
 // static
 AccelerometerReader* AccelerometerReader::GetInstance() {
-  return base::Singleton<AccelerometerReader>::get();
+  static base::NoDestructor<AccelerometerReader> accelerometer_reader;
+  return accelerometer_reader.get();
 }
 
 void AccelerometerReader::Initialize() {

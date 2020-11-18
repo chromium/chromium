@@ -12,7 +12,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 
 class SequencedTaskRunner;
 }  // namespace base
@@ -69,7 +69,7 @@ class ASH_EXPORT AccelerometerReader {
   virtual ~AccelerometerReader();
 
  private:
-  friend struct base::DefaultSingletonTraits<AccelerometerReader>;
+  friend class base::NoDestructor<AccelerometerReader>;
 
   // Worker that will run on the base::SequencedTaskRunner provided to
   // Initialize. It will determine accelerometer configuration, read the data,
