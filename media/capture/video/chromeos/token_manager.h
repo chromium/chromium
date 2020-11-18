@@ -18,6 +18,8 @@ class TokenManager {
 
   bool GenerateServerToken();
 
+  bool GenerateTestClientToken();
+
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
 

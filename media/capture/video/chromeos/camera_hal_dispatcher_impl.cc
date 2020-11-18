@@ -68,6 +68,14 @@ bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
   return true;
 }
 
+bool HasCrosCameraTest() {
+  static constexpr char kCrosCameraTestPath[] =
+      "/usr/local/bin/cros_camera_test";
+
+  base::FilePath path(kCrosCameraTestPath);
+  return base::PathExists(path);
+}
+
 class MojoCameraClientObserver : public CameraClientObserver {
  public:
   explicit MojoCameraClientObserver(
@@ -132,6 +140,10 @@ bool CameraHalDispatcherImpl::Start(
   // tokens.
   if (!token_manager_.GenerateServerToken()) {
     LOG(ERROR) << "Failed to generate authentication token for server";
+    return false;
+  }
+  if (HasCrosCameraTest() && !token_manager_.GenerateTestClientToken()) {
+    LOG(ERROR) << "Failed to generate token for test client";
     return false;
   }
   blocking_io_task_runner_->PostTask(

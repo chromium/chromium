@@ -43,6 +43,24 @@ bool EnsureTokenDirectoryExists(const base::FilePath& token_path) {
   return true;
 }
 
+bool WriteTokenToFile(const base::FilePath& token_path,
+                      const base::UnguessableToken& token) {
+  if (!EnsureTokenDirectoryExists(token_path)) {
+    LOG(ERROR) << "Failed to ensure token directory exists";
+    return false;
+  }
+  base::File token_file(
+      token_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  if (!token_file.IsValid()) {
+    LOG(ERROR) << "Failed to create token file at "
+               << token_path.AsUTF8Unsafe();
+    return false;
+  }
+  std::string token_string = token.ToString();
+  token_file.WriteAtCurrentPos(token_string.c_str(), token_string.length());
+  return true;
+}
+
 }  // namespace
 
 namespace media {
@@ -52,22 +70,18 @@ TokenManager::~TokenManager() = default;
 
 bool TokenManager::GenerateServerToken() {
   static constexpr char kServerTokenPath[] = "/run/camera_tokens/server/token";
-  base::FilePath token_path(kServerTokenPath);
 
-  if (!EnsureTokenDirectoryExists(token_path)) {
-    LOG(ERROR) << "Failed to ensure server token directory exists";
-    return false;
-  }
-  base::File token_file(
-      token_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (!token_file.IsValid()) {
-    LOG(ERROR) << "Failed to create server token file";
-    return false;
-  }
   server_token_ = base::UnguessableToken::Create();
-  std::string token_string = server_token_.ToString();
-  token_file.WriteAtCurrentPos(token_string.c_str(), token_string.length());
-  return true;
+  return WriteTokenToFile(base::FilePath(kServerTokenPath), server_token_);
+}
+
+bool TokenManager::GenerateTestClientToken() {
+  static constexpr char kTestClientTokenPath[] =
+      "/run/camera_tokens/testing/token";
+
+  return WriteTokenToFile(
+      base::FilePath(kTestClientTokenPath),
+      GetTokenForTrustedClient(cros::mojom::CameraClientType::TESTING));
 }
 
 base::UnguessableToken TokenManager::GetTokenForTrustedClient(
