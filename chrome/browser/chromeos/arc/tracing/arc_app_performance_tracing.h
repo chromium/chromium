@@ -14,8 +14,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/mojom/metrics.mojom.h"
+#include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -38,7 +40,8 @@ class ArcBridgeService;
 class ArcAppPerformanceTracing : public KeyedService,
                                  public wm::ActivationChangeObserver,
                                  public aura::WindowObserver,
-                                 public ArcAppListPrefs::Observer {
+                                 public ArcAppListPrefs::Observer,
+                                 public exo::SurfaceObserver {
  public:
   using ResultCallback = base::OnceCallback<void(bool success,
                                                  double fps,
@@ -85,6 +88,12 @@ class ArcAppPerformanceTracing : public KeyedService,
                      const std::string& activity,
                      const std::string& intent) override;
   void OnTaskDestroyed(int32_t task_id) override;
+
+  // exo::SurfaceObserver:
+  void OnCommit(exo::Surface* surface) override;
+  void OnSurfaceDestroying(exo::Surface* surface) override;
+
+  void HandleActiveAppRendered(base::Time timestamp);
 
   // Returns true in case |category| was already reported in the current user's
   // session.
@@ -147,6 +156,9 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Maps active tasks to app id and package name.
   std::map<int, std::pair<std::string, std::string>> task_id_to_app_id_;
+
+  // Set of tasks that have already rendered first frame.
+  std::set<int> rendered_tasks_;
 
   // Maps tasks to most recent GFX jankiness results. Used for delta
   // calculation.

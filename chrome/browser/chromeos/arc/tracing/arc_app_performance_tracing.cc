@@ -12,12 +12,16 @@
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_uma_session.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
 
@@ -223,6 +227,28 @@ void ArcAppPerformanceTracing::StartJankinessTracing() {
                      base::Unretained(this), false /* stopped_early */));
 }
 
+void ArcAppPerformanceTracing::HandleActiveAppRendered(base::Time timestamp) {
+  const int32_t task_id = arc::GetWindowTaskId(arc_active_window_);
+  DCHECK_GT(task_id, 0);
+
+  const std::string& app_id = task_id_to_app_id_[task_id].first;
+  const base::Time launch_request_time =
+      ArcAppListPrefs::Get(context_)->PollLaunchRequestTime(app_id);
+  if (!launch_request_time.is_null()) {
+    base::UmaHistogramTimes(
+        "Arc.Runtime.Performance.Generic.FirstFrameRendered",
+        timestamp - launch_request_time);
+  }
+}
+
+void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
+  HandleActiveAppRendered(base::Time::Now());
+  // Only need first frame. We don't need to observe anymore.
+  surface->RemoveSurfaceObserver(this);
+}
+
+void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {}
+
 void ArcAppPerformanceTracing::CancelJankinessTracing() {
   jankiness_timer_.Stop();
 }
@@ -371,14 +397,22 @@ void ArcAppPerformanceTracing::MaybeStopTracing() {
 void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window) {
   DCHECK(window);
   DCHECK(!arc_active_window_);
-
   arc_active_window_ = window;
   arc_active_window_->AddObserver(this);
+
+  exo::Surface* const surface = exo::GetShellMainSurface(window);
+  DCHECK(surface);
+  surface->AddSurfaceObserver(this);
 }
 
 void ArcAppPerformanceTracing::DetachActiveWindow() {
   if (!arc_active_window_)
     return;
+
+  exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+  // Surface might be destroyed.
+  if (surface)
+    surface->RemoveSurfaceObserver(this);
 
   arc_active_window_->RemoveObserver(this);
   arc_active_window_ = nullptr;

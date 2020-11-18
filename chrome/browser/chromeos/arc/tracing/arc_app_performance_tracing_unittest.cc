@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 
@@ -29,6 +31,8 @@ constexpr char kNonFocusAppActivity[] = "nonfocus.app.package.Activity";
 // For 20 frames.
 constexpr base::TimeDelta kTestPeriod =
     base::TimeDelta::FromSeconds(1) / (60 / 20);
+
+constexpr int kMillisecondsToFirstFrame = 500;
 
 // Creates name of histogram with required statistics.
 std::string GetFocusStatisticName(const std::string& name) {
@@ -201,6 +205,52 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   EXPECT_EQ(45L, ReadFocusStatistics("FPS"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality"));
+  arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
+  const std::string app_id =
+      ArcAppListPrefs::GetAppId(kFocusAppPackage, kFocusAppActivity);
+  views::Widget* const arc_widget =
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1");
+  DCHECK(arc_widget && arc_widget->GetNativeWindow());
+
+  tracing_helper().GetTracing()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
+  tracing_helper().GetTracing()->OnTaskCreated(
+      1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+      std::string() /* intent */);
+
+  // No report before launch
+  base::Time timestamp = base::Time::Now();
+  tracing_helper().GetTracing()->HandleActiveAppRendered(timestamp);
+  base::HistogramBase* histogram = base::StatisticsRecorder::FindHistogram(
+      "Arc.Runtime.Performance.Generic.FirstFrameRendered");
+  DCHECK(!histogram);
+
+  // Succesful report after launch
+  ArcAppListPrefs::Get(profile())->SetLaunchRequestTimeForTesting(app_id,
+                                                                  timestamp);
+  timestamp += base::TimeDelta::FromMilliseconds(kMillisecondsToFirstFrame);
+  tracing_helper().GetTracing()->HandleActiveAppRendered(timestamp);
+  histogram = base::StatisticsRecorder::FindHistogram(
+      "Arc.Runtime.Performance.Generic.FirstFrameRendered");
+  DCHECK(histogram);
+
+  std::unique_ptr<base::HistogramSamples> samples = histogram->SnapshotDelta();
+  DCHECK(samples.get());
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(kMillisecondsToFirstFrame, samples->sum());
+
+  // No double report
+  timestamp += base::TimeDelta::FromMilliseconds(kMillisecondsToFirstFrame);
+  tracing_helper().GetTracing()->HandleActiveAppRendered(timestamp);
+
+  samples = histogram->SnapshotDelta();
+  DCHECK(samples.get());
+  EXPECT_EQ(0, samples->TotalCount());
+
   arc_widget->Close();
 }
 

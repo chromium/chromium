@@ -299,8 +299,14 @@ class ArcAppListPrefs : public KeyedService,
       const std::string& app_id,
       const ArcAppIconDescriptor& descriptor) const;
 
+  // Returns and resets launch request time for the given app id.
+  // Returns base::Time() value if launch request time wasn't recorded.
+  base::Time PollLaunchRequestTime(const std::string& app_id);
+
   // Sets last launched time for the requested app.
   void SetLastLaunchTime(const std::string& app_id);
+  void SetLaunchRequestTimeForTesting(const std::string& app_id,
+                                      base::Time timestamp);
 
   // Calls RequestIcon if no request is recorded.
   void MaybeRequestIcon(const std::string& app_id,
@@ -437,6 +443,9 @@ class ArcAppListPrefs : public KeyedService,
 
   void SetDefaultAppsFilterLevel();
   void RegisterDefaultApps();
+
+  // Sets last launched time for the requested app.
+  void SetLastLaunchTimeInternal(const std::string& app_id);
 
   // Returns list of packages from prefs. If |installed| is set to true then
   // returns currently installed packages. If not, returns list of packages that
@@ -606,6 +615,11 @@ class ArcAppListPrefs : public KeyedService,
 
   // TODO (b/70566216): Remove this once fixed.
   base::OnceClosure app_list_refreshed_callback_;
+
+  // Records launch request time per app id.
+  // Stored runtime and for the current active session only.
+  // Not to be confused with `last_launch_time_`.
+  std::map<const std::string, base::Time> launch_request_times_;
 
   base::WeakPtrFactory<ArcAppListPrefs> weak_ptr_factory_{this};
 };
