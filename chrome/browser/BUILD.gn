@@ -1970,6 +1970,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/video_tutorials",
+    "//chrome/browser/web_share_target",
     "//chrome/common:channel_info",
     "//chrome/common:version_header",
     "//chrome/common/net",

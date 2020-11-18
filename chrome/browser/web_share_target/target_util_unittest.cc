@@ -1,12 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_post_share_target_navigator.h"
+#include "chrome/browser/web_share_target/target_util.h"
 
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace web_share_target {
 
 std::string convertDataElementToString(const network::DataElement& element) {
   if (element.type() == network::mojom::DataElementType::kBytes) {
@@ -38,7 +40,7 @@ void CheckDataElements(
 }
 
 // Test that multipart/form-data body is empty if inputs are of different sizes.
-TEST(WebApkPostShareTargetNavigatorTest, InvalidMultipartBody) {
+TEST(TargetUtilTest, InvalidMultipartBody) {
   std::vector<std::string> names = {"name"};
   std::vector<std::string> values;
   std::vector<bool> is_value_file_uris;
@@ -46,14 +48,14 @@ TEST(WebApkPostShareTargetNavigatorTest, InvalidMultipartBody) {
   std::vector<std::string> types;
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
-      webapk::ComputeMultipartBody(names, values, is_value_file_uris, filenames,
-                                   types, boundary);
+      ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
+                           boundary);
   EXPECT_EQ(nullptr, multipart_body.get());
 }
 
 // Test that multipart/form-data body is correctly computed for accepted
 // file inputs.
-TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForFile) {
+TEST(TargetUtilTest, ValidMultipartBodyForFile) {
   std::vector<std::string> names = {"share-file\"", "share-file\""};
   std::vector<std::string> values = {"mock-file-path", "mock-shared-text"};
   std::vector<bool> is_value_file_uris = {true, false};
@@ -62,8 +64,8 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForFile) {
   std::vector<std::string> types = {"type", "type"};
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
-      webapk::ComputeMultipartBody(names, values, is_value_file_uris, filenames,
-                                   types, boundary);
+      ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
+                           boundary);
 
   std::vector<network::mojom::DataElementType> expected_types = {
       network::mojom::DataElementType::kBytes,
@@ -84,7 +86,7 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForFile) {
 }
 
 // Test that multipart/form-data body is correctly computed for non-file inputs.
-TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForText) {
+TEST(TargetUtilTest, ValidMultipartBodyForText) {
   std::vector<std::string> names = {"name\""};
   std::vector<std::string> values = {"value"};
   std::vector<bool> is_value_file_uris = {false};
@@ -92,8 +94,8 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForText) {
   std::vector<std::string> types = {"type"};
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
-      webapk::ComputeMultipartBody(names, values, is_value_file_uris, filenames,
-                                   types, boundary);
+      ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
+                           boundary);
 
   std::vector<network::mojom::DataElementType> expected_types = {
       network::mojom::DataElementType::kBytes,
@@ -108,7 +110,7 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForText) {
 
 // Test that multipart/form-data body is correctly computed for a mixture
 // of file and non-file inputs.
-TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForTextAndFile) {
+TEST(TargetUtilTest, ValidMultipartBodyForTextAndFile) {
   std::vector<std::string> names = {"name1\"", "name2", "name3",
                                     "name4",   "name5", "name6"};
   std::vector<std::string> values = {"value1", "file_uri2", "file_uri3",
@@ -121,9 +123,8 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForTextAndFile) {
                                     "type4", "type5", "type6"};
   std::string boundary = "boundary";
 
-  scoped_refptr<network::ResourceRequestBody> body =
-      webapk::ComputeMultipartBody(names, values, is_value_file_uris, filenames,
-                                   types, boundary);
+  scoped_refptr<network::ResourceRequestBody> body = ComputeMultipartBody(
+      names, values, is_value_file_uris, filenames, types, boundary);
 
   std::vector<network::mojom::DataElementType> expected_types = {
       // item 1
@@ -173,16 +174,15 @@ TEST(WebApkPostShareTargetNavigatorTest, ValidMultipartBodyForTextAndFile) {
 }
 
 // Test that multipart/form-data body is properly percent-escaped.
-TEST(WebApkPostShareTargetNavigatorTest, MultipartBodyWithPercentEncoding) {
+TEST(TargetUtilTest, MultipartBodyWithPercentEncoding) {
   std::vector<std::string> names = {"name"};
   std::vector<std::string> values = {"value"};
   std::vector<bool> is_value_file_uris = {false};
   std::vector<std::string> filenames = {"filename"};
   std::vector<std::string> types = {"type"};
   std::string boundary = "boundary";
-  scoped_refptr<network::ResourceRequestBody> body =
-      webapk::ComputeMultipartBody(names, values, is_value_file_uris, filenames,
-                                   types, boundary);
+  scoped_refptr<network::ResourceRequestBody> body = ComputeMultipartBody(
+      names, values, is_value_file_uris, filenames, types, boundary);
   EXPECT_NE(nullptr, body->elements());
 
   std::vector<network::mojom::DataElementType> expected_types = {
@@ -199,39 +199,41 @@ TEST(WebApkPostShareTargetNavigatorTest, MultipartBodyWithPercentEncoding) {
 
 // Test that application/x-www-form-urlencoded body is empty if inputs are of
 // different sizes.
-TEST(WebApkPostShareTargetNavigatorTest, InvalidApplicationBody) {
+TEST(TargetUtilTest, InvalidApplicationBody) {
   std::vector<std::string> names = {"name1", "name2"};
   std::vector<std::string> values = {"value1"};
-  std::string application_body = webapk::ComputeUrlEncodedBody(names, values);
+  std::string application_body = ComputeUrlEncodedBody(names, values);
   EXPECT_EQ("", application_body);
 }
 
 // Test that application/x-www-form-urlencoded body is correctly computed for
 // accepted inputs.
-TEST(WebApkPostShareTargetNavigatorTest, ValidApplicationBody) {
+TEST(TargetUtilTest, ValidApplicationBody) {
   std::vector<std::string> names = {"name1", "name2"};
   std::vector<std::string> values = {"value1", "value2"};
-  std::string application_body = webapk::ComputeUrlEncodedBody(names, values);
+  std::string application_body = ComputeUrlEncodedBody(names, values);
   EXPECT_EQ("name1=value1&name2=value2", application_body);
 }
 
 // Test that PercentEscapeString correctly escapes quotes to %22.
-TEST(WebApkPostShareTargetNavigatorTest, NeedsPercentEscapeQuote) {
-  EXPECT_EQ("hello%22", webapk::PercentEscapeString("hello\""));
+TEST(TargetUtilTest, NeedsPercentEscapeQuote) {
+  EXPECT_EQ("hello%22", PercentEscapeString("hello\""));
 }
 
 // Test that PercentEscapeString correctly escapes newline to %0A.
-TEST(WebApkPostShareTargetNavigatorTest, NeedsPercentEscape0A) {
-  EXPECT_EQ("%0A", webapk::PercentEscapeString("\n"));
+TEST(TargetUtilTest, NeedsPercentEscape0A) {
+  EXPECT_EQ("%0A", PercentEscapeString("\n"));
 }
 
 // Test that PercentEscapeString correctly escapes \r to %0D.
-TEST(WebApkPostShareTargetNavigatorTest, NeedsPercentEscape0D) {
-  EXPECT_EQ("%0D", webapk::PercentEscapeString("\r"));
+TEST(TargetUtilTest, NeedsPercentEscape0D) {
+  EXPECT_EQ("%0D", PercentEscapeString("\r"));
 }
 
 // Test that Percent Escape is not performed on strings that don't need to be
 // escaped.
-TEST(WebApkPostShareTargetNavigatorTest, NoPercentEscape) {
-  EXPECT_EQ("helloworld", webapk::PercentEscapeString("helloworld"));
+TEST(TargetUtilTest, NoPercentEscape) {
+  EXPECT_EQ("helloworld", PercentEscapeString("helloworld"));
 }
+
+}  // namespace web_share_target
