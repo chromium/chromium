@@ -535,6 +535,10 @@ float WebFrameWidgetBase::DIPsToBlinkSpace(float scalar) {
   return widget_base_->DIPsToBlinkSpace(scalar);
 }
 
+gfx::Size WebFrameWidgetBase::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
+  return widget_base_->DIPsToCeiledBlinkSpace(size);
+}
+
 void WebFrameWidgetBase::SetActive(bool active) {
   View()->SetIsActive(active);
 }
@@ -1094,10 +1098,12 @@ void WebFrameWidgetBase::UpdateVisualProperties(
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
   SetDisplayMode(visual_properties.display_mode);
 
-  SetAutoResizeMode(visual_properties.auto_resize_enabled,
-                    visual_properties.min_size_for_auto_resize,
-                    visual_properties.max_size_for_auto_resize,
-                    visual_properties.screen_info.device_scale_factor);
+  if (ForMainFrame()) {
+    SetAutoResizeMode(visual_properties.auto_resize_enabled,
+                      visual_properties.min_size_for_auto_resize,
+                      visual_properties.max_size_for_auto_resize,
+                      visual_properties.screen_info.device_scale_factor);
+  }
 
   bool capture_sequence_number_changed =
       visual_properties.capture_sequence_number !=
@@ -1282,6 +1288,10 @@ void WebFrameWidgetBase::SynchronouslyCompositeForTesting(
   widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false);
 }
 
+void WebFrameWidgetBase::UseSynchronousResizeModeForTesting(bool enable) {
+  main_data().synchronous_resize_mode_for_testing = enable;
+}
+
 // TODO(665924): Remove direct dispatches of mouse events from
 // PointerLockController, instead passing them through EventHandler.
 void WebFrameWidgetBase::PointerLockMouseEvent(
@@ -1414,6 +1424,44 @@ void WebFrameWidgetBase::SetZoomLevel(double zoom_level) {
         remote_frame->Client()->ZoomLevelChanged(zoom_level);
       },
       zoom_level));
+}
+
+void WebFrameWidgetBase::SetAutoResizeMode(bool auto_resize,
+                                           const gfx::Size& min_window_size,
+                                           const gfx::Size& max_window_size,
+                                           float device_scale_factor) {
+  // Auto resize only applies to main frames.
+  DCHECK(ForMainFrame());
+
+  if (auto_resize) {
+    if (!Platform::Current()->IsUseZoomForDSFEnabled())
+      device_scale_factor = 1.f;
+    View()->EnableAutoResizeMode(
+        gfx::ScaleToCeiledSize(min_window_size, device_scale_factor),
+        gfx::ScaleToCeiledSize(max_window_size, device_scale_factor));
+  } else if (AutoResizeMode()) {
+    View()->DisableAutoResizeMode();
+  }
+}
+
+void WebFrameWidgetBase::DidAutoResize(const gfx::Size& size) {
+  DCHECK(ForMainFrame());
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size);
+  size_ = size;
+
+  if (main_data().synchronous_resize_mode_for_testing) {
+    gfx::Rect new_pos(widget_base_->WindowRect());
+    new_pos.set_size(size_in_dips);
+    SetScreenRects(new_pos, new_pos);
+  }
+
+  // TODO(ccameron): Note that this destroys any information differentiating
+  // |size| from the compositor's viewport size.
+  gfx::Rect size_with_dsf = gfx::Rect(gfx::ScaleToCeiledSize(
+      gfx::Rect(size_in_dips).size(),
+      widget_base_->GetScreenInfo().device_scale_factor));
+  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
+  widget_base_->UpdateCompositorViewportRect(size_with_dsf);
 }
 
 LocalFrame* WebFrameWidgetBase::FocusedLocalFrameInWidget() const {
@@ -3246,6 +3294,10 @@ HitTestResult WebFrameWidgetBase::HitTestResultForRootFramePos(
           location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   result.SetToShadowHostIfInRestrictedShadowRoot();
   return result;
+}
+
+bool WebFrameWidgetBase::SynchronousResizeModeForTestingEnabled() {
+  return main_data().synchronous_resize_mode_for_testing;
 }
 
 KURL WebFrameWidgetBase::GetURLForDebugTrace() {

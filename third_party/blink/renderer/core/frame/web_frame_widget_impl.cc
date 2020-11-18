@@ -486,13 +486,6 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   widget_base_->LayerTreeHost()->SetRootLayer(layer);
 }
 
-void WebFrameWidgetImpl::SetAutoResizeMode(bool auto_resize,
-                                           const gfx::Size& min_size_before_dsf,
-                                           const gfx::Size& max_size_before_dsf,
-                                           float device_scale_factor) {
-  // Auto resize mode only exists on the top level widget.
-}
-
 void WebFrameWidgetImpl::DidCreateLocalRootView() {
   // If this WebWidget still hasn't received its size from the embedder, block
   // the parser. This is necessary, because the parser can cause layout to

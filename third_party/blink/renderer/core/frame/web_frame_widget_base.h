@@ -501,10 +501,13 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Enable or disable auto-resize. This is part of
   // UpdateVisualProperties though tests may call to it more directly.
-  virtual void SetAutoResizeMode(bool auto_resize,
-                                 const gfx::Size& min_size_before_dsf,
-                                 const gfx::Size& max_size_before_dsf,
-                                 float device_scale_factor) = 0;
+  void SetAutoResizeMode(bool auto_resize,
+                         const gfx::Size& min_size_before_dsf,
+                         const gfx::Size& max_size_before_dsf,
+                         float device_scale_factor);
+
+  // Called when the View has auto resized.
+  void DidAutoResize(const gfx::Size& size);
 
   // This method returns the focused frame belonging to this WebWidget, that
   // is, a focused frame with the same local root as the one corresponding
@@ -570,6 +573,15 @@ class CORE_EXPORT WebFrameWidgetBase
   // Ask compositor to composite a frame for testing. This will generate a
   // BeginMainFrame, and update the document lifecycle.
   void SynchronouslyCompositeForTesting(base::TimeTicks frame_time);
+
+  // Adjust the synchronous resize mode for testing. Normally resizes are
+  // asynchronous with sending the resize to the browser, however some tests
+  // still need the resize to happen in a synchronous fashion.
+  void UseSynchronousResizeModeForTesting(bool enable);
+
+  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
+  // pixels).
+  gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
   void SetToolTipText(const String& tooltip_text, TextDirection dir);
 
@@ -711,6 +723,9 @@ class CORE_EXPORT WebFrameWidgetBase
   HitTestResult HitTestResultForRootFramePos(
       const FloatPoint& pos_in_root_frame);
 
+  // Returns the current state of synchronous resize mode for testing.
+  bool SynchronousResizeModeForTestingEnabled();
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 
@@ -743,6 +758,10 @@ class CORE_EXPORT WebFrameWidgetBase
   // TODO(dtapuska): Move to private once all input handling is moved to
   // base class.
   Member<HTMLPlugInElement> mouse_capture_element_;
+
+  // The size of the widget in viewport coordinates. This is slightly different
+  // than the WebViewImpl::size_ since isn't set in auto resize mode.
+  base::Optional<gfx::Size> size_;
 
  private:
   // PageWidgetEventHandler methods:
@@ -879,6 +898,20 @@ class CORE_EXPORT WebFrameWidgetBase
     // contents") like a <webview> or <portal> widget. If false, the widget is
     // the top level widget.
     bool is_for_nested_main_frame = false;
+
+    // In web tests, synchronous resizing mode may be used. Normally each
+    // widget's size is controlled by IPC from the browser. In synchronous
+    // resize mode the renderer controls the size directly, and IPCs from the
+    // browser must be ignored. This was deprecated but then later undeprecated,
+    // so it is now called unfortunate instead. See https://crbug.com/309760.
+    // When this is enabled the various size properties will be controlled
+    // directly when SetWindowRect() is called instead of needing a round trip
+    // through the browser. Note that SetWindowRectSynchronouslyForTesting()
+    // provides a secondary way to control the size of the FrameWidget
+    // independently from the renderer process, without the use of this mode,
+    // however it would be overridden by the browser if they disagree.
+    bool synchronous_resize_mode_for_testing = false;
+
   } main_frame_data_;
 
   MainFrameData& main_data() {

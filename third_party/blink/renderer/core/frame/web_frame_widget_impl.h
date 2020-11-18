@@ -101,10 +101,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   // WebFrameWidgetBase overrides:
   void DidCreateLocalRootView() override;
-  void SetAutoResizeMode(bool auto_resize,
-                         const gfx::Size& min_size_before_dsf,
-                         const gfx::Size& max_size_before_dsf,
-                         float device_scale_factor) override;
   void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) override;
 
@@ -132,8 +128,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       const Element& element,
       PhysicalRect& rect_to_scroll,
       mojom::blink::ScrollIntoViewParamsPtr& params);
-
-  base::Optional<gfx::Size> size_;
 
   bool did_suspend_parsing_ = false;
 

@@ -70,10 +70,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   bool ScrollFocusedEditableElementIntoView() override;
 
   // WebFrameWidgetBase overrides:
-  void SetAutoResizeMode(bool auto_resize,
-                         const gfx::Size& min_size_before_dsf,
-                         const gfx::Size& max_size_before_dsf,
-                         float device_scale_factor) override;
   void SetPageScaleStateAndLimits(float page_scale_factor,
                                   bool is_pinch_gesture_active,
                                   float minimum,
@@ -88,15 +84,9 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WidgetBaseClient overrides:
   void FocusChanged(bool enabled) override;
 
-  void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
   void SetWindowRect(const gfx::Rect& window_rect);
   void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
-  void UseSynchronousResizeModeForTesting(bool enable);
-
-  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
-  // pixels).
-  gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
  private:
   // PageWidgetEventHandler overrides:
@@ -106,24 +96,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
-
-  // In web tests, synchronous resizing mode may be used. Normally each widget's
-  // size is controlled by IPC from the browser. In synchronous resize mode the
-  // renderer controls the size directly, and IPCs from the browser must be
-  // ignored. This was deprecated but then later undeprecated, so it is now
-  // called unfortunate instead. See https://crbug.com/309760. When this is
-  // enabled the various size properties will be controlled directly when
-  // SetWindowRect() is called instead of needing a round trip through the
-  // browser.
-  // Note that SetWindowRectSynchronouslyForTesting() provides a secondary way
-  // to control the size of the FrameWidget independently from the renderer
-  // process, without the use of this mode, however it would be overridden by
-  // the browser if they disagree.
-  bool synchronous_resize_mode_for_testing_ = false;
-
-  // The size of the widget in viewport coordinates. This is slightly different
-  // than the WebViewImpl::size_ since isn't set in auto resize mode.
-  gfx::Size size_;
 
   // This stores the last hidden page popup. If a GestureTap attempts to open
   // the popup that is closed by its previous GestureTapDown, the popup remains

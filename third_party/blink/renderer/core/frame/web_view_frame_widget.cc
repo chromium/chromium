@@ -106,7 +106,7 @@ bool WebViewFrameWidget::ShouldHandleImeEvents() {
 }
 
 void WebViewFrameWidget::SetWindowRect(const gfx::Rect& window_rect) {
-  if (synchronous_resize_mode_for_testing_) {
+  if (SynchronousResizeModeForTestingEnabled()) {
     // This is a web-test-only path. At one point, it was planned to be
     // removed. See https://crbug.com/309760.
     SetWindowRectSynchronously(window_rect);
@@ -319,21 +319,6 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
   return event_result;
 }
 
-void WebViewFrameWidget::SetAutoResizeMode(bool auto_resize,
-                                           const gfx::Size& min_window_size,
-                                           const gfx::Size& max_window_size,
-                                           float device_scale_factor) {
-  if (auto_resize) {
-    if (!Platform::Current()->IsUseZoomForDSFEnabled())
-      device_scale_factor = 1.f;
-    web_view_->EnableAutoResizeMode(
-        gfx::ScaleToCeiledSize(min_window_size, device_scale_factor),
-        gfx::ScaleToCeiledSize(max_window_size, device_scale_factor));
-  } else if (web_view_->AutoResizeMode()) {
-    web_view_->DisableAutoResizeMode();
-  }
-}
-
 void WebViewFrameWidget::SetPageScaleStateAndLimits(
     float page_scale_factor,
     bool is_pinch_gesture_active,
@@ -350,25 +335,6 @@ void WebViewFrameWidget::SetPageScaleStateAndLimits(
   }
 
   NotifyPageScaleFactorChanged(page_scale_factor, is_pinch_gesture_active);
-}
-
-void WebViewFrameWidget::DidAutoResize(const gfx::Size& size) {
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size);
-  size_ = size;
-
-  if (synchronous_resize_mode_for_testing_) {
-    gfx::Rect new_pos(widget_base_->WindowRect());
-    new_pos.set_size(size_in_dips);
-    SetScreenRects(new_pos, new_pos);
-  }
-
-  // TODO(ccameron): Note that this destroys any information differentiating
-  // |size| from the compositor's viewport size.
-  gfx::Rect size_with_dsf = gfx::Rect(gfx::ScaleToCeiledSize(
-      gfx::Rect(size_in_dips).size(),
-      widget_base_->GetScreenInfo().device_scale_factor));
-  widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
-  widget_base_->UpdateCompositorViewportRect(size_with_dsf);
 }
 
 void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
@@ -412,14 +378,6 @@ void WebViewFrameWidget::SetWindowRectSynchronously(
   widget_base_->SetScreenRects(new_window_rect, new_window_rect);
 }
 
-void WebViewFrameWidget::UseSynchronousResizeModeForTesting(bool enable) {
-  synchronous_resize_mode_for_testing_ = enable;
-}
-
-gfx::Size WebViewFrameWidget::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
-  return widget_base_->DIPsToCeiledBlinkSpace(size);
-}
-
 void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     const VisualProperties& visual_properties) {
   if (size_ !=
@@ -438,7 +396,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
   // We can ignore browser-initialized resizing during synchronous
   // (renderer-controlled) mode, unless it is switching us to/from
   // fullsreen mode or changing the device scale factor.
-  bool ignore_resize = synchronous_resize_mode_for_testing_;
+  bool ignore_resize = SynchronousResizeModeForTestingEnabled();
   if (ignore_resize) {
     // TODO(danakj): Does the browser actually change DSF inside a web test??
     // TODO(danakj): Isn't the display mode check redundant with the
@@ -460,7 +418,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
       visual_properties.compositor_viewport_pixel_rect;
   if (AutoResizeMode()) {
     new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
-        widget_base_->BlinkSpaceToFlooredDIPs(size_),
+        widget_base_->BlinkSpaceToFlooredDIPs(size_.value_or(gfx::Size())),
         visual_properties.screen_info.device_scale_factor));
   }
 
@@ -478,7 +436,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     size_ = widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size);
 
     View()->ResizeWithBrowserControls(
-        size_,
+        size_.value(),
         widget_base_->DIPsToCeiledBlinkSpace(
             widget_base_->VisibleViewportSizeInDIPs()),
         visual_properties.browser_controls_params);
