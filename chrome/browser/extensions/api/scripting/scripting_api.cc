@@ -70,7 +70,7 @@ void ExecuteScript(ScriptExecutor* script_executor,
                    ScriptExecutor::ScriptFinishedCallback callback) {
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension.id()), UserScript::ADD_JAVASCRIPT,
-      code, frame_scope, ExtensionApiFrameIdMap::kTopFrameId,
+      code, frame_scope, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture,
@@ -105,7 +105,7 @@ bool CanAccessTarget(const PermissionsData& permissions,
   ScriptExecutor::FrameScope frame_scope =
       target.all_frames && *target.all_frames == true
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SINGLE_FRAME;
+          : ScriptExecutor::SPECIFIED_FRAMES;
 
   // TODO(devlin): It'd be best to do all the permission checks for the frames
   // on the browser side, including child frames. Today, we only check the
@@ -140,7 +140,7 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
 
   std::string error;
   ScriptExecutor* script_executor = nullptr;
-  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SINGLE_FRAME;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &error)) {
@@ -201,7 +201,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 
   std::string error;
   ScriptExecutor* script_executor = nullptr;
-  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SINGLE_FRAME;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &error)) {
@@ -230,7 +230,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
   constexpr UserScript::RunLocation kRunLocation = UserScript::DOCUMENT_START;
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
-      *injection.css, frame_scope, ExtensionApiFrameIdMap::kTopFrameId,
+      *injection.css, frame_scope, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::MATCH_ABOUT_BLANK, kRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture(), origin,
