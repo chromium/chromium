@@ -159,12 +159,10 @@ void AccountConsistencyHandler::ShouldAllowResponse(
         {url, GURL(kGoogleUrl)});
   }
 
-  // Chrome monitors GAIA cookies when navigating to a google.com domain to
-  // ensure that signed-in users remain signed-in to their Google services on
+  // Chrome monitors GAIA cookies when navigating to Google associated domains
+  // to ensure that signed-in users remain signed-in to their Google services on
   // the web. This includes redirects to accounts.google.com.
-  if (google_util::IsGoogleDomainUrl(
-          url, google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
     // TODO(crbug.com/1131027): Disable GAIA cookie restore on Google URLs that
     // may display cookie consent in the content area that conflict with the
     // sign-in notification. This will be removed once we perform cookie
