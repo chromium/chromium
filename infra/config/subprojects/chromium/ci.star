@@ -2601,6 +2601,15 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "linux-wpt-input-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "linux",
+    ),
+    experimental = True,
+    goma_backend = goma.backend.RBE_PROD,
+)
+
+ci.fyi_builder(
     name = "linux-wpt-payments-fyi-rel",
     console_view_entry = ci.console_view_entry(
         category = "linux",

@@ -1039,6 +1039,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-wpt-input-fyi-rel",
+)
+
+try_.chromium_linux_builder(
     name = "linux-wpt-payments-fyi-rel",
 )
 
