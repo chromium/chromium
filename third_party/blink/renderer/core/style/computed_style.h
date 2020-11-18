@@ -943,6 +943,10 @@ class ComputedStyle : public ComputedStyleBase,
   // TODO(crbug.com/687225): Get rid of the deprecated functions above so that
   // the getter can also be auto-generated.
   ListStyleTypeData* GetListStyleType() const;
+  bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
+    return DataEquivalent(ListStyleTypeInternal(),
+                          other.ListStyleTypeInternal());
+  }
 
   // quotes
   bool QuotesDataEquivalent(const ComputedStyle&) const;

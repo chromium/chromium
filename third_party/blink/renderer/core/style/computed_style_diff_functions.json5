@@ -202,16 +202,14 @@
         name: "DiffNeedsFullLayoutAndPaintInvalidationDisplayListItem",
         methods_to_diff: [
           {
-            method: "ListStyleType()",
-            field_dependencies: ["list-style-type"]
-          },
-          {
-            method: "ListStyleStringValue()",
-            field_dependencies: ["list-style-type"]
-          },
-          {
             method: "ListStylePosition()",
             field_dependencies: ["list-style-position"]
+          },
+        ],
+        predicates_to_test: [
+          {
+            predicate: "a.ListStyleTypeDataEquivalent(b)",
+            field_dependencies: ["list-style-type"]
           },
         ]
     },
