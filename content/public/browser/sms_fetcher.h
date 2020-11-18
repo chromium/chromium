@@ -34,6 +34,17 @@ class SmsFetcher {
     kMaxValue = kPromptCancelled,
   };
 
+  // Indicates whether the subscriber needs to obtain its own user consent or
+  // not.
+  enum class UserConsent {
+    // The fetcher has not obtained the user consent to share the OTP. It is
+    // expected that the the subscriber (the browser) will do so.
+    kNotObtained,
+    // The fetcher has already obtained the user consent to share the OTP.
+    // Currently this is the case only when GMS User Consent API is used.
+    kObtained
+  };
+
   SmsFetcher() = default;
   virtual ~SmsFetcher() = default;
 
@@ -46,7 +57,7 @@ class SmsFetcher {
     // Receive a |one_time_code| from subscribed origin. The |one_time_code|
     // is parsed from |sms| as an alphanumeric value which the origin uses
     // to verify the ownership of the phone number.
-    virtual void OnReceive(const std::string& one_time_code) = 0;
+    virtual void OnReceive(const std::string& one_time_code, UserConsent) = 0;
     virtual void OnFailure(FailureType failure_type) = 0;
   };
 

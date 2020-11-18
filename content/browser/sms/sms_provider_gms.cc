@@ -63,9 +63,14 @@ void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host) {
   Java_SmsProviderGms_listen(env, j_sms_provider_, j_window);
 }
 
-void SmsProviderGms::OnReceive(JNIEnv* env, jstring message) {
+void SmsProviderGms::OnReceive(JNIEnv* env, jstring message, jint backend) {
+  GmsBackend b = static_cast<GmsBackend>(backend);
+  auto consent_requirement = UserConsent::kNotObtained;
+  if (b == GmsBackend::kUserConsent)
+    consent_requirement = UserConsent::kObtained;
+
   std::string sms = ConvertJavaStringToUTF8(env, message);
-  NotifyReceive(sms);
+  NotifyReceive(sms, consent_requirement);
 }
 
 void SmsProviderGms::OnTimeout(JNIEnv* env) {

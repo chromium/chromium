@@ -111,8 +111,8 @@ public class SmsProviderGms {
 
     // --------- Callbacks for receivers
 
-    void onReceive(String sms) {
-        SmsProviderGmsJni.get().onReceive(mSmsProviderGmsAndroid, sms);
+    void onReceive(String sms, @GmsBackend int backend) {
+        SmsProviderGmsJni.get().onReceive(mSmsProviderGmsAndroid, sms, backend);
     }
     void onTimeout() {
         SmsProviderGmsJni.get().onTimeout(mSmsProviderGmsAndroid);
@@ -149,7 +149,7 @@ public class SmsProviderGms {
 
     @NativeMethods
     interface Natives {
-        void onReceive(long nativeSmsProviderGms, String sms);
+        void onReceive(long nativeSmsProviderGms, String sms, @GmsBackend int backend);
         void onTimeout(long nativeSmsProviderGms);
         void onCancel(long nativeSmsProviderGms);
     }

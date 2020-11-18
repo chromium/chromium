@@ -3844,7 +3844,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_CALL(*mock_provider_ptr, Retrieve(testing::_))
       .WillOnce(testing::Invoke([&]() {
         mock_provider_ptr->NotifyReceive(url::Origin::Create(first_url),
-                                         "hello");
+                                         "hello",
+                                         SmsFetcher::UserConsent::kObtained);
       }));
 
   // EvalJs waits for the promise being resolved. This ensures that the browser

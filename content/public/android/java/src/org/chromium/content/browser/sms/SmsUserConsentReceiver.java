@@ -106,7 +106,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
     void onConsentResult(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             String message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE);
-            mProvider.onReceive(message);
+            mProvider.onReceive(message, GmsBackend.USER_CONSENT);
         } else if (resultCode == Activity.RESULT_CANCELED) {
             if (DEBUG) Log.d(TAG, "Activity result cancelled.");
             mProvider.onCancel();

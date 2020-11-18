@@ -14,6 +14,7 @@
 #include "content/browser/sms/test/mock_sms_web_contents_delegate.h"
 #include "content/browser/sms/webotp_service.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/sms_fetcher.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,6 +35,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace content {
+
+using UserConsent = SmsFetcher::UserConsent;
 
 namespace {
 
@@ -193,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Receive) {
   )";
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
   }));
 
@@ -245,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, AtMostOneSmsRequestPerOrigin) {
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_))
       .WillOnce(Return())
       .WillOnce(Invoke([&]() {
-        mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+        mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                         UserConsent::kNotObtained);
         ConfirmPrompt();
       }));
 
@@ -325,7 +330,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
 
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello1");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello1",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
 
     ukm_loop.Run();
@@ -349,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
 
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello2");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello2",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
 
     ukm_loop.Run();
@@ -471,7 +478,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_TwoTabsSameOrigin) {
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
 
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello1");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello1",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
 
     ukm_loop.Run();
@@ -495,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_TwoTabsSameOrigin) {
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
 
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello2");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello2",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
 
     ukm_loop.Run();
@@ -553,7 +562,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_TwoTabsDifferentOrigin) {
     // capture and evaluation.
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url1), "hello1");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url1), "hello1",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
     ukm_loop.Run();
   }
@@ -569,7 +579,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_TwoTabsDifferentOrigin) {
     // capture and evaluation.
     ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                           ukm_loop.QuitClosure());
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url2), "hello2");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url2), "hello2",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
     ukm_loop.Run();
   }
@@ -605,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsReceivedAfterTabIsClosed) {
 
   shell()->Close();
 
-  mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+  mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                   UserConsent::kObtained);
 
   ExpectNoOutcomeUKM();
 }
@@ -626,7 +638,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Cancels) {
   ExpectSmsPrompt();
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                     UserConsent::kNotObtained);
     DismissPrompt();
   }));
 
@@ -665,7 +678,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, AbortAfterSmsRetrieval) {
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_))
       .WillOnce(Invoke([&mock_provider_ptr, &url]() {
-        mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+        mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                         UserConsent::kNotObtained);
       }));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -723,11 +737,11 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
   EXPECT_CALL(*provider, Retrieve(_))
       .WillOnce(Invoke([&]() {
         static_cast<SmsFetcherImpl*>(fetcher)->OnReceive(
-            url::Origin::Create(url), "ABC234");
+            url::Origin::Create(url), "ABC234", UserConsent::kObtained);
       }))
       .WillOnce(Invoke([&]() {
         static_cast<SmsFetcherImpl*>(fetcher2)->OnReceive(
-            url::Origin::Create(url), "DEF567");
+            url::Origin::Create(url), "DEF567", UserConsent::kObtained);
       }));
 
   service->Receive(base::BindLambdaForTesting(
@@ -758,7 +772,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ReportWebOTPInUseCounter) {
   BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
   }));
   base::HistogramTester histogram_tester;
@@ -788,7 +803,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
   BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "hello",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
   }));
 
@@ -955,12 +971,14 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
   EXPECT_TRUE(ExecJs(tab2, script));
 
   ExpectSmsPrompt();
-  mock_provider_ptr->NotifyReceive(url::Origin::Create(url1), "code1");
+  mock_provider_ptr->NotifyReceive(url::Origin::Create(url1), "code1",
+                                   UserConsent::kNotObtained);
   ConfirmPrompt();
   EXPECT_EQ("code1", EvalJs(tab1, "request"));
 
   ExpectSmsPrompt();
-  mock_provider_ptr->NotifyReceive(url::Origin::Create(url2), "code2");
+  mock_provider_ptr->NotifyReceive(url::Origin::Create(url2), "code2",
+                                   UserConsent::kNotObtained);
   ConfirmPrompt();
   EXPECT_EQ("code2", EvalJs(tab2, "request"));
 
@@ -988,7 +1006,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsNotParsedMetrics) {
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
     // Calls NotifyReceive with an invalid sms and record sms parse failure
     // metrics.
-    mock_provider_ptr->NotifyReceiveForTesting(invalid_sms);
+    mock_provider_ptr->NotifyReceiveForTesting(invalid_sms,
+                                               UserConsent::kObtained);
     loop.Quit();
   }));
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -1030,7 +1049,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsParsed) {
   const std::string valid_sms = "Your OTP is: 1234.\n@example.com #1234";
   base::RunLoop loop;
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceiveForTesting(valid_sms);
+    mock_provider_ptr->NotifyReceiveForTesting(valid_sms,
+                                               UserConsent::kObtained);
     loop.Quit();
   }));
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -1074,7 +1094,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsParsedMetrics) {
     // ports. Therefore we cannot create an SMS with valid origin from the test.
     // Bypassing the issue by calling NotifyReceive directly to test metrics
     // recording logic.
-    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "1234");
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "1234",
+                                     UserConsent::kNotObtained);
     ConfirmPrompt();
   }));
 

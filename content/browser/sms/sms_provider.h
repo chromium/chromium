@@ -26,12 +26,17 @@ class RenderFrameHost;
 // inject custom providers.
 class CONTENT_EXPORT SmsProvider {
  public:
+  using FailureType = SmsFetcher::FailureType;
+  using SmsParsingStatus = SmsParser::SmsParsingStatus;
+  using UserConsent = SmsFetcher::UserConsent;
+
   class Observer : public base::CheckedObserver {
    public:
     // Receive an |one_time_code| from an origin. Return true if the message is
     // handled, which stops its propagation to other observers.
     virtual bool OnReceive(const url::Origin&,
-                           const std::string& one_time_code) = 0;
+                           const std::string& one_time_code,
+                           UserConsent) = 0;
     virtual bool OnFailure(SmsFetcher::FailureType failure_type) = 0;
     virtual void NotifyParsingFailure(SmsParser::SmsParsingStatus) {}
   };
@@ -39,8 +44,6 @@ class CONTENT_EXPORT SmsProvider {
   SmsProvider();
   virtual ~SmsProvider();
 
-  using FailureType = SmsFetcher::FailureType;
-  using SmsParsingStatus = SmsParser::SmsParsingStatus;
 
   // Listen to the next incoming SMS and notify observers (exactly once) when
   // it is received or (exclusively) when it timeouts. |render_frame_host|
@@ -53,14 +56,16 @@ class CONTENT_EXPORT SmsProvider {
 
   void AddObserver(Observer*);
   void RemoveObserver(const Observer*);
-  void NotifyReceive(const url::Origin&, const std::string& one_time_code);
-  void NotifyReceiveForTesting(const std::string& sms);
+  void NotifyReceive(const url::Origin&,
+                     const std::string& one_time_code,
+                     UserConsent);
+  void NotifyReceiveForTesting(const std::string& sms, UserConsent);
   void NotifyFailure(FailureType failure_type);
   void RecordParsingStatus(SmsParsingStatus status);
   bool HasObservers();
 
  protected:
-  void NotifyReceive(const std::string& sms);
+  void NotifyReceive(const std::string& sms, UserConsent);
 
  private:
   base::ObserverList<Observer> observers_;

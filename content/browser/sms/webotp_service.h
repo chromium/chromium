@@ -47,7 +47,6 @@ class CONTENT_EXPORT WebOTPService
                 RenderFrameHost*,
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
   WebOTPService(SmsFetcher*,
-                std::unique_ptr<UserConsentHandler> consent_handler,
                 const url::Origin&,
                 RenderFrameHost*,
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
@@ -55,19 +54,21 @@ class CONTENT_EXPORT WebOTPService
 
   using FailureType = SmsFetcher::FailureType;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
+  using UserConsent = SmsFetcher::UserConsent;
 
   // blink::mojom::WebOTPService:
   void Receive(ReceiveCallback) override;
   void Abort() override;
 
   // content::SmsQueue::Subscriber
-  void OnReceive(const std::string& one_time_code) override;
+  void OnReceive(const std::string& one_time_code, UserConsent) override;
   void OnFailure(FailureType failure_type) override;
 
   // Completes the in-flight sms otp code request. Invokes the receive callback,
   // if one is available, with the provided status code and the existing one
   // time code.
   void CompleteRequest(blink::mojom::SmsStatus);
+  void SetConsentHandlerForTesting(UserConsentHandler*);
 
  protected:
   // content::WebContentsObserver:
@@ -76,18 +77,25 @@ class CONTENT_EXPORT WebOTPService
 
  private:
   void CleanUp();
+  UserConsentHandler* CreateConsentHandler(UserConsent);
+  UserConsentHandler* GetConsentHandler();
 
   // |fetcher_| is safe because all instances of SmsFetcher are owned
   // by the browser context, which transitively (through RenderFrameHost) owns
   // and outlives this class.
   SmsFetcher* fetcher_;
-  std::unique_ptr<UserConsentHandler> consent_handler_;
 
   const url::Origin origin_;
   ReceiveCallback callback_;
   base::Optional<std::string> one_time_code_;
   base::TimeTicks start_time_;
   base::TimeTicks receive_time_;
+
+  // The ptr is valid only when we are handling an incoming otp response.
+  std::unique_ptr<UserConsentHandler> consent_handler_;
+  // This is used to inject a mock consent handler for testing and it is owned
+  // by test code.
+  UserConsentHandler* consent_handler_for_test_{nullptr};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

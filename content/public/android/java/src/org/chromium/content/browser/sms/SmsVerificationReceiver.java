@@ -99,7 +99,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
             case CommonStatusCodes.SUCCESS:
                 String message = intent.getExtras().getString(SmsCodeRetriever.EXTRA_SMS_CODE_LINE);
                 if (DEBUG) Log.d(TAG, "Got message: %s!", message);
-                mProvider.onReceive(message);
+                mProvider.onReceive(message, GmsBackend.VERIFICATION);
                 break;
             case CommonStatusCodes.TIMEOUT:
                 if (DEBUG) Log.d(TAG, "Timeout");

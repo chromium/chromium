@@ -32,7 +32,7 @@ class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
   void Retrieve(RenderFrameHost* rfh) override;
 
   // Implements JNI method SmsProviderGms.Natives.onReceive().
-  void OnReceive(JNIEnv*, jstring message);
+  void OnReceive(JNIEnv*, jstring message, jint backend);
 
   // Implements JNI method SmsProviderGms.Natives.onTimeout().
   void OnTimeout(JNIEnv* env);

@@ -36,8 +36,10 @@ class MockObserver : public SmsProvider::Observer {
   MockObserver() = default;
   ~MockObserver() override = default;
 
-  MOCK_METHOD2(OnReceive,
-               bool(const Origin&, const std::string& one_time_code));
+  MOCK_METHOD3(OnReceive,
+               bool(const Origin&,
+                    const std::string& one_time_code,
+                    SmsFetcher::UserConsent));
   MOCK_METHOD1(OnFailure, bool(SmsFetcher::FailureType));
 
  private:
@@ -162,7 +164,8 @@ class SmsProviderGmsAutoTest : public SmsProviderGmsBaseTest {
 TEST_P(SmsProviderGmsTest, Retrieve) {
   std::string test_url = "https://google.com";
 
-  EXPECT_CALL(*observer(), OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+  EXPECT_CALL(*observer(),
+              OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
   provider()->Retrieve(main_rfh());
   TriggerSms("Hi\n@google.com #ABC123");
 }
@@ -172,7 +175,8 @@ TEST_P(SmsProviderGmsTest, IgnoreBadSms) {
   std::string good_sms = "Hi\n@google.com #ABC123";
   std::string bad_sms = "Hi\n@b.com";
 
-  EXPECT_CALL(*observer(), OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+  EXPECT_CALL(*observer(),
+              OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
   provider()->Retrieve(main_rfh());
   TriggerSms(bad_sms);
@@ -180,7 +184,7 @@ TEST_P(SmsProviderGmsTest, IgnoreBadSms) {
 }
 
 TEST_P(SmsProviderGmsTest, TaskTimedOut) {
-  EXPECT_CALL(*observer(), OnReceive(_, _)).Times(0);
+  EXPECT_CALL(*observer(), OnReceive(_, _, _)).Times(0);
   provider()->Retrieve(main_rfh());
   TriggerTimeout();
 }
@@ -188,7 +192,8 @@ TEST_P(SmsProviderGmsTest, TaskTimedOut) {
 TEST_P(SmsProviderGmsTest, OneObserverTwoTasks) {
   std::string test_url = "https://google.com";
 
-  EXPECT_CALL(*observer(), OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+  EXPECT_CALL(*observer(),
+              OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
   // Two tasks for when 1 request gets aborted but the task is still triggered.
   provider()->Retrieve(main_rfh());
@@ -221,7 +226,8 @@ TEST_F(SmsProviderGmsAutoTest, OneTimePermissionDeniedByUser) {
 TEST_F(SmsProviderGmsAutoTest, OneTimePermissionGrantedByUser) {
   std::string test_url = "https://example.com";
   EXPECT_CALL(*observer(), OnFailure(_)).Times(0);
-  EXPECT_CALL(*observer(), OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+  EXPECT_CALL(*observer(),
+              OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
   provider()->Retrieve(main_rfh());
 
@@ -246,7 +252,7 @@ TEST_F(SmsProviderGmsAutoTest, ExpectedFailuresShouldFallback) {
   {
     EXPECT_CALL(*observer(), OnFailure(_)).Times(0);
     EXPECT_CALL(*observer(),
-                OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+                OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
     TriggerAPIFailure("API_NOT_CONNECTED");
     TriggerSmsForUserConsent("Hi\n@example.com #ABC123");
@@ -257,7 +263,7 @@ TEST_F(SmsProviderGmsAutoTest, ExpectedFailuresShouldFallback) {
   {
     EXPECT_CALL(*observer(), OnFailure(_)).Times(0);
     EXPECT_CALL(*observer(),
-                OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+                OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
     provider()->Retrieve(main_rfh());
 
@@ -270,7 +276,7 @@ TEST_F(SmsProviderGmsAutoTest, ExpectedFailuresShouldFallback) {
   {
     EXPECT_CALL(*observer(), OnFailure(_)).Times(0);
     EXPECT_CALL(*observer(),
-                OnReceive(Origin::Create(GURL(test_url)), "ABC123"));
+                OnReceive(Origin::Create(GURL(test_url)), "ABC123", _));
 
     provider()->Retrieve(main_rfh());
 

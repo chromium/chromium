@@ -36,13 +36,11 @@ namespace content {
 
 WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
-    std::unique_ptr<UserConsentHandler> consent_handler,
     const url::Origin& origin,
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : FrameServiceBase(host, std::move(receiver)),
       fetcher_(fetcher),
-      consent_handler_(std::move(consent_handler)),
       origin_(origin) {
   DCHECK(fetcher_);
 }
@@ -52,23 +50,9 @@ WebOTPService::WebOTPService(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : WebOTPService(fetcher,
-                    nullptr,
                     host->GetLastCommittedOrigin(),
                     host,
-                    std::move(receiver)) {
-  auto otp_switch = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kWebOtpBackend);
-  bool needs_user_prompt =
-      otp_switch == switches::kWebOtpBackendSmsVerification ||
-      otp_switch == switches::kWebOtpBackendAuto;
-
-  if (needs_user_prompt) {
-    consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
-        render_frame_host(), origin_);
-  } else {
-    consent_handler_ = std::make_unique<NoopUserConsentHandler>();
-  }
-}
+                    std::move(receiver)) {}
 
 WebOTPService::~WebOTPService() {
   // Resolve any pending callback and invoke clean up to unsubscribe this
@@ -137,13 +121,17 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   // a new subscription is unnecessary. Note that it is only safe for us to use
   // the in flight otp with the new request since both requests belong to the
   // same origin.
-  if (consent_handler_->is_active())
+  // TODO(majidvp): replace is_active() check with a check on existence of the
+  // handler.
+  auto* consent_handler = GetConsentHandler();
+  if (consent_handler && consent_handler->is_active())
     return;
 
   fetcher_->Subscribe(origin_, this, render_frame_host());
 }
 
-void WebOTPService::OnReceive(const std::string& one_time_code) {
+void WebOTPService::OnReceive(const std::string& one_time_code,
+                              UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!one_time_code_);
   DCHECK(!start_time_.is_null());
@@ -156,7 +144,12 @@ void WebOTPService::OnReceive(const std::string& one_time_code) {
 
   one_time_code_ = one_time_code;
 
-  consent_handler_->RequestUserConsent(
+  // Create a new consent handler for each OTP request. While we could
+  // potentially cache these across request but they are lightweight enought to
+  // not be worth the complexity associate with caching them.
+  UserConsentHandler* consent_handler =
+      CreateConsentHandler(consent_requirement);
+  consent_handler->RequestUserConsent(
       one_time_code, base::BindOnce(&WebOTPService::CompleteRequest,
                                     weak_ptr_factory_.GetWeakPtr()));
 }
@@ -229,7 +222,8 @@ void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
 
   // Record ContinueOn timing values only if we are using an asynchronous
   // consent handler (i.e. showing user prompts).
-  if (consent_handler_->is_async()) {
+  auto* consent_handler = GetConsentHandler();
+  if (consent_handler && consent_handler->is_async()) {
     if (status == SmsStatus::kSuccess) {
       DCHECK(!receive_time_.is_null());
       RecordContinueOnSuccessTime(base::TimeTicks::Now() - receive_time_);
@@ -250,13 +244,45 @@ void WebOTPService::CleanUp() {
   // Skip resetting |one_time_code_|, |sms| and |receive_time_| while prompt is
   // still open in case it needs to be returned to the next incoming request
   // upon prompt confirmation.
-  if (!consent_handler_->is_active()) {
+  // TODO(majidvp): replace is_active() check with a check on existence of the
+  // handler.
+  auto* consent_handler = GetConsentHandler();
+  bool consent_in_progress = consent_handler && consent_handler->is_active();
+  if (!consent_in_progress) {
     one_time_code_.reset();
     receive_time_ = base::TimeTicks();
+    // Clear the consent handler to avoid reusing it by mistake.
+    consent_handler_.reset();
   }
   start_time_ = base::TimeTicks();
   callback_.Reset();
   fetcher_->Unsubscribe(origin_, this);
+}
+
+UserConsentHandler* WebOTPService::CreateConsentHandler(
+    UserConsent consent_requirement) {
+  if (consent_handler_for_test_)
+    return consent_handler_for_test_;
+
+  if (consent_requirement == UserConsent::kNotObtained) {
+    consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
+        render_frame_host(), origin_);
+  } else {
+    consent_handler_ = std::make_unique<NoopUserConsentHandler>();
+  }
+
+  return consent_handler_.get();
+}
+
+UserConsentHandler* WebOTPService::GetConsentHandler() {
+  if (consent_handler_for_test_)
+    return consent_handler_for_test_;
+
+  return consent_handler_.get();
+}
+
+void WebOTPService::SetConsentHandlerForTesting(UserConsentHandler* handler) {
+  consent_handler_for_test_ = handler;
 }
 
 }  // namespace content

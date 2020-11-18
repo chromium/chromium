@@ -76,7 +76,8 @@ void SmsFetcherImpl::Unsubscribe(const url::Origin& origin,
 }
 
 bool SmsFetcherImpl::Notify(const url::Origin& origin,
-                            const std::string& one_time_code) {
+                            const std::string& one_time_code,
+                            UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The received OTP is returned to the first subscriber for the origin.
   auto* subscriber = subscribers_.Pop(origin);
@@ -84,7 +85,7 @@ bool SmsFetcherImpl::Notify(const url::Origin& origin,
   if (!subscriber)
     return false;
 
-  subscriber->OnReceive(one_time_code);
+  subscriber->OnReceive(one_time_code, consent_requirement);
   return true;
 }
 
@@ -100,13 +101,14 @@ void SmsFetcherImpl::OnRemote(base::Optional<std::string> sms) {
   if (!result.IsValid())
     return;
 
-  Notify(result.origin, result.one_time_code);
+  Notify(result.origin, result.one_time_code, UserConsent::kNotObtained);
 }
 
 bool SmsFetcherImpl::OnReceive(const url::Origin& origin,
-                               const std::string& one_time_code) {
+                               const std::string& one_time_code,
+                               UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return Notify(origin, one_time_code);
+  return Notify(origin, one_time_code, consent_requirement);
 }
 
 bool SmsFetcherImpl::OnFailure(SmsFetcher::FailureType failure_type) {

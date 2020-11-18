@@ -56,6 +56,7 @@ namespace content {
 
 class RenderFrameHost;
 
+using UserConsent = SmsFetcher::UserConsent;
 namespace {
 
 const char kTestUrl[] = "https://www.google.com";
@@ -74,15 +75,15 @@ class Service {
           const Origin& origin,
           std::unique_ptr<UserConsentHandler> user_consent_handler)
       : fetcher_(web_contents->GetBrowserContext(), &provider_),
-        consent_handler_(user_consent_handler.get()) {
+        consent_handler_(std::move(user_consent_handler)) {
     // Set a stub delegate because sms service checks existence of delegate and
     // cancels requests early if one does not exist.
     web_contents->SetDelegate(&contents_delegate_);
 
     service_ = std::make_unique<WebOTPService>(
-        &fetcher_, std::move(user_consent_handler), origin,
-        web_contents->GetMainFrame(),
+        &fetcher_, origin, web_contents->GetMainFrame(),
         service_remote_.BindNewPipeAndPassReceiver());
+    service_->SetConsentHandlerForTesting(consent_handler_.get());
   }
 
  public:
@@ -94,7 +95,7 @@ class Service {
 
   NiceMock<MockSmsProvider>* provider() { return &provider_; }
   SmsFetcher* fetcher() { return &fetcher_; }
-  UserConsentHandler* consent_handler() { return consent_handler_; }
+  UserConsentHandler* consent_handler() { return consent_handler_.get(); }
 
   void MakeRequest(WebOTPService::ReceiveCallback callback) {
     service_remote_->Receive(std::move(callback));
@@ -102,15 +103,18 @@ class Service {
 
   void AbortRequest() { service_remote_->Abort(); }
 
-  void NotifyReceive(const GURL& url, const string& otp) {
-    provider_.NotifyReceive(Origin::Create(url), otp);
+  void NotifyReceive(const GURL& url,
+                     const string& otp,
+                     /* avoid showing user prompts */
+                     UserConsent consent_requirement = UserConsent::kObtained) {
+    provider_.NotifyReceive(Origin::Create(url), otp, consent_requirement);
   }
 
  private:
   StubWebContentsDelegate contents_delegate_;
   NiceMock<MockSmsProvider> provider_;
   SmsFetcherImpl fetcher_;
-  UserConsentHandler* consent_handler_;
+  std::unique_ptr<UserConsentHandler> consent_handler_;
   mojo::Remote<blink::mojom::WebOTPService> service_remote_;
   std::unique_ptr<WebOTPService> service_;
 };
@@ -487,7 +491,7 @@ class ServiceWithPrompt : public Service {
   explicit ServiceWithPrompt(WebContents* web_contents)
       : Service(web_contents,
                 web_contents->GetMainFrame()->GetLastCommittedOrigin(),
-                base::WrapUnique(new NiceMock<MockUserConsentHandler>())) {
+                std::make_unique<NiceMock<MockUserConsentHandler>>()) {
     mock_handler_ =
         static_cast<NiceMock<MockUserConsentHandler>*>(consent_handler());
   }
@@ -549,7 +553,7 @@ TEST_F(WebOTPServiceTest, SecondRequestDuringPrompt) {
   service.ExpectRequestUserConsent();
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-    service.NotifyReceive(GURL(kTestUrl), "second");
+    service.NotifyReceive(GURL(kTestUrl), "second", UserConsent::kNotObtained);
   }));
 
   // First request.
@@ -596,7 +600,7 @@ TEST_F(WebOTPServiceTest, AbortWhilePrompt) {
       }));
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-    service.NotifyReceive(GURL(kTestUrl), "ABC");
+    service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
     EXPECT_TRUE(service.IsPromptOpen());
     service.AbortRequest();
   }));
@@ -626,7 +630,7 @@ TEST_F(WebOTPServiceTest, RequestAfterAbortWhilePrompt) {
         }));
 
     EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-      service.NotifyReceive(GURL(kTestUrl), "hi");
+      service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
       EXPECT_TRUE(service.IsPromptOpen());
       service.AbortRequest();
     }));
@@ -654,7 +658,7 @@ TEST_F(WebOTPServiceTest, RequestAfterAbortWhilePrompt) {
         }));
 
     EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-      service.NotifyReceive(GURL(kTestUrl), "hi2");
+      service.NotifyReceive(GURL(kTestUrl), "hi2", UserConsent::kNotObtained);
       service.ConfirmPrompt();
     }));
 
@@ -679,7 +683,7 @@ TEST_F(WebOTPServiceTest, SecondRequestWhilePrompt) {
       }));
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-    service.NotifyReceive(GURL(kTestUrl), "hi");
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
     service.AbortRequest();
   }));
 
@@ -716,7 +720,7 @@ TEST_F(WebOTPServiceTest, RecordTimeMetricsForContinueOnSuccess) {
   service.ExpectRequestUserConsent();
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-    service.NotifyReceive(GURL(kTestUrl), "ABC");
+    service.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kNotObtained);
     service.ConfirmPrompt();
   }));
 
@@ -741,7 +745,7 @@ TEST_F(WebOTPServiceTest, RecordMetricsForCancelOnSuccess) {
   service.ExpectRequestUserConsent();
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
-    service.NotifyReceive(GURL(kTestUrl), "hi");
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
     service.DismissPrompt();
   }));
 
