@@ -18,13 +18,36 @@
 namespace base {
 class DictionaryValue;
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 namespace onc {
 
 struct OncValueSignature;
 
+// *** ONC Validator Modes of Operation ***
+// The ONC validator supports different modes of operation depending on the
+// combination of flags passed to the constructor.
+//
+// ** |log_warnings| **
+// If this flag is set to true, warnings will be logged.
+//
+// ** |error_on_unknown_field| **
+// If this flag is set to true, and error will be logged in case of unknown
+// fields are encountered in the ONC to be validated and the validation will
+// fail. If it is set to false, a warning will be logged instead and the
+// validation will not fail for that cause.
+//
+// ** |error_on_wrong_recommended| **
+// If this flag is set to true, an error will be logged and the validation will
+// fail in case of encountering recommended fields that are not expected to be
+// recommended. If it is set to false, a warning will be logged instead and the
+// validation will not fail for that cause.
+//
+// ** |managed_onc| **
+// ONC set by policy are validated differently from ONC set through UI.
+// Set this flag to true if policy is the source of the ONC to be validated.
+//
 // The ONC Validator searches for the following invalid cases:
 // - a value is found that has the wrong type or is not expected according to
 //   the ONC spec (always an error)
@@ -58,11 +81,7 @@ struct OncValueSignature;
 // returned.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
  public:
-  enum Result {
-    VALID,
-    VALID_WITH_WARNINGS,
-    INVALID
-  };
+  enum Result { VALID, VALID_WITH_WARNINGS, INVALID };
 
   struct ValidationIssue {
     // If true, the ONC value does not adhere to the specification and may be
@@ -88,9 +107,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   // checks:
   // - only the network types Wifi and Ethernet are allowed
   // - client certificate patterns are disallowed
-  void SetOncSource(::onc::ONCSource source) {
-    onc_source_ = source;
-  }
+  void SetOncSource(::onc::ONCSource source) { onc_source_ = source; }
 
   // Validate the given |onc_object| dictionary according to |object_signature|.
   // The |object_signature| has to be a pointer to one of the signatures in
