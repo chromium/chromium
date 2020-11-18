@@ -34,6 +34,15 @@ using CookieAndLineAccessResultList =
     std::vector<CookieAndLineWithAccessResult>;
 using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
+struct CookieAccessParams {
+  // |access_semantics| is the access mode of the cookie access check.
+  CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
+  // |delegate_treats_url_as_trustworthy| should be true iff the
+  // CookieAccessDelegate has authorized access to secure cookies from URLs
+  // which might not otherwise be able to do so.
+  bool delegate_treats_url_as_trustworthy = false;
+};
+
 class NET_EXPORT CanonicalCookie {
  public:
   using UniqueCookieKey = std::tuple<std::string, std::string, std::string>;
@@ -256,17 +265,13 @@ class NET_EXPORT CanonicalCookie {
   // Returns if the cookie should be included (and if not, why) for the given
   // request |url| using the CookieInclusionStatus enum. HTTP only cookies can
   // be filter by using appropriate cookie |options|.
-  // |delegate_treats_url_as_trustworthy| should be passed as true if the
-  // CookieAccessDelegate has authorized access to secure cookies from URLs
-  // which might not otherwise be able to do so.
   //
   // PLEASE NOTE that this method does not check whether a cookie is expired or
   // not!
   CookieAccessResult IncludeForRequestURL(
       const GURL& url,
       const CookieOptions& options,
-      CookieAccessSemantics access_semantics,
-      bool delegate_treats_url_as_trustworthy) const;
+      const CookieAccessParams& params) const;
 
   // Returns if the cookie with given attributes can be set in context described
   // by |options|, and if no, describes why.

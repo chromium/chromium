@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
@@ -159,9 +160,10 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
             url_);
 
     if (!change.cookie
-             .IncludeForRequestURL(url_, options_,
-                                   change.access_result.access_semantics,
-                                   delegate_treats_url_as_trustworthy)
+             .IncludeForRequestURL(
+                 url_, options_,
+                 net::CookieAccessParams{change.access_result.access_semantics,
+                                         delegate_treats_url_as_trustworthy})
              .status.IsInclude()) {
       return;
     }

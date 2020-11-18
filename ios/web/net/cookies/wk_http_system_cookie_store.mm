@@ -58,9 +58,9 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   }
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
-  return canonical_cookie
-      ->IncludeForRequestURL(url, options, cookie_access_semantics,
-                             delegate_treats_url_as_trustworthy)
+  net::CookieAccessParams params = {cookie_access_semantics,
+                                    delegate_treats_url_as_trustworthy};
+  return canonical_cookie->IncludeForRequestURL(url, options, params)
       .status.IsInclude();
 }
 

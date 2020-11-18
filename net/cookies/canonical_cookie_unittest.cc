@@ -732,35 +732,41 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
 
   std::unique_ptr<CanonicalCookie> cookie(
       CanonicalCookie::Create(url, "A=2", creation_time, server_time));
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.IsInclude());
   EXPECT_TRUE(
       cookie
-          ->IncludeForRequestURL(GURL("http://www.example.com/foo/bar"),
-                                 options, net::CookieAccessSemantics::UNKNOWN,
-                                 /*delegate_treats_url_as_trustworthy=*/false)
+          ->IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
           .status.IsInclude());
   EXPECT_TRUE(
       cookie
-          ->IncludeForRequestURL(GURL("https://www.example.com/foo/bar"),
-                                 options, net::CookieAccessSemantics::UNKNOWN,
-                                 /*delegate_treats_url_as_trustworthy=*/false)
+          ->IncludeForRequestURL(
+              GURL("http://www.example.com/foo/bar"), options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
           .status.IsInclude());
   EXPECT_TRUE(
       cookie
-          ->IncludeForRequestURL(GURL("https://sub.example.com"), options,
-                                 net::CookieAccessSemantics::UNKNOWN,
-                                 /*delegate_treats_url_as_trustworthy=*/false)
+          ->IncludeForRequestURL(
+              GURL("https://www.example.com/foo/bar"), options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.IsInclude());
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              GURL("https://sub.example.com"), options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH}));
   EXPECT_TRUE(
       cookie
-          ->IncludeForRequestURL(GURL("https://sub.www.example.com"), options,
-                                 net::CookieAccessSemantics::UNKNOWN,
-                                 /*delegate_treats_url_as_trustworthy=*/false)
+          ->IncludeForRequestURL(
+              GURL("https://sub.www.example.com"), options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH}));
 
@@ -768,35 +774,42 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   // not included.
   cookie = CanonicalCookie::Create(url, "A=2; Path=/foo/bar", creation_time,
                                    server_time);
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.HasExactlyExclusionReasonsForTesting(
-                      {CookieInclusionStatus::EXCLUDE_NOT_ON_PATH}));
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      GURL("http://www.example.com/foo/bar/index.html"),
-                      options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.IsInclude());
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_NOT_ON_PATH}));
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              GURL("http://www.example.com/foo/bar/index.html"), options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.IsInclude());
 
   // Test that a secure cookie is not included for a non secure URL.
   GURL secure_url("https://www.example.com");
   cookie = CanonicalCookie::Create(secure_url, "A=2; Secure", creation_time,
                                    server_time);
   EXPECT_TRUE(cookie->IsSecure());
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      secure_url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.IsInclude());
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.HasExactlyExclusionReasonsForTesting(
-                      {CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              secure_url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.IsInclude());
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
 
   // Test that a delegate can make an exception, however, and ask for a
   // non-secure URL to be treated as trustworthy... with a warning.
@@ -805,8 +818,9 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   ASSERT_TRUE(cookie);
   EXPECT_TRUE(cookie->IsSecure());
   CookieAccessResult result = cookie->IncludeForRequestURL(
-      url, options, net::CookieAccessSemantics::UNKNOWN,
-      /*delegate_treats_url_as_trustworthy=*/true);
+      url, options,
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/true});
   EXPECT_TRUE(result.status.IsInclude());
   EXPECT_TRUE(result.status.HasWarningReason(
       CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC));
@@ -818,8 +832,9 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   ASSERT_TRUE(cookie);
   EXPECT_TRUE(cookie->IsSecure());
   result = cookie->IncludeForRequestURL(
-      localhost_url, options, net::CookieAccessSemantics::UNKNOWN,
-      /*delegate_treats_url_as_trustworthy=*/false);
+      localhost_url, options,
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false});
   EXPECT_TRUE(result.status.IsInclude());
   EXPECT_TRUE(result.status.HasWarningReason(
       CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC));
@@ -830,8 +845,9 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   ASSERT_TRUE(cookie);
   EXPECT_TRUE(cookie->IsSecure());
   result = cookie->IncludeForRequestURL(
-      secure_url, options, net::CookieAccessSemantics::UNKNOWN,
-      /*delegate_treats_url_as_trustworthy=*/true);
+      secure_url, options,
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/true});
   EXPECT_TRUE(result.status.IsInclude());
   EXPECT_FALSE(result.status.ShouldWarn());
 
@@ -843,18 +859,22 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   cookie =
       CanonicalCookie::Create(url, "A=2; HttpOnly", creation_time, server_time);
   EXPECT_TRUE(cookie->IsHttpOnly());
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.IsInclude());
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.IsInclude());
   options.set_exclude_httponly();
-  EXPECT_TRUE(cookie
-                  ->IncludeForRequestURL(
-                      url, options, net::CookieAccessSemantics::UNKNOWN,
-                      /*delegate_treats_url_as_trustworthy=*/false)
-                  .status.HasExactlyExclusionReasonsForTesting(
-                      {CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
+  EXPECT_TRUE(
+      cookie
+          ->IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
 }
 
 struct IncludeForRequestURLTestCase {
@@ -889,8 +909,9 @@ void VerifyIncludeForRequestURLTestCases(
     request_options.set_same_site_cookie_context(
         test.request_options_samesite_context);
     net::CookieAccessResult access_result = cookie->IncludeForRequestURL(
-        url, request_options, access_semantics,
-        /*delegate_treats_url_as_trustworthy=*/false);
+        url, request_options,
+        CookieAccessParams{access_semantics,
+                           /*delegate_treats_url_as_trustworthy=*/false});
 
     EXPECT_EQ(test.expected_inclusion_status, access_result.status);
     EXPECT_EQ(test.expected_effective_samesite,
@@ -1288,20 +1309,27 @@ TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
 
     EXPECT_TRUE(
         cookie
-            ->IncludeForRequestURL(url, options, CookieAccessSemantics::UNKNOWN,
-                                   /*delegate_treats_url_as_trustworthy=*/false)
+            ->IncludeForRequestURL(
+                url, options,
+                CookieAccessParams{
+                    CookieAccessSemantics::UNKNOWN,
+                    /*delegate_treats_url_as_trustworthy=*/false})
             .status.HasExactlyExclusionReasonsForTesting(
                 {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
+    EXPECT_TRUE(cookie
+                    ->IncludeForRequestURL(
+                        url, options,
+                        CookieAccessParams{
+                            CookieAccessSemantics::LEGACY,
+                            /*delegate_treats_url_as_trustworthy=*/false})
+                    .status.IsInclude());
     EXPECT_TRUE(
         cookie
-            ->IncludeForRequestURL(url, options, CookieAccessSemantics::LEGACY,
-                                   /*delegate_treats_url_as_trustworthy=*/false)
-            .status.IsInclude());
-    EXPECT_TRUE(
-        cookie
-            ->IncludeForRequestURL(url, options,
-                                   CookieAccessSemantics::NONLEGACY,
-                                   /*delegate_treats_url_as_trustworthy=*/false)
+            ->IncludeForRequestURL(
+                url, options,
+                CookieAccessParams{
+                    CookieAccessSemantics::NONLEGACY,
+                    /*delegate_treats_url_as_trustworthy=*/false})
             .status.HasExactlyExclusionReasonsForTesting(
                 {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
   }
@@ -1314,22 +1342,28 @@ TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
          features::
              kCookiesWithoutSameSiteMustBeSecure} /* disabled_features */);
 
-    EXPECT_TRUE(
-        cookie
-            ->IncludeForRequestURL(url, options, CookieAccessSemantics::UNKNOWN,
-                                   /*delegate_treats_url_as_trustworthy=*/false)
-            .status.IsInclude());
-    EXPECT_TRUE(
-        cookie
-            ->IncludeForRequestURL(url, options, CookieAccessSemantics::LEGACY,
-                                   /*delegate_treats_url_as_trustworthy=*/false)
-            .status.IsInclude());
+    EXPECT_TRUE(cookie
+                    ->IncludeForRequestURL(
+                        url, options,
+                        CookieAccessParams{
+                            CookieAccessSemantics::UNKNOWN,
+                            /*delegate_treats_url_as_trustworthy=*/false})
+                    .status.IsInclude());
+    EXPECT_TRUE(cookie
+                    ->IncludeForRequestURL(
+                        url, options,
+                        CookieAccessParams{
+                            CookieAccessSemantics::LEGACY,
+                            /*delegate_treats_url_as_trustworthy=*/false})
+                    .status.IsInclude());
     // If the semantics is Nonlegacy, only reject the cookie if the
     // SameSite=None-must-be-Secure feature is enabled.
     EXPECT_TRUE(cookie
                     ->IncludeForRequestURL(
-                        url, options, CookieAccessSemantics::NONLEGACY,
-                        /*delegate_treats_url_as_trustworthy=*/false)
+                        url, options,
+                        CookieAccessParams{
+                            CookieAccessSemantics::NONLEGACY,
+                            /*delegate_treats_url_as_trustworthy=*/false})
                     .status.IsInclude());
   }
 }
@@ -1352,8 +1386,10 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false);
   EXPECT_TRUE(
       cookie1
-          .IncludeForRequestURL(url, options, CookieAccessSemantics::UNKNOWN,
-                                /*delegate_treats_url_as_trustworthy=*/false)
+          .IncludeForRequestURL(
+              url, options,
+              CookieAccessParams{CookieAccessSemantics::UNKNOWN,
+                                 /*delegate_treats_url_as_trustworthy=*/false})
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_HTTP_ONLY,
                CookieInclusionStatus::EXCLUDE_SECURE_ONLY,

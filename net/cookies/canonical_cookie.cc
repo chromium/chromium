@@ -613,8 +613,7 @@ bool CanonicalCookie::IsDomainMatch(const std::string& host) const {
 CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     const GURL& url,
     const CookieOptions& options,
-    CookieAccessSemantics access_semantics,
-    bool delegate_treats_url_as_trustworthy) const {
+    const CookieAccessParams& params) const {
   CookieInclusionStatus status;
   // Filter out HttpOnly cookies, per options.
   if (options.exclude_httponly() && IsHttpOnly())
@@ -627,7 +626,7 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     CookieAccessScheme cookie_access_scheme =
         cookie_util::ProvisionalAccessScheme(url);
     if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
-        delegate_treats_url_as_trustworthy) {
+        params.delegate_treats_url_as_trustworthy) {
       cookie_access_scheme = CookieAccessScheme::kTrustworthy;
     }
     if (cookie_access_scheme == CookieAccessScheme::kNonCryptographic) {
@@ -648,13 +647,13 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   // For LEGACY cookies we should always return the schemeless context,
   // otherwise let GetContextForCookieInclusion() decide.
   CookieOptions::SameSiteCookieContext::ContextType cookie_inclusion_context =
-      access_semantics == CookieAccessSemantics::LEGACY
+      params.access_semantics == CookieAccessSemantics::LEGACY
           ? options.same_site_cookie_context().context()
           : options.same_site_cookie_context().GetContextForCookieInclusion();
 
   // Don't include same-site cookies for cross-site requests.
   CookieEffectiveSameSite effective_same_site =
-      GetEffectiveSameSite(access_semantics);
+      GetEffectiveSameSite(params.access_semantics);
   DCHECK(effective_same_site != CookieEffectiveSameSite::UNDEFINED);
   // Log the effective SameSite mode that is applied to the cookie on this
   // request, if its SameSite was not specified.
@@ -705,7 +704,7 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   // ignored. This can apply to cookies which were created before the
   // experimental options were enabled (as non-SameSite, insecure cookies cannot
   // be set while the options are on).
-  if (access_semantics != CookieAccessSemantics::LEGACY &&
+  if (params.access_semantics != CookieAccessSemantics::LEGACY &&
       cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled() &&
       SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
     status.AddExclusionReason(
@@ -713,7 +712,7 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   }
 
   // TODO(chlily): Apply warning if SameSite-by-default is enabled but
-  // access_semantics is LEGACY?
+  // params.access_semantics is LEGACY?
   ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
                                      IsSecure(),
                                      options.same_site_cookie_context(),
@@ -731,7 +730,8 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   }
 
   // TODO(chlily): Log metrics.
-  return CookieAccessResult(effective_same_site, status, access_semantics);
+  return CookieAccessResult(effective_same_site, status,
+                            params.access_semantics);
 }
 
 CookieAccessResult CanonicalCookie::IsSetPermittedInContext(

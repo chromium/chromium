@@ -170,8 +170,10 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
   return cookie
-      .IncludeForRequestURL(url_, net_options, access_semantics,
-                            network::IsUrlPotentiallyTrustworthy(url_))
+      .IncludeForRequestURL(
+          url_, net_options,
+          net::CookieAccessParams{access_semantics,
+                                  network::IsUrlPotentiallyTrustworthy(url_)})
       .status.IsInclude();
 }
 

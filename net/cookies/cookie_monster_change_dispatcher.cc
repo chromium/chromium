@@ -65,9 +65,10 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
         cookie_access_delegate &&
         cookie_access_delegate->ShouldTreatUrlAsTrustworthy(url_);
     if (!cookie
-             .IncludeForRequestURL(url_, CookieOptions::MakeAllInclusive(),
-                                   change.access_result.access_semantics,
-                                   delegate_treats_url_as_trustworthy)
+             .IncludeForRequestURL(
+                 url_, CookieOptions::MakeAllInclusive(),
+                 CookieAccessParams{change.access_result.access_semantics,
+                                    delegate_treats_url_as_trustworthy})
              .status.IsInclude()) {
       return;
     }

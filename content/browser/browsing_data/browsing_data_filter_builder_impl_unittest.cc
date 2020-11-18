@@ -67,9 +67,11 @@ void RunTestCase(TestCase test_case,
   EXPECT_TRUE(cookie) << cookie_line << " from " << test_case.url
                       << " is not a valid cookie";
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(*cookie,
-                                  net::CookieAccessSemantics::NONLEGACY, false))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -78,9 +80,11 @@ void RunTestCase(TestCase test_case,
       net::CanonicalCookie::Create(test_url, cookie_line, base::Time::Now(),
                                    base::nullopt /* server_time */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(*cookie,
-                                  net::CookieAccessSemantics::NONLEGACY, false))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -89,9 +93,11 @@ void RunTestCase(TestCase test_case,
       net::CanonicalCookie::Create(test_url, cookie_line, base::Time::Now(),
                                    base::nullopt /* server_time */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(*cookie,
-                                  net::CookieAccessSemantics::NONLEGACY, false))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -100,9 +106,11 @@ void RunTestCase(TestCase test_case,
       net::CanonicalCookie::Create(test_url, cookie_line, base::Time::Now(),
                                    base::nullopt /* server_time */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(*cookie,
-                                  net::CookieAccessSemantics::NONLEGACY, false))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 }

@@ -88,20 +88,19 @@ struct NET_EXPORT CookieDeletionInfo {
   // |creation_range| AND the |cookie| name is equal to |name|, etc. then true
   // will be returned. If not false.
   //
-  // |access_semantics| is the access semantics mode of the cookie at the time
-  // of the attempted match. This is used to determine whether the cookie
+  // |params.access_semantics| is the access semantics mode of the cookie at the
+  // time of the attempted match. This is used to determine whether the cookie
   // matches a particular URL based on effective SameSite mode. (But the value
   // should not matter because the CookieOptions used for this check includes
   // all cookies for a URL regardless of SameSite).
   //
-  // |delegate_treats_url_as_trustworthy| should be set to true if |url| was
-  // granted access to secure cookies by the CookieAccessDelegate.
+  // |params.delegate_treats_url_as_trustworthy| should be set to true if |url|
+  // was granted access to secure cookies by the CookieAccessDelegate.
   //
   // All members are used. See comments above other members for specifics
   // about how checking is done for that value.
   bool Matches(const CanonicalCookie& cookie,
-               CookieAccessSemantics access_semantics,
-               bool delegate_treats_url_as_trustworthy) const;
+               const CookieAccessParams& params) const;
 
   // See comment above for TimeRange::Contains() for more info.
   TimeRange creation_range;

@@ -5,6 +5,7 @@
 #include "net/cookies/cookie_deletion_info.h"
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 
 namespace net {
@@ -86,10 +87,8 @@ CookieDeletionInfo& CookieDeletionInfo::operator=(CookieDeletionInfo&& rhs) =
 CookieDeletionInfo& CookieDeletionInfo::operator=(
     const CookieDeletionInfo& rhs) = default;
 
-bool CookieDeletionInfo::Matches(
-    const CanonicalCookie& cookie,
-    CookieAccessSemantics access_semantics,
-    bool delegate_treats_url_as_trustworthy) const {
+bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
+                                 const CookieAccessParams& params) const {
   if (session_control != SessionControl::IGNORE_CONTROL &&
       (cookie.IsPersistent() !=
        (session_control == SessionControl::PERSISTENT_COOKIES))) {
@@ -117,8 +116,7 @@ bool CookieDeletionInfo::Matches(
   if (url.has_value() &&
       !cookie
            .IncludeForRequestURL(url.value(), CookieOptions::MakeAllInclusive(),
-                                 access_semantics,
-                                 delegate_treats_url_as_trustworthy)
+                                 params)
            .status.IsInclude()) {
     return false;
   }

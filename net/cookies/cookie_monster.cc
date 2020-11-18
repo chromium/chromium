@@ -628,8 +628,9 @@ void CookieMonster::DeleteAllMatchingInfo(CookieDeletionInfo delete_info,
               delete_info.url.value());
     }
 
-    if (delete_info.Matches(*cc, GetAccessSemanticsForCookie(*cc),
-                            delegate_treats_url_as_trustworthy)) {
+    if (delete_info.Matches(
+            *cc, CookieAccessParams{GetAccessSemanticsForCookie(*cc),
+                                    delegate_treats_url_as_trustworthy})) {
       InternalDeleteCookie(curit, true, /*sync_to_store*/
                            DELETE_COOKIE_EXPLICIT);
       ++num_deleted;
@@ -974,8 +975,9 @@ void CookieMonster::FilterCookiesWithOptions(
     // given |url|. HTTP only cookies are filtered depending on the passed
     // cookie |options|.
     CookieAccessResult access_result = (*it)->IncludeForRequestURL(
-        url, options, GetAccessSemanticsForCookie(**it),
-        delegate_treats_url_as_trustworthy);
+        url, options,
+        CookieAccessParams{GetAccessSemanticsForCookie(**it),
+                           delegate_treats_url_as_trustworthy});
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies())
