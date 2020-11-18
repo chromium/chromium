@@ -22,6 +22,8 @@
 #include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/window.h"
+#include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/cursor/cursor_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
@@ -182,58 +184,129 @@ aura::Window* GetPreferredRootWindow() {
   return Shell::GetRootWindowForDisplayId(display_id);
 }
 
+// In fullscreen or window capture mode, the mouse will change to a camera
+// image icon if we're capturing image, or a video record image icon if we're
+// capturing video.
+ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
+  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          GetPreferredRootWindow());
+  const float device_scale_factor = display.device_scale_factor();
+  // TODO: Adjust the icon color after spec is updated.
+  const gfx::ImageSkia icon = gfx::CreateVectorIcon(
+      capture_image ? kCaptureModeImageIcon : kCaptureModeVideoIcon,
+      SK_ColorBLACK);
+  SkBitmap bitmap = *icon.bitmap();
+  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+  ui::ScaleAndRotateCursorBitmapAndHotpoint(
+      device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
+  auto* cursor_factory = ui::CursorFactory::GetInstance();
+  ui::PlatformCursor platform_cursor =
+      cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot);
+  cursor.SetPlatformCursor(platform_cursor);
+  cursor.set_custom_bitmap(bitmap);
+  cursor.set_custom_hotspot(hotspot);
+  cursor_factory->UnrefImageCursor(platform_cursor);
+
+  return cursor;
+}
+
+// Returns the expected cursor type for |position| in region capture.
+ui::mojom::CursorType GetCursorTypeForFineTunePosition(
+    FineTunePosition position) {
+  switch (position) {
+    case FineTunePosition::kTopLeft:
+      return ui::mojom::CursorType::kNorthWestResize;
+    case FineTunePosition::kBottomRight:
+      return ui::mojom::CursorType::kSouthEastResize;
+    case FineTunePosition::kTopCenter:
+    case FineTunePosition::kBottomCenter:
+      return ui::mojom::CursorType::kNorthSouthResize;
+    case FineTunePosition::kTopRight:
+      return ui::mojom::CursorType::kNorthEastResize;
+    case FineTunePosition::kBottomLeft:
+      return ui::mojom::CursorType::kSouthWestResize;
+    case FineTunePosition::kLeftCenter:
+    case FineTunePosition::kRightCenter:
+      return ui::mojom::CursorType::kEastWestResize;
+    case FineTunePosition::kCenter:
+      return ui::mojom::CursorType::kMove;
+    default:
+      return ui::mojom::CursorType::kCell;
+  }
+}
+
 }  // namespace
 
-class CaptureModeSession::ScopedCursorSetter {
+class CaptureModeSession::CursorSetter {
  public:
-  explicit ScopedCursorSetter(ui::mojom::CursorType cursor)
+  CursorSetter()
       : cursor_manager_(Shell::Get()->cursor_manager()),
         original_cursor_(cursor_manager_->GetCursor()),
         original_cursor_visible_(cursor_manager_->IsCursorVisible()),
-        original_cursor_locked_(cursor_manager_->IsCursorLocked()) {
-    UpdateCursor(cursor);
-  }
+        original_cursor_locked_(cursor_manager_->IsCursorLocked()) {}
 
-  ScopedCursorSetter(const ScopedCursorSetter&) = delete;
-  ScopedCursorSetter& operator=(const ScopedCursorSetter&) = delete;
+  CursorSetter(const CursorSetter&) = delete;
+  CursorSetter& operator=(const CursorSetter&) = delete;
 
-  ~ScopedCursorSetter() {
-    // Only unlock the cursor if it wasn't locked before.
-    if (original_cursor_locked_)
-      return;
-
-    cursor_manager_->UnlockCursor();
-    cursor_manager_->SetCursor(original_cursor_);
-    if (original_cursor_visible_) {
-      cursor_manager_->ShowCursor();
-    } else {
-      cursor_manager_->HideCursor();
-    }
-  }
+  ~CursorSetter() { ResetCursor(); }
 
   // Note that this will always make the cursor visible if it is not |kNone|.
-  void UpdateCursor(ui::mojom::CursorType cursor) {
+  void UpdateCursor(const ui::Cursor& cursor) {
     if (original_cursor_locked_)
       return;
 
-    const bool currently_locked = cursor_manager_->IsCursorLocked();
+    const ui::mojom::CursorType current_cursor_type =
+        cursor_manager_->GetCursor().type();
+    const ui::mojom::CursorType new_cursor_type = cursor.type();
+    const CaptureModeType capture_type = CaptureModeController::Get()->type();
 
-    if (cursor_manager_->GetCursor().type() == cursor &&
-        cursor_manager_->IsCursorVisible()) {
-      if (!currently_locked)
-        cursor_manager_->LockCursor();
+    // For custom cursor, update the cursor if we need to change between image
+    // capture and video capture.
+    const bool is_cursor_changed =
+        current_cursor_type != new_cursor_type ||
+        (current_cursor_type == ui::mojom::CursorType::kCustom &&
+         custom_cursor_capture_type_ != capture_type);
+    const bool is_cursor_visibility_changed =
+        cursor_manager_->IsCursorVisible() !=
+        (new_cursor_type != ui::mojom::CursorType::kNone);
+    if (new_cursor_type == ui::mojom::CursorType::kCustom)
+      custom_cursor_capture_type_ = capture_type;
+
+    if (!is_cursor_changed && !is_cursor_visibility_changed)
       return;
-    }
 
-    if (currently_locked)
+    if (cursor_manager_->IsCursorLocked())
       cursor_manager_->UnlockCursor();
-    if (cursor == ui::mojom::CursorType::kNone) {
+    if (new_cursor_type == ui::mojom::CursorType::kNone) {
       cursor_manager_->HideCursor();
     } else {
       cursor_manager_->SetCursor(cursor);
       cursor_manager_->ShowCursor();
     }
     cursor_manager_->LockCursor();
+    was_cursor_reset_to_original_ = false;
+  }
+
+  // Resets to its original cursor.
+  void ResetCursor() {
+    // Only unlock the cursor if it wasn't locked before.
+    if (original_cursor_locked_)
+      return;
+
+    // Only reset cursor if it hasn't been reset before.
+    if (was_cursor_reset_to_original_)
+      return;
+
+    if (cursor_manager_->IsCursorLocked())
+      cursor_manager_->UnlockCursor();
+    cursor_manager_->SetCursor(original_cursor_);
+    if (original_cursor_visible_)
+      cursor_manager_->ShowCursor();
+    else
+      cursor_manager_->HideCursor();
+    was_cursor_reset_to_original_ = true;
   }
 
   bool IsCursorVisible() const { return cursor_manager_->IsCursorVisible(); }
@@ -242,9 +315,17 @@ class CaptureModeSession::ScopedCursorSetter {
     if (original_cursor_locked_ || !IsCursorVisible())
       return;
 
-    cursor_manager_->UnlockCursor();
+    if (cursor_manager_->IsCursorLocked())
+      cursor_manager_->UnlockCursor();
     cursor_manager_->HideCursor();
     cursor_manager_->LockCursor();
+    was_cursor_reset_to_original_ = false;
+  }
+
+  bool IsUsingCustomCursor(CaptureModeType type) const {
+    return cursor_manager_->GetCursor().type() ==
+               ui::mojom::CursorType::kCustom &&
+           custom_cursor_capture_type_ == type;
   }
 
  private:
@@ -254,12 +335,22 @@ class CaptureModeSession::ScopedCursorSetter {
 
   // If the original cursor is already locked, don't make any changes to it.
   const bool original_cursor_locked_;
+
+  // The current custom cursor type. kImage if we're using image capture icon as
+  // the mouse cursor, and kVideo if we're using video record icon as the mouse
+  // cursor.
+  CaptureModeType custom_cursor_capture_type_ = CaptureModeType::kImage;
+
+  // True if the cursor has reset back to its original cursor. It's to prevent
+  // Reset() from setting the cursor to |original_cursor_| more than once.
+  bool was_cursor_reset_to_original_ = true;
 };
 
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
     : controller_(controller),
       current_root_(GetPreferredRootWindow()),
-      magnifier_glass_(kMagnifierParams) {
+      magnifier_glass_(kMagnifierParams),
+      cursor_setter_(std::make_unique<CursorSetter>()) {
   Shell::Get()->AddPreTargetHandler(this);
 
   SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
@@ -279,14 +370,10 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   UpdateCaptureLabelWidget();
   RefreshStackingOrder(parent);
 
-  if (controller_->source() == CaptureModeSource::kRegion) {
-    cursor_setter_ =
-        std::make_unique<ScopedCursorSetter>(ui::mojom::CursorType::kCell);
-  }
-  if (controller_->source() == CaptureModeSource::kWindow) {
-    capture_window_observer_ =
-        std::make_unique<CaptureWindowObserver>(this, controller_->type());
-  }
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
+  if (controller_->source() == CaptureModeSource::kWindow)
+    capture_window_observer_ = std::make_unique<CaptureWindowObserver>(this);
 
   UpdateRootWindowDimmers();
 
@@ -321,35 +408,27 @@ aura::Window* CaptureModeSession::GetSelectedWindow() const {
 void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_source_changed_ = true;
 
-  if (new_source == CaptureModeSource::kWindow) {
-    capture_window_observer_ =
-        std::make_unique<CaptureWindowObserver>(this, controller_->type());
-  } else {
+  if (new_source == CaptureModeSource::kWindow)
+    capture_window_observer_ = std::make_unique<CaptureWindowObserver>(this);
+  else
     capture_window_observer_.reset();
-  }
 
-  if (new_source == CaptureModeSource::kRegion) {
-    cursor_setter_ = std::make_unique<ScopedCursorSetter>(
-        capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
-            previous_location_in_root_)
-            ? ui::mojom::CursorType::kPointer
-            : ui::mojom::CursorType::kCell);
+  if (new_source == CaptureModeSource::kRegion)
     num_capture_region_adjusted_ = 0;
-  } else {
-    cursor_setter_.reset();
-  }
 
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget();
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
-  if (controller_->source() == CaptureModeSource::kWindow)
-    capture_window_observer_->OnCaptureTypeChanged(new_type);
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
   UpdateCaptureLabelWidget();
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
@@ -454,10 +533,14 @@ void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
 
 void CaptureModeSession::OnTabletModeStarted() {
   UpdateCaptureLabelWidget();
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnTabletModeEnded() {
   UpdateCaptureLabelWidget();
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
@@ -568,6 +651,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   aura::Window::ConvertPointToTarget(event_target, current_root_, &location);
   wm::ConvertPointToScreen(event_target, &screen_location);
 
+  // Let the capture button handle any events it can handle first.
+  if (ShouldCaptureLabelHandleEvent(event_target)) {
+    UpdateCursor(screen_location, is_touch);
+    return;
+  }
+
   const bool is_event_on_capture_bar =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           screen_location);
@@ -578,8 +667,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const bool is_capture_window = capture_source == CaptureModeSource::kWindow;
   if (is_capture_fullscreen || is_capture_window) {
     // Do not handle any event located on the capture mode bar.
-    if (is_event_on_capture_bar)
+    if (is_event_on_capture_bar) {
+      UpdateCursor(screen_location, is_touch);
       return;
+    }
 
     event->SetHandled();
     event->StopPropagation();
@@ -592,6 +683,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
           capture_window_observer_->UpdateSelectedWindowAtPosition(
               screen_location);
         }
+        UpdateCursor(screen_location, is_touch);
         break;
       }
       case ui::ET_MOUSE_RELEASED:
@@ -607,13 +699,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   DCHECK_EQ(CaptureModeSource::kRegion, capture_source);
   DCHECK(cursor_setter_);
-
-  // Let the capture button handle any events it can handle first.
-  if (ShouldCaptureLabelHandleEvent(event_target)) {
-    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kHand);
-    return;
-  }
-
   // Allow events that are located on the capture mode bar to pass through so we
   // can click the buttons.
   if (!is_event_on_capture_bar) {
@@ -640,15 +725,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
       OnLocatedEventReleased(location, is_event_on_capture_bar);
       break;
-    case ui::ET_MOUSE_MOVED:
-      if (cursor_setter_->IsCursorVisible()) {
-        cursor_setter_->UpdateCursor(GetCursorType(
-            GetFineTunePosition(location, is_touch), is_event_on_capture_bar));
-      }
-      break;
     default:
       break;
   }
+  UpdateCursor(screen_location, is_touch);
 }
 
 FineTunePosition CaptureModeSession::GetFineTunePosition(
@@ -681,36 +761,6 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
     return FineTunePosition::kCenter;
 
   return FineTunePosition::kNone;
-}
-
-ui::mojom::CursorType CaptureModeSession::GetCursorType(
-    FineTunePosition position,
-    bool is_event_on_capture_bar) const {
-  if (is_event_on_capture_bar ||
-      controller_->source() != CaptureModeSource::kRegion) {
-    return ui::mojom::CursorType::kPointer;
-  }
-
-  switch (position) {
-    case FineTunePosition::kTopLeft:
-      return ui::mojom::CursorType::kNorthWestResize;
-    case FineTunePosition::kBottomRight:
-      return ui::mojom::CursorType::kSouthEastResize;
-    case FineTunePosition::kTopCenter:
-    case FineTunePosition::kBottomCenter:
-      return ui::mojom::CursorType::kNorthSouthResize;
-    case FineTunePosition::kTopRight:
-      return ui::mojom::CursorType::kNorthEastResize;
-    case FineTunePosition::kBottomLeft:
-      return ui::mojom::CursorType::kSouthWestResize;
-    case FineTunePosition::kLeftCenter:
-    case FineTunePosition::kRightCenter:
-      return ui::mojom::CursorType::kEastWestResize;
-    case FineTunePosition::kCenter:
-      return ui::mojom::CursorType::kMove;
-    default:
-      return ui::mojom::CursorType::kCell;
-  }
 }
 
 void CaptureModeSession::OnLocatedEventPressed(
@@ -821,9 +871,6 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   is_drag_in_progress_ = false;
   Shell::Get()->UpdateCursorCompositingEnabled();
-  cursor_setter_->UpdateCursor(
-      GetCursorType(GetFineTunePosition(location_in_root, /*is_touch=*/false),
-                    is_event_on_capture_bar));
 
   // Do a repaint to show the affordance circles.
   gfx::Rect damage_region = controller_->user_capture_region();
@@ -935,11 +982,6 @@ void CaptureModeSession::MaybeShowMagnifierGlassAtPoint(
     const gfx::Point& location_in_root) {
   if (!capture_mode_util::IsCornerFineTunePosition(fine_tune_position_))
     return;
-
-  DCHECK(cursor_setter_);
-  // Cursor will be reshown the next time we call UpdateCursor (which should be
-  // in OnLocatedEventReleased).
-  cursor_setter_->HideCursor();
   magnifier_glass_.ShowFor(current_root_, location_in_root);
 }
 
@@ -1191,6 +1233,72 @@ bool CaptureModeSession::IsInCountDownAnimation() const {
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   return label_view->IsInCountDownAnimation();
+}
+
+void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
+                                      bool is_touch) {
+  // Hide mouse cursor in tablet mode.
+  if (TabletModeController::Get()->InTabletMode()) {
+    cursor_setter_->HideCursor();
+    return;
+  }
+
+  // If the current mouse is on capture bar, use the pointer mouse cursor.
+  const bool is_event_on_capture_bar =
+      capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
+          location_in_screen);
+  if (is_event_on_capture_bar) {
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
+    return;
+  }
+
+  // If the current mouse event is on capture label button, and capture label
+  // button can handle the event, show the hand mouse cursor.
+  const bool is_event_on_capture_button =
+      capture_label_widget_->GetWindowBoundsInScreen().Contains(
+          location_in_screen) &&
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView())
+          ->ShouldHandleEvent();
+  if (is_event_on_capture_button) {
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kHand);
+    return;
+  }
+
+  const CaptureModeSource source = controller_->source();
+  if (source == CaptureModeSource::kWindow && !GetSelectedWindow()) {
+    // If we're in window capture mode and there is no select window at the
+    // moment, we should use the original mouse.
+    cursor_setter_->ResetCursor();
+    return;
+  }
+
+  if (source == CaptureModeSource::kFullscreen ||
+      source == CaptureModeSource::kWindow) {
+    // For fullscreen and other window capture cases, we should either use
+    // image capture icon or screen record icon as the mouse icon.
+    cursor_setter_->UpdateCursor(GetCursorForFullscreenOrWindowCapture(
+        controller_->type() == CaptureModeType::kImage));
+    return;
+  }
+
+  DCHECK_EQ(source, CaptureModeSource::kRegion);
+  if (fine_tune_position_ != FineTunePosition::kNone) {
+    // We're in fine tuning process.
+    if (capture_mode_util::IsCornerFineTunePosition(fine_tune_position_)) {
+      cursor_setter_->HideCursor();
+    } else {
+      cursor_setter_->UpdateCursor(
+          GetCursorTypeForFineTunePosition(fine_tune_position_));
+    }
+  } else {
+    // Otherwise update the cursor depending on the current cursor location.
+    cursor_setter_->UpdateCursor(GetCursorTypeForFineTunePosition(
+        GetFineTunePosition(location_in_screen, is_touch)));
+  }
+}
+
+bool CaptureModeSession::IsUsingCustomCursor(CaptureModeType type) const {
+  return cursor_setter_->IsUsingCustomCursor(type);
 }
 
 }  // namespace ash
