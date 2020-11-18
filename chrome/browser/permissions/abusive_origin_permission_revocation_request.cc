@@ -129,7 +129,7 @@ void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
 
   const CrowdDenyPreloadData::SiteReputation* site_reputation =
       crowd_deny->GetReputationDataForSite(url::Origin::Create(origin_));
-  if (site_reputation &&
+  if (site_reputation && !site_reputation->warning_only() &&
       (site_reputation->notification_ux_quality() ==
            CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
        site_reputation->notification_ux_quality() ==

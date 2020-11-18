@@ -68,9 +68,11 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
   void AddToPreloadDataBlocklist(
       const GURL& origin,
       chrome_browser_crowd_deny::
-          SiteReputation_NotificationUserExperienceQuality reputation_type) {
+          SiteReputation_NotificationUserExperienceQuality reputation_type,
+      bool has_warning) {
     SiteReputation reputation;
     reputation.set_notification_ux_quality(reputation_type);
+    reputation.set_warning_only(has_warning);
     testing_preload_data_.SetOriginReputation(url::Origin::Create(origin),
                                               std::move(reputation));
   }
@@ -165,7 +167,8 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingTest) {
       AbusiveOriginPermissionRevocationRequest::HasPreviouslyRevokedPermission(
           GetTestingProfile(), origin_to_revoke));
 
-  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT);
+  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
   QueryAndExpectDecisionForUrl(origin_to_revoke,
                                Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
@@ -196,13 +199,18 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
     QueryAndExpectDecisionForUrl(origin, Outcome::PERMISSION_NOT_REVOKED);
 
   AddToPreloadDataBlocklist(abusive_content_origin_to_revoke,
-                            SiteReputation::ABUSIVE_CONTENT);
+                            SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
   AddToPreloadDataBlocklist(abusive_prompts_origin_to_revoke,
-                            SiteReputation::ABUSIVE_PROMPTS);
+                            SiteReputation::ABUSIVE_PROMPTS,
+                            /*has_warning=*/false);
   AddToPreloadDataBlocklist(unsolicited_prompts_origin,
-                            SiteReputation::UNSOLICITED_PROMPTS);
-  AddToPreloadDataBlocklist(acceptable_origin, SiteReputation::ACCEPTABLE);
-  AddToPreloadDataBlocklist(unknown_origin, SiteReputation::UNKNOWN);
+                            SiteReputation::UNSOLICITED_PROMPTS,
+                            /*has_warning=*/false);
+  AddToPreloadDataBlocklist(acceptable_origin, SiteReputation::ACCEPTABLE,
+                            /*has_warning=*/false);
+  AddToPreloadDataBlocklist(unknown_origin, SiteReputation::UNKNOWN,
+                            /*has_warning=*/false);
 
   // The origins are on CrowdDeny blocking lists, but not on SafeBrowsing.
   for (auto origin : origins)
@@ -222,6 +230,54 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
   QueryAndExpectDecisionForUrl(unknown_origin, Outcome::PERMISSION_NOT_REVOKED);
 }
 
+TEST_F(AbusiveOriginPermissionRevocationRequestTest,
+       PreloadDataTestWithWarning) {
+  const GURL abusive_content_origin_to_revoke =
+      GURL("https://abusive-content.com/");
+  const GURL abusive_prompts_origin_to_revoke =
+      GURL("https://abusive-prompts.com/");
+  const GURL unsolicited_prompts_origin =
+      GURL("https://unsolicited-prompts.com/");
+  const GURL acceptable_origin = GURL("https://acceptable-origin.com/");
+  const GURL unknown_origin = GURL("https://unknown-origin.com/");
+
+  auto origins = {abusive_content_origin_to_revoke,
+                  abusive_prompts_origin_to_revoke, unsolicited_prompts_origin,
+                  acceptable_origin, unknown_origin};
+
+  for (auto origin : origins)
+    SetPermission(origin, CONTENT_SETTING_ALLOW);
+
+  // The origins are not on any blocking lists.
+  for (auto origin : origins)
+    QueryAndExpectDecisionForUrl(origin, Outcome::PERMISSION_NOT_REVOKED);
+
+  AddToPreloadDataBlocklist(abusive_content_origin_to_revoke,
+                            SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/true);
+  AddToPreloadDataBlocklist(abusive_prompts_origin_to_revoke,
+                            SiteReputation::ABUSIVE_PROMPTS,
+                            /*has_warning=*/true);
+  AddToPreloadDataBlocklist(unsolicited_prompts_origin,
+                            SiteReputation::UNSOLICITED_PROMPTS,
+                            /*has_warning=*/true);
+  AddToPreloadDataBlocklist(acceptable_origin, SiteReputation::ACCEPTABLE,
+                            /*has_warning=*/true);
+  AddToPreloadDataBlocklist(unknown_origin, SiteReputation::UNKNOWN,
+                            /*has_warning=*/true);
+
+  // The origins are on CrowdDeny blocking lists, but not on SafeBrowsing.
+  for (auto origin : origins)
+    QueryAndExpectDecisionForUrl(origin, Outcome::PERMISSION_NOT_REVOKED);
+
+  for (auto origin : origins)
+    AddToSafeBrowsingBlocklist(origin);
+
+  // The warning is enabled for all origin, permission should not be revoked.
+  for (auto origin : origins)
+    QueryAndExpectDecisionForUrl(origin, Outcome::PERMISSION_NOT_REVOKED);
+}
+
 TEST_F(AbusiveOriginPermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   const GURL origin_to_exempt = GURL("https://origin-allow.com/");
   const GURL origin_to_revoke = GURL("https://origin.com/");
@@ -231,11 +287,13 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
 
   SetPermission(origin_to_exempt, CONTENT_SETTING_ALLOW);
 
-  AddToPreloadDataBlocklist(origin_to_exempt, SiteReputation::ABUSIVE_CONTENT);
+  AddToPreloadDataBlocklist(origin_to_exempt, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
   AddToSafeBrowsingBlocklist(origin_to_exempt);
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
-  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT);
+  AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
   AddToSafeBrowsingBlocklist(origin_to_revoke);
 
   // The origin added to the exempt list will not be revoked.
