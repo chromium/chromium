@@ -7,8 +7,10 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,6 +30,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/extension.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
@@ -51,6 +54,16 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
             update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
         show_in_launcher_ =
             update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
+
+        if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+          SetAccessibleName(l10n_util::GetStringFUTF16(
+              IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT,
+              base::UTF8ToUTF16(update.ShortName())));
+        } else if (update.Paused() == apps::mojom::OptionalBool::kTrue) {
+          SetAccessibleName(l10n_util::GetStringFUTF16(
+              IDS_APP_ACCESSIBILITY_PAUSED_INSTALLED_APP_ANNOUNCEMENT,
+              base::UTF8ToUTF16(update.ShortName())));
+        }
       });
 
   constexpr bool allow_placeholder_icon = true;

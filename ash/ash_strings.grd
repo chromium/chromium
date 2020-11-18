@@ -3185,6 +3185,13 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_SEARCH_KEY" desc="The name of the first key to be used for the keyboard shortcut for activating multipaste, when the device has a search key.">
         Search
       </message>
+
+      <message name="IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is a blocked installed app.">
+        <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App, Blocked
+      </message>
+      <message name="IDS_APP_ACCESSIBILITY_PAUSED_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an paused installed app.">
+        <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App, Paused
+      </message>
     </messages>
   </release>
 </grit>
