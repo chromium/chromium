@@ -1450,17 +1450,26 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kAuthNegotiateDelegateAllowlist,
           prefs::kAuthNegotiateDelegateAllowlist, base::Value::Type::STRING)));
 
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingWhitelistDomains,
-      base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kSafeBrowsingWhitelistDomains,
+          prefs::kSafeBrowsingWhitelistDomains, base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(
+          key::kSafeBrowsingAllowlistDomains,
+          prefs::kSafeBrowsingWhitelistDomains, base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
   handlers->AddHandler(std::make_unique<BrowsingHistoryPolicyHandler>());
 
-  handlers->AddHandler(
-      std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kURLAllowlist, policy_prefs::kUrlWhitelist,
-      base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlacklist),
+      std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist)));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kURLWhitelist,
+                                            policy_prefs::kUrlWhitelist,
+                                            base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(key::kURLAllowlist,
+                                            policy_prefs::kUrlWhitelist,
+                                            base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kSafeBrowsingExtendedReportingEnabled,
       prefs::kSafeBrowsingScoutReportingEnabled, chrome_schema,
@@ -1487,9 +1496,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED));
 
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kAutoplayAllowlist, prefs::kAutoplayWhitelist,
-      base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kAutoplayWhitelist,
+                                            prefs::kAutoplayWhitelist,
+                                            base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(key::kAutoplayAllowlist,
+                                            prefs::kAutoplayWhitelist,
+                                            base::Value::Type::LIST)));
 
   // Handlers for policies with embedded JSON strings. These handlers are very
   // lenient - as long as the root value is of the right type, they only display
@@ -1611,13 +1624,21 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(screen_lock_legacy_policies),
       std::make_unique<ScreenLockDelayPolicyHandler>(chrome_schema)));
 
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kAttestationExtensionAllowlist,
-      prefs::kAttestationExtensionAllowlist, false));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kAttestationExtensionAllowlist,
+          prefs::kAttestationExtensionAllowlist, false),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kAttestationExtensionWhitelist,
+          prefs::kAttestationExtensionAllowlist, false)));
 
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kQuickUnlockModeAllowlist, prefs::kQuickUnlockModeAllowlist,
-      base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeAllowlist,
+                                            prefs::kQuickUnlockModeAllowlist,
+                                            base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeWhitelist,
+                                            prefs::kQuickUnlockModeAllowlist,
+                                            base::Value::Type::LIST)));
 
   handlers->AddHandler(base::WrapUnique(
       NetworkConfigurationPolicyHandler::CreateForDevicePolicy()));
@@ -1684,12 +1705,20 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<SimplePolicyHandler>(
           key::kPrintersBulkAccessMode, prefs::kRecommendedPrintersAccessMode,
           base::Value::Type::INTEGER)));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kPrintersBulkBlocklist, prefs::kRecommendedPrintersBlocklist,
-      base::Value::Type::LIST));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kPrintersBulkAllowlist, prefs::kRecommendedPrintersAllowlist,
-      base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kNativePrintersBulkBlacklist,
+          prefs::kRecommendedPrintersBlocklist, base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(
+          key::kPrintersBulkBlocklist, prefs::kRecommendedPrintersBlocklist,
+          base::Value::Type::LIST)));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kNativePrintersBulkWhitelist,
+          prefs::kRecommendedPrintersAllowlist, base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(
+          key::kPrintersBulkAllowlist, prefs::kRecommendedPrintersAllowlist,
+          base::Value::Type::LIST)));
   handlers->AddHandler(
       std::make_unique<ExternalDataPolicyHandler>(key::kExternalPrintServers));
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
@@ -1706,9 +1735,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<chromeos::platform_keys::KeyPermissionsPolicyHandler>(
           chrome_schema));
   handlers->AddHandler(std::make_unique<DefaultGeolocationPolicyHandler>());
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kNoteTakingAppsLockScreenAllowlist,
-      prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kNoteTakingAppsLockScreenWhitelist,
+          prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kNoteTakingAppsLockScreenAllowlist,
+          prefs::kNoteTakingAppsLockScreenAllowlist,
+          false /*allow_wildcards*/)));
   handlers->AddHandler(
       std::make_unique<SecondaryGoogleAccountSigninPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
@@ -1753,11 +1787,19 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kPerAppTimeLimitsAllowlist, prefs::kPerAppTimeLimitsAllowlistPolicy,
-      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
-      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+          key::kPerAppTimeLimitsWhitelist,
+          prefs::kPerAppTimeLimitsAllowlistPolicy, chrome_schema,
+          SCHEMA_ALLOW_UNKNOWN,
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED),
+      std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+          key::kPerAppTimeLimitsAllowlist,
+          prefs::kPerAppTimeLimitsAllowlistPolicy, chrome_schema,
+          SCHEMA_ALLOW_UNKNOWN,
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED)));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kEduCoexistenceToSVersion,
       chromeos::prefs::kEduCoexistenceToSVersion, chrome_schema,
@@ -1774,9 +1816,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           chrome_schema));
   handlers->AddHandler(
       std::make_unique<SystemFeaturesDisableListPolicyHandler>());
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kExternalPrintServersAllowlist,
-      prefs::kExternalPrintServersAllowlist, base::Value::Type::LIST));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kExternalPrintServersWhitelist,
+          prefs::kExternalPrintServersAllowlist, base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(
+          key::kExternalPrintServersAllowlist,
+          prefs::kExternalPrintServersAllowlist, base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
@@ -1785,9 +1831,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #if defined(USE_CUPS)
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kPrintingAPIExtensionsAllowlist,
-      prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kPrintingAPIExtensionsWhitelist,
+          prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kPrintingAPIExtensionsAllowlist,
+          prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false)));
 #endif  // defined(USE_CUPS)
 #else   // defined(OS_CHROMEOS)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
@@ -1834,25 +1884,39 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
   handlers->AddHandler(std::make_unique<DiskCacheDirPolicyHandler>());
 
-  handlers->AddHandler(
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
+          key::kNativeMessagingWhitelist,
+          extensions::pref_names::kNativeMessagingAllowlist, false),
       std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
           key::kNativeMessagingAllowlist,
-          extensions::pref_names::kNativeMessagingAllowlist, false));
-  handlers->AddHandler(
+          extensions::pref_names::kNativeMessagingAllowlist, false)));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
+          key::kNativeMessagingBlacklist,
+          extensions::pref_names::kNativeMessagingBlocklist, true),
       std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
           key::kNativeMessagingBlocklist,
-          extensions::pref_names::kNativeMessagingBlocklist, true));
+          extensions::pref_names::kNativeMessagingBlocklist, true)));
   handlers->AddHandler(
       std::make_unique<AutoLaunchProtocolsPolicyHandler>(chrome_schema));
 #endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kExtensionInstallAllowlist,
-      extensions::pref_names::kInstallAllowList, false));
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kExtensionInstallBlocklist, extensions::pref_names::kInstallDenyList,
-      true));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kExtensionInstallWhitelist,
+          extensions::pref_names::kInstallAllowList, false),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kExtensionInstallAllowlist,
+          extensions::pref_names::kInstallAllowList, false)));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kExtensionInstallBlacklist,
+          extensions::pref_names::kInstallDenyList, true),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kExtensionInstallBlocklist,
+          extensions::pref_names::kInstallDenyList, true)));
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionInstallForcelistPolicyHandler>());
   handlers->AddHandler(
@@ -1881,9 +1945,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   handlers->AddHandler(std::make_unique<SpellcheckLanguagePolicyHandler>());
-  handlers->AddHandler(
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SpellcheckLanguageBlocklistPolicyHandler>(
-          policy::key::kSpellcheckLanguageBlocklist));
+          policy::key::kSpellcheckLanguageBlacklist),
+      std::make_unique<SpellcheckLanguageBlocklistPolicyHandler>(
+          policy::key::kSpellcheckLanguageBlocklist)));
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
   return handlers;
