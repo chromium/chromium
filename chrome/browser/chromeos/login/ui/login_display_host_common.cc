@@ -10,9 +10,11 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
+#include "chrome/browser/chromeos/language_preferences.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
+#include "chrome/browser/chromeos/login/lock_screen_utils.h"
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/webui_accelerator_mapping.h"
@@ -30,6 +32,8 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chromeos {
@@ -47,6 +51,56 @@ void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(callback));
+  }
+}
+
+void PushFrontImIfNotExists(const std::string& input_method,
+                            std::vector<std::string>* input_methods) {
+  if (input_method.empty())
+    return;
+
+  if (!base::Contains(*input_methods, input_method))
+    input_methods->insert(input_methods->begin(), input_method);
+}
+
+void SetGaiaInputMethods(const AccountId& account_id) {
+  input_method::InputMethodManager* imm =
+      input_method::InputMethodManager::Get();
+
+  scoped_refptr<input_method::InputMethodManager::State> gaia_ime_state =
+      imm->GetActiveIMEState()->Clone();
+  imm->SetState(gaia_ime_state);
+  gaia_ime_state->SetUIStyle(input_method::InputMethodManager::UIStyle::kLogin);
+
+  // Set Least Recently Used input method for the user.
+  if (account_id.is_valid()) {
+    lock_screen_utils::SetUserInputMethod(account_id, gaia_ime_state.get(),
+                                          true /*honor_device_policy*/);
+  } else {
+    lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
+    std::vector<std::string> input_methods;
+    if (gaia_ime_state->GetAllowedInputMethods().empty()) {
+      input_methods =
+          imm->GetInputMethodUtil()->GetHardwareLoginInputMethodIds();
+    } else {
+      input_methods = gaia_ime_state->GetAllowedInputMethods();
+    }
+    const std::string owner_im = lock_screen_utils::GetUserLastInputMethod(
+        user_manager::UserManager::Get()->GetOwnerAccountId());
+    const std::string system_im = g_browser_process->local_state()->GetString(
+        language_prefs::kPreferredKeyboardLayout);
+
+    PushFrontImIfNotExists(owner_im, &input_methods);
+    PushFrontImIfNotExists(system_im, &input_methods);
+
+    gaia_ime_state->EnableLoginLayouts(
+        g_browser_process->GetApplicationLocale(), input_methods);
+
+    if (!system_im.empty()) {
+      gaia_ime_state->ChangeInputMethod(system_im, false /* show_message */);
+    } else if (!owner_im.empty()) {
+      gaia_ime_state->ChangeInputMethod(owner_im, false /* show_message */);
+    }
   }
 }
 
@@ -327,6 +381,8 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   DCHECK(GetWizardController());
   GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
   gaia_screen->LoadOnline(prefilled_account);
+
+  SetGaiaInputMethods(prefilled_account);
 
   if (chromeos::features::IsChildSpecificSigninEnabled() &&
       !prefilled_account.is_valid()) {

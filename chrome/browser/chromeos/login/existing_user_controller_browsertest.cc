@@ -33,6 +33,7 @@
 #include "chrome/browser/chromeos/login/screens/user_selection_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
@@ -1161,8 +1162,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
 }
 
 // Tests different auth failures for an existing user login attempts.
-class ExistingUserControllerAuthFailureTest
-    : public MixinBasedInProcessBrowserTest {
+class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
  public:
   ExistingUserControllerAuthFailureTest() = default;
   ~ExistingUserControllerAuthFailureTest() override = default;
@@ -1208,6 +1208,7 @@ class ExistingUserControllerAuthFailureTest
   }
 
  protected:
+  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
@@ -1217,7 +1218,11 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
                        CryptohomeMissing) {
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::MISSING_CRYPTOHOME);
 
-  OobeScreenWaiter(OobeBaseTest::GetFirstSigninScreen()).Wait();
+  WaitForGaiaPageLoad();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            test_user_.account_id.GetUserEmail());
+
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(test_user_.account_id);
   ASSERT_TRUE(user);

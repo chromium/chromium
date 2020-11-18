@@ -33,8 +33,6 @@
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/certificate_provider/pin_dialog_manager.h"
-#include "chrome/browser/chromeos/language_preferences.h"
-#include "chrome/browser/chromeos/login/lock_screen_utils.h"
 #include "chrome/browser/chromeos/login/reauth_stats.h"
 #include "chrome/browser/chromeos/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/chromeos/login/saml/saml_metric_utils.h"
@@ -94,8 +92,6 @@
 #include "net/cert/x509_certificate.h"
 #include "services/network/nss_temp_certs_cache_chromeos.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -222,15 +218,6 @@ bool ShouldCheckUserTypeBeforeAllowing() {
 
 void RecordSAMLScrapingVerificationResultInHistogram(bool success) {
   UMA_HISTOGRAM_BOOLEAN("ChromeOS.SAML.Scraping.VerificationResult", success);
-}
-
-void PushFrontIMIfNotExists(const std::string& input_method,
-                            std::vector<std::string>* input_methods) {
-  if (input_method.empty())
-    return;
-
-  if (!base::Contains(*input_methods, input_method))
-    input_methods->insert(input_methods->begin(), input_method);
 }
 
 bool IsOnline(NetworkPortalDetector::CaptivePortalStatus status) {
@@ -958,12 +945,7 @@ void GaiaScreenHandler::HandleOnFatalError(
 }
 
 void GaiaScreenHandler::OnShowAddUser() {
-  lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
-  LoadGaiaAsync(EmptyAccountId());
-  LoginDisplayHost::default_host()->StartWizard(
-      chromeos::features::IsChildSpecificSigninEnabled()
-          ? UserCreationView::kScreenId
-          : GaiaView::kScreenId);
+  LoginDisplayHost::default_host()->ShowGaiaDialog(populated_account_id_);
 }
 
 void GaiaScreenHandler::DoCompleteLogin(
@@ -1114,8 +1096,7 @@ void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
-  if (account_id.is_valid())
-    populated_account_id_ = account_id;
+  populated_account_id_ = account_id;
   if (gaia_silent_load_ && !populated_account_id_.is_valid()) {
     dns_cleared_ = true;
     cookies_cleared_ = true;
@@ -1230,45 +1211,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
        gaia_silent_load_network_ != active_network_path)) {
     // Network has changed. Force Gaia reload.
     gaia_silent_load_ = false;
-  }
-
-  input_method::InputMethodManager* imm =
-      input_method::InputMethodManager::Get();
-
-  scoped_refptr<input_method::InputMethodManager::State> gaia_ime_state =
-      imm->GetActiveIMEState()->Clone();
-  imm->SetState(gaia_ime_state);
-  gaia_ime_state->SetUIStyle(input_method::InputMethodManager::UIStyle::kLogin);
-
-  // Set Least Recently Used input method for the user.
-  if (populated_account_id_.is_valid()) {
-    lock_screen_utils::SetUserInputMethod(populated_account_id_,
-                                          gaia_ime_state.get(),
-                                          true /*honor_device_policy*/);
-  } else {
-    std::vector<std::string> input_methods;
-    if (gaia_ime_state->GetAllowedInputMethods().empty()) {
-      input_methods =
-          imm->GetInputMethodUtil()->GetHardwareLoginInputMethodIds();
-    } else {
-      input_methods = gaia_ime_state->GetAllowedInputMethods();
-    }
-    const std::string owner_im = lock_screen_utils::GetUserLastInputMethod(
-        user_manager::UserManager::Get()->GetOwnerAccountId());
-    const std::string system_im = g_browser_process->local_state()->GetString(
-        language_prefs::kPreferredKeyboardLayout);
-
-    PushFrontIMIfNotExists(owner_im, &input_methods);
-    PushFrontIMIfNotExists(system_im, &input_methods);
-
-    gaia_ime_state->EnableLoginLayouts(
-        g_browser_process->GetApplicationLocale(), input_methods);
-
-    if (!system_im.empty()) {
-      gaia_ime_state->ChangeInputMethod(system_im, false /* show_message */);
-    } else if (!owner_im.empty()) {
-      gaia_ime_state->ChangeInputMethod(owner_im, false /* show_message */);
-    }
   }
 
   if (!untrusted_authority_certs_cache_) {
