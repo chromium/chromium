@@ -74,7 +74,8 @@ TEST(PaintImageTest, GetSkImageForFrameNotGeneratorBacked) {
 
 TEST(PaintImageTest, DecodeToYuv420NoAlpha) {
   const SkISize full_size = SkISize::Make(10, 10);
-  SkYUVAInfo yuva_info(full_size, SkYUVAInfo::PlanarConfig::kY_U_V_420,
+  SkYUVAInfo yuva_info(full_size, SkYUVAInfo::PlaneConfig::kY_U_V,
+                       SkYUVAInfo::Subsampling::k420,
                        kJPEG_Full_SkYUVColorSpace);
   SkYUVAPixmapInfo yuva_pixmap_info(yuva_info,
                                     SkYUVAPixmapInfo::DataType::kUnorm8,

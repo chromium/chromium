@@ -40,20 +40,24 @@ sk_sp<SkImage> YUVGrBackendTexturesToSkImage(
     VideoPixelFormat video_format,
     GrBackendTexture* yuv_textures,
     const GrBackendTexture& result_texture) {
-  SkYUVAInfo::PlanarConfig planar_config;
+  SkYUVAInfo::PlaneConfig plane_config;
+  SkYUVAInfo::Subsampling subsampling;
   switch (video_format) {
     case PIXEL_FORMAT_NV12:
-      planar_config = SkYUVAInfo::PlanarConfig::kY_UV_420;
+      plane_config = SkYUVAInfo::PlaneConfig::kY_UV;
+      subsampling = SkYUVAInfo::Subsampling::k420;
       break;
     case PIXEL_FORMAT_I420:
-      planar_config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
+      plane_config = SkYUVAInfo::PlaneConfig::kY_U_V;
+      subsampling = SkYUVAInfo::Subsampling::k420;
       break;
     default:
       NOTREACHED();
       return nullptr;
   }
   SkYUVColorSpace color_space = ColorSpaceToSkYUVColorSpace(video_color_space);
-  SkYUVAInfo yuva_info(result_texture.dimensions(), planar_config, color_space);
+  SkYUVAInfo yuva_info(result_texture.dimensions(), plane_config, subsampling,
+                       color_space);
   GrYUVABackendTextures yuva_backend_textures(yuva_info, yuv_textures,
                                               kTopLeft_GrSurfaceOrigin);
   return SkImage::MakeFromYUVATexturesCopyToExternal(
@@ -115,13 +119,16 @@ bool YUVGrBackendTexturesToSkSurface(GrDirectContext* gr_context,
                                      sk_sp<SkSurface> surface,
                                      bool flip_y,
                                      bool use_visible_rect) {
-  SkYUVAInfo::PlanarConfig planar_config;
+  SkYUVAInfo::PlaneConfig plane_config;
+  SkYUVAInfo::Subsampling subsampling;
   switch (video_frame->format()) {
     case PIXEL_FORMAT_NV12:
-      planar_config = SkYUVAInfo::PlanarConfig::kY_UV_420;
+      plane_config = SkYUVAInfo::PlaneConfig::kY_UV;
+      subsampling = SkYUVAInfo::Subsampling::k420;
       break;
     case PIXEL_FORMAT_I420:
-      planar_config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
+      plane_config = SkYUVAInfo::PlaneConfig::kY_U_V;
+      subsampling = SkYUVAInfo::Subsampling::k420;
       break;
     default:
       NOTREACHED();
@@ -129,7 +136,8 @@ bool YUVGrBackendTexturesToSkSurface(GrDirectContext* gr_context,
   }
   SkYUVAInfo yuva_info(
       {video_frame->coded_size().width(), video_frame->coded_size().height()},
-      planar_config, ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace()));
+      plane_config, subsampling,
+      ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace()));
   auto image = SkImage::MakeFromYUVATextures(
       gr_context,
       GrYUVABackendTextures(yuva_info, yuv_textures, kTopLeft_GrSurfaceOrigin),

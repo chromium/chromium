@@ -638,31 +638,24 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
   }
 }
 
-bool VideoPixelFormatAsSkYUVAInfoPlanarConfig(
-    VideoPixelFormat format,
-    SkYUVAInfo::PlanarConfig* config) {
-  // TODO(skbug.com/10632): Add more formats, e.g. I420A, NV12, NV21 when Skia
-  // equivalents are added.
+std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
+VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   // The 9, 10, and 12 bit formats could be added here if GetYUVAPlanes() were
-  // updated to convert data to unorm16/float16.
+  // updated to convert data to unorm16/float16. Similarly, alpha planes and
+  // formats with interleaved planes (e.g. NV12) could  be supported if that
+  // function were updated to not assume 3 separate Y, U, and V planes. Also,
+  // GpuImageDecodeCache would need be able to handle plane configurations
+  // other than 3 separate y, u, and v planes (crbug.com/910276).
   switch (format) {
     case PIXEL_FORMAT_I420:
-      if (config) {
-        *config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
-      }
-      return true;
+      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_I422:
-      if (config) {
-        *config = SkYUVAInfo::PlanarConfig::kY_U_V_422;
-      }
-      return true;
+      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k422};
     case PIXEL_FORMAT_I444:
-      if (config) {
-        *config = SkYUVAInfo::PlanarConfig::kY_U_V_444;
-      }
-      return true;
+      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k444};
     default:
-      return false;
+      return {SkYUVAInfo::PlaneConfig::kUnknown,
+              SkYUVAInfo::Subsampling::kUnknown};
   }
 }
 
@@ -704,9 +697,11 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     // is added for VideoImageGenerator.
     return false;
 #if 0
-    SkYUVAInfo::PlanarConfig planar_config;
-    if (!VideoPixelFormatAsSkYUVAInfoPlanarConfig(frame_->format(),
-                                                  &planar_config)) {
+    SkYUVAInfo::PlaneConfig plane_config;
+    SkYUVAInfo::Subsampling subsampling;
+    std::tie(plane_config, subsampling) =
+        VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
+    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown) {
       return false;
     }
     if (info) {
@@ -722,8 +717,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
           VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
                                 gfx::Size(frame_->visible_rect().width(),
                                           frame_->visible_rect().height()));
-      SkYUVAInfo yuva_info = SkYUVAInfo({y_size.width(), y_size.height()},
-                                        planar_config, yuv_color_space);
+      SkYUVAInfo yuva_info =
+          SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
+                     subsampling, yuv_color_space);
       *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
                                /* row bytes */ nullptr);
     }
@@ -735,13 +731,15 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
                      size_t frame_index,
                      uint32_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
+    DCHECK_EQ(pixmaps.numPlanes(), 3);
 
-    if (!VideoPixelFormatAsSkYUVAInfoPlanarConfig(frame_->format(), nullptr)) {
-      return false;
-    }
-
-    if (!pixmaps.plane(3).dimensions().isEmpty()) {
-      return false;
+    if (DCHECK_IS_ON()) {
+      SkYUVAInfo::PlaneConfig plane_config;
+      SkYUVAInfo::Subsampling subsampling;
+      std::tie(plane_config, subsampling) =
+          VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
+      DCHECK_EQ(plane_config, pixmaps.yuvaInfo().planeConfig());
+      DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
     }
 
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;

@@ -2737,10 +2737,11 @@ void RasterDecoderImpl::DoConvertYUVMailboxesToRGBINTERNAL(
 
     SkISize dest_size =
         SkISize::Make(dest_surface->width(), dest_surface->height());
-    SkYUVAInfo::PlanarConfig planar_config =
-        is_nv12 ? SkYUVAInfo::PlanarConfig::kY_UV_420
-                : SkYUVAInfo::PlanarConfig::kY_U_V_420;
-    SkYUVAInfo yuva_info(dest_size, planar_config, src_color_space);
+    SkYUVAInfo::PlaneConfig plane_config =
+        is_nv12 ? SkYUVAInfo::PlaneConfig::kY_UV
+                : SkYUVAInfo::PlaneConfig::kY_U_V;
+    SkYUVAInfo yuva_info(dest_size, plane_config, SkYUVAInfo::Subsampling::k420,
+                         src_color_space);
     GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
                                                 kTopLeft_GrSurfaceOrigin);
     auto result_image =

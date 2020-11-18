@@ -1950,7 +1950,8 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
 
   SkYUVAInfo yuva_info(
       {options.resource_size.width(), options.resource_size.height()},
-      SkYUVAInfo::PlanarConfig::kY_U_V_420, kJPEG_Full_SkYUVColorSpace);
+      SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420,
+      kJPEG_Full_SkYUVColorSpace);
   GrYUVABackendTextures yuva_textures(yuva_info, backend_textures,
                                       kTopLeft_GrSurfaceOrigin);
 
@@ -2068,7 +2069,8 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
 
   SkYUVAInfo yuva_info(
       {options.resource_size.width(), options.resource_size.height()},
-      SkYUVAInfo::PlanarConfig::kY_UV_420, kJPEG_Full_SkYUVColorSpace);
+      SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420,
+      kJPEG_Full_SkYUVColorSpace);
   GrYUVABackendTextures yuva_textures(yuva_info, backend_textures,
                                       kTopLeft_GrSurfaceOrigin);
   auto expected_image = SkImage::MakeFromYUVATextures(
