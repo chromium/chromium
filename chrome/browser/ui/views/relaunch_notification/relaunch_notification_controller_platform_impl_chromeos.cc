@@ -143,13 +143,15 @@ bool RelaunchNotificationControllerPlatformImpl::CanScheduleReboot() {
 }
 
 void RelaunchNotificationControllerPlatformImpl::StartObserving() {
-  if (!display_observer_.IsObservingSources())
-    display_observer_.Add(ash::Shell::Get()->display_configurator());
-  if (!session_observer_.IsObservingSources())
-    session_observer_.Add(session_manager::SessionManager::Get());
+  if (!display_observation_.IsObserving())
+    display_observation_.Observe(ash::Shell::Get()->display_configurator());
+  if (!session_observation_.IsObserving())
+    session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 void RelaunchNotificationControllerPlatformImpl::StopObserving() {
-  display_observer_.RemoveAll();
-  session_observer_.RemoveAll();
+  if (display_observation_.IsObserving())
+    display_observation_.RemoveObservation();
+  if (session_observation_.IsObserving())
+    session_observation_.RemoveObservation();
 }
