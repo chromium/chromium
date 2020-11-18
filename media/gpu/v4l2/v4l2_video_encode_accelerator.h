@@ -191,6 +191,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // |image_processor_|.
   void InputImageProcessorTask();
 
+  void MaybeFlushImageProcessor();
+
   // Change encoding parameters.
   void RequestEncodingParametersChangeTask(uint32_t bitrate,
                                            uint32_t framerate);
@@ -335,6 +337,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   std::vector<size_t> free_image_processor_output_buffer_indices_;
   // Video frames ready to be processed. Only accessed on child thread.
   base::queue<InputFrameInfo> image_processor_input_queue_;
+  // The number of frames that are being processed by |image_processor_|.
+  size_t num_frames_in_image_processor_ = 0;
 
   const scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
   SEQUENCE_CHECKER(encoder_sequence_checker_);
