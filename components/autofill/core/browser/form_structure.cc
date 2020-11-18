@@ -890,7 +890,6 @@ void FormStructure::ProcessQueryResponse(
     form->UpdateAutofillCount();
     form->RationalizeRepeatedFields(form_interactions_ukm_logger);
     form->RationalizeFieldTypePredictions();
-    form->OverrideServerPredictionsWithHeuristics();
     form->IdentifySections(false);
   }
 
@@ -1844,27 +1843,6 @@ void FormStructure::RationalizeAddressStateCountry(
       ApplyRationalizationsToFields(upper_index, lower_index,
                                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
                                     form_interactions_ukm_logger);
-    }
-  }
-}
-
-void FormStructure::OverrideServerPredictionsWithHeuristics() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames) &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    return;
-  }
-  for (const auto& field : fields_) {
-    switch (field->heuristic_type()) {
-      case NAME_LAST_SECOND:
-      case NAME_LAST_FIRST:
-      case ADDRESS_HOME_STREET_NAME:
-      case ADDRESS_HOME_HOUSE_NUMBER:
-        field->SetTypeTo(AutofillType(field->heuristic_type()));
-        break;
-      default: {
-      };
     }
   }
 }

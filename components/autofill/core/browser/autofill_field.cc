@@ -143,6 +143,27 @@ AutofillType AutofillField::ComputedType() const {
     believe_server = believe_server &&
                      !(AutofillType(server_type_).group() == PASSWORD_FIELD &&
                        heuristic_type_ == CREDIT_CARD_VERIFICATION_CODE);
+
+    // For new name tokens the heuristic predictions get precedence over the
+    // server predictions.
+    // TODO(crbug.com/1098943): Remove feature check once launched.
+    believe_server =
+        believe_server &&
+        !(base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForMoreStructureInNames) &&
+          (heuristic_type_ == NAME_LAST_SECOND ||
+           heuristic_type_ == NAME_LAST_FIRST));
+
+    // For new address tokens the heuristic predictions get precedence over the
+    // server predictions.
+    // TODO(crbug.com/1098943): Remove feature check once launched.
+    believe_server =
+        believe_server &&
+        !(base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForMoreStructureInAddresses) &&
+          (heuristic_type_ == ADDRESS_HOME_STREET_NAME ||
+           heuristic_type_ == ADDRESS_HOME_HOUSE_NUMBER));
+
     if (believe_server)
       return AutofillType(server_type_);
   }
