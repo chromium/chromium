@@ -88,6 +88,9 @@ class DlpRulesManager {
   // Returns a pointer to the existing instance of the class.
   static DlpRulesManager* Get();
 
+  // Deletes an instance of the class. Is needed for testing purposes.
+  static void DeleteInstanceForTesting();
+
   // Registers the policy pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -122,8 +125,6 @@ class DlpRulesManager {
                                     Restriction restriction) const;
 
  private:
-  friend class DlpRulesManagerTest;
-
   DlpRulesManager();
   ~DlpRulesManager();
 

@@ -59,6 +59,9 @@ base::Value GenerateClipboardCopyDisallowedRule() {
 
 class DlpRulesManagerTest : public testing::Test {
  protected:
+  DlpRulesManagerTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override {
     testing::Test::SetUp();
 
@@ -66,15 +69,12 @@ class DlpRulesManagerTest : public testing::Test {
     dlp_rules_manager_ = DlpRulesManager::Get();
   }
 
-  DlpRulesManagerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  void TearDown() override { DlpRulesManager::DeleteInstanceForTesting(); }
 
   void UpdatePolicyPref(base::Value rules_list) {
     DCHECK(rules_list.is_list());
     testing_local_state_.Get()->Set(policy_prefs::kDlpRulesList,
                                     std::move(rules_list));
-    // TODO(crbug.com/1131392): Remove OnPolicyUpdate call.
-    dlp_rules_manager_->OnPolicyUpdate();
   }
 
   DlpRulesManager* dlp_rules_manager_;

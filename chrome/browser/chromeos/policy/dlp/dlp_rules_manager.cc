@@ -160,6 +160,13 @@ DlpRulesManager* DlpRulesManager::Get() {
 }
 
 // static
+void DlpRulesManager::DeleteInstanceForTesting() {
+  DCHECK(g_dlp_rules_manager);
+  delete g_dlp_rules_manager;
+  g_dlp_rules_manager = nullptr;
+}
+
+// static
 void DlpRulesManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(policy_prefs::kDlpRulesList);
 }
