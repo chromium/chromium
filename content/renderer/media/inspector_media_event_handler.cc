@@ -108,7 +108,6 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
 
 void InspectorMediaEventHandler::OnWebMediaPlayerDestroyed() {
   video_player_destroyed_ = true;
-  inspector_context_->DestroyPlayer(player_id_);
 }
 
 }  // namespace content

@@ -43,10 +43,7 @@ class MediaInspectorContext {
  public:
   virtual WebString CreatePlayer() = 0;
 
-  virtual void DestroyPlayer(const WebString& playerId) = 0;
-  virtual void IncrementActiveSessionCount() = 0;
-  virtual void DecrementActiveSessionCount() = 0;
-
+  // These methods DCHECK if the player id is invalid.
   virtual void NotifyPlayerEvents(WebString player_id,
                                   const InspectorPlayerEvents&) = 0;
   virtual void NotifyPlayerErrors(WebString player_id,
