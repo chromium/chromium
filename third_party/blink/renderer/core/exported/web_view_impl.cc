@@ -1822,7 +1822,6 @@ void WebViewImpl::SetFocus(bool enable) {
         }
       }
     }
-    ime_accept_events_ = true;
   } else {
     CancelPagePopup();
 
@@ -1847,7 +1846,6 @@ void WebViewImpl::SetFocus(bool enable) {
         focused_frame->GetInputMethodController().FinishComposingText(
             InputMethodController::kKeepSelection);
       }
-      ime_accept_events_ = false;
     }
   }
 }
@@ -3574,10 +3572,6 @@ LocalFrame* WebViewImpl::FocusedLocalFrameInWidget() const {
   if (focused_frame->LocalFrameRoot() != MainFrameImpl()->GetFrame())
     return nullptr;
   return focused_frame;
-}
-
-LocalFrame* WebViewImpl::FocusedLocalFrameAvailableForIme() const {
-  return ime_accept_events_ ? FocusedLocalFrameInWidget() : nullptr;
 }
 
 void WebViewImpl::SetPageFrozen(bool frozen) {

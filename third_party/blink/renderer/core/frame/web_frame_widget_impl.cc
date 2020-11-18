@@ -367,7 +367,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
         }
       }
     }
-    ime_accept_events_ = true;
   } else {
     LocalFrame* focused_frame = FocusedLocalFrameInWidget();
     if (focused_frame) {
@@ -382,7 +381,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
         focused_frame->GetInputMethodController().FinishComposingText(
             InputMethodController::kKeepSelection);
       }
-      ime_accept_events_ = false;
     }
   }
 }
@@ -496,12 +494,6 @@ void WebFrameWidgetImpl::SetAutoResizeMode(bool auto_resize,
                                            const gfx::Size& max_size_before_dsf,
                                            float device_scale_factor) {
   // Auto resize mode only exists on the top level widget.
-}
-
-LocalFrame* WebFrameWidgetImpl::FocusedLocalFrameAvailableForIme() const {
-  if (!ime_accept_events_)
-    return nullptr;
-  return FocusedLocalFrameInWidget();
 }
 
 void WebFrameWidgetImpl::DidCreateLocalRootView() {

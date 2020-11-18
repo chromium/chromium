@@ -600,7 +600,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidChangeRootLayer(bool root_layer_exists);
 
   LocalFrame* FocusedLocalFrameInWidget() const;
-  LocalFrame* FocusedLocalFrameAvailableForIme() const;
 
   // Clear focus and text input state of the page. If there was a focused
   // element, this will trigger updates to observers and send focus, selection,
@@ -714,11 +713,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   float compositor_device_scale_factor_override_ = 0.f;
   TransformationMatrix device_emulation_transform_;
-
-  // TODO(ekaramad): Can we remove this and make sure IME events are not called
-  // when there is no page focus?
-  // Represents whether or not this object should process incoming IME events.
-  bool ime_accept_events_ = true;
 
   // The popup associated with an input/select element. The popup is owned via
   // closership (self-owned-but-deleted-via-close) by RenderWidget. We also hold
