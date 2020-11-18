@@ -120,7 +120,6 @@
     "bases": ["fast/css3-text/css3-text-decoration/stable",
               "fast/dom/Window",
               "http/tests/navigation",
-              "http/tests/origin_trials/feature-policy-reporting",
               "http/tests/sendbeacon",
               "http/tests/serviceworker/webexposed",
               "inspector-protocol/dom-snapshot",
