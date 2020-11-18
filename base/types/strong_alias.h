@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_TYPE_SAFETY_STRONG_ALIAS_H_
-#define BASE_UTIL_TYPE_SAFETY_STRONG_ALIAS_H_
+#ifndef BASE_TYPES_STRONG_ALIAS_H_
+#define BASE_TYPES_STRONG_ALIAS_H_
 
 #include <ostream>
 #include <utility>
 
-namespace util {
+namespace base {
 
 // A type-safe alternative for a typedef or a 'using' directive.
 //
@@ -119,6 +119,6 @@ std::ostream& operator<<(std::ostream& stream,
   return stream << alias.value();
 }
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_TYPE_SAFETY_STRONG_ALIAS_H_
+#endif  // BASE_TYPES_STRONG_ALIAS_H_

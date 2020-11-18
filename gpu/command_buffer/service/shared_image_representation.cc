@@ -54,7 +54,7 @@ SharedImageRepresentationGLTextureBase::BeginScopedAccess(
     backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedAccess>(
-      util::PassKey<SharedImageRepresentationGLTextureBase>(), this);
+      base::PassKey<SharedImageRepresentationGLTextureBase>(), this);
 }
 
 bool SharedImageRepresentationGLTextureBase::BeginAccess(GLenum mode) {
@@ -98,7 +98,7 @@ bool SharedImageRepresentationSkia::SupportsMultipleConcurrentReadAccess() {
 }
 
 SharedImageRepresentationSkia::ScopedWriteAccess::ScopedWriteAccess(
-    util::PassKey<SharedImageRepresentationSkia> /* pass_key */,
+    base::PassKey<SharedImageRepresentationSkia> /* pass_key */,
     SharedImageRepresentationSkia* representation,
     sk_sp<SkSurface> surface,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
@@ -132,7 +132,7 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
   backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedWriteAccess>(
-      util::PassKey<SharedImageRepresentationSkia>(), this, std::move(surface),
+      base::PassKey<SharedImageRepresentationSkia>(), this, std::move(surface),
       std::move(end_state));
 }
 
@@ -148,7 +148,7 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
 }
 
 SharedImageRepresentationSkia::ScopedReadAccess::ScopedReadAccess(
-    util::PassKey<SharedImageRepresentationSkia> /* pass_key */,
+    base::PassKey<SharedImageRepresentationSkia> /* pass_key */,
     SharedImageRepresentationSkia* representation,
     sk_sp<SkPromiseImageTexture> promise_image_texture,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
@@ -190,7 +190,7 @@ SharedImageRepresentationSkia::BeginScopedReadAccess(
   backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedReadAccess>(
-      util::PassKey<SharedImageRepresentationSkia>(), this,
+      base::PassKey<SharedImageRepresentationSkia>(), this,
       std::move(promise_image_texture), std::move(end_state));
 }
 
@@ -226,7 +226,7 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkia::BeginReadAccess(
 }
 
 SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
-    util::PassKey<SharedImageRepresentationOverlay> pass_key,
+    base::PassKey<SharedImageRepresentationOverlay> pass_key,
     SharedImageRepresentationOverlay* representation,
     gl::GLImage* gl_image,
     std::vector<gfx::GpuFence> acquire_fences,
@@ -255,13 +255,13 @@ SharedImageRepresentationOverlay::BeginScopedReadAccess(bool needs_gl_image) {
   backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedReadAccess>(
-      util::PassKey<SharedImageRepresentationOverlay>(), this,
+      base::PassKey<SharedImageRepresentationOverlay>(), this,
       needs_gl_image ? GetGLImage() : nullptr, std::move(acquire_fences),
       std::move(release_fences));
 }
 
 SharedImageRepresentationDawn::ScopedAccess::ScopedAccess(
-    util::PassKey<SharedImageRepresentationDawn> /* pass_key */,
+    base::PassKey<SharedImageRepresentationDawn> /* pass_key */,
     SharedImageRepresentationDawn* representation,
     WGPUTexture texture)
     : ScopedAccessBase(representation), texture_(texture) {}
@@ -293,7 +293,7 @@ SharedImageRepresentationDawn::BeginScopedAccess(
   }
 
   return std::make_unique<ScopedAccess>(
-      util::PassKey<SharedImageRepresentationDawn>(), this, texture);
+      base::PassKey<SharedImageRepresentationDawn>(), this, texture);
 }
 
 SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
@@ -319,7 +319,7 @@ SharedImageRepresentationVaapi::SharedImageRepresentationVaapi(
 SharedImageRepresentationVaapi::~SharedImageRepresentationVaapi() = default;
 
 SharedImageRepresentationVaapi::ScopedWriteAccess::ScopedWriteAccess(
-    util::PassKey<SharedImageRepresentationVaapi> /* pass_key */,
+    base::PassKey<SharedImageRepresentationVaapi> /* pass_key */,
     SharedImageRepresentationVaapi* representation)
     : ScopedAccessBase(representation) {}
 
@@ -335,7 +335,7 @@ SharedImageRepresentationVaapi::ScopedWriteAccess::va_surface() {
 std::unique_ptr<SharedImageRepresentationVaapi::ScopedWriteAccess>
 SharedImageRepresentationVaapi::BeginScopedWriteAccess() {
   return std::make_unique<ScopedWriteAccess>(
-      util::PassKey<SharedImageRepresentationVaapi>(), this);
+      base::PassKey<SharedImageRepresentationVaapi>(), this);
 }
 
 }  // namespace gpu

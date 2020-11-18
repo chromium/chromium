@@ -180,7 +180,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
    public:
     using DidCallSendMessage =
-        util::StrongAlias<class DidCallSendMessageTag, bool>;
+        base::StrongAlias<class DidCallSendMessageTag, bool>;
 
     // Initializes message as a string
     Message(const std::string&,

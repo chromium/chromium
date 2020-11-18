@@ -56,13 +56,13 @@ void NetLog::ThreadSafeCaptureModeObserver::
 
 // static
 NetLog* NetLog::Get() {
-  static base::NoDestructor<NetLog> instance{util::PassKey<NetLog>()};
+  static base::NoDestructor<NetLog> instance{base::PassKey<NetLog>()};
   return instance.get();
 }
 
-NetLog::NetLog(util::PassKey<NetLog>) {}
-NetLog::NetLog(util::PassKey<NetLogWithSource>) {}
-NetLog::NetLog(util::PassKey<TestNetLog>) {}
+NetLog::NetLog(base::PassKey<NetLog>) {}
+NetLog::NetLog(base::PassKey<NetLogWithSource>) {}
+NetLog::NetLog(base::PassKey<TestNetLog>) {}
 
 NetLog::~NetLog() = default;
 

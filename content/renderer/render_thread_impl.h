@@ -27,7 +27,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "content/child/child_thread_impl.h"
@@ -208,7 +208,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // global setting. It should probably be moved to some `mojom::Renderer` API
   // and this method should be removed.
   void SetScrollAnimatorEnabled(bool enable_scroll_animator,
-                                util::PassKey<AgentSchedulingGroup>);
+                                base::PassKey<AgentSchedulingGroup>);
 
   bool IsThreadedAnimationEnabled();
   scoped_refptr<base::SingleThreadTaskRunner>

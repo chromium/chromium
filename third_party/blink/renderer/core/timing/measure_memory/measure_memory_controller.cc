@@ -35,7 +35,7 @@ void MeasureMemoryController::SetDedicatedWorkerMemoryReporter(
 }
 
 MeasureMemoryController::MeasureMemoryController(
-    util::PassKey<MeasureMemoryController>,
+    base::PassKey<MeasureMemoryController>,
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     v8::Local<v8::Promise::Resolver> promise_resolver)
@@ -78,7 +78,7 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
           : v8::MeasureMemoryExecution::kDefault;
 
   auto* impl = MakeGarbageCollected<MeasureMemoryController>(
-      util::PassKey<MeasureMemoryController>(), isolate, context,
+      base::PassKey<MeasureMemoryController>(), isolate, context,
       promise_resolver);
 
   isolate->MeasureMemory(

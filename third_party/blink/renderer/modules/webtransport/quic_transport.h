@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -49,7 +49,7 @@ class MODULES_EXPORT QuicTransport final
   USING_PRE_FINALIZER(QuicTransport, Dispose);
 
  public:
-  using PassKey = util::PassKey<QuicTransport>;
+  using PassKey = base::PassKey<QuicTransport>;
   static QuicTransport* Create(ScriptState*,
                                const String& url,
                                QuicTransportOptions*,

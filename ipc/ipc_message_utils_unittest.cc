@@ -222,7 +222,7 @@ TEST(IPCMessageUtilsTest, FlatMap) {
 }
 
 TEST(IPCMessageUtilsTest, StrongAlias) {
-  using TestType = util::StrongAlias<class Tag, int>;
+  using TestType = base::StrongAlias<class Tag, int>;
   TestType input(42);
 
   base::Pickle pickle;

@@ -136,7 +136,7 @@ struct NativeFileSystemFileWriterImpl::WriteState {
 
 NativeFileSystemFileWriterImpl::NativeFileSystemFileWriterImpl(
     NativeFileSystemManagerImpl* manager,
-    util::PassKey<NativeFileSystemManagerImpl> pass_key,
+    base::PassKey<NativeFileSystemManagerImpl> pass_key,
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,

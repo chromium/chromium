@@ -36,7 +36,7 @@
 #include <utility>
 
 #include "base/single_thread_task_runner.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -374,12 +374,12 @@ class CORE_EXPORT WebLocalFrameImpl final
       const FramePolicy&,
       const WebString& name);
 
-  WebLocalFrameImpl(util::PassKey<WebLocalFrameImpl>,
+  WebLocalFrameImpl(base::PassKey<WebLocalFrameImpl>,
                     mojom::blink::TreeScopeType,
                     WebLocalFrameClient*,
                     blink::InterfaceRegistry*,
                     const base::UnguessableToken& frame_token);
-  WebLocalFrameImpl(util::PassKey<WebRemoteFrameImpl>,
+  WebLocalFrameImpl(base::PassKey<WebRemoteFrameImpl>,
                     mojom::blink::TreeScopeType,
                     WebLocalFrameClient*,
                     blink::InterfaceRegistry*,

@@ -142,7 +142,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
   WebViewFrameWidget* widget = nullptr;
   if (g_create_web_view_frame_widget) {
     widget = g_create_web_view_frame_widget(
-        util::PassKey<WebFrameWidget>(), *client, web_view_impl,
+        base::PassKey<WebFrameWidget>(), *client, web_view_impl,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
@@ -152,7 +152,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
     // caller needs to release by calling Close().
     // TODO(dcheng): Remove the special bridge class for main frame widgets.
     widget = MakeGarbageCollected<WebViewFrameWidget>(
-        util::PassKey<WebFrameWidget>(), *client, web_view_impl,
+        base::PassKey<WebFrameWidget>(), *client, web_view_impl,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
@@ -186,7 +186,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
   // Note: this isn't a leak, as the object has a self-reference that the
   // caller needs to release by calling Close().
   auto* widget = MakeGarbageCollected<WebFrameWidgetImpl>(
-      util::PassKey<WebFrameWidget>(), *client,
+      base::PassKey<WebFrameWidget>(), *client,
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
       std::move(mojo_widget_host), std::move(mojo_widget),
       local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
@@ -196,7 +196,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
 }
 
 WebFrameWidgetImpl::WebFrameWidgetImpl(
-    util::PassKey<WebFrameWidget>,
+    base::PassKey<WebFrameWidget>,
     WebWidgetClient& client,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,

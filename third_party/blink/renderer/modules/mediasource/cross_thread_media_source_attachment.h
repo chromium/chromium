@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/thread_annotations.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
@@ -39,7 +39,7 @@ class CrossThreadMediaSourceAttachment final
   // in the worker thread context.  The raw pointer is then adopted into a
   // scoped_refptr in MediaSourceRegistryImpl::RegisterURL.
   CrossThreadMediaSourceAttachment(MediaSource* media_source,
-                                   util::PassKey<URLMediaSource>);
+                                   base::PassKey<URLMediaSource>);
 
   // MediaSourceAttachmentSupplement, called by MSE API on worker thread.
   // These generally require the MSE implementation to issue these calls from

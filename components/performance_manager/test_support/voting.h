@@ -33,14 +33,14 @@ class DummyVoteConsumer : public VoteConsumer<VoteImpl> {
   DummyVoteConsumer& operator=(const DummyVoteConsumer& rhs) = delete;
 
   // VoteConsumer implementation:
-  VoteReceipt<VoteImpl> SubmitVote(util::PassKey<VotingChannel>,
+  VoteReceipt<VoteImpl> SubmitVote(base::PassKey<VotingChannel>,
                                    voting::VoterId<VoteImpl> voter_id,
                                    const ContextType* context,
                                    const VoteImpl& vote) override;
-  void ChangeVote(util::PassKey<AcceptedVote>,
+  void ChangeVote(base::PassKey<AcceptedVote>,
                   AcceptedVote* old_vote,
                   const VoteImpl& new_vote) override;
-  void VoteInvalidated(util::PassKey<AcceptedVote>,
+  void VoteInvalidated(base::PassKey<AcceptedVote>,
                        AcceptedVote* vote) override;
 
   void ExpectInvalidVote(size_t index);
@@ -125,7 +125,7 @@ DummyVoteConsumer<VoteImpl>::~DummyVoteConsumer() = default;
 
 template <class VoteImpl>
 VoteReceipt<VoteImpl> DummyVoteConsumer<VoteImpl>::SubmitVote(
-    util::PassKey<VotingChannel>,
+    base::PassKey<VotingChannel>,
     voting::VoterId<VoteImpl> voter_id,
     const ContextType* context,
     const VoteImpl& vote) {
@@ -144,7 +144,7 @@ VoteReceipt<VoteImpl> DummyVoteConsumer<VoteImpl>::SubmitVote(
 }
 
 template <class VoteImpl>
-void DummyVoteConsumer<VoteImpl>::ChangeVote(util::PassKey<AcceptedVote>,
+void DummyVoteConsumer<VoteImpl>::ChangeVote(base::PassKey<AcceptedVote>,
                                              AcceptedVote* old_vote,
                                              const VoteImpl& new_vote) {
   // We should own this vote and it should be valid.
@@ -158,7 +158,7 @@ void DummyVoteConsumer<VoteImpl>::ChangeVote(util::PassKey<AcceptedVote>,
 }
 
 template <class VoteImpl>
-void DummyVoteConsumer<VoteImpl>::VoteInvalidated(util::PassKey<AcceptedVote>,
+void DummyVoteConsumer<VoteImpl>::VoteInvalidated(base::PassKey<AcceptedVote>,
                                                   AcceptedVote* vote) {
   // We should own this vote.
   EXPECT_LE(votes_.data(), vote);

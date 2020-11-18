@@ -124,7 +124,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   String ToString() const override;
 #endif
 
-  using PassKey = util::PassKey<NGBlockBreakToken>;
+  using PassKey = base::PassKey<NGBlockBreakToken>;
 
   // Must only be called from Create(), because it assumes that enough space
   // has been allocated in the flexible array to store the children.

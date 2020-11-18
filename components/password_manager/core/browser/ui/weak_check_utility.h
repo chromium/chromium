@@ -8,11 +8,11 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 namespace password_manager {
 
-using IsWeakPassword = util::StrongAlias<class IsWeakPasswordTag, bool>;
+using IsWeakPassword = base::StrongAlias<class IsWeakPasswordTag, bool>;
 
 // Returns whether `password` is weak.
 IsWeakPassword IsWeak(base::StringPiece16 password);

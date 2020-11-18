@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -135,7 +135,7 @@ class V8ContextTracker final
   // parent frame. See the V8ContextWorldType enum for a description of the
   // relationship between world types, world names and execution contexts.
   void OnV8ContextCreated(
-      util::PassKey<ProcessNodeImpl> key,
+      base::PassKey<ProcessNodeImpl> key,
       ProcessNodeImpl* process_node,
       const mojom::V8ContextDescription& description,
       mojom::IframeAttributionDataPtr iframe_attribution_data);
@@ -147,14 +147,14 @@ class V8ContextTracker final
   // context. All ExecutionContext-associated V8Contexts will have this method
   // called before they are destroyed, and it will not be called for other
   // V8Contexts (they are never considered detached).
-  void OnV8ContextDetached(util::PassKey<ProcessNodeImpl> key,
+  void OnV8ContextDetached(base::PassKey<ProcessNodeImpl> key,
                            ProcessNodeImpl* process_node,
                            const blink::V8ContextToken& v8_context_token);
 
   // Notifies the tracker that a V8Context has been garbage collected. This will
   // only be called after OnV8ContextDetached if the OnV8ContextCreated had a
   // non-empty |execution_context_token|.
-  void OnV8ContextDestroyed(util::PassKey<ProcessNodeImpl> key,
+  void OnV8ContextDestroyed(base::PassKey<ProcessNodeImpl> key,
                             ProcessNodeImpl* process_node,
                             const blink::V8ContextToken& v8_context_token);
 
@@ -165,7 +165,7 @@ class V8ContextTracker final
   // be called for bookkeeping. This should only be called once for a given
   // |remote_frame_token|.
   void OnRemoteIframeAttached(
-      util::PassKey<ProcessNodeImpl> key,
+      base::PassKey<ProcessNodeImpl> key,
       FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
       mojom::IframeAttributionDataPtr iframe_attribution_data);
@@ -180,7 +180,7 @@ class V8ContextTracker final
   // |remote_frame_token|, and only after a matching "OnRemoteIframeAttached"
   // call.
   void OnRemoteIframeDetached(
-      util::PassKey<ProcessNodeImpl> key,
+      base::PassKey<ProcessNodeImpl> key,
       FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token);
 

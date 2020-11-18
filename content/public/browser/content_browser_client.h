@@ -22,7 +22,7 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/common/content_export.h"
@@ -250,7 +250,7 @@ class CONTENT_EXPORT ContentBrowserClient {
  public:
   // Callback used with IsClipboardPasteAllowed() method.
   using ClipboardPasteAllowed =
-      util::StrongAlias<class ClipboardPasteAllowedTag, bool>;
+      base::StrongAlias<class ClipboardPasteAllowedTag, bool>;
   using IsClipboardPasteAllowedCallback =
       base::OnceCallback<void(ClipboardPasteAllowed)>;
 

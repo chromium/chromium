@@ -32,7 +32,7 @@ void BindNewInProcessInstance(
 }  // namespace
 
 TracingServiceController::ClientRegistration::ClientRegistration(
-    util::PassKey<TracingServiceController>,
+    base::PassKey<TracingServiceController>,
     base::OnceClosure unregister)
     : unregister_(std::move(unregister)) {}
 
@@ -57,7 +57,7 @@ TracingServiceController::RegisterClient(base::ProcessId pid,
       base::BindOnce(&TracingServiceController::RemoveClient,
                      base::Unretained(&TracingServiceController::Get()), pid);
   auto registration = std::make_unique<ClientRegistration>(
-      util::PassKey<TracingServiceController>(), std::move(unregister));
+      base::PassKey<TracingServiceController>(), std::move(unregister));
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     // Force registration to happen on the UI thread.

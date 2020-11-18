@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTE_OBJECTS_REMOTE_OBJECT_GATEWAY_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTE_OBJECTS_REMOTE_OBJECT_GATEWAY_IMPL_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -30,7 +30,7 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   static const char kSupplementName[];
 
   RemoteObjectGatewayImpl(
-      util::PassKey<RemoteObjectGatewayImpl>,
+      base::PassKey<RemoteObjectGatewayImpl>,
       LocalFrame&,
       mojo::PendingReceiver<mojom::blink::RemoteObjectGateway>,
       mojo::PendingRemote<mojom::blink::RemoteObjectHost>);

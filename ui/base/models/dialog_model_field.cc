@@ -33,7 +33,7 @@ DialogModelLabel::DialogModelLabel(base::string16 fixed_string)
     : message_id_(-1), string_(std::move(fixed_string)) {}
 
 const base::string16& DialogModelLabel::GetString(
-    util::PassKey<DialogModelHost>) const {
+    base::PassKey<DialogModelHost>) const {
   DCHECK(links_.empty());
   return string_;
 }
@@ -51,7 +51,7 @@ DialogModelLabel DialogModelLabel::CreateWithLinks(int message_id,
   return DialogModelLabel(message_id, std::move(links));
 }
 
-DialogModelField::DialogModelField(util::PassKey<DialogModel>,
+DialogModelField::DialogModelField(base::PassKey<DialogModel>,
                                    DialogModel* model,
                                    Type type,
                                    int unique_id,
@@ -65,27 +65,27 @@ DialogModelField::DialogModelField(util::PassKey<DialogModel>,
 
 DialogModelField::~DialogModelField() = default;
 
-DialogModelButton* DialogModelField::AsButton(util::PassKey<DialogModelHost>) {
+DialogModelButton* DialogModelField::AsButton(base::PassKey<DialogModelHost>) {
   return AsButton();
 }
 
 DialogModelBodyText* DialogModelField::AsBodyText(
-    util::PassKey<DialogModelHost>) {
+    base::PassKey<DialogModelHost>) {
   return AsBodyText();
 }
 
 DialogModelCheckbox* DialogModelField::AsCheckbox(
-    util::PassKey<DialogModelHost>) {
+    base::PassKey<DialogModelHost>) {
   return AsCheckbox();
 }
 
 DialogModelCombobox* DialogModelField::AsCombobox(
-    util::PassKey<DialogModelHost>) {
+    base::PassKey<DialogModelHost>) {
   return AsCombobox();
 }
 
 DialogModelTextfield* DialogModelField::AsTextfield(
-    util::PassKey<DialogModelHost>) {
+    base::PassKey<DialogModelHost>) {
   return AsTextfield();
 }
 
@@ -131,7 +131,7 @@ DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
 }
 
 DialogModelButton::DialogModelButton(
-    util::PassKey<DialogModel> pass_key,
+    base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     base::RepeatingCallback<void(const Event&)> callback,
     base::string16 label,
@@ -148,12 +148,12 @@ DialogModelButton::DialogModelButton(
 
 DialogModelButton::~DialogModelButton() = default;
 
-void DialogModelButton::OnPressed(util::PassKey<DialogModelHost>,
+void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
                                   const Event& event) {
   callback_.Run(event);
 }
 
-DialogModelBodyText::DialogModelBodyText(util::PassKey<DialogModel> pass_key,
+DialogModelBodyText::DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                                          DialogModel* model,
                                          const DialogModelLabel& label)
     : DialogModelField(pass_key,
@@ -166,11 +166,10 @@ DialogModelBodyText::DialogModelBodyText(util::PassKey<DialogModel> pass_key,
 DialogModelBodyText::~DialogModelBodyText() = default;
 
 DialogModelCheckbox::DialogModelCheckbox(
-    util::PassKey<DialogModel> pass_key,
+    base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     int unique_id,
     const DialogModelLabel& label,
-
     const DialogModelCheckbox::Params& params)
     : DialogModelField(pass_key,
                        model,
@@ -182,7 +181,7 @@ DialogModelCheckbox::DialogModelCheckbox(
 
 DialogModelCheckbox::~DialogModelCheckbox() = default;
 
-void DialogModelCheckbox::OnChecked(util::PassKey<DialogModelHost>,
+void DialogModelCheckbox::OnChecked(base::PassKey<DialogModelHost>,
                                     bool is_checked) {
   is_checked_ = is_checked;
 }
@@ -210,7 +209,7 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
 }
 
 DialogModelCombobox::DialogModelCombobox(
-    util::PassKey<DialogModel> pass_key,
+    base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     base::string16 label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
@@ -228,12 +227,12 @@ DialogModelCombobox::DialogModelCombobox(
 
 DialogModelCombobox::~DialogModelCombobox() = default;
 
-void DialogModelCombobox::OnSelectedIndexChanged(util::PassKey<DialogModelHost>,
+void DialogModelCombobox::OnSelectedIndexChanged(base::PassKey<DialogModelHost>,
                                                  int selected_index) {
   selected_index_ = selected_index;
 }
 
-void DialogModelCombobox::OnPerformAction(util::PassKey<DialogModelHost>) {
+void DialogModelCombobox::OnPerformAction(base::PassKey<DialogModelHost>) {
   if (callback_)
     callback_.Run();
 }
@@ -255,7 +254,7 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
 }
 
 DialogModelTextfield::DialogModelTextfield(
-    util::PassKey<DialogModel> pass_key,
+    base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     base::string16 label,
     base::string16 text,
@@ -271,7 +270,7 @@ DialogModelTextfield::DialogModelTextfield(
 
 DialogModelTextfield::~DialogModelTextfield() = default;
 
-void DialogModelTextfield::OnTextChanged(util::PassKey<DialogModelHost>,
+void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
                                          base::string16 text) {
   text_ = std::move(text);
 }

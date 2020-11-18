@@ -12,7 +12,7 @@
 namespace blink {
 
 DocumentModuleScriptFetcher::DocumentModuleScriptFetcher(
-    util::PassKey<ModuleScriptLoader> pass_key)
+    base::PassKey<ModuleScriptLoader> pass_key)
     : ModuleScriptFetcher(pass_key) {}
 
 void DocumentModuleScriptFetcher::Fetch(

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEASURE_MEMORY_MEASURE_MEMORY_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEASURE_MEMORY_MEASURE_MEMORY_CONTROLLER_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
@@ -47,7 +47,7 @@ class MeasureMemoryController final
 
   // Private constructor guarded by PassKey. Use the StartMeasurement() wrapper
   // to construct the object and start the measurement.
-  MeasureMemoryController(util::PassKey<MeasureMemoryController>,
+  MeasureMemoryController(base::PassKey<MeasureMemoryController>,
                           v8::Isolate*,
                           v8::Local<v8::Context>,
                           v8::Local<v8::Promise::Resolver>);

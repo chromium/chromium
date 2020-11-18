@@ -171,7 +171,7 @@ Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
 
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType,
-    util::PassKey<ModuleScriptLoader> pass_key) {
+    base::PassKey<ModuleScriptLoader> pass_key) {
   NOTREACHED();
   return nullptr;
 }

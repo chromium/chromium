@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -28,7 +28,7 @@ using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
 
 TouchToFillController::TouchToFillController(
-    util::PassKey<TouchToFillControllerTest>) {}
+    base::PassKey<TouchToFillControllerTest>) {}
 
 TouchToFillController::TouchToFillController(
     ChromePasswordManagerClient* password_client)

@@ -345,7 +345,7 @@ void FrameNodeImpl::SetPriorityAndReason(
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
-void FrameNodeImpl::AddOpenedPage(util::PassKey<PageNodeImpl>,
+void FrameNodeImpl::AddOpenedPage(base::PassKey<PageNodeImpl>,
                                   PageNodeImpl* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(page_node);
@@ -356,7 +356,7 @@ void FrameNodeImpl::AddOpenedPage(util::PassKey<PageNodeImpl>,
   DCHECK(inserted);
 }
 
-void FrameNodeImpl::RemoveOpenedPage(util::PassKey<PageNodeImpl>,
+void FrameNodeImpl::RemoveOpenedPage(base::PassKey<PageNodeImpl>,
                                      PageNodeImpl* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(page_node);

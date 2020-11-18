@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 namespace web_app {
@@ -41,7 +41,7 @@ struct RegistryUpdateData {
 class WebAppRegistryUpdate {
  public:
   WebAppRegistryUpdate(const WebAppRegistrar* registrar,
-                       util::PassKey<WebAppSyncBridge>);
+                       base::PassKey<WebAppSyncBridge>);
   WebAppRegistryUpdate(const WebAppRegistryUpdate&) = delete;
   WebAppRegistryUpdate& operator=(const WebAppRegistryUpdate&) = delete;
   ~WebAppRegistryUpdate();

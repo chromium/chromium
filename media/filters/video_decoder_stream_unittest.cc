@@ -104,7 +104,7 @@ class VideoDecoderStreamTest
         base::BindRepeating(&VideoDecoderStreamTest::OnDecoderChanged,
                             base::Unretained(this)));
     video_decoder_stream_
-        ->GetDecoderSelectorForTesting(util::PassKey<VideoDecoderStreamTest>())
+        ->GetDecoderSelectorForTesting(base::PassKey<VideoDecoderStreamTest>())
         .OverrideDecoderPriorityCBForTesting(
             base::BindRepeating(MockDecoderPriority));
     if (GetParam().has_prepare) {

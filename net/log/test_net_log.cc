@@ -111,7 +111,7 @@ void RecordingNetLogObserver::SetThreadsafeAddEntryCallback(
   add_entry_callback_ = add_entry_callback;
 }
 
-TestNetLog::TestNetLog() : NetLog(util::PassKey<TestNetLog>()) {}
+TestNetLog::TestNetLog() : NetLog(base::PassKey<TestNetLog>()) {}
 TestNetLog::~TestNetLog() = default;
 
 RecordingTestNetLog::RecordingTestNetLog()

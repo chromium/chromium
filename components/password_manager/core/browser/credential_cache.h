@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -22,7 +22,7 @@ class CredentialCache {
   // TODO(crbug.com/1051553): Consider reusing this alias for other password
   // manager code as well.
   using IsOriginBlacklisted =
-      util::StrongAlias<class IsOriginBlacklistedTag, bool>;
+      base::StrongAlias<class IsOriginBlacklistedTag, bool>;
   CredentialCache();
   CredentialCache(const CredentialCache&) = delete;
   CredentialCache& operator=(const CredentialCache&) = delete;

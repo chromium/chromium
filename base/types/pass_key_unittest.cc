@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 namespace {
 
 class Manager;
@@ -16,7 +16,7 @@ class Manager;
 // May not be created without a PassKey.
 class Restricted {
  public:
-  Restricted(util::PassKey<Manager>) {}
+  Restricted(base::PassKey<Manager>) {}
 };
 
 class Manager {
@@ -24,7 +24,7 @@ class Manager {
   enum class ExplicitConstruction { kTag };
   enum class UniformInitialization { kTag };
 
-  Manager(ExplicitConstruction) : restricted_(util::PassKey<Manager>()) {}
+  Manager(ExplicitConstruction) : restricted_(base::PassKey<Manager>()) {}
   Manager(UniformInitialization) : restricted_({}) {}
 
  private:
@@ -43,4 +43,4 @@ TEST(PassKeyTest, UniformInitialization) {
 }
 
 }  // namespace
-}  // namespace util
+}  // namespace base

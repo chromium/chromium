@@ -33,7 +33,7 @@ namespace blink {
 
 SameThreadMediaSourceAttachment::SameThreadMediaSourceAttachment(
     MediaSource* media_source,
-    util::PassKey<URLMediaSource> /* passkey */)
+    base::PassKey<URLMediaSource> /* passkey */)
     : registered_media_source_(media_source),
       recent_element_time_(0.0),
       element_has_error_(false),

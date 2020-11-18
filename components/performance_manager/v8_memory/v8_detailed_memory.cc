@@ -14,7 +14,7 @@
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -74,7 +74,7 @@ class V8DetailedMemoryDecorator::ObserverNotifier {
         V8DetailedMemoryDecorator::GetFromGraph(process_node->GetGraph());
     if (decorator)
       decorator->NotifyObserversOnMeasurementAvailable(
-          util::PassKey<ObserverNotifier>(), process_node);
+          base::PassKey<ObserverNotifier>(), process_node);
   }
 };
 
@@ -596,7 +596,7 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
 // This constructor is called from the V8DetailedMemoryRequestAnySeq's
 // sequence.
 V8DetailedMemoryRequest::V8DetailedMemoryRequest(
-    util::PassKey<V8DetailedMemoryRequestAnySeq>,
+    base::PassKey<V8DetailedMemoryRequestAnySeq>,
     const base::TimeDelta& min_time_between_requests,
     MeasurementMode mode,
     base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
@@ -614,7 +614,7 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
 }
 
 V8DetailedMemoryRequest::V8DetailedMemoryRequest(
-    util::PassKey<V8DetailedMemoryRequestOneShot>,
+    base::PassKey<V8DetailedMemoryRequestOneShot>,
     MeasurementMode mode,
     base::OnceClosure on_owner_unregistered_closure)
     : min_time_between_requests_(base::TimeDelta()),
@@ -628,7 +628,7 @@ V8DetailedMemoryRequest::~V8DetailedMemoryRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (decorator_)
     decorator_->RemoveMeasurementRequest(
-        util::PassKey<V8DetailedMemoryRequest>(), this);
+        base::PassKey<V8DetailedMemoryRequest>(), this);
   // TODO(crbug.com/1080672): Delete the decorator and its NodeAttachedData
   // when the last request is destroyed. Make sure this doesn't mess up any
   // measurement that's already in progress.
@@ -660,7 +660,7 @@ void V8DetailedMemoryRequest::RemoveObserver(
 }
 
 void V8DetailedMemoryRequest::OnOwnerUnregistered(
-    util::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>) {
+    base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   decorator_ = nullptr;
   if (on_owner_unregistered_closure_)
@@ -668,7 +668,7 @@ void V8DetailedMemoryRequest::OnOwnerUnregistered(
 }
 
 void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
-    util::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
+    base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
     const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* process_data =
@@ -699,7 +699,7 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
         base::BindOnce(&V8DetailedMemoryRequestAnySeq::
                            NotifyObserversOnMeasurementAvailable,
                        off_sequence_request_,
-                       util::PassKey<V8DetailedMemoryRequest>(),
+                       base::PassKey<V8DetailedMemoryRequest>(),
                        process_node->GetRenderProcessHostId(), *process_data,
                        V8DetailedMemoryObserverAnySeq::FrameDataMap(
                            std::move(all_frame_data))));
@@ -741,7 +741,7 @@ void V8DetailedMemoryRequest::StartMeasurementImpl(
     graph->PassToGraph(std::move(decorator_ptr));
   }
 
-  decorator_->AddMeasurementRequest(util::PassKey<V8DetailedMemoryRequest>(),
+  decorator_->AddMeasurementRequest(base::PassKey<V8DetailedMemoryRequest>(),
                                     this, process_node);
 }
 
@@ -801,7 +801,7 @@ void V8DetailedMemoryRequestOneShot::OnV8MemoryMeasurementAvailable(
 // This constructor is called from the V8DetailedMemoryRequestOneShotAnySeq's
 // sequence.
 V8DetailedMemoryRequestOneShot::V8DetailedMemoryRequestOneShot(
-    util::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
+    base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
     base::WeakPtr<ProcessNode> process,
     MeasurementCallback callback,
     MeasurementMode mode)
@@ -823,7 +823,7 @@ V8DetailedMemoryRequestOneShot::V8DetailedMemoryRequestOneShot(
 void V8DetailedMemoryRequestOneShot::InitializeRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request_ = std::make_unique<V8DetailedMemoryRequest>(
-      util::PassKey<V8DetailedMemoryRequestOneShot>(), mode_,
+      base::PassKey<V8DetailedMemoryRequestOneShot>(), mode_,
       base::BindOnce(&V8DetailedMemoryRequestOneShot::OnOwnerUnregistered,
                      // Unretained is safe because |this| owns the request
                      // object that will invoke the closure.
@@ -985,7 +985,7 @@ V8DetailedMemoryDecorator::GetNextBoundedRequest() const {
 }
 
 void V8DetailedMemoryDecorator::AddMeasurementRequest(
-    util::PassKey<V8DetailedMemoryRequest> key,
+    base::PassKey<V8DetailedMemoryRequest> key,
     V8DetailedMemoryRequest* request,
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1000,7 +1000,7 @@ void V8DetailedMemoryDecorator::AddMeasurementRequest(
 }
 
 void V8DetailedMemoryDecorator::RemoveMeasurementRequest(
-    util::PassKey<V8DetailedMemoryRequest> key,
+    base::PassKey<V8DetailedMemoryRequest> key,
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Attempt to remove this request from all process-specific queues and the
@@ -1039,7 +1039,7 @@ void V8DetailedMemoryDecorator::UpdateProcessMeasurementSchedules() const {
 }
 
 void V8DetailedMemoryDecorator::NotifyObserversOnMeasurementAvailable(
-    util::PassKey<ObserverNotifier> key,
+    base::PassKey<ObserverNotifier> key,
     const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   measurement_requests_->NotifyObserversOnMeasurementAvailable(process_node);
@@ -1112,7 +1112,7 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::
   ApplyToAllRequests(base::BindRepeating(
       [](const ProcessNode* process_node, V8DetailedMemoryRequest* request) {
         request->NotifyObserversOnMeasurementAvailable(
-            util::PassKey<MeasurementRequestQueue>(), process_node);
+            base::PassKey<MeasurementRequestQueue>(), process_node);
       },
       process_node));
 }
@@ -1120,7 +1120,7 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::
 void V8DetailedMemoryDecorator::MeasurementRequestQueue::OnOwnerUnregistered() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplyToAllRequests(base::BindRepeating([](V8DetailedMemoryRequest* request) {
-    request->OnOwnerUnregistered(util::PassKey<MeasurementRequestQueue>());
+    request->OnOwnerUnregistered(base::PassKey<MeasurementRequestQueue>());
   }));
   bounded_measurement_requests_.clear();
   lazy_measurement_requests_.clear();
@@ -1225,7 +1225,7 @@ void V8DetailedMemoryRequestAnySeq::RemoveObserver(
 }
 
 void V8DetailedMemoryRequestAnySeq::NotifyObserversOnMeasurementAvailable(
-    util::PassKey<V8DetailedMemoryRequest>,
+    base::PassKey<V8DetailedMemoryRequest>,
     RenderProcessHostId render_process_host_id,
     const V8DetailedMemoryProcessData& process_data,
     const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) const {
@@ -1244,7 +1244,7 @@ void V8DetailedMemoryRequestAnySeq::InitializeWrappedRequest(
   // constructor. After construction the V8DetailedMemoryRequest must only be
   // accessed on the graph sequence.
   request_ = base::WrapUnique(new V8DetailedMemoryRequest(
-      util::PassKey<V8DetailedMemoryRequestAnySeq>(), min_time_between_requests,
+      base::PassKey<V8DetailedMemoryRequestAnySeq>(), min_time_between_requests,
       mode, std::move(process_to_measure), weak_factory_.GetWeakPtr()));
 }
 
@@ -1313,7 +1313,7 @@ void V8DetailedMemoryRequestOneShotAnySeq::InitializeWrappedRequest(
   // constructor. After construction the V8DetailedMemoryRequestOneShot must
   // only be accessed on the graph sequence.
   request_ = base::WrapUnique(new V8DetailedMemoryRequestOneShot(
-      util::PassKey<V8DetailedMemoryRequestOneShotAnySeq>(),
+      base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>(),
       std::move(process_node), std::move(wrapped_callback), mode));
 }
 

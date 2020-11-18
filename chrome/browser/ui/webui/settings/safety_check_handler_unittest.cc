@@ -16,7 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
@@ -64,8 +64,8 @@ constexpr char kChromeCleaner[] = "chrome-cleaner";
 #endif
 
 namespace {
-using Enabled = util::StrongAlias<class EnabledTag, bool>;
-using UserCanDisable = util::StrongAlias<class UserCanDisableTag, bool>;
+using Enabled = base::StrongAlias<class EnabledTag, bool>;
+using UserCanDisable = base::StrongAlias<class UserCanDisableTag, bool>;
 
 class TestingSafetyCheckHandler : public SafetyCheckHandler {
  public:

@@ -43,7 +43,7 @@ NetLogWithSource::NetLogWithSource() {
   // The "dummy" net log used here will always return false for IsCapturing(),
   // and have no sideffects should its method be called. In practice the only
   // method that will get called on it is IsCapturing().
-  static base::NoDestructor<NetLog> dummy{util::PassKey<NetLogWithSource>()};
+  static base::NoDestructor<NetLog> dummy{base::PassKey<NetLogWithSource>()};
   DCHECK(!dummy->IsCapturing());
   non_null_net_log_ = dummy.get();
 }

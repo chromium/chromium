@@ -11,16 +11,16 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 namespace autofill {
 
 // A LanguageCode is a two-letter lowercase abbreviation according to ISO 639-1
 // or "und", which is the ISO 639-2 code for "undetermined".
 class LanguageCode
-    : public util::StrongAlias<class LanguageCodeTag, std::string> {
+    : public base::StrongAlias<class LanguageCodeTag, std::string> {
  private:
-  using BaseClass = util::StrongAlias<LanguageCodeTag, std::string>;
+  using BaseClass = base::StrongAlias<LanguageCodeTag, std::string>;
 
  public:
   LanguageCode() = default;

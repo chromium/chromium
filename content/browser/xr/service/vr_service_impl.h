@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/common/content_export.h"
@@ -44,7 +44,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   explicit VRServiceImpl(content::RenderFrameHost* render_frame_host);
 
   // Constructor for tests.
-  explicit VRServiceImpl(util::PassKey<XRRuntimeManagerTest>);
+  explicit VRServiceImpl(base::PassKey<XRRuntimeManagerTest>);
 
   ~VRServiceImpl() override;
 

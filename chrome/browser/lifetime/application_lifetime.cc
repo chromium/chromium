@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -122,7 +122,7 @@ bool g_send_stop_request_to_session_manager = false;
 
 #if !defined(OS_ANDROID)
 using IgnoreUnloadHandlers =
-    util::StrongAlias<class IgnoreUnloadHandlersTag, bool>;
+    base::StrongAlias<class IgnoreUnloadHandlersTag, bool>;
 
 void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?

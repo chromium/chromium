@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_FILE_WRITER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/download/quarantine/quarantine.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -42,7 +42,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // FileWriters should only be created via the NativeFileSystemManagerImpl.
   NativeFileSystemFileWriterImpl(
       NativeFileSystemManagerImpl* manager,
-      util::PassKey<NativeFileSystemManagerImpl> pass_key,
+      base::PassKey<NativeFileSystemManagerImpl> pass_key,
       const BindingContext& context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,

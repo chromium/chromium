@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_INITIAL_COLOR_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_INITIAL_COLOR_VALUE_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -19,7 +19,7 @@ class CORE_EXPORT CSSInitialColorValue : public CSSValue {
  public:
   static CSSInitialColorValue* Create();
 
-  explicit CSSInitialColorValue(util::PassKey<CSSValuePool>)
+  explicit CSSInitialColorValue(base::PassKey<CSSValuePool>)
       : CSSValue(kInitialColorValueClass) {}
 
   String CustomCSSText() const;

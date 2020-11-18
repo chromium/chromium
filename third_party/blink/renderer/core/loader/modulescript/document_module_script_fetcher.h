@@ -19,7 +19,7 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
     : public GarbageCollected<DocumentModuleScriptFetcher>,
       public ModuleScriptFetcher {
  public:
-  explicit DocumentModuleScriptFetcher(util::PassKey<ModuleScriptLoader>);
+  explicit DocumentModuleScriptFetcher(base::PassKey<ModuleScriptLoader>);
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,

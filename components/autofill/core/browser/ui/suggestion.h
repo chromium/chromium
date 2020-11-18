@@ -9,13 +9,13 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {
 
 struct Suggestion {
-  using IsLoading = util::StrongAlias<class IsLoadingTag, bool>;
+  using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
 
   enum MatchMode {
     PREFIX_MATCH,    // for prefix matched suggestions;

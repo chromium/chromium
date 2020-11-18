@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_SUITABLE_TRUST_TOKEN_ORIGIN_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_SUITABLE_TRUST_TOKEN_ORIGIN_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "url/origin.h"
 
 namespace network {
@@ -46,7 +46,7 @@ class SuitableTrustTokenOrigin {
 
   // Constructs a SuitableTrustTokenOrigin from the given origin. Public only as
   // an implementation detail; clients should use |Create|.
-  SuitableTrustTokenOrigin(util::PassKey<SuitableTrustTokenOrigin>,
+  SuitableTrustTokenOrigin(base::PassKey<SuitableTrustTokenOrigin>,
                            url::Origin&& origin);
 
  private:

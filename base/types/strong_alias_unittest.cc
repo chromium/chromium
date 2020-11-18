@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 #include <cstdint>
 #include <map>
@@ -15,7 +15,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 namespace {
 
@@ -317,4 +317,4 @@ TEST(StrongAliasTest, EnsureConstexpr) {
   static_assert(kOne >= kZero, "");
 }
 
-}  // namespace util
+}  // namespace base

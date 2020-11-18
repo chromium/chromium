@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 namespace util {
 
@@ -51,7 +51,7 @@ template <typename TypeMarker,
           typename WrappedType,
           WrappedType kInvalidValue,
           WrappedType kFirstGeneratedId = kInvalidValue + 1>
-class IdType : public StrongAlias<TypeMarker, WrappedType> {
+class IdType : public base::StrongAlias<TypeMarker, WrappedType> {
  public:
   static_assert(
       std::is_unsigned<WrappedType>::value || kInvalidValue <= 0,
@@ -67,7 +67,7 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
                 "invalid value so that the monotonically increasing "
                 "GenerateNextId method will never return the invalid value.");
 
-  using StrongAlias<TypeMarker, WrappedType>::StrongAlias;
+  using base::StrongAlias<TypeMarker, WrappedType>::StrongAlias;
 
   // This class can be used to generate unique IdTypes. It keeps an internal
   // counter that is continually increased by one every time an ID is generated.
@@ -88,7 +88,8 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
 
   // Default-construct in the null state.
   constexpr IdType()
-      : StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {}
+      : base::StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {
+  }
 
   constexpr bool is_null() const { return this->value() == kInvalidValue; }
   constexpr explicit operator bool() const { return !is_null(); }

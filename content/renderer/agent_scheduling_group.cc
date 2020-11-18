@@ -5,7 +5,7 @@
 #include "content/renderer/agent_scheduling_group.h"
 
 #include "base/feature_list.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
@@ -31,7 +31,7 @@ using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
 
-using PassKey = ::util::PassKey<AgentSchedulingGroup>;
+using PassKey = ::base::PassKey<AgentSchedulingGroup>;
 
 namespace {
 RenderThreadImpl& ToImpl(RenderThread& render_thread) {

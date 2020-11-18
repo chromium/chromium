@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_CUE_TIMELINE_H_
 
 #include "base/optional.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -39,7 +39,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
    public:
     ~IgnoreUpdateScope() {
       DCHECK(cue_timeline_);
-      cue_timeline_->EndIgnoreUpdateScope(util::PassKey<IgnoreUpdateScope>(),
+      cue_timeline_->EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>(),
                                           *this);
     }
 
@@ -68,7 +68,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
 
   bool InsideIgnoreUpdateScope() const { return ignore_update_ > 0; }
   IgnoreUpdateScope BeginIgnoreUpdateScope();
-  void EndIgnoreUpdateScope(util::PassKey<IgnoreUpdateScope>,
+  void EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>,
                             IgnoreUpdateScope const& scope);
 
   void DidMoveToNewDocument(Document& old_document);

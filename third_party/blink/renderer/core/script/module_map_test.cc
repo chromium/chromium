@@ -108,7 +108,7 @@ class ModuleMapTestModulator final : public DummyModulator {
         public ModuleScriptFetcher {
    public:
     TestModuleScriptFetcher(ModuleMapTestModulator* modulator,
-                            util::PassKey<ModuleScriptLoader> pass_key)
+                            base::PassKey<ModuleScriptLoader> pass_key)
         : ModuleScriptFetcher(pass_key), modulator_(modulator) {}
     void Fetch(FetchParameters& request,
                ResourceFetcher*,
@@ -135,7 +135,7 @@ class ModuleMapTestModulator final : public DummyModulator {
 
   ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,
-      util::PassKey<ModuleScriptLoader> pass_key) override {
+      base::PassKey<ModuleScriptLoader> pass_key) override {
     return MakeGarbageCollected<TestModuleScriptFetcher>(this, pass_key);
   }
 

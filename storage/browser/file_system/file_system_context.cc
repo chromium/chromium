@@ -18,7 +18,7 @@
 #include "base/stl_util.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -170,7 +170,7 @@ FileSystemContext::FileSystemContext(
       partition_path_(partition_path),
       is_incognito_(options.is_incognito()),
       operation_runner_(
-          new FileSystemOperationRunner(util::PassKey<FileSystemContext>(),
+          new FileSystemOperationRunner(base::PassKey<FileSystemContext>(),
                                         this)) {
   RegisterBackend(sandbox_backend_.get());
   RegisterBackend(plugin_private_backend_.get());
@@ -458,13 +458,13 @@ std::unique_ptr<FileStreamWriter> FileSystemContext::CreateFileStreamWriter(
 std::unique_ptr<FileSystemOperationRunner>
 FileSystemContext::CreateFileSystemOperationRunner() {
   return std::make_unique<FileSystemOperationRunner>(
-      util::PassKey<FileSystemContext>(), this);
+      base::PassKey<FileSystemContext>(), this);
 }
 
 base::SequenceBound<FileSystemOperationRunner>
 FileSystemContext::CreateSequenceBoundFileSystemOperationRunner() {
   return base::SequenceBound<FileSystemOperationRunner>(
-      io_task_runner_, util::PassKey<FileSystemContext>(),
+      io_task_runner_, base::PassKey<FileSystemContext>(),
       base::WrapRefCounted(this));
 }
 

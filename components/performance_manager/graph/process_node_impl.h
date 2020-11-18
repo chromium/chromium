@@ -14,7 +14,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/properties.h"
@@ -47,7 +47,7 @@ class ProcessNodeImpl
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit {
  public:
-  using PassKey = util::PassKey<ProcessNodeImpl>;
+  using PassKey = base::PassKey<ProcessNodeImpl>;
 
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
 

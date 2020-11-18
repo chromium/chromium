@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,10 +21,10 @@ struct PasswordForm;
 class UiCredential {
  public:
   using IsPublicSuffixMatch =
-      util::StrongAlias<class IsPublicSuffixMatchTag, bool>;
+      base::StrongAlias<class IsPublicSuffixMatchTag, bool>;
 
   using IsAffiliationBasedMatch =
-      util::StrongAlias<class IsAffiliationBasedMatchTag, bool>;
+      base::StrongAlias<class IsAffiliationBasedMatchTag, bool>;
 
   UiCredential(base::string16 username,
                base::string16 password,

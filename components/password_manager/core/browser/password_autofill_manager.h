@@ -12,7 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -111,11 +111,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 #endif  // defined(UNIT_TEST)
 
  private:
-  using ForPasswordField = util::StrongAlias<class ForPasswordFieldTag, bool>;
-  using OffersGeneration = util::StrongAlias<class OffersGenerationTag, bool>;
-  using ShowAllPasswords = util::StrongAlias<class ShowAllPasswordsTag, bool>;
+  using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
+  using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
+  using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
   using ShowPasswordSuggestions =
-      util::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
+      base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
 
   // Builds the suggestions used to show or update the autofill popup.
   std::vector<autofill::Suggestion> BuildSuggestions(

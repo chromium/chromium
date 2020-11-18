@@ -174,7 +174,7 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
 }  // namespace
 
 CacheStorageCacheEntryHandler::DiskCacheBlobEntry::DiskCacheBlobEntry(
-    util::PassKey<CacheStorageCacheEntryHandler> key,
+    base::PassKey<CacheStorageCacheEntryHandler> key,
     base::WeakPtr<CacheStorageCacheEntryHandler> entry_handler,
     CacheStorageCacheHandle cache_handle,
     disk_cache::ScopedEntryPtr disk_cache_entry)
@@ -326,7 +326,7 @@ CacheStorageCacheEntryHandler::CreateDiskCacheBlobEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto blob_entry =
       base::MakeRefCounted<CacheStorageCacheEntryHandler::DiskCacheBlobEntry>(
-          util::PassKey<CacheStorageCacheEntryHandler>(), GetWeakPtr(),
+          base::PassKey<CacheStorageCacheEntryHandler>(), GetWeakPtr(),
           std::move(cache_handle), std::move(disk_cache_entry));
   DCHECK_EQ(blob_entries_.count(blob_entry.get()), 0u);
   blob_entries_.insert(blob_entry.get());

@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/optional.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -141,7 +141,7 @@ std::unique_ptr<WebAppRegistryUpdate> WebAppSyncBridge::BeginUpdate() {
   is_in_update_ = true;
 
   return std::make_unique<WebAppRegistryUpdate>(
-      registrar_, util::PassKey<WebAppSyncBridge>());
+      registrar_, base::PassKey<WebAppSyncBridge>());
 }
 
 void WebAppSyncBridge::CommitUpdate(

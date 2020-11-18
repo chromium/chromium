@@ -27,7 +27,7 @@ base::Optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
     return base::nullopt;
 
   return base::Optional<SuitableTrustTokenOrigin>(
-      base::in_place, util::PassKey<SuitableTrustTokenOrigin>(),
+      base::in_place, base::PassKey<SuitableTrustTokenOrigin>(),
       std::move(origin));
 }
 
@@ -41,7 +41,7 @@ std::string SuitableTrustTokenOrigin::Serialize() const {
 }
 
 SuitableTrustTokenOrigin::SuitableTrustTokenOrigin(
-    util::PassKey<SuitableTrustTokenOrigin>,
+    base::PassKey<SuitableTrustTokenOrigin>,
     url::Origin&& origin)
     : origin_(std::move(origin)) {}
 

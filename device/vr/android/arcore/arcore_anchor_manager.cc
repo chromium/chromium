@@ -8,7 +8,7 @@
 
 namespace device {
 
-ArCoreAnchorManager::ArCoreAnchorManager(util::PassKey<ArCoreImpl> pass_key,
+ArCoreAnchorManager::ArCoreAnchorManager(base::PassKey<ArCoreImpl> pass_key,
                                          ArSession* arcore_session)
     : arcore_session_(arcore_session) {
   DCHECK(arcore_session_);
@@ -216,7 +216,7 @@ base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
   DVLOG(2) << __func__ << ": plane_id=" << plane_id;
 
   auto ar_anchor = plane_manager->CreateAnchor(
-      util::PassKey<ArCoreAnchorManager>(), plane_id, pose);
+      base::PassKey<ArCoreAnchorManager>(), plane_id, pose);
   if (!ar_anchor.is_valid()) {
     return base::nullopt;
   }

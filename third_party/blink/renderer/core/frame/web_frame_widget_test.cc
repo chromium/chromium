@@ -243,7 +243,7 @@ class MockWebViewFrameWidget : public WebViewFrameWidget {
 };
 
 WebViewFrameWidget* CreateWebViewFrameWidget(
-    util::PassKey<WebFrameWidget> pass_key,
+    base::PassKey<WebFrameWidget> pass_key,
     WebWidgetClient& client,
     WebViewImpl& web_view_impl,
     CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>

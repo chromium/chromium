@@ -181,7 +181,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     WebFrame* opener,
     std::unique_ptr<blink::WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
-      util::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
+      base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       frame_policy, frame_owner_properties, frame_owner_element_type);

@@ -455,7 +455,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Low-level resource notifications ------------------------------------
 
-  using ForRedirect = util::StrongAlias<class ForRedirectTag, bool>;
+  using ForRedirect = base::StrongAlias<class ForRedirectTag, bool>;
   // A request is about to be sent out, and the client may modify it.  Request
   // is writable, and changes to the URL, for example, will change the request
   // made.

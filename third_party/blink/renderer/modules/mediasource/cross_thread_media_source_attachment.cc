@@ -29,7 +29,7 @@ std::ostream& operator<<(
 
 CrossThreadMediaSourceAttachment::CrossThreadMediaSourceAttachment(
     MediaSource* media_source,
-    util::PassKey<URLMediaSource> /* passkey */)
+    base::PassKey<URLMediaSource> /* passkey */)
     : registered_media_source_(media_source),
       // TODO(https://crbug.com/878133): Confirm if kMediaElementEvent remains
       // the appropriate task type when standardizing MSE-in-Workers, for

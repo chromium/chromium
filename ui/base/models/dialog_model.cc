@@ -10,7 +10,7 @@
 namespace ui {
 
 DialogModel::Builder::Builder(std::unique_ptr<DialogModelDelegate> delegate)
-    : model_(std::make_unique<DialogModel>(util::PassKey<Builder>(),
+    : model_(std::make_unique<DialogModel>(base::PassKey<Builder>(),
                                            std::move(delegate))) {}
 
 DialogModel::Builder::Builder() : Builder(nullptr) {}
@@ -75,7 +75,7 @@ DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
   return *this;
 }
 
-DialogModel::DialogModel(util::PassKey<Builder>,
+DialogModel::DialogModel(base::PassKey<Builder>,
                          std::unique_ptr<DialogModelDelegate> delegate)
     : delegate_(std::move(delegate)) {
   if (delegate_)
@@ -136,22 +136,22 @@ DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(int unique_id) {
   return GetFieldByUniqueId(unique_id)->AsTextfield();
 }
 
-void DialogModel::OnDialogAccepted(util::PassKey<DialogModelHost>) {
+void DialogModel::OnDialogAccepted(base::PassKey<DialogModelHost>) {
   if (accept_callback_)
     std::move(accept_callback_).Run();
 }
 
-void DialogModel::OnDialogCancelled(util::PassKey<DialogModelHost>) {
+void DialogModel::OnDialogCancelled(base::PassKey<DialogModelHost>) {
   if (cancel_callback_)
     std::move(cancel_callback_).Run();
 }
 
-void DialogModel::OnDialogClosed(util::PassKey<DialogModelHost>) {
+void DialogModel::OnDialogClosed(base::PassKey<DialogModelHost>) {
   if (close_callback_)
     std::move(close_callback_).Run();
 }
 
-void DialogModel::OnWindowClosing(util::PassKey<DialogModelHost>) {
+void DialogModel::OnWindowClosing(base::PassKey<DialogModelHost>) {
   if (window_closing_callback_)
     std::move(window_closing_callback_).Run();
 }

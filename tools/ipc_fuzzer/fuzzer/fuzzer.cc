@@ -1066,13 +1066,13 @@ struct FuzzTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
 };
 
 template <>
-struct FuzzTraits<util::StrongAlias<extensions::ActivationSequenceTag, int>> {
-  static bool Fuzz(util::StrongAlias<extensions::ActivationSequenceTag, int>* p,
+struct FuzzTraits<base::StrongAlias<extensions::ActivationSequenceTag, int>> {
+  static bool Fuzz(base::StrongAlias<extensions::ActivationSequenceTag, int>* p,
                    Fuzzer* fuzzer) {
     int value;
     if (!FuzzParam(&value, fuzzer))
       return false;
-    *p = util::StrongAlias<extensions::ActivationSequenceTag, int>(value);
+    *p = base::StrongAlias<extensions::ActivationSequenceTag, int>(value);
     return true;
   }
 };

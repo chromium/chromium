@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/test/base/testing_profile.h"
@@ -102,7 +102,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     mock_view_ = mock_view_unique_ptr.get();
     all_passwords_controller_ =
         std::make_unique<AllPasswordsBottomSheetController>(
-            util::PassKey<AllPasswordsBottomSheetControllerTest>(),
+            base::PassKey<AllPasswordsBottomSheetControllerTest>(),
             std::move(mock_view_unique_ptr), driver_.AsWeakPtr(), store_.get(),
             dissmissal_callback_.Get(), focused_field_type,
             mock_pwd_manager_client_.get());

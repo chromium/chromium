@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "base/version.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/field_types.h"

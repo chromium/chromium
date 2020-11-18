@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_REVERT_VALUE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -20,7 +20,7 @@ class CORE_EXPORT CSSRevertValue : public CSSValue {
  public:
   static CSSRevertValue* Create();
 
-  explicit CSSRevertValue(util::PassKey<CSSValuePool>)
+  explicit CSSRevertValue(base::PassKey<CSSValuePool>)
       : CSSValue(kRevertClass) {}
 
   String CustomCSSText() const;

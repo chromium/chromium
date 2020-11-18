@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 namespace password_manager {
 
@@ -18,7 +18,7 @@ struct PasswordForm;
 
 // Multimap from sort key to password forms.
 using DuplicatesMap = std::multimap<std::string, std::unique_ptr<PasswordForm>>;
-using IgnoreStore = util::StrongAlias<class IgnoreStoreTag, bool>;
+using IgnoreStore = base::StrongAlias<class IgnoreStoreTag, bool>;
 
 // Creates key for sorting password or password exception entries. The key is
 // eTLD+1 followed by the reversed list of domains (e.g.

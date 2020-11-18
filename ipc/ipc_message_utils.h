@@ -1072,8 +1072,8 @@ struct ParamTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
 };
 
 template <typename TagType, typename UnderlyingType>
-struct ParamTraits<util::StrongAlias<TagType, UnderlyingType>> {
-  using param_type = util::StrongAlias<TagType, UnderlyingType>;
+struct ParamTraits<base::StrongAlias<TagType, UnderlyingType>> {
+  using param_type = base::StrongAlias<TagType, UnderlyingType>;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, p.value());
   }

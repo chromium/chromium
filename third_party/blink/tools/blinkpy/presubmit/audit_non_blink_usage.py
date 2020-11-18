@@ -84,7 +84,7 @@ _CONFIG = [
             'base::size',
             'base::span',
             'logging::GetVlogLevel',
-            'util::PassKey',
+            'base::PassKey',
 
             # //base/observer_list.h.
             'base::ObserverList',
@@ -354,8 +354,8 @@ _CONFIG = [
             'gfx::ScrollOffset',
             'ui::ScrollGranularity',
 
-            # base/util/type_safety/strong_alias.h
-            'util::StrongAlias',
+            # base/types/strong_alias.h
+            'base::StrongAlias',
 
             # Standalone utility libraries that only depend on //base
             'skia::.+',

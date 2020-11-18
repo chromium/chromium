@@ -182,6 +182,7 @@ namespace content {
 
 namespace {
 
+using ::base::PassKey;
 using ::base::ThreadRestrictions;
 using ::blink::WebDocument;
 using ::blink::WebFrame;
@@ -191,7 +192,6 @@ using ::blink::WebScriptController;
 using ::blink::WebSecurityPolicy;
 using ::blink::WebString;
 using ::blink::WebView;
-using ::util::PassKey;
 
 // An implementation of mojom::RenderMessageFilter which can be mocked out
 // for tests which may indirectly send messages over this interface.
@@ -1349,7 +1349,7 @@ bool RenderThreadImpl::IsScrollAnimatorEnabled() {
 
 void RenderThreadImpl::SetScrollAnimatorEnabled(
     bool enable_scroll_animator,
-    util::PassKey<AgentSchedulingGroup>) {
+    base::PassKey<AgentSchedulingGroup>) {
   is_scroll_animator_enabled_ = enable_scroll_animator;
 }
 

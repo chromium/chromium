@@ -98,7 +98,7 @@ std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
   DCHECK(display_controller->skia_dependency());
   DCHECK(display_controller->gpu_task_scheduler());
   auto output_surface = std::make_unique<SkiaOutputSurfaceImpl>(
-      util::PassKey<SkiaOutputSurfaceImpl>(), display_controller,
+      base::PassKey<SkiaOutputSurfaceImpl>(), display_controller,
       renderer_settings, debug_settings);
   if (!output_surface->Initialize())
     output_surface = nullptr;
@@ -106,7 +106,7 @@ std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
 }
 
 SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
-    util::PassKey<SkiaOutputSurfaceImpl> /* pass_key */,
+    base::PassKey<SkiaOutputSurfaceImpl> /* pass_key */,
     DisplayCompositorMemoryAndTaskController* display_controller,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings)

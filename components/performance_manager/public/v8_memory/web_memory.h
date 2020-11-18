@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 

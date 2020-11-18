@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_ATTACHMENT_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_ATTACHMENT_SUPPLEMENT_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
@@ -26,7 +26,7 @@ class VideoTrackList;
 // members common to all concrete attachments.
 class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
  public:
-  using ExclusiveKey = util::PassKey<MediaSourceAttachmentSupplement>;
+  using ExclusiveKey = base::PassKey<MediaSourceAttachmentSupplement>;
   using RunExclusivelyCB = base::OnceCallback<void(ExclusiveKey)>;
 
   // Communicates a change in the media resource duration to the attached media

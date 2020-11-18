@@ -19,7 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -52,7 +52,7 @@ class WebSocketFactory;
 class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
  public:
   using HasRawHeadersAccess =
-      util::StrongAlias<class HasRawHeadersAccessTag, bool>;
+      base::StrongAlias<class HasRawHeadersAccessTag, bool>;
 
   WebSocket(
       WebSocketFactory* factory,

@@ -14,7 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/demuxer_stream.h"
@@ -149,7 +149,7 @@ class MEDIA_EXPORT DecoderStream {
   bool is_demuxer_read_pending() const { return pending_demuxer_read_; }
 
   DecoderSelector<StreamType>& GetDecoderSelectorForTesting(
-      util::PassKey<class VideoDecoderStreamTest>) {
+      base::PassKey<class VideoDecoderStreamTest>) {
     return decoder_selector_;
   }
 

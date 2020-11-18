@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/type_converters.h"
@@ -418,9 +418,9 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   arcore_session_ = std::move(session);
   arcore_light_estimate_ = std::move(light_estimate);
   anchor_manager_ = std::make_unique<ArCoreAnchorManager>(
-      util::PassKey<ArCoreImpl>(), arcore_session_.get());
+      base::PassKey<ArCoreImpl>(), arcore_session_.get());
   plane_manager_ = std::make_unique<ArCorePlaneManager>(
-      util::PassKey<ArCoreImpl>(), arcore_session_.get());
+      base::PassKey<ArCoreImpl>(), arcore_session_.get());
   return ArCore::InitializeResult(*maybe_enabled_features);
 }
 

@@ -17,7 +17,7 @@
 namespace blink {
 
 ModuleScriptFetcher::ModuleScriptFetcher(
-    util::PassKey<ModuleScriptLoader> pass_key) {}
+    base::PassKey<ModuleScriptLoader> pass_key) {}
 
 void ModuleScriptFetcher::Client::OnFetched(
     const base::Optional<ModuleScriptCreationParams>& params) {

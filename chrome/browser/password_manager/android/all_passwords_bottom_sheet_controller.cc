@@ -19,7 +19,7 @@ using password_manager::PasswordManagerClient;
 
 // No-op constructor for tests.
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
-    util::PassKey<class AllPasswordsBottomSheetControllerTest>,
+    base::PassKey<class AllPasswordsBottomSheetControllerTest>,
     std::unique_ptr<AllPasswordsBottomSheetView> view,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     password_manager::PasswordStore* store,

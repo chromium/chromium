@@ -15,7 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -180,7 +180,7 @@ class AutofillClient : public RiskDataLoader {
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     using AutoselectFirstSuggestion =
-        ::util::StrongAlias<class AutoSelectFirstSuggestionTag, bool>;
+        ::base::StrongAlias<class AutoSelectFirstSuggestionTag, bool>;
 
     PopupOpenArgs();
     PopupOpenArgs(const gfx::RectF& element_bounds,

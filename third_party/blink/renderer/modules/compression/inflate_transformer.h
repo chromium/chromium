@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_COMPRESSION_INFLATE_TRANSFORMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPRESSION_INFLATE_TRANSFORMER_H_
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -33,7 +33,7 @@ class InflateTransformer final : public TransformStreamTransformer {
   void Trace(Visitor*) const override;
 
  private:
-  using IsFinished = util::StrongAlias<class IsFinishedTag, bool>;
+  using IsFinished = base::StrongAlias<class IsFinishedTag, bool>;
 
   void Inflate(const uint8_t*,
                wtf_size_t,

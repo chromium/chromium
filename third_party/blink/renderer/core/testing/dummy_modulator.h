@@ -78,7 +78,7 @@ class DummyModulator : public Modulator {
       v8::Local<v8::Module>) override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,
-      util::PassKey<ModuleScriptLoader>) override;
+      base::PassKey<ModuleScriptLoader>) override;
   void ProduceCacheModuleTreeTopLevel(ModuleScript*) override;
 
   Member<ModuleRecordResolver> resolver_;

@@ -21,7 +21,7 @@ bool RegistryUpdateData::IsEmpty() const {
 }
 
 WebAppRegistryUpdate::WebAppRegistryUpdate(const WebAppRegistrar* registrar,
-                                           util::PassKey<WebAppSyncBridge>)
+                                           base::PassKey<WebAppSyncBridge>)
     : registrar_(registrar) {
   DCHECK(registrar_);
   update_data_ = std::make_unique<RegistryUpdateData>();

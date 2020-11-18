@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/optional.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,7 +31,7 @@ class VulkanDeviceQueue;
 
 class COMPONENT_EXPORT(VULKAN) VulkanImage {
  public:
-  explicit VulkanImage(util::PassKey<VulkanImage> pass_key);
+  explicit VulkanImage(base::PassKey<VulkanImage> pass_key);
   ~VulkanImage();
 
   VulkanImage(VulkanImage&) = delete;

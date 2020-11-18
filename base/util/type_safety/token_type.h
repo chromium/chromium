@@ -5,8 +5,8 @@
 #ifndef BASE_UTIL_TYPE_SAFETY_TOKEN_TYPE_H_
 #define BASE_UTIL_TYPE_SAFETY_TOKEN_TYPE_H_
 
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/strong_alias.h"
 
 namespace util {
 
@@ -15,9 +15,9 @@ namespace util {
 // not expose the concept of null tokens. If you need to indicate a null token,
 // please use base::Optional<TokenType<...>>.
 template <typename TypeMarker>
-class TokenType : public StrongAlias<TypeMarker, base::UnguessableToken> {
+class TokenType : public base::StrongAlias<TypeMarker, base::UnguessableToken> {
  private:
-  using Super = StrongAlias<TypeMarker, base::UnguessableToken>;
+  using Super = base::StrongAlias<TypeMarker, base::UnguessableToken>;
 
  public:
   TokenType() : Super(base::UnguessableToken::Create()) {}

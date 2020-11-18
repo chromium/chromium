@@ -106,7 +106,7 @@ ExternalSemaphore ExternalSemaphore::Create(
     return {};
   }
 
-  return ExternalSemaphore(util::PassKey<ExternalSemaphore>(), context_provider,
+  return ExternalSemaphore(base::PassKey<ExternalSemaphore>(), context_provider,
                            semaphore, std::move(handle));
 }
 
@@ -125,7 +125,7 @@ ExternalSemaphore ExternalSemaphore::CreateFromHandle(
   if (semaphore == VK_NULL_HANDLE)
     return {};
 
-  return ExternalSemaphore(util::PassKey<ExternalSemaphore>(), context_provider,
+  return ExternalSemaphore(base::PassKey<ExternalSemaphore>(), context_provider,
                            semaphore, std::move(handle));
 }
 
@@ -136,7 +136,7 @@ ExternalSemaphore::ExternalSemaphore(ExternalSemaphore&& other) {
 }
 
 ExternalSemaphore::ExternalSemaphore(
-    util::PassKey<ExternalSemaphore>,
+    base::PassKey<ExternalSemaphore>,
     viz::VulkanContextProvider* context_provider,
     VkSemaphore semaphore,
     SemaphoreHandle handle)

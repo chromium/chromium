@@ -422,7 +422,7 @@ CueTimeline::IgnoreUpdateScope CueTimeline::BeginIgnoreUpdateScope() {
   return scope;
 }
 
-void CueTimeline::EndIgnoreUpdateScope(util::PassKey<IgnoreUpdateScope>,
+void CueTimeline::EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>,
                                        IgnoreUpdateScope const& scope) {
   DCHECK(ignore_update_);
   --ignore_update_;

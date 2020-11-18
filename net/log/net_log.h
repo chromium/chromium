@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_capture_mode.h"
@@ -180,15 +180,15 @@ class NET_EXPORT NetLog {
   // NetLog should only be used through the singleton returned by Get(), the
   // constructor takes a PassKey to ensure that additional NetLog objects
   // cannot be created.
-  explicit NetLog(util::PassKey<NetLog>);
+  explicit NetLog(base::PassKey<NetLog>);
 
   // NetLogWithSource creates a dummy NetLog as an internal optimization.
-  explicit NetLog(util::PassKey<NetLogWithSource>);
+  explicit NetLog(base::PassKey<NetLogWithSource>);
 
   // Allow TestNetLog so test cases can create scoped lifetime NetLog objects.
   // TODO(crbug.com/177538): Remove TestNetLog class, make tests use the global
   // NetLog.
-  explicit NetLog(util::PassKey<TestNetLog>);
+  explicit NetLog(base::PassKey<TestNetLog>);
 
   // TODO(crbug.com/177538): make the destructor = delete once there are no
   // tests instantiating TestNetLogs.

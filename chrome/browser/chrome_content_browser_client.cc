@@ -5780,7 +5780,7 @@ content::XrIntegrationClient*
 ChromeContentBrowserClient::GetXrIntegrationClient() {
   if (!xr_integration_client_)
     xr_integration_client_ = std::make_unique<vr::ChromeXrIntegrationClient>(
-        util::PassKey<ChromeContentBrowserClient>());
+        base::PassKey<ChromeContentBrowserClient>());
   return xr_integration_client_.get();
 }
 #endif  // BUILDFLAG(ENABLE_VR)

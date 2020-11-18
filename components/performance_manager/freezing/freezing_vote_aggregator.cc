@@ -27,7 +27,7 @@ void FreezingVoteAggregator::SetUpstreamVotingChannel(
 }
 
 FreezingVoteReceipt FreezingVoteAggregator::SubmitVote(
-    util::PassKey<FreezingVotingChannel>,
+    base::PassKey<FreezingVotingChannel>,
     voting::VoterId<FreezingVote> voter_id,
     const PageNode* page_node,
     const FreezingVote& vote) {
@@ -47,7 +47,7 @@ FreezingVoteReceipt FreezingVoteAggregator::SubmitVote(
   return receipt;
 }
 
-void FreezingVoteAggregator::ChangeVote(util::PassKey<AcceptedFreezingVote>,
+void FreezingVoteAggregator::ChangeVote(base::PassKey<AcceptedFreezingVote>,
                                         AcceptedFreezingVote* old_vote,
                                         const FreezingVote& new_vote) {
   DCHECK(old_vote->IsValid());
@@ -61,7 +61,7 @@ void FreezingVoteAggregator::ChangeVote(util::PassKey<AcceptedFreezingVote>,
 }
 
 void FreezingVoteAggregator::VoteInvalidated(
-    util::PassKey<AcceptedFreezingVote>,
+    base::PassKey<AcceptedFreezingVote>,
     AcceptedFreezingVote* vote) {
   DCHECK(!vote->IsValid());
   auto it = GetVoteData(vote->context());

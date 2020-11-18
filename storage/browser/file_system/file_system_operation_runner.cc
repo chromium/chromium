@@ -28,12 +28,12 @@ namespace storage {
 using OperationID = FileSystemOperationRunner::OperationID;
 
 FileSystemOperationRunner::FileSystemOperationRunner(
-    util::PassKey<FileSystemContext>,
+    base::PassKey<FileSystemContext>,
     const scoped_refptr<FileSystemContext>& file_system_context)
     : FileSystemOperationRunner(file_system_context.get()) {}
 
 FileSystemOperationRunner::FileSystemOperationRunner(
-    util::PassKey<FileSystemContext>,
+    base::PassKey<FileSystemContext>,
     FileSystemContext* file_system_context)
     : FileSystemOperationRunner(file_system_context) {}
 

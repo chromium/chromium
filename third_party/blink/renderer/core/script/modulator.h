@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_H_
 
 #include "base/single_thread_task_runner.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -197,7 +197,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,
-      util::PassKey<ModuleScriptLoader> pass_key) = 0;
+      base::PassKey<ModuleScriptLoader> pass_key) = 0;
 
   // Produce V8 code cache for the given ModuleScript and its submodules.
   virtual void ProduceCacheModuleTreeTopLevel(ModuleScript*) = 0;

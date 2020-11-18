@@ -10,7 +10,7 @@ namespace blink {
 
 WorkletModuleScriptFetcher::WorkletModuleScriptFetcher(
     WorkletModuleResponsesMap* module_responses_map,
-    util::PassKey<ModuleScriptLoader> pass_key)
+    base::PassKey<ModuleScriptLoader> pass_key)
     : ModuleScriptFetcher(pass_key),
       module_responses_map_(module_responses_map) {}
 

@@ -17,7 +17,7 @@ DocumentModulatorImpl::DocumentModulatorImpl(ScriptState* script_state)
 
 ModuleScriptFetcher* DocumentModulatorImpl::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType custom_fetch_type,
-    util::PassKey<ModuleScriptLoader> pass_key) {
+    base::PassKey<ModuleScriptLoader> pass_key) {
   DCHECK_EQ(ModuleScriptCustomFetchType::kNone, custom_fetch_type);
   return MakeGarbageCollected<DocumentModuleScriptFetcher>(pass_key);
 }

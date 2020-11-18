@@ -49,7 +49,7 @@ class XRRuntimeManagerTest : public testing::Test {
     mojo::PendingRemote<device::mojom::VRServiceClient> proxy;
     device::FakeVRServiceClient client(proxy.InitWithNewPipeAndPassReceiver());
     auto service =
-        std::make_unique<VRServiceImpl>(util::PassKey<XRRuntimeManagerTest>());
+        std::make_unique<VRServiceImpl>(base::PassKey<XRRuntimeManagerTest>());
     service->SetClient(std::move(proxy));
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();

@@ -26,7 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLOATING_OBJECTS_H_
 
 #include <memory>
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
@@ -146,7 +146,7 @@ class FloatingObject {
   RootInlineBox* OriginatingLine() const { return originating_line_; }
   void SetOriginatingLine(RootInlineBox* line) { originating_line_ = line; }
 
-  using PassKey = util::PassKey<FloatingObject>;
+  using PassKey = base::PassKey<FloatingObject>;
   FloatingObject(PassKey, LayoutBox*, Type);
   FloatingObject(PassKey,
                  LayoutBox*,

@@ -50,7 +50,7 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
     VkImageTiling image_tiling,
     void* vk_image_create_info_next,
     void* vk_memory_allocation_info_next) {
-  auto image = std::make_unique<VulkanImage>(util::PassKey<VulkanImage>());
+  auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (!image->Initialize(device_queue, size, format, usage, flags, image_tiling,
                          vk_image_create_info_next,
                          vk_memory_allocation_info_next,
@@ -68,7 +68,7 @@ std::unique_ptr<VulkanImage> VulkanImage::CreateWithExternalMemory(
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
     VkImageTiling image_tiling) {
-  auto image = std::make_unique<VulkanImage>(util::PassKey<VulkanImage>());
+  auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (!image->InitializeWithExternalMemory(device_queue, size, format, usage,
                                            flags, image_tiling)) {
     return nullptr;
@@ -85,7 +85,7 @@ std::unique_ptr<VulkanImage> VulkanImage::CreateFromGpuMemoryBufferHandle(
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
     VkImageTiling image_tiling) {
-  auto image = std::make_unique<VulkanImage>(util::PassKey<VulkanImage>());
+  auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (!image->InitializeFromGpuMemoryBufferHandle(
           device_queue, std::move(gmb_handle), size, format, usage, flags,
           image_tiling)) {
@@ -107,7 +107,7 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
     base::Optional<VulkanYCbCrInfo>& ycbcr_info,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags) {
-  auto image = std::make_unique<VulkanImage>(util::PassKey<VulkanImage>());
+  auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   image->device_queue_ = device_queue;
   image->image_ = vk_image;
   image->device_memory_ = vk_device_memory;
@@ -122,7 +122,7 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
   return image;
 }
 
-VulkanImage::VulkanImage(util::PassKey<VulkanImage> pass_key) {}
+VulkanImage::VulkanImage(base::PassKey<VulkanImage> pass_key) {}
 
 VulkanImage::~VulkanImage() {
   DCHECK(!device_queue_);

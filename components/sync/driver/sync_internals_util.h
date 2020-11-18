@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/version_info/version_info.h"
 
@@ -74,7 +74,7 @@ extern const char kTypes[];
 extern const char kOnInvalidationReceived[];
 
 using IncludeSensitiveData =
-    util::StrongAlias<class IncludeSensitiveDataTag, bool>;
+    base::StrongAlias<class IncludeSensitiveDataTag, bool>;
 // This function returns a DictionaryValue which contains all the information
 // required to populate the 'About' tab of chrome://sync-internals.
 // Note that |service| may be null.

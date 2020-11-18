@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -28,7 +28,7 @@ class VulkanContextProvider;
 class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceVulkan(
-      util::PassKey<SkiaOutputDeviceVulkan>,
+      base::PassKey<SkiaOutputDeviceVulkan>,
       VulkanContextProvider* context_provider,
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,

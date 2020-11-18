@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 
 #include "base/component_export.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "gpu/vulkan/vulkan_surface.h"
 
 namespace gfx {
@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(VULKAN_WIN32) VulkanSurfaceWin32 : public VulkanSurface {
   static std::unique_ptr<VulkanSurfaceWin32> Create(VkInstance vk_instance,
                                                     HWND parent_window);
   class WindowThread;
-  VulkanSurfaceWin32(util::PassKey<VulkanSurfaceWin32> pass_key,
+  VulkanSurfaceWin32(base::PassKey<VulkanSurfaceWin32> pass_key,
                      VkInstance vk_instance,
                      VkSurfaceKHR vk_surface,
                      scoped_refptr<WindowThread> thread,

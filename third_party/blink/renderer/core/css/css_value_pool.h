@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_POOL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -50,7 +50,7 @@ namespace blink {
 
 class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
  public:
-  using PassKey = util::PassKey<CSSValuePool>;
+  using PassKey = base::PassKey<CSSValuePool>;
 
   // TODO(sashab): Make all the value pools store const CSSValues.
   static const int kMaximumCacheableIntegerValue = 255;

@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 

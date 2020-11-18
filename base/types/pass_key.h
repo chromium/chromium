@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_TYPE_SAFETY_PASS_KEY_H_
-#define BASE_UTIL_TYPE_SAFETY_PASS_KEY_H_
+#ifndef BASE_TYPES_PASS_KEY_H_
+#define BASE_TYPES_PASS_KEY_H_
 
-namespace util {
+namespace base {
 
-// util::PassKey can be used to restrict access to functions to an authorized
+// base::PassKey can be used to restrict access to functions to an authorized
 // caller. The primary use case is restricting the construction of an object in
 // situations where the constructor needs to be public, which may be the case
 // if the object must be constructed through a helper function, such as
@@ -17,12 +17,12 @@ namespace util {
 //
 //  class Foo {
 //   public:
-//    Foo(util::PassKey<Manager>);
+//    Foo(base::PassKey<Manager>);
 //  };
 //
 //  class Manager {
 //   public:
-//    using PassKey = util::PassKey<Manager>;
+//    using PassKey = base::PassKey<Manager>;
 //    Manager() : foo_(blink::MakeGarbageCollected<Foo>(PassKey())) {}
 //    void Trace(blink::Visitor* visitor) const { visitor->Trace(foo_); }
 //    Foo* GetFooSingleton() { foo_; }
@@ -32,7 +32,7 @@ namespace util {
 //  };
 //
 // In the above example, the 'Foo' constructor requires an instance of
-// util::PassKey<Manager>. Only Manager is allowed to create such instances,
+// base::PassKey<Manager>. Only Manager is allowed to create such instances,
 // making the constructor unusable elsewhere.
 template <typename T>
 class PassKey {
@@ -43,6 +43,6 @@ class PassKey {
   friend T;
 };
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_TYPE_SAFETY_PASS_KEY_H_
+#endif  // BASE_TYPES_PASS_KEY_H_

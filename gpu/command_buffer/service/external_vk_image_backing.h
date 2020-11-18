@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
@@ -60,7 +60,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       uint32_t usage,
       const VulkanImageUsageCache* image_usage_cache);
 
-  ExternalVkImageBacking(util::PassKey<ExternalVkImageBacking>,
+  ExternalVkImageBacking(base::PassKey<ExternalVkImageBacking>,
                          const Mailbox& mailbox,
                          viz::ResourceFormat format,
                          const gfx::Size& size,

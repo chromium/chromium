@@ -17,8 +17,8 @@ namespace password_manager {
 
 namespace metrics_util {
 
-using IsUsernameChanged = util::StrongAlias<class IsUsernameChangedTag, bool>;
-using IsPasswordChanged = util::StrongAlias<class IsPasswordChangedTag, bool>;
+using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
+using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

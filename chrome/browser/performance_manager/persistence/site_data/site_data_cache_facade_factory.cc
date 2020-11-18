@@ -73,7 +73,7 @@ bool SiteDataCacheFacadeFactory::ServiceIsNULLWhileTesting() const {
 }
 
 void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
-    util::PassKey<SiteDataCacheFacade>) {
+    base::PassKey<SiteDataCacheFacade>) {
   if (service_instance_count_ == 0U) {
     DCHECK(cache_factory_.is_null());
     cache_factory_ = base::SequenceBound<SiteDataCacheFactory>(
@@ -83,7 +83,7 @@ void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
 }
 
 void SiteDataCacheFacadeFactory::OnFacadeDestroyed(
-    util::PassKey<SiteDataCacheFacade>) {
+    base::PassKey<SiteDataCacheFacade>) {
   DCHECK_GT(service_instance_count_, 0U);
   // Destroy the cache factory if there's no more SiteDataCacheFacade needing
   // it.

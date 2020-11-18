@@ -14,7 +14,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -108,9 +108,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                               public FormTracker::Observer,
                               public mojom::PasswordAutofillAgent {
  public:
-  using UseFallbackData = util::StrongAlias<class UseFallbackDataTag, bool>;
-  using ShowAll = util::StrongAlias<class ShowAllTag, bool>;
-  using GenerationShowing = util::StrongAlias<class GenerationShowingTag, bool>;
+  using UseFallbackData = base::StrongAlias<class UseFallbackDataTag, bool>;
+  using ShowAll = base::StrongAlias<class ShowAllTag, bool>;
+  using GenerationShowing = base::StrongAlias<class GenerationShowingTag, bool>;
 
   PasswordAutofillAgent(content::RenderFrame* render_frame,
                         blink::AssociatedInterfaceRegistry* registry);
@@ -247,7 +247,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   }
 
  private:
-  using OnPasswordField = util::StrongAlias<class OnPasswordFieldTag, bool>;
+  using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
 
   // Enumeration representing possible Touch To Fill states. This is used to
   // make sure that Touch To Fill will only be shown in response to the first

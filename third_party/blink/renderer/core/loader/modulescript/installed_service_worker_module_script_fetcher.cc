@@ -20,7 +20,7 @@ namespace blink {
 InstalledServiceWorkerModuleScriptFetcher::
     InstalledServiceWorkerModuleScriptFetcher(
         WorkerGlobalScope* global_scope,
-        util::PassKey<ModuleScriptLoader> pass_key)
+        base::PassKey<ModuleScriptLoader> pass_key)
     : ModuleScriptFetcher(pass_key), global_scope_(global_scope) {
   DCHECK(global_scope_->IsServiceWorkerGlobalScope());
 }

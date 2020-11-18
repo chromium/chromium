@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BODY_STREAM_BUFFER_H_
 
 #include <memory>
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -32,7 +32,7 @@ class ScriptCachedMetadataHandler;
 class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                                            public BytesConsumer::Client {
  public:
-  using PassKey = util::PassKey<BodyStreamBuffer>;
+  using PassKey = base::PassKey<BodyStreamBuffer>;
 
   // Create a BodyStreamBuffer for |consumer|.
   // |consumer| must not have a client.

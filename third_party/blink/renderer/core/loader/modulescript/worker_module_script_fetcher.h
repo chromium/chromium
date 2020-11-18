@@ -25,7 +25,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
       public WorkerMainScriptLoaderClient {
  public:
   WorkerModuleScriptFetcher(WorkerGlobalScope*,
-                            util::PassKey<ModuleScriptLoader>);
+                            base::PassKey<ModuleScriptLoader>);
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,

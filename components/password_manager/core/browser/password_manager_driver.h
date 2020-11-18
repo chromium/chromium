@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/renderer_id.h"
 
@@ -34,7 +34,7 @@ class PasswordManagerDriver
     : public base::SupportsWeakPtr<PasswordManagerDriver> {
  public:
   using ShowVirtualKeyboard =
-      util::StrongAlias<class ShowVirtualKeyboardTag, bool>;
+      base::StrongAlias<class ShowVirtualKeyboardTag, bool>;
 
   PasswordManagerDriver() = default;
   virtual ~PasswordManagerDriver() = default;

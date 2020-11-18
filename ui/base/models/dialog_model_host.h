@@ -5,7 +5,7 @@
 #ifndef UI_BASE_MODELS_DIALOG_MODEL_HOST_H_
 #define UI_BASE_MODELS_DIALOG_MODEL_HOST_H_
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 
 namespace ui {
 
@@ -30,8 +30,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
 
   // This PassKey is used to make sure that some methods on DialogModel
   // are only called as part of the host integration.
-  static util::PassKey<DialogModelHost> GetPassKey() {
-    return util::PassKey<DialogModelHost>();
+  static base::PassKey<DialogModelHost> GetPassKey() {
+    return base::PassKey<DialogModelHost>();
   }
 
   // Called when various parts of the model changes.

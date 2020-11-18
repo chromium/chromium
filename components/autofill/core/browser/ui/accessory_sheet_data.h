@@ -10,7 +10,7 @@
 
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 
 namespace password_manager {
@@ -65,7 +65,7 @@ class UserInfo {
   };
 
   using IsPslMatch =
-      util::StrongAlias<password_manager::IsPublicSuffixMatchTag, bool>;
+      base::StrongAlias<password_manager::IsPublicSuffixMatchTag, bool>;
 
   UserInfo();
   explicit UserInfo(std::string origin);

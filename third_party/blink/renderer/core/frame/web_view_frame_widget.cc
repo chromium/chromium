@@ -38,7 +38,7 @@
 namespace blink {
 
 WebViewFrameWidget::WebViewFrameWidget(
-    util::PassKey<WebFrameWidget>,
+    base::PassKey<WebFrameWidget>,
     WebWidgetClient& client,
     WebViewImpl& web_view,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>

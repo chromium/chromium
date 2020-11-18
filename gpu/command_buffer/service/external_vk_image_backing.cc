@@ -268,7 +268,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), format);
   auto backing = std::make_unique<ExternalVkImageBacking>(
-      util::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
+      base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, std::move(context_state),
       std::move(image), command_pool, use_separate_gl_texture);
 
@@ -314,7 +314,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     bool use_separate_gl_texture =
         UseSeparateGLTexture(context_state.get(), resource_format);
     auto backing = std::make_unique<ExternalVkImageBacking>(
-        util::PassKey<ExternalVkImageBacking>(), mailbox, resource_format, size,
+        base::PassKey<ExternalVkImageBacking>(), mailbox, resource_format, size,
         color_space, surface_origin, alpha_type, usage,
         std::move(context_state), std::move(image), command_pool,
         use_separate_gl_texture);
@@ -345,7 +345,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 }
 
 ExternalVkImageBacking::ExternalVkImageBacking(
-    util::PassKey<ExternalVkImageBacking>,
+    base::PassKey<ExternalVkImageBacking>,
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,

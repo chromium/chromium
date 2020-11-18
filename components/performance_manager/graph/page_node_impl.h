@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -28,7 +28,7 @@ class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver> {
  public:
-  using PassKey = util::PassKey<PageNodeImpl>;
+  using PassKey = base::PassKey<PageNodeImpl>;
 
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
 

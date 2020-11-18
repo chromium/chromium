@@ -34,7 +34,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                                const base::Optional<PhysicalRect>
                                    updated_layout_overflow = base::nullopt);
 
-  using PassKey = util::PassKey<NGPhysicalBoxFragment>;
+  using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
                         bool has_layout_overflow,

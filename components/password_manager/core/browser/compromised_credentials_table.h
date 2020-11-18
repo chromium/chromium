@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
 
@@ -18,7 +18,7 @@ class Database;
 
 namespace password_manager {
 
-using BulkCheckDone = util::StrongAlias<class BulkCheckDoneTag, bool>;
+using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
 
 enum class CompromiseType {
   // If the credentials was leaked by a data breach.

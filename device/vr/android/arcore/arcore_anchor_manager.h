@@ -7,8 +7,8 @@
 
 #include <map>
 
+#include "base/types/pass_key.h"
 #include "base/util/type_safety/id_type.h"
-#include "base/util/type_safety/pass_key.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
@@ -23,7 +23,7 @@ using AnchorId = util::IdTypeU64<class AnchorTag>;
 
 class ArCoreAnchorManager {
  public:
-  ArCoreAnchorManager(util::PassKey<ArCoreImpl> pass_key,
+  ArCoreAnchorManager(base::PassKey<ArCoreImpl> pass_key,
                       ArSession* arcore_session);
   ~ArCoreAnchorManager();
 

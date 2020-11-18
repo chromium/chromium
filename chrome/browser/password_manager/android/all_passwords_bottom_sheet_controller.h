@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
@@ -29,7 +29,7 @@ class AllPasswordsBottomSheetController
  public:
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
-      util::PassKey<class AllPasswordsBottomSheetControllerTest>,
+      base::PassKey<class AllPasswordsBottomSheetControllerTest>,
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       password_manager::PasswordStore* store,

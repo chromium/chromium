@@ -14,7 +14,7 @@ WorkletModulatorImpl::WorkletModulatorImpl(ScriptState* script_state)
 
 ModuleScriptFetcher* WorkletModulatorImpl::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType custom_fetch_type,
-    util::PassKey<ModuleScriptLoader> pass_key) {
+    base::PassKey<ModuleScriptLoader> pass_key) {
   DCHECK_EQ(ModuleScriptCustomFetchType::kWorkletAddModule, custom_fetch_type);
   WorkletGlobalScope* global_scope =
       To<WorkletGlobalScope>(GetExecutionContext());

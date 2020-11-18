@@ -25,7 +25,7 @@ class ModuleScriptLoader;
 class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
  public:
   // ModuleScriptFetcher should only be called from ModuleScriptLoader.
-  explicit ModuleScriptFetcher(util::PassKey<ModuleScriptLoader>);
+  explicit ModuleScriptFetcher(base::PassKey<ModuleScriptLoader>);
 
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:

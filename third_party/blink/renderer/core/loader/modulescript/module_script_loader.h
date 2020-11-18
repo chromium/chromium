@@ -77,10 +77,10 @@ class CORE_EXPORT ModuleScriptLoader final
 
   void AdvanceState(State new_state);
 
-  using PassKey = util::PassKey<ModuleScriptLoader>;
+  using PassKey = base::PassKey<ModuleScriptLoader>;
   // PassKey should be private and cannot be accessed from outside, but allow
   // accessing only from friend classes for testing.
-  static util::PassKey<ModuleScriptLoader> CreatePassKeyForTests() {
+  static base::PassKey<ModuleScriptLoader> CreatePassKeyForTests() {
     return PassKey();
   }
 

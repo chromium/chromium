@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -76,7 +76,7 @@ class WorkerNodeImpl
 
   // Used by the ExecutionContextRegistry mechanism.
   std::unique_ptr<NodeAttachedData>* GetExecutionContextStorage(
-      util::PassKey<execution_context::ExecutionContextAccess> key) {
+      base::PassKey<execution_context::ExecutionContextAccess> key) {
     return &execution_context_;
   }
 

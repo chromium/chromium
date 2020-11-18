@@ -1812,7 +1812,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const FeaturePolicyFeatureState& opener_feature_state) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
-      util::PassKey<WebLocalFrameImpl>(),
+      base::PassKey<WebLocalFrameImpl>(),
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
       frame_token);
   Page& page = *static_cast<WebViewImpl*>(web_view)->GetPage();
@@ -1835,7 +1835,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   Frame* previous_frame = ToCoreFrame(*previous_web_frame);
   DCHECK(name.IsEmpty() || name.Equals(previous_frame->Tree().GetName()));
   auto* web_frame = MakeGarbageCollected<WebLocalFrameImpl>(
-      util::PassKey<WebLocalFrameImpl>(),
+      base::PassKey<WebLocalFrameImpl>(),
       previous_web_frame->InShadowTree()
           ? mojom::blink::TreeScopeType::kShadow
           : mojom::blink::TreeScopeType::kDocument,
@@ -1891,13 +1891,13 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateLocalChild(
     blink::InterfaceRegistry* interface_registry,
     const base::UnguessableToken& frame_token) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
-      util::PassKey<WebLocalFrameImpl>(), scope, client, interface_registry,
+      base::PassKey<WebLocalFrameImpl>(), scope, client, interface_registry,
       frame_token);
   return frame;
 }
 
 WebLocalFrameImpl::WebLocalFrameImpl(
-    util::PassKey<WebLocalFrameImpl>,
+    base::PassKey<WebLocalFrameImpl>,
     mojom::blink::TreeScopeType scope,
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
@@ -1918,12 +1918,12 @@ WebLocalFrameImpl::WebLocalFrameImpl(
 }
 
 WebLocalFrameImpl::WebLocalFrameImpl(
-    util::PassKey<WebRemoteFrameImpl>,
+    base::PassKey<WebRemoteFrameImpl>,
     mojom::blink::TreeScopeType scope,
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
     const base::UnguessableToken& frame_token)
-    : WebLocalFrameImpl(util::PassKey<WebLocalFrameImpl>(),
+    : WebLocalFrameImpl(base::PassKey<WebLocalFrameImpl>(),
                         scope,
                         client,
                         interface_registry,

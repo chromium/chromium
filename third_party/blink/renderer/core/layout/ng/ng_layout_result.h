@@ -334,7 +334,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
                                     bool check_same_block_size = true) const;
 #endif
 
-  using NGBoxFragmentBuilderPassKey = util::PassKey<NGBoxFragmentBuilder>;
+  using NGBoxFragmentBuilderPassKey = base::PassKey<NGBoxFragmentBuilder>;
   // This constructor is for a non-success status.
   NGLayoutResult(NGBoxFragmentBuilderPassKey, EStatus, NGBoxFragmentBuilder*);
   // This constructor requires a non-null fragment and sets a success status.
@@ -343,7 +343,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
       scoped_refptr<const NGPhysicalContainerFragment> physical_fragment,
       NGBoxFragmentBuilder*);
   using NGLineBoxFragmentBuilderPassKey =
-      util::PassKey<NGLineBoxFragmentBuilder>;
+      base::PassKey<NGLineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
   NGLayoutResult(
       NGLineBoxFragmentBuilderPassKey,

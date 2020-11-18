@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -38,11 +38,11 @@ using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 
 // Contains a number of compromised sites.
 using CompromisedSitesCount =
-    util::StrongAlias<class CompromisedSitesCountTag, int>;
+    base::StrongAlias<class CompromisedSitesCountTag, int>;
 
-using IsSaved = util::StrongAlias<class IsSavedTag, bool>;
-using IsReused = util::StrongAlias<class IsReusedTag, bool>;
-using IsSyncing = util::StrongAlias<class IsSyncingTag, bool>;
+using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
+using IsReused = base::StrongAlias<class IsReusedTag, bool>;
+using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
 // Creates CredentialLeakType from strong booleans.
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,

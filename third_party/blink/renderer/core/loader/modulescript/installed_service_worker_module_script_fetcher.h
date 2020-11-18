@@ -19,7 +19,7 @@ class CORE_EXPORT InstalledServiceWorkerModuleScriptFetcher final
       public ModuleScriptFetcher {
  public:
   InstalledServiceWorkerModuleScriptFetcher(WorkerGlobalScope*,
-                                            util::PassKey<ModuleScriptLoader>);
+                                            base::PassKey<ModuleScriptLoader>);
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,

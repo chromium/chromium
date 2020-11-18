@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/services/storage/public/mojom/native_file_system_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -61,7 +61,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       public storage::mojom::NativeFileSystemContext {
  public:
   using BindingContext = NativeFileSystemEntryFactory::BindingContext;
-  using PassKey = util::PassKey<NativeFileSystemManagerImpl>;
+  using PassKey = base::PassKey<NativeFileSystemManagerImpl>;
 
   // State that is shared between handles that are derived from each other.
   // Handles that are created through ChooseEntries or GetSandboxedFileSystem

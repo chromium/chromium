@@ -34,7 +34,7 @@ std::unique_ptr<SkiaOutputDeviceVulkan> SkiaOutputDeviceVulkan::Create(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback) {
   auto output_device = std::make_unique<SkiaOutputDeviceVulkan>(
-      util::PassKey<SkiaOutputDeviceVulkan>(), context_provider, surface_handle,
+      base::PassKey<SkiaOutputDeviceVulkan>(), context_provider, surface_handle,
       memory_tracker, did_swap_buffer_complete_callback);
   if (UNLIKELY(!output_device->Initialize()))
     return nullptr;
@@ -42,7 +42,7 @@ std::unique_ptr<SkiaOutputDeviceVulkan> SkiaOutputDeviceVulkan::Create(
 }
 
 SkiaOutputDeviceVulkan::SkiaOutputDeviceVulkan(
-    util::PassKey<SkiaOutputDeviceVulkan>,
+    base::PassKey<SkiaOutputDeviceVulkan>,
     VulkanContextProvider* context_provider,
     gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,

@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -91,7 +91,7 @@ enum SyncState {
 class PasswordManagerClient {
  public:
   using CredentialsCallback = base::OnceCallback<void(const PasswordForm*)>;
-  using ReauthSucceeded = util::StrongAlias<class ReauthSucceededTag, bool>;
+  using ReauthSucceeded = base::StrongAlias<class ReauthSucceededTag, bool>;
 
   PasswordManagerClient() {}
   virtual ~PasswordManagerClient() {}

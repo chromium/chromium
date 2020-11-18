@@ -27,7 +27,7 @@ class CORE_EXPORT WorkletModuleScriptFetcher final
       public ModuleScriptFetcher {
  public:
   WorkletModuleScriptFetcher(WorkletModuleResponsesMap*,
-                             util::PassKey<ModuleScriptLoader>);
+                             base::PassKey<ModuleScriptLoader>);
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,

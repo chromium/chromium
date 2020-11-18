@@ -36,7 +36,6 @@
 #include "ui/base/idle/idle.h"
 
 namespace chromeos {
-class CrosSettings;
 namespace system {
 class StatisticsProvider;
 }

@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -72,7 +72,7 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
    public:
     // Use |CacheStorageCacheEntryHandler::CreateDiskCacheBlobEntry|.
     DiskCacheBlobEntry(
-        util::PassKey<CacheStorageCacheEntryHandler> key,
+        base::PassKey<CacheStorageCacheEntryHandler> key,
         base::WeakPtr<CacheStorageCacheEntryHandler> entry_handler,
         CacheStorageCacheHandle cache_handle,
         disk_cache::ScopedEntryPtr disk_cache_entry);

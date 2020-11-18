@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/url_data_source.h"
 
 namespace content {
@@ -21,7 +21,7 @@ namespace content {
 // working.
 class SharedResourcesDataSource : public URLDataSource {
  public:
-  using PassKey = util::PassKey<SharedResourcesDataSource>;
+  using PassKey = base::PassKey<SharedResourcesDataSource>;
 
   // Creates a SharedResourcesDataSource instance for chrome://resources.
   static std::unique_ptr<SharedResourcesDataSource> CreateForChromeScheme();

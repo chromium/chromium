@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
@@ -69,11 +69,11 @@ class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
 
   // Should be called early in the creation of a SiteDataCacheFacade to make
   // sure that |cache_factory_| gets created.
-  void OnBeforeFacadeCreated(util::PassKey<SiteDataCacheFacade> key);
+  void OnBeforeFacadeCreated(base::PassKey<SiteDataCacheFacade> key);
 
   // Should be called at the end of the destruction of a SiteDataCacheFacade to
   // release |cache_factory_| if there's no more profile needing it.
-  void OnFacadeDestroyed(util::PassKey<SiteDataCacheFacade> key);
+  void OnFacadeDestroyed(base::PassKey<SiteDataCacheFacade> key);
 
  private:
   // BrowserContextKeyedServiceFactory:

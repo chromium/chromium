@@ -382,7 +382,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
   context_state->set_need_context_state_reset(true);
 
   auto impl_on_gpu = std::make_unique<SkiaOutputSurfaceImplOnGpu>(
-      util::PassKey<SkiaOutputSurfaceImplOnGpu>(), deps,
+      base::PassKey<SkiaOutputSurfaceImplOnGpu>(), deps,
       context_state->feature_info(), renderer_settings, sequence_id,
       shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
@@ -394,7 +394,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
 }
 
 SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
-    util::PassKey<SkiaOutputSurfaceImplOnGpu> /* pass_key */,
+    base::PassKey<SkiaOutputSurfaceImplOnGpu> /* pass_key */,
     SkiaOutputSurfaceDependency* deps,
     scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
     const RendererSettings& renderer_settings,

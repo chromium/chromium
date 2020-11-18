@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
@@ -29,7 +29,7 @@ class SameThreadMediaSourceAttachment final
   // raw pointer is then adopted into a scoped_refptr in
   // MediaSourceRegistryImpl::RegisterURL.
   SameThreadMediaSourceAttachment(MediaSource* media_source,
-                                  util::PassKey<URLMediaSource>);
+                                  base::PassKey<URLMediaSource>);
 
   // MediaSourceAttachmentSupplement
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;

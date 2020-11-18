@@ -59,13 +59,13 @@ void RemoteObjectGatewayImpl::BindMojoReceiver(
   DCHECK(!RemoteObjectGatewayImpl::From(*frame));
 
   auto* self = MakeGarbageCollected<RemoteObjectGatewayImpl>(
-      util::PassKey<RemoteObjectGatewayImpl>(), *frame, std::move(receiver),
+      base::PassKey<RemoteObjectGatewayImpl>(), *frame, std::move(receiver),
       std::move(host));
   Supplement<LocalFrame>::ProvideTo(*frame, self);
 }
 
 RemoteObjectGatewayImpl::RemoteObjectGatewayImpl(
-    util::PassKey<RemoteObjectGatewayImpl>,
+    base::PassKey<RemoteObjectGatewayImpl>,
     LocalFrame& frame,
     mojo::PendingReceiver<mojom::blink::RemoteObjectGateway>
         object_gateway_receiver,

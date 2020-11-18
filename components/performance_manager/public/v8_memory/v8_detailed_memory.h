@@ -16,7 +16,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -237,17 +237,17 @@ class V8DetailedMemoryDecorator
   // V8DetailedMemoryRequest objects register themselves with the decorator.
   // If |process_node| is null, the request will be sent to every renderer
   // process, otherwise it will be sent only to |process_node|.
-  void AddMeasurementRequest(util::PassKey<V8DetailedMemoryRequest>,
+  void AddMeasurementRequest(base::PassKey<V8DetailedMemoryRequest>,
                              V8DetailedMemoryRequest* request,
                              const ProcessNode* process_node = nullptr);
-  void RemoveMeasurementRequest(util::PassKey<V8DetailedMemoryRequest>,
+  void RemoveMeasurementRequest(base::PassKey<V8DetailedMemoryRequest>,
                                 V8DetailedMemoryRequest* request);
 
   // Internal helper class that can call NotifyObserversOnMeasurementAvailable
   // when a measurement is received.
   class ObserverNotifier;
   void NotifyObserversOnMeasurementAvailable(
-      util::PassKey<ObserverNotifier>,
+      base::PassKey<ObserverNotifier>,
       const ProcessNode* process_node) const;
 
  private:
@@ -422,7 +422,7 @@ class V8DetailedMemoryRequest {
   // request will be sent to every renderer process, otherwise it will be sent
   // only to |process_to_measure|.
   V8DetailedMemoryRequest(
-      util::PassKey<V8DetailedMemoryRequestAnySeq>,
+      base::PassKey<V8DetailedMemoryRequestAnySeq>,
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode,
       base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
@@ -432,7 +432,7 @@ class V8DetailedMemoryRequest {
   // min_time_between_requests_ to 0, which is not allowed for repeating
   // requests, and registers |on_owner_unregistered_closure| to be called from
   // OnOwnerUnregistered.
-  V8DetailedMemoryRequest(util::PassKey<V8DetailedMemoryRequestOneShot>,
+  V8DetailedMemoryRequest(base::PassKey<V8DetailedMemoryRequestOneShot>,
                           MeasurementMode mode,
                           base::OnceClosure on_owner_unregistered_closure);
 
@@ -440,12 +440,12 @@ class V8DetailedMemoryRequest {
   // OnOwnerUnregistered for all requests in the queue when the owning
   // decorator or process node is removed from the graph.
   void OnOwnerUnregistered(
-      util::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>);
+      base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>);
 
   // V8DetailedMemoryDecorator::MeasurementRequestQueue calls
   // NotifyObserversOnMeasurementAvailable when a measurement is received.
   void NotifyObserversOnMeasurementAvailable(
-      util::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
+      base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
       const ProcessNode* process_node) const;
 
  private:
@@ -530,7 +530,7 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   // Private constructor for V8DetailedMemoryRequestOneShotAnySeq. Will be
   // called from off-sequence.
   V8DetailedMemoryRequestOneShot(
-      util::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
+      base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
       base::WeakPtr<ProcessNode> process,
       MeasurementCallback callback,
       MeasurementMode mode = MeasurementMode::kDefault);
@@ -615,7 +615,7 @@ class V8DetailedMemoryRequestAnySeq {
   // V8DetailedMemoryRequest calls NotifyObserversOnMeasurementAvailable when
   // a measurement is received.
   void NotifyObserversOnMeasurementAvailable(
-      util::PassKey<V8DetailedMemoryRequest>,
+      base::PassKey<V8DetailedMemoryRequest>,
       RenderProcessHostId render_process_host_id,
       const V8DetailedMemoryProcessData& process_data,
       const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) const;

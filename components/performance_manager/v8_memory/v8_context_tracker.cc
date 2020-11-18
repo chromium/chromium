@@ -87,7 +87,7 @@ const V8ContextTracker::V8ContextState* V8ContextTracker::GetV8ContextState(
 }
 
 void V8ContextTracker::OnV8ContextCreated(
-    util::PassKey<ProcessNodeImpl> key,
+    base::PassKey<ProcessNodeImpl> key,
     ProcessNodeImpl* process_node,
     const mojom::V8ContextDescription& description,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
@@ -162,7 +162,7 @@ void V8ContextTracker::OnV8ContextCreated(
 }
 
 void V8ContextTracker::OnV8ContextDetached(
-    util::PassKey<ProcessNodeImpl> key,
+    base::PassKey<ProcessNodeImpl> key,
     ProcessNodeImpl* process_node,
     const blink::V8ContextToken& v8_context_token) {
   DCHECK_ON_GRAPH_SEQUENCE(process_node->graph());
@@ -181,7 +181,7 @@ void V8ContextTracker::OnV8ContextDetached(
 }
 
 void V8ContextTracker::OnV8ContextDestroyed(
-    util::PassKey<ProcessNodeImpl> key,
+    base::PassKey<ProcessNodeImpl> key,
     ProcessNodeImpl* process_node,
     const blink::V8ContextToken& v8_context_token) {
   DCHECK_ON_GRAPH_SEQUENCE(process_node->graph());
@@ -196,7 +196,7 @@ void V8ContextTracker::OnV8ContextDestroyed(
 }
 
 void V8ContextTracker::OnRemoteIframeAttached(
-    util::PassKey<ProcessNodeImpl> key,
+    base::PassKey<ProcessNodeImpl> key,
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
@@ -284,7 +284,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
 }
 
 void V8ContextTracker::OnRemoteIframeDetached(
-    util::PassKey<ProcessNodeImpl> key,
+    base::PassKey<ProcessNodeImpl> key,
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token) {
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());

@@ -49,14 +49,14 @@ class FreezingVoteAggregator final : public FreezingVoteConsumer {
   void SetUpstreamVotingChannel(FreezingVotingChannel&& channel);
 
   // VoteConsumer implementation:
-  FreezingVoteReceipt SubmitVote(util::PassKey<FreezingVotingChannel>,
+  FreezingVoteReceipt SubmitVote(base::PassKey<FreezingVotingChannel>,
                                  voting::VoterId<FreezingVote> voter_id,
                                  const PageNode* page_node,
                                  const FreezingVote& vote) override;
-  void ChangeVote(util::PassKey<AcceptedFreezingVote>,
+  void ChangeVote(base::PassKey<AcceptedFreezingVote>,
                   AcceptedFreezingVote* old_vote,
                   const FreezingVote& new_vote) override;
-  void VoteInvalidated(util::PassKey<AcceptedFreezingVote>,
+  void VoteInvalidated(base::PassKey<AcceptedFreezingVote>,
                        AcceptedFreezingVote* vote) override;
 
  private:

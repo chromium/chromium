@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 #include "ui/base/models/image_model.h"
@@ -225,7 +225,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     std::unique_ptr<DialogModel> model_;
   };
 
-  DialogModel(util::PassKey<DialogModel::Builder>,
+  DialogModel(base::PassKey<DialogModel::Builder>,
               std::unique_ptr<DialogModelDelegate> delegate);
 
   DialogModel(const DialogModel&) = delete;
@@ -272,51 +272,51 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelCombobox* GetComboboxByUniqueId(int unique_id);
   DialogModelTextfield* GetTextfieldByUniqueId(int unique_id);
 
-  // Methods with util::PassKey<DialogModelHost> are only intended to be called
+  // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
-  void OnDialogAccepted(util::PassKey<DialogModelHost>);
-  void OnDialogCancelled(util::PassKey<DialogModelHost>);
-  void OnDialogClosed(util::PassKey<DialogModelHost>);
-  void OnWindowClosing(util::PassKey<DialogModelHost>);
+  void OnDialogAccepted(base::PassKey<DialogModelHost>);
+  void OnDialogCancelled(base::PassKey<DialogModelHost>);
+  void OnDialogClosed(base::PassKey<DialogModelHost>);
+  void OnWindowClosing(base::PassKey<DialogModelHost>);
 
   // Called when added to a DialogModelHost.
-  void set_host(util::PassKey<DialogModelHost>, DialogModelHost* host) {
+  void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {
     host_ = host;
   }
 
   const base::Optional<bool>& override_show_close_button(
-      util::PassKey<DialogModelHost>) const {
+      base::PassKey<DialogModelHost>) const {
     return override_show_close_button_;
   }
 
-  const base::string16& title(util::PassKey<DialogModelHost>) const {
+  const base::string16& title(base::PassKey<DialogModelHost>) const {
     return title_;
   }
 
-  const ImageModel& icon(util::PassKey<DialogModelHost>) const { return icon_; }
+  const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
 
   base::Optional<int> initially_focused_field(
-      util::PassKey<DialogModelHost>) const {
+      base::PassKey<DialogModelHost>) const {
     return initially_focused_field_;
   }
 
-  bool is_alert_dialog(util::PassKey<DialogModelHost>) const {
+  bool is_alert_dialog(base::PassKey<DialogModelHost>) const {
     return is_alert_dialog_;
   }
 
-  DialogModelButton* ok_button(util::PassKey<DialogModelHost>) {
+  DialogModelButton* ok_button(base::PassKey<DialogModelHost>) {
     return ok_button_.has_value() ? &ok_button_.value() : nullptr;
   }
 
-  DialogModelButton* cancel_button(util::PassKey<DialogModelHost>) {
+  DialogModelButton* cancel_button(base::PassKey<DialogModelHost>) {
     return cancel_button_.has_value() ? &cancel_button_.value() : nullptr;
   }
 
-  DialogModelButton* extra_button(util::PassKey<DialogModelHost>) {
+  DialogModelButton* extra_button(base::PassKey<DialogModelHost>) {
     return extra_button_.has_value() ? &extra_button_.value() : nullptr;
   }
 
-  bool close_on_deactivate(util::PassKey<DialogModelHost>) const {
+  bool close_on_deactivate(base::PassKey<DialogModelHost>) const {
     return close_on_deactivate_;
   }
 
@@ -324,13 +324,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   // though they should be handled separately (OK button has fixed position in
   // dialog).
   const std::vector<std::unique_ptr<DialogModelField>>& fields(
-      util::PassKey<DialogModelHost>) {
+      base::PassKey<DialogModelHost>) {
     return fields_;
   }
 
  private:
-  util::PassKey<DialogModel> GetPassKey() {
-    return util::PassKey<DialogModel>();
+  base::PassKey<DialogModel> GetPassKey() {
+    return base::PassKey<DialogModel>();
   }
 
   void AddField(std::unique_ptr<DialogModelField> field);

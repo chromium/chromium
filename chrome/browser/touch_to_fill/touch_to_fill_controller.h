@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -42,7 +42,7 @@ class TouchToFillController {
 
   // No-op constructor for tests.
   explicit TouchToFillController(
-      util::PassKey<class TouchToFillControllerTest>);
+      base::PassKey<class TouchToFillControllerTest>);
   explicit TouchToFillController(ChromePasswordManagerClient* web_contents);
   TouchToFillController(const TouchToFillController&) = delete;
   TouchToFillController& operator=(const TouchToFillController&) = delete;

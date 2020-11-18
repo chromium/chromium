@@ -11,7 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
@@ -167,7 +167,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
   class ScopedAccess
       : public ScopedAccessBase<SharedImageRepresentationGLTextureBase> {
    public:
-    ScopedAccess(util::PassKey<SharedImageRepresentationGLTextureBase> pass_key,
+    ScopedAccess(base::PassKey<SharedImageRepresentationGLTextureBase> pass_key,
                  SharedImageRepresentationGLTextureBase* representation)
         : ScopedAccessBase(representation) {}
     ~ScopedAccess() {
@@ -243,7 +243,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   class GPU_GLES2_EXPORT ScopedWriteAccess
       : public ScopedAccessBase<SharedImageRepresentationSkia> {
    public:
-    ScopedWriteAccess(util::PassKey<SharedImageRepresentationSkia> pass_key,
+    ScopedWriteAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
                       SharedImageRepresentationSkia* representation,
                       sk_sp<SkSurface> surface,
                       std::unique_ptr<GrBackendSurfaceMutableState> end_state);
@@ -260,7 +260,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   class GPU_GLES2_EXPORT ScopedReadAccess
       : public ScopedAccessBase<SharedImageRepresentationSkia> {
    public:
-    ScopedReadAccess(util::PassKey<SharedImageRepresentationSkia> pass_key,
+    ScopedReadAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
                      SharedImageRepresentationSkia* representation,
                      sk_sp<SkPromiseImageTexture> promise_image_texture,
                      std::unique_ptr<GrBackendSurfaceMutableState> end_state);
@@ -359,7 +359,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationDawn
   class GPU_GLES2_EXPORT ScopedAccess
       : public ScopedAccessBase<SharedImageRepresentationDawn> {
    public:
-    ScopedAccess(util::PassKey<SharedImageRepresentationDawn> pass_key,
+    ScopedAccess(base::PassKey<SharedImageRepresentationDawn> pass_key,
                  SharedImageRepresentationDawn* representation,
                  WGPUTexture texture);
     ~ScopedAccess();
@@ -397,7 +397,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   class GPU_GLES2_EXPORT ScopedReadAccess
       : public ScopedAccessBase<SharedImageRepresentationOverlay> {
    public:
-    ScopedReadAccess(util::PassKey<SharedImageRepresentationOverlay> pass_key,
+    ScopedReadAccess(base::PassKey<SharedImageRepresentationOverlay> pass_key,
                      SharedImageRepresentationOverlay* representation,
                      gl::GLImage* gl_image,
                      std::vector<gfx::GpuFence> acquire_fences,
@@ -487,7 +487,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
   class GPU_GLES2_EXPORT ScopedWriteAccess
       : public ScopedAccessBase<SharedImageRepresentationVaapi> {
    public:
-    ScopedWriteAccess(util::PassKey<SharedImageRepresentationVaapi> pass_key,
+    ScopedWriteAccess(base::PassKey<SharedImageRepresentationVaapi> pass_key,
                       SharedImageRepresentationVaapi* representation);
 
     ~ScopedWriteAccess();

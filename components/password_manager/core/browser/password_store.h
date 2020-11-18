@@ -20,16 +20,16 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
-#include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_sync.h"
 
 class PrefService;
 
@@ -49,7 +49,7 @@ namespace password_manager {
 
 struct PasswordForm;
 
-using IsAccountStore = util::StrongAlias<class IsAccountStoreTag, bool>;
+using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
 
 using metrics_util::GaiaPasswordHashChange;
 

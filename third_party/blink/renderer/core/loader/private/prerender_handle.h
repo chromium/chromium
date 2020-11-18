@@ -33,7 +33,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -70,7 +70,7 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
       const KURL&,
       mojom::blink::PrerenderRelType prerender_rel_type);
 
-  using PassKey = util::PassKey<PrerenderHandle>;
+  using PassKey = base::PassKey<PrerenderHandle>;
   PrerenderHandle(
       PassKey,
       ExecutionContext*,

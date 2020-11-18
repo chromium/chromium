@@ -31,7 +31,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final
   static scoped_refptr<const NGPhysicalLineBoxFragment> Create(
       NGLineBoxFragmentBuilder* builder);
 
-  using PassKey = util::PassKey<NGPhysicalLineBoxFragment>;
+  using PassKey = base::PassKey<NGPhysicalLineBoxFragment>;
   NGPhysicalLineBoxFragment(PassKey, NGLineBoxFragmentBuilder* builder);
 
   ~NGPhysicalLineBoxFragment() {

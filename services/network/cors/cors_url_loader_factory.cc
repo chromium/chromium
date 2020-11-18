@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -44,7 +44,7 @@ namespace cors {
 
 namespace {
 
-using IsConsistent = ::util::StrongAlias<class IsConsistentTag, bool>;
+using IsConsistent = ::base::StrongAlias<class IsConsistentTag, bool>;
 
 // Record, for requests with associated Trust Tokens operations of operation
 // types requiring initiators to have the Trust Tokens Feature Policy feature

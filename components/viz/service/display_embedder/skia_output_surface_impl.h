@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -50,7 +50,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const DebugRendererSettings* debug_settings);
 
   SkiaOutputSurfaceImpl(
-      util::PassKey<SkiaOutputSurfaceImpl> pass_key,
+      base::PassKey<SkiaOutputSurfaceImpl> pass_key,
       DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);

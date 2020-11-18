@@ -5,7 +5,7 @@
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 
 #include "base/sequence_checker.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -19,7 +19,7 @@ namespace execution_context {
 // implementations.
 class ExecutionContextAccess {
  public:
-  using PassKey = util::PassKey<ExecutionContextAccess>;
+  using PassKey = base::PassKey<ExecutionContextAccess>;
 
   template <typename NodeImplType>
   static std::unique_ptr<NodeAttachedData>* GetExecutionAccessStorage(

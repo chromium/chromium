@@ -795,6 +795,8 @@ component("base") {
     "trace_event/trace_id_helper.h",
     "traits_bag.h",
     "tuple.h",
+    "types/pass_key.h",
+    "types/strong_alias.h",
     "unguessable_token.cc",
     "unguessable_token.h",
     "updateable_sequenced_task_runner.h",
@@ -3009,6 +3011,8 @@ test("base_unittests") {
     "tools_sanity_unittest.cc",
     "traits_bag_unittest.cc",
     "tuple_unittest.cc",
+    "types/pass_key_unittest.cc",
+    "types/strong_alias_unittest.cc",
     "unguessable_token_unittest.cc",
     "value_iterators_unittest.cc",
     "values_unittest.cc",
@@ -3502,6 +3506,7 @@ if (enable_nocompile_tests) {
       "task/task_traits_unittest.nc",
       "thread_annotations_unittest.nc",
       "traits_bag_unittest.nc",
+      "types/pass_key_unittest.nc",
     ]
 
     deps = [

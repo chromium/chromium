@@ -66,7 +66,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
     return flags_ & kHasClonedBoxDecorations;
   }
 
-  using PassKey = util::PassKey<NGInlineBreakToken>;
+  using PassKey = base::PassKey<NGInlineBreakToken>;
   NGInlineBreakToken(PassKey,
                      NGInlineNode node,
                      const ComputedStyle*,

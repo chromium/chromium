@@ -443,7 +443,7 @@ void BubbleDialogModelHost::AddOrUpdateCheckbox(
 
   checkbox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCheckbox* model_field,
-         util::PassKey<DialogModelHost> pass_key, Checkbox* checkbox,
+         base::PassKey<DialogModelHost> pass_key, Checkbox* checkbox,
          const ui::Event& event) {
         model_field->OnChecked(pass_key, checkbox->GetChecked());
       },
@@ -463,7 +463,7 @@ void BubbleDialogModelHost::AddOrUpdateCombobox(
                                   : model_field->accessible_name(GetPassKey()));
   combobox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCombobox* model_field,
-         util::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
+         base::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
         // TODO(pbos): This should be a subscription through the Combobox
         // directly, but Combobox right now doesn't support listening to
         // selected-index changes.
@@ -494,7 +494,7 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
   property_changed_subscriptions_.push_back(
       textfield->AddTextChangedCallback(base::BindRepeating(
           [](ui::DialogModelTextfield* model_field,
-             util::PassKey<DialogModelHost> pass_key, Textfield* textfield) {
+             base::PassKey<DialogModelHost> pass_key, Textfield* textfield) {
             model_field->OnTextChanged(pass_key, textfield->GetText());
           },
           model_field, GetPassKey(), textfield.get())));

@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 
 namespace autofill {
 // AlternativeStateNameMap encapsulates mappings from state names in the
@@ -71,17 +71,17 @@ namespace autofill {
 class AlternativeStateNameMap {
  public:
   // Represents ISO 3166-1 alpha-2 codes (always uppercase ASCII).
-  using CountryCode = util::StrongAlias<class CountryCodeTag, std::string>;
+  using CountryCode = base::StrongAlias<class CountryCodeTag, std::string>;
 
   // Represents either a canonical state name, or an abbreviation, or an
   // alternative name or normalized state name from the profile.
-  using StateName = util::StrongAlias<class StateNameTag, base::string16>;
+  using StateName = base::StrongAlias<class StateNameTag, base::string16>;
 
   // States can be represented as different strings (different spellings,
   // translations, abbreviations). All representations of a single state in a
   // single country are mapped to the same canonical name.
   using CanonicalStateName =
-      util::StrongAlias<class CanonicalStateNameTag, base::string16>;
+      base::StrongAlias<class CanonicalStateNameTag, base::string16>;
 
   static AlternativeStateNameMap* GetInstance();
 

@@ -19,7 +19,7 @@ BufferingBytesConsumer* BufferingBytesConsumer::CreateWithDelay(
     BytesConsumer* bytes_consumer,
     scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner) {
   return MakeGarbageCollected<BufferingBytesConsumer>(
-      util::PassKey<BufferingBytesConsumer>(), bytes_consumer,
+      base::PassKey<BufferingBytesConsumer>(), bytes_consumer,
       std::move(timer_task_runner),
       base::TimeDelta::FromMilliseconds(kDelayMilliseconds));
 }
@@ -28,12 +28,12 @@ BufferingBytesConsumer* BufferingBytesConsumer::CreateWithDelay(
 BufferingBytesConsumer* BufferingBytesConsumer::Create(
     BytesConsumer* bytes_consumer) {
   return MakeGarbageCollected<BufferingBytesConsumer>(
-      util::PassKey<BufferingBytesConsumer>(), bytes_consumer, nullptr,
+      base::PassKey<BufferingBytesConsumer>(), bytes_consumer, nullptr,
       base::TimeDelta());
 }
 
 BufferingBytesConsumer::BufferingBytesConsumer(
-    util::PassKey<BufferingBytesConsumer> key,
+    base::PassKey<BufferingBytesConsumer> key,
     BytesConsumer* bytes_consumer,
     scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner,
     base::TimeDelta buffering_start_delay)

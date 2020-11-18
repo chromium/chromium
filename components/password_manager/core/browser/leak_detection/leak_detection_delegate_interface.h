@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_DELEGATE_INTERFACE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_DELEGATE_INTERFACE_H_
 
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -31,7 +31,7 @@ enum class LeakDetectionError {
   kMaxValue = kQuotaLimit,
 };
 
-using IsLeaked = util::StrongAlias<class IsLeakedTag, bool>;
+using IsLeaked = base::StrongAlias<class IsLeakedTag, bool>;
 
 // Interface with callbacks for LeakDetectionCheck. Used to get the result of
 // the check.
