@@ -20,7 +20,6 @@
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -290,11 +289,6 @@ bool AppBannerManager::ShouldBypassEngagementChecks() const {
 
 bool AppBannerManager::IsExternallyInstalledWebApp() {
   return false;
-}
-
-bool AppBannerManager::IsWebAppConsideredInstalled() {
-  return IsWebAppInstalledForUrl(web_contents()->GetBrowserContext(),
-                                 manifest_.start_url);
 }
 
 bool AppBannerManager::ShouldAllowWebAppReplacementInstall() {

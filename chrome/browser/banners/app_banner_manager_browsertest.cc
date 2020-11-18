@@ -142,6 +142,8 @@ class AppBannerManagerTest : public AppBannerManager {
                              "installed-extension-id");
   }
 
+  bool IsWebAppConsideredInstalled() const override { return false; }
+
  private:
   base::OnceClosure on_done_;
 

@@ -86,7 +86,6 @@ class AppBannerManagerAndroid
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;
   std::string GetBannerType() override;
-  bool IsWebAppConsideredInstalled() override;
   void PerformInstallableChecks() override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
@@ -101,6 +100,7 @@ class AppBannerManagerAndroid
       const base::string16& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
+  bool IsWebAppConsideredInstalled() const override;
 
  private:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;

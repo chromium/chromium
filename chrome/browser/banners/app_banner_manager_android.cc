@@ -174,15 +174,6 @@ std::string AppBannerManagerAndroid::GetBannerType() {
                                     : "play";
 }
 
-bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() {
-  // Also check if a WebAPK is currently being installed. Installation may take
-  // some time, so ensure we don't accidentally allow a new installation whilst
-  // one is in flight for the current site.
-  return AppBannerManager::IsWebAppConsideredInstalled() ||
-         WebApkInstallService::Get(web_contents()->GetBrowserContext())
-             ->IsInstallInProgress(manifest_url_);
-}
-
 InstallableParams
 AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
@@ -554,6 +545,16 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
     const blink::Manifest::RelatedApplication& related_app) const {
   // TODO(https://crbug.com/949430): Implement for Android apps.
   return false;
+}
+
+bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
+  // Also check if a WebAPK is currently being installed. Installation may take
+  // some time, so ensure we don't accidentally allow a new installation whilst
+  // one is in flight for the current site.
+  return ShortcutHelper::IsWebApkInstalled(web_contents()->GetBrowserContext(),
+                                           manifest_.start_url) ||
+         WebApkInstallService::Get(web_contents()->GetBrowserContext())
+             ->IsInstallInProgress(manifest_url_);
 }
 
 base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {

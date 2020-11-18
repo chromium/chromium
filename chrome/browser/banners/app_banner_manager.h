@@ -229,8 +229,12 @@ class AppBannerManager : public content::WebContentsObserver,
       const blink::Manifest::RelatedApplication& related_app) const = 0;
 
   // Returns whether the current page is already installed as a web app, or
-  // should be considered as installed.
-  virtual bool IsWebAppConsideredInstalled();
+  // should be considered as installed. Returns true if there is an installed
+  // web app within the BrowserContext of |web_contents()| that contains |url|
+  // within its scope, and false otherwise. For example, the URL
+  // https://example.com/a/b/c/d.html is contained within a web app with scope
+  // https://example.com/a/b/.
+  virtual bool IsWebAppConsideredInstalled() const = 0;
 
   // Returns whether the installed web app at the current page can be
   // overwritten with a new app install for the current page.

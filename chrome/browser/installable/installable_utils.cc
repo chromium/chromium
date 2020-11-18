@@ -12,25 +12,11 @@
 #else
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #endif
-
-bool IsWebAppInstalledForUrl(content::BrowserContext* browser_context,
-                             const GURL& url) {
-#if defined(OS_ANDROID)
-  // This will still detect the presence of a WebAPK even if Chrome's data is
-  // cleared
-  return ShortcutHelper::IsWebApkInstalled(browser_context, url);
-#else
-  return web_app::FindInstalledAppWithUrlInScope(
-             Profile::FromBrowserContext(browser_context), url)
-      .has_value();
-#endif
-}
 
 bool DoesOriginContainAnyInstalledWebApp(
     content::BrowserContext* browser_context,

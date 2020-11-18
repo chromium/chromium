@@ -13,13 +13,6 @@ class BrowserContext;
 
 class GURL;
 
-// Returns true if there is an installed web app within |browser_context| that
-// contains |url| within its scope, and false otherwise. For example, the URL
-// https://example.com/a/b/c/d.html is contained within a web app with scope
-// https://example.com/a/b/.
-bool IsWebAppInstalledForUrl(content::BrowserContext* browser_context,
-                             const GURL& url);
-
 // Returns true if there is any installed web app within |browser_context|
 // contained within |origin|. For example, a web app at https://example.com/a/b
 // is contained within the origin https://example.com.

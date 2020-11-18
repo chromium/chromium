@@ -145,6 +145,13 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
   return false;
 }
 
+bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
+  return web_app::FindInstalledAppWithUrlInScope(
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+             manifest_.start_url)
+      .has_value();
+}
+
 web_app::AppRegistrar& AppBannerManagerDesktop::registrar() {
   auto* provider = web_app::WebAppProviderBase::GetProviderBase(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
