@@ -35,6 +35,27 @@ void InsertKeyframe(std::unique_ptr<KeyframeType> keyframe,
   keyframes->push_back(std::move(keyframe));
 }
 
+struct TimeValues {
+  base::TimeDelta start_time;
+  base::TimeDelta duration;
+  double progress;
+};
+
+template <typename KeyframeType>
+TimeValues GetTimeValues(const KeyframeType& start_frame,
+                         const KeyframeType& end_frame,
+                         double scaled_duration,
+                         base::TimeDelta time) {
+  TimeValues values;
+  values.start_time = start_frame.Time() * scaled_duration;
+  values.duration = (end_frame.Time() * scaled_duration) - values.start_time;
+  const base::TimeDelta elapsed = time - values.start_time;
+  values.progress = (elapsed.is_inf() || values.duration.is_zero())
+                        ? 1.0
+                        : (elapsed / values.duration);
+  return values;
+}
+
 template <typename KeyframeType>
 base::TimeDelta TransformedAnimationTime(
     const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
@@ -42,14 +63,10 @@ base::TimeDelta TransformedAnimationTime(
     double scaled_duration,
     base::TimeDelta time) {
   if (timing_function) {
-    base::TimeDelta start_time = keyframes.front()->Time() * scaled_duration;
-    base::TimeDelta duration =
-        (keyframes.back()->Time() - keyframes.front()->Time()) *
-        scaled_duration;
-    const double progress =
-        duration.is_zero() ? 1.0 : ((time - start_time) / duration);
-
-    time = (duration * timing_function->GetValue(progress)) + start_time;
+    const auto values = GetTimeValues(*keyframes.front(), *keyframes.back(),
+                                      scaled_duration, time);
+    time = (values.duration * timing_function->GetValue(values.progress)) +
+           values.start_time;
   }
 
   return time;
@@ -75,12 +92,9 @@ double TransformedKeyframeProgress(
     double scaled_duration,
     base::TimeDelta time,
     size_t i) {
-  const base::TimeDelta start_time = keyframes[i]->Time() * scaled_duration;
-  const base::TimeDelta duration =
-      keyframes[i + 1]->Time() * scaled_duration - start_time;
   const double progress =
-      duration.is_zero() ? 1.0 : ((time - start_time) / duration);
-
+      GetTimeValues(*keyframes[i], *keyframes[i + 1], scaled_duration, time)
+          .progress;
   return keyframes[i]->timing_function()
              ? keyframes[i]->timing_function()->GetValue(progress)
              : progress;
