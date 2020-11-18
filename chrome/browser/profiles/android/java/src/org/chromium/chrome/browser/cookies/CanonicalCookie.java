@@ -29,11 +29,12 @@ class CanonicalCookie {
     private final int mPriority;
     private final boolean mSameParty;
     private final int mSourceScheme;
+    private final int mSourcePort;
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(String name, String value, String domain, String path, long creation,
             long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-            int priority, boolean sameParty, int sourceScheme) {
+            int priority, boolean sameParty, int sourceScheme, int sourcePort) {
         mName = name;
         mValue = value;
         mDomain = domain;
@@ -47,6 +48,7 @@ class CanonicalCookie {
         mPriority = priority;
         mSameParty = sameParty;
         mSourceScheme = sourceScheme;
+        mSourcePort = sourcePort;
     }
 
     /** @return Priority of the cookie. */
@@ -114,10 +116,15 @@ class CanonicalCookie {
         return mSourceScheme;
     }
 
+    /** @return Source port of the cookie. */
+    int sourcePort() {
+        return mSourcePort;
+    }
+
     // Note incognito state cannot persist across app installs since the encryption key is stored
     // in the activity state bundle. So the version here is more of a guard than a real version
     // used for format migrations.
-    private static final int SERIALIZATION_VERSION = 20201029;
+    private static final int SERIALIZATION_VERSION = 20201111;
 
     static void saveListToStream(DataOutputStream out, CanonicalCookie[] cookies)
             throws IOException {
@@ -184,6 +191,7 @@ class CanonicalCookie {
         out.writeInt(mPriority);
         out.writeBoolean(mSameParty);
         out.writeInt(mSourceScheme);
+        out.writeInt(mSourcePort);
     }
 
     private static CanonicalCookie createFromStream(DataInputStream in) throws IOException {
@@ -199,6 +207,7 @@ class CanonicalCookie {
                 in.readInt(), // samesite
                 in.readInt(), // priority
                 in.readBoolean(), // sameparty
-                in.readInt()); // source scheme
+                in.readInt(), // source scheme
+                in.readInt()); // source port
     }
 }

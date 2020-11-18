@@ -42,6 +42,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 using base::Time;
 
@@ -106,7 +107,7 @@ const int kLoadDelayMilliseconds = 0;
 #endif
 
 // Port number to use for cookies whose source port is unknown at the time of
-// database migration to V13.
+// database migration to V13. The value -1 comes from url::PORT_UNSPECIFIED.
 const int kDefaultUnknownPort = -1;
 
 // A little helper to help us log (on client thread) if the background runner
@@ -168,9 +169,9 @@ namespace {
 //
 // Version 13 adds two new fields: "source_port" (the port number of the source
 // origin, and "same_party" (boolean indicating whether the cookie had a
-// SameParty attribute). In migrating, source_port defaults to -1 for old
-// entries for which the source port is unknown, and same_party defaults to
-// false.
+// SameParty attribute). In migrating, source_port defaults to -1
+// (url::PORT_UNSPECIFIED) for old entries for which the source port is unknown,
+// and same_party defaults to false.
 //
 // Version 12 adds a column for "source_scheme" to store whether the
 // cookie was set from a URL with a cryptographic scheme.
@@ -885,14 +886,15 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
         "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
         "expires_utc, is_secure, is_httponly, samesite, "
         "last_access_utc, has_expires, is_persistent, priority, "
-        "source_scheme, is_same_party "
+        "source_scheme, source_port, is_same_party "
         "FROM cookies WHERE host_key = ?"));
   } else {
     smt.Assign(db()->GetCachedStatement(
         SQL_FROM_HERE,
         "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
         "expires_utc, is_secure, is_httponly, samesite, last_access_utc, "
-        "has_expires, is_persistent, priority, source_scheme, is_same_party "
+        "has_expires, is_persistent, priority, source_scheme, source_port, "
+        "is_same_party "
         "FROM cookies WHERE host_key = ? AND is_persistent = 1"));
   }
   del_smt.Assign(db()->GetCachedStatement(
@@ -973,8 +975,9 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
             static_cast<DBCookieSameSite>(smt.ColumnInt(9))),  // samesite
         DBCookiePriorityToCookiePriority(
             static_cast<DBCookiePriority>(smt.ColumnInt(13))),  // priority
-        smt.ColumnBool(15),                                     // is_same_party
-        DBToCookieSourceScheme(smt.ColumnInt(14)));             // source_scheme
+        smt.ColumnBool(16),                                     // is_same_party
+        DBToCookieSourceScheme(smt.ColumnInt(14)),              // source_scheme
+        smt.ColumnInt(15));                                     // source_port
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << L"CreationDate too recent";
@@ -1298,8 +1301,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_smt.BindInt(
               13, CookiePriorityToDBCookiePriority(po->cc().Priority()));
           add_smt.BindInt(14, static_cast<int>(po->cc().SourceScheme()));
-          // TODO(crbug.com/1141135): Record port number of the cookie.
-          add_smt.BindInt(15, kDefaultUnknownPort);
+          add_smt.BindInt(15, po->cc().SourcePort());
           add_smt.BindBool(16, po->cc().IsSameParty());
           if (!add_smt.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";

@@ -405,7 +405,7 @@ bool StructTraits<
   auto cc = net::CanonicalCookie::FromStorage(
       name, value, domain, path, creation_time, expiry_time, last_access_time,
       cookie.secure(), cookie.httponly(), site_restrictions, priority,
-      cookie.same_party(), source_scheme);
+      cookie.same_party(), source_scheme, cookie.source_port());
   if (!cc)
     return false;
   *out = *cc;

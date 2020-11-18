@@ -44,6 +44,7 @@
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace net {
 
@@ -895,6 +896,58 @@ TEST_F(SQLitePersistentCookieStoreTest, SamePartyIsPersistent) {
 
   ASSERT_EQ(1u, cookie_map.count(kSamePartyCookieName));
   EXPECT_TRUE(cookie_map[kSamePartyCookieName]->IsSameParty());
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
+  const char kDomain[] = "sessioncookie.com";
+  const char kCookieValue[] = "value";
+  const char kCookiePath[] = "/";
+
+  struct CookieTestValues {
+    std::string name;
+    int port;
+  };
+
+  const std::vector<CookieTestValues> kTestCookies = {
+      {"1", 80},
+      {"2", 443},
+      {"3", 1234},
+      {"4", url::PORT_UNSPECIFIED},
+      {"5", url::PORT_INVALID}};
+
+  InitializeStore(false, true);
+
+  for (const auto& input : kTestCookies) {
+    // Add some persistent cookies.
+    store_->AddCookie(CanonicalCookie(
+        input.name, kCookieValue, kDomain, kCookiePath,
+        base::Time::Now() - base::TimeDelta::FromMinutes(1),
+        base::Time::Now() + base::TimeDelta::FromDays(1), base::Time(),
+        /*secure=*/true, false, CookieSameSite::LAX_MODE,
+        COOKIE_PRIORITY_DEFAULT,
+        /*same_party=*/false,
+        CookieSourceScheme::kUnset /* Doesn't matter for this test. */,
+        input.port));
+  }
+
+  // Force the store to write its data to the disk.
+  DestroyStore();
+
+  // Create a store that loads session cookie and test that the source_port
+  // attribute values are restored.
+  CanonicalCookieVector cookies;
+  CreateAndLoad(false, true, &cookies);
+  ASSERT_EQ(kTestCookies.size(), cookies.size());
+
+  // Put the cookies into a map, by name, for comparison below.
+  std::map<std::string, CanonicalCookie*> cookie_map;
+  for (const auto& cookie : cookies)
+    cookie_map[cookie->Name()] = cookie.get();
+
+  for (const auto& expected : kTestCookies) {
+    ASSERT_EQ(1u, cookie_map.count(expected.name));
+    ASSERT_EQ(expected.port, cookie_map[expected.name]->SourcePort());
+  }
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
