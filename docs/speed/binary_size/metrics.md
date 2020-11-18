@@ -47,6 +47,7 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
    * With all translations as if they were not missing (estimates size of missing translations based on size of english strings).
      * Why: Without translation-normalization, translation dumps cause jumps.
      * Translation-normalization applies only to apks (not to Android App Bundles).
+ * For Android App Bundles, the normalized size is the sum of the normalized size of all splits that have onDemand="false" (those installed by default).
 
 ### Native Code Size Metrics
 

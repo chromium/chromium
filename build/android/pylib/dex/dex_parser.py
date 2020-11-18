@@ -422,6 +422,23 @@ class DexFile(object):
         for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.iteritems()
         if flag & access_flags)
 
+  def IterMethodSignatureParts(self):
+    """Yields the string components of dex methods in a dex file.
+
+    Yields:
+      Tuples that look like:
+        (class name, return type, method name, (parameter type, ...)).
+    """
+    for method_item in self.method_item_list:
+      class_name_string = self.GetTypeString(method_item.type_idx)
+      method_name_string = self.GetString(method_item.name_idx)
+      proto_item = self.proto_item_list[method_item.proto_idx]
+      return_type_string = self.GetTypeString(proto_item.return_type_idx)
+      parameter_types = self.GetTypeListStringsByOffset(
+          proto_item.parameters_off)
+      yield (class_name_string, return_type_string, method_name_string,
+             parameter_types)
+
   def __repr__(self):
     items = [
         self.header,
@@ -436,45 +453,6 @@ class DexFile(object):
     return '\n'.join(str(item) for item in items)
 
 
-def _MethodSignaturePartsFromDexFile(dexfile):
-  """Yields the string components of dex methods in a dex file.
-
-  Args:
-    dexfile: The input dex file.
-
-  Yields:
-    Tuples that look like:
-      (class name, return type, method name, (parameter type, ...)).
-  """
-  for method_item in dexfile.method_item_list:
-    class_name_string = dexfile.GetTypeString(method_item.type_idx)
-    method_name_string = dexfile.GetString(method_item.name_idx)
-    proto_item = dexfile.proto_item_list[method_item.proto_idx]
-    return_type_string = dexfile.GetTypeString(proto_item.return_type_idx)
-    parameter_types = dexfile.GetTypeListStringsByOffset(
-        proto_item.parameters_off)
-    yield (class_name_string, return_type_string, method_name_string,
-           parameter_types)
-
-
-def CountUniqueDexMethods(dexfiles):
-  """Returns the number of unique methods given an iterable of dex files.
-
-  For method counts, most tools count the total number of dex methods referred
-  to by a dex file. In the multi-dex case, some method items are referred to by
-  multiple dex files, which means some methods are double counted. This method
-  returns a count of the number of unique methods referred to across all given
-  dex files.
-
-  Args:
-    dexfiles: Iterable of DexFile objects to count unique methods for.
-  """
-  unique_methods = set()
-  for dexfile in dexfiles:
-    unique_methods.update(_MethodSignaturePartsFromDexFile(dexfile))
-  return len(unique_methods)
-
-
 class _DumpCommand(object):
 
   def __init__(self, dexfile):
@@ -487,7 +465,7 @@ class _DumpCommand(object):
 class _DumpMethods(_DumpCommand):
 
   def Run(self):
-    for parts in _MethodSignaturePartsFromDexFile(self._dexfile):
+    for parts in self._dexfile.IterMethodSignatureParts():
       class_type, return_type, method_name, parameter_types = parts
       print('{} {} (return type={}, parameters={})'.format(
           class_type, method_name, return_type, parameter_types))
