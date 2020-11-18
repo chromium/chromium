@@ -320,24 +320,26 @@ class VIEWS_EXPORT MenuController
   // Used by GetMenuPart to indicate the menu part at a particular location.
   struct MenuPart {
     // Type of part.
-    enum Type { NONE, MENU_ITEM, SCROLL_UP, SCROLL_DOWN };
+    enum class Type { kNone, kMenuItem, kScrollUp, kScrollDown };
 
-    // Convenience for testing type == SCROLL_DOWN or type == SCROLL_UP.
-    bool is_scroll() const { return type == SCROLL_DOWN || type == SCROLL_UP; }
+    // Convenience for testing type == kScrollDown or type == kScrollUp.
+    bool is_scroll() const {
+      return type == Type::kScrollDown || type == Type::kScrollUp;
+    }
 
     // Type of part.
-    Type type = NONE;
+    Type type = Type::kNone;
 
-    // If type is MENU_ITEM, this is the menu item the mouse is over, otherwise
-    // this is NULL.
-    // NOTE: if type is MENU_ITEM and the mouse is not over a valid menu item
+    // If type is kMenuItem, this is the menu item the mouse is over, otherwise
+    // this is null.
+    // NOTE: if type is kMenuItem and the mouse is not over a valid menu item
     //       but is over a menu (for example, the mouse is over a separator or
-    //       empty menu), this is NULL and parent is the menu the mouse was
+    //       empty menu), this is null and parent is the menu the mouse was
     //       clicked on.
     MenuItemView* menu = nullptr;
 
-    // If type is MENU_ITEM but the mouse is not over a menu item this is the
-    // parent of the menu item the user clicked on. Otherwise this is NULL.
+    // If type is kMenuItem but the mouse is not over a menu item this is the
+    // parent of the menu item the user clicked on. Otherwise this is null.
     MenuItemView* parent = nullptr;
 
     // This is the submenu the mouse is over.

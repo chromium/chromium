@@ -386,7 +386,7 @@ class MenuController::MenuScrollTask {
     }
     DCHECK(part.submenu);
     SubmenuView* new_menu = part.submenu;
-    bool new_is_up = (part.type == MenuController::MenuPart::SCROLL_UP);
+    bool new_is_up = (part.type == MenuController::MenuPart::Type::kScrollUp);
     if (new_menu == submenu_ && is_scrolling_up_ == new_is_up)
       return;
 
@@ -734,7 +734,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
     return true;
   }
   MenuItemView* mouse_menu = nullptr;
-  if (part.type == MenuPart::MENU_ITEM) {
+  if (part.type == MenuPart::Type::kMenuItem) {
     // If there is no menu target, but a submenu target, then we are interacting
     // with an empty menu item within a submenu. These cannot become selection
     // targets for mouse interaction, so do not attempt to update selection.
@@ -745,7 +745,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
         mouse_menu = part.menu;
       SetSelection(part.menu ? part.menu : state_.item, SELECTION_OPEN_SUBMENU);
     }
-  } else if (part.type == MenuPart::NONE) {
+  } else if (part.type == MenuPart::Type::kNone) {
     // If there is a sibling menu, show it. Otherwise, if the user has selected
     // a menu item with no accompanying sibling menu or submenu, move selection
     // back to the parent menu item.
@@ -788,7 +788,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
   DCHECK(state_.item);
   possible_drag_ = false;
   MenuPart part = GetMenuPart(source, event.location());
-  if (event.IsRightMouseButton() && part.type == MenuPart::MENU_ITEM) {
+  if (event.IsRightMouseButton() && part.type == MenuPart::Type::kMenuItem) {
     MenuItemView* menu = part.menu;
     // |menu| is null means this event is from an empty menu or a separator.
     // If it is from an empty menu, use parent context menu instead of that.
@@ -844,7 +844,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
       Accept(part.menu, event.flags());
       return;
     }
-  } else if (part.type == MenuPart::MENU_ITEM) {
+  } else if (part.type == MenuPart::Type::kMenuItem) {
     // User either clicked on empty space, or a menu that has children.
     SetSelection(part.menu ? part.menu : state_.item,
                  SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -940,7 +940,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
     SetSelectionOnPointerDown(source, event);
     event->StopPropagation();
   } else if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
-    if (part.type == MenuPart::MENU_ITEM && part.menu) {
+    if (part.type == MenuPart::Type::kMenuItem && part.menu) {
       gfx::Point screen_location(event->location());
       View::ConvertPointToScreen(source->GetScrollViewContainer(),
                                  &screen_location);
@@ -955,14 +955,14 @@ void MenuController::OnGestureEvent(SubmenuView* source,
         Accept(part.menu, event->flags());
       }
       event->StopPropagation();
-    } else if (part.type == MenuPart::MENU_ITEM) {
+    } else if (part.type == MenuPart::Type::kMenuItem) {
       // User either tapped on empty space, or a menu that has children.
       SetSelection(part.menu ? part.menu : state_.item,
                    SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
       event->StopPropagation();
     }
   } else if (event->type() == ui::ET_GESTURE_TAP_CANCEL && part.menu &&
-             part.type == MenuPart::MENU_ITEM) {
+             part.type == MenuPart::Type::kMenuItem) {
     // Move the selection to the parent menu so that the selection in the
     // current menu is unset. Make sure the submenu remains open by sending the
     // appropriate SetSelectionTypes flags.
@@ -986,7 +986,7 @@ void MenuController::OnTouchEvent(SubmenuView* source, ui::TouchEvent* event) {
 
   if (event->type() == ui::ET_TOUCH_PRESSED) {
     MenuPart part = GetMenuPart(source, event->location());
-    if (part.type == MenuPart::NONE) {
+    if (part.type == MenuPart::Type::kNone) {
       RepostEventAndCancel(source, event);
       event->SetHandled();
     }
@@ -1152,7 +1152,7 @@ int MenuController::OnPerformDrop(SubmenuView* source,
 void MenuController::OnDragEnteredScrollButton(SubmenuView* source,
                                                bool is_up) {
   MenuPart part;
-  part.type = is_up ? MenuPart::SCROLL_UP : MenuPart::SCROLL_DOWN;
+  part.type = is_up ? MenuPart::Type::kScrollUp : MenuPart::Type::kScrollDown;
   part.submenu = source;
   UpdateScrolling(part);
 
@@ -1458,8 +1458,8 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
       (event->flags() & ui::EF_FROM_TOUCH))
     return;
 
-  if (part.type == MenuPart::NONE ||
-      (part.type == MenuPart::MENU_ITEM && part.menu &&
+  if (part.type == MenuPart::Type::kNone ||
+      (part.type == MenuPart::Type::kMenuItem && part.menu &&
        part.menu->GetRootMenuItem() != state_.item->GetRootMenuItem())) {
     // Remember the time stamp of the current (press down) event. The owner can
     // then use this to figure out if this menu was finished with the same click
@@ -1896,11 +1896,11 @@ bool MenuController::IsScrollButtonAt(SubmenuView* source,
       scroll_view->GetEventHandlerForPoint(gfx::Point(x, y));
   if (child_under_mouse && child_under_mouse->GetEnabled()) {
     if (child_under_mouse == scroll_view->scroll_up_button()) {
-      *part = MenuPart::SCROLL_UP;
+      *part = MenuPart::Type::kScrollUp;
       return true;
     }
     if (child_under_mouse == scroll_view->scroll_down_button()) {
-      *part = MenuPart::SCROLL_DOWN;
+      *part = MenuPart::Type::kScrollDown;
       return true;
     }
   }
@@ -1955,7 +1955,7 @@ bool MenuController::GetMenuPartByScreenCoordinateImpl(
     gfx::Point menu_loc = screen_loc;
     View::ConvertPointFromScreen(menu, &menu_loc);
     part->menu = GetMenuItemAt(menu, menu_loc.x(), menu_loc.y());
-    part->type = MenuPart::MENU_ITEM;
+    part->type = MenuPart::Type::kMenuItem;
     part->submenu = menu;
     part->should_submenu_show =
         part->submenu && part->menu &&
@@ -2151,7 +2151,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       View::ConvertPointFromScreen(item->submenu_->GetWidget()->GetRootView(),
                                    &mouse_pos);
       MenuPart part_under_mouse = GetMenuPart(item->submenu_, mouse_pos);
-      if (part_under_mouse.type != MenuPart::NONE)
+      if (part_under_mouse.type != MenuPart::Type::kNone)
         menu_open_mouse_loc_ = mouse_pos;
     }
 
@@ -2889,7 +2889,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     // of the menus from the last run.
     MenuPart last_part = GetMenuPartByScreenCoordinateUsingMenu(
         menu_stack_.back().first.item, screen_loc);
-    if (last_part.type != MenuPart::NONE)
+    if (last_part.type != MenuPart::Type::kNone)
       exit_type = ExitType::kOutermost;
   }
 #if defined(OS_MAC)
@@ -3136,10 +3136,11 @@ void MenuController::HandleMouseLocation(SubmenuView* source,
   if (for_drop_)
     return;
 
-  if (part.type == MenuPart::NONE && ShowSiblingMenu(source, mouse_location))
+  if (part.type == MenuPart::Type::kNone &&
+      ShowSiblingMenu(source, mouse_location))
     return;
 
-  if (part.type == MenuPart::MENU_ITEM && part.menu) {
+  if (part.type == MenuPart::Type::kMenuItem && part.menu) {
     SetSelection(part.menu, part.should_submenu_show ? SELECTION_OPEN_SUBMENU
                                                      : SELECTION_DEFAULT);
   } else if (!part.is_scroll() && pending_state_.item &&
