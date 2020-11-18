@@ -5,6 +5,7 @@
 #include "mojo/core/node_channel.h"
 
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/task_environment.h"
@@ -21,6 +22,7 @@ namespace {
 
 using NodeChannelTest = testing::Test;
 using ports::NodeName;
+using testing::_;
 
 scoped_refptr<NodeChannel> CreateNodeChannel(NodeChannel::Delegate* delegate,
                                              PlatformChannelEndpoint endpoint) {
@@ -65,6 +67,51 @@ TEST_F(NodeChannelTest, DestructionIsSafe) {
   });
   local_channel.reset();
   error_loop.Run();
+}
+
+TEST_F(NodeChannelTest, MessagesCannotBeSmallerThanOldestVersion) {
+  base::test::TaskEnvironment task_environment;
+
+  PlatformChannel channel;
+  MockNodeChannelDelegate local_delegate;
+  auto local_channel =
+      CreateNodeChannel(&local_delegate, channel.TakeLocalEndpoint());
+  local_channel->Start();
+  MockNodeChannelDelegate remote_delegate;
+  auto remote_channel =
+      CreateNodeChannel(&remote_delegate, channel.TakeRemoteEndpoint());
+  remote_channel->Start();
+
+  base::RunLoop loop;
+
+  // It's a bad message and shouldn't be passed to the delegate.
+  EXPECT_CALL(local_delegate, OnRequestPortMerge(_, _, _)).Times(0);
+
+  // This good message should go through after.
+  const NodeName kRemoteNodeName{123, 456};
+  const NodeName kToken{987, 654};
+  EXPECT_CALL(local_delegate,
+              OnAcceptInvitee(ports::kInvalidNodeName, kRemoteNodeName, kToken))
+      .WillRepeatedly([&] {
+    loop.Quit(); });
+
+  // 1 byte is not enough to contain the oldest version of the request port
+  // merge payload, it should be discarded.
+  int payload_size = 1;
+  int capacity = /*sizeof(header)=*/8 + payload_size;
+  auto message =
+      std::make_unique<Channel::Message>(capacity, capacity, /*num_handles=*/0);
+
+  // Set the type of this message as REQUEST_PORT_MERGE (6)
+  *reinterpret_cast<uint32_t*>(message->mutable_payload()) = 6;
+
+  // This short message should be ignored.
+  remote_channel->SendChannelMessage(std::move(message));
+  remote_channel->AcceptInvitee(kRemoteNodeName, kToken);
+  loop.Run();
+
+  remote_channel->ShutDown();
+  local_channel->ShutDown();
 }
 
 }  // namespace

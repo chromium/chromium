@@ -190,13 +190,16 @@ Channel::MessagePtr CreateMessage(MessageType type,
   return msg_ptr;
 }
 
-template <typename DataType>
-bool GetMessagePayload(const void* bytes,
-                       size_t num_bytes,
-                       DataType* out_data) {
+// This method takes a second template argument which is another datatype which
+// represents the smallest size this payload can be to be considered valid this
+// MUST be used when there is more than one version of a message to specify the
+// oldest version of the message.
+template <typename DataType, typename MinSizedDataType>
+bool GetMessagePayloadMinimumSized(const void* bytes,
+                                   size_t num_bytes,
+                                   DataType* out_data) {
   static_assert(sizeof(DataType) > 0, "DataType must have non-zero size.");
-  // We should have at least 1 byte to contribute towards DataType.
-  if (num_bytes <= sizeof(Header))
+  if (num_bytes < sizeof(Header) + sizeof(MinSizedDataType))
     return false;
 
   // Always make sure that the full object is zeored and default constructed as
@@ -209,6 +212,14 @@ bool GetMessagePayload(const void* bytes,
   memcpy(out_data, static_cast<const uint8_t*>(bytes) + sizeof(Header),
          std::min(sizeof(DataType), num_bytes - sizeof(Header)));
   return true;
+}
+
+template <typename DataType>
+bool GetMessagePayload(const void* bytes,
+                       size_t num_bytes,
+                       DataType* out_data) {
+  return GetMessagePayloadMinimumSized<DataType, DataType>(bytes, num_bytes,
+                                                           out_data);
 }
 
 }  // namespace
