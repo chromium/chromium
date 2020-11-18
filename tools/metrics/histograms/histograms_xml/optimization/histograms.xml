@@ -271,6 +271,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionManager.DownloadServiceAvailabilityBlockedFetch"
+    units="BooleanBlocked" expires_after="2021-04-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the Download Service was unavailable and blocked a fetch
+    that would have happened otherwise. Only recorded if model downloads are
+    enabled for the session.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost"
     enum="Boolean" expires_after="2021-01-31">
   <owner>mcrouse@chromium.org</owner>
@@ -289,6 +301,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the number of host model features loaded into the map used by the
     PredictionManager. This is recorded when the host model features are loaded
     from the store.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionManager.IsDownloadUrlValid"
+    units="BooleanValid" expires_after="2021-04-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the download URL received from the remote Optimization Guide
+    server is valid.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
+    units="BooleanSucceeded" expires_after="2021-04-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the Download Service notified whether a model download has
+    succeeded or failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.DownloadVerificationStatus"
+    enum="OptimizationGuidePredictionModelDownloadStatus"
+    expires_after="2021-04-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The status of verifying and processing model downloads. Recorded once per
+    file that was successfully downloaded via the Download Service.
   </summary>
 </histogram>
 

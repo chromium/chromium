@@ -54838,6 +54838,39 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePredictionModelDownloadStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    The download was successfully verified and processed.
+  </int>
+  <int value="2" label="Failed to verify download">
+    The download failed verification.
+  </int>
+  <int value="3" label="Failed to create unzip directory">
+    The download was successfully verified but a directory to unzip the file to
+    could not be created.
+  </int>
+  <int value="4" label="Failed to unzip file">
+    The download was successfully verified but it failed to be unzipped.
+  </int>
+  <int value="5" label="Failed to read model info file">
+    The download was successfully verified, but the expected model info file
+    could not be read.
+  </int>
+  <int value="6" label="Failed to parse model info file">
+    The download was successfully verified, but the expected model info file
+    could not be parsed.
+  </int>
+  <int value="7" label="Failed to find expected model file">
+    The download and model info files were successfully verified and processed,
+    but the expected model file was not found.
+  </int>
+  <int value="8" label="Failed to process expected model file">
+    The download and model info files were successfully verified and processed,
+    but the expected model file failed to be processed.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideProcessHintsResult">
   <int value="0" label="Success">
     Hints were processed and at least one supported hint was stored.

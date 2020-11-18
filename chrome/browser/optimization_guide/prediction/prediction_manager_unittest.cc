@@ -950,6 +950,11 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
 
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager."
+      "DownloadServiceAvailabilityBlockedFetch",
+      true, 1);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
@@ -978,6 +983,12 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
       "OptimizationGuide.PredictionManager.HostModelFeaturesStored", true, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager."
+      "DownloadServiceAvailabilityBlockedFetch",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.IsDownloadUrlValid", true, 1);
 
   EXPECT_EQ(prediction_model_download_manager()->last_requested_download(),
             GURL("https://example.com/model"));

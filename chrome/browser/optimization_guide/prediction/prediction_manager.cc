@@ -563,10 +563,15 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
   ScheduleModelsAndHostModelFeaturesFetch();
 
   // We cannot download any models from the server, so don't refresh them.
-  if (prediction_model_download_manager_ &&
-      !prediction_model_download_manager_->IsAvailableForDownloads()) {
-    // TODO(crbug/1146151): Add histogram for how often this happens.
-    return;
+  if (prediction_model_download_manager_) {
+    bool download_service_available =
+        prediction_model_download_manager_->IsAvailableForDownloads();
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PredictionManager."
+        "DownloadServiceAvailabilityBlockedFetch",
+        !download_service_available);
+    if (!download_service_available)
+      return;
   }
 
   // Models and host model features should not be fetched if there are no
@@ -705,9 +710,10 @@ void PredictionManager::UpdatePredictionModels(
         GURL download_url(model.model().download_url());
         if (download_url.is_valid()) {
           prediction_model_download_manager_->StartDownload(download_url);
-        } else {
-          // TODO(crbug/1146151): Add histogram for invalid download URL.
         }
+        base::UmaHistogramBoolean(
+            "OptimizationGuide.PredictionManager.IsDownloadUrlValid",
+            download_url.is_valid());
       }
 
       // Skip over models that have a download URL since they will be updated

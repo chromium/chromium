@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/download_service.h"
+#include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
@@ -78,6 +80,13 @@ base::FilePath GetFilePathForModelInfo(const proto::ModelInfo& model_info) {
       "%s_%s.tflite",
       proto::OptimizationTarget_Name(model_info.optimization_target()).c_str(),
       base::NumberToString(model_info.version()).c_str()));
+}
+
+void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      status);
 }
 
 }  // namespace
@@ -163,8 +172,6 @@ void PredictionModelDownloadManager::OnDownloadServiceReady(
 
 void PredictionModelDownloadManager::OnDownloadServiceUnavailable() {
   is_available_for_downloads_ = false;
-
-  // TODO(crbug/1146151): Log histogram.
 }
 
 void PredictionModelDownloadManager::OnDownloadStarted(
@@ -179,6 +186,10 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
     const base::FilePath& file_path) {
   pending_download_guids_.erase(guid);
 
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
+      true);
+
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PredictionModelDownloadManager::ProcessDownload,
@@ -190,7 +201,9 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
 void PredictionModelDownloadManager::OnDownloadFailed(const std::string& guid) {
   pending_download_guids_.erase(guid);
 
-  // TODO(crbug/1146151): Log histogram.
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
+      false);
 }
 
 base::Optional<std::pair<base::FilePath, base::FilePath>>
@@ -206,7 +219,8 @@ PredictionModelDownloadManager::ProcessDownload(
         /*required_file_hash=*/{}, /*public_key=*/nullptr,
         /*crx_id=*/nullptr);
     if (verifier_result != crx_file::VerifierResult::OK_FULL) {
-      // TODO(crbug/1146151): Add histogram for exact status.
+      RecordPredictionModelDownloadStatus(
+          PredictionModelDownloadStatus::kFailedCrxVerification);
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
           base::BindOnce(base::GetDeleteFileCallback(), file_path));
@@ -218,7 +232,8 @@ PredictionModelDownloadManager::ProcessDownload(
   base::FilePath temp_dir_path;
   if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
                                     &temp_dir_path)) {
-    // TODO(crbug/1146151): Log histogram.
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedUnzipDirectoryCreation);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), file_path));
@@ -256,7 +271,8 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
       base::BindOnce(base::GetDeleteFileCallback(), original_file_path));
 
   if (!success) {
-    // TODO(crbug/1146151): Log histogram.
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedCrxUnzip);
     return;
   }
 
@@ -282,23 +298,33 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   base::FilePath model_info_path = unzipped_dir_path.Append(kModelInfoFileName);
   std::string binary_model_info_pb;
   if (!base::ReadFileToString(model_info_path, &binary_model_info_pb)) {
-    // TODO(crbug/1146151): Log histogram.
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedModelInfoFileRead);
     return base::nullopt;
   }
   proto::ModelInfo model_info;
   if (!model_info.ParseFromString(binary_model_info_pb)) {
-    // TODO(crbug/1146151): Log histogram.
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedModelInfoParsing);
     return base::nullopt;
   }
 
   // Move model file away from temp directory.
   base::FilePath temp_model_path = unzipped_dir_path.Append(kModelFileName);
   base::FilePath model_path = GetFilePathForModelInfo(model_info);
-  if (!base::ReplaceFile(temp_model_path, model_path, /*error=*/nullptr)) {
-    // TODO(crbug/1146151): Log histogram.
+  base::File::Error file_error;
+  if (!base::ReplaceFile(temp_model_path, model_path, &file_error)) {
+    if (file_error == base::File::FILE_ERROR_NOT_FOUND) {
+      RecordPredictionModelDownloadStatus(
+          PredictionModelDownloadStatus::kFailedModelFileNotFound);
+    } else {
+      RecordPredictionModelDownloadStatus(
+          PredictionModelDownloadStatus::kFailedModelFileOtherError);
+    }
     return base::nullopt;
   }
 
+  RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus::kSuccess);
   return std::make_pair(model_info, model_path);
 }
 

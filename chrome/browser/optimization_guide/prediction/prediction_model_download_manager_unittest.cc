@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/download/download_service_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
+#include "components/optimization_guide/optimization_guide_enums.h"
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
@@ -207,6 +209,8 @@ class PredictionModelDownloadManagerTest
 };
 
 TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
+  base::HistogramTester histogram_tester;
+
   SetDownloadServiceReady(
       {"pending1", "pending2", "pending3"},
       {{"success1", PredictionModelDownloadFileStatus::kUnverifiedFile},
@@ -219,6 +223,10 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending2")));
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending3")));
   download_manager()->CancelAllPendingDownloads();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
+      true, 3);
 }
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
@@ -325,6 +333,8 @@ TEST_F(PredictionModelDownloadManagerTest, IsAvailableForDownloads) {
 
 TEST_F(PredictionModelDownloadManagerTest,
        SuccessfulDownloadShouldNoLongerBeTracked) {
+  base::HistogramTester histogram_tester;
+
   SetDownloadServiceReady({"pending1", "pending2", "pending3"},
                           /*successful_guids=*/{});
 
@@ -336,10 +346,16 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending2")));
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending3")));
   download_manager()->CancelAllPendingDownloads();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
+      true, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
        FailedDownloadShouldNoLongerBeTracked) {
+  base::HistogramTester histogram_tester;
+
   SetDownloadServiceReady({"pending1", "pending2", "pending3"},
                           /*successful_guids=*/{});
 
@@ -349,9 +365,15 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending1")));
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending3")));
   download_manager()->CancelAllPendingDownloads();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
+      false, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest, UnverifiedFileShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
   TestPredictionModelDownloadObserver observer;
   download_manager()->AddObserver(&observer);
 
@@ -362,10 +384,16 @@ TEST_F(PredictionModelDownloadManagerTest, UnverifiedFileShouldDeleteTempFile) {
   EXPECT_FALSE(observer.last_ready_model().has_value());
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kUnverifiedFile)));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedCrxVerification, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
        VerifiedCrxWithNoFilesShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
   TestPredictionModelDownloadObserver observer;
   download_manager()->AddObserver(&observer);
 
@@ -376,10 +404,17 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_FALSE(observer.last_ready_model().has_value());
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedModelInfoFileRead, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
        VerifiedCrxWithBadModelInfoFileShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
   TestPredictionModelDownloadObserver observer;
   download_manager()->AddObserver(&observer);
   TurnOffDownloadVerification();
@@ -392,10 +427,17 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_FALSE(observer.last_ready_model().has_value());
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedModelInfoParsing, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
        VerifiedCrxWithValidModelInfoFileButNoModelFileShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
   TestPredictionModelDownloadObserver observer;
   download_manager()->AddObserver(&observer);
   TurnOffDownloadVerification();
@@ -408,11 +450,18 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::
           kVerfiedCrxWithValidModelInfoNoModelFile)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedModelFileNotFound, 1);
 }
 
 TEST_F(
     PredictionModelDownloadManagerTest,
     VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted) {
+  base::HistogramTester histogram_tester;
+
   TestPredictionModelDownloadObserver observer;
   download_manager()->AddObserver(&observer);
   TurnOffDownloadVerification();
@@ -432,6 +481,11 @@ TEST_F(
   // Downloaded file should still be deleted.
   EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
 }
 
 }  // namespace optimization_guide

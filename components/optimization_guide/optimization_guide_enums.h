@@ -123,6 +123,34 @@ enum class PredictionManagerModelStatus {
   kMaxValue = kStoreUnavailableModelUnknown,
 };
 
+// The statuses for a download file containing a prediction model when verified
+// and processed.
+//
+// Keep in sync with OptimizationGuidePredictionModelDownloadStatus
+// in enums.xml.
+enum class PredictionModelDownloadStatus {
+  kUnknown,
+  // The downloaded file was successfully verified and processed.
+  kSuccess,
+  // The downloaded file was not a valid CRX file.
+  kFailedCrxVerification,
+  // A temporary directory for unzipping the CRX file failed to be created.
+  kFailedUnzipDirectoryCreation,
+  // The CRX file failed to be unzipped.
+  kFailedCrxUnzip,
+  // The model info failed to be read from disk.
+  kFailedModelInfoFileRead,
+  // The model info failed to be parsed.
+  kFailedModelInfoParsing,
+  // The model file was not found in the CRX file.
+  kFailedModelFileNotFound,
+  // The model file failed to be moved to a more permanent directory.
+  kFailedModelFileOtherError,
+
+  // Add new values above this line.
+  kMaxValue = kFailedModelFileOtherError,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_ENUMS_H_
