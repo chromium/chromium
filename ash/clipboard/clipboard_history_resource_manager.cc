@@ -277,6 +277,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
       cached_image_models_, FindCachedImageModelForItem(item));
 
   DCHECK(cached_image_model != cached_image_models_.end());
+  if (cached_image_model == cached_image_models_.end())
+    return;
 
   // Update usages.
   base::Erase(cached_image_model->clipboard_history_item_ids, item.id());
