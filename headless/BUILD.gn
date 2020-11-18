@@ -403,6 +403,7 @@ component("headless_non_renderer") {
     ":headless_shared_sources",
     ":version_header",
     "//base:base_static",
+    "//build:chromeos_buildflags",
     "//components/cookie_config",
     "//components/security_state/core",
     "//content/public/common",

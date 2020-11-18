@@ -5,12 +5,13 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
 namespace headless {
 
 void HeadlessBrowserMainParts::PostMainMessageLoopStart() {
-#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
 #endif
 }
