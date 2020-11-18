@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -55,6 +56,12 @@ void TrayEventFilter::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  // Users in a capture session may be trying to capture tray bubble(s).
+  if (features::IsCaptureModeEnabled() &&
+      CaptureModeController::Get()->IsActive()) {
+    return;
+  }
+
   // The hit target window for the virtual keyboard isn't the same as its
   // views::Widget.
   aura::Window* target = static_cast<aura::Window*>(event.target());
