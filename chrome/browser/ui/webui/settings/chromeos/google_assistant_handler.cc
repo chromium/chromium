@@ -88,7 +88,9 @@ void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
     const base::ListValue* args) {
   CHECK_EQ(0U, args->GetSize());
 
-  assistant::AssistantSettings::Get()->SyncSpeakerIdEnrollmentStatus();
+  auto* settings = assistant::AssistantSettings::Get();
+  if (settings)
+    settings->SyncSpeakerIdEnrollmentStatus();
 }
 
 void GoogleAssistantHandler::HandleInitialized(const base::ListValue* args) {
