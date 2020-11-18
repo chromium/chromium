@@ -37,7 +37,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetNSWindow() {
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() {
   if (view()->parent())
-    return view()->parent()->GetNativeViewAccessible();
+    return ViewAXPlatformNodeDelegate::GetParent();
 
   auto* widget = view()->GetWidget();
   if (!widget)

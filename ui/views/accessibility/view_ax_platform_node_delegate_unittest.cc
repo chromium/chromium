@@ -423,35 +423,139 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetSizeAndPosition) {
   EXPECT_EQ(view_accessibility(group_ids[4])->GetPosInSet(), 1);
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, Navigation) {
-  View::Views view_ids = SetUpExtraViews();
+TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
+  // Adds one extra parent view with four child views to our widget. The parent
+  // view is added as the next sibling of the already present button view.
+  //
+  // Widget
+  // ++Button
+  // ++++Label
+  // 0 = ++ParentView
+  // 1 = ++++ChildView1
+  // 2 = ++++ChildView2
+  // 3 = ChildView3
+  // 4 = ChildView4
+  View::Views extra_views = SetUpExtraViews();
+  ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
+  ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
+  ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
+  ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
+  ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
 
-  EXPECT_EQ(view_accessibility(view_ids[0])->GetNextSibling(), nullptr);
-  EXPECT_EQ(view_accessibility(view_ids[0])->GetPreviousSibling(),
-            view_accessibility(button_)->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[0])->GetIndexInParent(), 3);
+  EXPECT_EQ(view_accessibility(widget_->GetContentsView())->GetNativeObject(),
+            parent_view->GetParent());
+  EXPECT_EQ(4, parent_view->GetChildCount());
 
-  EXPECT_EQ(view_accessibility(view_ids[1])->GetNextSibling(),
-            view_accessibility(view_ids[2])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[1])->GetPreviousSibling(), nullptr);
-  EXPECT_EQ(view_accessibility(view_ids[1])->GetIndexInParent(), 0);
+  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(3, parent_view->GetIndexInParent());
 
-  EXPECT_EQ(view_accessibility(view_ids[2])->GetNextSibling(),
-            view_accessibility(view_ids[3])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[2])->GetPreviousSibling(),
-            view_accessibility(view_ids[1])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[2])->GetIndexInParent(), 1);
+  EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
+  EXPECT_EQ(child_view_2->GetNativeObject(), parent_view->ChildAtIndex(1));
+  EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(2));
+  EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(3));
 
-  EXPECT_EQ(view_accessibility(view_ids[3])->GetNextSibling(),
-            view_accessibility(view_ids[4])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[3])->GetPreviousSibling(),
-            view_accessibility(view_ids[2])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[3])->GetIndexInParent(), 2);
+  EXPECT_EQ(nullptr, parent_view->GetNextSibling());
+  EXPECT_EQ(button_accessibility()->GetNativeObject(),
+            parent_view->GetPreviousSibling());
 
-  EXPECT_EQ(view_accessibility(view_ids[4])->GetNextSibling(), nullptr);
-  EXPECT_EQ(view_accessibility(view_ids[4])->GetPreviousSibling(),
-            view_accessibility(view_ids[3])->GetNativeObject());
-  EXPECT_EQ(view_accessibility(view_ids[4])->GetIndexInParent(), 3);
+  EXPECT_EQ(parent_view->GetNativeObject(), child_view_1->GetParent());
+  EXPECT_EQ(0, child_view_1->GetChildCount());
+  EXPECT_EQ(0, child_view_1->GetIndexInParent());
+  EXPECT_EQ(child_view_2->GetNativeObject(), child_view_1->GetNextSibling());
+  EXPECT_EQ(nullptr, child_view_1->GetPreviousSibling());
+
+  EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
+  EXPECT_EQ(0, child_view_2->GetChildCount());
+  EXPECT_EQ(1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(child_view_3->GetNativeObject(), child_view_2->GetNextSibling());
+  EXPECT_EQ(child_view_1->GetNativeObject(),
+            child_view_2->GetPreviousSibling());
+
+  EXPECT_EQ(parent_view->GetNativeObject(), child_view_3->GetParent());
+  EXPECT_EQ(0, child_view_3->GetChildCount());
+  EXPECT_EQ(2, child_view_3->GetIndexInParent());
+  EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
+  EXPECT_EQ(child_view_2->GetNativeObject(),
+            child_view_3->GetPreviousSibling());
+
+  EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
+  EXPECT_EQ(0, child_view_4->GetChildCount());
+  EXPECT_EQ(3, child_view_4->GetIndexInParent());
+  EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
+  EXPECT_EQ(child_view_3->GetNativeObject(),
+            child_view_4->GetPreviousSibling());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
+  // Adds one extra parent view with four child views to our widget. The parent
+  // view is added as the next sibling of the already present button view.
+  //
+  // Widget
+  // ++Button
+  // ++++Label
+  // 0 = ++ParentView
+  // 1 = ++++ChildView1
+  // 2 = ++++ChildView2
+  // 3 = ChildView3
+  // 4 = ChildView4
+  View::Views extra_views = SetUpExtraViews();
+  ViewAXPlatformNodeDelegate* contents_view =
+      view_accessibility(widget_->GetContentsView());
+  ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
+  ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
+  ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
+  ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
+  ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
+
+  // Mark the parent view and the second child view as ignored.
+  parent_view->OverrideIsIgnored(true);
+  child_view_2->OverrideIsIgnored(true);
+
+  EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
+  EXPECT_EQ(3, parent_view->GetChildCount());
+
+  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(-1, parent_view->GetIndexInParent());
+
+  EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
+  EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(1));
+  EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(2));
+
+  EXPECT_EQ(button_accessibility()->GetNativeObject(),
+            contents_view->ChildAtIndex(2));
+  EXPECT_EQ(child_view_1->GetNativeObject(), contents_view->ChildAtIndex(3));
+  EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(4));
+  EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(5));
+
+  EXPECT_EQ(nullptr, parent_view->GetNextSibling());
+  EXPECT_EQ(nullptr, parent_view->GetPreviousSibling());
+
+  EXPECT_EQ(contents_view->GetNativeObject(), child_view_1->GetParent());
+  EXPECT_EQ(0, child_view_1->GetChildCount());
+  EXPECT_EQ(3, child_view_1->GetIndexInParent());
+  EXPECT_EQ(child_view_3->GetNativeObject(), child_view_1->GetNextSibling());
+  EXPECT_EQ(button_accessibility()->GetNativeObject(),
+            child_view_1->GetPreviousSibling());
+
+  EXPECT_EQ(contents_view->GetNativeObject(), child_view_2->GetParent());
+  EXPECT_EQ(0, child_view_2->GetChildCount());
+  EXPECT_EQ(-1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(nullptr, child_view_2->GetNextSibling());
+  EXPECT_EQ(nullptr, child_view_2->GetPreviousSibling());
+
+  EXPECT_EQ(contents_view->GetNativeObject(), child_view_3->GetParent());
+  EXPECT_EQ(0, child_view_3->GetChildCount());
+  EXPECT_EQ(4, child_view_3->GetIndexInParent());
+  EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
+  EXPECT_EQ(child_view_1->GetNativeObject(),
+            child_view_3->GetPreviousSibling());
+
+  EXPECT_EQ(contents_view->GetNativeObject(), child_view_4->GetParent());
+  EXPECT_EQ(0, child_view_4->GetChildCount());
+  EXPECT_EQ(5, child_view_4->GetIndexInParent());
+  EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
+  EXPECT_EQ(child_view_3->GetNativeObject(),
+            child_view_4->GetPreviousSibling());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, OverrideHasPopup) {

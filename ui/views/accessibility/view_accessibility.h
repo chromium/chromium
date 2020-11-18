@@ -97,7 +97,11 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* GetNextFocus();
   Widget* GetPreviousFocus();
 
+  // Returns the accessibility object that represents the View whose
+  // accessibility is managed by this instance. This may be an AXPlatformNode or
+  // it may be a native accessible object implemented by another class.
   virtual gfx::NativeViewAccessible GetNativeObject() const;
+
   virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type);
 
   // Causes the screen reader to announce |text|. If the current user is not

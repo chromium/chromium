@@ -187,8 +187,9 @@ ViewAXPlatformNodeDelegateAuraLinux::ViewAXPlatformNodeDelegateAuraLinux(
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent() {
   if (gfx::NativeViewAccessible parent =
-          ViewAXPlatformNodeDelegate::GetParent())
+          ViewAXPlatformNodeDelegate::GetParent()) {
     return parent;
+  }
 
   Widget* parent_widget =
       GetWidgetOfParentWindowIncludingTransient(view()->GetWidget());

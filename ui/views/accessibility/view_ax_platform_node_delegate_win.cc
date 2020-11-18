@@ -46,7 +46,7 @@ ViewAXPlatformNodeDelegateWin::~ViewAXPlatformNodeDelegateWin() = default;
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() {
   // If the View has a parent View, return that View's IAccessible.
   if (view()->parent())
-    return view()->parent()->GetNativeViewAccessible();
+    return ViewAXPlatformNodeDelegate::GetParent();
 
   // Otherwise we must be the RootView, get the corresponding Widget
   // and Window.
@@ -105,4 +105,5 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
       return gfx::Rect();
   }
 }
+
 }  // namespace views

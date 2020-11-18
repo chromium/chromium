@@ -165,14 +165,19 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // Gets the real View that owns our shallowest virtual ancestor,, if any.
   View* GetOwnerView() const;
 
-  // Gets the view platform delegate if exists, otherwise nullptr.
+  // Gets the delegate for our owning View; if we are on a platform that exposes
+  // Views directly to platform APIs instead of serializing them into an AXTree.
+  // Otherwise, returns nullptr.
   ViewAXPlatformNodeDelegate* GetDelegate() const;
 
   // Gets or creates a wrapper suitable for use with tree sources.
   AXVirtualViewWrapper* GetOrCreateWrapper(views::AXAuraObjCache* cache);
 
   // Returns true if this node is ignored and should be hidden from the
-  // accessibility tree. This does not impact the node's descendants.
+  // accessibility tree. Methods that are used to navigate the accessibility
+  // tree, such as "ChildAtIndex", "GetParent", and "GetChildCount", among
+  // others, also skip ignored nodes. This does not impact the node's
+  // descendants.
   bool IsIgnored() const;
 
   // Handle a request from assistive technology to perform an action on this
