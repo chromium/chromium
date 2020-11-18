@@ -71,6 +71,15 @@ void RunNativeCrashReporter(const std::string& exec_name,
     LOG(ERROR) << "Failed to run crash_reporter";
 }
 
+// Runs crash_reporter to save the kernel crash info.
+void RunKernelCrashReporter(base::ScopedFD ramoops_fd,
+                            std::vector<std::string> args) {
+  args.push_back("--arc_kernel");
+
+  if (!RunCrashReporter(args, ramoops_fd.get()))
+    LOG(ERROR) << "Failed to run crash_reporter";
+}
+
 }  // namespace
 
 namespace arc {
@@ -132,6 +141,16 @@ void ArcCrashCollectorBridge::DumpNativeCrash(const std::string& exec_name,
       base::BindOnce(
           &RunNativeCrashReporter, exec_name, pid, timestamp,
           mojo::UnwrapPlatformHandle(std::move(minidump_fd)).TakeFD(),
+          CreateCrashReporterArgs()));
+}
+
+void ArcCrashCollectorBridge::DumpKernelCrash(
+    mojo::ScopedHandle ramoops_handle) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(
+          &RunKernelCrashReporter,
+          mojo::UnwrapPlatformHandle(std::move(ramoops_handle)).TakeFD(),
           CreateCrashReporterArgs()));
 }
 

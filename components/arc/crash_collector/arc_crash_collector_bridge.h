@@ -43,6 +43,7 @@ class ArcCrashCollectorBridge
                        int32_t pid,
                        int64_t timestamp,
                        mojo::ScopedHandle minidump_fd) override;
+  void DumpKernelCrash(mojo::ScopedHandle ramoops_handle) override;
   void SetBuildProperties(
       const std::string& device,
       const std::string& board,
