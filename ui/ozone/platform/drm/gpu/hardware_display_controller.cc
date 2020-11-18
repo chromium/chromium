@@ -76,14 +76,12 @@ HardwareDisplayController::~HardwareDisplayController() = default;
 void HardwareDisplayController::GetModesetProps(CommitRequest* commit_request,
                                                 const DrmOverlayPlane& primary,
                                                 const drmModeModeInfo& mode) {
-  TRACE_EVENT0("drm", "HDC::GetModesetProps");
   GetModesetPropsForCrtcs(commit_request, primary,
                           /*use_current_crtc_mode=*/false, mode);
 }
 
 void HardwareDisplayController::GetEnableProps(CommitRequest* commit_request,
                                                const DrmOverlayPlane& primary) {
-  TRACE_EVENT0("drm", "HDC::GetEnableProps");
   // TODO(markyacoub): Simplify and remove the use of empty_mode.
   drmModeModeInfo empty_mode = {};
   GetModesetPropsForCrtcs(commit_request, primary,
@@ -114,8 +112,6 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
 }
 
 void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
-  TRACE_EVENT0("drm", "HDC::GetDisableProps");
-
   for (const auto& controller : crtc_controllers_) {
     CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
         controller->crtc(), controller->connector(), &owned_hardware_planes_);

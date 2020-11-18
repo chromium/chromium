@@ -10,6 +10,7 @@
 
 #include "base/files/platform_file.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/display/types/display_snapshot.h"
@@ -175,6 +176,9 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
 
 void ScreenManager::RemoveDisplayControllers(
     const CrtcsWithDrmList& controllers_to_remove) {
+  TRACE_EVENT1("drm", "ScreenManager::RemoveDisplayControllers",
+               "display_count", controllers_to_remove.size());
+
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, CrtcsWithDrmList>
       controllers_for_drm_devices;
@@ -225,6 +229,8 @@ void ScreenManager::RemoveDisplayControllers(
 
 base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params) {
+  TRACE_EVENT0("drm", "ScreenManager::ConfigureDisplayControllers");
+
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
       displays_for_drm_devices;
@@ -265,6 +271,9 @@ base::flat_map<int64_t, bool> ScreenManager::TestAndModeset(
 
 bool ScreenManager::TestModeset(
     const ControllerConfigsList& controllers_params) {
+  TRACE_EVENT1("drm", "ScreenManager::TestModeset", "display_count",
+               controllers_params.size());
+
   CommitRequest commit_request;
   auto drm = controllers_params[0].drm;
 
@@ -294,6 +303,8 @@ bool ScreenManager::TestModeset(
 
 base::flat_map<int64_t, bool> ScreenManager::Modeset(
     const ControllerConfigsList& controllers_params) {
+  TRACE_EVENT0("drm", "ScreenManager::Modeset");
+
   base::flat_map<int64_t, bool> statuses;
 
   for (const auto& params : controllers_params) {
