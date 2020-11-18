@@ -124,8 +124,8 @@ class VoiceSuggestionProvider {
         classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
         suggestions.add(new AutocompleteMatch(OmniboxSuggestionType.VOICE_SUGGEST, null, true, 0, 1,
                 result.getMatch(), classifications, null, classifications, null, null, voiceUrl,
-                GURL.emptyGURL(), null, false, false, null, null, AutocompleteMatch.INVALID_GROUP,
-                null, null, false, null));
+                GURL.emptyGURL(), null, false, null, null, AutocompleteMatch.INVALID_GROUP, null,
+                null, false, null));
     }
 
     private boolean doesVoiceResultHaveMatch(

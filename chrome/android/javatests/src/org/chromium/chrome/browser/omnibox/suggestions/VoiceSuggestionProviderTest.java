@@ -55,7 +55,7 @@ public class VoiceSuggestionProviderTest {
     }
 
     private static boolean assertSuggestionMatchesVoiceResult(AutocompleteMatch a, VoiceResult b) {
-        return a.getType() == OmniboxSuggestionType.VOICE_SUGGEST && !a.isStarred()
+        return a.getType() == OmniboxSuggestionType.VOICE_SUGGEST
                 && TextUtils.equals(a.getDisplayText(), b.getMatch());
     }
 

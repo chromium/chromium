@@ -8,12 +8,14 @@ import android.content.Context;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
@@ -53,14 +55,15 @@ class DropdownItemViewInfoListBuilder {
     private static final int DROPDOWN_HEIGHT_UNKNOWN = -1;
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
-    private final List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
+    private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private @NonNull AutocompleteController mAutocompleteController;
 
-    private HeaderProcessor mHeaderProcessor;
-    private ActivityTabProvider mActivityTabProvider;
-    private Supplier<ShareDelegate> mShareDelegateSupplier;
-    private ImageFetcher mImageFetcher;
-    private LargeIconBridge mIconBridge;
+    private @Nullable HeaderProcessor mHeaderProcessor;
+    private @Nullable ActivityTabProvider mActivityTabProvider;
+    private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Nullable ImageFetcher mImageFetcher;
+    private @Nullable LargeIconBridge mIconBridge;
+    private @Nullable BookmarkBridge mBookmarkBridge;
     @Px
     private int mDropdownHeight;
     private boolean mEnableAdaptiveSuggestionsCount;
@@ -92,6 +95,7 @@ class DropdownItemViewInfoListBuilder {
                 () -> mActivityTabProvider == null ? null : mActivityTabProvider.get();
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
+        final Supplier<BookmarkBridge> bookmarkSupplier = () -> mBookmarkBridge;
 
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
@@ -107,8 +111,8 @@ class DropdownItemViewInfoListBuilder {
                 new TileSuggestionProcessor(context, queryTileSuggestionCallback));
         registerSuggestionProcessor(
                 new MostVisitedTilesProcessor(context, host, iconBridgeSupplier));
-        registerSuggestionProcessor(
-                new BasicSuggestionProcessor(context, host, textProvider, iconBridgeSupplier));
+        registerSuggestionProcessor(new BasicSuggestionProcessor(
+                context, host, textProvider, iconBridgeSupplier, bookmarkSupplier));
     }
 
     void destroy() {
@@ -159,9 +163,15 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
+        if (mBookmarkBridge != null) {
+            mBookmarkBridge.destroy();
+            mBookmarkBridge = null;
+        }
+
         mIconBridge = new LargeIconBridge(profile);
         mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
                 profile, GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+        mBookmarkBridge = new BookmarkBridge(profile);
     }
 
     /**

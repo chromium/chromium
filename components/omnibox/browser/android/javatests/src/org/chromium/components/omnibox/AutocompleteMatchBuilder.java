@@ -35,7 +35,6 @@ public class AutocompleteMatchBuilder {
     private String mImageDominantColor;
     private int mRelevance;
     private int mTransition;
-    private boolean mIsStarred;
     private boolean mIsDeletable;
     private String mPostContentType;
     private byte[] mPostData;
@@ -85,7 +84,6 @@ public class AutocompleteMatchBuilder {
         mImageDominantColor = null;
         mRelevance = 0;
         mTransition = 0;
-        mIsStarred = false;
         mIsDeletable = false;
         mPostContentType = null;
         mPostData = null;
@@ -111,8 +109,8 @@ public class AutocompleteMatchBuilder {
         return new AutocompleteMatch(mType, mSubtypes, mIsSearchType, mRelevance, mTransition,
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
-                mImageDominantColor, mIsStarred, mIsDeletable, mPostContentType, mPostData,
-                mGroupId, mQueryTiles, mClipboardImageData, mHasTabMatch, mNavsuggestTiles);
+                mImageDominantColor, mIsDeletable, mPostContentType, mPostData, mGroupId,
+                mQueryTiles, mClipboardImageData, mHasTabMatch, mNavsuggestTiles);
     }
 
     /**
@@ -193,15 +191,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setIsSearch(boolean isSearch) {
         mIsSearchType = isSearch;
-        return this;
-    }
-
-    /**
-     * @param isStarred Whether built suggestion is bookmarked.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setIsStarred(boolean isStarred) {
-        mIsStarred = isStarred;
         return this;
     }
 

@@ -40,10 +40,6 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
@@ -197,8 +193,7 @@ struct AutocompleteMatch {
   // Returns a corresponding Java object, creating it if necessary.
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
-      JNIEnv* env,
-      bookmarks::BookmarkModel* model) const;
+      JNIEnv* env) const;
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)

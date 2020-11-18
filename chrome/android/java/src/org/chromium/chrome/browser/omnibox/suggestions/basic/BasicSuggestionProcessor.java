@@ -8,9 +8,11 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -29,24 +31,30 @@ import java.util.List;
 
 /** A class that handles model and view creation for the basic omnibox suggestions. */
 public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private final Supplier<LargeIconBridge> mIconBridgeSupplier;
+    private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
+    private final @NonNull Supplier<LargeIconBridge> mIconBridgeSupplier;
+    private final @NonNull Supplier<BookmarkBridge> mBookmarkBridgeSupplier;
     private final int mDesiredFaviconWidthPx;
 
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
      * @param editingTextProvider A means of accessing the text in the omnibox.
+     * @param iconBridgeSupplier A means of accessing the large icon bridge.
+     * @param bookmarkBridgeSupplier A means of accessing the bookmark information.
      */
-    public BasicSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            UrlBarEditingTextStateProvider editingTextProvider,
-            Supplier<LargeIconBridge> iconBridgeSupplier) {
+    public BasicSuggestionProcessor(@NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
+            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
+            @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
+            @NonNull Supplier<BookmarkBridge> bookmarkBridgeSupplier) {
         super(context, suggestionHost);
 
         mDesiredFaviconWidthPx = getContext().getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
         mUrlBarEditingTextProvider = editingTextProvider;
         mIconBridgeSupplier = iconBridgeSupplier;
+        mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
     }
 
     @Override
@@ -88,7 +96,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                     return SuggestionIcon.MAGNIFIER;
             }
         } else {
-            if (suggestion.isStarred()) {
+            BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
+            if (bridge != null && bridge.isBookmarked(suggestion.getUrl())) {
                 return SuggestionIcon.BOOKMARK;
             } else {
                 return SuggestionIcon.GLOBE;

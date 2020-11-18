@@ -92,7 +92,6 @@ public class AutocompleteMatch {
     private final String mImageDominantColor;
     private final int mRelevance;
     private final int mTransition;
-    private final boolean mIsStarred;
     private final boolean mIsDeletable;
     private final String mPostContentType;
     private final byte[] mPostData;
@@ -107,8 +106,8 @@ public class AutocompleteMatch {
             List<MatchClassification> displayTextClassifications, String description,
             List<MatchClassification> descriptionClassifications, SuggestionAnswer answer,
             String fillIntoEdit, GURL url, GURL imageUrl, String imageDominantColor,
-            boolean isStarred, boolean isDeletable, String postContentType, byte[] postData,
-            int groupId, List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
+            boolean isDeletable, String postContentType, byte[] postData, int groupId,
+            List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
             List<NavsuggestTile> navsuggestTiles) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
@@ -129,7 +128,6 @@ public class AutocompleteMatch {
         assert imageUrl != null;
         mImageUrl = imageUrl;
         mImageDominantColor = imageDominantColor;
-        mIsStarred = isStarred;
         mIsDeletable = isDeletable;
         mPostContentType = postContentType;
         mPostData = postData;
@@ -146,10 +144,10 @@ public class AutocompleteMatch {
             int[] contentClassificationOffsets, int[] contentClassificationStyles,
             String description, int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles, SuggestionAnswer answer, String fillIntoEdit,
-            GURL url, GURL imageUrl, String imageDominantColor, boolean isStarred,
-            boolean isDeletable, String postContentType, byte[] postData, int groupId,
-            List<QueryTile> tiles, byte[] clipboardImageData, boolean hasTabMatch,
-            String[] navsuggestTitles, GURL[] navsuggestUrls) {
+            GURL url, GURL imageUrl, String imageDominantColor, boolean isDeletable,
+            String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
+            byte[] clipboardImageData, boolean hasTabMatch, String[] navsuggestTitles,
+            GURL[] navsuggestUrls) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -177,9 +175,8 @@ public class AutocompleteMatch {
 
         return new AutocompleteMatch(nativeType, subtypes, isSearchType, relevance, transition,
                 contents, contentClassifications, description, descriptionClassifications, answer,
-                fillIntoEdit, url, imageUrl, imageDominantColor, isStarred, isDeletable,
-                postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch,
-                navsuggestTiles);
+                fillIntoEdit, url, imageUrl, imageDominantColor, isDeletable, postContentType,
+                postData, groupId, tiles, clipboardImageData, hasTabMatch, navsuggestTiles);
     }
 
     public int getType() {
@@ -238,13 +235,6 @@ public class AutocompleteMatch {
         return mIsSearchType;
     }
 
-    /**
-     * @return Whether this suggestion represents a starred/bookmarked URL.
-     */
-    public boolean isStarred() {
-        return mIsStarred;
-    }
-
     public boolean isDeletable() {
         return mIsDeletable;
     }
@@ -293,7 +283,7 @@ public class AutocompleteMatch {
         final int displayTextHash = mDisplayText != null ? mDisplayText.hashCode() : 0;
         final int fillIntoEditHash = mFillIntoEdit != null ? mFillIntoEdit.hashCode() : 0;
         int hash = 37 * mType + 2017 * displayTextHash + 1901 * fillIntoEditHash
-                + (mIsStarred ? 1 : 0) + (mIsDeletable ? 1 : 0);
+                + (mIsDeletable ? 1 : 0);
         if (mAnswer != null) hash = hash + mAnswer.hashCode();
         return hash;
     }
@@ -313,8 +303,7 @@ public class AutocompleteMatch {
                 && TextUtils.equals(mDescription, suggestion.mDescription)
                 && ObjectsCompat.equals(
                         mDescriptionClassifications, suggestion.mDescriptionClassifications)
-                && mIsStarred == suggestion.mIsStarred && mIsDeletable == suggestion.mIsDeletable
-                && mRelevance == suggestion.mRelevance
+                && mIsDeletable == suggestion.mIsDeletable && mRelevance == suggestion.mRelevance
                 && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData) && mGroupId == suggestion.mGroupId
@@ -344,9 +333,8 @@ public class AutocompleteMatch {
                 "mDescription=" + mDescription, "mFillIntoEdit=" + mFillIntoEdit, "mUrl=" + mUrl,
                 "mImageUrl=" + mImageUrl, "mImageDominatColor=" + mImageDominantColor,
                 "mRelevance=" + mRelevance, "mTransition=" + mTransition,
-                "mIsStarred=" + mIsStarred, "mIsDeletable=" + mIsDeletable,
-                "mPostContentType=" + mPostContentType, "mPostData=" + Arrays.toString(mPostData),
-                "mGroupId=" + mGroupId,
+                "mIsDeletable=" + mIsDeletable, "mPostContentType=" + mPostContentType,
+                "mPostData=" + Arrays.toString(mPostData), "mGroupId=" + mGroupId,
                 "mDisplayTextClassifications=" + mDisplayTextClassifications,
                 "mDescriptionClassifications=" + mDescriptionClassifications, "mAnswer=" + mAnswer);
         return pieces.toString();

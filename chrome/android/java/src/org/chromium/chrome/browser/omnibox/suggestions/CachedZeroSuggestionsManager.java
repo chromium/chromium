@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX;
@@ -104,8 +103,6 @@ public class CachedZeroSuggestionsManager {
             prefs.writeBoolean(
                     KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX.createKey(numCachableSuggestions),
                     suggestion.isDeletable());
-            prefs.writeBoolean(KEY_ZERO_SUGGEST_IS_STARRED_PREFIX.createKey(numCachableSuggestions),
-                    suggestion.isStarred());
             prefs.writeString(
                     KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getPostContentType());
@@ -160,8 +157,6 @@ public class CachedZeroSuggestionsManager {
                     AutocompleteMatch.INVALID_TYPE);
             boolean isSearchType =
                     prefs.readBoolean(KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX.createKey(i), false);
-            boolean isStarred =
-                    prefs.readBoolean(KEY_ZERO_SUGGEST_IS_STARRED_PREFIX.createKey(i), false);
             boolean isDeletable =
                     prefs.readBoolean(KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX.createKey(i), false);
             String postContentType =
@@ -186,8 +181,8 @@ public class CachedZeroSuggestionsManager {
 
             AutocompleteMatch suggestion = new AutocompleteMatch(nativeType, subtypes, isSearchType,
                     0, 0, displayText, classifications, description, classifications, null, null,
-                    url, GURL.emptyGURL(), null, isStarred, isDeletable, postContentType, postData,
-                    groupId, null, null, false, null);
+                    url, GURL.emptyGURL(), null, isDeletable, postContentType, postData, groupId,
+                    null, null, false, null);
             suggestions.add(suggestion);
         }
 

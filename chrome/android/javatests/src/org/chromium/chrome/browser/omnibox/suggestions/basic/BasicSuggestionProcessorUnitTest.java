@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -31,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -104,6 +106,8 @@ public class BasicSuggestionProcessorUnitTest {
     LargeIconBridge mIconBridge;
     @Mock
     UrlBarEditingTextStateProvider mUrlBarText;
+    @Mock
+    BookmarkBridge mBookmarkBridge;
 
     private Bitmap mBitmap;
     private BasicSuggestionProcessor mProcessor;
@@ -117,7 +121,7 @@ public class BasicSuggestionProcessorUnitTest {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlBarText, () -> mIconBridge);
+                mSuggestionHost, mUrlBarText, () -> mIconBridge, () -> mBookmarkBridge);
     }
 
     /**
@@ -126,14 +130,6 @@ public class BasicSuggestionProcessorUnitTest {
      */
     private AutocompleteMatchBuilder createSuggestionBuilder(int type, String title) {
         return AutocompleteMatchBuilder.searchWithType(type).setDisplayText(title);
-    }
-
-    /** Create bookmark suggestion for test. */
-    private void createBookmarkSuggestion(int type, String title) {
-        mSuggestion =
-                createSuggestionBuilder(type, title).setIsSearch(false).setIsStarred(true).build();
-        mModel = mProcessor.createModel();
-        mProcessor.populateModel(mSuggestion, mModel, 0);
     }
 
     /** Create search suggestion for test. */
@@ -260,9 +256,11 @@ public class BasicSuggestionProcessorUnitTest {
                 {OmniboxSuggestionType.PEDAL, SuggestionIcon.BOOKMARK},
         };
 
+        doReturn(true).when(mBookmarkBridge).isBookmarked(any());
+
         mProcessor.onNativeInitialized();
         for (int[] testCase : testCases) {
-            createBookmarkSuggestion(testCase[0], "");
+            createUrlSuggestion(testCase[0], "");
             Assert.assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
             assertSuggestionTypeAndIcon(testCase[0], testCase[1]);
         }

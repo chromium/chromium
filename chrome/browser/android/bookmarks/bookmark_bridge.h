@@ -23,6 +23,7 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "url/android/gurl_android.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -231,6 +232,9 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   void EndGroupingUndos(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
+
+  bool IsBookmarked(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& gurl);
 
   base::string16 GetTitle(const bookmarks::BookmarkNode* node) const;
 

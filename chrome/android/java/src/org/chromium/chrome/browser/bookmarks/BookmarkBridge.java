@@ -25,6 +25,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -858,6 +859,15 @@ public class BookmarkBridge {
                 mNativeBookmarkBridge, BookmarkBridge.this, url, read);
     }
 
+    /**
+     * Checks whether supplied URL has already been bookmarked.
+     * @param url The URL to check.
+     * @return Whether the URL has been bookmarked.
+     */
+    public boolean isBookmarked(GURL url) {
+        return BookmarkBridgeJni.get().isBookmarked(mNativeBookmarkBridge, url);
+    }
+
     @VisibleForTesting
     BookmarkId getPartnerFolderId() {
         ThreadUtils.assertOnUiThread();
@@ -1100,5 +1110,6 @@ public class BookmarkBridge {
         boolean isEditBookmarksEnabled(long nativeBookmarkBridge);
         void reorderChildren(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
                 long[] orderedNodes);
+        boolean isBookmarked(long nativeBookmarkBridge, GURL url);
     }
 }

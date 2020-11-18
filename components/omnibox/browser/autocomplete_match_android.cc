@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
@@ -23,8 +22,7 @@ using base::android::ToJavaByteArray;
 using base::android::ToJavaIntArray;
 
 ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
-    JNIEnv* env,
-    bookmarks::BookmarkModel* bookmark_model) const {
+    JNIEnv* env) const {
   // Short circuit if we already built the match.
   if (java_match_)
     return ScopedJavaLocalRef<jobject>(java_match_);
@@ -90,9 +88,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
       ConvertUTF16ToJavaString(env, fill_into_edit),
       url::GURLAndroid::FromNativeGURL(env, destination_url),
       url::GURLAndroid::FromNativeGURL(env, destination_url),
-      j_image_dominant_color,
-      bookmark_model && bookmark_model->IsBookmarked(destination_url),
-      SupportsDeletion(), j_post_content_type, j_post_content,
+      j_image_dominant_color, SupportsDeletion(), j_post_content_type,
+      j_post_content,
       suggestion_group_id.value_or(
           SearchSuggestionParser::kNoSuggestionGroupId),
       j_query_tiles, ToJavaByteArray(env, clipboard_image_data), has_tab_match,

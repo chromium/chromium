@@ -235,8 +235,8 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
   if (result.empty())
     return ScopedJavaLocalRef<jobject>();
 
-  return ScopedJavaLocalRef<jobject>(result.begin()->GetOrCreateJavaObject(
-      env, provider_client_->GetBookmarkModel()));
+  return ScopedJavaLocalRef<jobject>(
+      result.begin()->GetOrCreateJavaObject(env));
 }
 
 void AutocompleteControllerAndroid::OnOmniboxFocused(
@@ -524,8 +524,7 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
 
   for (const auto& match : autocomplete_result) {
     Java_AutocompleteController_addOmniboxSuggestionToResult(
-        env, j_autocomplete_result,
-        match.GetOrCreateJavaObject(env, provider_client_->GetBookmarkModel()));
+        env, j_autocomplete_result, match.GetOrCreateJavaObject(env));
   }
 
   PopulateOmniboxGroupsDetails(env, j_autocomplete_result,
@@ -573,9 +572,7 @@ bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
   // match count is very low, we can consider skipping the expensive
   // verification step and removing this code.
   bool equal = Java_AutocompleteController_isEquivalentOmniboxSuggestion(
-      env,
-      result.match_at(selected_index)
-          .GetOrCreateJavaObject(env, provider_client_->GetBookmarkModel()),
+      env, result.match_at(selected_index).GetOrCreateJavaObject(env),
       hash_code);
   UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
                             equal ? MatchValidationResult::VALID_MATCH
