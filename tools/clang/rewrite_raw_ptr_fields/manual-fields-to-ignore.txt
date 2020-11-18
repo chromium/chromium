@@ -113,6 +113,12 @@ blink::scheduler::MainThreadSchedulerImpl::current_agent_group_scheduler_
 performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
 
+# Populated manually - requires rewriting member pointer type
+courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::input
+courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_forward
+courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_backward
+courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_in
+
 # Populated manually - other compile-time reasons
 iovec::iov_base  # requires adding .get() in another repository, used e.g. in
                  # reinterpret_cast in quic_stream_sequencer_buffer.cc
