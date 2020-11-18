@@ -77,10 +77,6 @@
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/flash_deprecation_infobar_delegate.h"
-#endif
-
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/google/core/common/google_util.h"
 #include "components/rlz/rlz_tracker.h"  // nogncheck
@@ -723,15 +719,6 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
     }
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-    auto* host_content_settings_map =
-        HostContentSettingsMapFactory::GetForProfile(profile_);
-    if (FlashDeprecationInfoBarDelegate::ShouldDisplayFlashDeprecation(
-            host_content_settings_map)) {
-      FlashDeprecationInfoBarDelegate::Create(infobar_service,
-                                              host_content_settings_map);
-    }
-#endif
   }
 }
 

@@ -22,7 +22,6 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/pepper_broker_infobar_delegate.h"
-#include "chrome/browser/plugins/flash_deprecation_infobar_delegate.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
@@ -206,7 +205,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
       {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
-      {"flash_deprecation", IBD::FLASH_DEPRECATION_INFOBAR_DELEGATE},
       {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
       {"rosetta_required", IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE},
   };
@@ -384,9 +382,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       PreviewsLitePageInfoBarDelegate::Create(GetWebContents());
       break;
 
-    case IBD::FLASH_DEPRECATION_INFOBAR_DELEGATE:
-      FlashDeprecationInfoBarDelegate::Create(GetInfoBarService(), nullptr);
-      break;
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
       TabSharingInfoBarDelegate::Create(
           GetInfoBarService(), base::ASCIIToUTF16("example.com"),
@@ -502,10 +497,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_previews_lite_page) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_flash_deprecation) {
   ShowAndVerifyUi();
 }
 
