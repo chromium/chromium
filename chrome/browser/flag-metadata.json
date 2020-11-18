@@ -2136,7 +2136,7 @@
   {
     "name": "enable-suggested-files",
     "owners": [ "edimitriadis", "tby" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "enable-suggestions-with-substring-match",
