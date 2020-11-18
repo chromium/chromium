@@ -96,7 +96,7 @@ bool Partitions::InitializeOnce() {
                          base::PartitionOptions::PCScan::kDisabledByDefault});
   layout_allocator.init({base::PartitionOptions::Alignment::kRegular,
                          base::PartitionOptions::ThreadCache::kDisabled,
-                         base::PartitionOptions::PCScan::kDisabledByDefault});
+                         base::PartitionOptions::PCScan::kAlwaysDisabled});
 
   fast_malloc_root_ = fast_malloc_allocator.root();
   array_buffer_root_ = array_buffer_allocator.root();
@@ -107,7 +107,6 @@ bool Partitions::InitializeOnce() {
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
     fast_malloc_root_->EnablePCScan();
     buffer_root_->EnablePCScan();
-    layout_root_->EnablePCScan();
   }
 
   initialized_ = true;

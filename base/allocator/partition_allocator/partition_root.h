@@ -302,6 +302,7 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   void EnablePCScan() {
+    PA_CHECK(thread_safe);
     PA_CHECK(scannable && !pcscan.has_value());
     // Setting |pcscan| and committing bitmaps has to be done under the lock to
     // avoid racing with PartitionBucket::AllocNewSlotSpan and avoid racing on
