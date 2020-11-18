@@ -245,7 +245,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   mojo::Remote<blink::mojom::SharedWorkerFactory> factory_;
 
   BrowserInterfaceBrokerImpl<SharedWorkerHost, const url::Origin&> broker_{
-      this};
+      this, /*policy_applier=*/nullptr};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 

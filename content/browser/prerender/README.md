@@ -31,4 +31,4 @@ The Prerender2 is the new implementation of prerendering.
 
 The date is the publication date, not the last updated date.
 
-- [Prerender2](https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing) (Oct, 2020)
+- [Prerender2](https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing) (Oct, 2020): Introduces how Prerender2 works and more detailed designs such as Mojo Capability Control.

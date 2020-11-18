@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+// The interface is used in mojo_binder_policy_applier_unittest.cc, the
+// MojoBinderPolicy of this interface is kDefer.
+interface TestInterfaceForDefer {};
+
+// The interface is used in mojo_binder_policy_applier_unittest.cc, the
+// MojoBinderPolicy of this interface is kGrant.
+interface TestInterfaceForGrant {};
+
+// The interface is used in mojo_binder_policy_applier_unittest.cc, the
+// MojoBinderPolicy of this interface is kCancel.
+interface TestInterfaceForCancel {};

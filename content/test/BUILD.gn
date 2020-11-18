@@ -789,6 +789,7 @@ mojom("content_test_mojo_bindings") {
     "../public/test/test_service.mojom",
     "frame_host_test_interface.mojom",
     "test_browser_associated_interfaces.mojom",
+    "test_mojo_binder_policy_applier_unittest.mojom",
   ]
   public_deps = [
     "//mojo/public/mojom/base",
@@ -1866,6 +1867,7 @@ test("content_unittests") {
     "../browser/media/system_media_controls_notifier_unittest.cc",
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
+    "../browser/mojo_binder_policy_applier_unittest.cc",
     "../browser/native_io/native_io_context_unittest.cc",
     "../browser/net/cross_origin_embedder_policy_reporter_unittest.cc",
     "../browser/net/cross_origin_opener_policy_reporter_unittest.cc",
